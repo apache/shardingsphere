@@ -375,23 +375,33 @@
 <ul>
 <li><a href="#已完成">已完成</a>
 <ul>
+<li><a href="#数据库">数据库</a></li>
+<li><a href="#dql">DQL</a></li>
+<li><a href="#dml">DML</a></li>
+<li><a href="#配置">配置</a></li>
+<li><a href="#sql解析">SQL解析</a></li>
+<li><a href="#sql改写">SQL改写</a></li>
+<li><a href="#访问路由">访问路由</a></li>
+<li><a href="#结果归并">结果归并</a></li>
 <li><a href="#分库分表">分库分表</a></li>
 <li><a href="#读写分离">读写分离</a></li>
-<li><a href="#配置2-0">配置2.0</a></li>
 <li><a href="#分布式主键">分布式主键</a></li>
 <li><a href="#柔性事务">柔性事务</a></li>
 </ul></li>
-<li><a href="#进行中">进行中</a>
-<ul>
-<li><a href="#sql解析2-0">SQL解析2.0</a></li>
-</ul></li>
 <li><a href="#计划中">计划中</a>
 <ul>
-<li><a href="#结果归并2-0">结果归并2.0</a></li>
-<li><a href="#访问路由2-0">访问路由2.0</a></li>
-<li><a href="#柔性事务2-0">柔性事务2.0</a></li>
+<li><a href="#配置-1">配置</a></li>
+<li><a href="#治理">治理</a></li>
 </ul></li>
-<li><a href="#待定">待定</a></li>
+<li><a href="#待定">待定</a>
+<ul>
+<li><a href="#dql-1">DQL</a></li>
+<li><a href="#dml-1">DML</a></li>
+<li><a href="#ddl">DDL</a></li>
+<li><a href="#sql解析提升">SQL解析提升</a></li>
+<li><a href="#柔性事务提升">柔性事务提升</a></li>
+<li><a href="#运维工具">运维工具</a></li>
+</ul></li>
 </ul></li>
 </ul>
 </nav>
@@ -411,99 +421,176 @@
 
 <h2 id="已完成">已完成</h2>
 
+<h3 id="数据库">数据库</h3>
+
+<ol>
+<li>MySQL</li>
+<li>Oracle</li>
+<li>SQLServer</li>
+<li>PostgreSQL</li>
+</ol>
+
+<h3 id="dql">DQL</h3>
+
+<ol>
+<li>JOIN</li>
+<li>BETWEEN</li>
+<li>IN</li>
+<li>ORDER BY</li>
+<li>GROUP BY</li>
+<li>COUNT, SUM, MAX, MIN, AVG</li>
+<li>LIMIT, rownum, TOP</li>
+<li>非功能型子查询</li>
+</ol>
+
+<h3 id="dml">DML</h3>
+
+<ol>
+<li>INSERT INTO</li>
+<li>INSERT SET</li>
+<li>UPDATE</li>
+<li>DELETE</li>
+</ol>
+
+<h3 id="配置">配置</h3>
+
+<ol>
+<li>Java API</li>
+<li>Spring命名空间</li>
+<li>Yaml (仅读写分离未完成)</li>
+</ol>
+
+<h3 id="sql解析">SQL解析</h3>
+
+<ol>
+<li>词法分析</li>
+<li>语法分析</li>
+</ol>
+
+<h3 id="sql改写">SQL改写</h3>
+
+<ol>
+<li>正确性改写</li>
+<li>优化改写</li>
+</ol>
+
+<h3 id="访问路由">访问路由</h3>
+
+<ol>
+<li>Hint路由</li>
+<li>简单路由</li>
+<li>笛卡尔积路由</li>
+</ol>
+
+<h3 id="结果归并">结果归并</h3>
+
+<ol>
+<li>流式归并</li>
+<li>内存归并</li>
+<li>装饰者归并</li>
+</ol>
+
 <h3 id="分库分表">分库分表</h3>
 
 <ol>
-<li>SQL解析 (完成)</li>
-<li>SQL改写 (完成)</li>
-<li>访问路由 (完成)</li>
-<li>结果归并 (完成)</li>
+<li>分库</li>
+<li>分表</li>
+<li>动态表</li>
+<li>默认数据源</li>
 </ol>
 
 <h3 id="读写分离">读写分离</h3>
 
 <ol>
-<li>一主多从的读写分离，可配合分库分表使用 (完成)</li>
-<li>同一线程且同一数据库连接内，写入操作后读操作均从主库读取，用于保证数据一致性 (完成)</li>
-<li>Spring命名空间 (完成)</li>
-<li>Hint强制主库路由 (完成)</li>
-</ol>
-
-<h3 id="配置2-0">配置2.0</h3>
-
-<ol>
-<li>动态表配置 (完成)</li>
-<li>简化只分库配置，无需配置逻辑表和真实表对应关系 (完成)</li>
-<li>简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule (完成)</li>
+<li>读写分离</li>
+<li>同一线程且同一数据库连接内一致性保证</li>
+<li>Hint强制主库路由</li>
 </ol>
 
 <h3 id="分布式主键">分布式主键</h3>
 
 <ol>
-<li>JDBC接口改写 (完成)</li>
-<li>分布式主键策略接口制定 (完成)</li>
-<li>基于snowflake的分布式主键算法实现 (完成)</li>
+<li>JDBC集成</li>
+<li>分布式主键策略接口</li>
+<li>基于snowflake的分布式主键算法实现</li>
 </ol>
 
 <h3 id="柔性事务">柔性事务</h3>
 
 <ol>
-<li>sharding-jdbc-core发送SQL执行事件 (完成)</li>
-<li>BED类型事务日志存储设计 (完成)</li>
-<li>BED类型事务同步尝试 (完成)</li>
-<li>基于elastic-job的BED类型事务异步尝试 (完成)</li>
-</ol>
-
-<h2 id="进行中">进行中</h2>
-
-<h3 id="sql解析2-0">SQL解析2.0</h3>
-
-<ol>
-<li>使用全新的自研SQL解析引擎替换druid的SQL解析引擎 (完成)</li>
-<li>其他数据库支持 (完成)</li>
-<li>判断不支持SQL并直接报错 (部分完成)</li>
-<li>支持DISTINCT</li>
-<li>支持GROUP BY聚合之后进行HAVING</li>
-<li>支持计算表达式，如：SUM(pv) / COUNT(uv)</li>
-<li>支持通过SQL注释指定SQL Hint</li>
-<li>SQL重写优化，进一步提升性能</li>
+<li>最大努力送达型</li>
 </ol>
 
 <h2 id="计划中">计划中</h2>
 
-<h3 id="结果归并2-0">结果归并2.0</h3>
+<h3 id="配置-1">配置</h3>
 
 <ol>
-<li>管道化结果归并 (完成)</li>
-<li>支持OR语句根据row的唯一标识去重</li>
-<li>支持DISTINCT</li>
-<li>支持GROUP BY聚合之后进行HAVING</li>
-<li>支持计算表达式，如：SUM(pv) / COUNT(uv)</li>
+<li>读写分离独立化</li>
+<li>Binding策略提升</li>
+<li>集中化</li>
+<li>动态化</li>
 </ol>
 
-<h3 id="访问路由2-0">访问路由2.0</h3>
+<h3 id="治理">治理</h3>
 
 <ol>
-<li>支持通过SQL注释指定SQL Hint</li>
-<li>ThreadLocal Hints需重新考虑生命周期是否和connection以及statement绑定 (完成)</li>
-<li>释放资源时，自动清理ThreadLocal Hints (完成)</li>
-</ol>
-
-<h3 id="柔性事务2-0">柔性事务2.0</h3>
-
-<ol>
-<li>基于TCC的柔性事务</li>
+<li>数据源健康检测及发现</li>
+<li>数据源动态切换</li>
+<li>流量控制</li>
 </ol>
 
 <h2 id="待定">待定</h2>
 
+<h3 id="dql-1">DQL</h3>
+
+<ol>
+<li>DISTINCT</li>
+<li>HAVING</li>
+<li>OR</li>
+<li>UNION, UNION ALL</li>
+<li>全子查询</li>
+<li>计算表达式，如：SUM(pv) / COUNT(uv)</li>
+<li>通过SQL注释指定SQL Hint</li>
+</ol>
+
+<h3 id="dml-1">DML</h3>
+
+<ol>
+<li>INSERT INTO VALUES (xxx), (xxx)</li>
+<li>多表UPDATE</li>
+<li>多表DELETE</li>
+</ol>
+
+<h3 id="ddl">DDL</h3>
+
+<ol>
+<li>CREATE</li>
+<li>ALTER</li>
+<li>DROP</li>
+<li>TRUNCATE</li>
+</ol>
+
+<h3 id="sql解析提升">SQL解析提升</h3>
+
+<ol>
+<li>批量解析</li>
+<li>冗余括号</li>
+<li>通过SQL注释指定SQL Hint</li>
+</ol>
+
+<h3 id="柔性事务提升">柔性事务提升</h3>
+
+<ol>
+<li>TCC</li>
+</ol>
+
+<h3 id="运维工具">运维工具</h3>
+
 <ol>
 <li>字典表复制广播</li>
-<li>HA相关</li>
-<li>流量控制</li>
 <li>建表工具</li>
 <li>动态扩容</li>
-<li>配置动态化</li>
 </ol>
 
 

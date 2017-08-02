@@ -43,7 +43,7 @@
       <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
       
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/03-design/roadmap/</guid>
-      <description>已完成 分库分表  SQL解析 (完成) SQL改写 (完成) 访问路由 (完成) 结果归并 (完成)  读写分离  一主多从的读写分离，可配合分库分表使用 (完成) 同一线程且同一数据库连接内，写入操作后读操作均从主库读取，用于保证数据一致性 (完成) Spring命名空间 (完成) Hint强制主库路由 (完成)  配置2.0  动态表配置 (完成) 简化只分库配置，无需配置逻辑表和真实表对应关系 (完成) 简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule (完成)  分布式主键  JDBC接口改写 (完成) 分布式主键策略接口制定 (完成) 基于snowflake的分布式主键算法实现 (完成)  柔性事务  sharding-jdbc-core发送SQL执行事件 (完成) BED类型事务日志存储设计 (完成) BED类型事务同步尝试 (完成) 基于elastic-job的BED类型事务异步尝试 (完成)  进行中 SQL解析2.0  使用全新的自研SQL解析引擎替换druid的SQL解析引擎 (完成) 其他数据库支持 (完成) 判断不支持SQL并直接报错 (部分完成) 支持DISTINCT 支持GROUP BY聚合之后进行HAVING 支持计算表达式，如：SUM(pv) / COUNT(uv) 支持通过SQL注释指定SQL Hint SQL重写优化，进一步提升性能  计划中 结果归并2.</description>
+      <description> 已完成 数据库  MySQL Oracle SQLServer PostgreSQL  DQL  JOIN BETWEEN IN ORDER BY GROUP BY COUNT, SUM, MAX, MIN, AVG LIMIT, rownum, TOP 非功能型子查询  DML  INSERT INTO INSERT SET UPDATE DELETE  配置  Java API Spring命名空间 Yaml (仅读写分离未完成)  SQL解析  词法分析 语法分析  SQL改写  正确性改写 优化改写  访问路由  Hint路由 简单路由 笛卡尔积路由  结果归并  流式归并 内存归并 装饰者归并  分库分表  分库 分表 动态表 默认数据源  读写分离  读写分离 同一线程且同一数据库连接内一致性保证 Hint强制主库路由  分布式主键  JDBC集成 分布式主键策略接口 基于snowflake的分布式主键算法实现  柔性事务  最大努力送达型  计划中 配置  读写分离独立化 Binding策略提升 集中化 动态化  治理  数据源健康检测及发现 数据源动态切换 流量控制  待定 DQL  DISTINCT HAVING OR UNION, UNION ALL 全子查询 计算表达式，如：SUM(pv) / COUNT(uv) 通过SQL注释指定SQL Hint  DML  INSERT INTO VALUES (xxx), (xxx) 多表UPDATE 多表DELETE  DDL  CREATE ALTER DROP TRUNCATE  SQL解析提升  批量解析 冗余括号 通过SQL注释指定SQL Hint  柔性事务提升  TCC  运维工具  字典表复制广播 建表工具 动态扩容  </description>
     </item>
     
   </channel>
