@@ -62,7 +62,7 @@ public enum ShardingPropertiesConstant {
      * 工作线程数量.
      * 
      * <p>
-     * 默认值: 100
+     * 默认值: CPU核数
      * </p>
      */
     EXECUTOR_SIZE("executor.size", String.valueOf(Runtime.getRuntime().availableProcessors()), int.class);
