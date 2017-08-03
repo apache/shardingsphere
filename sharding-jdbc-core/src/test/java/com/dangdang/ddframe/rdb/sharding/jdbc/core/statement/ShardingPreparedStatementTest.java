@@ -17,11 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingJDBCDatabaseAndTableTest;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
-import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.util.JDBCTestSQL;
+import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import com.google.common.eventbus.Subscribe;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +35,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -41,173 +44,210 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ShardingPreparedStatementTest extends AbstractShardingDatabaseOnlyDBUnitTest {
+public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private ShardingDataSource shardingDataSource;
+    private static final String SELECT_COUNT_AS_ORDERS_COUNT_SQL = "SELECT COUNT(*) AS orders_count FROM t_order WHERE status = ?";
     
-    private String sql = "SELECT COUNT(*) AS orders_count FROM t_order WHERE status = ?";
+    private static final String SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL = "SELECT item_id from t_order_item where user_id = %d and order_id= %s and status = 'BATCH'";
     
-    private String sql2 = "SELECT order_id from t_order where user_id = %d and status = 'BATCH'";
+    private static final String DELETE_WITHOUT_SHARDING_VALUE_SQL = "DELETE FROM t_order WHERE status = %s";
+    
+    private static final String INSERT_WITH_ALL_PLACEHOLDERS_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
+    
+    private static final String INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL = "INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s, %s)";
+    
+    private static final String UPDATE_WITHOUT_SHARDING_VALUE_SQL = "UPDATE t_order SET status = %s WHERE status = %s";
+    
+    private Map<DatabaseType, ShardingDataSource> shardingDataSources;
     
     @Before
     public void init() throws SQLException {
-        shardingDataSource = getShardingDataSource();
+        shardingDataSources = getShardingDataSources();
     }
     
     @Test
     public void assertExecuteQueryWithParameter() throws SQLException {
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, "init");
-            ResultSet resultSet = preparedStatement.executeQuery();
-            assertTrue(resultSet.next());
-            assertThat(resultSet.getLong(1), is(40L));
-            preparedStatement.setString(1, "null");
-            resultSet = preparedStatement.executeQuery();
-            assertTrue(resultSet.next());
-            assertThat(resultSet.getLong(1), is(0L));
-            preparedStatement.setString(1, "init");
-            resultSet = preparedStatement.executeQuery();
-            assertTrue(resultSet.next());
-            assertThat(resultSet.getLong(1), is(40L));
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL)) {
+                preparedStatement.setString(1, "init");
+                ResultSet resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getLong(1), is(4L));
+                preparedStatement.setString(1, "null");
+                resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getLong(1), is(0L));
+                preparedStatement.setString(1, "init");
+                resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getLong(1), is(4L));
+            }
         }
     }
     
     @Test
     public void assertExecuteQueryWithoutParameter() throws SQLException {
-        String sql = getDatabaseTestSQL().getSelectCountAliasSql();
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            assertTrue(resultSet.next());
-            assertThat(resultSet.getLong(1), is(40L));
-            resultSet = preparedStatement.executeQuery();
-            assertTrue(resultSet.next());
-            assertThat(resultSet.getLong(1), is(40L));
-            resultSet = preparedStatement.executeQuery();
-            assertTrue(resultSet.next());
-            assertThat(resultSet.getLong(1), is(40L));
+        String sql = JDBCTestSQL.SELECT_COUNT_ALIAS_SQL;
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getLong(1), is(4L));
+                resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getLong(1), is(4L));
+                resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getLong(1), is(4L));
+            }
         }
     }
     
+    
     @Test
     public void assertExecuteUpdateWithParameter() throws SQLException {
-        String sql = replacePreparedStatement(getDatabaseTestSQL().getDeleteWithoutShardingValueSql());
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, "init");
-            assertThat(preparedStatement.executeUpdate(), is(40));
-            preparedStatement.setString(1, "null");
-            assertThat(preparedStatement.executeUpdate(), is(0));
-            preparedStatement.setString(1, "init");
-            assertThat(preparedStatement.executeUpdate(), is(0));
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(DELETE_WITHOUT_SHARDING_VALUE_SQL))) {
+                preparedStatement.setString(1, "init");
+                assertThat(preparedStatement.executeUpdate(), is(4));
+                preparedStatement.setString(1, "null");
+                assertThat(preparedStatement.executeUpdate(), is(0));
+                preparedStatement.setString(1, "init");
+                assertThat(preparedStatement.executeUpdate(), is(0));
+            }
         }
     }
     
     @Test
     public void assertExecuteUpdateWithoutParameter() throws SQLException {
-        String sql = String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'init'");
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            assertThat(preparedStatement.executeUpdate(), is(40));
-            assertThat(preparedStatement.executeUpdate(), is(0));
-            assertThat(preparedStatement.executeUpdate(), is(0));
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            String sql = String.format(DELETE_WITHOUT_SHARDING_VALUE_SQL, "'init'");
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                assertThat(preparedStatement.executeUpdate(), is(4));
+                assertThat(preparedStatement.executeUpdate(), is(0));
+                assertThat(preparedStatement.executeUpdate(), is(0));
+            }
         }
     }
     
     @Test
     public void assertExecuteWithParameter() throws SQLException {
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, "init");
-            assertTrue(preparedStatement.execute());
-            assertTrue(preparedStatement.getResultSet().next());
-            assertThat(preparedStatement.getResultSet().getLong(1), is(40L));
-            preparedStatement.setString(1, "null");
-            assertTrue(preparedStatement.execute());
-            assertTrue(preparedStatement.getResultSet().next());
-            assertThat(preparedStatement.getResultSet().getLong(1), is(0L));
-            preparedStatement.setString(1, "init");
-            assertTrue(preparedStatement.execute());
-            assertTrue(preparedStatement.getResultSet().next());
-            assertThat(preparedStatement.getResultSet().getLong(1), is(40L));
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL)) {
+                preparedStatement.setString(1, "init");
+                assertTrue(preparedStatement.execute());
+                assertTrue(preparedStatement.getResultSet().next());
+                assertThat(preparedStatement.getResultSet().getLong(1), is(4L));
+                preparedStatement.setString(1, "null");
+                assertTrue(preparedStatement.execute());
+                assertTrue(preparedStatement.getResultSet().next());
+                assertThat(preparedStatement.getResultSet().getLong(1), is(0L));
+                preparedStatement.setString(1, "init");
+                assertTrue(preparedStatement.execute());
+                assertTrue(preparedStatement.getResultSet().next());
+                assertThat(preparedStatement.getResultSet().getLong(1), is(4L));
+            }
         }
     }
     
     @Test
     public void assertExecuteWithoutParameter() throws SQLException {
-        String sql = String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'init'");
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            assertFalse(preparedStatement.execute());
-            assertFalse(preparedStatement.execute());
-            assertFalse(preparedStatement.execute());
+        String sql = String.format(DELETE_WITHOUT_SHARDING_VALUE_SQL, "'init'");
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                assertFalse(preparedStatement.execute());
+                assertFalse(preparedStatement.execute());
+                assertFalse(preparedStatement.execute());
+            }
         }
     }
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws SQLException {
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
-            preparedStatement.setString(1, "init");
-            ResultSet resultSet = preparedStatement.executeQuery();
-            assertTrue(resultSet.next());
-            assertThat(resultSet.getLong(1), is(40L));
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+                preparedStatement.setString(1, "init");
+                ResultSet resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getLong(1), is(4L));
+            }
         }
     }
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException {
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
-            preparedStatement.setString(1, "init");
-            ResultSet resultSet = preparedStatement.executeQuery();
-            assertTrue(resultSet.next());
-            assertThat(resultSet.getLong(1), is(40L));
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL, ResultSet.TYPE_FORWARD_ONLY, 
+                            ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+                preparedStatement.setString(1, "init");
+                ResultSet resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getLong(1), is(4L));
+            }
         }
     }
     
     @Test
     public void assertExecuteQueryWithAutoGeneratedKeys() throws SQLException {
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.NO_GENERATED_KEYS)) {
-            preparedStatement.setString(1, "init");
-            ResultSet resultSet = preparedStatement.executeQuery();
-            assertTrue(resultSet.next());
-            assertThat(resultSet.getLong(1), is(40L));
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL, Statement.NO_GENERATED_KEYS)) {
+                preparedStatement.setString(1, "init");
+                ResultSet resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getLong(1), is(4L));
+            }
         }
     }
     
     @Test
     public void assertExecuteQueryWithColumnIndexes() throws SQLException {
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, new int[] {1})) {
-            preparedStatement.setNull(1, java.sql.Types.VARCHAR);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            assertTrue(resultSet.next());
-            assertThat(resultSet.getLong(1), is(0L));
+        for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
+            if (DatabaseType.PostgreSQL == each.getKey()) {
+                continue;
+            }
+            try (
+                    Connection connection = each.getValue().getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL, new int[]{1})) {
+                preparedStatement.setNull(1, java.sql.Types.VARCHAR);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getLong(1), is(0L));
+            }
         }
     }
     
     @Test
     public void assertExecuteQueryWithColumnNames() throws SQLException {
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[] {"orders_count"})) {
-            preparedStatement.setNull(1, java.sql.Types.VARCHAR);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            assertTrue(resultSet.next());
-            assertThat(resultSet.getLong(1), is(0L));
+        for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
+            if (DatabaseType.PostgreSQL == each.getKey()) {
+                continue;
+            }
+            try (
+                    Connection connection = each.getValue().getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL, new String[]{"orders_count"})) {
+                preparedStatement.setNull(1, java.sql.Types.VARCHAR);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getLong(1), is(0L));
+            }
         }
     }
     
@@ -216,7 +256,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
         Object listener = new Object() {
             
             private List<DMLExecutionEvent> beforeEvents = new ArrayList<>();
-    
+            
             @Subscribe
             public void subscribe(final DMLExecutionEvent event) {
                 if (event.getEventExecutionType() == EventExecutionType.BEFORE_EXECUTE) {
@@ -227,180 +267,199 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
             }
         };
         EventBusInstance.getInstance().register(listener);
-        String sql = getDatabaseTestSQL().getInsertWithAllPlaceholdersSql();
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, 3101);
-            preparedStatement.setInt(2, 11);
-            preparedStatement.setString(3, "BATCH");
-            preparedStatement.addBatch();
-            preparedStatement.setInt(1, 3102);
-            preparedStatement.setInt(2, 12);
-            preparedStatement.setString(3, "BATCH");
-            preparedStatement.addBatch();
-            preparedStatement.setInt(1, 3111);
-            preparedStatement.setInt(2, 21);
-            preparedStatement.setString(3, "BATCH");
-            preparedStatement.addBatch();
-            preparedStatement.setInt(1, 3112);
-            preparedStatement.setInt(2, 22);
-            preparedStatement.setString(3, "BATCH");
-            preparedStatement.addBatch();
-            int[] result = preparedStatement.executeBatch();
-            for (int each : result) {
-                assertThat(each, is(1));
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_ALL_PLACEHOLDERS_SQL)) {
+                preparedStatement.setInt(1, 3101);
+                preparedStatement.setInt(2, 11);
+                preparedStatement.setInt(3, 11);
+                preparedStatement.setString(4, "BATCH");
+                preparedStatement.addBatch();
+                preparedStatement.setInt(1, 3102);
+                preparedStatement.setInt(2, 12);
+                preparedStatement.setInt(3, 12);
+                preparedStatement.setString(4, "BATCH");
+                preparedStatement.addBatch();
+                preparedStatement.setInt(1, 3111);
+                preparedStatement.setInt(2, 21);
+                preparedStatement.setInt(3, 21);
+                preparedStatement.setString(4, "BATCH");
+                preparedStatement.addBatch();
+                preparedStatement.setInt(1, 3112);
+                preparedStatement.setInt(2, 22);
+                preparedStatement.setInt(3, 22);
+                preparedStatement.setString(4, "BATCH");
+                preparedStatement.addBatch();
+                int[] result = preparedStatement.executeBatch();
+                for (int rs : result) {
+                    assertThat(rs, is(1));
+                }
             }
-        } finally {
-            EventBusInstance.getInstance().unregister(listener);
         }
+        EventBusInstance.getInstance().unregister(listener);
     }
     
     @Test
     public void assertAddBatchWithoutGenerateKeyColumn() throws SQLException {
-        String sql = replacePreparedStatement(getDatabaseTestSQL().getInsertWithAutoIncrementColumnSql());
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                Statement queryStatement = connection.createStatement()) {
-            preparedStatement.setInt(1, 11);
-            preparedStatement.setString(2, "BATCH");
-            preparedStatement.addBatch();
-            preparedStatement.setInt(1, 12);
-            preparedStatement.setString(2, "BATCH");
-            preparedStatement.addBatch();
-            preparedStatement.setInt(1, 21);
-            preparedStatement.setString(2, "BATCH");
-            preparedStatement.addBatch();
-            preparedStatement.setInt(1, 22);
-            preparedStatement.setString(2, "BATCH");
-            preparedStatement.addBatch();
-            int[] result = preparedStatement.executeBatch();
-            for (int each : result) {
-                assertThat(each, is(1));
-            }
-            ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(1L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(2L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(3L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(4L));
-            assertFalse(generateKeyResultSet.next());
-            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 11))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(1));
-            }
-            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 12))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(2));
-            }
-            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 21))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(3));
-            }
-            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 22))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(4));
+        String sql = replacePreparedStatement(INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL);
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                    Statement queryStatement = connection.createStatement()) {
+                preparedStatement.setInt(1, 11);
+                preparedStatement.setInt(2, 11);
+                preparedStatement.setString(3, "BATCH");
+                preparedStatement.addBatch();
+                preparedStatement.setInt(1, 12);
+                preparedStatement.setInt(2, 12);
+                preparedStatement.setString(3, "BATCH");
+                preparedStatement.addBatch();
+                preparedStatement.setInt(1, 21);
+                preparedStatement.setInt(2, 21);
+                preparedStatement.setString(3, "BATCH");
+                preparedStatement.addBatch();
+                preparedStatement.setInt(1, 22);
+                preparedStatement.setInt(2, 22);
+                preparedStatement.setString(3, "BATCH");
+                preparedStatement.addBatch();
+                int[] result = preparedStatement.executeBatch();
+                for (int rs : result) {
+                    assertThat(rs, is(1));
+                }
+                ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(1L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(2L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(3L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(4L));
+                assertFalse(generateKeyResultSet.next());
+                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 11, 11))) {
+                    assertTrue(rs.next());
+                    assertThat(rs.getInt(1), is(1));
+                }
+                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 12, 12))) {
+                    assertTrue(rs.next());
+                    assertThat(rs.getInt(1), is(2));
+                }
+                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 21, 21))) {
+                    assertTrue(rs.next());
+                    assertThat(rs.getInt(1), is(3));
+                }
+                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 22, 22))) {
+                    assertTrue(rs.next());
+                    assertThat(rs.getInt(1), is(4));
+                }
             }
         }
     }
     
     @Test
     public void assertAddBatchWithGenerateKeyColumn() throws SQLException {
-        String sql = getDatabaseTestSQL().getInsertWithAllPlaceholdersSql();
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                Statement queryStatement = connection.createStatement()) {
-            preparedStatement.setInt(1, 1);
-            preparedStatement.setInt(2, 11);
-            preparedStatement.setString(3, "BATCH");
-            preparedStatement.addBatch();
-            preparedStatement.setInt(1, 2);
-            preparedStatement.setInt(2, 12);
-            preparedStatement.setString(3, "BATCH");
-            preparedStatement.addBatch();
-            preparedStatement.setInt(1, 3);
-            preparedStatement.setInt(2, 21);
-            preparedStatement.setString(3, "BATCH");
-            preparedStatement.addBatch();
-            preparedStatement.setInt(1, 4);
-            preparedStatement.setInt(2, 22);
-            preparedStatement.setString(3, "BATCH");
-            preparedStatement.addBatch();
-            int[] result = preparedStatement.executeBatch();
-            for (int each : result) {
-                assertThat(each, is(1));
-            }
-            ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(1L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(2L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(3L));
-            assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getLong(1), is(4L));
-            assertFalse(generateKeyResultSet.next());
-            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 11))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(1));
-            }
-            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 12))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(2));
-            }
-            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 21))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(3));
-            }
-            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 22))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(4));
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_ALL_PLACEHOLDERS_SQL, Statement.RETURN_GENERATED_KEYS);
+                    Statement queryStatement = connection.createStatement()) {
+                preparedStatement.setInt(1, 1);
+                preparedStatement.setInt(2, 11);
+                preparedStatement.setInt(3, 11);
+                preparedStatement.setString(4, "BATCH");
+                preparedStatement.addBatch();
+                preparedStatement.setInt(1, 2);
+                preparedStatement.setInt(2, 12);
+                preparedStatement.setInt(3, 12);
+                preparedStatement.setString(4, "BATCH");
+                preparedStatement.addBatch();
+                preparedStatement.setInt(1, 3);
+                preparedStatement.setInt(2, 21);
+                preparedStatement.setInt(3, 21);
+                preparedStatement.setString(4, "BATCH");
+                preparedStatement.addBatch();
+                preparedStatement.setInt(1, 4);
+                preparedStatement.setInt(2, 22);
+                preparedStatement.setInt(3, 22);
+                preparedStatement.setString(4, "BATCH");
+                preparedStatement.addBatch();
+                int[] result = preparedStatement.executeBatch();
+                for (int rs : result) {
+                    assertThat(rs, is(1));
+                }
+                ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(1L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(2L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(3L));
+                assertTrue(generateKeyResultSet.next());
+                assertThat(generateKeyResultSet.getLong(1), is(4L));
+                assertFalse(generateKeyResultSet.next());
+                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 11, 11))) {
+                    assertTrue(rs.next());
+                    assertThat(rs.getInt(1), is(1));
+                }
+                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 12, 12))) {
+                    assertTrue(rs.next());
+                    assertThat(rs.getInt(1), is(2));
+                }
+                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 21, 21))) {
+                    assertTrue(rs.next());
+                    assertThat(rs.getInt(1), is(3));
+                }
+                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 22, 22))) {
+                    assertTrue(rs.next());
+                    assertThat(rs.getInt(1), is(4));
+                }
             }
         }
     }
     
     @Test
     public void assertUpdateBatch() throws SQLException {
-        String sql = replacePreparedStatement(getDatabaseTestSQL().getUpdateWithoutShardingValueSql());
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, "batch");
-            preparedStatement.setString(2, "init");
-            preparedStatement.addBatch();
-            preparedStatement.setString(1, "batch");
-            preparedStatement.setString(2, "init");
-            preparedStatement.addBatch();
-            preparedStatement.setString(1, "init");
-            preparedStatement.setString(2, "batch");
-            preparedStatement.addBatch();
-          
-            int[] result = preparedStatement.executeBatch();
-            assertThat(result.length, is(3));
-            assertThat(result[0], is(40));
-            assertThat(result[1], is(0));
-            assertThat(result[2], is(40));
+        String sql = replacePreparedStatement(UPDATE_WITHOUT_SHARDING_VALUE_SQL);
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, "batch");
+                preparedStatement.setString(2, "init");
+                preparedStatement.addBatch();
+                preparedStatement.setString(1, "batch");
+                preparedStatement.setString(2, "init");
+                preparedStatement.addBatch();
+                preparedStatement.setString(1, "init");
+                preparedStatement.setString(2, "batch");
+                preparedStatement.addBatch();
+        
+                int[] result = preparedStatement.executeBatch();
+                assertThat(result.length, is(3));
+                assertThat(result[0], is(4));
+                assertThat(result[1], is(0));
+                assertThat(result[2], is(4));
+            }
         }
     }
     
     @Test
     public void assertClearBatch() throws SQLException {
-        String sql = getDatabaseTestSQL().getInsertWithAllPlaceholdersSql();
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, 3101);
-            preparedStatement.setInt(2, 11);
-            preparedStatement.setString(3, "BATCH");
-            preparedStatement.addBatch();
-            preparedStatement.clearBatch();
-            int[] result = preparedStatement.executeBatch();
-            assertThat(result.length, is(0));
+        for (ShardingDataSource each : shardingDataSources.values()) {
+            try (
+                    Connection connection = each.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_ALL_PLACEHOLDERS_SQL)) {
+                preparedStatement.setInt(1, 3101);
+                preparedStatement.setInt(2, 11);
+                preparedStatement.setInt(3, 11);
+                preparedStatement.setString(4, "BATCH");
+                preparedStatement.addBatch();
+                preparedStatement.clearBatch();
+                int[] result = preparedStatement.executeBatch();
+                assertThat(result.length, is(0));
+            }
         }
     }
 }

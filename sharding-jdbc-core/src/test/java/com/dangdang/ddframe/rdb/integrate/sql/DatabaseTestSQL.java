@@ -47,24 +47,6 @@ public class DatabaseTestSQL {
     
     private static final String SELECT_IN_WITH_SINGLE_TABLE_SQL = "SELECT * FROM t_order WHERE user_id IN (%s, %s, %s) AND order_id IN (%s, %s) ORDER BY user_id, order_id";
     
-    private static final String SELECT_GROUP_BY_USER_ID_SQL = "SELECT user_id AS uid FROM t_order GROUP BY uid";
-    
-    private static final String SELECT_USER_ID_BY_STATUS_SQL = "SELECT user_id AS uid FROM t_order WHERE status = 'init'";
-    
-    private static final String SELECT_USER_ID_BY_IN_STATUS_SQL = "SELECT user_id AS uid FROM t_order WHERE status IN (? ,? ,? ,? ,?)";
-    
-    private static final String SELECT_USER_ID_BY_STATUS_ORDER_BY_USER_ID_SQL = "SELECT user_id AS uid FROM t_order WHERE status = 'init' ORDER BY user_id";
-    
-    private static final String SELECT_ALL_ORDER_SQL = "SELECT * FROM t_order";
-    
-    public String getSelectCountAliasSql() {
-        return SELECT_COUNT_ALIAS_SQL;
-    }
-    
-    public String getInsertWithAutoIncrementColumnSql() {
-        return INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL;
-    }
-    
     public String getInsertWithAllPlaceholdersSql() {
         return INSERT_WITH_ALL_PLACEHOLDERS_SQL;
     }
@@ -85,16 +67,8 @@ public class DatabaseTestSQL {
         return UPDATE_WITH_ALIAS_SQL;
     }
     
-    public String getUpdateWithoutShardingValueSql() {
-        return UPDATE_WITHOUT_SHARDING_VALUE_SQL;
-    }
-    
     public String getDeleteWithoutAliasSql() {
         return DELETE_WITHOUT_ALIAS_SQL;
-    }
-    
-    public String getDeleteWithoutShardingValueSql() {
-        return DELETE_WITHOUT_SHARDING_VALUE_SQL;
     }
     
     public String getAssertSelectWithStatusSql() {
@@ -111,9 +85,5 @@ public class DatabaseTestSQL {
     
     public String getSelectInWithSingleTableSql() {
         return SELECT_IN_WITH_SINGLE_TABLE_SQL;
-    }
-    
-    public String getSelectUserIdByStatusSql() {
-        return SELECT_USER_ID_BY_STATUS_SQL;
     }
 }

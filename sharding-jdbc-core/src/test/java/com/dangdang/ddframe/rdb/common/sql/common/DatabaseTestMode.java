@@ -23,10 +23,6 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
-
 public enum DatabaseTestMode {
     
     ALL, LOCAL, TEST;
@@ -36,11 +32,11 @@ public enum DatabaseTestMode {
         if (ALL == this) {
             return Lists.newArrayList(DatabaseType.values());
         } else if (LOCAL == this) {
-            result.add(MySQL);
-            result.add(PostgreSQL);
-            result.add(H2);
+            result.add(DatabaseType.MySQL);
+            result.add(DatabaseType.PostgreSQL);
+            result.add(DatabaseType.H2);
         } else if (TEST == this) {
-            result.add(H2);
+            result.add(DatabaseType.H2);
         }
         return result;
     }

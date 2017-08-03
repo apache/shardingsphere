@@ -17,8 +17,6 @@
 
 package com.dangdang.ddframe.rdb.common.sql.base;
 
-import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -27,6 +25,8 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.routing.fixture.OrderShardingAlgorithm;
 import org.junit.AfterClass;
 
 import javax.sql.DataSource;
@@ -62,12 +62,12 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
                     "t_order_1")).dataSourceRule(dataSourceRule).build();
             TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList(
                     "t_order_item_0",
-                    "t_order_item_1")).dataSourceRule(dataSourceRule).build();
+                    "t_order_item_1")).dataSourceRule(dataSourceRule).generateKeyColumn("item_id", IncrementKeyGenerator.class).build();
             TableRule configRule = TableRule.builder("t_config").dataSourceRule(dataSourceRule).build();
             ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule, configRule))
                     .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
-                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new SingleKeyModuloDatabaseShardingAlgorithm()))
-                    .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm())).build();
+                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new OrderShardingAlgorithm()))
+                    .tableShardingStrategy(new TableShardingStrategy("order_id", new OrderShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;

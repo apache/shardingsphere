@@ -386,10 +386,10 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     @Test
     public void assertGetGeneratedKeysForSingleRoutedStatement() throws SQLException {
         for (Statement each : statements.values()) {
-            each.execute("INSERT INTO t_order (user_id, order_id, status) VALUES (1, 1, 'init')", Statement.RETURN_GENERATED_KEYS);
-//            ResultSet generatedKeysResult = each.getGeneratedKeys();
-//            assertTrue(generatedKeysResult.next());
-//            assertTrue(generatedKeysResult.getInt(1) > 0);
+            each.execute("INSERT INTO t_order_item (user_id, order_id, status) VALUES (1, 1, 'init')", Statement.RETURN_GENERATED_KEYS);
+            ResultSet generatedKeysResult = each.getGeneratedKeys();
+            assertTrue(generatedKeysResult.next());
+            assertTrue(generatedKeysResult.getInt(1) > 0);
         }
     }
     
