@@ -29,12 +29,12 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    ShardingDatabaseOnlyTest.class,
-    ShardingTableOnlyTest.class,
-    ShardingMasterSlaveTest.class,
-    ShardingDatabaseAndTableTest.class,
-    ShardingDatabaseAndTableDynamicTest.class,
-    NullableShardingTableOnlyTest.class
+        ShardingDatabaseOnlyTest.class,
+        ShardingTableOnlyTest.class,
+        ShardingMasterSlaveTest.class,
+        ShardingDatabaseAndTableTest.class,
+        ShardingDatabaseAndTableDynamicTest.class,
+        NullableShardingTableOnlyTest.class
     })
 public class AllSqlAssertTests {
 }
