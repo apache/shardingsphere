@@ -83,18 +83,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return selectStatement;
     }
     
-    protected void customizedSelect() {
-    }
-    
-    protected void query() {
-        sqlParser.accept(DefaultKeyword.SELECT);
-        parseDistinct();
-        parseSelectList();
-        parseFrom();
-        parseWhere();
-        parseGroupBy();
-        queryRest();
-    }
+    protected abstract void query();
     
     protected final void parseDistinct() {
         if (sqlParser.equalAny(DefaultKeyword.DISTINCT, DefaultKeyword.DISTINCTROW, DefaultKeyword.UNION)) {
@@ -369,6 +358,9 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         if (selectStatement.getTables().getTableNames().contains(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()))) {
             selectStatement.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpression.getOwner().getName()));
         }
+    }
+    
+    protected void customizedSelect() {
     }
     
     private void appendDerivedColumns() {
