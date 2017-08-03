@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertSelectSubQuerySingleTableWithParentheses" value="SELECT t.* FROM ((SELECT o.* FROM t_order o WHERE o.order_id IN (%s, %s))) t ORDER BY t.order_id" type="MySQL,PostgreSQL,SQLServer,Oracle">
+        <sharding-rule>
+            <data parameter="1000,1001" expected="select_sub_query/SelectSubQuerySingleTableWithParentheses.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectSubQueryMultiTableWithParentheses" value="SELECT t.* FROM ((SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id and o.order_id IN (%s, %s))) t ORDER BY t.item_id" type="MySQL,PostgreSQL,SQLServer,Oracle">
+        <sharding-rule>
+            <data parameter="1000,1001" expected="select_sub_query/SelectSubQueryMultiTableWithParentheses.xml" />
+        </sharding-rule>
+    </sql>
+    <!--<sql id="assertSelectSubQueryWithOrderBy" value="SELECT COUNT(1) FROM (SELECT * FROM t_order ORDER BY order_id desc) t" type="MySQL,PostgreSQL,SQLServer,Oracle">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data expected="select_sub_query/SelectSubQueryWithOrderBy.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectSubQueryWithGroupBy" value="SELECT COUNT(1) FROM (SELECT * FROM t_order GROUP BY order_id) t" type="MySQL,PostgreSQL,SQLServer,Oracle">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data expected="select_sub_query/SelectSubQueryWithGroupBy.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+</sqls>

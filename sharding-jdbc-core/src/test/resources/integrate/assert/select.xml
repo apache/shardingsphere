@@ -100,16 +100,6 @@
             <data parameter="10,11,1009,1108,'none"/>
         </sharding-rule>
     </sql>
-    <sql id="assertSelectSubQuerySingleTableWithParentheses" value="SELECT t.* FROM ((SELECT o.* FROM t_order o WHERE o.order_id IN (%s, %s))) t ORDER BY t.order_id" type="MySQL,PostgreSQL,SQLServer,Oracle">
-        <sharding-rule>
-            <data parameter="1000,1001" expected="select/SelectSubquerySingleTableWithParentheses.xml" />
-        </sharding-rule>
-    </sql>
-    <sql id="assertSelectSubQueryMultiTableWithParentheses" value="SELECT t.* FROM ((SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id and o.order_id IN (%s, %s))) t ORDER BY t.item_id" type="MySQL,PostgreSQL,SQLServer,Oracle">
-        <sharding-rule>
-            <data parameter="1000,1001" expected="select/SelectSubqueryMultiTableWithParentheses.xml" />
-        </sharding-rule>
-    </sql>
     <sql id="assertSelectCountWithBindingTable" value="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s">
         <sharding-rule>
             <data parameter="10,11,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_0.xml" />
