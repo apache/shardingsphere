@@ -21,16 +21,18 @@ import com.dangdang.ddframe.rdb.integrate.fixture.NoneKeyModuloDatabaseShardingA
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 
-abstract class AbstractRoutingDatabaseOnlyTest extends AbstractShardingDatabaseOnlyHintDBUnitTest {
+import javax.sql.DataSource;
+import java.util.Map;
+
+public abstract class AbstractRoutingDatabaseOnlyTest extends AbstractShardingDatabaseOnlyHintDBUnitTest {
     
-    protected ShardingDataSource initDataSource() {
-        
-        DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap("dataSource_%s"));
-        ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule)
+    @Override
+    protected ShardingRule getShardingRule(final Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) {
+        DataSourceRule dataSourceRule = new DataSourceRule(dataSourceEntry.getValue());
+        return ShardingRule.builder().dataSourceRule(dataSourceRule)
                 .databaseShardingStrategy(new DatabaseShardingStrategy(new NoneKeyModuloDatabaseShardingAlgorithm()))
                 .build();
-        return new ShardingDataSource(shardingRule);
     }
 }

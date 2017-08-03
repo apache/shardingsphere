@@ -18,29 +18,37 @@
 package com.dangdang.ddframe.rdb.integrate.hint;
 
 import com.dangdang.ddframe.rdb.integrate.hint.helper.DynamicDatabaseShardingValueHelper;
+import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
 
 public class RoutingDatabaseOnlyWithHintForSelectTest extends AbstractRoutingDatabaseOnlyTest {
     
-    private ShardingDataSource shardingDataSource;
+    private Map<DatabaseType, ShardingDataSource> shardingDataSources;
     
     @Before
     public void init() throws SQLException {
-        shardingDataSource = getShardingDataSource();
+        shardingDataSources = getShardingDataSources();
     }
     
     @Test
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
-        String statement = replacePreparedStatement(getDatabaseTestSQL().getSelectEqualsWithSingleTableSql());
-        assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_0.xml", new DynamicDatabaseShardingValueHelper(10), shardingDataSource.getConnection(), "t_order", statement, 10, 1000);
-        assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_1.xml", new DynamicDatabaseShardingValueHelper(12), shardingDataSource.getConnection(), "t_order", statement, 12, 1201);
-        assertDataSet("integrate/dataset/Empty.xml", new DynamicDatabaseShardingValueHelper(12), shardingDataSource.getConnection(), "t_order", statement, 12, 1000);
+        for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
+            String sql = replacePreparedStatement(DatabaseTestSQL.SELECT_EQUALS_WITH_SINGLE_TABLE_SQL);
+            assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_0.xml", new DynamicDatabaseShardingValueHelper(10), 
+                    each.getValue().getConnection(), "t_order", sql, each.getKey(), 10, 1000);
+            assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_1.xml", new DynamicDatabaseShardingValueHelper(12), 
+                    each.getValue().getConnection(), "t_order", sql, each.getKey(), 12, 1201);
+            assertDataSet("integrate/dataset/Empty.xml", new DynamicDatabaseShardingValueHelper(12), 
+                    each.getValue().getConnection(), "t_order", sql, each.getKey(), 12, 1000);
+        }
     }
 }

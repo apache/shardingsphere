@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
 import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingJDBCDatabaseAndTableTest;
+import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
@@ -46,18 +47,6 @@ import static org.junit.Assert.assertTrue;
 
 public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private static final String SELECT_COUNT_AS_ORDERS_COUNT_SQL = "SELECT COUNT(*) AS orders_count FROM t_order WHERE status = ?";
-    
-    private static final String SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL = "SELECT item_id from t_order_item where user_id = %d and order_id= %s and status = 'BATCH'";
-    
-    private static final String DELETE_WITHOUT_SHARDING_VALUE_SQL = "DELETE FROM t_order WHERE status = %s";
-    
-    private static final String INSERT_WITH_ALL_PLACEHOLDERS_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
-    
-    private static final String INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL = "INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s, %s)";
-    
-    private static final String UPDATE_WITHOUT_SHARDING_VALUE_SQL = "UPDATE t_order SET status = %s WHERE status = %s";
-    
     private Map<DatabaseType, ShardingDataSource> shardingDataSources;
     
     @Before
@@ -70,7 +59,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         for (ShardingDataSource each : shardingDataSources.values()) {
             try (
                     Connection connection = each.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL)) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.SELECT_COUNT_AS_ORDERS_COUNT_SQL)) {
                 preparedStatement.setString(1, "init");
                 ResultSet resultSet = preparedStatement.executeQuery();
                 assertTrue(resultSet.next());
@@ -113,7 +102,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         for (ShardingDataSource each : shardingDataSources.values()) {
             try (
                     Connection connection = each.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(DELETE_WITHOUT_SHARDING_VALUE_SQL))) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(DatabaseTestSQL.DELETE_WITHOUT_SHARDING_VALUE_SQL))) {
                 preparedStatement.setString(1, "init");
                 assertThat(preparedStatement.executeUpdate(), is(4));
                 preparedStatement.setString(1, "null");
@@ -127,7 +116,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     @Test
     public void assertExecuteUpdateWithoutParameter() throws SQLException {
         for (ShardingDataSource each : shardingDataSources.values()) {
-            String sql = String.format(DELETE_WITHOUT_SHARDING_VALUE_SQL, "'init'");
+            String sql = String.format(DatabaseTestSQL.DELETE_WITHOUT_SHARDING_VALUE_SQL, "'init'");
             try (
                     Connection connection = each.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -143,7 +132,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         for (ShardingDataSource each : shardingDataSources.values()) {
             try (
                     Connection connection = each.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL)) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.SELECT_COUNT_AS_ORDERS_COUNT_SQL)) {
                 preparedStatement.setString(1, "init");
                 assertTrue(preparedStatement.execute());
                 assertTrue(preparedStatement.getResultSet().next());
@@ -162,7 +151,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     
     @Test
     public void assertExecuteWithoutParameter() throws SQLException {
-        String sql = String.format(DELETE_WITHOUT_SHARDING_VALUE_SQL, "'init'");
+        String sql = String.format(DatabaseTestSQL.DELETE_WITHOUT_SHARDING_VALUE_SQL, "'init'");
         for (ShardingDataSource each : shardingDataSources.values()) {
             try (
                     Connection connection = each.getConnection();
@@ -179,7 +168,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         for (ShardingDataSource each : shardingDataSources.values()) {
             try (
                     Connection connection = each.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.SELECT_COUNT_AS_ORDERS_COUNT_SQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
                 preparedStatement.setString(1, "init");
                 ResultSet resultSet = preparedStatement.executeQuery();
                 assertTrue(resultSet.next());
@@ -193,7 +182,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         for (ShardingDataSource each : shardingDataSources.values()) {
             try (
                     Connection connection = each.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL, ResultSet.TYPE_FORWARD_ONLY, 
+                    PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.SELECT_COUNT_AS_ORDERS_COUNT_SQL, ResultSet.TYPE_FORWARD_ONLY, 
                             ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
                 preparedStatement.setString(1, "init");
                 ResultSet resultSet = preparedStatement.executeQuery();
@@ -208,7 +197,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         for (ShardingDataSource each : shardingDataSources.values()) {
             try (
                     Connection connection = each.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL, Statement.NO_GENERATED_KEYS)) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.SELECT_COUNT_AS_ORDERS_COUNT_SQL, Statement.NO_GENERATED_KEYS)) {
                 preparedStatement.setString(1, "init");
                 ResultSet resultSet = preparedStatement.executeQuery();
                 assertTrue(resultSet.next());
@@ -225,7 +214,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             }
             try (
                     Connection connection = each.getValue().getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL, new int[]{1})) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.SELECT_COUNT_AS_ORDERS_COUNT_SQL, new int[]{1})) {
                 preparedStatement.setNull(1, java.sql.Types.VARCHAR);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 assertTrue(resultSet.next());
@@ -242,7 +231,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             }
             try (
                     Connection connection = each.getValue().getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COUNT_AS_ORDERS_COUNT_SQL, new String[]{"orders_count"})) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.SELECT_COUNT_AS_ORDERS_COUNT_SQL, new String[]{"orders_count"})) {
                 preparedStatement.setNull(1, java.sql.Types.VARCHAR);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 assertTrue(resultSet.next());
@@ -270,7 +259,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         for (ShardingDataSource each : shardingDataSources.values()) {
             try (
                     Connection connection = each.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_ALL_PLACEHOLDERS_SQL)) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL)) {
                 preparedStatement.setInt(1, 3101);
                 preparedStatement.setInt(2, 11);
                 preparedStatement.setInt(3, 11);
@@ -302,7 +291,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     
     @Test
     public void assertAddBatchWithoutGenerateKeyColumn() throws SQLException {
-        String sql = replacePreparedStatement(INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL);
+        String sql = replacePreparedStatement(DatabaseTestSQL.INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL);
         for (ShardingDataSource each : shardingDataSources.values()) {
             try (
                     Connection connection = each.getConnection();
@@ -338,19 +327,19 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
                 assertTrue(generateKeyResultSet.next());
                 assertThat(generateKeyResultSet.getLong(1), is(4L));
                 assertFalse(generateKeyResultSet.next());
-                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 11, 11))) {
+                try (ResultSet rs = queryStatement.executeQuery(String.format(DatabaseTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 11, 11))) {
                     assertTrue(rs.next());
                     assertThat(rs.getInt(1), is(1));
                 }
-                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 12, 12))) {
+                try (ResultSet rs = queryStatement.executeQuery(String.format(DatabaseTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 12, 12))) {
                     assertTrue(rs.next());
                     assertThat(rs.getInt(1), is(2));
                 }
-                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 21, 21))) {
+                try (ResultSet rs = queryStatement.executeQuery(String.format(DatabaseTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 21, 21))) {
                     assertTrue(rs.next());
                     assertThat(rs.getInt(1), is(3));
                 }
-                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 22, 22))) {
+                try (ResultSet rs = queryStatement.executeQuery(String.format(DatabaseTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 22, 22))) {
                     assertTrue(rs.next());
                     assertThat(rs.getInt(1), is(4));
                 }
@@ -363,7 +352,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         for (ShardingDataSource each : shardingDataSources.values()) {
             try (
                     Connection connection = each.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_ALL_PLACEHOLDERS_SQL, Statement.RETURN_GENERATED_KEYS);
+                    PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL, Statement.RETURN_GENERATED_KEYS);
                     Statement queryStatement = connection.createStatement()) {
                 preparedStatement.setInt(1, 1);
                 preparedStatement.setInt(2, 11);
@@ -399,19 +388,19 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
                 assertTrue(generateKeyResultSet.next());
                 assertThat(generateKeyResultSet.getLong(1), is(4L));
                 assertFalse(generateKeyResultSet.next());
-                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 11, 11))) {
+                try (ResultSet rs = queryStatement.executeQuery(String.format(DatabaseTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 11, 11))) {
                     assertTrue(rs.next());
                     assertThat(rs.getInt(1), is(1));
                 }
-                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 12, 12))) {
+                try (ResultSet rs = queryStatement.executeQuery(String.format(DatabaseTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 12, 12))) {
                     assertTrue(rs.next());
                     assertThat(rs.getInt(1), is(2));
                 }
-                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 21, 21))) {
+                try (ResultSet rs = queryStatement.executeQuery(String.format(DatabaseTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 21, 21))) {
                     assertTrue(rs.next());
                     assertThat(rs.getInt(1), is(3));
                 }
-                try (ResultSet rs = queryStatement.executeQuery(String.format(SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 22, 22))) {
+                try (ResultSet rs = queryStatement.executeQuery(String.format(DatabaseTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 22, 22))) {
                     assertTrue(rs.next());
                     assertThat(rs.getInt(1), is(4));
                 }
@@ -421,7 +410,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     
     @Test
     public void assertUpdateBatch() throws SQLException {
-        String sql = replacePreparedStatement(UPDATE_WITHOUT_SHARDING_VALUE_SQL);
+        String sql = replacePreparedStatement(DatabaseTestSQL.UPDATE_WITHOUT_SHARDING_VALUE_SQL);
         for (ShardingDataSource each : shardingDataSources.values()) {
             try (
                     Connection connection = each.getConnection();
@@ -450,7 +439,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         for (ShardingDataSource each : shardingDataSources.values()) {
             try (
                     Connection connection = each.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_ALL_PLACEHOLDERS_SQL)) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL)) {
                 preparedStatement.setInt(1, 3101);
                 preparedStatement.setInt(2, 11);
                 preparedStatement.setInt(3, 11);

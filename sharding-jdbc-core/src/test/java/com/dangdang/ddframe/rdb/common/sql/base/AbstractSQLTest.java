@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.common.sql.base;
 
 import com.dangdang.ddframe.rdb.common.sql.common.DatabaseTestMode;
-import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.integrate.util.ShardingJdbcDatabaseTester;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
@@ -73,7 +72,7 @@ public abstract class AbstractSQLTest {
                     if ("tbl".equals(database)) {
                         if (i == 0) {
                             conn = initialConnection(database, dbType);
-                            RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+                            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
                             conn.close();
                         }
                     } else {
@@ -81,7 +80,7 @@ public abstract class AbstractSQLTest {
                             continue;
                         }
                         conn = initialConnection(database + "_" + i, dbType);
-                        RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
+                        RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
                         conn.close();
                     }
                 }
@@ -96,7 +95,7 @@ public abstract class AbstractSQLTest {
         for (DatabaseType databaseType : CURRENT_TEST_MODE.databaseTypes()) {
             DataBaseEnvironment dbEnv = new DataBaseEnvironment(databaseType);
             for (String each : getDataSetFiles()) {
-                InputStream is = AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(each);
+                InputStream is = AbstractSQLTest.class.getClassLoader().getResourceAsStream(each);
                 IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
                 IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getDatabaseName(each)),
                         dbEnv.getUsername(), dbEnv.getPassword(), dbEnv.getSchema(getDatabaseName(each)));
