@@ -10,9 +10,6 @@
                 <value literal="1" type="java.lang.Integer" />
             </condition>
         </conditions>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
-        </order-by-columns>
     </assert>
     <!--
     <assert id="assertSelectWithGroupByAndSubQuery" sql="SELECT AVG(i.SUM_PRICE) avg FROM (SELECT o.order_id,SUM(o.price) AS SUM_PRICE FROM order o WHERE o.order_id = 1 GROUP BY o.order_id) i" expected-sql="SELECT AVG(i.SUM_PRICE) AS avg[sharding_auto_gen_0(, COUNT(i.SUM_PRICE) AS sharding_gen_1, SUM(i.SUM_PRICE) AS sharding_gen_2)] FROM (SELECT [Token(o)].order_id, SUM(o.price) AS SUM_PRICE FROM [Token(order)] o WHERE o.order_id = 1 GROUP BY o.order_id ) i">
