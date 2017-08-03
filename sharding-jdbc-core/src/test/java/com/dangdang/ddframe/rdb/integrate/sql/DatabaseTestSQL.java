@@ -19,25 +19,17 @@ package com.dangdang.ddframe.rdb.integrate.sql;
 
 public class DatabaseTestSQL {
     
-    private static final String SELECT_COUNT_ALIAS_SQL = "SELECT COUNT(*) AS orders_count FROM t_order";
-    
     private static final String INSERT_WITH_ALL_PLACEHOLDERS_SQL = "INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)";
     
     private static final String INSERT_WITH_PARTIAL_PLACEHOLDERS_SQL = "INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, ?)";
     
     private static final String INSERT_WITHOUT_PLACEHOLDER_SQL = "INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, 'insert')";
     
-    private static final String INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL = "INSERT INTO t_order (user_id, status) VALUES (%s, %s)";
-    
     private static final String UPDATE_WITHOUT_ALIAS_SQL = "UPDATE t_order SET status = %s WHERE order_id = %s AND user_id = %s";
     
     private static final String UPDATE_WITH_ALIAS_SQL = "UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?";
     
-    private static final String UPDATE_WITHOUT_SHARDING_VALUE_SQL = "UPDATE t_order SET status = %s WHERE status = %s";
-    
     private static final String DELETE_WITHOUT_ALIAS_SQL = "DELETE FROM t_order WHERE order_id = %s AND user_id = %s AND status = %s";
-    
-    private static final String DELETE_WITHOUT_SHARDING_VALUE_SQL = "DELETE FROM t_order WHERE status = %s";
     
     private static final String ASSERT_SELECT_WITH_STATUS_SQL = "SELECT * FROM t_order WHERE status = %s";
     
