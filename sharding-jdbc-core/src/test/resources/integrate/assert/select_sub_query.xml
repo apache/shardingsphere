@@ -10,14 +10,14 @@
             <data parameter="1000,1001" expected="select_sub_query/SelectSubQueryMultiTableWithParentheses.xml" />
         </sharding-rule>
     </sql>
-    <!--<sql id="assertSelectSubQueryWithOrderBy" value="SELECT COUNT(1) FROM (SELECT * FROM t_order ORDER BY order_id desc) t" type="MySQL,PostgreSQL,SQLServer,Oracle">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data expected="select_sub_query/SelectSubQueryWithOrderBy.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
-    <!--<sql id="assertSelectSubQueryWithGroupBy" value="SELECT COUNT(1) FROM (SELECT * FROM t_order GROUP BY order_id) t" type="MySQL,PostgreSQL,SQLServer,Oracle">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data expected="select_sub_query/SelectSubQueryWithGroupBy.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+    <sql id="assertSelectSubQueryWithOrderBy" value="SELECT COUNT(1) as orders_count FROM (SELECT * FROM t_order ORDER BY order_id desc) t" type="MySQL,PostgreSQL,SQLServer,Oracle">
+        <sharding-rule value="tbl">
+            <data expected="select_sub_query/SelectSubQueryWithOrderBy.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectSubQueryWithGroupBy" value="SELECT COUNT(1) as order_items_count FROM (SELECT order_id FROM t_order_item GROUP BY order_id) t" type="MySQL,PostgreSQL,SQLServer,Oracle">
+        <sharding-rule value="tbl">
+            <data expected="select_sub_query/SelectSubQueryWithGroupBy.xml" />
+        </sharding-rule>
+    </sql>
 </sqls>

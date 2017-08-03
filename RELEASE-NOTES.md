@@ -3,6 +3,7 @@
 ### 缺陷修正
 
 1. [ISSUE #308](https://github.com/dangdangdotcom/sharding-jdbc/issues/308) 数据库原生的自增GeneratedKey的返回无效
+1. [ISSUE #309](https://github.com/dangdangdotcom/sharding-jdbc/issues/310) 子查询中的orderby和groupby不列入解析上下文
 
 ## 1.5.0
 
