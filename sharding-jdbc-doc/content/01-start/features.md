@@ -35,7 +35,7 @@ next = "/01-start/limitations/"
     
     1.2. 全数据库连接池支持
     
-    1.3. 多数据库支持(目前仅MySQL，未来计划支持Oracle，SQLServer和DB2)
+    1.3. 多数据库支持(目前支持MySQL，Oracle，SQLServer和PostgreSQL)
 2. 配置多样性
 
     2.1. Spring命名空间支持
