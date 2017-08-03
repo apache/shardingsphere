@@ -46,7 +46,7 @@ public final class SelectStatement extends AbstractSQLStatement {
     
     private boolean containStar;
     
-    private boolean containSubquery;
+    private boolean containSubQuery;
     
     private int selectListLastPosition;
     

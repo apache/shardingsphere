@@ -204,7 +204,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         sqlParser.accept(DefaultKeyword.BY);
         do {
             Optional<OrderItem> orderItem = parseSelectOrderByItem();
-            if (orderItem.isPresent() && !selectStatement.isContainSubquery()) {
+            if (orderItem.isPresent() && !selectStatement.isContainSubQuery()) {
                 result.add(orderItem.get());
             }
         }
@@ -276,7 +276,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         } else {
             return;
         }
-        if (!selectStatement.isContainSubquery()) {
+        if (!selectStatement.isContainSubQuery()) {
             selectStatement.getGroupByItems().add(orderItem);
         }
     }
@@ -308,7 +308,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             if (!selectStatement.getTables().isEmpty()) {
                 throw new UnsupportedOperationException("Cannot support subquery for nested tables.");
             }
-            selectStatement.setContainSubquery(true);
+            selectStatement.setContainSubQuery(true);
             selectStatement.setContainStar(false);
             sqlParser.skipUselessParentheses();
             parse();
