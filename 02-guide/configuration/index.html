@@ -1059,10 +1059,10 @@ props: 属性配置(可选)
 
 <p>inline表达式中连续多个${&hellip;}表达式，整个inline最终的结果将会根据每个子表达式的结果进行笛卡尔组合，例如正式表inline表达式如下：</p>
 
-<pre><code class="language-groovy">dbtbl_${[online, offline]}_${1..3}
+<pre><code class="language-groovy">dbtbl_${['online', 'offline']}_${1..3}
 </code></pre>
 
-<p>最终会解析为dbtbl_online_1，dbtbl_online_2，dbtbl_online_3，dbtbl_offline_1，dbtbl_offline<em>2和dbtbl</em> offline_3这6张表。</p>
+<p>最终会解析为dbtbl_online_1，dbtbl_online_2，dbtbl_online_3，dbtbl_offline_1，dbtbl_offline_2和dbtbl_offline_3这6张表。</p>
 
 <h3 id="字符串内嵌groovy代码">字符串内嵌groovy代码</h3>
 
