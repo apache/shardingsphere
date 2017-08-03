@@ -29,7 +29,6 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -147,14 +146,14 @@ public final class TableRuleTest {
     public void assertGetActualDataNodesForStatic() {
         TableRule actual = TableRule.builder("logicTable")
                 .actualTables(Arrays.asList("ds0.table_0", "ds0.table_1", "ds0.table_2", "ds1.table_0", "ds1.table_1", "ds1.table_2")).build();
-        assertThat(actual.getActualDataNodes(Collections.singletonList("ds1"), Arrays.asList("table_0", "table_1")), is(
+        assertThat(actual.getActualDataNodes("ds1", Arrays.asList("table_0", "table_1")), is(
                 (Collection<DataNode>) Sets.newLinkedHashSet(Arrays.asList(new DataNode("ds1", "table_0"), new DataNode("ds1", "table_1")))));
     }
     
     @Test
     public void assertGetActualDataNodesForDynamic() {
         TableRule actual = TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule()).build();
-        assertThat(actual.getActualDataNodes(Collections.singletonList("ds1"), Arrays.asList("table_0", "table_1")), is(
+        assertThat(actual.getActualDataNodes("ds1", Arrays.asList("table_0", "table_1")), is(
                 (Collection<DataNode>) Sets.newLinkedHashSet(Arrays.asList(new DataNode("ds1", "table_0"), new DataNode("ds1", "table_1")))));
     }
     
@@ -169,7 +168,7 @@ public final class TableRuleTest {
     public void assertGetActualTableNames() {
         TableRule actual = TableRule.builder("logicTable")
                 .actualTables(Arrays.asList("ds0.table_0", "ds0.table_1", "ds0.table_2", "ds1.table_0", "ds1.table_1", "ds1.table_2")).build();
-        assertThat(actual.getActualTableNames(Collections.singletonList("ds1")), is((Collection<String>) Sets.newLinkedHashSet(Arrays.asList("table_0", "table_1", "table_2"))));
+        assertThat(actual.getActualTableNames("ds1"), is((Collection<String>) Sets.newLinkedHashSet(Arrays.asList("table_0", "table_1", "table_2"))));
     }
     
     @Test

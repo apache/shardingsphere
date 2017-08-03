@@ -142,28 +142,26 @@ public final class TableRule {
     /**
      * 根据数据源名称过滤获取真实数据单元.
      *
-     * @param targetDataSources 数据源名称集合
+     * @param targetDataSource 数据源名称
      * @param targetTables 真实表名称集合
      * @return 真实数据单元
      */
-    public Collection<DataNode> getActualDataNodes(final Collection<String> targetDataSources, final Collection<String> targetTables) {
-        return dynamic ? getDynamicDataNodes(targetDataSources, targetTables) : getStaticDataNodes(targetDataSources, targetTables);
+    public Collection<DataNode> getActualDataNodes(final String targetDataSource, final Collection<String> targetTables) {
+        return dynamic ? getDynamicDataNodes(targetDataSource, targetTables) : getStaticDataNodes(targetDataSource, targetTables);
     }
     
-    private Collection<DataNode> getDynamicDataNodes(final Collection<String> targetDataSources, final Collection<String> targetTables) {
-        Collection<DataNode> result = new LinkedHashSet<>(targetDataSources.size() * targetTables.size());
-        for (String targetDataSource : targetDataSources) {
-            for (String targetTable : targetTables) {
-                result.add(new DataNode(targetDataSource, targetTable));
-            }
+    private Collection<DataNode> getDynamicDataNodes(final String targetDataSource, final Collection<String> targetTables) {
+        Collection<DataNode> result = new LinkedHashSet<>(targetTables.size());
+        for (String each : targetTables) {
+            result.add(new DataNode(targetDataSource, each));
         }
         return result;
     }
     
-    private Collection<DataNode> getStaticDataNodes(final Collection<String> targetDataSources, final Collection<String> targetTables) {
+    private Collection<DataNode> getStaticDataNodes(final String targetDataSource, final Collection<String> targetTables) {
         Collection<DataNode> result = new LinkedHashSet<>(actualTables.size());
         for (DataNode each : actualTables) {
-            if (targetDataSources.contains(each.getDataSourceName()) && targetTables.contains(each.getTableName())) {
+            if (targetDataSource.equals(each.getDataSourceName()) && targetTables.contains(each.getTableName())) {
                 result.add(each);
             }
         }
@@ -186,13 +184,13 @@ public final class TableRule {
     /**
      * 根据数据源名称过滤获取真实表名称.
      *
-     * @param targetDataSources 数据源名称
+     * @param targetDataSource 数据源名称
      * @return 真实表名称
      */
-    public Collection<String> getActualTableNames(final Collection<String> targetDataSources) {
+    public Collection<String> getActualTableNames(final String targetDataSource) {
         Collection<String> result = new LinkedHashSet<>(actualTables.size());
         for (DataNode each : actualTables) {
-            if (targetDataSources.contains(each.getDataSourceName())) {
+            if (targetDataSource.equals(each.getDataSourceName())) {
                 result.add(each.getTableName());
             }
         }
