@@ -26,7 +26,7 @@
 - [ ] Complicated SQL
     - [ ] OR
     - [ ] UNION / UNION ALL
-    - [ ] Subquery
+    - [ ] SubQuery
 
 ## Database
 - [x] MySQL
