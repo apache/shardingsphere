@@ -15,13 +15,13 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.hint;
+package com.dangdang.ddframe.rdb.integrate.strategy.hint;
 
 import com.dangdang.ddframe.rdb.common.sql.base.AbstractSQLTest;
 import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.integrate.hint.helper.DynamicShardingValueHelper;
-import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
-import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.integrate.strategy.hint.helper.DynamicShardingValueHelper;
+import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
+import com.dangdang.ddframe.rdb.common.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;

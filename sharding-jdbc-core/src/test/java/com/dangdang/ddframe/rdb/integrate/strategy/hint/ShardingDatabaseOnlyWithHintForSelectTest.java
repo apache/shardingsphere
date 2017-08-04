@@ -15,9 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.hint;
+package com.dangdang.ddframe.rdb.integrate.strategy.hint;
 
-import com.dangdang.ddframe.rdb.integrate.hint.helper.DynamicShardingValueHelper;
+import com.dangdang.ddframe.rdb.integrate.strategy.hint.helper.DynamicShardingValueHelper;
 import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
@@ -30,7 +30,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
+import static com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil.replacePreparedStatement;
 
 public final class ShardingDatabaseOnlyWithHintForSelectTest extends AbstractShardingDatabaseOnlyHintDBUnitTest {
     

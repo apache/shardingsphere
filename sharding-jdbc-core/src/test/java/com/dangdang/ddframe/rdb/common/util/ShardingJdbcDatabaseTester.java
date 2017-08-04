@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.util;
+package com.dangdang.ddframe.rdb.common.util;
 
 import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.database.DatabaseConfig;

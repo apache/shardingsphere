@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.common.sql.common;
+package com.dangdang.ddframe.rdb.common.util;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssert;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAsserts;

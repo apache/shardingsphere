@@ -19,10 +19,10 @@ package com.dangdang.ddframe.rdb.common.sql.base;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
-import com.dangdang.ddframe.rdb.common.sql.common.SQLAssertUtil;
+import com.dangdang.ddframe.rdb.common.util.SQLAssertUtil;
 import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
-import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
-import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
+import com.dangdang.ddframe.rdb.common.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
@@ -49,8 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
-import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replaceStatement;
+import static com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil.replacePreparedStatement;
+import static com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil.replaceStatement;
 import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractSQLAssertTest extends AbstractSQLTest {

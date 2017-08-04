@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.common.sql.base;
 
 import com.dangdang.ddframe.rdb.common.sql.common.DatabaseTestMode;
-import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
-import com.dangdang.ddframe.rdb.integrate.util.ShardingJdbcDatabaseTester;
+import com.dangdang.ddframe.rdb.common.util.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.common.util.ShardingJdbcDatabaseTester;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.IDatabaseTester;
@@ -53,7 +53,7 @@ public abstract class AbstractSQLTest {
         createSchema();
     }
     
-    public static synchronized void createSchema() {
+    private static synchronized void createSchema() {
         if (!initialized) {
             for (DatabaseType each : CURRENT_TEST_MODE.databaseTypes()) {
                 if (DatabaseType.H2 == each) {

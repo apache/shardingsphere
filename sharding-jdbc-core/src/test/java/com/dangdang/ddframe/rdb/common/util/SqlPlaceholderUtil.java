@@ -15,17 +15,18 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.hint;
+package com.dangdang.ddframe.rdb.common.util;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        ShardingDatabaseOnlyWithHintForDMLTest.class,
-        ShardingDatabaseOnlyWithHintForSelectTest.class,
-        RoutingDatabaseOnlyWithHintForDMLTest.class,
-        RoutingDatabaseOnlyWithHintForSelectTest.class
-    })
-public class AllHintDatabaseOnlyTests {
+public class SqlPlaceholderUtil {
+    
+    public static String replaceStatement(final String str, final Object[] args) {
+        if (args.length == 0) {
+            return str;
+        }
+        return String.format(str, args);
+    }
+    
+    public static String replacePreparedStatement(final String str) {
+        return str.replace("%s", "?");
+    }
 }

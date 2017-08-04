@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.integrate.hint.helper;
+package com.dangdang.ddframe.rdb.integrate.strategy.hint.helper;
 
 public class DynamicDatabaseShardingValueHelper extends DynamicShardingValueHelper {
     

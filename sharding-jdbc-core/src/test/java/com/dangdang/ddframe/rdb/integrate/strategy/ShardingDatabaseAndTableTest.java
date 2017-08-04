@@ -15,13 +15,13 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.common.sql.strategy;
+package com.dangdang.ddframe.rdb.integrate.strategy;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
 import com.dangdang.ddframe.rdb.common.sql.base.AbstractSQLAssertTest;
 import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
-import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyDynamicModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -43,13 +43,13 @@ import java.util.Map;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
-public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
+public class ShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
     
     private static boolean isShutdown;
     
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
-    public ShardingDatabaseAndTableDynamicTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
+    public ShardingDatabaseAndTableTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
         super(testCaseName, sql, types, sqlShardingRules);
     }
     
@@ -81,13 +81,34 @@ public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
         isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
-            DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
-            TableRule orderTableRule = TableRule.builder("t_order").dynamic(true).dataSourceRule(dataSourceRule).build();
-            TableRule orderItemTableRule = TableRule.builder("t_order_item").dynamic(true).dataSourceRule(dataSourceRule).build();
-            ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+            DataSourceRule dataSourceRule = new DataSourceRule(each.getValue(), "dataSource_dbtbl_0");
+            TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList(
+                    "t_order_0",
+                    "t_order_1",
+                    "t_order_2",
+                    "t_order_3",
+                    "t_order_4",
+                    "t_order_5",
+                    "t_order_6",
+                    "t_order_7",
+                    "t_order_8",
+                    "t_order_9")).dataSourceRule(dataSourceRule).build();
+            TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList(
+                    "t_order_item_0",
+                    "t_order_item_1",
+                    "t_order_item_2",
+                    "t_order_item_3",
+                    "t_order_item_4",
+                    "t_order_item_5",
+                    "t_order_item_6",
+                    "t_order_item_7",
+                    "t_order_item_8",
+                    "t_order_item_9")).dataSourceRule(dataSourceRule).build();
+            TableRule configRule = TableRule.builder("t_config").dataSourceRule(dataSourceRule).build();
+            ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule, configRule))
                     .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
                     .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new SingleKeyModuloDatabaseShardingAlgorithm()))
-                    .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyDynamicModuloTableShardingAlgorithm("t_order_"))).build();
+                    .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;
