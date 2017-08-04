@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.common.sql;
+package com.dangdang.ddframe.rdb.integrate;
 
 import com.dangdang.ddframe.rdb.common.sql.strategy.NullableShardingTableOnlyTest;
 import com.dangdang.ddframe.rdb.common.sql.strategy.ShardingDatabaseAndTableDynamicTest;
@@ -36,5 +36,5 @@ import org.junit.runners.Suite.SuiteClasses;
         ShardingDatabaseAndTableDynamicTest.class,
         NullableShardingTableOnlyTest.class
     })
-public class AllSqlAssertTests {
+public class AllIntegrateTests {
 }

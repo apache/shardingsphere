@@ -17,8 +17,7 @@
 
 package com.dangdang.ddframe.rdb;
 
-import com.dangdang.ddframe.rdb.common.sql.AllSqlAssertTests;
-import com.dangdang.ddframe.rdb.integrate.AllHintDatabaseOnlyTests;
+import com.dangdang.ddframe.rdb.integrate.AllIntegrateTests;
 import com.dangdang.ddframe.rdb.sharding.AllShardingTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -27,8 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllShardingTests.class,
-        AllHintDatabaseOnlyTests.class,
-        AllSqlAssertTests.class
+        AllIntegrateTests.class
     })
 public class AllTests {
 }

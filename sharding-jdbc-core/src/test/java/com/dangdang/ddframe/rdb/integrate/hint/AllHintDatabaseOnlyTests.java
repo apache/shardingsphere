@@ -15,21 +15,17 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate;
+package com.dangdang.ddframe.rdb.integrate.hint;
 
-import com.dangdang.ddframe.rdb.integrate.hint.RoutingDatabaseOnlyWithHintForDMLTest;
-import com.dangdang.ddframe.rdb.integrate.hint.RoutingDatabaseOnlyWithHintForSelectTest;
-import com.dangdang.ddframe.rdb.integrate.hint.ShardingDatabaseOnlyWithHintForDMLTest;
-import com.dangdang.ddframe.rdb.integrate.hint.ShardingDatabaseOnlyWithHintForSelectTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    ShardingDatabaseOnlyWithHintForDMLTest.class,
-    ShardingDatabaseOnlyWithHintForSelectTest.class,
-    RoutingDatabaseOnlyWithHintForDMLTest.class,
-    RoutingDatabaseOnlyWithHintForSelectTest.class
+        ShardingDatabaseOnlyWithHintForDMLTest.class,
+        ShardingDatabaseOnlyWithHintForSelectTest.class,
+        RoutingDatabaseOnlyWithHintForDMLTest.class,
+        RoutingDatabaseOnlyWithHintForSelectTest.class
     })
 public class AllHintDatabaseOnlyTests {
 }
