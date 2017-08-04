@@ -20,6 +20,8 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseSQLTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
@@ -29,19 +31,20 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
+import java.util.Set;
 
 @RunWith(Parameterized.class)
-public final class MySQLPreparedStatementForTwoParametersTest extends AbstractBaseParseTest {
+public final class MySQLPreparedStatementForTwoParametersTest extends AbstractBaseParseSQLTest {
     
     public MySQLPreparedStatementForTwoParametersTest(
-            final String testCaseName, final String sql, final Tables expectedTables, 
-            final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
-        super(testCaseName, sql, expectedTables, expectedConditions, expectedSQLStatement);
+            final String testCaseName, final String sql, final Set<DatabaseType> types,
+            final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
+        super(testCaseName, sql, types, expectedTables, expectedConditions, expectedSQLStatement);
     }
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractBaseParseTest.dataParameters("com/dangdang/ddframe/rdb/sharding/parsing/parser/dialect/mysql/prepared_statement/two_params/");
+        return AbstractBaseParseTest.dataParameters("parser/mysql/prepared_statement/two_params/");
     }
     
     @Test
