@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.strategy.hint;
+package com.dangdang.ddframe.rdb.integrate.type.hint.base;
 
 import com.dangdang.ddframe.rdb.integrate.fixture.NoneKeyModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import javax.sql.DataSource;
 import java.util.Map;
 
-public abstract class AbstractRoutingDatabaseOnlyTest extends AbstractShardingDatabaseOnlyHintDBUnitTest {
+public abstract class AbstractRoutingDatabaseOnlyWithHintTest extends AbstractHintTest {
     
     @Override
     protected ShardingRule getShardingRule(final Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) {

@@ -15,18 +15,19 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.strategy;
+package com.dangdang.ddframe.rdb.integrate.type;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
-import com.dangdang.ddframe.rdb.common.sql.base.AbstractSQLAssertTest;
+import com.dangdang.ddframe.rdb.common.base.AbstractSQLAssertTest;
+import com.dangdang.ddframe.rdb.common.util.SQLAssertUtil;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
-import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
@@ -36,6 +37,7 @@ import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -43,24 +45,39 @@ import java.util.Map;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
-public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
+public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
     
     private static boolean isShutdown;
     
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
-    public ShardingTableOnlyTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
+    public NullableShardingTableOnlyTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
         super(testCaseName, sql, types, sqlShardingRules);
+    }
+    
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<Object[]> dataParameters() {
+        return SQLAssertUtil.getDataParameters("integrate/assert/select_aggregate.xml");
     }
     
     @Override
     protected ShardingTestStrategy getShardingStrategy() {
-        return ShardingTestStrategy.tbl;
+        return ShardingTestStrategy.nullable;
     }
     
     @Override
     protected List<String> getDataSetFiles() {
-        return Collections.singletonList("integrate/dataset/tbl/init/tbl.xml");
+        return Arrays.asList(
+                "integrate/dataset/nullable/init/nullable_0.xml",
+                "integrate/dataset/nullable/init/nullable_1.xml",
+                "integrate/dataset/nullable/init/nullable_2.xml",
+                "integrate/dataset/nullable/init/nullable_3.xml",
+                "integrate/dataset/nullable/init/nullable_4.xml",
+                "integrate/dataset/nullable/init/nullable_5.xml",
+                "integrate/dataset/nullable/init/nullable_6.xml",
+                "integrate/dataset/nullable/init/nullable_7.xml",
+                "integrate/dataset/nullable/init/nullable_8.xml",
+                "integrate/dataset/nullable/init/nullable_9.xml");
     }
     
     @Override
@@ -72,34 +89,11 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
-            TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList(
-                    "t_order_0",
-                    "t_order_1",
-                    "t_order_2",
-                    "t_order_3",
-                    "t_order_4",
-                    "t_order_5",
-                    "t_order_6",
-                    "t_order_7",
-                    "t_order_8",
-                    "t_order_9")).dataSourceRule(dataSourceRule).build();
-            TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList(
-                    "t_order_item_0",
-                    "t_order_item_1",
-                    "t_order_item_2",
-                    "t_order_item_3",
-                    "t_order_item_4",
-                    "t_order_item_5",
-                    "t_order_item_6",
-                    "t_order_item_7",
-                    "t_order_item_8",
-                    "t_order_item_9")).dataSourceRule(dataSourceRule).build();
-            ShardingRule shardingRule = ShardingRule.builder()
-                    .dataSourceRule(dataSourceRule)
-                    .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
-                    .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
-                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new NoneDatabaseShardingAlgorithm()))
-                    .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm())).build();
+            TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).build();
+            ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(orderTableRule))
+                    .bindingTableRules(Collections.singletonList(new BindingTableRule(Collections.singletonList(orderTableRule))))
+                    .databaseShardingStrategy(new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()))
+                    .tableShardingStrategy(new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;

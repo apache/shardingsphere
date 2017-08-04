@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.integrate.strategy.hint.helper;
+package com.dangdang.ddframe.rdb.integrate.type.hint.helper;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;

@@ -17,25 +17,22 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingJDBCDatabaseAndTableTest;
+import com.dangdang.ddframe.rdb.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 public final class UnsupportedOperationDataSourceTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private List<ShardingDataSource> shardingDataSources = new ArrayList<>();
+    private Collection<ShardingDataSource> shardingDataSources;
     
     @Before
     public void init() throws SQLException {
-        for (ShardingDataSource each : getShardingDataSources().values()) {
-            shardingDataSources.add(each);
-        }
+        shardingDataSources = getShardingDataSources().values();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)

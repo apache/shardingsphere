@@ -15,10 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.strategy;
+package com.dangdang.ddframe.rdb.integrate.type;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
-import com.dangdang.ddframe.rdb.common.sql.base.AbstractSQLAssertTest;
+import com.dangdang.ddframe.rdb.common.base.AbstractSQLAssertTest;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloTableShardingAlgorithm;

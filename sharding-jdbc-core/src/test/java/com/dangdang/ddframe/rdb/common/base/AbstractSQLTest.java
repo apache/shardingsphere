@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.common.sql.base;
+package com.dangdang.ddframe.rdb.common.base;
 
 import com.dangdang.ddframe.rdb.common.env.DatabaseTestMode;
 import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;

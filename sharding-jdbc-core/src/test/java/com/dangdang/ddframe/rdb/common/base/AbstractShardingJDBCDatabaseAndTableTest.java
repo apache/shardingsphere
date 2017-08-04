@@ -15,13 +15,8 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.strategy;
+package com.dangdang.ddframe.rdb.common.base;
 
-import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
-import com.dangdang.ddframe.rdb.common.sql.base.AbstractSQLAssertTest;
-import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
-import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyDynamicModuloTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -30,9 +25,9 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.routing.fixture.OrderShardingAlgorithm;
 import org.junit.AfterClass;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -40,40 +35,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-@RunWith(Parameterized.class)
-public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
+public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
     private static boolean isShutdown;
     
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
-    public ShardingDatabaseAndTableDynamicTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
-        super(testCaseName, sql, types, sqlShardingRules);
-    }
-    
-    @Override
-    protected ShardingTestStrategy getShardingStrategy() {
-        return ShardingTestStrategy.dbtbl;
-    }
-    
     @Override
     protected List<String> getDataSetFiles() {
         return Arrays.asList(
-                "integrate/dataset/dbtbl/init/dbtbl_0.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_1.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_2.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_3.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_4.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_5.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_6.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_7.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_8.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_9.xml");
+                "integrate/dataset/jdbc/jdbc_0.xml",
+                "integrate/dataset/jdbc/jdbc_1.xml");
     }
     
-    @Override
     protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
         if (!shardingDataSources.isEmpty() && !isShutdown) {
             return shardingDataSources;
@@ -82,12 +57,17 @@ public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
-            TableRule orderTableRule = TableRule.builder("t_order").dynamic(true).dataSourceRule(dataSourceRule).build();
-            TableRule orderItemTableRule = TableRule.builder("t_order_item").dynamic(true).dataSourceRule(dataSourceRule).build();
-            ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+            TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList(
+                    "t_order_0",
+                    "t_order_1")).dataSourceRule(dataSourceRule).build();
+            TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList(
+                    "t_order_item_0",
+                    "t_order_item_1")).dataSourceRule(dataSourceRule).generateKeyColumn("item_id", IncrementKeyGenerator.class).build();
+            TableRule configRule = TableRule.builder("t_config").dataSourceRule(dataSourceRule).build();
+            ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule, configRule))
                     .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
-                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new SingleKeyModuloDatabaseShardingAlgorithm()))
-                    .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyDynamicModuloTableShardingAlgorithm("t_order_"))).build();
+                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new OrderShardingAlgorithm()))
+                    .tableShardingStrategy(new TableShardingStrategy("order_id", new OrderShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;

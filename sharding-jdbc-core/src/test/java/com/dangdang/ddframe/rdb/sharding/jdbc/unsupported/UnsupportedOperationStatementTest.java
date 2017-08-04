@@ -17,13 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingJDBCDatabaseAndTableTest;
+import com.dangdang.ddframe.rdb.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
@@ -65,7 +66,7 @@ public final class UnsupportedOperationStatementTest extends AbstractShardingJDB
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetFetchDirection() throws SQLException {
         for (Statement each : statements) {
-            each.setFetchDirection(0);
+            each.setFetchDirection(ResultSet.FETCH_UNKNOWN);
         }
     }
     

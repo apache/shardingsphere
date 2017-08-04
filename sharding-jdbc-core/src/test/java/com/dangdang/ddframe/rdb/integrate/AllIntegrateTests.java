@@ -17,12 +17,13 @@
 
 package com.dangdang.ddframe.rdb.integrate;
 
-import com.dangdang.ddframe.rdb.integrate.strategy.NullableShardingTableOnlyTest;
-import com.dangdang.ddframe.rdb.integrate.strategy.ShardingDatabaseAndTableDynamicTest;
-import com.dangdang.ddframe.rdb.integrate.strategy.ShardingDatabaseAndTableTest;
-import com.dangdang.ddframe.rdb.integrate.strategy.ShardingDatabaseOnlyTest;
-import com.dangdang.ddframe.rdb.integrate.strategy.ShardingMasterSlaveTest;
-import com.dangdang.ddframe.rdb.integrate.strategy.ShardingTableOnlyTest;
+import com.dangdang.ddframe.rdb.integrate.type.NullableShardingTableOnlyTest;
+import com.dangdang.ddframe.rdb.integrate.type.ShardingDatabaseAndTableDynamicTest;
+import com.dangdang.ddframe.rdb.integrate.type.ShardingDatabaseAndTableTest;
+import com.dangdang.ddframe.rdb.integrate.type.ShardingDatabaseOnlyTest;
+import com.dangdang.ddframe.rdb.integrate.type.ShardingMasterSlaveTest;
+import com.dangdang.ddframe.rdb.integrate.type.ShardingTableOnlyTest;
+import com.dangdang.ddframe.rdb.integrate.type.hint.AllHintDatabaseOnlyTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -34,7 +35,8 @@ import org.junit.runners.Suite.SuiteClasses;
         ShardingMasterSlaveTest.class,
         ShardingDatabaseAndTableTest.class,
         ShardingDatabaseAndTableDynamicTest.class,
-        NullableShardingTableOnlyTest.class
+        NullableShardingTableOnlyTest.class,
+        AllHintDatabaseOnlyTests.class
     })
 public class AllIntegrateTests {
 }

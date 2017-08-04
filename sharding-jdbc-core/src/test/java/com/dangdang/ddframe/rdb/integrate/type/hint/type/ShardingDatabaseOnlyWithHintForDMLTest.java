@@ -15,11 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.strategy.hint;
+package com.dangdang.ddframe.rdb.integrate.type.hint.type;
 
-import com.dangdang.ddframe.rdb.integrate.strategy.hint.helper.DynamicDatabaseShardingValueHelper;
-import com.dangdang.ddframe.rdb.integrate.strategy.hint.helper.DynamicShardingValueHelper;
 import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
+import com.dangdang.ddframe.rdb.integrate.type.hint.base.AbstractShardingDatabaseOnlyWithHintTest;
+import com.dangdang.ddframe.rdb.integrate.type.hint.helper.DynamicShardingValueHelper;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
@@ -37,7 +37,7 @@ import static com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil.replacePre
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class RoutingDatabaseOnlyWithHintForDMLTest extends AbstractRoutingDatabaseOnlyTest {
+public final class ShardingDatabaseOnlyWithHintForDMLTest extends AbstractShardingDatabaseOnlyWithHintTest {
     
     private Map<DatabaseType, ShardingDataSource> shardingDataSources;
     
@@ -50,9 +50,9 @@ public class RoutingDatabaseOnlyWithHintForDMLTest extends AbstractRoutingDataba
     public void assertInsertWithAllPlaceholders() throws SQLException, DatabaseUnitException {
         for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
             for (int i = 1; i <= 10; i++) {
-                try (DynamicShardingValueHelper helper = new DynamicDatabaseShardingValueHelper(i);
-                     Connection connection = each.getValue().getConnection();
-                     PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.INSERT_ORDER_WITH_ALL_PLACEHOLDERS_SQL)) {
+                try (DynamicShardingValueHelper helper = new DynamicShardingValueHelper(i, i);
+                     Connection connection = each.getValue().getConnection()) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.INSERT_ORDER_WITH_ALL_PLACEHOLDERS_SQL);
                     preparedStatement.setInt(1, i);
                     preparedStatement.setInt(2, i);
                     preparedStatement.setString(3, "insert");
@@ -67,9 +67,9 @@ public class RoutingDatabaseOnlyWithHintForDMLTest extends AbstractRoutingDataba
     public void assertInsertWithoutPlaceholder() throws SQLException, DatabaseUnitException {
         for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
             for (int i = 1; i <= 10; i++) {
-                try (DynamicShardingValueHelper helper = new DynamicDatabaseShardingValueHelper(i);
-                     Connection connection = each.getValue().getConnection();
-                     PreparedStatement preparedStatement = connection.prepareStatement(String.format(DatabaseTestSQL.INSERT_WITHOUT_PLACEHOLDER_SQL, i, i))) {
+                try (DynamicShardingValueHelper helper = new DynamicShardingValueHelper(i, i);
+                     Connection connection = each.getValue().getConnection()) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(String.format(DatabaseTestSQL.INSERT_WITHOUT_PLACEHOLDER_SQL, i, i));
                     preparedStatement.executeUpdate();
                 }
             }
@@ -81,9 +81,9 @@ public class RoutingDatabaseOnlyWithHintForDMLTest extends AbstractRoutingDataba
     public void assertInsertWithPartialPlaceholders() throws SQLException, DatabaseUnitException {
         for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
             for (int i = 1; i <= 10; i++) {
-                try (DynamicShardingValueHelper helper = new DynamicDatabaseShardingValueHelper(i);
-                     Connection connection = each.getValue().getConnection();
-                     PreparedStatement preparedStatement = connection.prepareStatement(String.format(DatabaseTestSQL.INSERT_WITH_PARTIAL_PLACEHOLDERS_SQL, i, i))) {
+                try (DynamicShardingValueHelper helper = new DynamicShardingValueHelper(i, i);
+                     Connection connection = each.getValue().getConnection()) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(String.format(DatabaseTestSQL.INSERT_WITH_PARTIAL_PLACEHOLDERS_SQL, i, i));
                     preparedStatement.setString(1, "insert");
                     preparedStatement.executeUpdate();
                 }
@@ -103,9 +103,9 @@ public class RoutingDatabaseOnlyWithHintForDMLTest extends AbstractRoutingDataba
     private void updateWithoutAlias(final Map.Entry<DatabaseType, ShardingDataSource> dataSourceEntry) throws SQLException {
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
-                try (DynamicShardingValueHelper helper = new DynamicDatabaseShardingValueHelper(i);
-                     Connection connection = dataSourceEntry.getValue().getConnection();
-                     PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(DatabaseTestSQL.UPDATE_WITHOUT_ALIAS_SQL))) {
+                try (DynamicShardingValueHelper helper = new DynamicShardingValueHelper(i, i * 100 + j);
+                     Connection connection = dataSourceEntry.getValue().getConnection()) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(DatabaseTestSQL.UPDATE_WITHOUT_ALIAS_SQL));
                     preparedStatement.setString(1, "updated");
                     preparedStatement.setInt(2, i * 100 + j);
                     preparedStatement.setInt(3, i);
@@ -127,9 +127,9 @@ public class RoutingDatabaseOnlyWithHintForDMLTest extends AbstractRoutingDataba
     private void updateWithAlias(final Map.Entry<DatabaseType, ShardingDataSource> dataSourceEntry) throws SQLException, DatabaseUnitException {
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
-                try (DynamicShardingValueHelper helper = new DynamicDatabaseShardingValueHelper(i);
-                     Connection connection = dataSourceEntry.getValue().getConnection();
-                     PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.UPDATE_WITH_ALIAS_SQL)) {
+                try (DynamicShardingValueHelper helper = new DynamicShardingValueHelper(i, i * 100 + j);
+                     Connection connection = dataSourceEntry.getValue().getConnection()) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(DatabaseTestSQL.UPDATE_WITH_ALIAS_SQL);
                     preparedStatement.setString(1, "updated");
                     preparedStatement.setInt(2, i * 100 + j);
                     preparedStatement.setInt(3, i);
@@ -144,15 +144,16 @@ public class RoutingDatabaseOnlyWithHintForDMLTest extends AbstractRoutingDataba
     public void assertDeleteWithoutAlias() throws SQLException, DatabaseUnitException {
         for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
             deleteWithoutAlias(each);
+            assertDataSet(each.getValue().getConnection(), each.getKey(), "delete", "init");
         }
     }
     
-    private void deleteWithoutAlias(final Map.Entry<DatabaseType, ShardingDataSource> dataSourceEntry) throws SQLException, DatabaseUnitException {
+    private void deleteWithoutAlias(final Map.Entry<DatabaseType, ShardingDataSource> dataSourceEntry) throws SQLException {
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
-                try (DynamicShardingValueHelper helper = new DynamicDatabaseShardingValueHelper(i);
-                     Connection connection = dataSourceEntry.getValue().getConnection();
-                     PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(DatabaseTestSQL.DELETE_WITHOUT_ALIAS_SQL))) {
+                try (DynamicShardingValueHelper helper = new DynamicShardingValueHelper(i, i * 100 + j);
+                     Connection connection = dataSourceEntry.getValue().getConnection()) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(DatabaseTestSQL.DELETE_WITHOUT_ALIAS_SQL));
                     preparedStatement.setInt(1, i * 100 + j);
                     preparedStatement.setInt(2, i);
                     preparedStatement.setString(3, "init");
@@ -160,7 +161,6 @@ public class RoutingDatabaseOnlyWithHintForDMLTest extends AbstractRoutingDataba
                 }
             }
         }
-        assertDataSet(dataSourceEntry.getValue().getConnection(), dataSourceEntry.getKey(), "delete", "init");
     }
     
     private void assertDataSet(final ShardingConnection connection, final DatabaseType type, final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
