@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.common.util;
+package com.dangdang.ddframe.rdb.common.env;
 
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import lombok.Getter;

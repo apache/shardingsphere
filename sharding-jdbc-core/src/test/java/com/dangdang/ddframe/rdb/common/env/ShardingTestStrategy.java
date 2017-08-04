@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.common.sql.common;
+package com.dangdang.ddframe.rdb.common.env;
 
 public enum ShardingTestStrategy {
     

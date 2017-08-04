@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.common.util;
 
+import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;

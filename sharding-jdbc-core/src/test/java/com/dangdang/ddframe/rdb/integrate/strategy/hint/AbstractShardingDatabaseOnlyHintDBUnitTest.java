@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.common.sql.base.AbstractSQLTest;
 import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.strategy.hint.helper.DynamicShardingValueHelper;
 import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
-import com.dangdang.ddframe.rdb.common.util.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -106,19 +106,19 @@ public abstract class AbstractShardingDatabaseOnlyHintDBUnitTest extends Abstrac
     }
     
     protected void assertDataSet(final String expectedDataSetFile, final DynamicShardingValueHelper helper, 
-                                 final Connection connection, final String actualTableName, final String sql, 
+                                 final Connection connection, final String sql, 
                                  final DatabaseType type, final Object... params) throws SQLException, DatabaseUnitException {
         try (DynamicShardingValueHelper anotherHelper = helper) {
-            assertDataSetEquals(expectedDataSetFile, connection, actualTableName, sql, type, params);
+            assertDataSetEquals(expectedDataSetFile, connection, sql, type, params);
         }
     }
     
-    protected void assertDataSet(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql, final DatabaseType type, final Object... params)
+    protected void assertDataSet(final String expectedDataSetFile, final Connection connection, final String sql, final DatabaseType type, final Object... params)
             throws SQLException, DatabaseUnitException {
-        assertDataSetEquals(expectedDataSetFile, connection, actualTableName, sql, type, params);
+        assertDataSetEquals(expectedDataSetFile, connection, sql, type, params);
     }
     
-    private void assertDataSetEquals(final String expectedDataSetFile, final Connection connection, final String actualTableName, 
+    private void assertDataSetEquals(final String expectedDataSetFile, final Connection connection, 
                                      final String sql, final DatabaseType type, final Object[] params) throws SQLException, DatabaseUnitException {
         try (
                 Connection conn = connection;
@@ -127,10 +127,10 @@ public abstract class AbstractShardingDatabaseOnlyHintDBUnitTest extends Abstrac
             for (Object param : params) {
                 ps.setObject(i++, param);
             }
-            ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(type), connection).createTable(actualTableName, ps);
+            ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(type), connection).createTable("t_order", ps);
             IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractShardingDatabaseOnlyHintDBUnitTest.class.getClassLoader()
                     .getResourceAsStream(expectedDataSetFile)));
-            assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
+            assertEquals(expectedDataSet.getTable("t_order"), actualTable);
         }
     }
 }

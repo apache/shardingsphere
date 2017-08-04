@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.common.sql.base;
 
-import com.dangdang.ddframe.rdb.common.sql.common.DatabaseTestMode;
-import com.dangdang.ddframe.rdb.common.util.DataBaseEnvironment;
-import com.dangdang.ddframe.rdb.common.util.ShardingJdbcDatabaseTester;
+import com.dangdang.ddframe.rdb.common.env.DatabaseTestMode;
+import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.common.env.ShardingJdbcDatabaseTester;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.IDatabaseTester;

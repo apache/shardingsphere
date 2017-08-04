@@ -44,11 +44,11 @@ public class RoutingDatabaseOnlyWithHintForSelectTest extends AbstractRoutingDat
         for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
             String sql = replacePreparedStatement(DatabaseTestSQL.SELECT_EQUALS_WITH_SINGLE_TABLE_SQL);
             assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_0.xml", new DynamicDatabaseShardingValueHelper(10), 
-                    each.getValue().getConnection(), "t_order", sql, each.getKey(), 10, 1000);
+                    each.getValue().getConnection(), sql, each.getKey(), 10, 1000);
             assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_1.xml", new DynamicDatabaseShardingValueHelper(12), 
-                    each.getValue().getConnection(), "t_order", sql, each.getKey(), 12, 1201);
+                    each.getValue().getConnection(), sql, each.getKey(), 12, 1201);
             assertDataSet("integrate/dataset/Empty.xml", new DynamicDatabaseShardingValueHelper(12), 
-                    each.getValue().getConnection(), "t_order", sql, each.getKey(), 12, 1000);
+                    each.getValue().getConnection(), sql, each.getKey(), 12, 1000);
         }
     }
 }

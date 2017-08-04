@@ -46,11 +46,11 @@ public final class ShardingDatabaseOnlyWithHintForSelectTest extends AbstractSha
         String sql = replacePreparedStatement(DatabaseTestSQL.SELECT_EQUALS_WITH_SINGLE_TABLE_SQL);
         for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
             assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_0.xml",
-                    new DynamicShardingValueHelper(10, 1000), each.getValue().getConnection(), "t_order", sql, each.getKey(), 10, 1000);
+                    new DynamicShardingValueHelper(10, 1000), each.getValue().getConnection(), sql, each.getKey(), 10, 1000);
             assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_1.xml",
-                    new DynamicShardingValueHelper(12, 1201), each.getValue().getConnection(), "t_order", sql, each.getKey(), 12, 1201);
+                    new DynamicShardingValueHelper(12, 1201), each.getValue().getConnection(), sql, each.getKey(), 12, 1201);
             assertDataSet("integrate/dataset/Empty.xml",
-                    new DynamicShardingValueHelper(12, 1000), each.getValue().getConnection(), "t_order", sql, each.getKey(), 12, 1000);
+                    new DynamicShardingValueHelper(12, 1000), each.getValue().getConnection(), sql, each.getKey(), 12, 1000);
         }
     }
     
@@ -60,9 +60,9 @@ public final class ShardingDatabaseOnlyWithHintForSelectTest extends AbstractSha
         for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
             assertDataSet("integrate/dataset/db/expect/select/SelectBetweenWithSingleTable.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12),
                             ShardingOperator.BETWEEN, Lists.newArrayList(1001, 1200), ShardingOperator.BETWEEN), each.getValue().getConnection(),
-                    "t_order", sql, each.getKey(), 10, 12, 1001, 1200);
+                    sql, each.getKey(), 10, 12, 1001, 1200);
             assertDataSet("integrate/dataset/Empty.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12),
-                    ShardingOperator.BETWEEN, Lists.newArrayList(1309, 1408), ShardingOperator.BETWEEN), each.getValue().getConnection(), "t_order", sql, each.getKey(), 10, 12, 1309, 1408);
+                    ShardingOperator.BETWEEN, Lists.newArrayList(1309, 1408), ShardingOperator.BETWEEN), each.getValue().getConnection(), sql, each.getKey(), 10, 12, 1309, 1408);
         }
     }
     
@@ -71,11 +71,11 @@ public final class ShardingDatabaseOnlyWithHintForSelectTest extends AbstractSha
         String sql = replacePreparedStatement(DatabaseTestSQL.SELECT_IN_WITH_SINGLE_TABLE_SQL);
         for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
             assertDataSet("integrate/dataset/db/expect/select/SelectInWithSingleTable_0.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15),
-                    ShardingOperator.IN, Lists.newArrayList(1000, 1201), ShardingOperator.IN), each.getValue().getConnection(), "t_order", sql, each.getKey(), 10, 12, 15, 1000, 1201);
+                    ShardingOperator.IN, Lists.newArrayList(1000, 1201), ShardingOperator.IN), each.getValue().getConnection(), sql, each.getKey(), 10, 12, 15, 1000, 1201);
             assertDataSet("integrate/dataset/db/expect/select/SelectInWithSingleTable_1.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15),
-                    ShardingOperator.IN, Lists.newArrayList(1000, 1101), ShardingOperator.IN), each.getValue().getConnection(), "t_order", sql, each.getKey(), 10, 12, 15, 1000, 1101);
+                    ShardingOperator.IN, Lists.newArrayList(1000, 1101), ShardingOperator.IN), each.getValue().getConnection(), sql, each.getKey(), 10, 12, 15, 1000, 1101);
             assertDataSet("integrate/dataset/Empty.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15),
-                    ShardingOperator.IN, Lists.newArrayList(1309, 1408), ShardingOperator.IN), each.getValue().getConnection(), "t_order", sql, each.getKey(), 10, 12, 15, 1309, 1408);
+                    ShardingOperator.IN, Lists.newArrayList(1309, 1408), ShardingOperator.IN), each.getValue().getConnection(), sql, each.getKey(), 10, 12, 15, 1309, 1408);
         }
     }
     

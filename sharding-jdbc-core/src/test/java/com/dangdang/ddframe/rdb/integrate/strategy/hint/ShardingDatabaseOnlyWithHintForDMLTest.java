@@ -166,7 +166,7 @@ public final class ShardingDatabaseOnlyWithHintForDMLTest extends AbstractShardi
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/hint/expect/%s/db_%s.xml", expectedDataSetPattern, i),
                     connection.getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT),
-                    "t_order", replacePreparedStatement(DatabaseTestSQL.ASSERT_SELECT_WITH_STATUS_SQL), type, status);
+                    replacePreparedStatement(DatabaseTestSQL.ASSERT_SELECT_WITH_STATUS_SQL), type, status);
         }
     }
 }
