@@ -15,17 +15,17 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        MySQLStatementTest.class,
-        MySQLPreparedStatementForOneParameterTest.class, 
-        MySQLPreparedStatementForTwoParametersTest.class,  
+        StatementParserTest.class,
+        PreparedStatementParserForOneParameterTest.class, 
+        PreparedStatementParserForTwoParametersTest.class,  
         OrParseTest.class
     })
-public class AllMySQLStatementTests {
+public class AllSQLParserTests {
 }

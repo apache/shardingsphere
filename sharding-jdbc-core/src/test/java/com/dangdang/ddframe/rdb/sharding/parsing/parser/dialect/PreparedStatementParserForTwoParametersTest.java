@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect;
 
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
@@ -34,27 +34,24 @@ import java.util.Collection;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
-public final class MySQLStatementTest extends AbstractBaseParseSQLTest {
+public final class PreparedStatementParserForTwoParametersTest extends AbstractBaseParseSQLTest {
     
-    public MySQLStatementTest(
-            final String testCaseName, final String sql, final Set<DatabaseType> types, 
+    public PreparedStatementParserForTwoParametersTest(
+            final String testCaseName, final String sql, final Set<DatabaseType> types,
             final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
         super(testCaseName, sql, types, expectedTables, expectedConditions, expectedSQLStatement);
     }
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractBaseParseTest.dataParameters("parser/mysql/statement/");
+        return AbstractBaseParseTest.dataParameters("parser/prepared_statement/two_params/");
     }
     
     @Test
     public void assertParse() {
         for (DatabaseType each : getTypes()) {
-            if (each == DatabaseType.MySQL) {
-                assertSQLStatement(new SQLParsingEngine(each, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                        .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "id").addGenerateKeyColumn("payment", "order_id").build()).parse());
-            }
-            
+            assertSQLStatement(new SQLParsingEngine(each, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
+                    .addGenerateKeyColumn("order", "order_id").build()).parse());
         }
     }
 }

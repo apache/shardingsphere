@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect;
 
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
@@ -34,24 +34,27 @@ import java.util.Collection;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
-public final class MySQLPreparedStatementForOneParameterTest extends AbstractBaseParseSQLTest {
+public final class StatementParserTest extends AbstractBaseParseSQLTest {
     
-    public MySQLPreparedStatementForOneParameterTest(
-            final String testCaseName, final String sql, final Set<DatabaseType> types,
+    public StatementParserTest(
+            final String testCaseName, final String sql, final Set<DatabaseType> types, 
             final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
         super(testCaseName, sql, types, expectedTables, expectedConditions, expectedSQLStatement);
     }
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractBaseParseTest.dataParameters("parser/mysql/prepared_statement/one_param/");
+        return AbstractBaseParseTest.dataParameters("parser/statement/");
     }
     
     @Test
     public void assertParse() {
         for (DatabaseType each : getTypes()) {
-            assertSQLStatement(new SQLParsingEngine(each, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                    .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse());
+            if (each == DatabaseType.MySQL) {
+                assertSQLStatement(new SQLParsingEngine(each, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
+                        .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "id").addGenerateKeyColumn("payment", "order_id").build()).parse());
+            }
+            
         }
     }
 }
