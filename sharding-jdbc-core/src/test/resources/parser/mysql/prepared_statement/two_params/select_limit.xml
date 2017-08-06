@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertSelectForLimitWithRowCountOnlyWithParameter" sql="SELECT * FROM order o LIMIT ?, ?">
+    <assert id="assertSelectForLimitWithRowCountOnlyWithParameter" sql="SELECT * FROM order o LIMIT ?, ?" type="MySQL">
         <tables>
             <table name="order" alias="o" />
         </tables>

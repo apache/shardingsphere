@@ -49,7 +49,9 @@ public final class MySQLPreparedStatementForTwoParametersTest extends AbstractBa
     
     @Test
     public void assertParse() {
-        assertSQLStatement(new SQLParsingEngine(DatabaseType.MySQL, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                .addGenerateKeyColumn("order", "order_id").build()).parse());
+        for (DatabaseType each : getTypes()) {
+            assertSQLStatement(new SQLParsingEngine(each, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
+                    .addGenerateKeyColumn("order", "order_id").build()).parse());
+        }
     }
 }

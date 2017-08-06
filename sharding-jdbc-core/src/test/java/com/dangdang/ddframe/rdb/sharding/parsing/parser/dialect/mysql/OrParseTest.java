@@ -53,8 +53,10 @@ public final class OrParseTest extends AbstractBaseParseSQLTest {
     @Test
     @Ignore
     public void assertParse() {
-        assertSQLStatement(new SQLParsingEngine(DatabaseType.MySQL, getSql(), new ShardingRuleMockBuilder()
-                .addShardingColumns("id").addShardingColumns("user_id").addShardingColumns("name").addShardingColumns("age")
-                .addShardingColumns("days").addShardingColumns("fee").addShardingColumns("travel_date").addShardingColumns("long").build()).parse());
+        for (DatabaseType each : getTypes()) {
+            assertSQLStatement(new SQLParsingEngine(each, getSql(), new ShardingRuleMockBuilder()
+                    .addShardingColumns("id").addShardingColumns("user_id").addShardingColumns("name").addShardingColumns("age")
+                    .addShardingColumns("days").addShardingColumns("fee").addShardingColumns("travel_date").addShardingColumns("long").build()).parse());
+        }
     }
 }

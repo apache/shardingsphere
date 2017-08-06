@@ -49,7 +49,12 @@ public final class MySQLStatementTest extends AbstractBaseParseSQLTest {
     
     @Test
     public void assertParse() {
-        assertSQLStatement(new SQLParsingEngine(DatabaseType.MySQL, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "id").addGenerateKeyColumn("payment", "order_id").build()).parse());
+        for (DatabaseType each : getTypes()) {
+            if (each == DatabaseType.MySQL) {
+                assertSQLStatement(new SQLParsingEngine(each, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
+                        .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "id").addGenerateKeyColumn("payment", "order_id").build()).parse());
+            }
+            
+        }
     }
 }

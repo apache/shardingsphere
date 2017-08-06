@@ -26,8 +26,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class ParserSQLUtil {
     
     public static Set<DatabaseType> getDatabaseTypes(final Assert assertObj) {
         if (null == assertObj.getTypes()) {
-            return Collections.emptySet();
+            return Sets.newHashSet(DatabaseType.values());
         }
         Set<DatabaseType> types = new HashSet<>();
         for (String each : assertObj.getTypes().split(",")) {
