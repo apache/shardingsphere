@@ -24,6 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
@@ -49,8 +50,10 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final String name;
     
+    @Getter
     private final DataSource masterDataSource;
     
+    @Getter
     private final List<DataSource> slaveDataSources;
     
     private final SlaveLoadBalanceStrategy slaveLoadBalanceStrategy = new RoundRobinSlaveLoadBalanceStrategy();

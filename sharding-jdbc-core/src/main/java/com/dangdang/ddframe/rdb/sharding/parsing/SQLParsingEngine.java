@@ -22,12 +22,13 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.create.CreateParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.DeleteParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectParserFactory;
@@ -70,6 +71,9 @@ public final class SQLParsingEngine {
         }
         if (sqlParser.equalAny(DefaultKeyword.DELETE)) {
             return DeleteParserFactory.newInstance(sqlParser).parse();
+        }
+        if (sqlParser.equalAny(DefaultKeyword.CREATE)) {
+            return CreateParserFactory.newInstance(sqlParser).parse();
         }
         throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
     }

@@ -32,7 +32,6 @@ public enum MySQLKeyword implements Keyword {
     OFFSET,
     VALUE,
     BEGIN,
-    IF,
     TRUE,
     FALSE,
     FORCE,

@@ -137,5 +137,9 @@ public enum DefaultKeyword implements Keyword {
     MINUS,
     USER,
     PASSWORD,
-    CONNECT_BY_ROOT
+    CONNECT_BY_ROOT,
+    IF,
+    GLOBAL,
+    LOCAL, 
+    TEMPORARY
 }

@@ -25,11 +25,6 @@ import org.junit.Test;
 public final class UnsupportedParseTest {
     
     @Test(expected = SQLParsingUnsupportedException.class)
-    public void assertCreate() {
-        new SQLParsingEngine(DatabaseType.MySQL, "CREATE TABLE `order` (id BIGINT(10))", new ShardingRuleMockBuilder().build()).parse();
-    }
-    
-    @Test(expected = SQLParsingUnsupportedException.class)
     public void assertDrop() {
         new SQLParsingEngine(DatabaseType.MySQL, "DROP TABLE `order`", new ShardingRuleMockBuilder().build()).parse();
     }

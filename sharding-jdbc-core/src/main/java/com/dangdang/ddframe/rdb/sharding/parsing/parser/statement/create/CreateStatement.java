@@ -15,14 +15,23 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.constant;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.create;
+
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
- * SQL类型.
- * 
+ * Create SQL语句对象.
+ *
  * @author zhangliang
  */
-public enum SQLType {
+@Getter
+@ToString(callSuper = true)
+public final class CreateStatement extends AbstractSQLStatement {
     
-    SELECT, INSERT, DELETE, UPDATE, CREATE, ALTER, DROP, TRUNCATE
+    public CreateStatement() {
+        super(SQLType.CREATE);
+    }
 }

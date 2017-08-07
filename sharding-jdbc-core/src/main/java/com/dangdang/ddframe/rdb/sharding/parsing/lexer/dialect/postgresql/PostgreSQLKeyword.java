@@ -53,7 +53,6 @@ public enum PostgreSQLKeyword implements Keyword {
     ROWS,
     SHARE,
     TEMP,
-    TEMPORARY,
     IDENTITY,
     WINDOW
 }

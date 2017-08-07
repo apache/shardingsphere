@@ -44,7 +44,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
             parseDistinct();
             parseSelectList();
             if (getSqlParser().skipIfEqual(DefaultKeyword.INTO)) {
-                getSqlParser().skipIfEqual(PostgreSQLKeyword.TEMPORARY, PostgreSQLKeyword.TEMP, PostgreSQLKeyword.UNLOGGED);
+                getSqlParser().skipIfEqual(DefaultKeyword.TEMPORARY, PostgreSQLKeyword.TEMP, PostgreSQLKeyword.UNLOGGED);
                 getSqlParser().skipIfEqual(DefaultKeyword.TABLE);
             }
         }

@@ -40,6 +40,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -55,6 +56,34 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     private final ShardingContext shardingContext;
     
     private final Map<String, Connection> connectionMap = new HashMap<>();
+    
+    /**
+     * 根据数据源名称获取全部数据库连接.
+     *
+     * @param dataSourceName 数据源名称
+     * @return 数据库连接集合
+     * @throws SQLException SQL异常
+     */
+    public Collection<Connection> getConnectionForDDL(final String dataSourceName) throws SQLException {
+        final Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnectionForDDL", dataSourceName));
+        DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
+        Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
+        Collection<DataSource> dataSources = new LinkedList<>();
+        if (dataSource instanceof MasterSlaveDataSource) {
+            dataSources.add(((MasterSlaveDataSource) dataSource).getMasterDataSource());
+            dataSources.addAll(((MasterSlaveDataSource) dataSource).getSlaveDataSources());
+        } else {
+            dataSources.add(dataSource);
+        }
+        Collection<Connection> result = new LinkedList<>();
+        for (DataSource each : dataSources) {
+            Connection connection = each.getConnection();
+            replayMethodsInvocation(connection);
+            result.add(connection);
+        }
+        MetricsContext.stop(metricsContext);
+        return result;
+    }
     
     /**
      * 根据数据源名称获取相应的数据库连接.
