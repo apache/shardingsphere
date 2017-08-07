@@ -46,23 +46,28 @@ public final class Main {
     // CHECKSTYLE:ON
         DataSource dataSource = getShardingDataSource();
         createTable(dataSource);
+        insertData(dataSource);
         printSimpleSelect(dataSource);
         System.out.println("--------------");
         printGroupBy(dataSource);
         System.out.println("--------------");
         printHintSimpleSelect(dataSource);
+        dropTable(dataSource);
     }
     
     private static void createTable(final DataSource dataSource) throws SQLException {
-        createTable(dataSource, "CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(50), PRIMARY KEY (`order_id`))");
-        createTable(dataSource, "CREATE TABLE IF NOT EXISTS `t_order_item` (`item_id` INT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, PRIMARY KEY (`item_id`))");
+        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(50), PRIMARY KEY (`order_id`))");
+        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS `t_order_item` (`item_id` INT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, PRIMARY KEY (`item_id`))");
     }
     
-    private static void createTable(final DataSource dataSource, final String sql) throws SQLException {
-        try (
-                Connection conn = dataSource.getConnection();
-                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-            preparedStatement.execute();
+    private static void insertData(final DataSource dataSource) throws SQLException {
+        for (int orderId = 1000; orderId < 1010; orderId++) {
+            executeUpdate(dataSource, String.format("INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, 10, 'INIT')", orderId));
+            executeUpdate(dataSource, String.format("INSERT INTO `t_order_item` (`item_id`, `order_id`, `user_id`) VALUES (%s01, %s, 10)", orderId, orderId));
+        }
+        for (int orderId = 1100; orderId < 1110; orderId++) {
+            executeUpdate(dataSource, String.format("INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, 11, 'INIT')", orderId));
+            executeUpdate(dataSource, String.format("INSERT INTO `t_order_item` (`item_id`, `order_id`, `user_id`) VALUES (%s01, %s, 11)", orderId, orderId));
         }
     }
     
@@ -139,5 +144,18 @@ public final class Main {
         result.setUsername("root");
         result.setPassword("");
         return result;
+    }
+    
+    private static void dropTable(final DataSource dataSource) throws SQLException {
+        executeUpdate(dataSource, "DROP TABLE `t_order`");
+        executeUpdate(dataSource, "DROP TABLE `t_order_item`");
+    }
+    
+    private static void executeUpdate(final DataSource dataSource, final String sql) throws SQLException {
+        try (
+                Connection conn = dataSource.getConnection();
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }
     }
 }
