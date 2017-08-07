@@ -33,37 +33,37 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * 多线程执行框架.
- * 
+ *
  * @author gaohongtao
  */
 @Slf4j
 public final class ExecutorEngine {
-    
+
     private final ListeningExecutorService executorService;
-    
+
     public ExecutorEngine(final ShardingProperties shardingProperties) {
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(executorSize, executorSize, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactoryBuilder()
-                        .setDaemon(true).setNameFormat("ShardingJDBC-%d").build()));
+//        executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(executorSize, executorSize, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactoryBuilder()
+//                .setDaemon(true).setNameFormat("ShardingJDBC-%d").build()));
+        executorService = MoreExecutors.listeningDecorator(new ForkJoinPool
+                (executorSize,
+                        ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+                        null, true));
         MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
     }
-    
+
     /**
      * 多线程执行任务.
      * 一组任务中,将第一个任务放在当前线程中执行,其余的任务放到线程池中运行.
-     * 
-     * 
-     * @param inputs 输入参数
+     *
+     * @param inputs      输入参数
      * @param executeUnit 执行单元
-     * @param <I> 入参类型
-     * @param <O> 出参类型
+     * @param <I>         入参类型
+     * @param <O>         出参类型
      * @return 执行结果
      */
     public <I, O> List<O> execute(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
@@ -88,27 +88,27 @@ public final class ExecutorEngine {
         result.add(0, firstOutput);
         return result;
     }
-    
+
     /**
      * 多线程执行任务并归并结果.
-     * 
-     * @param inputs 执行入参
+     *
+     * @param inputs      执行入参
      * @param executeUnit 执行单元
-     * @param mergeUnit 合并结果单元
-     * @param <I> 入参类型
-     * @param <M> 中间结果类型
-     * @param <O> 最终结果类型
+     * @param mergeUnit   合并结果单元
+     * @param <I>         入参类型
+     * @param <M>         中间结果类型
+     * @param <O>         最终结果类型
      * @return 执行结果
      */
     public <I, M, O> O execute(final Collection<I> inputs, final ExecuteUnit<I, M> executeUnit, final MergeUnit<M, O> mergeUnit) {
         return mergeUnit.merge(execute(inputs, executeUnit));
     }
-    
+
     private <I, O> ListenableFuture<List<O>> asyncRun(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
         List<ListenableFuture<O>> result = new ArrayList<>(inputs.size());
         for (final I each : inputs) {
             result.add(executorService.submit(new Callable<O>() {
-                
+
                 @Override
                 public O call() throws Exception {
                     return executeUnit.execute(each);
@@ -117,7 +117,7 @@ public final class ExecutorEngine {
         }
         return Futures.allAsList(result);
     }
-    
+
     /**
      * 安全关闭执行器,并释放线程.
      */
