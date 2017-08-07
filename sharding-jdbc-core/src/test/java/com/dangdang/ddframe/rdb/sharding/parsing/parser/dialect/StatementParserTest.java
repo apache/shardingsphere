@@ -37,9 +37,9 @@ import java.util.Set;
 public final class StatementParserTest extends AbstractBaseParseSQLTest {
     
     public StatementParserTest(
-            final String testCaseName, final String sql, final Set<DatabaseType> types, 
+            final String testCaseName, final String sql, final String[] parameters, final Set<DatabaseType> types, 
             final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
-        super(testCaseName, sql, types, expectedTables, expectedConditions, expectedSQLStatement);
+        super(testCaseName, sql, parameters, types, expectedTables, expectedConditions, expectedSQLStatement);
     }
     
     @Parameters(name = "{0}")
@@ -54,7 +54,6 @@ public final class StatementParserTest extends AbstractBaseParseSQLTest {
                 assertSQLStatement(new SQLParsingEngine(each, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
                         .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "id").addGenerateKeyColumn("payment", "order_id").build()).parse());
             }
-            
         }
     }
 }

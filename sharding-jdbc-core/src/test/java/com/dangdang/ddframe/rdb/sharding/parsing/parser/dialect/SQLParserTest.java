@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect;
 
+import com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
@@ -25,7 +26,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseTe
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -35,28 +35,34 @@ import java.util.Collection;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
-public final class OrParseTest extends AbstractBaseParseSQLTest {
+public final class SQLParserTest extends AbstractBaseParseSQLTest {
     
-    public OrParseTest(
-            final String testCaseName, final String sql, final Set<DatabaseType> types, 
+    public SQLParserTest(
+            final String testCaseName, final String sql, final String[] parameters, final Set<DatabaseType> types,
             final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
-        super(testCaseName, sql, types, expectedTables, expectedConditions, expectedSQLStatement);
+        super(testCaseName, sql, parameters, types, expectedTables, expectedConditions, expectedSQLStatement);
     }
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractBaseParseTest.dataParameters("parser/or/");
+        return AbstractBaseParseTest.dataParameters("parser/assert/");
     }
     
-    // TODO 归并字段，整合进mySQL测试
-    // TODO 暂时不支持or
+//    @Test
+//    public void assertStatement() {
+//        for (DatabaseType each : getTypes()) {
+//            assertSQLStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replaceStatement(getSql(), getParameters()), 
+// new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
+//                    .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse());
+//        }
+//    }
+//    
     @Test
-    @Ignore
-    public void assertParse() {
+    public void assertPreparedStatement() {
         for (DatabaseType each : getTypes()) {
-            assertSQLStatement(new SQLParsingEngine(each, getSql(), new ShardingRuleMockBuilder()
-                    .addShardingColumns("id").addShardingColumns("user_id").addShardingColumns("name").addShardingColumns("age")
-                    .addShardingColumns("days").addShardingColumns("fee").addShardingColumns("travel_date").addShardingColumns("long").build()).parse());
+            assertSQLStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replacePreparedStatement(getSql()), 
+                    new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
+                    .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse());
         }
     }
 }

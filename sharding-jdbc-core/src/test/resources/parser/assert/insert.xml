@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertInsertWithAllPlaceholders" sql="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)" parameters="1,1,'insert'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                <value index="0"/>
+            </condition>
+            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                <value index="1"/>
+            </condition>
+        </conditions>
+    </assert>
+    <!-- // TODO
+    <assert id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )" expected-sql="INSERT INTO [Token(order)] ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )">
+        <tables>
+            <table name="order" />
+        </tables>
+        <condition-contexts>
+           <condition-context/>
+        </condition-contexts>
+    </assert>
+    -->
+</asserts>

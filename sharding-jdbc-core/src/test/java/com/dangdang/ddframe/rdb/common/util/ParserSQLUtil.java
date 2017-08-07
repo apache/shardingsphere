@@ -35,9 +35,18 @@ import java.util.Set;
 
 public class ParserSQLUtil {
     
+    public static String[] getParameters(final Assert assertObj) {
+        if (null == assertObj.getParameters()) {
+            return new String[]{};
+        }
+        return assertObj.getParameters().split(",");
+    }
+    
     public static Set<DatabaseType> getDatabaseTypes(final Assert assertObj) {
         if (null == assertObj.getTypes()) {
-            return Sets.newHashSet(DatabaseType.values());
+            Set<DatabaseType> result = Sets.newHashSet(DatabaseType.values());
+            result.remove(DatabaseType.H2);
+            return result;
         }
         Set<DatabaseType> types = new HashSet<>();
         for (String each : assertObj.getTypes().split(",")) {

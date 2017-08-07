@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertSelectWithCountAndMaxAndMin" sql="SELECT COUNT(MAX(*)) AS c, order_id , MAX(MIN(date)), MIN(time) Time FROM order WHERE order_id=max(order_id) ">
+    <assert id="assertSelectWithCountAndMaxAndMin" sql="SELECT COUNT(MAX(*)) AS c, order_id , MAX(MIN(date)), MIN(time) Time FROM order WHERE order_id=max(order_id)">
         <tables>
             <table name="order"/>
         </tables>

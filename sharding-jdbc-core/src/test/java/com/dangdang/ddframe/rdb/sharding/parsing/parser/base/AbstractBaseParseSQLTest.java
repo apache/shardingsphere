@@ -17,9 +17,9 @@ import static org.junit.Assert.assertTrue;
 public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     
     protected AbstractBaseParseSQLTest(
-            final String testCaseName, final String sql, final Set<DatabaseType> types, 
+            final String testCaseName, final String sql, final String[] parameters, final Set<DatabaseType> types, 
             final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
-        super(testCaseName, sql, types, expectedTables, expectedConditions, expectedSQLStatement);
+        super(testCaseName, sql, parameters, types, expectedTables, expectedConditions, expectedSQLStatement);
     }
     
     protected final void assertSQLStatement(final SQLStatement actual) {
