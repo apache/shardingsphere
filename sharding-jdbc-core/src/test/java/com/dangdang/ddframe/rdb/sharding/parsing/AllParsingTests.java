@@ -26,12 +26,12 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    TokenizerTest.class,
-    AllLexerTests.class,
-    AllStatementParserTests.class,
-    AllSQLParserTests.class,
-    SQLParsingEngineTest.class,
-    UnsupportedParseTest.class
+        TokenizerTest.class,
+        AllLexerTests.class,
+        AllStatementParserTests.class,
+        AllSQLParserTests.class,
+        SQLParsingEngineTest.class,
+        UnsupportedParseTest.class
     })
 public class AllParsingTests {
 }

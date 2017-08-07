@@ -10,7 +10,7 @@
             <data parameter="1000,1001" expected="select_sub_query/SelectSubQueryMultiTableWithParentheses.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectSubQueryWithOrderBy" value="SELECT COUNT(1) as orders_count FROM (SELECT * FROM t_order ORDER BY order_id desc) t" type="MySQL,PostgreSQL,SQLServer,Oracle">
+    <sql id="assertSelectSubQueryWithOrderBy" value="SELECT COUNT(1) as orders_count FROM (SELECT * FROM t_order ORDER BY order_id desc) t" type="MySQL,PostgreSQL,Oracle">
         <sharding-rule>
             <data expected="select_sub_query/SelectSubQueryWithOrderBy.xml" />
         </sharding-rule>
