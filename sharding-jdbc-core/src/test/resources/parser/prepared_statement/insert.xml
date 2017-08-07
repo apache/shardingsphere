@@ -11,9 +11,6 @@
             <condition column-name="user_id" table-name="order" operator="EQUAL">
                 <value index="1"/>
             </condition>
-            <condition column-name="state" table-name="order" operator="EQUAL">
-                <value literal="RUNNING" type="java.lang.String" />
-            </condition>
         </conditions>
     </assert>
     <assert id="assertInsertWithParameterAndGenerateKeyColumnIsShardingColumn" sql="insert into `order`('state') values(?)">
