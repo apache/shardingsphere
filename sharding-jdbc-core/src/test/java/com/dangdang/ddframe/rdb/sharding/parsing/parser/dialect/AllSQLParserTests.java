@@ -23,8 +23,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         StatementParserTest.class,
-        PreparedStatementParserForOneParameterTest.class, 
-        PreparedStatementParserForTwoParametersTest.class,  
+        PreparedStatementParserTest.class, 
         OrParseTest.class
     })
 public class AllSQLParserTests {

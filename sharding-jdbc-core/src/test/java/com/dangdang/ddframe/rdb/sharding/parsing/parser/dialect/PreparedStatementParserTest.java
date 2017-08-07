@@ -34,9 +34,9 @@ import java.util.Collection;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
-public final class PreparedStatementParserForTwoParametersTest extends AbstractBaseParseSQLTest {
+public final class PreparedStatementParserTest extends AbstractBaseParseSQLTest {
     
-    public PreparedStatementParserForTwoParametersTest(
+    public PreparedStatementParserTest(
             final String testCaseName, final String sql, final Set<DatabaseType> types,
             final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
         super(testCaseName, sql, types, expectedTables, expectedConditions, expectedSQLStatement);
@@ -44,14 +44,14 @@ public final class PreparedStatementParserForTwoParametersTest extends AbstractB
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractBaseParseTest.dataParameters("parser/prepared_statement/two_params/");
+        return AbstractBaseParseTest.dataParameters("parser/prepared_statement/");
     }
     
     @Test
     public void assertParse() {
         for (DatabaseType each : getTypes()) {
             assertSQLStatement(new SQLParsingEngine(each, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                    .addGenerateKeyColumn("order", "order_id").build()).parse());
+                    .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse());
         }
     }
 }
