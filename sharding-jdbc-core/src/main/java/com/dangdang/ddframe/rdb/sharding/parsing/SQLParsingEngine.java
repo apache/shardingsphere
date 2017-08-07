@@ -31,6 +31,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.alter.AlterParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.create.CreateParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.DeleteParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.drop.DropParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.UpdateParserFactory;
@@ -78,6 +79,9 @@ public final class SQLParsingEngine {
         }
         if (sqlParser.equalAny(DefaultKeyword.ALTER)) {
             return AlterParserFactory.newInstance(sqlParser).parse();
+        }
+        if (sqlParser.equalAny(DefaultKeyword.DROP)) {
+            return DropParserFactory.newInstance(sqlParser).parse();
         }
         throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
     }

@@ -15,46 +15,46 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.alter;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.drop;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLAlterParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLDropParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleAlterParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleDropParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLAlterParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLDropParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerAlterParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerDropParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Alter语句解析器工厂.
+ * Drop语句解析器工厂.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AlterParserFactory {
+public final class DropParserFactory {
     
     /**
-     * Alter Table语句解析器.
+     * Drop Table语句解析器.
      * 
      * @param sqlParser SQL解析器
-     * @return Alter语句解析器
+     * @return Drop语句解析器
      */
-    public static AbstractAlterParser newInstance(final SQLParser sqlParser) {
+    public static AbstractDropParser newInstance(final SQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
-            return new MySQLAlterParser(sqlParser);
+            return new MySQLDropParser(sqlParser);
         }
         if (sqlParser instanceof OracleParser) {
-            return new OracleAlterParser(sqlParser);
+            return new OracleDropParser(sqlParser);
         }
         if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerAlterParser(sqlParser);
+            return new SQLServerDropParser(sqlParser);
         }
         if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLAlterParser(sqlParser);
+            return new PostgreSQLDropParser(sqlParser);
         }
         throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 

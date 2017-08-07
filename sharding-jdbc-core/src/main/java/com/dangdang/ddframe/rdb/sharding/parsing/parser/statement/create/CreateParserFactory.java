@@ -41,7 +41,7 @@ public final class CreateParserFactory {
      * 创建Create Table语句解析器.
      * 
      * @param sqlParser SQL解析器
-     * @return Delete语句解析器
+     * @return Create语句解析器
      */
     public static AbstractCreateParser newInstance(final SQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
