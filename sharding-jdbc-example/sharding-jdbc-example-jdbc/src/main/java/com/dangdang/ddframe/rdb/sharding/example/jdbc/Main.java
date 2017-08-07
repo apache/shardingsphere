@@ -45,11 +45,25 @@ public final class Main {
     public static void main(final String[] args) throws SQLException {
     // CHECKSTYLE:ON
         DataSource dataSource = getShardingDataSource();
+        createTable(dataSource);
         printSimpleSelect(dataSource);
         System.out.println("--------------");
         printGroupBy(dataSource);
         System.out.println("--------------");
         printHintSimpleSelect(dataSource);
+    }
+    
+    private static void createTable(final DataSource dataSource) throws SQLException {
+        createTable(dataSource, "CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(50), PRIMARY KEY (`order_id`))");
+        createTable(dataSource, "CREATE TABLE IF NOT EXISTS `t_order_item` (`item_id` INT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, PRIMARY KEY (`item_id`))");
+    }
+    
+    private static void createTable(final DataSource dataSource, final String sql) throws SQLException {
+        try (
+                Connection conn = dataSource.getConnection();
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.execute();
+        }
     }
     
     private static void printSimpleSelect(final DataSource dataSource) throws SQLException {
