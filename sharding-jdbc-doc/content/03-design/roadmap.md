@@ -31,6 +31,12 @@ next = "/00-overview"
 1. UPDATE
 1. DELETE
 
+### DDL
+1. CREATE
+1. ALTER
+1. DROP
+1. TRUNCATE
+
 ### 配置
 1. Java API
 1. Spring命名空间
@@ -103,10 +109,9 @@ next = "/00-overview"
 1. 多表DELETE
 
 ### DDL
-1. CREATE
-1. ALTER
-1. DROP
-1. TRUNCATE
+1. CREATE VIEW
+1. CREATE INDEX
+1. CREATE OR REPLACE
 
 ### SQL解析提升
 1. 批量解析
@@ -118,5 +123,4 @@ next = "/00-overview"
 
 ### 运维工具
 1. 字典表复制广播
-1. 建表工具
 1. 动态扩容
