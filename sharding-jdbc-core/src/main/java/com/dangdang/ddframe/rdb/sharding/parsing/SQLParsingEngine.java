@@ -28,6 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.Postg
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.alter.AlterParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.create.CreateParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.DeleteParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertParserFactory;
@@ -74,6 +75,9 @@ public final class SQLParsingEngine {
         }
         if (sqlParser.equalAny(DefaultKeyword.CREATE)) {
             return CreateParserFactory.newInstance(sqlParser).parse();
+        }
+        if (sqlParser.equalAny(DefaultKeyword.ALTER)) {
+            return AlterParserFactory.newInstance(sqlParser).parse();
         }
         throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
     }

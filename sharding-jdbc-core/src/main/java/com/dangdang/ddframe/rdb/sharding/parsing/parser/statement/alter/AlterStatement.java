@@ -15,17 +15,23 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.alter;
 
-import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import org.junit.Test;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
+import lombok.Getter;
+import lombok.ToString;
 
-public final class UnsupportedParseTest {
+/**
+ * Alter SQL语句对象.
+ *
+ * @author zhangliang
+ */
+@Getter
+@ToString(callSuper = true)
+public final class AlterStatement extends AbstractSQLStatement {
     
-    @Test(expected = SQLParsingUnsupportedException.class)
-    public void assertGrant() {
-        new SQLParsingEngine(DatabaseType.MySQL, "GRANT ALL ON * TO 'root'@'localhost'", new ShardingRuleMockBuilder().build()).parse();
+    public AlterStatement() {
+        super(SQLType.ALTER);
     }
 }
