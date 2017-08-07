@@ -147,8 +147,8 @@ public final class Main {
     }
     
     private static void dropTable(final DataSource dataSource) throws SQLException {
-        executeUpdate(dataSource, "DROP TABLE `t_order`");
         executeUpdate(dataSource, "DROP TABLE `t_order_item`");
+        executeUpdate(dataSource, "DROP TABLE `t_order`");
     }
     
     private static void executeUpdate(final DataSource dataSource, final String sql) throws SQLException {
