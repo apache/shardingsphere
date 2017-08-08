@@ -19,13 +19,12 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
@@ -45,7 +44,7 @@ import java.util.LinkedList;
 @Getter
 @Setter
 @ToString
-public final class InsertStatement extends AbstractSQLStatement {
+public final class InsertStatement extends DMLStatement {
     
     private final Collection<Column> columns = new LinkedList<>();
     
@@ -54,10 +53,6 @@ public final class InsertStatement extends AbstractSQLStatement {
     private int columnsListLastPosition;
     
     private int valuesListLastPosition;
-    
-    public InsertStatement() {
-        super(SQLType.DML);
-    }
     
     /**
      * 追加自增主键标记对象.

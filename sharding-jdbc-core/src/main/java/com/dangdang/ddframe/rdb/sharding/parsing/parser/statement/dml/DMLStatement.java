@@ -15,23 +15,25 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Delete SQL语句对象.
+ * DML语句对象.
  *
  * @author zhangliang
  */
 @Getter
+@Setter
 @ToString(callSuper = true)
-public final class DeleteStatement extends AbstractSQLStatement {
+public class DMLStatement extends AbstractSQLStatement {
     
-    public DeleteStatement() {
+    public DMLStatement() {
         super(SQLType.DML);
     }
 }

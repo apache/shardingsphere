@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.AccessLevel;
@@ -36,18 +37,18 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private final SQLParser sqlParser;
     
-    private final UpdateStatement updateStatement;
+    private final DMLStatement updateStatement;
     
     @Getter(AccessLevel.NONE)
     private int parametersIndex;
     
     public AbstractUpdateParser(final SQLParser sqlParser) {
         this.sqlParser = sqlParser;
-        updateStatement = new UpdateStatement();
+        updateStatement = new DMLStatement();
     }
     
     @Override
-    public UpdateStatement parse() {
+    public DMLStatement parse() {
         sqlParser.getLexer().nextToken();
         skipBetweenUpdateAndTable();
         sqlParser.parseSingleTable(updateStatement);

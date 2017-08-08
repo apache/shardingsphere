@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete.DeleteStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import com.google.common.collect.Range;
 import org.junit.Test;
 
@@ -43,7 +43,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     public void parseWithoutCondition() throws SQLException {
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX", shardingRule);
-        DeleteStatement deleteStatement = (DeleteStatement) statementParser.parse();
+        DMLStatement deleteStatement = (DMLStatement) statementParser.parse();
         assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
     }
     
@@ -52,11 +52,11 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, 
                 "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10", shardingRule);
-        DeleteStatement deleteStatement = (DeleteStatement) statementParser.parse();
+        DMLStatement deleteStatement = (DMLStatement) statementParser.parse();
         assertDeleteStatementWithoutParameter(deleteStatement);
     }
     
-    private void assertDeleteStatementWithoutParameter(final DeleteStatement deleteStatement) {
+    private void assertDeleteStatementWithoutParameter(final DMLStatement deleteStatement) {
         assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         assertThat(deleteStatement.getTables().find("xxx").get().getAlias().get(), is("xxx"));
         Condition condition1 = deleteStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
@@ -80,11 +80,11 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, 
                 "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?", shardingRule);
-        DeleteStatement deleteStatement = (DeleteStatement) statementParser.parse();
+        DMLStatement deleteStatement = (DMLStatement) statementParser.parse();
         assertDeleteStatementWithParameter(deleteStatement);
     }
     
-    private void assertDeleteStatementWithParameter(final DeleteStatement deleteStatement) {
+    private void assertDeleteStatementWithParameter(final DMLStatement deleteStatement) {
         assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         assertThat(deleteStatement.getTables().find("xxx").get().getAlias().get(), is("xxx"));
         List<Object> actualParameters = Arrays.<Object>asList(0, 10, 20, 30, 40, 50, 60, 70, 80);
@@ -135,7 +135,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
         ShardingRule shardingRule = createShardingRule();
-        DeleteStatement deleteStatement = (DeleteStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule).parse();
+        DMLStatement deleteStatement = (DMLStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule).parse();
         assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         assertFalse(deleteStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = deleteStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();

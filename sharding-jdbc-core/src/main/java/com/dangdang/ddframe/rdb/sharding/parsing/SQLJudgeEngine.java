@@ -23,12 +23,10 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete.DeleteStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.InsertStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.UpdateStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -54,12 +52,8 @@ public final class SQLJudgeEngine {
             if (tokenType instanceof Keyword) {
                 if (DefaultKeyword.SELECT == tokenType) {
                     return new SelectStatement();
-                } else if (DefaultKeyword.UPDATE == tokenType) {
-                    return new UpdateStatement();
-                } else if (DefaultKeyword.INSERT == tokenType) {
-                    return new InsertStatement();
-                } else if (DefaultKeyword.DELETE == tokenType) {
-                    return new DeleteStatement();
+                } else if (DefaultKeyword.INSERT == tokenType || DefaultKeyword.UPDATE == tokenType || DefaultKeyword.DELETE == tokenType) {
+                    return new DMLStatement();
                 }
             }
             if (tokenType instanceof Assist && Assist.END == tokenType) {

@@ -1,10 +1,8 @@
 package com.dangdang.ddframe.rdb.sharding.parsing;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete.DeleteStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.InsertStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.UpdateStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.DQLStatement;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -14,22 +12,22 @@ public final class SQLParsingEngineTest {
     
     @Test
     public void assertPrepareParseForSelect() {
-        assertThat(new SQLJudgeEngine(" /*COMMENT*/  \t \n  \r \fsElecT\t\n  * from table  ").judge(), instanceOf(SelectStatement.class));
+        assertThat(new SQLJudgeEngine(" /*COMMENT*/  \t \n  \r \fsElecT\t\n  * from table  ").judge(), instanceOf(DQLStatement.class));
     }
     
     @Test
     public void assertPrepareParseForInsert() {
-        assertThat(new SQLJudgeEngine(" - - COMMENT  \t \n  \r \fInsert\t\n  into table  ").judge(), instanceOf(InsertStatement.class));
+        assertThat(new SQLJudgeEngine(" - - COMMENT  \t \n  \r \fInsert\t\n  into table  ").judge(), instanceOf(DMLStatement.class));
     }
     
     @Test
     public void assertPrepareParseForUpdate() {
-        assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fuPdAte\t\n  table  ").judge(), instanceOf(UpdateStatement.class));
+        assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fuPdAte\t\n  table  ").judge(), instanceOf(DMLStatement.class));
     }
     
     @Test
     public void assertPrepareParseForDelete() {
-        assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fdelete\t\n  table  ").judge(), instanceOf(DeleteStatement.class));
+        assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fdelete\t\n  table  ").judge(), instanceOf(DMLStatement.class));
     }
     
     @Test(expected = SQLParsingException.class)

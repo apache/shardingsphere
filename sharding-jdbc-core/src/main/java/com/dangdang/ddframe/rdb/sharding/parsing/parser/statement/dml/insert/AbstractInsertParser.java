@@ -32,6 +32,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
@@ -70,7 +71,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     }
     
     @Override
-    public final InsertStatement parse() {
+    public final DMLStatement parse() {
         sqlParser.getLexer().nextToken();
         parseInto();
         parseColumns();

@@ -15,23 +15,25 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.drop;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Drop SQL语句对象.
+ * DDL语句对象.
  *
  * @author zhangliang
  */
 @Getter
+@Setter
 @ToString(callSuper = true)
-public final class DropStatement extends AbstractSQLStatement {
+public class DDLStatement extends AbstractSQLStatement {
     
-    public DropStatement() {
+    public DDLStatement() {
         super(SQLType.DDL);
     }
 }

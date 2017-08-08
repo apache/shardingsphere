@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.DDLStatement;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -37,15 +38,15 @@ public abstract class AbstractTruncateParser implements SQLStatementParser {
     
     private final SQLParser sqlParser;
     
-    private final TruncateStatement truncateStatement;
+    private final DDLStatement truncateStatement;
     
     public AbstractTruncateParser(final SQLParser sqlParser) {
         this.sqlParser = sqlParser;
-        truncateStatement = new TruncateStatement();
+        truncateStatement = new DDLStatement();
     }
     
     @Override
-    public TruncateStatement parse() {
+    public DDLStatement parse() {
         sqlParser.getLexer().nextToken();
         if (!sqlParser.skipIfEqual(DefaultKeyword.TABLE)) {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());

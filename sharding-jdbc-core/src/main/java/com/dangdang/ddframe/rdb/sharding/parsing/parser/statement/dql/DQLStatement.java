@@ -15,23 +15,25 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Alter SQL语句对象.
+ * DQL语句对象.
  *
  * @author zhangliang
  */
 @Getter
+@Setter
 @ToString(callSuper = true)
-public final class AlterStatement extends AbstractSQLStatement {
+public class DQLStatement extends AbstractSQLStatement {
     
-    public AlterStatement() {
-        super(SQLType.DDL);
+    public DQLStatement() {
+        super(SQLType.DQL);
     }
 }

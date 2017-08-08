@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.DDLStatement;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -37,15 +38,15 @@ public abstract class AbstractCreateParser implements SQLStatementParser {
     
     private final SQLParser sqlParser;
     
-    private final CreateStatement createStatement;
+    private final DDLStatement createStatement;
     
     public AbstractCreateParser(final SQLParser sqlParser) {
         this.sqlParser = sqlParser;
-        createStatement = new CreateStatement();
+        createStatement = new DDLStatement();
     }
     
     @Override
-    public CreateStatement parse() {
+    public DDLStatement parse() {
         sqlParser.getLexer().nextToken();
         getSqlParser().skipAll(getSkipWordsBetweenCreateAndKeyword());
         if (!sqlParser.skipIfEqual(DefaultKeyword.TABLE)) {

@@ -17,12 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select;
 
-import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.DQLStatement;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,7 +39,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public final class SelectStatement extends AbstractSQLStatement {
+public final class SelectStatement extends DQLStatement {
     
     private boolean distinct;
     
@@ -59,10 +58,6 @@ public final class SelectStatement extends AbstractSQLStatement {
     private final List<OrderItem> orderByItems = new LinkedList<>();
     
     private Limit limit;
-    
-    public SelectStatement() {
-        super(SQLType.DQL);
-    }
     
     /**
      * 获取聚合选择项集合.
