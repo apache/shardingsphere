@@ -291,7 +291,7 @@ public class SQLParser extends AbstractParser {
             } else {
                 parseOtherCondition(sqlStatement);
             }
-        } else if (equalAny(DefaultKeyword.LIKE)) {
+        } else if (equalAny(Symbol.LT_GT, DefaultKeyword.LIKE)) {
             parseOtherCondition(sqlStatement);
         }
         skipIfEqual(Symbol.RIGHT_PAREN);

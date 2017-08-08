@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <!--
     <sql id="assertSelectNotEqualsWithSingleTable" value="SELECT * FROM t_order_item WHERE item_id &lt;&gt; %s ORDER BY item_id">
         <sharding-rule value="tbl">
             <data parameter="100000" expected="select/SelectNotEqualsWithSingleTable.xml" />
         </sharding-rule>
     </sql>
-    -->
     <sql id="assertSelectEqualsWithSingleTable" value="SELECT * FROM t_order WHERE user_id = %s AND order_id = %s">
         <sharding-rule value="tbl">
             <data parameter="10,1000" expected="select/SelectEqualsWithSingleTable_0.xml" />
