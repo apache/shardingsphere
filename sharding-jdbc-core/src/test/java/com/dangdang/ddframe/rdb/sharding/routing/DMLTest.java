@@ -18,17 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.routing;
 
 import com.google.common.collect.Lists;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 public final class DMLTest extends AbstractDynamicRouteSqlTest {
-    
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
     
     @Test
     public void assertInsert() {
