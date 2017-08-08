@@ -1,8 +1,8 @@
-package com.dangdang.ddframe.rdb.common.jaxb.helper;
+package com.dangdang.ddframe.rdb.integrate.jaxb.helper;
 
-import com.dangdang.ddframe.rdb.common.jaxb.SQLAssert;
-import com.dangdang.ddframe.rdb.common.jaxb.SQLAsserts;
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
+import com.dangdang.ddframe.rdb.integrate.jaxb.SQLAssert;
+import com.dangdang.ddframe.rdb.integrate.jaxb.SQLAsserts;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 public class SQLAssertJAXBHelper {
     
@@ -66,16 +64,8 @@ public class SQLAssertJAXBHelper {
     private static Object[] getDataParameter(final SQLAssert sqlAssert) {
         final Object[] result = new Object[4];
         result[0] = sqlAssert.getId();
-        result[1] = sqlAssert.getSql();
-        if (null == sqlAssert.getTypes()) {
-            result[2] = Collections.emptySet();
-        } else {
-            Set<DatabaseType> types = new HashSet<>();
-            for (String each : sqlAssert.getTypes().split(",")) {
-                types.add(DatabaseType.valueOf(each));
-            }
-            result[2] = types;
-        }
+        result[1] = SQLStatementHelper.getSql(sqlAssert.getId());
+        result[2] = SQLStatementHelper.getTypes(sqlAssert.getId());
         result[3] = sqlAssert.getSqlShardingRules();
         return result;
     }

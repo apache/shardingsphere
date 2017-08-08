@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.common.jaxb;
+package com.dangdang.ddframe.rdb.integrate.jaxb;
 
 import lombok.Getter;
 import lombok.Setter;

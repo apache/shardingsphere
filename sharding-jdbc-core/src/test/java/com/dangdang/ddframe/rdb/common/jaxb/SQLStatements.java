@@ -18,20 +18,16 @@
 package com.dangdang.ddframe.rdb.common.jaxb;
 
 import lombok.Getter;
-import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "sqls")
 @Getter
-@Setter
-public final class SQLAssertData {
+public final class SQLStatements {
     
-    @XmlAttribute
-    private String parameter;
-    
-    @XmlAttribute
-    private String expected;
+    @XmlElement(name = "sql")
+    private List<SQLStatement> sqls = new ArrayList<>();
 }

@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.common.base;
 
-import com.dangdang.ddframe.rdb.common.jaxb.SQLAssertData;
-import com.dangdang.ddframe.rdb.common.jaxb.SQLShardingRule;
-import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLAssertJAXBHelper;
+import com.dangdang.ddframe.rdb.integrate.jaxb.SQLAssertData;
+import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
+import com.dangdang.ddframe.rdb.integrate.jaxb.helper.SQLAssertJAXBHelper;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;

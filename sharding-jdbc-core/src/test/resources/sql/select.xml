@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
+    <sql id="assertSelectNotEqualsWithSingleTable" value="SELECT * FROM t_order_item WHERE item_id &lt;&gt; %s ORDER BY item_id" />
     <sql id="assertSelectEqualsWithSingleTable" value="SELECT * FROM t_order WHERE user_id = %s AND order_id = %s" />
     <sql id="assertSelectBetweenWithSingleTable" value="SELECT * FROM t_order WHERE user_id BETWEEN %s AND %s AND order_id BETWEEN %s AND %s ORDER BY user_id, order_id" />
     <sql id="assertSelectInWithSingleTable" value="SELECT * FROM t_order WHERE user_id IN (%s, %s, %s) AND order_id IN (%s, %s) ORDER BY user_id, order_id" />

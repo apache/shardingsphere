@@ -15,19 +15,25 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.common.jaxb;
+package com.dangdang.ddframe.rdb.integrate.jaxb;
 
 import lombok.Getter;
+import lombok.Setter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "sqls")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class SQLAsserts {
+@Setter
+public final class SQLAssert {
     
-    @XmlElement(name = "sql")
-    private List<SQLAssert> sqlAsserts = new ArrayList<>();
+    @XmlAttribute
+    private String id;
+    
+    @XmlElement(name = "sharding-rule")
+    private List<SQLShardingRule> sqlShardingRules;
 }

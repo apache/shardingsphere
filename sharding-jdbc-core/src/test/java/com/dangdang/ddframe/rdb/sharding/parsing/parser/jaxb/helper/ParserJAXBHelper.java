@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.common.jaxb.helper;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.helper;
 
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
@@ -77,7 +77,8 @@ public class ParserJAXBHelper {
             for (Value value : each.getValues()) {
                 if (null != value.getIndex()) {
                     sqlExpressions.add(new SQLPlaceholderExpression(value.getIndex()));
-                } else {
+                }
+                if (null != value.getLiteral()) {
                     Comparable<?> valueWithType = value.getValueWithType();
                     if (valueWithType instanceof Number) {
                         sqlExpressions.add(new SQLNumberExpression((Number) valueWithType));

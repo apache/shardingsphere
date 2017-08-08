@@ -26,6 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseTe
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -48,21 +49,16 @@ public final class SQLParserTest extends AbstractBaseParseSQLTest {
         return AbstractBaseParseTest.dataParameters("parser/assert/");
     }
     
-//    @Test
-//    public void assertStatement() {
-//        for (DatabaseType each : getTypes()) {
-//            assertSQLStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replaceStatement(getSql(), getParameters()), 
-// new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-//                    .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse());
-//        }
-//    }
-//    
     @Test
-    public void assertPreparedStatement() {
+    @Ignore
+    public void assertSQLStatements() {
         for (DatabaseType each : getTypes()) {
             assertSQLStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replacePreparedStatement(getSql()), 
                     new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
                     .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse());
+            assertSQLStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replaceStatement(getSql(), getParameters()),
+                    new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
+                            .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse());
         }
     }
 }

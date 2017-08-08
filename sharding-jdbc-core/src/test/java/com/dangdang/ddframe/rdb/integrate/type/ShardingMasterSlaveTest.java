@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.type;
 
-import com.dangdang.ddframe.rdb.common.jaxb.SQLShardingRule;
+import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.common.base.AbstractSQLAssertTest;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloDatabaseShardingAlgorithm;
