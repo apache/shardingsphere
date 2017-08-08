@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.common.util;
+package com.dangdang.ddframe.rdb.common.jaxb.helper;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssert;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAsserts;
@@ -15,11 +15,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SQLAssertUtil {
+public class IntegrateJAXBHelper {
     
     public static Collection<Object[]> getDataParameters(final String filePath) {
         Collection<Object[]> result = new ArrayList<>();
-        URL url = SQLAssertUtil.class.getClassLoader().getResource(filePath);
+        URL url = IntegrateJAXBHelper.class.getClassLoader().getResource(filePath);
         if (null == url) {
             return Collections.emptyList();
         }

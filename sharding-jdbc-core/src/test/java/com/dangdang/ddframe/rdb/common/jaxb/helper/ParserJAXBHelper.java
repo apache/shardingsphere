@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.common.util;
+package com.dangdang.ddframe.rdb.common.jaxb.helper;
 
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class ParserSQLUtil {
+public class ParserJAXBHelper {
     
     public static String[] getParameters(final Assert assertObj) {
         if (null == assertObj.getParameters()) {

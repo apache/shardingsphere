@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.common.base;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
-import com.dangdang.ddframe.rdb.common.util.SQLAssertUtil;
+import com.dangdang.ddframe.rdb.common.jaxb.helper.IntegrateJAXBHelper;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;
@@ -69,7 +69,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return SQLAssertUtil.getDataParameters("integrate/assert");
+        return IntegrateJAXBHelper.getDataParameters("integrate/assert");
     }
     
     protected abstract ShardingTestStrategy getShardingStrategy();

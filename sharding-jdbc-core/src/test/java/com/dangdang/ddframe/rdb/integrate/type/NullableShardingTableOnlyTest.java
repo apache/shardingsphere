@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.type;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
 import com.dangdang.ddframe.rdb.common.base.AbstractSQLAssertTest;
-import com.dangdang.ddframe.rdb.common.util.SQLAssertUtil;
+import com.dangdang.ddframe.rdb.common.jaxb.helper.IntegrateJAXBHelper;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
@@ -57,7 +57,7 @@ public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
     
     @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return SQLAssertUtil.getDataParameters("integrate/assert/select_aggregate.xml");
+        return IntegrateJAXBHelper.getDataParameters("integrate/assert/select_aggregate.xml");
     }
     
     @Override

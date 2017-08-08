@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertInsertWithAllPlaceholders" sql="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)" parameters="1,1,'insert'">
+    <assert id="assertInsertWithAllPlaceholders" sql="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="1" type="int" />
+            </condition>
+            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                <value index="1" literal="1" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    <assert id="assertInsertWithPartialPlaceholder" sql="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, 'insert')" parameters="1,1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -13,14 +26,4 @@
             </condition>
         </conditions>
     </assert>
-    <!-- // TODO
-    <assert id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )" expected-sql="INSERT INTO [Token(order)] ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )">
-        <tables>
-            <table name="order" />
-        </tables>
-        <condition-contexts>
-           <condition-context/>
-        </condition-contexts>
-    </assert>
-    -->
 </asserts>

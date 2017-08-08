@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.base;
 
-import com.dangdang.ddframe.rdb.common.util.ParserSQLUtil;
+import com.dangdang.ddframe.rdb.common.jaxb.helper.ParserJAXBHelper;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
@@ -119,11 +119,11 @@ public abstract class AbstractBaseParseTest {
         final Object[] result = new Object[7];
         result[0] = assertObj.getId();
         result[1] = assertObj.getSql();
-        result[2] = ParserSQLUtil.getParameters(assertObj);
-        result[3] = ParserSQLUtil.getDatabaseTypes(assertObj);
-        result[4] = ParserSQLUtil.getTables(assertObj);
-        result[5] = ParserSQLUtil.getConditions(assertObj);
-        result[6] = ParserSQLUtil.getSelectStatement(assertObj);
+        result[2] = ParserJAXBHelper.getParameters(assertObj);
+        result[3] = ParserJAXBHelper.getDatabaseTypes(assertObj);
+        result[4] = ParserJAXBHelper.getTables(assertObj);
+        result[5] = ParserJAXBHelper.getConditions(assertObj);
+        result[6] = ParserJAXBHelper.getSelectStatement(assertObj);
         return result;
     }
 }
