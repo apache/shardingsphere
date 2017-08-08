@@ -84,7 +84,7 @@ public abstract class AbstractSoftTransactionIntegrationTest {
             + "`id` int NOT NULL, "
             + "PRIMARY KEY (`id`));";
         try (
-                Connection conn = shardingDataSource.getConnection().getConnection("db_trans", SQLType.SELECT);
+                Connection conn = shardingDataSource.getConnection().getConnection("db_trans", SQLType.DQL);
                 PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {

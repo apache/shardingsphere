@@ -70,7 +70,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     private static boolean isMasterRoute(final SQLType sqlType) {
-        return SQLType.SELECT != sqlType || DML_FLAG.get() || HintManagerHolder.isMasterRouteOnly();
+        return SQLType.DQL != sqlType || DML_FLAG.get() || HintManagerHolder.isMasterRouteOnly();
     }
     
     private static String getMasterDataSourceName(final String dataSourceName) {

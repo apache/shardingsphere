@@ -192,7 +192,7 @@ public final class ExecutorEngine implements AutoCloseable {
     
     private AbstractExecutionEvent getExecutionEvent(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final List<Object> parameters) {
         AbstractExecutionEvent result;
-        if (SQLType.SELECT == sqlType) {
+        if (SQLType.DQL == sqlType) {
             result = new DQLExecutionEvent(baseStatementUnit.getSqlExecutionUnit().getDataSource(), baseStatementUnit.getSqlExecutionUnit().getSql(), parameters);
         } else {
             result = new DMLExecutionEvent(baseStatementUnit.getSqlExecutionUnit().getDataSource(), baseStatementUnit.getSqlExecutionUnit().getSql(), parameters);

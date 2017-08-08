@@ -61,7 +61,7 @@ public final class SelectStatement extends AbstractSQLStatement {
     private Limit limit;
     
     public SelectStatement() {
-        super(SQLType.SELECT);
+        super(SQLType.DQL);
     }
     
     /**

@@ -32,6 +32,6 @@ import lombok.ToString;
 public final class DeleteStatement extends AbstractSQLStatement {
     
     public DeleteStatement() {
-        super(SQLType.DELETE);
+        super(SQLType.DML);
     }
 }

@@ -208,7 +208,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             Collection<Connection> connections;
             SQLType sqlType = routeResult.getSqlStatement().getType();
-            if (SQLType.CREATE == sqlType || SQLType.ALTER == sqlType || SQLType.DROP == sqlType || SQLType.TRUNCATE == sqlType) {
+            if (SQLType.DDL == sqlType) {
                 connections = shardingConnection.getConnectionForDDL(each.getDataSource());
             } else {
                 connections = Collections.singletonList(shardingConnection.getConnection(each.getDataSource(), routeResult.getSqlStatement().getType()));

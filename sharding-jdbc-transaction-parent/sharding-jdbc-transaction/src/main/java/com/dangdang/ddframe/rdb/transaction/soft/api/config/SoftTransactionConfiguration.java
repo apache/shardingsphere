@@ -81,7 +81,7 @@ public class SoftTransactionConfiguration {
         if (!(targetDataSource instanceof ShardingDataSource)) {
             return targetDataSource.getConnection();
         }
-        return ((ShardingDataSource) targetDataSource).getConnection().getConnection(dataSourceName, SQLType.SELECT);
+        return ((ShardingDataSource) targetDataSource).getConnection().getConnection(dataSourceName, SQLType.DQL);
     }
 
     /**

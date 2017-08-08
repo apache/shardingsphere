@@ -163,7 +163,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     }
     
     private SQLType getSqlType() {
-        return ShardingTestStrategy.masterslave == getShardingStrategy() ? SQLType.INSERT : SQLType.SELECT;
+        return ShardingTestStrategy.masterslave == getShardingStrategy() ? SQLType.DML : SQLType.DQL;
     }
     
     // TODO 标准化文件名

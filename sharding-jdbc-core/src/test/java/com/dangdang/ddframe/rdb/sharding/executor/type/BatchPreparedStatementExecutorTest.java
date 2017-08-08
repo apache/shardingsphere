@@ -47,7 +47,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @SuppressWarnings("unchecked")
     @Test
     public void assertNoPreparedStatement() throws SQLException {
-        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, 
+        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DML, 
                 Collections.<BatchPreparedStatementUnit>emptyList(), Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
     }
@@ -57,7 +57,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeBatch()).thenReturn(new int[] {10, 20});
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
-        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, 
+        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DML, 
                 createPreparedStatementUnits(SQL, preparedStatement, "ds_0", 2), Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
         assertThat(actual.executeBatch(), is(new int[] {10, 20}));
         verify(preparedStatement).executeBatch();
@@ -78,7 +78,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement2.executeBatch()).thenReturn(new int[] {20, 40});
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, 
+        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DML, 
                 createPreparedStatementUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2), 
                 Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
         assertThat(actual.executeBatch(), is(new int[] {30, 60}));
@@ -102,7 +102,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         SQLException exp = new SQLException();
         when(preparedStatement.executeBatch()).thenThrow(exp);
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
-        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE,
+        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DML,
                 createPreparedStatementUnits(SQL, preparedStatement, "ds_0", 2), Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement).executeBatch();
@@ -124,7 +124,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement2.executeBatch()).thenThrow(exp);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE,
+        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DML,
                 createPreparedStatementUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2),
                 Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));

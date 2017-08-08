@@ -72,10 +72,10 @@ public final class BestEffortsDeliveryListener {
                     Connection conn = null;
                     PreparedStatement preparedStatement = null;
                     try {
-                        conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLType.UPDATE);
+                        conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLType.DML);
                         if (!isValidConnection(conn)) {
                             bedSoftTransaction.getConnection().release(conn);
-                            conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLType.UPDATE);
+                            conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLType.DML);
                             isNewConnection = true;
                         }
                         preparedStatement = conn.prepareStatement(event.getSql());

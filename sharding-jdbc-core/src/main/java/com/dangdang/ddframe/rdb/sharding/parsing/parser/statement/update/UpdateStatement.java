@@ -30,6 +30,6 @@ import lombok.ToString;
 public final class UpdateStatement extends AbstractSQLStatement {
     
     public UpdateStatement() {
-        super(SQLType.UPDATE);
+        super(SQLType.DML);
     }
 }

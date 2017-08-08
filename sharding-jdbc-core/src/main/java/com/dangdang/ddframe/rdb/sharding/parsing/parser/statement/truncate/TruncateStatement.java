@@ -32,6 +32,6 @@ import lombok.ToString;
 public final class TruncateStatement extends AbstractSQLStatement {
     
     public TruncateStatement() {
-        super(SQLType.TRUNCATE);
+        super(SQLType.DDL);
     }
 }

@@ -32,6 +32,6 @@ import lombok.ToString;
 public final class AlterStatement extends AbstractSQLStatement {
     
     public AlterStatement() {
-        super(SQLType.ALTER);
+        super(SQLType.DDL);
     }
 }

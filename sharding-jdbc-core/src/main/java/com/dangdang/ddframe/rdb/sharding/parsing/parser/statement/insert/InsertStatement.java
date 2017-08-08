@@ -56,7 +56,7 @@ public final class InsertStatement extends AbstractSQLStatement {
     private int valuesListLastPosition;
     
     public InsertStatement() {
-        super(SQLType.INSERT);
+        super(SQLType.DML);
     }
     
     /**

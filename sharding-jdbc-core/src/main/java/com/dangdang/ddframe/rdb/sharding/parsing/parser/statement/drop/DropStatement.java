@@ -32,6 +32,6 @@ import lombok.ToString;
 public final class DropStatement extends AbstractSQLStatement {
     
     public DropStatement() {
-        super(SQLType.DROP);
+        super(SQLType.DDL);
     }
 }

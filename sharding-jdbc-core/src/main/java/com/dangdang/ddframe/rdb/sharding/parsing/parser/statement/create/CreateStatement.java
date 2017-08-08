@@ -32,6 +32,6 @@ import lombok.ToString;
 public final class CreateStatement extends AbstractSQLStatement {
     
     public CreateStatement() {
-        super(SQLType.CREATE);
+        super(SQLType.DDL);
     }
 }

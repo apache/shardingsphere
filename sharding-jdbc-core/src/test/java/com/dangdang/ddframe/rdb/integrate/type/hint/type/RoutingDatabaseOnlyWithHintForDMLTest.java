@@ -167,7 +167,7 @@ public class RoutingDatabaseOnlyWithHintForDMLTest extends AbstractRoutingDataba
     private void assertDataSet(final ShardingConnection connection, final DatabaseType type, final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/hint/expect/%s/db_%s.xml", expectedDataSetPattern, i),
-                    connection.getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT),
+                    connection.getConnection(String.format("dataSource_db_%s", i), SQLType.DQL),
                     replacePreparedStatement(DatabaseTestSQL.ASSERT_SELECT_WITH_STATUS_SQL), type, status);
         }
     }

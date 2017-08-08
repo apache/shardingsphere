@@ -50,7 +50,7 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
     private void insert() {
         String dbSchema = "insert into transaction_test(id) values (1)";
         try (
-                Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLType.INSERT);
+                Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLType.DML);
                 PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {
@@ -62,7 +62,7 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
         String dbSchema = "select * from `transaction_test`;";
         int id = 0;
         try (
-                Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLType.SELECT);
+                Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLType.DQL);
                 PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {

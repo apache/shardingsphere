@@ -123,7 +123,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         for (SQLExecutionUnit each : getRouteResult().getExecutionUnits()) {
             SQLType sqlType = getRouteResult().getSqlStatement().getType();
             Collection<PreparedStatement> preparedStatements;
-            if (SQLType.CREATE == sqlType || SQLType.ALTER == sqlType || SQLType.DROP == sqlType || SQLType.TRUNCATE == sqlType) {
+            if (SQLType.DDL == sqlType) {
                 preparedStatements = generatePreparedStatementForDDL(each);
             } else {
                 preparedStatements = Collections.singletonList(generatePreparedStatement(each));
