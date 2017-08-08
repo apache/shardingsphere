@@ -166,7 +166,7 @@ TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;).actual
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/01-start/limitations/</guid>
       <description> JDBC未支持列表 Sharding-JDBC暂时未支持不常用的JDBC方法。
 DataSource接口  不支持timeout相关操作  Connection接口  不支持存储过程，函数，游标的操作 不支持执行native的SQL 不支持savepoint相关操作 不支持Schema/Catalog的操作 不支持自定义类型映射  Statement和PreparedStatement接口  不支持返回多结果集的语句（即存储过程，非SELECT多条数据） 不支持国际化字符的操作  对于ResultSet接口  不支持对于结果集指针位置判断 不支持通过非next方法改变结果指针位置 不支持修改结果集内容 不支持获取国际化字符 不支持获取Array  JDBC 4.1  不支持JDBC 4.1接口新功能  查询所有未支持方法，请阅读com.dangdang.ddframe.rdb.sharding.jdbc.unsupported包。
-SQL语句限制 不支持DDL语句 有限支持子查询 不支持HAVING 不支持OR，UNION 和 UNION ALL 不支持特殊INSERT 每条INSERT语句只能插入一条数据，不支持VALUES后有多行数据的语句
+SQL语句限制 有限支持子查询 不支持HAVING 不支持OR，UNION 和 UNION ALL 不支持特殊INSERT 每条INSERT语句只能插入一条数据，不支持VALUES后有多行数据的语句
 不支持DISTINCT聚合 不支持dual虚拟表 </description>
     </item>
     
@@ -176,7 +176,7 @@ SQL语句限制 不支持DDL语句 有限支持子查询 不支持HAVING 不支�
       <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
       
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/03-design/roadmap/</guid>
-      <description> 已完成 数据库  MySQL Oracle SQLServer PostgreSQL  DQL  JOIN BETWEEN IN ORDER BY GROUP BY COUNT, SUM, MAX, MIN, AVG LIMIT, rownum, TOP 非功能型子查询  DML  INSERT INTO INSERT SET UPDATE DELETE  配置  Java API Spring命名空间 Yaml (仅读写分离未完成)  SQL解析  词法分析 语法分析  SQL改写  正确性改写 优化改写  访问路由  Hint路由 简单路由 笛卡尔积路由  结果归并  流式归并 内存归并 装饰者归并  分库分表  分库 分表 动态表 默认数据源  读写分离  读写分离 同一线程且同一数据库连接内一致性保证 Hint强制主库路由  分布式主键  JDBC集成 分布式主键策略接口 基于snowflake的分布式主键算法实现  柔性事务  最大努力送达型  计划中 配置  读写分离独立化 Binding策略提升 集中化 动态化  治理  数据源健康检测及发现 数据源动态切换 流量控制  待定 DQL  DISTINCT HAVING OR UNION, UNION ALL 全子查询 计算表达式，如：SUM(pv) / COUNT(uv) 通过SQL注释指定SQL Hint  DML  INSERT INTO VALUES (xxx), (xxx) 多表UPDATE 多表DELETE  DDL  CREATE ALTER DROP TRUNCATE  SQL解析提升  批量解析 冗余括号 通过SQL注释指定SQL Hint  柔性事务提升  TCC  运维工具  字典表复制广播 建表工具 动态扩容  </description>
+      <description> 已完成 数据库  MySQL Oracle SQLServer PostgreSQL  DQL  JOIN BETWEEN IN ORDER BY GROUP BY COUNT, SUM, MAX, MIN, AVG LIMIT, rownum, TOP 非功能型子查询  DML  INSERT INTO INSERT SET UPDATE DELETE  DDL  CREATE ALTER DROP TRUNCATE  配置  Java API Spring命名空间 Yaml (仅读写分离未完成)  SQL解析  词法分析 语法分析  SQL改写  正确性改写 优化改写  访问路由  Hint路由 简单路由 笛卡尔积路由  结果归并  流式归并 内存归并 装饰者归并  分库分表  分库 分表 动态表 默认数据源  读写分离  读写分离 同一线程且同一数据库连接内一致性保证 Hint强制主库路由  分布式主键  JDBC集成 分布式主键策略接口 基于snowflake的分布式主键算法实现  柔性事务  最大努力送达型  计划中 配置  读写分离独立化 Binding策略提升 集中化 动态化  治理  数据源健康检测及发现 数据源动态切换 流量控制  待定 DQL  DISTINCT HAVING OR UNION, UNION ALL 全子查询 计算表达式，如：SUM(pv) / COUNT(uv) 通过SQL注释指定SQL Hint  DML  INSERT INTO VALUES (xxx), (xxx) 多表UPDATE 多表DELETE  DDL  CREATE VIEW CREATE INDEX CREATE OR REPLACE  SQL解析提升  批量解析 冗余括号 通过SQL注释指定SQL Hint  柔性事务提升  TCC  运维工具  字典表复制广播 动态扩容  </description>
     </item>
     
     <item>
