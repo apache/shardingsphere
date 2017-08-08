@@ -34,12 +34,12 @@ import java.util.List;
 
 /**
  * MySQL的INSERT语句访问器.
- * 
+ *
  * @author gaohongtao
  * @author zhangliang
  */
 public class MySQLInsertVisitor extends AbstractMySQLVisitor {
-    
+
     @Override
     public boolean visit(final MySqlInsertStatement x) {
         final String tableName = SQLUtil.getExactlyValue(x.getTableName().toString());
@@ -52,7 +52,7 @@ public class MySQLInsertVisitor extends AbstractMySQLVisitor {
         List<SQLExpr> values = x.getValues().getValues();
         for (int i = 0; i < x.getColumns().size(); i++) {
             String columnName = SQLUtil.getExactlyValue(columns.get(i).toString());
-            getParseContext().addCondition(columnName, tableName, BinaryOperator.EQUAL, values.get(i), getDatabaseType(), getParameters());
+            getParseContext().addCondition(columnName, tableName, BinaryOperator.EQUAL, values.get(i), getDatabaseType(), super.inputParameters);
             if (autoIncrementColumns.contains(columnName)) {
                 autoIncrementColumns.remove(columnName);
             }
@@ -63,7 +63,7 @@ public class MySQLInsertVisitor extends AbstractMySQLVisitor {
         supplyAutoIncrementColumn(autoIncrementColumns, tableName, columns, values);
         return super.visit(x);
     }
-    
+
     private void supplyAutoIncrementColumn(final Collection<String> autoIncrementColumns, final String tableName, final List<SQLExpr> columns, final List<SQLExpr> values) {
         boolean isPreparedStatement = !getParameters().isEmpty();
         GeneratedKeyContext generatedKeyContext = getParseContext().getParsedResult().getGeneratedKeyContext();
@@ -78,7 +78,7 @@ public class MySQLInsertVisitor extends AbstractMySQLVisitor {
             if (isPreparedStatement) {
                 sqlExpr = new SQLVariantRefExpr("?");
                 getParameters().add(id);
-                ((SQLVariantRefExpr) sqlExpr).setIndex(getParameters().size() - 1);
+                ((SQLVariantRefExpr) sqlExpr).setIndex(super.inputParameters.size() - 1);
             } else {
                 sqlExpr = (id instanceof Number) ? new SQLNumberExpr((Number) id) : new SQLCharExpr((String) id);
             }

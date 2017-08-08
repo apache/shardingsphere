@@ -6,4 +6,22 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sharding-jdbc-example-config-spring-masterslave</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dangdang</groupId>
+            <artifactId>sharding-jdbc-transaction</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>22.0</version>
+        </dependency>
+
+    </dependencies>
 </project>

@@ -3,24 +3,28 @@
     <parent>
         <groupId>com.dangdang</groupId>
         <artifactId>sharding-jdbc-transaction-parent</artifactId>
-        <version>1.4.2.0-M1</version>
+        <version>1.4.2.0.M1</version>
     </parent>
     <artifactId>sharding-jdbc-transaction</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
+
         <dependency>
             <groupId>com.dangdang</groupId>
             <artifactId>sharding-jdbc-core</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.dangdang</groupId>
             <artifactId>sharding-jdbc-transaction-storage</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.dangdang</groupId>
             <artifactId>elastic-job-core</artifactId>
         </dependency>
+
     </dependencies>
 </project>

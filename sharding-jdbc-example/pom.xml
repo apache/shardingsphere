@@ -23,7 +23,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         
-        <sharding-jdbc.version>1.4.2</sharding-jdbc.version>
+        <sharding-jdbc.version>1.4.2.0.M1</sharding-jdbc.version>
         
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <mysql-connector-java.version>5.1.30</mysql-connector-java.version>
@@ -42,8 +42,31 @@
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
-    
+
+    <!-- 默认仓库地址 -->
+    <repositories>
+
+        <repository>
+            <id>bluepay</id>
+            <name>com.bluepay</name>
+            <url>http://192.168.4.216:8081/nexus/content/groups/public/</url>
+        </repository>
+
+
+        <repository>
+            <id>aliyun</id>
+            <name>com.aliyun</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+        </repository>
+
+
+    </repositories>
+
+
     <dependencies>
+
+
+
         <dependency>
             <groupId>com.dangdang</groupId>
             <artifactId>sharding-jdbc-core</artifactId>
@@ -104,6 +127,17 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.dangdang</groupId>
+                <artifactId>sharding-jdbc-config-common</artifactId>
+                <version>${sharding-jdbc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dangdang</groupId>
+                <artifactId>sharding-jdbc-transaction-storage</artifactId>
+                <version>1.4.2.0.M1</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.mybatis</groupId>
                 <artifactId>mybatis</artifactId>
                 <version>${mybatis.version}</version>
@@ -160,7 +194,11 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
+
+
+
+
     <build>
         <plugins>
             <plugin>

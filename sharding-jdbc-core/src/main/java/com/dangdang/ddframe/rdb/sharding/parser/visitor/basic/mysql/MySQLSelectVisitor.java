@@ -20,13 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLLimit;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
-import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
-import com.alibaba.druid.sql.ast.expr.SQLAllColumnExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
-import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
-import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
+import com.alibaba.druid.sql.ast.expr.*;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
@@ -174,7 +168,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
                 printToken(Limit.OFFSET_NAME, String.valueOf(offset));
                 print(", ");
             } else {
-                offset = ((Number) getParameters().get(((SQLVariantRefExpr) x.getOffset()).getIndex())).intValue();
+                offset = ((Number) super.inputParameters.get(((SQLVariantRefExpr) x.getOffset()).getIndex())).intValue();
                 offSetIndex = ((SQLVariantRefExpr) x.getOffset()).getIndex();
                 print("?, ");
             }
@@ -186,7 +180,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
             rowCount = ((SQLNumericLiteralExpr) x.getRowCount()).getNumber().intValue();
             printToken(Limit.COUNT_NAME, String.valueOf(rowCount));
         } else {
-            rowCount = ((Number) getParameters().get(((SQLVariantRefExpr) x.getRowCount()).getIndex())).intValue();
+            rowCount = ((Number) super.inputParameters.get(((SQLVariantRefExpr) x.getRowCount()).getIndex())).intValue();
             rowCountIndex = ((SQLVariantRefExpr) x.getRowCount()).getIndex();
             print("?");
         }

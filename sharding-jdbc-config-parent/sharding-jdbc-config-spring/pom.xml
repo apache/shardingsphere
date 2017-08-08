@@ -3,7 +3,7 @@
     <parent>
         <artifactId>sharding-jdbc-config-parent</artifactId>
         <groupId>com.dangdang</groupId>
-        <version>1.4.2.0-M1</version>
+        <version>1.4.2.0.M1</version>
     </parent>
     <artifactId>sharding-jdbc-config-spring</artifactId>
     <dependencies>
