@@ -39,6 +39,15 @@ public final class Conditions {
     }
     
     /**
+     * 判断条件对象是否为空.
+     * 
+     * @return 条件对象是否为空
+     */
+    public boolean isEmpty() {
+        return conditions.isEmpty();
+    }
+    
+    /**
      * 查找条件对象.
      *
      * @param column 列对象

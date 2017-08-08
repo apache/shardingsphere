@@ -73,7 +73,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         DatabaseShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
         List<ShardingValue<?>> shardingValues = HintManagerHolder.isUseShardingHint() ? getDatabaseShardingValuesFromHint(strategy.getShardingColumns())
                 : getShardingValues(strategy.getShardingColumns());
-        Collection<String> result = strategy.doStaticSharding(sqlStatement.getType(), tableRule.getActualDatasourceNames(), shardingValues);
+        Collection<String> result = strategy.doStaticSharding(tableRule.getActualDatasourceNames(), shardingValues);
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         return result;
     }
@@ -82,8 +82,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         TableShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
         List<ShardingValue<?>> shardingValues = HintManagerHolder.isUseShardingHint() ? getTableShardingValuesFromHint(strategy.getShardingColumns())
                 : getShardingValues(strategy.getShardingColumns());
-        Collection<String> result = tableRule.isDynamic() ? strategy.doDynamicSharding(shardingValues)
-                : strategy.doStaticSharding(sqlStatement.getType(), tableRule.getActualTableNames(routedDataSource), shardingValues);
+        Collection<String> result = tableRule.isDynamic() ? strategy.doDynamicSharding(shardingValues) : strategy.doStaticSharding(tableRule.getActualTableNames(routedDataSource), shardingValues);
         Preconditions.checkState(!result.isEmpty(), "no table route info");
         return result;
     }
