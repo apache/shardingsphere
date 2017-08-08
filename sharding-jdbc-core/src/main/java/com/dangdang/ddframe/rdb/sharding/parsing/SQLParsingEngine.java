@@ -28,14 +28,14 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.Postg
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.alter.AlterParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.create.CreateParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.DeleteParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.drop.DropParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.truncate.TruncateParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.UpdateParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter.AlterParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.create.CreateParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete.DeleteParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.drop.DropParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.InsertParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.truncate.TruncateParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.UpdateParserFactory;
 import lombok.RequiredArgsConstructor;
 
 /**

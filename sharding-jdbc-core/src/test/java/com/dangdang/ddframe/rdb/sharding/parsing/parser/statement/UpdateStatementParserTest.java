@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.UpdateStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.UpdateStatement;
 import com.google.common.collect.Range;
 import org.junit.Test;
 

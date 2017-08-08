@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.AbstractUpdateParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.AbstractUpdateParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 
 /**

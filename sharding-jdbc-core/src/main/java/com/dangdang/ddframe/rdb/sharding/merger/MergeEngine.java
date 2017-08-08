@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByStreamResultSetMe
 import com.dangdang.ddframe.rdb.sharding.merger.iterator.IteratorStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.limit.LimitDecoratorResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByStreamResultSetMerger;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 
 import java.sql.ResultSet;

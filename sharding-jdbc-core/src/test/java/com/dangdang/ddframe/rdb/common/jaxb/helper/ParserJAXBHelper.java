@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GroupByColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Value;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;

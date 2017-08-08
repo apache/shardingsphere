@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.DeleteStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete.DeleteStatement;
 import com.google.common.collect.Range;
 import org.junit.Test;
 

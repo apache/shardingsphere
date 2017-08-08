@@ -6,7 +6,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condit
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 
 import java.util.Set;
