@@ -106,15 +106,24 @@ public final class ExecutorEngine {
 
     private <I, O> ListenableFuture<List<O>> asyncRun(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
         List<ListenableFuture<O>> result = new ArrayList<>(inputs.size());
-        for (final I each : inputs) {
+        inputs.parallelStream().forEachOrdered(item -> {
             result.add(executorService.submit(new Callable<O>() {
-
                 @Override
                 public O call() throws Exception {
-                    return executeUnit.execute(each);
+                    return executeUnit.execute(item);
                 }
             }));
-        }
+        });
+
+//        for (final I each : inputs) {
+//            result.add(executorService.submit(new Callable<O>() {
+//
+//                @Override
+//                public O call() throws Exception {
+//                    return executeUnit.execute(each);
+//                }
+//            }));
+//        }
         return Futures.allAsList(result);
     }
 

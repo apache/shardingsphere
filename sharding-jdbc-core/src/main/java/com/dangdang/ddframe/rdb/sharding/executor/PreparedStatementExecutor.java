@@ -32,27 +32,27 @@ import java.util.Map;
 
 /**
  * 多线程执行预编译语句对象请求的执行器.
- * 
+ *
  * @author zhangliang
  * @author caohao
  */
 public final class PreparedStatementExecutor {
-    
+
     private final ExecutorEngine executorEngine;
-    
+
     private final Collection<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers;
-    
+
     private final EventPostman eventPostman;
-    
+
     public PreparedStatementExecutor(final ExecutorEngine executorEngine, final Collection<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers) {
         this.executorEngine = executorEngine;
         this.preparedStatementExecutorWrappers = preparedStatementExecutorWrappers;
         this.eventPostman = new EventPostman(preparedStatementExecutorWrappers);
     }
-    
+
     /**
      * 执行SQL查询.
-     * 
+     *
      * @return 结果集列表
      */
     public List<ResultSet> executeQuery() {
@@ -66,7 +66,7 @@ public final class PreparedStatementExecutor {
                 return Collections.singletonList(executeQueryInternal(preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap));
             }
             result = executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, ResultSet>() {
-        
+
                 @Override
                 public ResultSet execute(final PreparedStatementExecutorWrapper input) throws Exception {
                     synchronized (input.getPreparedStatement().getConnection()) {
@@ -79,7 +79,7 @@ public final class PreparedStatementExecutor {
         }
         return result;
     }
-    
+
     private ResultSet executeQueryInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper,
                                            final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         ResultSet result;
@@ -95,10 +95,10 @@ public final class PreparedStatementExecutor {
         eventPostman.postExecutionEventsAfterExecution(preparedStatementExecutorWrapper);
         return result;
     }
-    
+
     /**
      * 执行SQL更新.
-     * 
+     *
      * @return 更新数量
      */
     public int executeUpdate() {
@@ -111,7 +111,7 @@ public final class PreparedStatementExecutor {
                 return executeUpdateInternal(preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap);
             }
             return executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, Integer>() {
-        
+
                 @Override
                 public Integer execute(final PreparedStatementExecutorWrapper input) throws Exception {
                     synchronized (input.getPreparedStatement().getConnection()) {
@@ -119,7 +119,7 @@ public final class PreparedStatementExecutor {
                     }
                 }
             }, new MergeUnit<Integer, Integer>() {
-        
+
                 @Override
                 public Integer merge(final List<Integer> results) {
                     if (null == results) {
@@ -136,14 +136,14 @@ public final class PreparedStatementExecutor {
             MetricsContext.stop(context);
         }
     }
-    
+
     private int executeUpdateInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper,
                                       final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         try {
-            result =  preparedStatementExecutorWrapper.getPreparedStatement().executeUpdate();
+            result = preparedStatementExecutorWrapper.getPreparedStatement().executeUpdate();
         } catch (final SQLException ex) {
             eventPostman.postExecutionEventsAfterExecution(preparedStatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE, Optional.of(ex));
             ExecutorExceptionHandler.handleException(ex);
@@ -152,10 +152,10 @@ public final class PreparedStatementExecutor {
         eventPostman.postExecutionEventsAfterExecution(preparedStatementExecutorWrapper);
         return result;
     }
-    
+
     /**
      * 执行SQL请求.
-     * 
+     *
      * @return true表示执行DQL, false表示执行的DML
      */
     public boolean execute() {
@@ -169,7 +169,7 @@ public final class PreparedStatementExecutor {
                 return executeInternal(preparedStatementExecutorWrapper, isExceptionThrown, dataMap);
             }
             List<Boolean> result = executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, Boolean>() {
-        
+
                 @Override
                 public Boolean execute(final PreparedStatementExecutorWrapper input) throws Exception {
                     synchronized (input.getPreparedStatement().getConnection()) {
@@ -182,7 +182,7 @@ public final class PreparedStatementExecutor {
             MetricsContext.stop(context);
         }
     }
-    
+
     private boolean executeInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper,
                                     final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         boolean result;
@@ -198,13 +198,13 @@ public final class PreparedStatementExecutor {
         eventPostman.postExecutionEventsAfterExecution(preparedStatementExecutorWrapper);
         return result;
     }
-    
-    
+
+
     /**
      * 执行批量接口.
      *
-     * @return 每个
      * @param batchSize 批量执行语句总数
+     * @return 每个
      */
     public int[] executeBatch(final int batchSize) {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
@@ -216,7 +216,7 @@ public final class PreparedStatementExecutor {
                 return executeBatchInternal(preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap);
             }
             return executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, int[]>() {
-                
+
                 @Override
                 public int[] execute(final PreparedStatementExecutorWrapper input) throws Exception {
                     synchronized (input.getPreparedStatement().getConnection()) {
@@ -224,14 +224,18 @@ public final class PreparedStatementExecutor {
                     }
                 }
             }, new MergeUnit<int[], int[]>() {
-                
+
                 @Override
                 public int[] merge(final List<int[]> results) {
                     if (null == results) {
                         return new int[]{0};
                     }
                     int[] result = new int[batchSize];
+
                     int i = 0;
+
+//                    results.stream().findFirst().orElse(null);
+
                     for (PreparedStatementExecutorWrapper each : preparedStatementExecutorWrappers) {
                         for (Integer[] indices : each.getBatchIndices()) {
                             result[indices[0]] += results.get(i)[indices[1]];
@@ -245,7 +249,7 @@ public final class PreparedStatementExecutor {
             MetricsContext.stop(context);
         }
     }
-    
+
     private int[] executeBatchInternal(final PreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int[] result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
