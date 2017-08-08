@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.common.base;
 
-import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
-import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
-import com.dangdang.ddframe.rdb.common.jaxb.helper.IntegrateJAXBHelper;
+import com.dangdang.ddframe.rdb.common.jaxb.SQLAssertData;
+import com.dangdang.ddframe.rdb.common.jaxb.SQLShardingRule;
+import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLAssertJAXBHelper;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;
@@ -59,9 +59,9 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     private final Set<DatabaseType> types;
     
-    private final List<SqlShardingRule> shardingRules;
+    private final List<SQLShardingRule> shardingRules;
     
-    protected AbstractSQLAssertTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> shardingRules) {
+    protected AbstractSQLAssertTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SQLShardingRule> shardingRules) {
         this.sql = sql;
         this.types = types;
         this.shardingRules = shardingRules;
@@ -69,7 +69,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return IntegrateJAXBHelper.getDataParameters("integrate/assert");
+        return SQLAssertJAXBHelper.getDataParameters("integrate/assert");
     }
     
     protected abstract ShardingTestStrategy getShardingStrategy();
@@ -105,11 +105,11 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     }
     
     private void executeAndAssertSQL(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource) throws MalformedURLException, SQLException, DatabaseUnitException {
-        for (SqlShardingRule sqlShardingRule : shardingRules) {
+        for (SQLShardingRule sqlShardingRule : shardingRules) {
             if (!needAssert(sqlShardingRule)) {
                 continue;
             }
-            for (SqlAssertData each : sqlShardingRule.getData()) {
+            for (SQLAssertData each : sqlShardingRule.getData()) {
                 String strategyName = getShardingStrategy().name();
                 // TODO DML和DQL保持一直，去掉DML中XML名称里面的placeholder
                 String expected = null == each.getExpected() ? "integrate/dataset/EmptyTable.xml"
@@ -128,7 +128,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
     }
     
-    private boolean needAssert(final SqlShardingRule sqlShardingRule) {
+    private boolean needAssert(final SQLShardingRule sqlShardingRule) {
         String shardingRules = sqlShardingRule.getValue();
         if (null == shardingRules) {
             return true;
@@ -141,7 +141,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return false;
     }
     
-    private void assertSelectSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SqlAssertData data, final File expectedDataSetFile)
+    private void assertSelectSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SQLAssertData data, final File expectedDataSetFile)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
             executeQueryWithPreparedStatement(shardingDataSource, getParameters(data), expectedDataSetFile);
@@ -150,7 +150,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
     }
     
-    private void assertDmlSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SqlAssertData data, final File expectedDataSetFile)
+    private void assertDmlSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SQLAssertData data, final File expectedDataSetFile)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
             executeWithPreparedStatement(shardingDataSource, getParameters(data));
@@ -185,7 +185,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return result;
     }
     
-    private List<String> getParameters(final SqlAssertData data) {
+    private List<String> getParameters(final SQLAssertData data) {
         return Strings.isNullOrEmpty(data.getParameter()) ? Collections.<String>emptyList() : Lists.newArrayList(data.getParameter().split(","));
     }
     

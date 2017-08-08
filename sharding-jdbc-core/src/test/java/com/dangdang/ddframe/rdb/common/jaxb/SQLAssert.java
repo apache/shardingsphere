@@ -22,15 +22,24 @@ import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
 import java.util.List;
 
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class SqlParameters {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class SQLAssert {
     
-    @XmlElement
-    private List<SqlAssertData> parameter = new ArrayList<>();
+    @XmlAttribute
+    private String id;
+    
+    @XmlAttribute(name = "value")
+    private String sql;
+    
+    @XmlAttribute(name = "type")
+    private String types;
+    
+    @XmlElement(name = "sharding-rule")
+    private List<SQLShardingRule> sqlShardingRules;
 }

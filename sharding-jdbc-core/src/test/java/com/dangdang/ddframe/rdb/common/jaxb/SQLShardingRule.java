@@ -18,16 +18,22 @@
 package com.dangdang.ddframe.rdb.common.jaxb;
 
 import lombok.Getter;
+import lombok.Setter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "sqls")
 @Getter
-public final class SqlAsserts {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class SQLShardingRule {
     
-    @XmlElement(name = "sql")
-    private List<SqlAssert> sqlAsserts = new ArrayList<>();
+    @XmlAttribute(name = "value")
+    private String value;
+    
+    @XmlElement
+    private List<SQLAssertData> data;
 }

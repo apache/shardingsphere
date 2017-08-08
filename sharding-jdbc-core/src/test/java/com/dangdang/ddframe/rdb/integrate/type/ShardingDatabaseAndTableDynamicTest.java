@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.type;
 
-import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
+import com.dangdang.ddframe.rdb.common.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.common.base.AbstractSQLAssertTest;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyDynamicModuloTableShardingAlgorithm;
@@ -49,7 +49,7 @@ public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
     
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
-    public ShardingDatabaseAndTableDynamicTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
+    public ShardingDatabaseAndTableDynamicTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, types, sqlShardingRules);
     }
     

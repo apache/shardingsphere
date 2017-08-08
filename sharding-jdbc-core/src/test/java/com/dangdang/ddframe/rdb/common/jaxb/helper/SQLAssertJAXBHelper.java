@@ -1,7 +1,7 @@
 package com.dangdang.ddframe.rdb.common.jaxb.helper;
 
-import com.dangdang.ddframe.rdb.common.jaxb.SqlAssert;
-import com.dangdang.ddframe.rdb.common.jaxb.SqlAsserts;
+import com.dangdang.ddframe.rdb.common.jaxb.SQLAssert;
+import com.dangdang.ddframe.rdb.common.jaxb.SQLAsserts;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 
 import javax.xml.bind.JAXBContext;
@@ -15,11 +15,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class IntegrateJAXBHelper {
+public class SQLAssertJAXBHelper {
     
     public static Collection<Object[]> getDataParameters(final String filePath) {
         Collection<Object[]> result = new ArrayList<>();
-        URL url = IntegrateJAXBHelper.class.getClassLoader().getResource(filePath);
+        URL url = SQLAssertJAXBHelper.class.getClassLoader().getResource(filePath);
         if (null == url) {
             return Collections.emptyList();
         }
@@ -47,7 +47,7 @@ public class IntegrateJAXBHelper {
     }
     
     private static Collection<Object[]> dataParameters(final File file) {
-        SqlAsserts asserts = loadSqlAsserts(file);
+        SQLAsserts asserts = loadSqlAsserts(file);
         Object[][] result = new Object[asserts.getSqlAsserts().size()][1];
         for (int i = 0; i < asserts.getSqlAsserts().size(); i++) {
             result[i] = getDataParameter(asserts.getSqlAsserts().get(i));
@@ -55,15 +55,15 @@ public class IntegrateJAXBHelper {
         return Arrays.asList(result);
     }
     
-    private static SqlAsserts loadSqlAsserts(final File file) {
+    private static SQLAsserts loadSqlAsserts(final File file) {
         try {
-            return (SqlAsserts) JAXBContext.newInstance(SqlAsserts.class).createUnmarshaller().unmarshal(file);
+            return (SQLAsserts) JAXBContext.newInstance(SQLAsserts.class).createUnmarshaller().unmarshal(file);
         } catch (final JAXBException ex) {
             throw new RuntimeException(ex);
         }
     }
     
-    private static Object[] getDataParameter(final SqlAssert sqlAssert) {
+    private static Object[] getDataParameter(final SQLAssert sqlAssert) {
         final Object[] result = new Object[4];
         result[0] = sqlAssert.getId();
         result[1] = sqlAssert.getSql();
