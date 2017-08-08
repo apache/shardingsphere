@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertInsertWithAllPlaceholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)">
+    <sql id="assertInsertWithAllPlaceholders">
         <sharding-rule>
             <data parameter="1,1,'insert'" expected="insert/%s_1.xml" />
             <data parameter="2,2,'insert'" expected="insert/%s_2.xml" />
@@ -14,7 +14,7 @@
             <data parameter="10,10,'insert'" expected="insert/%s_0.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertInsertWithPartialPlaceholder" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, 'insert')">
+    <sql id="assertInsertWithPartialPlaceholder">
         <sharding-rule>
             <data parameter="1,1" expected="insert/%s_1.xml" />
             <data parameter="2,2" expected="insert/%s_2.xml" />
@@ -28,7 +28,7 @@
             <data parameter="10,10" expected="insert/%s_0.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertUpdateWithAlias" value="UPDATE t_order AS o SET o.status = %s WHERE o.order_id = %s AND o.user_id = %s" type="MySQL,H2">
+    <sql id="assertUpdateWithAlias">
         <sharding-rule value="tbl">
             <data parameter="'update',1000,10" expected="update/%s_0.xml" />
             <data parameter="'update',1001,10" expected="update/%s_1.xml" />
@@ -66,7 +66,7 @@
             <data parameter="'update',1909,19" expected="update/%s_9.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertUpdateWithoutAlias" value="UPDATE t_order SET status = %s WHERE order_id = %s AND user_id = %s">
+    <sql id="assertUpdateWithoutAlias">
         <sharding-rule value="tbl">
             <data parameter="'update',1000,10" expected="update/%s_0.xml" />
             <data parameter="'update',1001,10" expected="update/%s_1.xml" />
@@ -104,7 +104,7 @@
             <data parameter="'update',1909,19" expected="update/%s_9.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertDeleteWithoutAlias" value="DELETE FROM t_order WHERE order_id = %s AND user_id = %s AND status=%s">
+    <sql id="assertDeleteWithoutAlias">
         <sharding-rule value="tbl">
             <data parameter="1000,10,'init'" expected="delete/%s_0.xml" />
             <data parameter="1001,10,'init'" expected="delete/%s_1.xml" />
@@ -154,7 +154,7 @@
             <data parameter="1909,19,'init_master'" expected="delete/%s_9.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertDeleteWithoutShardingValue" value="DELETE FROM t_order WHERE status=%s">
+    <sql id="assertDeleteWithoutShardingValue">
         <sharding-rule value="masterslave">
             <data parameter="'init_master'" expected="delete/%s.xml" />
         </sharding-rule>
