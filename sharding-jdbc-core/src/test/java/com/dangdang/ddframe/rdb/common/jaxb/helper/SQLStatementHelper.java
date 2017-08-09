@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,15 +25,27 @@ public class SQLStatementHelper {
     }
     
     private static void loadSqlStatements() {
-        File filePath = new File(SQLAssertJAXBHelper.class.getClassLoader().getResource("sql").getPath());
+        URL url = SQLAssertJAXBHelper.class.getClassLoader().getResource("sql");
+        if (url == null) {
+            return;
+        }
+        File filePath = new File(url.getPath());
         if (!filePath.exists()) {
             return;
         }
-        for (File each : filePath.listFiles()) {
+        File[] files = filePath.listFiles();
+        if (null == files) {
+            return;
+        }
+        for (File each : files) {
             try {
                 SQLStatements statements = (SQLStatements) JAXBContext.newInstance(SQLStatements.class).createUnmarshaller().unmarshal(each);
                 for (SQLStatement statement : statements.getSqls()) {
-                    statementMap.put(statement.getId(), statement);
+                    String id = statement.getId();
+                    if (statementMap.containsKey(id)) {
+                        throw new RuntimeException("Existed sql assert id with:" + id);
+                    }
+                    statementMap.put(id, statement);
                 }
             } catch (final JAXBException ex) {
                 throw new RuntimeException(ex);
