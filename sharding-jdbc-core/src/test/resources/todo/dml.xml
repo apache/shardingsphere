@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertInsertWithParameterAndGenerateKeyColumnIsShardingColumn" sql="insert into `order`('state') values(?)">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="state" table-name="order" operator="EQUAL">
+                <value index="0"/>
+            </condition>
+        </conditions>
+    </assert>
+    <assert id="assertInsertWithParameterAndGenerateKeyColumn" sql="insert into `payment`('state') values(?)">
+        <tables>
+            <table name="payment" />
+        </tables>
+        <conditions>
+            <condition column-name="state" table-name="payment" operator="EQUAL">
+                <value index="0" />
+            </condition>
+        </conditions>
+    </assert>
+    <assert id="assertInsertWithGenerateKeyColumn" sql="insert into `order`('state') values('RUNNING')">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="state" table-name="order" operator="EQUAL">
+                <value literal="RUNNING" type="java.lang.String" />
+            </condition>
+        </conditions>
+    </assert>
+
+    <assert id="assertInsertWithoutGenerateKeyColumn" sql="insert into `user`('user_id', 'state') values(1, 'RUNNING')">
+        <tables>
+            <table name="user" />
+        </tables>
+        <conditions>
+            <condition column-name="user_id" table-name="user" operator="EQUAL">
+                <value literal="1" type="java.lang.Integer" />
+            </condition>
+            <condition column-name="state" table-name="user" operator="EQUAL">
+                <value literal="RUNNING" type="java.lang.String" />
+            </condition>
+        </conditions>
+    </assert>
+    <assert id="assertUpdate" sql="update `order` set 'state'='STOPPED' where order_id in (1, 2, 3)">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="IN">
+                <value literal="1" type="java.lang.Integer" />
+                <value literal="2" type="java.lang.Integer" />
+                <value literal="3" type="java.lang.Integer" />
+            </condition>
+        </conditions>
+    </assert>
+    <assert id="assertDelete" sql="DELETE FROM `order` WHERE order_id IN (1, 2, 3)">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="IN">
+                <value literal="1" type="java.lang.Integer" />
+                <value literal="2" type="java.lang.Integer" />
+                <value literal="3" type="java.lang.Integer" />
+            </condition>
+        </conditions>
+    </assert>
+    <assert id="assertDeleteWithAlias" sql="DELETE FROM `order` o WHERE order_id BETWEEN 1 AND 3">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="BETWEEN">
+                <value literal="1" type="java.lang.Integer" />
+                <value literal="3" type="java.lang.Integer" />
+            </condition>
+        </conditions>
+    </assert>
+    <!-- // TODO
+    <assert id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )" expected-sql="INSERT INTO [Token(order)] ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )">
+        <tables>
+            <table name="order" />
+        </tables>
+        <condition-contexts>
+           <condition-context/>
+        </condition-contexts>
+    </assert>
+    -->
+</asserts>
