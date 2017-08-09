@@ -232,6 +232,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertRewriteForDerivedOrderBy() {
+        selectStatement.setGroupByLastPosition(61);
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderType.ASC, Optional.<String>absent()));
         selectStatement.getOrderByItems().add(new OrderItem("x", "name", OrderType.DESC, Optional.<String>absent()));
         selectStatement.getSqlTokens().add(new TableToken(25, "table_x"));
