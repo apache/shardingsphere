@@ -34,8 +34,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     public void query() {
-        if (getSqlParser().equalAny(DefaultKeyword.SELECT)) {
-            getSqlParser().getLexer().nextToken();
+        if (getSqlParser().skipIfEqual(DefaultKeyword.SELECT)) {
             parseDistinct();
             parseSelectList();
         }
