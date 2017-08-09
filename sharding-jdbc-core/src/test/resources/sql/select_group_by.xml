@@ -8,4 +8,5 @@
     <sql id="assertSelectOrderByDescWithGroupBy" value="SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY orders_sum DESC" />
     <sql id="assertSelectCountWithoutGroupedColumn" value="SELECT count(*) as items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s GROUP BY o.user_id" />
     <sql id="assertSelectCountWithGroupByBindingTable" value="SELECT count(*) as items_count, o.user_id FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s GROUP BY o.user_id" />
+    <sql id="assertSelectWithGroupByAndLimit" value="SELECT user_id FROM t_order GROUP BY user_id LIMIT %s" type="H2,MySQL,PostgreSQL" />
 </sqls>

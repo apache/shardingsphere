@@ -90,7 +90,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof OffsetToken) {
                 appendLimitOffsetToken(result, (OffsetToken) each, count, sqlTokens, isRewriteLimit);
             } else if (each instanceof OrderByToken) {
-                appendOrderByToken(result);
+                appendOrderByToken(result, count, sqlTokens);
             }
             count++;
         }
@@ -147,7 +147,7 @@ public final class SQLRewriteEngine {
         sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
     }
     
-    private void appendOrderByToken(final SQLBuilder sqlBuilder) {
+    private void appendOrderByToken(final SQLBuilder sqlBuilder, final int count, final List<SQLToken> sqlTokens) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         StringBuilder orderByLiterals = new StringBuilder(" ORDER BY ");
         int i = 0;
@@ -161,6 +161,9 @@ public final class SQLRewriteEngine {
         }
         orderByLiterals.append(" ");
         sqlBuilder.appendLiterals(orderByLiterals.toString());
+        int beginPosition = ((SelectStatement) sqlStatement).getGroupByLastPosition();
+        int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
+        sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
     }
     
     /**

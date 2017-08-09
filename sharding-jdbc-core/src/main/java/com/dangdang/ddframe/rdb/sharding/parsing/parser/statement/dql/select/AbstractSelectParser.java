@@ -252,7 +252,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
                 throw new UnsupportedOperationException("Cannot support Having");
             }
-            selectStatement.setGroupByLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition());
+            selectStatement.setGroupByLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - getSqlParser().getLexer().getCurrentToken().getLiterals().length());
         } else if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
             throw new UnsupportedOperationException("Cannot support Having");
         }
