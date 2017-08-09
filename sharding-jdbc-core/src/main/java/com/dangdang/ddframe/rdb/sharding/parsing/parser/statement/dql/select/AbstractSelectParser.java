@@ -96,9 +96,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return selectStatement;
     }
     
-    protected final void parseDistinct() {
+    private void parseDistinct() {
         if (sqlParser.equalAny(DefaultKeyword.DISTINCT, DefaultKeyword.DISTINCTROW, DefaultKeyword.UNION)) {
-            selectStatement.setDistinct(true);
             sqlParser.getLexer().nextToken();
             if (hasDistinctOn() && sqlParser.equalAny(DefaultKeyword.ON)) {
                 sqlParser.getLexer().nextToken();

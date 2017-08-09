@@ -41,8 +41,6 @@ import java.util.Map;
 @ToString(callSuper = true)
 public final class SelectStatement extends DQLStatement {
     
-    private boolean distinct;
-    
     private boolean containStar;
     
     private int selectListLastPosition;
