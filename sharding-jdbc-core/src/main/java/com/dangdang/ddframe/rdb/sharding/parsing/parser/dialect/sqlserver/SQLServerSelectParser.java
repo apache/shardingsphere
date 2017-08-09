@@ -88,6 +88,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     protected SelectItem parseRowNumberSelectItem() {
         getSqlParser().getLexer().nextToken();
         if (getSqlParser().equalAny(Symbol.LEFT_PAREN)) {
+            setInSubQuery(false);
             getSqlParser().skipUntil(DefaultKeyword.OVER);
             getSqlParser().getLexer().nextToken();
             getSqlParser().skipIfEqual(Symbol.LEFT_PAREN);

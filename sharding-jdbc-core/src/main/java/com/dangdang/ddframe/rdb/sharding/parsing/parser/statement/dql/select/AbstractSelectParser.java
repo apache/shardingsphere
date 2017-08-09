@@ -70,6 +70,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     @Setter
     private int parametersIndex;
     
+    @Setter
     private boolean isInSubQuery;
     
     private boolean appendDerivedColumnsFlag;
@@ -345,6 +346,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     protected final void parseTableFactor() {
         int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
+        sqlParser.skipAll(DefaultKeyword.AS);
         String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
         sqlParser.getLexer().nextToken();
         // TODO 包含Schema解析
