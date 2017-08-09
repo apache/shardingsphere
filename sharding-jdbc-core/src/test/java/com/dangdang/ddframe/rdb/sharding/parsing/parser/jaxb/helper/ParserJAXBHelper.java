@@ -3,24 +3,15 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.helper;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
-import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GroupByColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByColumn;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Value;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -29,7 +20,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -63,45 +53,6 @@ public class ParserJAXBHelper {
         for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Table each : assertObj.getTables().getTables()) {
             Table table = new Table(each.getName(), Optional.fromNullable(each.getAlias()));
             result.add(table);
-        }
-        return result;
-    }
-    
-    public static Conditions getConditions(final Assert assertObj) {
-        Conditions result = new Conditions();
-        if (null == assertObj.getConditions()) {
-            return result;
-        }
-        for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Condition each : assertObj.getConditions().getConditions()) {
-            List<SQLExpression> sqlExpressions = new LinkedList<>();
-            for (Value value : each.getValues()) {
-                if (null != value.getIndex()) {
-                    sqlExpressions.add(new SQLPlaceholderExpression(value.getIndex()));
-                }
-                if (null != value.getLiteral()) {
-                    Comparable<?> valueWithType = value.getValueWithType();
-                    if (valueWithType instanceof Number) {
-                        sqlExpressions.add(new SQLNumberExpression((Number) valueWithType));
-                    } else {
-                        sqlExpressions.add(new SQLTextExpression(valueWithType.toString()));
-                    }
-                }
-            }
-            Condition condition;
-            switch (ShardingOperator.valueOf(each.getOperator().toUpperCase())) {
-                case EQUAL:
-                    condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0));
-                    break;
-                case BETWEEN:
-                    condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0), sqlExpressions.get(1));
-                    break;
-                case IN:
-                    condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions);
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-            result.add(condition);
         }
         return result;
     }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectNotEqualsWithSingleTable" parameters="1">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <order-by-columns>
+            <order-by-column name="item_id" order-by-type="ASC" />
+        </order-by-columns>
+    </assert>
+    <assert id="assertSelectEqualsWithSingleTable" parameters="1,1">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="1" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                <value index="1" literal="1" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+</asserts>

@@ -17,15 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.base;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.helper.ParserJAXBHelper;
+import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Asserts;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Conditions;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.helper.ParserJAXBHelper;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import lombok.AccessLevel;
@@ -90,9 +91,9 @@ public abstract class AbstractBaseParseTest {
         }
     }
     
-    protected static Collection<Object[]> dataParameters(final String path) {
+    protected static Collection<Object[]> dataParameters() {
         Collection<Object[]> result = new ArrayList<>();
-        for (File each : new File(AbstractBaseParseTest.class.getClassLoader().getResource(path).getPath()).listFiles()) {
+        for (File each : new File(AbstractBaseParseTest.class.getClassLoader().getResource("parser/assert/").getPath()).listFiles()) {
             result.addAll(dataParameters(each));
         }
         return result;
@@ -118,11 +119,11 @@ public abstract class AbstractBaseParseTest {
     private static Object[] getDataParameter(final Assert assertObj) {
         final Object[] result = new Object[7];
         result[0] = assertObj.getId();
-        result[1] = assertObj.getSql();
+        result[1] = SQLStatementHelper.getSql(assertObj.getId());
         result[2] = ParserJAXBHelper.getParameters(assertObj);
         result[3] = ParserJAXBHelper.getDatabaseTypes(assertObj);
         result[4] = ParserJAXBHelper.getTables(assertObj);
-        result[5] = ParserJAXBHelper.getConditions(assertObj);
+        result[5] = assertObj.getConditions();
         result[6] = ParserJAXBHelper.getSelectStatement(assertObj);
         return result;
     }
