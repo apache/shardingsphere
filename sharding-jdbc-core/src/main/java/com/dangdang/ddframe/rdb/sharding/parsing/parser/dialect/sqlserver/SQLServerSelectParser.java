@@ -42,19 +42,8 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    public void query() {
-        if (getSqlParser().skipIfEqual(DefaultKeyword.SELECT)) {
-            parseDistinct();
-            parseTop();
-            parseSelectList();
-        }
-        if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
-            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
-        }
-        parseFrom();
-        parseWhere();
-        parseGroupBy();
-        queryRest();
+    protected void parseBetweenSelectAndList() {
+        parseTop();
     }
     
     private void parseTop() {
@@ -110,6 +99,13 @@ public class SQLServerSelectParser extends AbstractSelectParser {
             return result;
         }
         return new CommonSelectItem("ROW_NUMBER", getSqlParser().parseAlias());
+    }
+    
+    @Override
+    protected final void skipToFrom() {
+        if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
+            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
+        }
     }
     
     @Override

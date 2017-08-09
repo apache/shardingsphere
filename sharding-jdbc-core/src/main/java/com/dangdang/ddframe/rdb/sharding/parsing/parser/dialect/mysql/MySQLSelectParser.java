@@ -39,23 +39,24 @@ public class MySQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    public void query() {
-        if (getSqlParser().skipIfEqual(DefaultKeyword.SELECT)) {
-            parseDistinct();
-            getSqlParser().skipAll(MySQLKeyword.HIGH_PRIORITY, DefaultKeyword.STRAIGHT_JOIN, MySQLKeyword.SQL_SMALL_RESULT, MySQLKeyword.SQL_BIG_RESULT, MySQLKeyword.SQL_BUFFER_RESULT,
-                    MySQLKeyword.SQL_CACHE, MySQLKeyword.SQL_NO_CACHE, MySQLKeyword.SQL_CALC_FOUND_ROWS);
-            parseSelectList();
-            skipToFrom();
+    protected void parseBetweenSelectAndList() {
+        getSqlParser().skipAll(MySQLKeyword.HIGH_PRIORITY, DefaultKeyword.STRAIGHT_JOIN, MySQLKeyword.SQL_SMALL_RESULT, MySQLKeyword.SQL_BIG_RESULT, MySQLKeyword.SQL_BUFFER_RESULT,
+                MySQLKeyword.SQL_CACHE, MySQLKeyword.SQL_NO_CACHE, MySQLKeyword.SQL_CALC_FOUND_ROWS);
+    }
+    
+    @Override
+    protected final void skipToFrom() {
+        while (!getSqlParser().equalAny(DefaultKeyword.FROM) && !getSqlParser().equalAny(Assist.END)) {
+            getSqlParser().getLexer().nextToken();
         }
-        parseFrom();
-        parseWhere();
-        parseGroupBy();
-        parseOrderBy();
+    }
+    
+    @Override
+    protected void customizedQuery() {
         parseLimit();
         if (getSqlParser().equalAny(DefaultKeyword.PROCEDURE)) {
             throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
         }
-        queryRest();
     }
     
     private void parseLimit() {
@@ -149,12 +150,6 @@ public class MySQLSelectParser extends AbstractSelectParser {
         result.setRowCount(new LimitValue(value, index));
         result.setOffset(new LimitValue(offsetValue, offsetIndex));
         return result;
-    }
-    
-    private void skipToFrom() {
-        while (!getSqlParser().equalAny(DefaultKeyword.FROM) && !getSqlParser().equalAny(Assist.END)) {
-            getSqlParser().getLexer().nextToken();
-        }
     }
     
     @Override
