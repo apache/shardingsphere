@@ -49,7 +49,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedBetweenWhereAndGroupBy() {
+    protected final void customizedBetweenWhereAndGroupBy() {
         skipHierarchicalQueryClause();
     }
     

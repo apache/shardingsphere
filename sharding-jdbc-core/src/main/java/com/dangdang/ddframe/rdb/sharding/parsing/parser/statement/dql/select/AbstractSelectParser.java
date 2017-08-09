@@ -93,9 +93,9 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         parseGroupBy();
         customizedBetweenGroupByAndOrderBy();
         parseOrderBy();
-        customizedQuery();
-        queryRest();
         customizedSelect();
+        processUnsupportedTokens();
+        // TODO move to rewrite
         appendDerivedColumns();
         appendDerivedOrderBy();
         return selectStatement;
@@ -345,7 +345,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected final void parseTableFactor() {
-        int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
+        final int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
         sqlParser.skipAll(DefaultKeyword.AS);
         String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
         sqlParser.getLexer().nextToken();
@@ -387,16 +387,12 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
     }
     
-    protected void customizedQuery() {
-    }
+    protected abstract void customizedSelect();
     
-    protected final void queryRest() {
+    private void processUnsupportedTokens() {
         if (sqlParser.equalAny(DefaultKeyword.UNION, DefaultKeyword.EXCEPT, DefaultKeyword.INTERSECT, DefaultKeyword.MINUS)) {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
-    }
-    
-    protected void customizedSelect() {
     }
     
     private void appendDerivedColumns() {

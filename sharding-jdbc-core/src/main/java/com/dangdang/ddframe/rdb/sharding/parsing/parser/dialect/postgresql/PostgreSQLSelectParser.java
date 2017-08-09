@@ -47,7 +47,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedQuery() {
+    protected final void customizedSelect() {
         if (getSqlParser().equalAny(PostgreSQLKeyword.WINDOW)) {
             throw new SQLParsingUnsupportedException(PostgreSQLKeyword.WINDOW);
         }
