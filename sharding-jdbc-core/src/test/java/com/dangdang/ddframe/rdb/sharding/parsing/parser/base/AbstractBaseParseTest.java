@@ -93,7 +93,7 @@ public abstract class AbstractBaseParseTest {
     
     protected static Collection<Object[]> dataParameters() {
         Collection<Object[]> result = new ArrayList<>();
-        for (File each : new File(AbstractBaseParseTest.class.getClassLoader().getResource("parser/assert/").getPath()).listFiles()) {
+        for (File each : new File(AbstractBaseParseTest.class.getClassLoader().getResource("parser/").getPath()).listFiles()) {
             result.addAll(dataParameters(each));
         }
         return result;
