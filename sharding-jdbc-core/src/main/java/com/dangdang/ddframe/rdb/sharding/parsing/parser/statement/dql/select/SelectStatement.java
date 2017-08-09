@@ -45,8 +45,6 @@ public final class SelectStatement extends DQLStatement {
     
     private boolean containStar;
     
-    private boolean containSubQuery;
-    
     private int selectListLastPosition;
     
     private int groupByLastPosition;
