@@ -17,6 +17,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -100,28 +101,31 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     }
     
     private void assertOrderBy(final SelectStatement actual) {
+        Iterator<OrderItem> orderByColumns = getExpectedOrderByColumns().iterator();
         for (OrderItem each : actual.getOrderByItems()) {
-            assertTrue(new ReflectionEquals(getExpectedOrderByColumns().next()).matches(each));
+            assertTrue(new ReflectionEquals(orderByColumns.next()).matches(each));
         }
-        assertFalse(getExpectedOrderByColumns().hasNext());
+        assertFalse(orderByColumns.hasNext());
     }
     
     private void assertGroupBy(final SelectStatement actual) {
+        Iterator<OrderItem> groupByColumns = getExpectedGroupByColumns().iterator();
         for (OrderItem each : actual.getGroupByItems()) {
-            assertTrue(new ReflectionEquals(getExpectedGroupByColumns().next()).matches(each));
+            assertTrue(new ReflectionEquals(groupByColumns.next()).matches(each));
         }
-        assertFalse(getExpectedGroupByColumns().hasNext());
+        assertFalse(groupByColumns.hasNext());
     }
     
     private void assertAggregationSelectItem(final SelectStatement actual) {
+        Iterator<AggregationSelectItem> aggregationSelectItems = getExpectedAggregationSelectItems().iterator();
         for (AggregationSelectItem each : actual.getAggregationSelectItems()) {
-            AggregationSelectItem expected = getExpectedAggregationSelectItems().next();
+            AggregationSelectItem expected = aggregationSelectItems.next();
             assertTrue(new ReflectionEquals(expected, "derivedAggregationSelectItems").matches(each));
             for (int i = 0; i < each.getDerivedAggregationSelectItems().size(); i++) {
                 assertTrue(new ReflectionEquals(expected.getDerivedAggregationSelectItems().get(i)).matches(each.getDerivedAggregationSelectItems().get(i)));
             }
         }
-        assertFalse(getExpectedAggregationSelectItems().hasNext());
+        assertFalse(aggregationSelectItems.hasNext());
     }
     
     private void assertLimit(final SelectStatement actual) {

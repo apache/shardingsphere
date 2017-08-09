@@ -38,7 +38,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public abstract class AbstractBaseParseTest {
@@ -59,13 +59,13 @@ public abstract class AbstractBaseParseTest {
     private final Conditions expectedConditions;
     
     @Getter(AccessLevel.PROTECTED)
-    private final Iterator<OrderItem> expectedOrderByColumns;
+    private final List<OrderItem> expectedOrderByColumns;
     
     @Getter(AccessLevel.PROTECTED)
-    private final Iterator<OrderItem> expectedGroupByColumns;
+    private final List<OrderItem> expectedGroupByColumns;
     
     @Getter(AccessLevel.PROTECTED)
-    private final Iterator<AggregationSelectItem> expectedAggregationSelectItems;
+    private final List<AggregationSelectItem> expectedAggregationSelectItems;
     
     @Getter(AccessLevel.PROTECTED)
     private final Limit expectedLimit;
@@ -79,9 +79,9 @@ public abstract class AbstractBaseParseTest {
         this.expectedTables = expectedTables;
         this.expectedConditions = expectedConditions;
         if (expectedSQLStatement instanceof SelectStatement) {
-            expectedOrderByColumns = ((SelectStatement) expectedSQLStatement).getOrderByItems().iterator();
-            expectedGroupByColumns = ((SelectStatement) expectedSQLStatement).getGroupByItems().iterator();
-            expectedAggregationSelectItems = ((SelectStatement) expectedSQLStatement).getAggregationSelectItems().iterator();
+            expectedOrderByColumns = ((SelectStatement) expectedSQLStatement).getOrderByItems();
+            expectedGroupByColumns = ((SelectStatement) expectedSQLStatement).getGroupByItems();
+            expectedAggregationSelectItems = ((SelectStatement) expectedSQLStatement).getAggregationSelectItems();
             expectedLimit = ((SelectStatement) expectedSQLStatement).getLimit();
         } else {
             expectedOrderByColumns = null;
