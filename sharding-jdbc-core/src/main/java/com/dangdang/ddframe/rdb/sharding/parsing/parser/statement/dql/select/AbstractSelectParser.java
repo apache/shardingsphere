@@ -77,9 +77,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     @Override
     public final SelectStatement parse() {
-        getSqlParser().getLexer().nextToken();
-        parseDistinct();
-        parseBetweenSelectAndList();
+        sqlParser.getLexer().nextToken();
+        parseBetweenSelectAndSelectList();
         parseSelectList();
         skipToFrom();
         parseFrom();
@@ -96,23 +95,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return selectStatement;
     }
     
-    private void parseDistinct() {
-        if (sqlParser.equalAny(DefaultKeyword.DISTINCT, DefaultKeyword.DISTINCTROW, DefaultKeyword.UNION)) {
-            sqlParser.getLexer().nextToken();
-            if (hasDistinctOn() && sqlParser.equalAny(DefaultKeyword.ON)) {
-                sqlParser.getLexer().nextToken();
-                sqlParser.skipParentheses();
-            }
-        } else if (sqlParser.equalAny(DefaultKeyword.ALL)) {
-            sqlParser.getLexer().nextToken();
-        }
-    }
-    
-    protected boolean hasDistinctOn() {
-        return false;
-    }
-    
-    protected void parseBetweenSelectAndList() {
+    protected void parseBetweenSelectAndSelectList() {
     }
     
     protected final void parseSelectList() {

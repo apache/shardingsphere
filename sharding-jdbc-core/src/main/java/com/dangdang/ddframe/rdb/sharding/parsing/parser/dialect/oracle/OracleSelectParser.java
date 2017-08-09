@@ -33,6 +33,11 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
+    protected void parseBetweenSelectAndSelectList() {
+        getSqlParser().skipAll(DefaultKeyword.ALL, DefaultKeyword.DISTINCT, DefaultKeyword.UNIQUE);
+    }
+    
+    @Override
     protected final void skipToFrom() {
         if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
             throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());

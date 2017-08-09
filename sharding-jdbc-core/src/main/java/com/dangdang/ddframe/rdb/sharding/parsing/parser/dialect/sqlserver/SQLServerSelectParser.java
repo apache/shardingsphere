@@ -42,7 +42,8 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void parseBetweenSelectAndList() {
+    protected void parseBetweenSelectAndSelectList() {
+        getSqlParser().skipAll(DefaultKeyword.ALL, DefaultKeyword.DISTINCT);
         parseTop();
     }
     
@@ -66,9 +67,10 @@ public class SQLServerSelectParser extends AbstractSelectParser {
         } else {
             throw new SQLParsingException(getSqlParser().getLexer());
         }
-        if (getSqlParser().skipIfEqual(SQLServerKeyword.PERCENT)) {
-            return;
+        if (getSqlParser().equalAny(SQLServerKeyword.PERCENT)) {
+            throw new SQLParsingUnsupportedException(SQLServerKeyword.PERCENT);
         }
+        getSqlParser().skipIfEqual(DefaultKeyword.WITH, SQLServerKeyword.TIES);
         if (null == getSelectStatement().getLimit()) {
             Limit limit = new Limit(false);
             limit.setRowCount(rowCountValue);

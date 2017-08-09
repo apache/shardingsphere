@@ -39,9 +39,9 @@ public class MySQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void parseBetweenSelectAndList() {
-        getSqlParser().skipAll(MySQLKeyword.HIGH_PRIORITY, DefaultKeyword.STRAIGHT_JOIN, MySQLKeyword.SQL_SMALL_RESULT, MySQLKeyword.SQL_BIG_RESULT, MySQLKeyword.SQL_BUFFER_RESULT,
-                MySQLKeyword.SQL_CACHE, MySQLKeyword.SQL_NO_CACHE, MySQLKeyword.SQL_CALC_FOUND_ROWS);
+    protected void parseBetweenSelectAndSelectList() {
+        getSqlParser().skipAll(DefaultKeyword.ALL, DefaultKeyword.DISTINCT, DefaultKeyword.DISTINCTROW, MySQLKeyword.HIGH_PRIORITY, DefaultKeyword.STRAIGHT_JOIN, MySQLKeyword.SQL_SMALL_RESULT, 
+                MySQLKeyword.SQL_BIG_RESULT, MySQLKeyword.SQL_BUFFER_RESULT, MySQLKeyword.SQL_CACHE, MySQLKeyword.SQL_NO_CACHE, MySQLKeyword.SQL_CALC_FOUND_ROWS);
     }
     
     @Override
