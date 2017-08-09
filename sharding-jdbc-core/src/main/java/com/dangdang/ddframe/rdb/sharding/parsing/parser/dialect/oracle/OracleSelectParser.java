@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
@@ -191,21 +190,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    public final void parseTable() {
-        if (getSqlParser().skipIfEqual(Symbol.LEFT_PAREN)) {
-            if (!getSelectStatement().getTables().isEmpty()) {
-                throw new UnsupportedOperationException("Cannot support subquery for nested tables.");
-            }
-            setInSubQuery(true);
-            getSelectStatement().setContainStar(false);
-            getSqlParser().skipUselessParentheses();
-            parse();
-            getSqlParser().skipUselessParentheses();
-            if (getSqlParser().equalAny(DefaultKeyword.WHERE, Assist.END)) {
-                return;
-            }
-        }
-        setInSubQuery(false);
+    protected void customizedParseTableFactor() {
         if (getSqlParser().skipIfEqual(OracleKeyword.ONLY)) {
             getSqlParser().skipIfEqual(Symbol.LEFT_PAREN);
             parseQueryTableExpression();
@@ -216,7 +201,6 @@ public class OracleSelectParser extends AbstractSelectParser {
             skipPivotClause();
             skipFlashbackQueryClause();
         }
-        parseJoinTable();
     }
     
     private void parseQueryTableExpression() {
