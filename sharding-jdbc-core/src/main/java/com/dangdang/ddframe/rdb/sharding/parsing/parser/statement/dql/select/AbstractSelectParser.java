@@ -77,15 +77,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     @Override
     public final SelectStatement parse() {
-        query();
-        parseOrderBy();
-        customizedSelect();
-        appendDerivedColumns();
-        appendDerivedOrderBy();
-        return selectStatement;
-    }
-    
-    protected final void query() {
         getSqlParser().getLexer().nextToken();
         parseDistinct();
         parseBetweenSelectAndList();
@@ -99,6 +90,10 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         parseOrderBy();
         customizedQuery();
         queryRest();
+        customizedSelect();
+        appendDerivedColumns();
+        appendDerivedOrderBy();
+        return selectStatement;
     }
     
     protected final void parseDistinct() {
