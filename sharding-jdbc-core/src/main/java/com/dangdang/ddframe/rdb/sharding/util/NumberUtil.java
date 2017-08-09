@@ -40,8 +40,14 @@ public final class NumberUtil {
      * @return 四舍五入后的整形值
      */
     public static int roundHalfUp(final Object obj) {
+        if (obj instanceof Short) {
+            return (short) obj;
+        }
         if (obj instanceof Integer) {
             return (int) obj;
+        }
+        if (obj instanceof Long) {
+            return ((Long) obj).intValue();
         }
         if (obj instanceof Double) {
             return new BigDecimal((double) obj).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();

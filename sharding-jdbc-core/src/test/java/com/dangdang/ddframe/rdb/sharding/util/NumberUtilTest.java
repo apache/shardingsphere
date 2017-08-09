@@ -28,9 +28,23 @@ import static org.junit.Assert.assertThat;
 public final class NumberUtilTest {
     
     @Test
+    public void assertRoundHalfUpWithShort() {
+        short i = 1;
+        short j = 2;
+        assertThat(NumberUtil.roundHalfUp(i), is(1));
+        assertThat(NumberUtil.roundHalfUp(j), is(2));
+    }
+    
+    @Test
     public void assertRoundHalfUpWithInteger() {
         assertThat(NumberUtil.roundHalfUp(1), is(1));
         assertThat(NumberUtil.roundHalfUp(2), is(2));
+    }
+    
+    @Test
+    public void assertRoundHalfUpWithLong() {
+        assertThat(NumberUtil.roundHalfUp(1L), is(1));
+        assertThat(NumberUtil.roundHalfUp(2L), is(2));
     }
     
     @Test
