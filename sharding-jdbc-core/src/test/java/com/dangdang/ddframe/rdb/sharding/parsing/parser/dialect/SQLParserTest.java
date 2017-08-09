@@ -25,6 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseSQ
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Conditions;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,8 +40,8 @@ public final class SQLParserTest extends AbstractBaseParseSQLTest {
     
     public SQLParserTest(
             final String testCaseName, final String sql, final String[] parameters, final Set<DatabaseType> types,
-            final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
-        super(testCaseName, sql, parameters, types, expectedTables, expectedConditions, expectedSQLStatement);
+            final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement, final Limit expectedLimit) {
+        super(testCaseName, sql, parameters, types, expectedTables, expectedConditions, expectedSQLStatement, expectedLimit);
     }
     
     @Parameters(name = "{0}")

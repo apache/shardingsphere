@@ -4,8 +4,6 @@ import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
@@ -103,16 +101,6 @@ public class ParserJAXBHelper {
                         }
                     });
             result.getItems().addAll(selectItems);
-        }
-        if (null != assertObj.getLimit()) {
-            Limit limit = new Limit(true);
-            if (null != assertObj.getLimit().getOffset() && null != assertObj.getLimit().getOffsetParameterIndex()) {
-                limit.setRowCount(new LimitValue(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
-                limit.setOffset(new LimitValue(assertObj.getLimit().getOffset(), assertObj.getLimit().getOffsetParameterIndex()));
-            } else {
-                limit.setRowCount(new LimitValue(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
-            }
-            result.setLimit(limit);
         }
         return result;
     }

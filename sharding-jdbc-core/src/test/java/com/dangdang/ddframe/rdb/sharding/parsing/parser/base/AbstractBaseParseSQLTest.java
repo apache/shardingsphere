@@ -6,6 +6,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
@@ -29,8 +31,9 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     
     protected AbstractBaseParseSQLTest(
             final String testCaseName, final String sql, final String[] parameters, final Set<DatabaseType> types, 
-            final Tables expectedTables, final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
-        super(testCaseName, sql, parameters, types, expectedTables, expectedConditions, expectedSQLStatement);
+            final Tables expectedTables, final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Conditions expectedConditions, 
+            final SQLStatement expectedSQLStatement, final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit expectedLimit) {
+        super(testCaseName, sql, parameters, types, expectedTables, expectedConditions, expectedSQLStatement, expectedLimit);
     }
     
     protected final void assertStatement(final SQLStatement actual) {
@@ -48,7 +51,7 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
             assertOrderBy((SelectStatement) actual);
             assertGroupBy((SelectStatement) actual);
             assertAggregationSelectItem((SelectStatement) actual);
-            assertLimit((SelectStatement) actual);
+            assertLimit((SelectStatement) actual, isPreparedStatement);
         }
     }
     
@@ -100,6 +103,32 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
         return result;
     }
     
+    private Limit buildExpectedLimit(final boolean isPreparedStatement) {
+        com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit limit = getExpectedLimit();
+        if (null == limit) {
+            return null;
+        }
+        Limit result = new Limit(true);
+        if (isPreparedStatement) {
+            if (null != limit.getOffsetParameterIndex()) {
+                result.setOffset(new LimitValue(-1, limit.getOffsetParameterIndex()));
+            }
+            if (null != limit.getRowCountParameterIndex()) {
+                result.setRowCount(new LimitValue(-1, limit.getRowCountParameterIndex()));
+            }
+        } else {
+            if (null != limit.getOffset()) {
+                result.setOffset(new LimitValue(limit.getOffset(), -1));
+                
+            }
+            if (null != limit.getRowCount()) {
+                result.setRowCount(new LimitValue(limit.getRowCount(), -1));
+            }
+        }
+        return result;
+    }
+    
+    
     private void assertOrderBy(final SelectStatement actual) {
         Iterator<OrderItem> orderByColumns = getExpectedOrderByColumns().iterator();
         for (OrderItem each : actual.getOrderByItems()) {
@@ -128,13 +157,13 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
         assertFalse(aggregationSelectItems.hasNext());
     }
     
-    private void assertLimit(final SelectStatement actual) {
+    private void assertLimit(final SelectStatement actual, final boolean isPreparedStatement) {
         if (null != actual.getLimit()) {
             if (null != actual.getLimit().getOffset()) {
-                assertTrue(new ReflectionEquals(getExpectedLimit().getOffset()).matches(actual.getLimit().getOffset()));
+                assertTrue(new ReflectionEquals(buildExpectedLimit(isPreparedStatement).getOffset()).matches(actual.getLimit().getOffset()));
             }
             if (null != actual.getLimit().getRowCount()) {
-                assertTrue(new ReflectionEquals(getExpectedLimit().getRowCount()).matches(actual.getLimit().getRowCount()));
+                assertTrue(new ReflectionEquals(buildExpectedLimit(isPreparedStatement).getRowCount()).matches(actual.getLimit().getRowCount()));
             }
         }
     }

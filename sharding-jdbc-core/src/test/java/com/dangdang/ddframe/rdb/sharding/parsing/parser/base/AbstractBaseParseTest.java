@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.base;
 import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Assert;
@@ -72,22 +72,21 @@ public abstract class AbstractBaseParseTest {
     
     protected AbstractBaseParseTest(
             final String testCaseName, final String sql, final String[] parameters, final Set<DatabaseType> types, 
-            final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
+            final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement, final Limit expectedLimit) {
         this.sql = sql;
         this.parameters = parameters;
         this.types = types;
         this.expectedTables = expectedTables;
         this.expectedConditions = expectedConditions;
+        this.expectedLimit = expectedLimit;
         if (expectedSQLStatement instanceof SelectStatement) {
             expectedOrderByColumns = ((SelectStatement) expectedSQLStatement).getOrderByItems();
             expectedGroupByColumns = ((SelectStatement) expectedSQLStatement).getGroupByItems();
             expectedAggregationSelectItems = ((SelectStatement) expectedSQLStatement).getAggregationSelectItems();
-            expectedLimit = ((SelectStatement) expectedSQLStatement).getLimit();
         } else {
             expectedOrderByColumns = null;
             expectedGroupByColumns = null;
             expectedAggregationSelectItems = null;
-            expectedLimit = null;
         }
     }
     
@@ -117,7 +116,7 @@ public abstract class AbstractBaseParseTest {
     }
     
     private static Object[] getDataParameter(final Assert assertObj) {
-        final Object[] result = new Object[7];
+        final Object[] result = new Object[8];
         result[0] = assertObj.getId();
         result[1] = SQLStatementHelper.getSql(assertObj.getId());
         result[2] = ParserJAXBHelper.getParameters(assertObj);
@@ -125,6 +124,7 @@ public abstract class AbstractBaseParseTest {
         result[4] = ParserJAXBHelper.getTables(assertObj);
         result[5] = assertObj.getConditions();
         result[6] = ParserJAXBHelper.getSelectStatement(assertObj);
+        result[7] = assertObj.getLimit();
         return result;
     }
 }
