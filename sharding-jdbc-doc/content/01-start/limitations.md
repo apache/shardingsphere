@@ -47,3 +47,4 @@ Sharding-JDBC暂时未支持不常用的JDBC方法。
 每条INSERT语句只能插入一条数据，不支持VALUES后有多行数据的语句
 ###  不支持DISTINCT聚合
 ###  不支持dual虚拟表
+###  不支持SELECT LAST_INSERT_ID()
