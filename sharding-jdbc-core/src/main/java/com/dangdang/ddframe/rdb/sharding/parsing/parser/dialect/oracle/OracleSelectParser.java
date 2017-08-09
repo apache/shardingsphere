@@ -33,16 +33,6 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedSelect() {
-        if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
-            skipForUpdate();
-        }
-        if (getSelectStatement().getOrderByItems().isEmpty()) {
-            parseOrderBy();
-        }
-    }
-    
-    @Override
     public void query() {
         if (getSqlParser().equalAny(DefaultKeyword.SELECT)) {
             getSqlParser().getLexer().nextToken();
@@ -132,7 +122,7 @@ public class OracleSelectParser extends AbstractSelectParser {
         skipCellReferenceOptions();
         skipModelRulesClause();
     }
-
+    
     private void skipModelRulesClause() {
         if (getSqlParser().skipIfEqual(OracleKeyword.RULES)) {
             getSqlParser().skipIfEqual(DefaultKeyword.UPDATE);
@@ -162,9 +152,19 @@ public class OracleSelectParser extends AbstractSelectParser {
             }
         }
     }
-
+    
     private void skipModelColumnClause() {
         throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
+    }
+    
+    @Override
+    protected void customizedSelect() {
+        if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
+            skipForUpdate();
+        }
+        if (getSelectStatement().getOrderByItems().isEmpty()) {
+            parseOrderBy();
+        }
     }
     
     @Override

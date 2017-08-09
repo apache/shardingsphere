@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
@@ -90,7 +91,7 @@ public final class InsertStatement extends DMLStatement {
     }
     
     private void appendGenerateKeyToken(final ShardingRule shardingRule, final TableRule tableRule, final ItemsToken valuesToken, final int parametersSize) {
-        valuesToken.getItems().add("?");
+        valuesToken.getItems().add(Symbol.QUESTION.getLiterals());
         getConditions().add(new Condition(new Column(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLPlaceholderExpression(parametersSize)), shardingRule);
         generatedKey = new GeneratedKey(tableRule.getGenerateKeyColumn(), parametersSize, null);
     }

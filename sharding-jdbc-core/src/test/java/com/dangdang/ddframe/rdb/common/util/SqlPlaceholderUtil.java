@@ -17,7 +17,12 @@
 
 package com.dangdang.ddframe.rdb.common.util;
 
-public class SqlPlaceholderUtil {
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SqlPlaceholderUtil {
     
     public static String replaceStatement(final String str, final Object[] args) {
         if (args.length == 0) {
@@ -27,6 +32,6 @@ public class SqlPlaceholderUtil {
     }
     
     public static String replacePreparedStatement(final String str) {
-        return str.replace("%s", "?");
+        return str.replace("%s", Symbol.QUESTION.getLiterals());
     }
 }
