@@ -21,7 +21,12 @@ import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 
-public class SQLParsingException extends ShardingJdbcException {
+/**
+ * SQL解析异常.
+ * 
+ * @author zhangliang 
+ */
+public final class SQLParsingException extends ShardingJdbcException {
     
     private static final long serialVersionUID = -6408790652103666096L;
     

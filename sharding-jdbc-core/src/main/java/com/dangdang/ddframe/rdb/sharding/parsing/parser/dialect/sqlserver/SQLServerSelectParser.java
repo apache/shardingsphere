@@ -42,8 +42,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void parseBetweenSelectAndSelectList() {
-        getSqlParser().skipAll(DefaultKeyword.ALL, DefaultKeyword.DISTINCT);
+    protected void parseBeforeSelectList() {
         parseTop();
     }
     

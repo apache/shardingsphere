@@ -20,7 +20,12 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.exception;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 
-public class SQLParsingUnsupportedException extends ShardingJdbcException {
+/**
+ * 不支持的SQL抛出的异常.
+ * 
+ * @author zhangliang 
+ */
+public final class SQLParsingUnsupportedException extends ShardingJdbcException {
     
     private static final long serialVersionUID = -4968036951399076811L;
     

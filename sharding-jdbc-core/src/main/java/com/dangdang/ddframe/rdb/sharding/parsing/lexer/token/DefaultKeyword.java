@@ -38,7 +38,6 @@ public enum DefaultKeyword implements Keyword {
     REVOKE,
     AS,
     DISTINCT,
-    DISTINCTROW,
     MAX,
     MIN,
     SUM,

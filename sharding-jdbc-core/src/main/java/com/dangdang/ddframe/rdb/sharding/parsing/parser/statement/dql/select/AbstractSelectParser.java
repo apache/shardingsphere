@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Token;
@@ -41,10 +42,13 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -78,7 +82,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     @Override
     public final SelectStatement parse() {
         sqlParser.getLexer().nextToken();
-        parseBetweenSelectAndSelectList();
+        parseDistinct();
+        parseBeforeSelectList();
         parseSelectList();
         skipToFrom();
         parseFrom();
@@ -95,7 +100,20 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return selectStatement;
     }
     
-    protected void parseBetweenSelectAndSelectList() {
+    private void parseDistinct() {
+        sqlParser.skipAll(DefaultKeyword.ALL);
+        Collection<Keyword> distinctKeywords = Lists.newLinkedList(getCustomizedDistinctKeywords());
+        distinctKeywords.add(DefaultKeyword.DISTINCT);
+        if (getSqlParser().equalAny(distinctKeywords.toArray(new Keyword[distinctKeywords.size()]))) {
+            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
+        }
+    }
+    
+    protected Collection<Keyword> getCustomizedDistinctKeywords() {
+        return Collections.emptyList();
+    }
+    
+    protected void parseBeforeSelectList() {
     }
     
     protected final void parseSelectList() {

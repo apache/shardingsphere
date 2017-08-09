@@ -39,14 +39,6 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void parseBetweenSelectAndSelectList() {
-        getSqlParser().skipAll(DefaultKeyword.ALL, DefaultKeyword.DISTINCT);
-        if (getSqlParser().skipIfEqual(DefaultKeyword.ON)) {
-            getSqlParser().skipParentheses();
-        }
-    }
-    
-    @Override
     protected final void skipToFrom() {
         if (getSqlParser().skipIfEqual(DefaultKeyword.INTO)) {
             getSqlParser().skipIfEqual(DefaultKeyword.TEMPORARY, PostgreSQLKeyword.TEMP, PostgreSQLKeyword.UNLOGGED);
