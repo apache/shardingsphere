@@ -39,22 +39,18 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    public void query() {
-        if (getSqlParser().skipIfEqual(DefaultKeyword.SELECT)) {
-            parseDistinct();
-            parseSelectList();
-            if (getSqlParser().skipIfEqual(DefaultKeyword.INTO)) {
-                getSqlParser().skipIfEqual(DefaultKeyword.TEMPORARY, PostgreSQLKeyword.TEMP, PostgreSQLKeyword.UNLOGGED);
-                getSqlParser().skipIfEqual(DefaultKeyword.TABLE);
-            }
+    protected final void skipToFrom() {
+        if (getSqlParser().skipIfEqual(DefaultKeyword.INTO)) {
+            getSqlParser().skipIfEqual(DefaultKeyword.TEMPORARY, PostgreSQLKeyword.TEMP, PostgreSQLKeyword.UNLOGGED);
+            getSqlParser().skipIfEqual(DefaultKeyword.TABLE);
         }
-        parseFrom();
-        parseWhere();
-        parseGroupBy();
+    }
+    
+    @Override
+    protected void customizedQuery() {
         if (getSqlParser().equalAny(PostgreSQLKeyword.WINDOW)) {
             throw new SQLParsingUnsupportedException(PostgreSQLKeyword.WINDOW);
         }
-        parseOrderBy();
         parseLimit();
         if (getSqlParser().skipIfEqual(DefaultKeyword.FETCH)) {
             throw new SQLParsingUnsupportedException(DefaultKeyword.FETCH);
@@ -66,7 +62,6 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
             }
             getSqlParser().skipIfEqual(PostgreSQLKeyword.NOWAIT);
         }
-        queryRest();
     }
     
     private void parseLimit() {

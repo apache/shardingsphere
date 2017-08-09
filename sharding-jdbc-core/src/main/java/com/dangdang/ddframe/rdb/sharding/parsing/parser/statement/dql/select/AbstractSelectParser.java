@@ -77,19 +77,27 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     @Override
     public final SelectStatement parse() {
-        query();
+        getSqlParser().getLexer().nextToken();
+        parseDistinct();
+        parseBetweenSelectAndList();
+        parseSelectList();
+        skipToFrom();
+        parseFrom();
+        parseWhere();
+        customizedBetweenWhereAndGroupBy();
+        parseGroupBy();
+        customizedBetweenGroupByAndOrderBy();
         parseOrderBy();
+        customizedQuery();
+        queryRest();
         customizedSelect();
         appendDerivedColumns();
         appendDerivedOrderBy();
         return selectStatement;
     }
     
-    protected abstract void query();
-    
-    protected final void parseDistinct() {
+    private void parseDistinct() {
         if (sqlParser.equalAny(DefaultKeyword.DISTINCT, DefaultKeyword.DISTINCTROW, DefaultKeyword.UNION)) {
-            selectStatement.setDistinct(true);
             sqlParser.getLexer().nextToken();
             if (hasDistinctOn() && sqlParser.equalAny(DefaultKeyword.ON)) {
                 sqlParser.getLexer().nextToken();
@@ -102,6 +110,9 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     protected boolean hasDistinctOn() {
         return false;
+    }
+    
+    protected void parseBetweenSelectAndList() {
     }
     
     protected final void parseSelectList() {
@@ -183,10 +194,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return new CommonSelectItem(SQLUtil.getExactlyValue(expression.substring(0, expression.lastIndexOf(lastToken.getLiterals()))), Optional.of(lastToken.getLiterals()));
     }
     
-    protected void queryRest() {
-        if (sqlParser.equalAny(DefaultKeyword.UNION, DefaultKeyword.EXCEPT, DefaultKeyword.INTERSECT, DefaultKeyword.MINUS)) {
-            throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
-        }
+    protected void skipToFrom() {
     }
     
     protected final void parseWhere() {
@@ -195,6 +203,12 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
         sqlParser.parseWhere(selectStatement);
         parametersIndex = sqlParser.getParametersIndex();
+    }
+    
+    protected void customizedBetweenWhereAndGroupBy() {
+    }
+    
+    protected void customizedBetweenGroupByAndOrderBy() {
     }
     
     protected final void parseOrderBy() {
@@ -367,6 +381,15 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
         if (selectStatement.getTables().getTableNames().contains(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()))) {
             selectStatement.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpression.getOwner().getName()));
+        }
+    }
+    
+    protected void customizedQuery() {
+    }
+    
+    protected final void queryRest() {
+        if (sqlParser.equalAny(DefaultKeyword.UNION, DefaultKeyword.EXCEPT, DefaultKeyword.INTERSECT, DefaultKeyword.MINUS)) {
+            throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
     }
     

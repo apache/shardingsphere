@@ -33,24 +33,15 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    public void query() {
-        if (getSqlParser().skipIfEqual(DefaultKeyword.SELECT)) {
-            parseDistinct();
-            parseSelectList();
-        }
-        skipInto();
-        parseFrom();
-        parseWhere();
-        skipHierarchicalQueryClause();
-        parseGroupBy();
-        skipModelClause();
-        queryRest();
-    }
-    
-    private void skipInto() {
+    protected final void skipToFrom() {
         if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
             throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
         }
+    }
+    
+    @Override
+    protected void customizedBetweenWhereAndGroupBy() {
+        skipHierarchicalQueryClause();
     }
     
     private void skipHierarchicalQueryClause() {
@@ -75,6 +66,11 @@ public class OracleSelectParser extends AbstractSelectParser {
             }
             getSqlParser().parseComparisonCondition(getSelectStatement());
         }
+    }
+    
+    @Override
+    protected final void customizedBetweenGroupByAndOrderBy() {
+        skipModelClause();
     }
     
     private void skipModelClause() {
