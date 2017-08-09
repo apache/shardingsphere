@@ -1,6 +1,5 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.base;
 
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
@@ -22,7 +21,6 @@ import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -30,10 +28,10 @@ import static org.junit.Assert.assertTrue;
 public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     
     protected AbstractBaseParseSQLTest(
-            final String testCaseName, final String sql, final String[] parameters, final Set<DatabaseType> types, 
+            final String testCaseName, final String[] parameters,  
             final Tables expectedTables, final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Conditions expectedConditions, 
             final SQLStatement expectedSQLStatement, final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit expectedLimit) {
-        super(testCaseName, sql, parameters, types, expectedTables, expectedConditions, expectedSQLStatement, expectedLimit);
+        super(testCaseName, parameters, expectedTables, expectedConditions, expectedSQLStatement, expectedLimit);
     }
     
     protected final void assertStatement(final SQLStatement actual) {
@@ -105,9 +103,6 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     
     private Limit buildExpectedLimit(final boolean isPreparedStatement) {
         com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit limit = getExpectedLimit();
-        if (null == limit) {
-            return null;
-        }
         Limit result = new Limit(true);
         if (isPreparedStatement) {
             if (null != limit.getOffsetParameterIndex()) {

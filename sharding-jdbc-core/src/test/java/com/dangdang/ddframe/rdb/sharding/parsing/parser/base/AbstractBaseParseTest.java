@@ -17,15 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.base;
 
-import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Asserts;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Conditions;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.helper.ParserJAXBHelper;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
@@ -35,23 +33,20 @@ import lombok.Getter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public abstract class AbstractBaseParseTest {
     
     @Getter(AccessLevel.PROTECTED)
-    private final String sql;
-
+    private final String testCaseName;
+    
     @Getter(AccessLevel.PROTECTED)
     private final String[] parameters;
 
-    @Getter(AccessLevel.PROTECTED)
-    private final Set<DatabaseType> types;
-    
     @Getter(AccessLevel.PROTECTED)
     private final Tables expectedTables;
     
@@ -70,12 +65,11 @@ public abstract class AbstractBaseParseTest {
     @Getter(AccessLevel.PROTECTED)
     private final Limit expectedLimit;
     
-    protected AbstractBaseParseTest(
-            final String testCaseName, final String sql, final String[] parameters, final Set<DatabaseType> types, 
-            final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement, final Limit expectedLimit) {
-        this.sql = sql;
+    AbstractBaseParseTest(
+            final String testCaseName, final String[] parameters, final Tables expectedTables, 
+            final Conditions expectedConditions, final SQLStatement expectedSQLStatement, final Limit expectedLimit) {
+        this.testCaseName = testCaseName;
         this.parameters = parameters;
-        this.types = types;
         this.expectedTables = expectedTables;
         this.expectedConditions = expectedConditions;
         this.expectedLimit = expectedLimit;
@@ -92,7 +86,15 @@ public abstract class AbstractBaseParseTest {
     
     protected static Collection<Object[]> dataParameters() {
         Collection<Object[]> result = new ArrayList<>();
-        for (File each : new File(AbstractBaseParseTest.class.getClassLoader().getResource("parser/").getPath()).listFiles()) {
+        URL url = AbstractBaseParseTest.class.getClassLoader().getResource("parser/");
+        if (null == url) {
+            return result;
+        }
+        File[] files = new File(url.getPath()).listFiles();
+        if (null == files) {
+            return result;
+        }
+        for (File each : files) {
             result.addAll(dataParameters(each));
         }
         return result;
@@ -116,15 +118,13 @@ public abstract class AbstractBaseParseTest {
     }
     
     private static Object[] getDataParameter(final Assert assertObj) {
-        final Object[] result = new Object[8];
+        final Object[] result = new Object[6];
         result[0] = assertObj.getId();
-        result[1] = SQLStatementHelper.getSql(assertObj.getId());
-        result[2] = ParserJAXBHelper.getParameters(assertObj);
-        result[3] = ParserJAXBHelper.getDatabaseTypes(assertObj);
-        result[4] = ParserJAXBHelper.getTables(assertObj);
-        result[5] = assertObj.getConditions();
-        result[6] = ParserJAXBHelper.getSelectStatement(assertObj);
-        result[7] = assertObj.getLimit();
+        result[1] = ParserJAXBHelper.getParameters(assertObj);
+        result[2] = ParserJAXBHelper.getTables(assertObj);
+        result[3] = assertObj.getConditions();
+        result[4] = ParserJAXBHelper.getSelectStatement(assertObj);
+        result[5] = assertObj.getLimit();
         return result;
     }
 }

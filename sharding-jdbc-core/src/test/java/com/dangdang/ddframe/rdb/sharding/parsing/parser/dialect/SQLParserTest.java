@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect;
 
+import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
 import com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
@@ -33,15 +34,14 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
-import java.util.Set;
 
 @RunWith(Parameterized.class)
 public final class SQLParserTest extends AbstractBaseParseSQLTest {
     
     public SQLParserTest(
-            final String testCaseName, final String sql, final String[] parameters, final Set<DatabaseType> types,
-            final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement, final Limit expectedLimit) {
-        super(testCaseName, sql, parameters, types, expectedTables, expectedConditions, expectedSQLStatement, expectedLimit);
+            final String testCaseName, final String[] parameters, final Tables expectedTables, 
+            final Conditions expectedConditions, final SQLStatement expectedSQLStatement, final Limit expectedLimit) {
+        super(testCaseName, parameters, expectedTables, expectedConditions, expectedSQLStatement, expectedLimit);
     }
     
     @Parameters(name = "{0}")
@@ -51,8 +51,8 @@ public final class SQLParserTest extends AbstractBaseParseSQLTest {
     
     @Test
     public void assertStatement() {
-        for (DatabaseType each : getTypes()) {
-            assertStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replaceStatement(getSql(), getParameters()),
+        for (DatabaseType each : SQLStatementHelper.getTypes(getTestCaseName())) {
+            assertStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replaceStatement(SQLStatementHelper.getSql(getTestCaseName()), getParameters()),
                     new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
                             .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse());
         }
@@ -60,8 +60,8 @@ public final class SQLParserTest extends AbstractBaseParseSQLTest {
     
     @Test
     public void assertPreparedStatement() {
-        for (DatabaseType each : getTypes()) {
-            assertPreparedStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replacePreparedStatement(getSql()),
+        for (DatabaseType each : SQLStatementHelper.getTypes(getTestCaseName())) {
+            assertPreparedStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replacePreparedStatement(SQLStatementHelper.getSql(getTestCaseName())),
                     new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
                             .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse());
         }

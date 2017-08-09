@@ -1,7 +1,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.helper;
 
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -15,11 +14,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ParserJAXBHelper {
     
@@ -28,19 +24,6 @@ public class ParserJAXBHelper {
             return new String[]{};
         }
         return assertObj.getParameters().split(",");
-    }
-    
-    public static Set<DatabaseType> getDatabaseTypes(final Assert assertObj) {
-        if (null == assertObj.getTypes()) {
-            Set<DatabaseType> result = Sets.newHashSet(DatabaseType.values());
-            result.remove(DatabaseType.H2);
-            return result;
-        }
-        Set<DatabaseType> types = new HashSet<>();
-        for (String each : assertObj.getTypes().split(",")) {
-            types.add(DatabaseType.valueOf(each));
-        }
-        return types;
     }
     
     public static Tables getTables(final Assert assertObj) {
