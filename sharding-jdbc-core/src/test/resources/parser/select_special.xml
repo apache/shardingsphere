@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectIntoWithSingleTableInPostgreSQL">
+        <!--<tables>-->
+        <!--<table name="t_order" />-->
+        <!--</tables>-->
+    </assert>
+    <!--<assert id="assertSelectStartWithInOracleSQL">-->
+        <!--<tables>-->
+            <!--<table name="t_order_item" />-->
+        <!--</tables>-->
+        <!--<conditions>-->
+            <!--<condition column-name="order_id" table-name="t_order_item" operator="EQUAL">-->
+                <!--<value index="0" literal="1001" type="int" />-->
+            <!--</condition>-->
+        <!--</conditions>-->
+    <!--</assert>-->
+    
+    
+</asserts>

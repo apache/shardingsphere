@@ -4,4 +4,5 @@
     <sql id="assertSelectWindowInPostgreSQL" value="SELECT * FROM t_order WINDOW w AS (PARTITION BY order_id)" type="PostgreSQL"/>
     <sql id="assertSelectFetchInPostgreSQL" value="SELECT * FROM t_order FETCH NEXT 1 ROW ONLY" type="PostgreSQL"/>
     <sql id="assertSelectForInPostgreSQL" value="SELECT * FROM t_order FOR UPDATE OF t_order" type="PostgreSQL"/>
+    <sql id="assertSelectIntoInOracleSQL" value="SELECT * INTO t_order_new FROM t_order" type="Oracle"/>
 </sqls>

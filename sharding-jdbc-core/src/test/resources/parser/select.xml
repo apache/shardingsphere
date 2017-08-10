@@ -175,9 +175,4 @@
             <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="items_count"/>
         </aggregation-select-items>
     </assert>
-    <assert id="assertSelectIntoWithSingleTableInPostgreSQL">
-        <!--<tables>-->
-            <!--<table name="t_order" />-->
-        <!--</tables>-->
-    </assert>
 </asserts>
