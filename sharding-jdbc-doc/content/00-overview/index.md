@@ -73,3 +73,31 @@ Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以
  **使用Sharding-JDBC的公司如果方便请留下公司+网址** https://github.com/dangdangdotcom/sharding-jdbc/issues/234
   
 # 采用公司（统计中）
+
+公司排名不分先后，按拼音顺序排名
+
+## [北京家视天下科技有限公司](http://www.hiveview.com/)
+
+## [北京真信认知科技有限公司](http://www.zhenxinsafe.com/)
+
+## [当当](http://www.dangdang.com/)
+
+## [山东佰昌信息科技有限公司](http://www.sdbaichang.com/)
+
+## [上海定菱网络科技有限公司](http://www.qbaolive.com/)
+
+## [上海九脉信息技术有限公司(东方车联)](http://www.dongfang789.com/)
+
+## [深圳小牛在线](https://www.xiaoniu88.com/)
+
+## [视觉中国](https://500px.me/)
+
+## [特微智能](http://www.trawe.cn/)
+
+## [唯品会](http://www.vip.com/)
+
+## [中策车空间](http://www.zcckj.com/)
+
+## [转转公司](http://www.zhuanzhuan.com/)
+
+## [足记](http://www.fotoplace.cc/)
