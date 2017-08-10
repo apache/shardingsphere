@@ -282,8 +282,8 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected Optional<OrderItem> parseSelectOrderByItem() {
-        Optional<OrderItem> result = super.parseSelectOrderByItem();
+    protected OrderItem parseSelectOrderByItem() {
+        OrderItem result = super.parseSelectOrderByItem();
         skipAfterOrderByItem();
         return result;
     }

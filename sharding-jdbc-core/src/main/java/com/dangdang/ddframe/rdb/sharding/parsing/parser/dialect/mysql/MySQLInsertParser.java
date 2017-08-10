@@ -68,7 +68,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             } else if (getSqlParser().equalAny(Literals.CHARS)) {
                 sqlExpression = new SQLTextExpression(getSqlParser().getLexer().getCurrentToken().getLiterals());
             } else if (getSqlParser().equalAny(DefaultKeyword.NULL)) {
-                sqlExpression = new SQLIgnoreExpression();
+                sqlExpression = new SQLIgnoreExpression(DefaultKeyword.NULL.name());
             } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
                 sqlExpression = new SQLPlaceholderExpression(getSqlParser().getParametersIndex());
                 getSqlParser().increaseParametersIndex();

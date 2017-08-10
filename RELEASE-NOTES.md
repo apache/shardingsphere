@@ -11,6 +11,7 @@
 1. [ISSUE #313](https://github.com/dangdangdotcom/sharding-jdbc/issues/313) 支持<>操作符
 1. [ISSUE #317](https://github.com/dangdangdotcom/sharding-jdbc/issues/317) 分页Limit参数问题
 1. [ISSUE #320](https://github.com/dangdangdotcom/sharding-jdbc/issues/320) GROUP BY + LIMIT的SQL改写错误
+1. [ISSUE #323](https://github.com/dangdangdotcom/sharding-jdbc/issues/323) 解析ORDER BY + 聚合表达式错误
 
 ## 1.5.0
 

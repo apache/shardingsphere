@@ -17,10 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.expression;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * 分片中无需关注的SQL表达式.
  *
  * @author zhangliang
  */
-public class SQLIgnoreExpression implements SQLExpression {
+@RequiredArgsConstructor
+@Getter
+public final class SQLIgnoreExpression implements SQLExpression {
+    
+    private final String expression;
 }

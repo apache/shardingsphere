@@ -31,9 +31,11 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.Aggre
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.CommonSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIgnoreExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
@@ -221,16 +223,16 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         sqlParser.skipIfEqual(DefaultKeyword.SIBLINGS);
         sqlParser.accept(DefaultKeyword.BY);
         do {
-            Optional<OrderItem> orderItem = parseSelectOrderByItem();
-            if (orderItem.isPresent() && !isInSubQuery) {
-                result.add(orderItem.get());
+            OrderItem orderItem = parseSelectOrderByItem();
+            if (!isInSubQuery) {
+                result.add(orderItem);
             }
         }
         while (sqlParser.skipIfEqual(Symbol.COMMA));
         selectStatement.getOrderByItems().addAll(result);
     }
     
-    protected Optional<OrderItem> parseSelectOrderByItem() {
+    protected OrderItem parseSelectOrderByItem() {
         SQLExpression sqlExpression = sqlParser.parseExpression(selectStatement);
         OrderType orderByType = OrderType.ASC;
         if (sqlParser.skipIfEqual(DefaultKeyword.ASC)) {
@@ -238,20 +240,20 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         } else if (sqlParser.skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderType.DESC;
         }
-        OrderItem result;
         if (sqlExpression instanceof SQLNumberExpression) {
-            result = new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderByType);
+            return new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderByType);
         } else if (sqlExpression instanceof SQLIdentifierExpression) {
-            result = new OrderItem(
+            return new OrderItem(
                     SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), orderByType, getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName())));
         } else if (sqlExpression instanceof SQLPropertyExpression) {
             SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-            result = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, 
+            return new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, 
                     getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName())));
-        } else {
-            return Optional.absent();
+        } else if (sqlExpression instanceof SQLIgnoreExpression) {
+            SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
+            return new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getAlias(sqlIgnoreExpression.getExpression()));
         }
-        return Optional.of(result);
+        throw new SQLParsingException(sqlParser.getLexer());
     }
     
     protected void parseGroupBy() {

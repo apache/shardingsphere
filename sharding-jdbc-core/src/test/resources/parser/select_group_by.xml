@@ -149,19 +149,19 @@
         </order-by-columns>
         <limit row-count-index="0" row-count="5" />
     </assert>
-    <!--<assert id="assertSelectWithGroupByAndOrderByAndLimit" parameters="5">-->
-        <!--<tables>-->
-            <!--<table name="t_order" />-->
-        <!--</tables>-->
-        <!--<aggregation-select-items>-->
-            <!--<aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM"/>-->
-        <!--</aggregation-select-items>-->
-        <!--<group-by-columns>-->
-            <!--<group-by-column name="user_id" order-by-type="ASC" />-->
-        <!--</group-by-columns>-->
-        <!--<order-by-columns>-->
-            <!--<order-by-column name="order_id" order-by-type="ASC" />-->
-        <!--</order-by-columns>-->
-        <!--<limit row-count-index="0" row-count="5" />-->
-    <!--</assert>-->
+    <assert id="assertSelectWithGroupByAndOrderByAndLimit" parameters="5">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM"/>
+        </aggregation-select-items>
+        <group-by-columns>
+            <group-by-column name="user_id" order-by-type="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="SUM(order_id)" order-by-type="ASC" />
+        </order-by-columns>
+        <limit row-count-index="0" row-count="5" />
+    </assert>
 </asserts>
