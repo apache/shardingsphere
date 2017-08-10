@@ -385,7 +385,7 @@ public final class MultipleKeysModuloTableShardingAlgorithm implements MultipleK
 ## 构造ShardingDataSource
 完成规则配置后，我们可以通过ShardingDataSourceFactory工厂得到ShardingDataSource
 ```java
-DataSource dataSource = new ShardingDataSourceFactory.createDataSource(shardingRule);
+DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule);
 ```
 
 ## 使用ShardingDataSource
