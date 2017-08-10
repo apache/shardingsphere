@@ -104,13 +104,6 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected final void skipToFrom() {
-        if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
-            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
-        }
-    }
-    
-    @Override
     protected void parseJoinTable() {
         if (getSqlParser().skipIfEqual(DefaultKeyword.WITH)) {
             getSqlParser().skipParentheses();

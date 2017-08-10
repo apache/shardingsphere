@@ -39,14 +39,6 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected final void skipToFrom() {
-        if (getSqlParser().skipIfEqual(DefaultKeyword.INTO)) {
-            getSqlParser().skipIfEqual(DefaultKeyword.TEMPORARY, PostgreSQLKeyword.TEMP, PostgreSQLKeyword.UNLOGGED);
-            getSqlParser().skipIfEqual(DefaultKeyword.TABLE);
-        }
-    }
-    
-    @Override
     protected final void customizedSelect() {
         if (getSqlParser().equalAny(PostgreSQLKeyword.WINDOW)) {
             throw new SQLParsingUnsupportedException(PostgreSQLKeyword.WINDOW);

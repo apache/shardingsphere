@@ -88,7 +88,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         parseDistinct();
         parseBeforeSelectList();
         parseSelectList();
-        skipToFrom();
         parseFrom();
         parseWhere();
         customizedBetweenWhereAndGroupBy();
@@ -196,9 +195,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private CommonSelectItem parseSelectItemWithAlias(final StringBuilder expression, final Token lastToken) {
         return new CommonSelectItem(SQLUtil.getExactlyValue(expression.substring(0, expression.lastIndexOf(lastToken.getLiterals()))), Optional.of(lastToken.getLiterals()));
-    }
-    
-    protected void skipToFrom() {
     }
     
     protected final void parseWhere() {
@@ -318,6 +314,9 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected final void parseFrom() {
+        if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
+            throw new SQLParsingUnsupportedException(DefaultKeyword.INTO);
+        }
         if (sqlParser.skipIfEqual(DefaultKeyword.FROM)) {
             parseTable();
         }

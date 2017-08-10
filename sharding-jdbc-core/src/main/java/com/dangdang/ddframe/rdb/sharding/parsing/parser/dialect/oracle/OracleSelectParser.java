@@ -25,7 +25,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
-import com.google.common.base.Optional;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,13 +38,6 @@ public class OracleSelectParser extends AbstractSelectParser {
     @Override
     protected Collection<Keyword> getCustomizedDistinctKeywords() {
         return Collections.<Keyword>singletonList(DefaultKeyword.UNIQUE);
-    }
-    
-    @Override
-    protected final void skipToFrom() {
-        if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
-            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
-        }
     }
     
     @Override
