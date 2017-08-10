@@ -16,9 +16,12 @@ chapter = true
 [![GitHub forks](https://img.shields.io/github/forks/dangdangdotcom/sharding-jdbc.svg?style=social&label=Fork)](https://github.com/dangdangdotcom/sharding-jdbc/fork)&nbsp;
 [![GitHub watchers](https://img.shields.io/github/watchers/dangdangdotcom/sharding-jdbc.svg?style=social&label=Watch)](https://github.com/dangdangdotcom/sharding-jdbc/watchers)
 
-Sharding-JDBC是当当应用框架ddframe中，关系型数据库模块dd-rdb中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。Sharding-JDBC继dubbox和Elastic-Job之后，是ddframe系列开源的第三个产品。
+Sharding-JDBC是一个开源的适用于微服务的分布式数据访问基础类库，它始终以云原生的基础开发套件为目标。
 
 Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。
+
+Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功能，并初步实现了柔性事务。从2016年开源至今，在经历了整体架构的数次精炼以及稳定性打磨后，如今它已积累了足够的底蕴，相信可以成为开发者选择技术组件时的一个参考。
+
 
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
 [![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.svg?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
@@ -37,23 +40,23 @@ Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以
 * 一主多从的读写分离配置，可配合分库分表使用
 * 基于Hint的强制主库路由
 
-## 3. 分布式事务
+## 3. 柔性事务
 * 最大努力送达型事务
 * TCC型事务(TBD)
 
-## 4. 兼容性
+## 4. 分布式主键
+* 统一的分布式基于时间序列的ID生成器
+
+## 5. 兼容性
 * 可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC
 * 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等
 * 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL
 
-## 5. 灵活多样的配置
+## 6. 灵活多样的配置
 * Java
 * Spring命名空间
 * YAML
 * Inline表达式
-
-## 6. 分布式生成全局主键
-* 统一的分布式基于时间序列的ID生成器
 
 # 第三方文章
 * 2017-07 [InfoQ新闻：分布式数据库中间件Sharding-JDBC 1.5.0发布——自研SQL解析引擎+全数据库支持里程碑版本](http://www.infoq.com/cn/news/2017/08/Sharding-JDBC-150)
