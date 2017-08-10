@@ -60,17 +60,11 @@
             <order-by-column name="order_id" order-by-type="ASC" />
         </order-by-columns>
     </assert>
-    <!--<assert id="assertSelectIterator" parameters="1,2">-->
-        <!--<tables>-->
-            <!--<table name="t_order_item" alias="t"/>-->
-        <!--</tables>-->
-        <!--<conditions>-->
-            <!--<condition column-name="item_id" table-name="t_order_item" operator="IN">-->
-                <!--<value index="0" literal="1" type="int" />-->
-                <!--<value index="1" literal="2" type="int" />-->
-            <!--</condition>-->
-        <!--</conditions>-->
-    <!--</assert>-->
+    <assert id="assertSelectIterator" parameters="1,2">
+        <tables>
+            <table name="t_order_item" alias="t"/>
+        </tables>
+    </assert>
     <assert id="assertSelectNoShardingTable">
         <tables>
             <table name="t_order" alias="o"/>
