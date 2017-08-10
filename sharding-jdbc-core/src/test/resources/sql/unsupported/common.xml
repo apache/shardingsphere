@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertSelectDistinctWithSingleTable" value="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" />
+    <sql id="assertSelectWindowInPostgreSQL" value="SELECT * FROM t_order WINDOW w AS (PARTITION BY order_id)" type="PostgreSQL"/>
+    <sql id="assertSelectFetchInPostgreSQL" value="SELECT * FROM t_order FETCH NEXT 1 ROW ONLY" type="PostgreSQL"/>
+    <sql id="assertSelectForInPostgreSQL" value="SELECT * FROM t_order FOR UPDATE OF t_order" type="PostgreSQL"/>
+</sqls>

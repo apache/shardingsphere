@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.AllLexerTests;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer.TokenizerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.SQLParserTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AllStatementParserTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -29,9 +28,9 @@ import org.junit.runners.Suite;
         TokenizerTest.class,
         AllLexerTests.class,
         AllStatementParserTests.class,
-        SQLParserTest.class,
         SQLParsingEngineTest.class,
-        UnsupportedParseTest.class
+        UnsupportedSQLParsingEngineTest.class,
+        SQLJudgeEngineTest.class
     })
 public class AllParsingTests {
 }

@@ -10,6 +10,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,39 +19,47 @@ import java.util.Set;
 
 public class SQLStatementHelper {
     
-    private static Map<String, SQLStatement> statementMap = new HashMap<>();
+    private static final Map<String, SQLStatement> statementMap;
+    
+    private static final Map<String, SQLStatement> unsuppportedStatementMap;
     
     static {
-        loadSqlStatements();
+        statementMap = loadSqlStatements("sql");
+        unsuppportedStatementMap = loadSqlStatements("sql/unsupported");
     }
     
-    private static void loadSqlStatements() {
-        URL url = SQLAssertJAXBHelper.class.getClassLoader().getResource("sql");
+    private static Map<String, SQLStatement> loadSqlStatements(final String directory) {
+        Map<String, SQLStatement> result = new HashMap<>();
+        URL url = SQLAssertJAXBHelper.class.getClassLoader().getResource(directory);
         if (url == null) {
-            return;
+            return result;
         }
         File filePath = new File(url.getPath());
         if (!filePath.exists()) {
-            return;
+            return result;
         }
         File[] files = filePath.listFiles();
         if (null == files) {
-            return;
+            return result;
         }
         for (File each : files) {
+            if (each.isDirectory()) {
+                continue;
+            }
             try {
                 SQLStatements statements = (SQLStatements) JAXBContext.newInstance(SQLStatements.class).createUnmarshaller().unmarshal(each);
                 for (SQLStatement statement : statements.getSqls()) {
-                    String id = statement.getId();
-                    if (statementMap.containsKey(id)) {
-                        throw new RuntimeException("Existed sql assert id with:" + id);
-                    }
-                    statementMap.put(id, statement);
+                    result.put(statement.getId(), statement);
                 }
             } catch (final JAXBException ex) {
                 throw new RuntimeException(ex);
             }
         }
+        return result;
+    }
+    
+    public static Collection<SQLStatement> getUnsupportedSqlStatements() {
+        return unsuppportedStatementMap.values();
     }
     
     public static String getSql(final String sqlId) {
