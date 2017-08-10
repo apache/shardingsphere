@@ -35,7 +35,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.Abs
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.google.common.base.Optional;
 
-public class SQLServerSelectParser extends AbstractSelectParser {
+/**
+ * SQLServer Select语句解析器.
+ *
+ * @author zhangliang
+ */
+public final class SQLServerSelectParser extends AbstractSelectParser {
     
     public SQLServerSelectParser(final AbstractSQLParser sqlParser) {
         super(sqlParser);
@@ -112,7 +117,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected final void customizedSelect() {
+    protected void customizedSelect() {
         if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
             parseFor();
         }

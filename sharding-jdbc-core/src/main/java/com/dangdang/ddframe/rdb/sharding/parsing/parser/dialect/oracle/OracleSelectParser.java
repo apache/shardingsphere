@@ -29,7 +29,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.Abs
 import java.util.Collection;
 import java.util.Collections;
 
-public class OracleSelectParser extends AbstractSelectParser {
+/**
+ * Oracle Select语句解析器.
+ *
+ * @author zhangliang
+ */
+public final class OracleSelectParser extends AbstractSelectParser {
     
     public OracleSelectParser(final AbstractSQLParser sqlParser) {
         super(sqlParser);
@@ -41,7 +46,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected final void customizedBetweenWhereAndGroupBy() {
+    protected void customizedBetweenWhereAndGroupBy() {
         skipHierarchicalQueryClause();
     }
     
@@ -70,7 +75,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected final void customizedBetweenGroupByAndOrderBy() {
+    protected void customizedBetweenGroupByAndOrderBy() {
         skipModelClause();
     }
     

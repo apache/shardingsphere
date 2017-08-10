@@ -32,14 +32,19 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.dangdang.ddframe.rdb.sharding.util.NumberUtil;
 import com.google.common.base.Optional;
 
-public class PostgreSQLSelectParser extends AbstractSelectParser {
+/**
+ * PostgreSQL Select语句解析器.
+ *
+ * @author zhangliang
+ */
+public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
     public PostgreSQLSelectParser(final AbstractSQLParser sqlParser) {
         super(sqlParser);
     }
     
     @Override
-    protected final void customizedSelect() {
+    protected void customizedSelect() {
         if (getSqlParser().equalAny(PostgreSQLKeyword.WINDOW)) {
             throw new SQLParsingUnsupportedException(PostgreSQLKeyword.WINDOW);
         }
@@ -126,9 +131,5 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
             limit.setRowCount(rowCount.get());
         }
         getSelectStatement().setLimit(limit);
-    }
-    
-    protected boolean hasDistinctOn() {
-        return true;
     }
 }

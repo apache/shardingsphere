@@ -35,7 +35,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import java.util.Collection;
 import java.util.Collections;
 
-public class MySQLSelectParser extends AbstractSelectParser {
+/**
+ * MySQL Select语句解析器.
+ *
+ * @author zhangliang
+ */
+public final class MySQLSelectParser extends AbstractSelectParser {
     
     public MySQLSelectParser(final AbstractSQLParser sqlParser) {
         super(sqlParser);
@@ -47,13 +52,13 @@ public class MySQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected final void parseBeforeSelectList() {
+    protected void parseBeforeSelectList() {
         getSqlParser().skipAll(MySQLKeyword.HIGH_PRIORITY, DefaultKeyword.STRAIGHT_JOIN, MySQLKeyword.SQL_SMALL_RESULT, MySQLKeyword.SQL_BIG_RESULT, MySQLKeyword.SQL_BUFFER_RESULT, 
                 MySQLKeyword.SQL_CACHE, MySQLKeyword.SQL_NO_CACHE, MySQLKeyword.SQL_CALC_FOUND_ROWS);
     }
     
     @Override
-    protected final void customizedSelect() {
+    protected void customizedSelect() {
         parseLimit();
         if (getSqlParser().equalAny(DefaultKeyword.PROCEDURE)) {
             throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());

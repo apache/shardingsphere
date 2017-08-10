@@ -24,5 +24,10 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.token;
  */
 public interface SQLToken {
     
+    /**
+     * 获取开始位置.
+     * 
+     * @return 开始位置
+     */
     int getBeginPosition();
 }

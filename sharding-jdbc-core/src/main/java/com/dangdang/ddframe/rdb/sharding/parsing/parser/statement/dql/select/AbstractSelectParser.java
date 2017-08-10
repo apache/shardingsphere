@@ -54,6 +54,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Select语句解析器.
+ * 
+ * @author zhangliang 
+ */
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractSelectParser implements SQLStatementParser {
     

@@ -31,7 +31,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class DDLStatement extends AbstractSQLStatement {
+public final class DDLStatement extends AbstractSQLStatement {
     
     public DDLStatement() {
         super(SQLType.DDL);

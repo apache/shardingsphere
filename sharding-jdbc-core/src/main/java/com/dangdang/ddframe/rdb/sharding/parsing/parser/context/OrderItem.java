@@ -30,6 +30,7 @@ import lombok.ToString;
  * @author zhangliang
  */
 @Getter
+@Setter
 @EqualsAndHashCode
 @ToString
 public final class OrderItem {
@@ -40,10 +41,8 @@ public final class OrderItem {
     
     private final OrderType type;
     
-    @Setter
     private int index = -1;
     
-    @Setter
     private Optional<String> alias;
     
     public OrderItem(final String name, final OrderType type, final Optional<String> alias) {
