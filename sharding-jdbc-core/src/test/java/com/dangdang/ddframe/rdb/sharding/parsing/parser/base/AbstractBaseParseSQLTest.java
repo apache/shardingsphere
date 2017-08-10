@@ -123,7 +123,6 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
         return result;
     }
     
-    
     private void assertOrderBy(final SelectStatement actual) {
         Iterator<OrderItem> orderByColumns = getExpectedOrderByColumns().iterator();
         for (OrderItem each : actual.getOrderByItems()) {

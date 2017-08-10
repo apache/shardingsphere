@@ -44,7 +44,7 @@ public final class UnsupportedSQLParsingEngineTest {
     
     private Set<DatabaseType> types;
     
-    public UnsupportedSQLParsingEngineTest(final String testCaseName, final String sql, Set<DatabaseType> types) {
+    public UnsupportedSQLParsingEngineTest(final String testCaseName, final String sql, final Set<DatabaseType> types) {
         this.testcaseName = testCaseName;
         this.sql = sql;
         this.types = types;

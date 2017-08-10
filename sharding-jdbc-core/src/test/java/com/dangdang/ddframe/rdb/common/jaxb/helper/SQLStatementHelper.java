@@ -5,6 +5,8 @@ import com.dangdang.ddframe.rdb.common.jaxb.SQLStatements;
 import com.dangdang.ddframe.rdb.integrate.jaxb.helper.SQLAssertJAXBHelper;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.google.common.collect.Sets;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -17,15 +19,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class SQLStatementHelper {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLStatementHelper {
     
-    private static final Map<String, SQLStatement> statementMap;
+    private static final Map<String, SQLStatement> STATEMENT_MAP;
     
-    private static final Map<String, SQLStatement> unsuppportedStatementMap;
+    private static final Map<String, SQLStatement> UNSUPPORTED_STATEMENT_MAP;
     
     static {
-        statementMap = loadSqlStatements("sql");
-        unsuppportedStatementMap = loadSqlStatements("sql/unsupported");
+        STATEMENT_MAP = loadSqlStatements("sql");
+        UNSUPPORTED_STATEMENT_MAP = loadSqlStatements("sql/unsupported");
     }
     
     private static Map<String, SQLStatement> loadSqlStatements(final String directory) {
@@ -59,18 +62,18 @@ public class SQLStatementHelper {
     }
     
     public static Collection<SQLStatement> getUnsupportedSqlStatements() {
-        return unsuppportedStatementMap.values();
+        return UNSUPPORTED_STATEMENT_MAP.values();
     }
     
     public static String getSql(final String sqlId) {
-        return statementMap.get(sqlId).getSql();
+        return STATEMENT_MAP.get(sqlId).getSql();
     }
     
     public static Set<DatabaseType> getTypes(final String sqlId) {
-        if (null == sqlId || !statementMap.containsKey(sqlId)) {
+        if (null == sqlId || !STATEMENT_MAP.containsKey(sqlId)) {
             return Collections.emptySet();
         }
-        SQLStatement statement = statementMap.get(sqlId);
+        SQLStatement statement = STATEMENT_MAP.get(sqlId);
         if (null == statement.getTypes()) {
             return Sets.newHashSet(DatabaseType.values());
         }
