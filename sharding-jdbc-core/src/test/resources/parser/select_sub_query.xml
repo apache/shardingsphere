@@ -37,7 +37,7 @@
             <table name="t" />
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="orders_count"/>
+            <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="orders_count" />
         </aggregation-select-items>
         <order-by-columns>
             <order-by-column name="order_id" order-by-type="DESC" />
@@ -49,7 +49,7 @@
             <table name="t" />
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="order_items_count"/>
+            <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="order_items_count" />
         </aggregation-select-items>
         <group-by-columns>
             <group-by-column name="order_id" order-by-type="ASC" />

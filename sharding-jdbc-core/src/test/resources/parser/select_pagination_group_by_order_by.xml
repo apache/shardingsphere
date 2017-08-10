@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertSelectPaginationWithOffsetInPostgreSQL" parameters="1,2,9,10,5">
+    <assert id="assertSelectPaginationWithGroupByAndOrderBy" parameters="1,2,9,10,5,3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -15,52 +15,38 @@
                 <value index="3" literal="10" type="int" />
             </condition>
         </conditions>
-        <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
-        </order-by-columns>
-        <limit offset="5" offset-index="4" />
-    </assert>
-    <assert id="assertSelectPaginationWithRowCount" parameters="1,2,9,10,5">
-        <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-        </tables>
-        <conditions>
-            <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
-            </condition>
-            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="2" literal="9" type="int" />
-                <value index="3" literal="10" type="int" />
-            </condition>
-        </conditions>
-        <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
-        </order-by-columns>
-        <limit row-count="5" row-count-index="4" />
-    </assert>
-    <assert id="assertSelectPaginationWithOffsetAndRowCount" parameters="1,2,9,10,5,3">
-        <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-        </tables>
-        <conditions>
-            <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
-            </condition>
-            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="2" literal="9" type="int" />
-                <value index="3" literal="10" type="int" />
-            </condition>
-        </conditions>
+        <group-by-columns>
+            <group-by-column name="item_id" alias="GROUP_BY_DERIVED_0" owner="i" order-by-type="ASC" />
+        </group-by-columns>
         <order-by-columns>
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
         </order-by-columns>
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </assert>
-    <assert id="assertSelectPaginationWithRowCountInSQLServer" parameters="3,1,2,9,10">
+    <assert id="assertSelectPaginationWithDiffGroupByAndOrderBy" parameters="1,2,9,10,5,3">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="2" literal="9" type="int" />
+                <value index="3" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <group-by-columns>
+            <group-by-column name="user_id" owner="i" order-by-type="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+        </order-by-columns>
+        <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
+    </assert>
+    <assert id="assertSelectPaginationWithGroupByAndOrderByInSQLServer" parameters="3,1,2,9,10,6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -76,74 +62,39 @@
                 <value index="4" literal="10" type="int" />
             </condition>
         </conditions>
-        <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-by-type="DESC" />
-        </order-by-columns>
-        <limit row-count="3" row-count-index="0" />
-    </assert>
-    <assert id="assertSelectPaginationWithOffsetAndRowCountInPostgreSQL" parameters="1,2,9,10,5,3">
-        <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-        </tables>
-        <conditions>
-            <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
-            </condition>
-            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="2" literal="9" type="int" />
-                <value index="3" literal="10" type="int" />
-            </condition>
-        </conditions>
-        <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
-        </order-by-columns>
-        <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
-    </assert>
-    <assert id="assertSelectPaginationWithOffsetAndRowCountInSQLServer" parameters="3,1,2,9,10,6">
-        <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-            <table name="row_" />
-        </tables>
-        <conditions>
-            <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="1" literal="1" type="int" />
-                <value index="2" literal="2" type="int" />
-            </condition>
-            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="3" literal="9" type="int" />
-                <value index="4" literal="10" type="int" />
-            </condition>
-        </conditions>
+        <group-by-columns>
+            <group-by-column name="item_id" owner="i" order-by-type="ASC" />
+        </group-by-columns>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-by-type="DESC" />
         </order-by-columns>
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </assert>
-    <assert id="assertSelectPaginationWithRowCountInOracle" parameters="1,2,9,10,3">
+    <assert id="assertSelectPaginationWithDiffGroupByAndOrderByInSQLServer" parameters="3,1,2,9,10,6">
         <tables>
-            <table name="t_order" alias="order0_" />
+            <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
             <table name="row_" />
         </tables>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
+                <value index="1" literal="1" type="int" />
+                <value index="2" literal="2" type="int" />
             </condition>
             <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="2" literal="9" type="int" />
-                <value index="3" literal="10" type="int" />
+                <value index="3" literal="9" type="int" />
+                <value index="4" literal="10" type="int" />
             </condition>
         </conditions>
+        <group-by-columns>
+            <group-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="i" order-by-type="ASC" />
+        </group-by-columns>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+            <order-by-column name="item_id" owner="i" order-by-type="DESC" />
         </order-by-columns>
-        <limit row-count="3" row-count-index="4" />
+        <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </assert>
-    <assert id="assertSelectPaginationWithOffsetAndRowCountInOracle" parameters="1,2,9,10,5,3">
+    <assert id="assertSelectPaginationWithGroupByAndOrderByInOracle" parameters="1,2,9,10,5,3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
@@ -160,6 +111,34 @@
                 <value index="3" literal="10" type="int" />
             </condition>
         </conditions>
+        <group-by-columns>
+            <group-by-column name="item_id" alias="GROUP_BY_DERIVED_0" owner="i" order-by-type="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+        </order-by-columns>
+        <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
+    </assert>
+    <assert id="assertSelectPaginationWithDiffGroupByAndOrderByInOracle" parameters="1,2,9,10,5,3">
+        <tables>
+            <table name="t_order" alias="order0_" />
+            <table name="t_order_item" alias="i" />
+            <table name="row_" />
+            <table name="t" />
+        </tables>
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="2" literal="9" type="int" />
+                <value index="3" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <group-by-columns>
+            <group-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="i" order-by-type="ASC" />
+        </group-by-columns>
         <order-by-columns>
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
         </order-by-columns>

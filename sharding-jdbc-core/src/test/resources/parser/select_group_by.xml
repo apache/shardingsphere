@@ -5,7 +5,7 @@
             <table name="t_order" />
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM" alias="orders_sum"/>
+            <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM" alias="orders_sum" />
         </aggregation-select-items>
         <group-by-columns>
             <group-by-column name="user_id" order-by-type="ASC" />
@@ -19,7 +19,7 @@
             <table name="t_order" />
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(order_id)" aggregation-type="COUNT" alias="orders_count"/>
+            <aggregation-select-item inner-expression="(order_id)" aggregation-type="COUNT" alias="orders_count" />
         </aggregation-select-items>
         <group-by-columns>
             <group-by-column name="user_id" order-by-type="ASC" />
@@ -33,7 +33,7 @@
             <table name="t_order" />
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(order_id)" aggregation-type="MAX" alias="max_order_id"/>
+            <aggregation-select-item inner-expression="(order_id)" aggregation-type="MAX" alias="max_order_id" />
         </aggregation-select-items>
         <group-by-columns>
             <group-by-column name="user_id" order-by-type="ASC" />
@@ -78,7 +78,7 @@
             <table name="t_order" />
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM" alias="orders_sum"/>
+            <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM" alias="orders_sum" />
         </aggregation-select-items>
         <group-by-columns>
             <group-by-column name="user_id" order-by-type="ASC" />
@@ -103,38 +103,13 @@
             </condition>
         </conditions>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="items_count"/>
+            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="items_count" />
         </aggregation-select-items>
         <group-by-columns>
             <group-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="o" order-by-type="ASC" />
         </group-by-columns>
         <order-by-columns>
             <order-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="o" order-by-type="ASC" />
-        </order-by-columns>
-    </assert>
-    <assert id="assertSelectCountWithGroupByBindingTable" parameters="1,2,9,10">
-        <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-        </tables>
-        <conditions>
-            <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
-            </condition>
-            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="2" literal="9" type="int" />
-                <value index="3" literal="10" type="int" />
-            </condition>
-        </conditions>
-        <aggregation-select-items>
-            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="items_count"/>
-        </aggregation-select-items>
-        <group-by-columns>
-            <group-by-column name="user_id" owner="o" order-by-type="ASC" />
-        </group-by-columns>
-        <order-by-columns>
-            <order-by-column name="user_id" owner="o" order-by-type="ASC" />
         </order-by-columns>
     </assert>
 </asserts>

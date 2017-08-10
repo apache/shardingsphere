@@ -5,7 +5,7 @@
             <table name="t_order" />
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(user_id)" aggregation-type="SUM" alias="user_id_sum"/>
+            <aggregation-select-item inner-expression="(user_id)" aggregation-type="SUM" alias="user_id_sum" />
         </aggregation-select-items>
     </assert>
     <assert id="assertSelectCount">
@@ -13,7 +13,7 @@
             <table name="t_order" />
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="orders_count"/>
+            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="orders_count" />
         </aggregation-select-items>
     </assert>
     <assert id="assertSelectMax">
@@ -21,7 +21,7 @@
             <table name="t_order" />
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(user_id)" aggregation-type="MAX" alias="max_user_id"/>
+            <aggregation-select-item inner-expression="(user_id)" aggregation-type="MAX" alias="max_user_id" />
         </aggregation-select-items>
     </assert>
     <assert id="assertSelectMin">
@@ -29,7 +29,7 @@
             <table name="t_order" />
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(user_id)" aggregation-type="MIN" alias="min_user_id"/>
+            <aggregation-select-item inner-expression="(user_id)" aggregation-type="MIN" alias="min_user_id" />
         </aggregation-select-items>
     </assert>
     <assert id="assertSelectAvg">

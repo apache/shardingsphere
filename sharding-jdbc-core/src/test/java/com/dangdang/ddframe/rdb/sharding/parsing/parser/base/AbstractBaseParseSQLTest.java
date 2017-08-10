@@ -135,7 +135,8 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     private void assertGroupBy(final SelectStatement actual) {
         Iterator<OrderItem> groupByColumns = getExpectedGroupByColumns().iterator();
         for (OrderItem each : actual.getGroupByItems()) {
-            assertTrue(new ReflectionEquals(groupByColumns.next()).matches(each));
+            OrderItem groupByColumn = groupByColumns.next();
+            assertTrue(new ReflectionEquals(groupByColumn).matches(each));
         }
         assertFalse(groupByColumns.hasNext());
     }
