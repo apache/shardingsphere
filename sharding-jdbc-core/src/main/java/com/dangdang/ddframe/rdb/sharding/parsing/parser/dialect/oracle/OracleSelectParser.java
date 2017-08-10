@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 
@@ -279,13 +278,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected OrderItem parseSelectOrderByItem() {
-        OrderItem result = super.parseSelectOrderByItem();
-        skipAfterOrderByItem();
-        return result;
-    }
-    
-    private void skipAfterOrderByItem() {
+    protected void skipAfterOrderByItem() {
         if (getSqlParser().skipIfEqual(OracleKeyword.NULLS)) {
             getSqlParser().getLexer().nextToken();
             if (!getSqlParser().skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {

@@ -233,7 +233,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         selectStatement.getOrderByItems().addAll(result);
     }
     
-    protected OrderItem parseSelectOrderByItem() {
+    private OrderItem parseSelectOrderByItem() {
         SQLExpression sqlExpression = sqlParser.parseExpression(selectStatement);
         OrderType orderByType = OrderType.ASC;
         if (sqlParser.skipIfEqual(DefaultKeyword.ASC)) {
@@ -241,20 +241,27 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         } else if (sqlParser.skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderType.DESC;
         }
+        OrderItem result;
         if (sqlExpression instanceof SQLNumberExpression) {
-            return new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderByType);
+            result = new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderByType);
         } else if (sqlExpression instanceof SQLIdentifierExpression) {
-            return new OrderItem(
+            result = new OrderItem(
                     SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), orderByType, getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName())));
         } else if (sqlExpression instanceof SQLPropertyExpression) {
             SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-            return new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, 
+            result = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, 
                     getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName())));
         } else if (sqlExpression instanceof SQLIgnoreExpression) {
             SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
-            return new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getAlias(sqlIgnoreExpression.getExpression()));
+            result = new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getAlias(sqlIgnoreExpression.getExpression()));
+        } else {
+            throw new SQLParsingException(sqlParser.getLexer());
         }
-        throw new SQLParsingException(sqlParser.getLexer());
+        skipAfterOrderByItem();
+        return result;
+    }
+    
+    protected void skipAfterOrderByItem() {
     }
     
     protected void parseGroupBy() {
@@ -318,7 +325,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return Optional.absent();
     }
     
-    protected final void parseFrom() {
+    private void parseFrom() {
         if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
             throw new SQLParsingUnsupportedException(DefaultKeyword.INTO);
         }
@@ -327,7 +334,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
     }
     
-    protected final void parseTable() {
+    private void parseTable() {
         if (sqlParser.skipIfEqual(Symbol.LEFT_PAREN)) {
             if (!selectStatement.getTables().isEmpty()) {
                 throw new UnsupportedOperationException("Cannot support subquery for nested tables.");
