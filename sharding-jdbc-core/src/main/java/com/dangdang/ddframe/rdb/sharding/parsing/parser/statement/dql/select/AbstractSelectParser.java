@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Token;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.CommonSelectItem;
@@ -65,7 +65,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private static final String GROUP_BY_DERIVED_ALIAS = "GROUP_BY_DERIVED_%s";
     
-    private final SQLParser sqlParser;
+    private final AbstractSQLParser sqlParser;
     
     private final SelectStatement selectStatement;
     
@@ -77,7 +77,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private boolean appendDerivedColumnsFlag;
     
-    public AbstractSelectParser(final SQLParser sqlParser) {
+    public AbstractSelectParser(final AbstractSQLParser sqlParser) {
         this.sqlParser = sqlParser;
         selectStatement = new SelectStatement();
     }

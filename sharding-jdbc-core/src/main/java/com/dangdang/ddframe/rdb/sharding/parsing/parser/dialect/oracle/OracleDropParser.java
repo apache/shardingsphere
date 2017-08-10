@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.drop.AbstractDropParser;
 
 /**
@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.drop.Abstr
  */
 public final class OracleDropParser extends AbstractDropParser {
     
-    public OracleDropParser(final SQLParser sqlParser) {
+    public OracleDropParser(final AbstractSQLParser sqlParser) {
         super(sqlParser);
     }
     

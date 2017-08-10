@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.AbstractUpdateParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 
 /**
  * SQLServer Update语句解析器.
@@ -29,7 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
  */
 public final class SQLServerUpdateParser extends AbstractUpdateParser {
     
-    public SQLServerUpdateParser(final SQLParser sqlParser) {
+    public SQLServerUpdateParser(final AbstractSQLParser sqlParser) {
         super(sqlParser);
     }
     

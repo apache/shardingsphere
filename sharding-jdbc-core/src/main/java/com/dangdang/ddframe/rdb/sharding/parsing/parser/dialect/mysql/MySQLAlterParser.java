@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter.AbstractAlterParser;
 
 /**
@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter.Abst
  */
 public final class MySQLAlterParser extends AbstractAlterParser {
     
-    public MySQLAlterParser(final SQLParser sqlParser) {
+    public MySQLAlterParser(final AbstractSQLParser sqlParser) {
         super(sqlParser);
     }
     

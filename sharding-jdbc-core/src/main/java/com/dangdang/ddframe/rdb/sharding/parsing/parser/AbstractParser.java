@@ -35,13 +35,12 @@ import java.util.Set;
  * @author zhangliang
  */
 @RequiredArgsConstructor
+@Getter
+@Setter
 public abstract class AbstractParser {
     
-    @Getter
     private final Lexer lexer;
     
-    @Getter
-    @Setter
     private int parametersIndex;
     
     /**
@@ -61,26 +60,26 @@ public abstract class AbstractParser {
     public final String skipParentheses() {
         StringBuilder result = new StringBuilder("");
         int count = 0;
-        if (Symbol.LEFT_PAREN == getLexer().getCurrentToken().getType()) {
-            final int beginPosition = getLexer().getCurrentToken().getEndPosition();
+        if (Symbol.LEFT_PAREN == lexer.getCurrentToken().getType()) {
+            final int beginPosition = lexer.getCurrentToken().getEndPosition();
             result.append(Symbol.LEFT_PAREN.getLiterals());
-            getLexer().nextToken();
+            lexer.nextToken();
             while (true) {
                 if (equalAny(Symbol.QUESTION)) {
                     increaseParametersIndex();
                 }
-                if (Assist.END == getLexer().getCurrentToken().getType() || (Symbol.RIGHT_PAREN == getLexer().getCurrentToken().getType() && 0 == count)) {
+                if (Assist.END == lexer.getCurrentToken().getType() || (Symbol.RIGHT_PAREN == lexer.getCurrentToken().getType() && 0 == count)) {
                     break;
                 }
-                if (Symbol.LEFT_PAREN == getLexer().getCurrentToken().getType()) {
+                if (Symbol.LEFT_PAREN == lexer.getCurrentToken().getType()) {
                     count++;
-                } else if (Symbol.RIGHT_PAREN == getLexer().getCurrentToken().getType()) {
+                } else if (Symbol.RIGHT_PAREN == lexer.getCurrentToken().getType()) {
                     count--;
                 }
-                getLexer().nextToken();
+                lexer.nextToken();
             }
-            result.append(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition()));
-            getLexer().nextToken();
+            result.append(lexer.getInput().substring(beginPosition, lexer.getCurrentToken().getEndPosition()));
+            lexer.nextToken();
         }
         return result.toString();
     }

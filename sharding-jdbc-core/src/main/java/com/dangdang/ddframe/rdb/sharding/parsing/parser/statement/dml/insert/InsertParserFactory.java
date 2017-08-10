@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleInsertParser;
@@ -45,7 +45,7 @@ public final class InsertParserFactory {
      * @param sqlParser SQL解析器
      * @return Insert语句解析器
      */
-    public static AbstractInsertParser newInstance(final ShardingRule shardingRule, final SQLParser sqlParser) {
+    public static AbstractInsertParser newInstance(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
             return new MySQLInsertParser(shardingRule, sqlParser);
         }

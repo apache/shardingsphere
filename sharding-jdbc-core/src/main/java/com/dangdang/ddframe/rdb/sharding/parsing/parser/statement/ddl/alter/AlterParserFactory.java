@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLAlterParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleAlterParser;
@@ -43,7 +43,7 @@ public final class AlterParserFactory {
      * @param sqlParser SQL解析器
      * @return Alter语句解析器
      */
-    public static AbstractAlterParser newInstance(final SQLParser sqlParser) {
+    public static AbstractAlterParser newInstance(final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
             return new MySQLAlterParser(sqlParser);
         }

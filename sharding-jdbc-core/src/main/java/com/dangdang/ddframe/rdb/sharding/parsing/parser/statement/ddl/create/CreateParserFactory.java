@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.create;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLCreateParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleCreateParser;
@@ -43,7 +43,7 @@ public final class CreateParserFactory {
      * @param sqlParser SQL解析器
      * @return Create语句解析器
      */
-    public static AbstractCreateParser newInstance(final SQLParser sqlParser) {
+    public static AbstractCreateParser newInstance(final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
             return new MySQLCreateParser(sqlParser);
         }

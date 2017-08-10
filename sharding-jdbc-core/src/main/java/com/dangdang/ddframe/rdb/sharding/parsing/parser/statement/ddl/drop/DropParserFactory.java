@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.drop;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLDropParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleDropParser;
@@ -43,7 +43,7 @@ public final class DropParserFactory {
      * @param sqlParser SQL解析器
      * @return Drop语句解析器
      */
-    public static AbstractDropParser newInstance(final SQLParser sqlParser) {
+    public static AbstractDropParser newInstance(final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
             return new MySQLDropParser(sqlParser);
         }

@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLParser;
@@ -58,7 +58,7 @@ public final class SQLParsingEngine {
      * @return SQL语句对象
      */
     public SQLStatement parse() {
-        SQLParser sqlParser = getSQLParser();
+        AbstractSQLParser sqlParser = getSQLParser();
         sqlParser.skipIfEqual(Symbol.SEMI);
         if (sqlParser.equalAny(DefaultKeyword.WITH)) {
             skipWith(sqlParser);
@@ -90,7 +90,7 @@ public final class SQLParsingEngine {
         throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
     }
     
-    private SQLParser getSQLParser() {
+    private AbstractSQLParser getSQLParser() {
         switch (dbType) {
             case H2:
             case MySQL:
@@ -106,7 +106,7 @@ public final class SQLParsingEngine {
         }
     }
     
-    private void skipWith(final SQLParser sqlParser) {
+    private void skipWith(final AbstractSQLParser sqlParser) {
         sqlParser.getLexer().nextToken();
         do {
             sqlParser.skipUntil(DefaultKeyword.AS);

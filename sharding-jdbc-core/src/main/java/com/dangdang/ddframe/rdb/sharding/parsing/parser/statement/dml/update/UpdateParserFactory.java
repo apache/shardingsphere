@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLUpdateParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
@@ -43,7 +43,7 @@ public final class UpdateParserFactory {
      * @param sqlParser SQL解析器
      * @return Update语句解析器
      */
-    public static AbstractUpdateParser newInstance(final SQLParser sqlParser) {
+    public static AbstractUpdateParser newInstance(final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
             return new MySQLUpdateParser(sqlParser);
         }

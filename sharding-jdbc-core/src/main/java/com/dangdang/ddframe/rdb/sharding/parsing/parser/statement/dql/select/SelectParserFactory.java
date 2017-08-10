@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
@@ -43,7 +43,7 @@ public final class SelectParserFactory {
      * @param sqlParser SQL解析器
      * @return Select语句解析器
      */
-    public static AbstractSelectParser newInstance(final SQLParser sqlParser) {
+    public static AbstractSelectParser newInstance(final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
             return new MySQLSelectParser(sqlParser);
         }

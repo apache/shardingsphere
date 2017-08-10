@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import lombok.AccessLevel;
@@ -34,11 +34,11 @@ import lombok.RequiredArgsConstructor;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractDeleteParser implements SQLStatementParser {
     
-    private final SQLParser sqlParser;
+    private final AbstractSQLParser sqlParser;
     
     private final DMLStatement deleteStatement;
     
-    public AbstractDeleteParser(final SQLParser sqlParser) {
+    public AbstractDeleteParser(final AbstractSQLParser sqlParser) {
         this.sqlParser = sqlParser;
         deleteStatement = new DMLStatement();
     }

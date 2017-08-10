@@ -19,14 +19,14 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 
 /**
  * PostgreSQL解析器.
  *
  * @author zhangliang
  */
-public final class PostgreSQLParser extends SQLParser {
+public final class PostgreSQLParser extends AbstractSQLParser {
     
     public PostgreSQLParser(final String sql, final ShardingRule shardingRule) {
         super(new PostgreSQLLexer(sql), shardingRule);

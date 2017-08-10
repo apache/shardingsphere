@@ -20,11 +20,11 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete.AbstractDeleteParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 
 public class OracleDeleteParser extends AbstractDeleteParser {
     
-    public OracleDeleteParser(final SQLParser sqlParser) {
+    public OracleDeleteParser(final AbstractSQLParser sqlParser) {
         super(sqlParser);
     }
     

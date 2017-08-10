@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.truncate;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLTruncateParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
@@ -43,7 +43,7 @@ public final class TruncateParserFactory {
      * @param sqlParser SQL解析器
      * @return Truncate语句解析器
      */
-    public static AbstractTruncateParser newInstance(final SQLParser sqlParser) {
+    public static AbstractTruncateParser newInstance(final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
             return new MySQLTruncateParser(sqlParser);
         }

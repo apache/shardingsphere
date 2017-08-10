@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.create.AbstractCreateParser;
 
 /**
@@ -30,7 +30,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.create.Abs
  */
 public final class PostgreSQLCreateParser extends AbstractCreateParser {
     
-    public PostgreSQLCreateParser(final SQLParser sqlParser) {
+    public PostgreSQLCreateParser(final AbstractSQLParser sqlParser) {
         super(sqlParser);
     }
     

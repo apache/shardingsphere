@@ -44,7 +44,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.NumberUtil;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
-import lombok.Getter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -54,12 +53,11 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@Getter
-public class SQLParser extends AbstractParser {
+public abstract class AbstractSQLParser extends AbstractParser {
     
     private final ShardingRule shardingRule;
     
-    public SQLParser(final Lexer lexer, final ShardingRule shardingRule) {
+    public AbstractSQLParser(final Lexer lexer, final ShardingRule shardingRule) {
         super(lexer);
         this.shardingRule = shardingRule;
         getLexer().nextToken();

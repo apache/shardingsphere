@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
@@ -35,14 +35,14 @@ import lombok.Getter;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractUpdateParser implements SQLStatementParser {
     
-    private final SQLParser sqlParser;
+    private final AbstractSQLParser sqlParser;
     
     private final DMLStatement updateStatement;
     
     @Getter(AccessLevel.NONE)
     private int parametersIndex;
     
-    public AbstractUpdateParser(final SQLParser sqlParser) {
+    public AbstractUpdateParser(final AbstractSQLParser sqlParser) {
         this.sqlParser = sqlParser;
         updateStatement = new DMLStatement();
     }

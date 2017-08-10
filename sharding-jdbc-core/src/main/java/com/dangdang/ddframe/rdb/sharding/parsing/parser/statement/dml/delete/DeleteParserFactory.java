@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleDeleteParser;
@@ -43,7 +43,7 @@ public final class DeleteParserFactory {
      * @param sqlParser SQL解析器
      * @return Delete语句解析器
      */
-    public static AbstractDeleteParser newInstance(final SQLParser sqlParser) {
+    public static AbstractDeleteParser newInstance(final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
             return new MySQLDeleteParser(sqlParser);
         }

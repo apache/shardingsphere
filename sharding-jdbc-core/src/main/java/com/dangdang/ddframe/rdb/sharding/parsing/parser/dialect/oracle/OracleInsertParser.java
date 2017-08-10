@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.AbstractInsertParser;
 import com.google.common.collect.Sets;
 
@@ -34,7 +34,7 @@ import java.util.Set;
  */
 public final class OracleInsertParser extends AbstractInsertParser {
     
-    public OracleInsertParser(final ShardingRule shardingRule, final SQLParser sqlParser) {
+    public OracleInsertParser(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
         super(shardingRule, sqlParser);
     }
     

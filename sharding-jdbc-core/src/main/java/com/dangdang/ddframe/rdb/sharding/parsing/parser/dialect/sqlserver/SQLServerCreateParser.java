@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.create.AbstractCreateParser;
 
 /**
@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.create.Abs
  */
 public final class SQLServerCreateParser extends AbstractCreateParser {
     
-    public SQLServerCreateParser(final SQLParser sqlParser) {
+    public SQLServerCreateParser(final AbstractSQLParser sqlParser) {
         super(sqlParser);
     }
     
