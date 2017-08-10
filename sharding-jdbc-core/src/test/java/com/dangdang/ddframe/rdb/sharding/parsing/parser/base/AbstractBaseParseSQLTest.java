@@ -127,7 +127,8 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     private void assertOrderBy(final SelectStatement actual) {
         Iterator<OrderItem> orderByColumns = getExpectedOrderByColumns().iterator();
         for (OrderItem each : actual.getOrderByItems()) {
-            assertTrue(new ReflectionEquals(orderByColumns.next()).matches(each));
+            OrderItem expectedOrderItem = orderByColumns.next();
+            assertTrue(new ReflectionEquals(expectedOrderItem).matches(each));
         }
         assertFalse(orderByColumns.hasNext());
     }
