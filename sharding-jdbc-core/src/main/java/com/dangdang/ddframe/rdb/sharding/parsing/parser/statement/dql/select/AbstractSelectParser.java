@@ -104,6 +104,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         // TODO move to rewrite
         appendDerivedColumns();
         appendDerivedOrderBy();
+        isInSubQuery = false;
         return selectStatement;
     }
     
@@ -133,13 +134,13 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private void parseSelectItem() {
+        sqlParser.skipIfEqual(getSkipKeywordsBeforeSelectItem());
         if (isRowNumberSelectItem()) {
             selectStatement.getItems().add(parseRowNumberSelectItem());
             return;
         }
-        sqlParser.skipIfEqual(getSkipKeywordsBeforeSelectItem());
         String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
-        if (isStarSelectItem(literals)) {
+        if (Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
             selectStatement.getItems().add(parseStarSelectItem());
             return;
         }
@@ -176,10 +177,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     protected SelectItem parseRowNumberSelectItem() {
         throw new UnsupportedOperationException("Cannot support special select item.");
-    }
-    
-    private boolean isStarSelectItem(final String literals) {
-        return sqlParser.equalAny(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals));
     }
     
     private SelectItem parseStarSelectItem() {
@@ -354,7 +351,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 return;
             }
         }
-        isInSubQuery = false;
         customizedParseTableFactor();
         parseJoinTable();
     }
