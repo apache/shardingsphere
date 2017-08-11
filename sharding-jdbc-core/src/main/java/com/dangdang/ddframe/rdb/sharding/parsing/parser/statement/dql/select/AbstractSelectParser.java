@@ -104,7 +104,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         // TODO move to rewrite
         appendDerivedColumns();
         appendDerivedOrderBy();
-        isInSubQuery = false;
         return selectStatement;
     }
     
@@ -351,6 +350,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 return;
             }
         }
+        isInSubQuery = false;
         customizedParseTableFactor();
         parseJoinTable();
     }

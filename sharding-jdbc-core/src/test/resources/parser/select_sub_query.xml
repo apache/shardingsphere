@@ -39,6 +39,9 @@
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="orders_count" />
         </aggregation-select-items>
+        <order-by-columns>
+            <order-by-column name="order_id" order-by-type="DESC" />
+        </order-by-columns>
     </assert>
     <assert id="assertSelectSubQueryWithGroupBy">
         <tables>
@@ -48,5 +51,11 @@
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="order_items_count" />
         </aggregation-select-items>
+        <group-by-columns>
+            <group-by-column name="order_id" order-by-type="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="order_id" order-by-type="ASC" />
+        </order-by-columns>
     </assert>
 </asserts>
