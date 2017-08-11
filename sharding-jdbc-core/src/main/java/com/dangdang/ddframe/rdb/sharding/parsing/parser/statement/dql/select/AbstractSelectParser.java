@@ -137,7 +137,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             selectStatement.getItems().add(parseRowNumberSelectItem());
             return;
         }
-        sqlParser.skipIfEqual(getSkipKeyWordBeforeSelectItem());
+        sqlParser.skipIfEqual(getSkipKeywordsBeforeSelectItem());
         String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
         if (isStarSelectItem(literals)) {
             selectStatement.getItems().add(parseStarSelectItem());
@@ -166,7 +166,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         selectStatement.getItems().add(new CommonSelectItem(SQLUtil.getExactlyValue(expression.toString()), sqlParser.parseAlias()));
     }
     
-    protected Keyword[] getSkipKeyWordBeforeSelectItem() {
+    protected Keyword[] getSkipKeywordsBeforeSelectItem() {
         return new Keyword[0];
     }
     

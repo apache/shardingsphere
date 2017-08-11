@@ -45,7 +45,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected Keyword[] getSkipKeyWordBeforeSelectItem() {
+    protected Keyword[] getSkipKeywordsBeforeSelectItem() {
         return new Keyword[] {OracleKeyword.CONNECT_BY_ROOT};
     }
     
