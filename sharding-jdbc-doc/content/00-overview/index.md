@@ -79,40 +79,44 @@ Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功�
 
 公司排名不分先后，按拼音顺序排名
 
-## [北京家视天下科技有限公司](http://www.hiveview.com/)
+## [佰昌科技](http://www.sdbaichang.com/)
 
-## [北京真信认知科技有限公司](http://www.zhenxinsafe.com/)
+## [堡直播](http://www.qbaolive.com/)
 
 ## [当当](http://www.dangdang.com/)
 
-## [山东佰昌信息科技有限公司](http://www.sdbaichang.com/)
+## [东方车联](http://www.dongfang789.com/)
+
+## [非凡之星](http://www.ffzxnet.com/)
+
+## [欢聚时代YY](http://www.yy.com/)
+
+## [家视天下](http://www.hiveview.com/)
+
+## [男衣库](http://www.nanyiku.com/)
 
 ## [权大师](http://www.quandashi.com/)
 
-## [上海定菱网络科技有限公司](http://www.qbaolive.com/)
-
-## [上海九脉信息技术有限公司(东方车联)](http://www.dongfang789.com/)
-
-## [上海御馔网络科技有限公司](http://www.uzengroup.com/)
-
-## [深圳男衣库科技有限公司](http://www.nanyiku.com/)
-
-## [深圳小牛在线](https://www.xiaoniu88.com/)
-
 ## [视觉中国](https://500px.me/)
 
-## [食蚁兽网络](http://www.41soo.com/)
+## [食蚁兽](http://www.41soo.com/)
 
 ## [搜好货](http://www.912688.com/)
 
-## [TCL](http://yq.tclo2o.cn/)
+## [TCL](http://www.tcl.com/)
 
 ## [特微智能](http://www.trawe.cn/)
 
 ## [唯品会](http://www.vip.com/)
 
+## [小牛在线](https://www.xiaoniu88.com/)
+
+## [御馔企业](http://www.uzengroup.com/)
+
 ## [中策车空间](http://www.zcckj.com/)
 
 ## [转转公司](http://www.zhuanzhuan.com/)
+
+## [真信认知科技](http://www.zhenxinsafe.com/)
 
 ## [足记](http://www.fotoplace.cc/)
