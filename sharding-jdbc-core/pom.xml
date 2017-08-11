@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.dangdang</groupId>
         <artifactId>sharding-jdbc</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
+        <version>1.5.1</version>
     </parent>
     <artifactId>sharding-jdbc-core</artifactId>
     <name>${project.artifactId}</name>
