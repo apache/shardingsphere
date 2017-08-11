@@ -383,9 +383,11 @@
 <a href="https://github.com/dangdangdotcom/sharding-jdbc/fork"><img src="https://img.shields.io/github/forks/dangdangdotcom/sharding-jdbc.svg?style=social&amp;label=Fork" alt="GitHub forks" /></a>&nbsp;
 <a href="https://github.com/dangdangdotcom/sharding-jdbc/watchers"><img src="https://img.shields.io/github/watchers/dangdangdotcom/sharding-jdbc.svg?style=social&amp;label=Watch" alt="GitHub watchers" /></a></p>
 
-<p>Sharding-JDBC是当当应用框架ddframe中，关系型数据库模块dd-rdb中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。Sharding-JDBC继dubbox和Elastic-Job之后，是ddframe系列开源的第三个产品。</p>
+<p>Sharding-JDBC是一个开源的适用于微服务的分布式数据访问基础类库，它始终以云原生的基础开发套件为目标。</p>
 
 <p>Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。</p>
+
+<p>Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功能，并初步实现了柔性事务。从2016年开源至今，在经历了整体架构的数次精炼以及稳定性打磨后，如今它已积累了足够的底蕴，相信可以成为开发者选择技术组件时的一个参考。</p>
 
 <p><a href="https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc"><img src="https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg" alt="Maven Status" /></a>
 <a href="https://travis-ci.org/dangdangdotcom/sharding-jdbc"><img src="https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.svg?branch=master" alt="Build Status" /></a>
@@ -410,14 +412,20 @@
 <li>基于Hint的强制主库路由</li>
 </ul>
 
-<h2 id="3-分布式事务">3. 分布式事务</h2>
+<h2 id="3-柔性事务">3. 柔性事务</h2>
 
 <ul>
 <li>最大努力送达型事务</li>
 <li>TCC型事务(TBD)</li>
 </ul>
 
-<h2 id="4-兼容性">4. 兼容性</h2>
+<h2 id="4-分布式主键">4. 分布式主键</h2>
+
+<ul>
+<li>统一的分布式基于时间序列的ID生成器</li>
+</ul>
+
+<h2 id="5-兼容性">5. 兼容性</h2>
 
 <ul>
 <li>可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC</li>
@@ -425,19 +433,13 @@
 <li>理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL</li>
 </ul>
 
-<h2 id="5-灵活多样的配置">5. 灵活多样的配置</h2>
+<h2 id="6-灵活多样的配置">6. 灵活多样的配置</h2>
 
 <ul>
 <li>Java</li>
 <li>Spring命名空间</li>
 <li>YAML</li>
 <li>Inline表达式</li>
-</ul>
-
-<h2 id="6-分布式生成全局主键">6. 分布式生成全局主键</h2>
-
-<ul>
-<li>统一的分布式基于时间序列的ID生成器</li>
 </ul>
 
 <h1 id="第三方文章">第三方文章</h1>
@@ -463,6 +465,46 @@
 <p><strong>使用Sharding-JDBC的公司如果方便请留下公司+网址</strong> <a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/234">https://github.com/dangdangdotcom/sharding-jdbc/issues/234</a></p>
 
 <h1 id="采用公司-统计中">采用公司（统计中）</h1>
+
+<p>公司排名不分先后，按拼音顺序排名</p>
+
+<h2 id="北京家视天下科技有限公司-http-www-hiveview-com"><a href="http://www.hiveview.com/">北京家视天下科技有限公司</a></h2>
+
+<h2 id="北京真信认知科技有限公司-http-www-zhenxinsafe-com"><a href="http://www.zhenxinsafe.com/">北京真信认知科技有限公司</a></h2>
+
+<h2 id="当当-http-www-dangdang-com"><a href="http://www.dangdang.com/">当当</a></h2>
+
+<h2 id="山东佰昌信息科技有限公司-http-www-sdbaichang-com"><a href="http://www.sdbaichang.com/">山东佰昌信息科技有限公司</a></h2>
+
+<h2 id="权大师-http-www-quandashi-com"><a href="http://www.quandashi.com/">权大师</a></h2>
+
+<h2 id="上海定菱网络科技有限公司-http-www-qbaolive-com"><a href="http://www.qbaolive.com/">上海定菱网络科技有限公司</a></h2>
+
+<h2 id="上海九脉信息技术有限公司-东方车联-http-www-dongfang789-com"><a href="http://www.dongfang789.com/">上海九脉信息技术有限公司(东方车联)</a></h2>
+
+<h2 id="上海御馔网络科技有限公司-http-www-uzengroup-com"><a href="http://www.uzengroup.com/">上海御馔网络科技有限公司</a></h2>
+
+<h2 id="深圳男衣库科技有限公司-http-www-nanyiku-com"><a href="http://www.nanyiku.com/">深圳男衣库科技有限公司</a></h2>
+
+<h2 id="深圳小牛在线-https-www-xiaoniu88-com"><a href="https://www.xiaoniu88.com/">深圳小牛在线</a></h2>
+
+<h2 id="视觉中国-https-500px-me"><a href="https://500px.me/">视觉中国</a></h2>
+
+<h2 id="食蚁兽网络-http-www-41soo-com"><a href="http://www.41soo.com/">食蚁兽网络</a></h2>
+
+<h2 id="搜好货-http-www-912688-com"><a href="http://www.912688.com/">搜好货</a></h2>
+
+<h2 id="tcl-http-yq-tclo2o-cn"><a href="http://yq.tclo2o.cn/">TCL</a></h2>
+
+<h2 id="特微智能-http-www-trawe-cn"><a href="http://www.trawe.cn/">特微智能</a></h2>
+
+<h2 id="唯品会-http-www-vip-com"><a href="http://www.vip.com/">唯品会</a></h2>
+
+<h2 id="中策车空间-http-www-zcckj-com"><a href="http://www.zcckj.com/">中策车空间</a></h2>
+
+<h2 id="转转公司-http-www-zhuanzhuan-com"><a href="http://www.zhuanzhuan.com/">转转公司</a></h2>
+
+<h2 id="足记-http-www-fotoplace-cc"><a href="http://www.fotoplace.cc/">足记</a></h2>
 
 
       
