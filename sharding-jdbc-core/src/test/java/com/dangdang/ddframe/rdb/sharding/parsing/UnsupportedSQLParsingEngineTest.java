@@ -38,14 +38,14 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public final class UnsupportedSQLParsingEngineTest {
     
-    private String testcaseName;
+    private String testCaseName;
     
     private String sql;
     
     private Set<DatabaseType> types;
     
     public UnsupportedSQLParsingEngineTest(final String testCaseName, final String sql, final Set<DatabaseType> types) {
-        this.testcaseName = testCaseName;
+        this.testCaseName = testCaseName;
         this.sql = sql;
         this.types = types;
     }
