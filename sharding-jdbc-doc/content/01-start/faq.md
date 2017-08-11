@@ -115,3 +115,8 @@ WHERE id=1 OR status=‘OK’
 因此，SQL必须拆为两条，一条为WHERE id=1，另一条为status=‘OK’，而且他们的分片路由方式截然不同。
 
 如果考虑到很多OR和AND的组合就更加复杂，必须组成一个多维递归的树结构。这种性能对于分布式数据库无法接受，也不可控，因此Sharding-JDBC选择不对OR进行支持。
+
+### 9. 如果SQL在Sharding-JDBC中执行不正确，该如何调试？
+
+Sharding-JDBC 1.5.0版本之后提供了sql.show的配置，可以将Sharding-JDBC从解析上下文，到改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
+sql.show配置默认关闭，如果需要请通过配置开启。详情请参见[配置手册](/02-guide/configuration/)。

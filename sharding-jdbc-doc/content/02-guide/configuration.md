@@ -275,7 +275,7 @@ props: 属性配置(可选)
 | *名称*                                | *类型*       | *数据类型*  | *必填* | *说明*                              |
 | ------------------------------------ | ------------ | ---------- | ----- | ----------------------------------- |
 | metrics.enable                       | 属性         |  boolean   |   否   | 是否开启度量采集，默认为false不开启     |
-| sql.show                             | 属性         |  boolean   |   是   | 是否开启SQL显示，默认为true开启     |
+| sql.show                             | 属性         |  boolean   |   是   | 是否开启SQL显示，默认为false不开启     |
 | metrics.millisecond.period           | 属性         |  String    |   否   | 度量输出周期，单位为毫秒               |
 | executor.min.idle.size               | 属性         |  int       |   否   | 最小空闲工作线程数量                  |
 | executor.max.size                    | 属性         |  int       |   否   | 最大工作线程数量                      |
