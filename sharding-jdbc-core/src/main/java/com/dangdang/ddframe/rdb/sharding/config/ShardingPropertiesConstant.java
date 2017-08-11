@@ -37,7 +37,7 @@ public enum ShardingPropertiesConstant {
      * 默认值: 关闭
      * </p>
      */
-    SQL_SHOW("sql.show", Boolean.TRUE.toString(), boolean.class),
+    SQL_SHOW("sql.show", Boolean.FALSE.toString(), boolean.class),
     
     /**
      * 是否开启SQL.
