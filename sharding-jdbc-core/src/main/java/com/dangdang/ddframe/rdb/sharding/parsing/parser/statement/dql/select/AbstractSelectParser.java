@@ -344,7 +344,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             sqlParser.skipUselessParentheses();
             parse();
             sqlParser.skipUselessParentheses();
-            if (getSqlParser().equalAny(DefaultKeyword.WHERE, Assist.END)) {
+            if (!selectStatement.getTables().isEmpty() || getSqlParser().equalAny(DefaultKeyword.WHERE, Assist.END)) {
                 return;
             }
         }
