@@ -138,9 +138,6 @@
                 <value index="3" literal="10" type="int" />
             </condition>
         </conditions>
-        <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
-        </order-by-columns>
         <limit row-count="3" row-count-index="4" />
     </assert>
     <assert id="assertSelectPaginationWithOffsetAndRowCountInOracle" parameters="1,2,9,10,5,3">
@@ -160,9 +157,6 @@
                 <value index="3" literal="10" type="int" />
             </condition>
         </conditions>
-        <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
-        </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </assert>
 </asserts>
