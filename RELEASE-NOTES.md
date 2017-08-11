@@ -9,7 +9,7 @@
 1. [ISSUE #308](https://github.com/dangdangdotcom/sharding-jdbc/issues/308) 数据库原生的自增GeneratedKey的返回无效
 1. [ISSUE #309](https://github.com/dangdangdotcom/sharding-jdbc/issues/310) 子查询中的ORDER BY和GROUP BY不列入解析上下文
 1. [ISSUE #313](https://github.com/dangdangdotcom/sharding-jdbc/issues/313) 支持<>操作符
-1. [ISSUE #317](https://github.com/dangdangdotcom/sharding-jdbc/issues/317) 分页Limit参数问题
+1. [ISSUE #317](https://github.com/dangdangdotcom/sharding-jdbc/issues/317) LIMIT参数不能是Long类型
 1. [ISSUE #320](https://github.com/dangdangdotcom/sharding-jdbc/issues/320) GROUP BY + LIMIT的SQL改写错误
 1. [ISSUE #323](https://github.com/dangdangdotcom/sharding-jdbc/issues/323) 解析ORDER BY + 聚合表达式错误
 
