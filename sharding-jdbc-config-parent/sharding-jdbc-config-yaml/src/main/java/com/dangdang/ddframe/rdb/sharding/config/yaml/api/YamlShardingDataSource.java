@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -36,21 +36,28 @@ import java.util.Map;
  * @author gaohongtao
  */
 public class YamlShardingDataSource extends ShardingDataSource {
-    
+
     public YamlShardingDataSource(final File yamlFile) throws IOException {
         super(new ShardingRuleBuilder(yamlFile.getName(), unmarshal(yamlFile)).build(), unmarshal(yamlFile).getProps());
     }
-    
+
     public YamlShardingDataSource(final Map<String, DataSource> dataSource, final File yamlFile) throws IOException {
         super(new ShardingRuleBuilder(yamlFile.getName(), dataSource, unmarshal(yamlFile)).build(), unmarshal(yamlFile).getProps());
     }
-    
+
+    public YamlShardingDataSource(String logroot, final InputStream inputStream) throws IOException {
+        super(new ShardingRuleBuilder(logroot, unmarshal(inputStream)).build(), unmarshal(inputStream).getProps());
+    }
+
     private static YamlConfig unmarshal(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
             ) {
-            return new Yaml(new Constructor(YamlConfig.class)).loadAs(inputStreamReader, YamlConfig.class);
+            return unmarshal(fileInputStream);
         }
+    }
+
+    private static YamlConfig unmarshal(final InputStream inputStream) throws IOException {
+        return new Yaml(new Constructor(YamlConfig.class)).loadAs(inputStream, YamlConfig.class);
     }
 }
