@@ -127,9 +127,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         do {
             parseSelectItem();
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
-        if (0 == selectStatement.getSelectListLastPosition()) {
-            selectStatement.setSelectListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
-        }
+        selectStatement.setSelectListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
     }
     
     private void parseSelectItem() {
