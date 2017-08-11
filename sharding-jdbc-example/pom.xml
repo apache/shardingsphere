@@ -11,9 +11,9 @@
         <module>sharding-jdbc-example-jpa</module>
         <module>sharding-jdbc-example-config-yaml</module>
         <module>sharding-jdbc-example-config-spring</module>
-        <module>sharding-jdbc-example-jdbc-transaction</module>
-        <module>sharding-jdbc-example-jdbc-masterslave</module>
         <module>sharding-jdbc-example-config-spring-masterslave</module>
+        <module>sharding-jdbc-example-jdbc-masterslave</module>
+        <module>sharding-jdbc-example-jdbc-transaction</module>
     </modules>
     
     <properties>

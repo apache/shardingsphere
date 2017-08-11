@@ -26,11 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
-/**
- * Order 服务对象.
- * 
- * @author gaohongtao
- */
 @Service
 @Transactional
 public class OrderService {
