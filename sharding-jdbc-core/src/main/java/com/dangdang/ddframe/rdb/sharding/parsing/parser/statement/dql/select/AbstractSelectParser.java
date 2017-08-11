@@ -123,7 +123,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     protected void parseBeforeSelectList() {
     }
     
-    protected final void parseSelectList() {
+    private void parseSelectList() {
         do {
             parseSelectItem();
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
