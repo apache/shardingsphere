@@ -31,6 +31,7 @@ public enum OracleKeyword implements Keyword {
     CREATION,
     UPDATED,
     UPSERT,
+    CONNECT_BY_ROOT,
     STORE,
     MERGE,
     PURGE,
