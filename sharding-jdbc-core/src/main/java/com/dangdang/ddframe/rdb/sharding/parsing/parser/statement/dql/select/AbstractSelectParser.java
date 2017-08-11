@@ -349,7 +349,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             sqlParser.skipUselessParentheses();
             parse();
             sqlParser.skipUselessParentheses();
-            if (!selectStatement.getTables().isEmpty() || getSqlParser().equalAny(DefaultKeyword.WHERE, Assist.END)) {
+            if (getSqlParser().equalAny(DefaultKeyword.WHERE, Assist.END)) {
                 return;
             }
         }
@@ -362,8 +362,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected final void parseTableFactor() {
-        final int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
         sqlParser.skipAll(DefaultKeyword.AS);
+        final int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
         String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
         sqlParser.getLexer().nextToken();
         // TODO 包含Schema解析

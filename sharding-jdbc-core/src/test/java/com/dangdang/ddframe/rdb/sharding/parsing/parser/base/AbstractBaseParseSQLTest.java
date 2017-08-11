@@ -53,7 +53,6 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
         }
     }
     
-    
     private void assertExpectedTables(final SQLStatement actual) {
         assertTrue(new ReflectionEquals(getExpectedTables()).matches(actual.getTables()));
     }
