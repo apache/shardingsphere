@@ -79,8 +79,8 @@ public final class UnsupportedSQLParsingEngineTest {
         for (DatabaseType each : types) {
             try {
                 new SQLParsingEngine(each, sql,
-                        new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                                .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse();
+                        new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id")
+                                .addGenerateKeyColumn("t_order", "order_id").build()).parse();
                 fail(String.format("Should have thrown an SQLParsingUnsupportedException because %s is invalid!", sql));
                 //CHECKSTYLE:OFF
             } catch (final Exception exception) {

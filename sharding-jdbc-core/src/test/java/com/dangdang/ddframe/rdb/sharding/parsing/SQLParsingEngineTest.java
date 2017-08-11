@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing;
 import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
 import com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseSQLTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseTest;
@@ -51,18 +52,19 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     @Test
     public void assertStatement() {
         for (DatabaseType each : SQLStatementHelper.getTypes(getTestCaseName())) {
-            assertStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replaceStatement(SQLStatementHelper.getSql(getTestCaseName()), getParameters()),
-                    new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                            .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse());
+            assertStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replaceStatement(SQLStatementHelper.getSql(getTestCaseName()), getParameters()), buildShardingRule()).parse());
         }
     }
     
     @Test
     public void assertPreparedStatement() {
         for (DatabaseType each : SQLStatementHelper.getTypes(getTestCaseName())) {
-            assertPreparedStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replacePreparedStatement(SQLStatementHelper.getSql(getTestCaseName())),
-                    new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                            .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse());
+            assertPreparedStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replacePreparedStatement(SQLStatementHelper.getSql(getTestCaseName())), buildShardingRule()).parse());
         }
+    }
+    
+    private ShardingRule buildShardingRule() {
+        return new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id")
+                .addGenerateKeyColumn("t_order", "order_id").build();
     }
 }
