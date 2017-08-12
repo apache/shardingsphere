@@ -63,9 +63,15 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void commit() throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : getConnections()) {
-            each.commit();
+            try {
+                each.commit();
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
         }
+        throwSQLExceptionIfNecessary(exceptions);
     }
     
     @Override
