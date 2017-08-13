@@ -33,7 +33,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpr
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
-import com.google.common.base.Optional;
 
 /**
  * SQLServer Select语句解析器.
@@ -86,28 +85,23 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     protected boolean isRowNumberSelectItem() {
-        return getSqlParser().getLexer().getCurrentToken().getLiterals().equalsIgnoreCase("ROW_NUMBER");
+        return getSqlParser().skipIfEqual(SQLServerKeyword.ROW_NUMBER);
     }
     
     @Override
     protected SelectItem parseRowNumberSelectItem() {
-        getSqlParser().getLexer().nextToken();
-        if (getSqlParser().equalAny(Symbol.LEFT_PAREN)) {
-            getSqlParser().skipUntil(DefaultKeyword.OVER);
+        getSqlParser().skipParentheses();
+        getSqlParser().accept(DefaultKeyword.OVER);
+        boolean containSubquery = isContainSubquery();
+        setContainSubquery(false);
+        while (!getSqlParser().skipIfEqual(Symbol.RIGHT_PAREN)) {
             getSqlParser().getLexer().nextToken();
-            getSqlParser().skipIfEqual(Symbol.LEFT_PAREN);
-            boolean containSubquery = isContainSubquery();
-            setContainSubquery(false);
-            parseOrderBy();
-            setContainSubquery(containSubquery);
-            getSqlParser().skipIfEqual(Symbol.RIGHT_PAREN);
-            getSqlParser().skipUntil(DefaultKeyword.AS);
-            getSqlParser().getLexer().nextToken();
-            SelectItem result = new CommonSelectItem("ROW_NUMBER", Optional.of(getSqlParser().getLexer().getCurrentToken().getLiterals()));
-            getSqlParser().getLexer().nextToken();
-            return result;
+            if (getSqlParser().equalAny(DefaultKeyword.ORDER)) {
+                parseOrderBy();
+            }
         }
-        return new CommonSelectItem("ROW_NUMBER", getSqlParser().parseAlias());
+        setContainSubquery(containSubquery);
+        return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getSqlParser().parseAlias());
     }
     
     @Override
