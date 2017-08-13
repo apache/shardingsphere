@@ -24,10 +24,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Map;
 
 /**
@@ -45,19 +42,20 @@ public class YamlShardingDataSource extends ShardingDataSource {
         super(new ShardingRuleBuilder(yamlFile.getName(), dataSource, unmarshal(yamlFile)).build(), unmarshal(yamlFile).getProps());
     }
 
-    public YamlShardingDataSource(String logroot, final InputStream inputStream) throws IOException {
-        super(new ShardingRuleBuilder(logroot, unmarshal(inputStream)).build(), unmarshal(inputStream).getProps());
-    }
-
     private static YamlConfig unmarshal(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
-            ) {
-            return unmarshal(fileInputStream);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
+        ) {
+            return new Yaml(new Constructor(YamlConfig.class)).loadAs(inputStreamReader, YamlConfig.class);
         }
     }
 
-    private static YamlConfig unmarshal(final InputStream inputStream) throws IOException {
-        return new Yaml(new Constructor(YamlConfig.class)).loadAs(inputStream, YamlConfig.class);
+    public YamlShardingDataSource(String logroot, final byte[] ymlByteArray) throws IOException {
+        super(new ShardingRuleBuilder(logroot, unmarshal(ymlByteArray)).build(), unmarshal(ymlByteArray).getProps());
+    }
+
+    private static YamlConfig unmarshal(final byte[] ymlByteArray) throws IOException {
+        return new Yaml(new Constructor(YamlConfig.class)).loadAs(new ByteArrayInputStream(ymlByteArray), YamlConfig.class);
     }
 }
