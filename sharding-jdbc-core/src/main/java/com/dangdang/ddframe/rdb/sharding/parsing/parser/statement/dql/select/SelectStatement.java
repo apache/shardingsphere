@@ -43,8 +43,6 @@ public final class SelectStatement extends DQLStatement {
     
     private boolean containStar;
     
-    private int selectListLastPosition;
-    
     private int groupByLastPosition;
     
     private final List<SelectItem> items = new LinkedList<>();

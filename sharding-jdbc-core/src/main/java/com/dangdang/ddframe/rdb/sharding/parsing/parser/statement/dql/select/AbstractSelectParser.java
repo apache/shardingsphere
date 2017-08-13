@@ -74,6 +74,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final SelectStatement selectStatement;
     
+    private int selectListLastPosition;
+    
     @Setter
     private int parametersIndex;
     
@@ -129,7 +131,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         do {
             parseSelectItem();
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
-        selectStatement.setSelectListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
+        selectListLastPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
     }
     
     private void parseSelectItem() {
@@ -417,7 +419,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             return;
         }
         appendDerivedColumnsFlag = true;
-        ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListLastPosition());
+        ItemsToken itemsToken = new ItemsToken(selectListLastPosition);
         appendAvgDerivedColumns(itemsToken);
         appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByItems(), ORDER_BY_DERIVED_ALIAS);
         appendDerivedOrderColumns(itemsToken, selectStatement.getGroupByItems(), GROUP_BY_DERIVED_ALIAS);
