@@ -34,6 +34,7 @@ public enum DatabaseTestMode {
         } else if (LOCAL == this) {
             result.add(DatabaseType.MySQL);
             result.add(DatabaseType.PostgreSQL);
+            result.add(DatabaseType.SQLServer);
             result.add(DatabaseType.H2);
         } else if (TEST == this) {
             result.add(DatabaseType.H2);
