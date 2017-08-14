@@ -98,7 +98,8 @@ public abstract class AbstractSQLParser extends AbstractParser {
             if (equalAny(Symbol.LEFT_PAREN)) {
                 skipParentheses();
                 skipRestCompositeExpression();
-                return new SQLIgnoreExpression(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition()));
+                return new SQLIgnoreExpression(
+                        getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition() - getLexer().getCurrentToken().getLiterals().length()).trim());
             }
             return skipIfCompositeExpression() ? new SQLIgnoreExpression(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition())) : expression;
         }

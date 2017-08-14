@@ -1,3 +1,9 @@
+## 1.5.2
+
+### 缺陷修正
+
+1. [ISSUE #334](https://github.com/dangdangdotcom/sharding-jdbc/issues/334) 解析有函数的ORDER BY会将后面的ASC, DESC解析到OrderItem的name属性中
+
 ## 1.5.1
 
 ### 新功能
