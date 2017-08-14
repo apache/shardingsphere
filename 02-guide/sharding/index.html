@@ -509,7 +509,7 @@ db1
         .dataSourceRule(dataSourceRule)
         .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
         .databaseShardingStrategy(new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()))
-        .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm())))
+        .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm()))
         .build();
 </code></pre>
 
@@ -565,37 +565,37 @@ Sharding-JDBC认为对于分片策略存有两种维度
 
 <pre><code class="language-java">  //使用了默认策略配置
   TableRule orderTableRule = TableRule.builder(&quot;t_order&quot;)
-          .actualTables(Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;)
+          .actualTables(Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;))
           .dataSourceRule(dataSourceRule)
           .build();
   TableRule orderItemTableRule = TableRule.builder(&quot;t_order_item&quot;)
-            .actualTables(Arrays.asList(&quot;t_order_item_0&quot;, &quot;t_order_item_1&quot;)
+            .actualTables(Arrays.asList(&quot;t_order_item_0&quot;, &quot;t_order_item_1&quot;))
             .dataSourceRule(dataSourceRule)
             .build();
   ShardingRule shardingRule = ShardingRule.builder()
             .dataSourceRule(dataSourceRule)
             .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
             .databaseShardingStrategy(new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()))
-            .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm())))
+            .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm()))
             .build();
 </code></pre>
 
 <pre><code class="language-java">  //未使用默认策略配置
   TableRule orderTableRule = TableRule.builder(&quot;t_order&quot;)
-          .actualTables(Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;)
+          .actualTables(Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;))
           .dataSourceRule(dataSourceRule)
           .build();
   TableRule orderItemTableRule = TableRule.builder(&quot;t_order_item&quot;)
-            .actualTables(Arrays.asList(&quot;t_order_item_0&quot;, &quot;t_order_item_1&quot;)
+            .actualTables(Arrays.asList(&quot;t_order_item_0&quot;, &quot;t_order_item_1&quot;))
             .dataSourceRule(dataSourceRule)
             .databaseShardingStrategy(new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()))
-            .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm())))
+            .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm()))
             .build();
   ShardingRule shardingRule = ShardingRule.builder()
             .dataSourceRule(dataSourceRule)
             .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
             .databaseShardingStrategy(new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()))
-            .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm())))
+            .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm()))
             .build();
 </code></pre>
 
