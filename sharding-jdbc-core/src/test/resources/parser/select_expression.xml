@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
+    <!--<assert id="assertSelectFuncWithSingleTable">-->
+        <!--<tables>-->
+            <!--<table name="t_order" alias="o"/>-->
+        <!--</tables>-->
+        <!--<order-by-columns>-->
+            <!--<order-by-column name="DATE(o.atime)" order-by-type="DESC" />-->
+        <!--</order-by-columns>-->
+    <!--</assert>-->
     <assert id="assertSelectNotEqualsWithSingleTable" parameters="1">
         <tables>
             <table name="t_order_item" />
