@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
@@ -36,6 +37,7 @@ import lombok.ToString;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Insert SQL语句对象.
@@ -48,6 +50,8 @@ import java.util.LinkedList;
 public final class InsertStatement extends DMLStatement {
     
     private final Collection<Column> columns = new LinkedList<>();
+    
+    private final List<Conditions> multipleConditions = new LinkedList<>();
     
     private GeneratedKey generatedKey;
     

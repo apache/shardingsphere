@@ -142,10 +142,11 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getShardingValue(Collections.emptyList()).getValue(), is((Comparable) 1));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
+    // TODO assert
     public void parseMultipleInsertForMySQL() {
         ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.Oracle, "INSERT INTO TABLE_XXX (`field1`, `field2`) VALUES (1, 'value_char'), (2, 'value_char')", shardingRule).parse();
+        new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (`field1`, `field2`) VALUES (1, 'value_char'), (2, 'value_char')", shardingRule).parse();
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)

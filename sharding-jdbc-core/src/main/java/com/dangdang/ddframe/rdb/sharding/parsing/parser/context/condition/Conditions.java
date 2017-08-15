@@ -2,11 +2,13 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.google.common.base.Optional;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * 条件对象集合.
@@ -14,10 +16,17 @@ import java.util.Map;
  * @author zhangliang
  */
 @RequiredArgsConstructor
+@Getter
 @ToString
 public final class Conditions {
     
     private final Map<Column, Condition> conditions = new LinkedHashMap<>();
+    
+    public Conditions(final Conditions conditions) {
+        for (Entry<Column, Condition> entry : conditions.conditions.entrySet()) {
+            this.conditions.put(entry.getKey(), entry.getValue());
+        }
+    }
     
     /**
      * 添加条件对象.
