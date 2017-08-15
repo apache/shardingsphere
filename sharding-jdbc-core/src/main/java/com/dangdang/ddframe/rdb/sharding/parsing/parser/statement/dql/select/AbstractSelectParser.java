@@ -144,9 +144,16 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
         if (isAggregationSelectItem()) {
             selectStatement.getItems().add(parseAggregationSelectItem());
+            while (sqlParser.equalAny(Symbol.getOperators())) {
+                parseCommonSelectItem();
+            }
             return;
         }
-        selectStatement.getItems().add(new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem()), sqlParser.parseAlias()));
+        StringBuilder commonSelectItem = new StringBuilder(parseCommonSelectItem());
+        while (sqlParser.equalAny(Symbol.getOperators())) {
+            commonSelectItem.append(parseCommonSelectItem());
+        }
+        selectStatement.getItems().add(new CommonSelectItem(SQLUtil.getExactlyValue(commonSelectItem.toString()), sqlParser.parseAlias()));
     }
     
     private String parseCommonSelectItem() {
@@ -163,9 +170,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             sqlParser.getLexer().nextToken();
             result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
             sqlParser.getLexer().nextToken();
-        }
-        while (sqlParser.equalAny(Symbol.getOperators())) {
-            result.append(parseCommonSelectItem());
         }
         return result.toString();
     }
