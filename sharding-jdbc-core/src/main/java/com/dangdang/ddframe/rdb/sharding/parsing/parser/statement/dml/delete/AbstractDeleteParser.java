@@ -43,7 +43,7 @@ public abstract class AbstractDeleteParser implements SQLStatementParser {
     @Override
     public DMLStatement parse() {
         sqlParser.getLexer().nextToken();
-        sqlParser.skipAll(getSkipKeywordsBetweenDeleteAndTable());
+        sqlParser.skipAll(getSkippedKeywordsBetweenDeleteAndTable());
         if (sqlParser.equalAny(getUnsupportedKeywordsBetweenDeleteAndTable())) {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
@@ -53,7 +53,7 @@ public abstract class AbstractDeleteParser implements SQLStatementParser {
         return deleteStatement;
     }
     
-    protected abstract Keyword[] getSkipKeywordsBetweenDeleteAndTable();
+    protected abstract Keyword[] getSkippedKeywordsBetweenDeleteAndTable();
     
     protected Keyword[] getUnsupportedKeywordsBetweenDeleteAndTable() {
         return new Keyword[0];

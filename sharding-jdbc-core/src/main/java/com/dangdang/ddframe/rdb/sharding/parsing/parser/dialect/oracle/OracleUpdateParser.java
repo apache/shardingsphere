@@ -29,7 +29,7 @@ public class OracleUpdateParser extends AbstractUpdateParser {
     }
     
     @Override
-    protected Keyword[] getSkipKeywordsBetweenUpdateAndTable() {
+    protected Keyword[] getSkippedKeywordsBetweenUpdateAndTable() {
         return new Keyword[] {OracleKeyword.ONLY};
     }
 }

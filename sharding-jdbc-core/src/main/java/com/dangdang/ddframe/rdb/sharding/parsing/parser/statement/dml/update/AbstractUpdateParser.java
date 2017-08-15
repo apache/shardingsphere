@@ -51,7 +51,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     @Override
     public DMLStatement parse() {
         sqlParser.getLexer().nextToken();
-        sqlParser.skipAll(getSkipKeywordsBetweenUpdateAndTable());
+        sqlParser.skipAll(getSkippedKeywordsBetweenUpdateAndTable());
         if (sqlParser.equalAny(getUnsupportedKeywordsBetweenUpdateAndTable())) {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
@@ -63,7 +63,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
         return updateStatement;
     }
     
-    protected Keyword[] getSkipKeywordsBetweenUpdateAndTable() {
+    protected Keyword[] getSkippedKeywordsBetweenUpdateAndTable() {
         return new Keyword[0];
     }
     

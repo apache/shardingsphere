@@ -35,7 +35,7 @@ public final class MySQLDeleteParser extends AbstractDeleteParser {
     }
     
     @Override
-    protected Keyword[] getSkipKeywordsBetweenDeleteAndTable() {
+    protected Keyword[] getSkippedKeywordsBetweenDeleteAndTable() {
         return new Keyword[] {MySQLKeyword.LOW_PRIORITY, MySQLKeyword.QUICK, MySQLKeyword.IGNORE, DefaultKeyword.FROM};
     }
 }

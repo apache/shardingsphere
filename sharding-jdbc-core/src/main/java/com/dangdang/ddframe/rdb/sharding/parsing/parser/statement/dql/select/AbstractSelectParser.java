@@ -133,7 +133,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private void parseSelectItem() {
-        sqlParser.skipIfEqual(getSkipKeywordsBeforeSelectItem());
+        sqlParser.skipIfEqual(getSkippedKeywordsBeforeSelectItem());
         SelectItem result;
         if (isRowNumberSelectItem()) {
             result = parseRowNumberSelectItem();
@@ -148,7 +148,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         selectStatement.getItems().add(result);
     }
     
-    protected Keyword[] getSkipKeywordsBeforeSelectItem() {
+    protected Keyword[] getSkippedKeywordsBeforeSelectItem() {
         return new Keyword[0];
     }
     
