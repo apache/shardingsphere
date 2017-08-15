@@ -18,8 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
@@ -32,7 +34,6 @@ import lombok.Getter;
  *
  * @author zhangliang
  */
-@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private final AbstractSQLParser sqlParser;
@@ -50,7 +51,10 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     @Override
     public DMLStatement parse() {
         sqlParser.getLexer().nextToken();
-        skipBetweenUpdateAndTable();
+        sqlParser.skipAll(getSkipKeywordsBetweenUpdateAndTable());
+        if (sqlParser.equalAny(getUnsupportedKeywordsBetweenUpdateAndTable())) {
+            throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
+        }
         sqlParser.parseSingleTable(updateStatement);
         parseSetItems();
         sqlParser.skipUntil(DefaultKeyword.WHERE);
@@ -59,7 +63,13 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
         return updateStatement;
     }
     
-    protected abstract void skipBetweenUpdateAndTable();
+    protected Keyword[] getSkipKeywordsBetweenUpdateAndTable() {
+        return new Keyword[0];
+    }
+    
+    protected Keyword[] getUnsupportedKeywordsBetweenUpdateAndTable() {
+        return new Keyword[0];
+    }
     
     private void parseSetItems() {
         sqlParser.accept(DefaultKeyword.SET);

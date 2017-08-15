@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.AbstractUpdateParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.AbstractUpdateParser;
 
 /**
  * SQLServer Update语句解析器.
@@ -34,9 +34,7 @@ public final class SQLServerUpdateParser extends AbstractUpdateParser {
     }
     
     @Override
-    protected void skipBetweenUpdateAndTable() {
-        if (getSqlParser().equalAny(SQLServerKeyword.TOP)) {
-            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
-        }
+    protected Keyword[] getUnsupportedKeywordsBetweenUpdateAndTable() {
+        return new Keyword[] {SQLServerKeyword.TOP};
     }
 }

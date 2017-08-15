@@ -23,14 +23,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Delete语句解析器.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public abstract class AbstractDeleteParser implements SQLStatementParser {
     
     private final AbstractSQLParser sqlParser;

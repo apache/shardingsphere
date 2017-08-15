@@ -18,8 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.AbstractUpdateParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.AbstractUpdateParser;
 
 public class OracleUpdateParser extends AbstractUpdateParser {
     
@@ -28,7 +29,7 @@ public class OracleUpdateParser extends AbstractUpdateParser {
     }
     
     @Override
-    protected void skipBetweenUpdateAndTable() {
-        getSqlParser().skipIfEqual(OracleKeyword.ONLY);
+    protected Keyword[] getSkipKeywordsBetweenUpdateAndTable() {
+        return new Keyword[] {OracleKeyword.ONLY};
     }
 }
