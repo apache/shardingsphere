@@ -9,8 +9,8 @@
     <t_order_item item_id="100301" order_id="1003" order_by_derived_0="100301" user_id="10" status="init" c_date="2017-08-08" />
     <t_order_item item_id="100400" order_id="1004" order_by_derived_0="100400" user_id="10" status="init" c_date="2017-08-08" />
     <t_order_item item_id="100401" order_id="1004" order_by_derived_0="100401" user_id="10" status="init" c_date="2017-08-08" />
-    <t_order_item item_id="100500" order_id="1005" order_by_derived_0="100500" user_id="10" status="init" c_date="2017-08-08" />
-    <t_order_item item_id="100501" order_id="1005" order_by_derived_0="100501" user_id="10" status="init" c_date="2017-08-08" />
+    <t_order_item item_id="100500" order_id="1005" order_by_derived_0="100500" user_id="10" status="init" c_date="2017-08-09" />
+    <t_order_item item_id="100501" order_id="1005" order_by_derived_0="100501" user_id="10" status="init" c_date="2017-08-09" />
     <t_order_item item_id="100600" order_id="1006" order_by_derived_0="100600" user_id="10" status="init" c_date="2017-08-09" />
     <t_order_item item_id="100601" order_id="1006" order_by_derived_0="100601" user_id="10" status="init" c_date="2017-08-09" />
     <t_order_item item_id="100700" order_id="1007" order_by_derived_0="100700" user_id="10" status="init" c_date="2017-08-09" />
@@ -29,8 +29,8 @@
     <t_order_item item_id="110301" order_id="1103" order_by_derived_0="110301" user_id="11" status="init" c_date="2017-08-18" />
     <t_order_item item_id="110400" order_id="1104" order_by_derived_0="110400" user_id="11" status="init" c_date="2017-08-18" />
     <t_order_item item_id="110401" order_id="1104" order_by_derived_0="110401" user_id="11" status="init" c_date="2017-08-18" />
-    <t_order_item item_id="110500" order_id="1105" order_by_derived_0="110500" user_id="11" status="init" c_date="2017-08-18" />
-    <t_order_item item_id="110501" order_id="1105" order_by_derived_0="110501" user_id="11" status="init" c_date="2017-08-18" />
+    <t_order_item item_id="110500" order_id="1105" order_by_derived_0="110500" user_id="11" status="init" c_date="2017-08-19" />
+    <t_order_item item_id="110501" order_id="1105" order_by_derived_0="110501" user_id="11" status="init" c_date="2017-08-19" />
     <t_order_item item_id="110600" order_id="1106" order_by_derived_0="110600" user_id="11" status="init" c_date="2017-08-19" />
     <t_order_item item_id="110601" order_id="1106" order_by_derived_0="110601" user_id="11" status="init" c_date="2017-08-19" />
     <t_order_item item_id="110700" order_id="1107" order_by_derived_0="110700" user_id="11" status="init" c_date="2017-08-19" />

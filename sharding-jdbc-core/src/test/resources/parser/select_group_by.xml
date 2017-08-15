@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
+    <assert id="assertSelectDateFuncWithGroupBy" parameters="1000,1100">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="t_order_item" operator="IN">
+                <value index="0" literal="1000" type="int" />
+                <value index="1" literal="1100" type="int" />
+            </condition>
+        </conditions>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="c_number" />
+        </aggregation-select-items>
+        <group-by-columns>
+            <group-by-column name="date_format(c_date, '%y-%m-%d')" order-by-type="ASC" alias="c_date" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="date_format(c_date, '%y-%m-%d')" order-by-type="ASC" alias="c_date" />
+        </order-by-columns>
+    </assert>
     <assert id="assertSelectSumWithGroupBy">
         <tables>
             <table name="t_order" />

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertSelectFuncWithSingleTable">
+    <assert id="assertSelectDateFuncWithSingleTable">
         <tables>
-            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
         </tables>
         <order-by-columns>
-            <order-by-column name="DATE(o.atime)" order-by-type="DESC" />
+            <order-by-column name="DATE(i.c_date)" order-by-type="DESC" alias="c_date"/>
         </order-by-columns>
     </assert>
     <assert id="assertSelectNotEqualsWithSingleTable" parameters="1">
@@ -72,6 +72,12 @@
         <tables>
             <table name="t_order_item" alias="t"/>
         </tables>
+        <conditions>
+            <condition column-name="item_id" table-name="t_order_item" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+        </conditions>
     </assert>
     <assert id="assertSelectNoShardingTable">
         <tables>
