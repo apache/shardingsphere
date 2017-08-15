@@ -134,44 +134,18 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private void parseSelectItem() {
         sqlParser.skipIfEqual(getSkipKeywordsBeforeSelectItem());
+        SelectItem selectItem;
         if (isRowNumberSelectItem()) {
-            selectStatement.getItems().add(parseRowNumberSelectItem());
-            return;
+            selectItem = parseRowNumberSelectItem();
+        } else if (isStarSelectItem()) {
+            selectItem = parseStarSelectItem();
+        } else if (isAggregationSelectItem()) {
+            selectItem = parseAggregationSelectItem();
+            parseRestSelectItem();
+        } else {
+            selectItem = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem() + parseRestSelectItem()), sqlParser.parseAlias());
         }
-        if (isStarSelectItem()) {
-            selectStatement.getItems().add(parseStarSelectItem());
-            return;
-        }
-        if (isAggregationSelectItem()) {
-            selectStatement.getItems().add(parseAggregationSelectItem());
-            while (sqlParser.equalAny(Symbol.getOperators())) {
-                parseCommonSelectItem();
-            }
-            return;
-        }
-        StringBuilder commonSelectItem = new StringBuilder(parseCommonSelectItem());
-        while (sqlParser.equalAny(Symbol.getOperators())) {
-            commonSelectItem.append(parseCommonSelectItem());
-        }
-        selectStatement.getItems().add(new CommonSelectItem(SQLUtil.getExactlyValue(commonSelectItem.toString()), sqlParser.parseAlias()));
-    }
-    
-    private String parseCommonSelectItem() {
-        String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
-        int position = sqlParser.getLexer().getCurrentToken().getEndPosition() - literals.length();
-        StringBuilder result = new StringBuilder();
-        result.append(literals);
-        sqlParser.getLexer().nextToken();
-        if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
-            result.append(sqlParser.skipParentheses());
-        } else if (sqlParser.equalAny(Symbol.DOT)) {
-            selectStatement.getSqlTokens().add(new TableToken(position, literals));
-            result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
-            sqlParser.getLexer().nextToken();
-            result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
-            sqlParser.getLexer().nextToken();
-        }
-        return result.toString();
+        selectStatement.getItems().add(selectItem);
     }
     
     protected Keyword[] getSkipKeywordsBeforeSelectItem() {
@@ -207,6 +181,32 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         AggregationType aggregationType = AggregationType.valueOf(sqlParser.getLexer().getCurrentToken().getLiterals().toUpperCase());
         sqlParser.getLexer().nextToken();
         return new AggregationSelectItem(aggregationType, sqlParser.skipParentheses(), sqlParser.parseAlias());
+    }
+    
+    private String parseCommonSelectItem() {
+        String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
+        int position = sqlParser.getLexer().getCurrentToken().getEndPosition() - literals.length();
+        StringBuilder result = new StringBuilder();
+        result.append(literals);
+        sqlParser.getLexer().nextToken();
+        if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
+            result.append(sqlParser.skipParentheses());
+        } else if (sqlParser.equalAny(Symbol.DOT)) {
+            selectStatement.getSqlTokens().add(new TableToken(position, literals));
+            result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
+            sqlParser.getLexer().nextToken();
+            result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
+            sqlParser.getLexer().nextToken();
+        }
+        return result.toString();
+    }
+    
+    private String parseRestSelectItem() {
+        StringBuilder result = new StringBuilder();
+        while (sqlParser.equalAny(Symbol.getOperators())) {
+            result.append(parseCommonSelectItem());
+        }
+        return result.toString();
     }
     
     protected final void parseWhere() {
