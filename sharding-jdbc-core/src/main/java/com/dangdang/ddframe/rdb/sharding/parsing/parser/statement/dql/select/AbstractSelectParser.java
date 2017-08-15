@@ -22,9 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Token;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -148,28 +146,28 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             selectStatement.getItems().add(parseAggregationSelectItem());
             return;
         }
-        StringBuilder expression = new StringBuilder();
-        Token lastToken = null;
-        while (!sqlParser.equalAny(DefaultKeyword.AS) && !sqlParser.equalAny(Symbol.COMMA) && !sqlParser.equalAny(DefaultKeyword.FROM) && !sqlParser.equalAny(Assist.END)) {
-            if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
-                expression.append(sqlParser.skipParentheses());
-                lastToken = sqlParser.getLexer().getCurrentToken();
-                continue;
-            }
-            String value = sqlParser.getLexer().getCurrentToken().getLiterals();
-            int position = sqlParser.getLexer().getCurrentToken().getEndPosition() - value.length();
-            expression.append(value);
-            lastToken = sqlParser.getLexer().getCurrentToken();
+        selectStatement.getItems().add(new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem()), sqlParser.parseAlias()));
+    }
+    
+    private String parseCommonSelectItem() {
+        String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
+        int position = sqlParser.getLexer().getCurrentToken().getEndPosition() - literals.length();
+        StringBuilder result = new StringBuilder();
+        result.append(literals);
+        sqlParser.getLexer().nextToken();
+        if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
+            result.append(sqlParser.skipParentheses());
+        } else if (sqlParser.equalAny(Symbol.DOT)) {
+            selectStatement.getSqlTokens().add(new TableToken(position, literals));
+            result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
             sqlParser.getLexer().nextToken();
-            if (sqlParser.equalAny(Symbol.DOT)) {
-                selectStatement.getSqlTokens().add(new TableToken(position, value));
-            }
+            result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
+            sqlParser.getLexer().nextToken();
         }
-        if (hasAlias(expression, lastToken)) {
-            selectStatement.getItems().add(parseSelectItemWithAlias(expression, lastToken));
-            return;
+        while (sqlParser.equalAny(Symbol.getOperators())) {
+            result.append(parseCommonSelectItem());
         }
-        selectStatement.getItems().add(new CommonSelectItem(SQLUtil.getExactlyValue(expression.toString()), sqlParser.parseAlias()));
+        return result.toString();
     }
     
     protected Keyword[] getSkipKeywordsBeforeSelectItem() {
@@ -205,18 +203,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         AggregationType aggregationType = AggregationType.valueOf(sqlParser.getLexer().getCurrentToken().getLiterals().toUpperCase());
         sqlParser.getLexer().nextToken();
         return new AggregationSelectItem(aggregationType, sqlParser.skipParentheses(), sqlParser.parseAlias());
-    }
-    
-    private boolean hasAlias(final StringBuilder expression, final Token lastToken) {
-        return null != lastToken && Literals.IDENTIFIER == lastToken.getType() && !isSQLPropertyExpression(expression, lastToken) && !expression.toString().equals(lastToken.getLiterals());
-    }
-    
-    private boolean isSQLPropertyExpression(final StringBuilder expression, final Token lastToken) {
-        return expression.toString().endsWith(Symbol.DOT.getLiterals() + lastToken.getLiterals());
-    }
-    
-    private CommonSelectItem parseSelectItemWithAlias(final StringBuilder expression, final Token lastToken) {
-        return new CommonSelectItem(SQLUtil.getExactlyValue(expression.substring(0, expression.lastIndexOf(lastToken.getLiterals()))), Optional.of(lastToken.getLiterals()));
     }
     
     protected final void parseWhere() {
