@@ -28,10 +28,10 @@ public final class SqlPlaceholderUtil {
         if (args.length == 0) {
             return str;
         }
-        return String.format(str, args);
+        return String.format(str, args).replace("%%", "%");
     }
     
     public static String replacePreparedStatement(final String str) {
-        return str.replace("%s", Symbol.QUESTION.getLiterals());
+        return str.replace("%s", Symbol.QUESTION.getLiterals()).replace("%%", "%");
     }
 }

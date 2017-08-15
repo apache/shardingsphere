@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
+    <sql id="assertSelectFuncWithGroupBy">
+        <sharding-rule value="tbl">
+            <data parameter="1000,1100" expected="select_group_by/SelectFunc.xml" />
+        </sharding-rule>
+    </sql>
     <sql id="assertSelectSumWithGroupBy">
         <sharding-rule>
             <data expected="select_group_by/SelectSum.xml" />
