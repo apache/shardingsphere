@@ -21,8 +21,8 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
@@ -37,15 +37,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Insert语句解析器.
@@ -78,9 +75,9 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         if (sqlParser.equalAny(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
-        if (getValuesKeywords().contains(sqlParser.getLexer().getCurrentToken().getType())) {
+        if (sqlParser.equalAny(getValuesKeywords())) {
             parseValues();
-        } else if (getCustomizedInsertKeywords().contains(sqlParser.getLexer().getCurrentToken().getType())) {
+        } else if (sqlParser.equalAny(getCustomizedInsertKeywords())) {
             parseCustomizedInsert();
         }
         appendGenerateKey();
@@ -88,7 +85,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     }
     
     private void parseInto() {
-        if (getUnsupportedKeywords().contains(sqlParser.getLexer().getCurrentToken().getType())) {
+        if (sqlParser.equalAny(getUnsupportedKeywordsBeforeInto())) {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
         sqlParser.skipUntil(DefaultKeyword.INTO);
@@ -97,12 +94,12 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         skipBetweenTableAndValues();
     }
     
-    protected Set<TokenType> getUnsupportedKeywords() {
-        return Collections.emptySet();
+    protected Keyword[] getUnsupportedKeywordsBeforeInto() {
+        return new Keyword[0];
     }
     
     private void skipBetweenTableAndValues() {
-        while (getSkippedKeywordsBetweenTableAndValues().contains(sqlParser.getLexer().getCurrentToken().getType())) {
+        while (sqlParser.skipIfEqual(getSkippedKeywordsBetweenTableAndValues())) {
             sqlParser.getLexer().nextToken();
             if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
                 sqlParser.skipParentheses();
@@ -110,8 +107,8 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         }
     }
     
-    protected Set<TokenType> getSkippedKeywordsBetweenTableAndValues() {
-        return Collections.emptySet();
+    protected Keyword[] getSkippedKeywordsBetweenTableAndValues() {
+        return new Keyword[0];
     }
     
     private void parseColumns() {
@@ -136,8 +133,8 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         insertStatement.getColumns().addAll(result);
     }
     
-    protected Set<TokenType> getValuesKeywords() {
-        return Sets.<TokenType>newHashSet(DefaultKeyword.VALUES);
+    protected Keyword[] getValuesKeywords() {
+        return new Keyword[] {DefaultKeyword.VALUES};
     }
     
     private void parseValues() {
@@ -180,8 +177,8 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         return result;
     }
     
-    protected Set<TokenType> getCustomizedInsertKeywords() {
-        return Collections.emptySet();
+    protected Keyword[] getCustomizedInsertKeywords() {
+        return new Keyword[0];
     }
     
     protected void parseCustomizedInsert() {

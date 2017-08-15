@@ -21,9 +21,9 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
@@ -34,9 +34,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholde
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.AbstractInsertParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
-import com.google.common.collect.Sets;
-
-import java.util.Set;
 
 /**
  * MySQL Insert语句解析器.
@@ -85,17 +82,17 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     @Override
-    protected Set<TokenType> getSkippedKeywordsBetweenTableAndValues() {
-        return Sets.<TokenType>newHashSet(MySQLKeyword.PARTITION);
+    protected Keyword[] getSkippedKeywordsBetweenTableAndValues() {
+        return new Keyword[] {MySQLKeyword.PARTITION};
     }
     
     @Override
-    protected Set<TokenType> getValuesKeywords() {
-        return Sets.<TokenType>newHashSet(DefaultKeyword.VALUES, MySQLKeyword.VALUE);
+    protected Keyword[] getValuesKeywords() {
+        return new Keyword[] {DefaultKeyword.VALUES, MySQLKeyword.VALUE};
     }
     
     @Override
-    protected Set<TokenType> getCustomizedInsertKeywords() {
-        return Sets.<TokenType>newHashSet(DefaultKeyword.SET);
+    protected Keyword[] getCustomizedInsertKeywords() {
+        return new Keyword[] {DefaultKeyword.SET};
     }
 }
