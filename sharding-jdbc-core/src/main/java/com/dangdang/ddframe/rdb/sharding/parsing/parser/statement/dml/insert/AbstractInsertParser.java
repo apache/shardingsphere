@@ -80,9 +80,9 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         if (sqlParser.equalAny(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
-        if (sqlParser.equalAny(getValuesKeywords())) {
+        if (sqlParser.skipIfEqual(getValuesKeywords())) {
             parseValues();
-        } else if (sqlParser.equalAny(getCustomizedInsertKeywords())) {
+        } else if (sqlParser.skipIfEqual(getCustomizedInsertKeywords())) {
             parseCustomizedInsert();
         }
         appendGenerateKey();
@@ -148,7 +148,6 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             if (parsed) {
                 throw new UnsupportedOperationException("Cannot support multiple insert");
             }
-            sqlParser.getLexer().nextToken();
             sqlParser.accept(Symbol.LEFT_PAREN);
             List<SQLExpression> sqlExpressions = new LinkedList<>();
             do {
@@ -167,7 +166,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             sqlParser.accept(Symbol.RIGHT_PAREN);
             parsed = true;
         }
-        while (sqlParser.equalAny(Symbol.COMMA));
+        while (sqlParser.skipIfEqual(Symbol.COMMA));
     }
     
     private GeneratedKey createGeneratedKey(final Column column, final SQLExpression sqlExpression) {

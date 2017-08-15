@@ -53,7 +53,6 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     
     private void parseInsertSet() {
         do {
-            getSqlParser().getLexer().nextToken();
             Column column = new Column(SQLUtil.getExactlyValue(getSqlParser().getLexer().getCurrentToken().getLiterals()), getInsertStatement().getTables().getSingleTableName());
             getSqlParser().getLexer().nextToken();
             getSqlParser().accept(Symbol.EQ);
@@ -78,7 +77,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             } else {
                 getSqlParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }
-        } while (getSqlParser().equalAny(Symbol.COMMA));
+        } while (getSqlParser().skipIfEqual(Symbol.COMMA));
     }
     
     @Override
