@@ -140,13 +140,12 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             selectStatement.getItems().add(parseRowNumberSelectItem());
             return;
         }
-        String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
-        if (Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
+        if (isStarSelectItem()) {
             selectStatement.getItems().add(parseStarSelectItem());
             return;
         }
         if (isAggregationSelectItem()) {
-            selectStatement.getItems().add(parseAggregationSelectItem(literals));
+            selectStatement.getItems().add(parseAggregationSelectItem());
             return;
         }
         StringBuilder expression = new StringBuilder();
@@ -180,6 +179,10 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         throw new UnsupportedOperationException("Cannot support special select item.");
     }
     
+    private boolean isStarSelectItem() {
+        return Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(sqlParser.getLexer().getCurrentToken().getLiterals()));
+    }
+    
     private SelectItem parseStarSelectItem() {
         if (!containSubquery) {
             containStarForOutQuery = true;
@@ -190,11 +193,13 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private boolean isAggregationSelectItem() {
-        return sqlParser.skipIfEqual(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
+        return sqlParser.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
     }
     
-    private SelectItem parseAggregationSelectItem(final String literals) {
-        return new AggregationSelectItem(AggregationType.valueOf(literals.toUpperCase()), sqlParser.skipParentheses(), sqlParser.parseAlias());
+    private SelectItem parseAggregationSelectItem() {
+        AggregationType aggregationType = AggregationType.valueOf(sqlParser.getLexer().getCurrentToken().getLiterals().toUpperCase());
+        sqlParser.getLexer().nextToken();
+        return new AggregationSelectItem(aggregationType, sqlParser.skipParentheses(), sqlParser.parseAlias());
     }
     
     private boolean hasAlias(final StringBuilder expression, final Token lastToken) {
