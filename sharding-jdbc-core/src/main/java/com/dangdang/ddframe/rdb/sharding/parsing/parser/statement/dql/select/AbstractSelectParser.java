@@ -134,18 +134,18 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private void parseSelectItem() {
         sqlParser.skipIfEqual(getSkipKeywordsBeforeSelectItem());
-        SelectItem selectItem;
+        SelectItem result;
         if (isRowNumberSelectItem()) {
-            selectItem = parseRowNumberSelectItem();
+            result = parseRowNumberSelectItem();
         } else if (isStarSelectItem()) {
-            selectItem = parseStarSelectItem();
+            result = parseStarSelectItem();
         } else if (isAggregationSelectItem()) {
-            selectItem = parseAggregationSelectItem();
+            result = parseAggregationSelectItem();
             parseRestSelectItem();
         } else {
-            selectItem = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem() + parseRestSelectItem()), sqlParser.parseAlias());
+            result = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem() + parseRestSelectItem()), sqlParser.parseAlias());
         }
-        selectStatement.getItems().add(selectItem);
+        selectStatement.getItems().add(result);
     }
     
     protected Keyword[] getSkipKeywordsBeforeSelectItem() {

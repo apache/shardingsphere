@@ -18,11 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -31,7 +31,6 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractDeleteParser implements SQLStatementParser {
     
     private final AbstractSQLParser sqlParser;
@@ -46,12 +45,19 @@ public abstract class AbstractDeleteParser implements SQLStatementParser {
     @Override
     public DMLStatement parse() {
         sqlParser.getLexer().nextToken();
-        skipBetweenDeleteAndTable();
+        sqlParser.skipAll(getSkipKeywordsBetweenDeleteAndTable());
+        if (sqlParser.equalAny(getUnsupportedKeywordsBetweenDeleteAndTable())) {
+            throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
+        }
         sqlParser.parseSingleTable(deleteStatement);
         sqlParser.skipUntil(DefaultKeyword.WHERE);
         sqlParser.parseWhere(deleteStatement);
         return deleteStatement;
     }
     
-    protected abstract void skipBetweenDeleteAndTable();
+    protected abstract Keyword[] getSkipKeywordsBetweenDeleteAndTable();
+    
+    protected Keyword[] getUnsupportedKeywordsBetweenDeleteAndTable() {
+        return new Keyword[0];
+    }
 }
