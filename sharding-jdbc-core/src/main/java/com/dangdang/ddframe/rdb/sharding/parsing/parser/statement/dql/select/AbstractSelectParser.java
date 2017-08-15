@@ -151,6 +151,11 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         StringBuilder expression = new StringBuilder();
         Token lastToken = null;
         while (!sqlParser.equalAny(DefaultKeyword.AS) && !sqlParser.equalAny(Symbol.COMMA) && !sqlParser.equalAny(DefaultKeyword.FROM) && !sqlParser.equalAny(Assist.END)) {
+            if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
+                expression.append(sqlParser.skipParentheses());
+                lastToken = sqlParser.getLexer().getCurrentToken();
+                continue;
+            }
             String value = sqlParser.getLexer().getCurrentToken().getLiterals();
             int position = sqlParser.getLexer().getCurrentToken().getEndPosition() - value.length();
             expression.append(value);
@@ -313,6 +318,9 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         } else if (sqlExpression instanceof SQLIdentifierExpression) {
             SQLIdentifierExpression sqlIdentifierExpression = (SQLIdentifierExpression) sqlExpression;
             orderItem = new OrderItem(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName())));
+        } else if (sqlExpression instanceof SQLIgnoreExpression) {
+            SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
+            orderItem = new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getAlias(sqlIgnoreExpression.getExpression()));
         } else {
             return;
         }
