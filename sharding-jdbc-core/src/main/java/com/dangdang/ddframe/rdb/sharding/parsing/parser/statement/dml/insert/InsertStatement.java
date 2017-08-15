@@ -51,10 +51,6 @@ public final class InsertStatement extends DMLStatement {
     
     private GeneratedKey generatedKey;
     
-    private int columnsListLastPosition;
-    
-    private int valuesListLastPosition;
-    
     /**
      * 追加自增主键标记对象.
      *

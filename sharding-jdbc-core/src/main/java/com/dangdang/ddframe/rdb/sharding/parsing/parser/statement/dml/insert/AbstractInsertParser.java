@@ -49,16 +49,21 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractInsertParser implements SQLStatementParser {
     
+    @Getter(AccessLevel.PROTECTED)
     private final AbstractSQLParser sqlParser;
     
+    @Getter(AccessLevel.PROTECTED)
     private final ShardingRule shardingRule;
     
+    @Getter(AccessLevel.PROTECTED)
     private final InsertStatement insertStatement;
     
-    @Getter(AccessLevel.NONE)
+    private int columnsListLastPosition;
+    
+    private int valuesListLastPosition;
+    
     private int generateKeyColumnIndex = -1;
     
     public AbstractInsertParser(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
@@ -127,7 +132,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
                 }
                 count++;
             } while (!sqlParser.equalAny(Symbol.RIGHT_PAREN) && !sqlParser.equalAny(Assist.END));
-            insertStatement.setColumnsListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
+            columnsListLastPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
             sqlParser.getLexer().nextToken();
         }
         insertStatement.getColumns().addAll(result);
@@ -149,7 +154,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             do {
                 sqlExpressions.add(sqlParser.parseExpression());
             } while (sqlParser.skipIfEqual(Symbol.COMMA));
-            insertStatement.setValuesListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
+            valuesListLastPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
             int count = 0;
             for (Column each : insertStatement.getColumns()) {
                 SQLExpression sqlExpression = sqlExpressions.get(count);
@@ -190,9 +195,9 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         if (!generateKeyColumn.isPresent() || null != insertStatement.getGeneratedKey()) {
             return;
         } 
-        ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
+        ItemsToken columnsToken = new ItemsToken(columnsListLastPosition);
         columnsToken.getItems().add(generateKeyColumn.get());
         insertStatement.getSqlTokens().add(columnsToken);
-        insertStatement.getSqlTokens().add(new GeneratedKeyToken(insertStatement.getValuesListLastPosition()));
+        insertStatement.getSqlTokens().add(new GeneratedKeyToken(valuesListLastPosition));
     }
 }
