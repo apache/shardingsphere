@@ -186,12 +186,14 @@
             <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
         </order-by-columns>
     </assert>
-    <!--// TODO verify sql-->
-    <!--<assert id="assertSelectCountWithExpression">-->
-        <!--<tables>-->
-            <!--<table name="t_order" alias="o"/>-->
-        <!--</tables>-->
-    <!--</assert>-->
+    <assert id="assertSelectCountWithExpression">
+        <tables>
+            <table name="t_order" alias="o" />
+        </tables>
+        <aggregation-select-items>
+            <aggregation-select-item aggregation-type="COUNT" inner-expression="(o.order_id)" />
+        </aggregation-select-items>
+    </assert>
     <assert id="assertSelectCountWithBindingTable" parameters="1,2,9,10">
         <tables>
             <table name="t_order" alias="o"/>

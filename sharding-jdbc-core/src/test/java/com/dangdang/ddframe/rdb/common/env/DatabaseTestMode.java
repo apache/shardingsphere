@@ -37,7 +37,7 @@ public enum DatabaseTestMode {
             result.add(DatabaseType.SQLServer);
             result.add(DatabaseType.H2);
         } else if (TEST == this) {
-            result.add(DatabaseType.MySQL);
+            result.add(DatabaseType.H2);
         }
         return result;
     }
