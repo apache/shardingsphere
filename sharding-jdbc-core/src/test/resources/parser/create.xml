@@ -10,4 +10,9 @@
             <table name="t_temp" />
         </tables>
     </assert>
+    <assert id="assertCreateTemporaryTable">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
 </asserts>
