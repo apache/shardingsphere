@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertCreateTable" value="CREATE TABLE t_temp(id int)" />
+    <sql id="assertCreateTableIfNotExist" value="CREATE TABLE IF NOT EXISTS t_temp(id int)" type="PostgreSQL"/>
+    <sql id="assertCreateTemporaryTable" value="CREATE TEMPORARY TABLE IF NOT EXISTS t_temp(id int)" type="H2,MySQL,PostgreSQL"/>
+</sqls>
