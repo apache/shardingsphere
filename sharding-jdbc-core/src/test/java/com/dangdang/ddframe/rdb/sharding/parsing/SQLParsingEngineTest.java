@@ -65,6 +65,6 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     
     private ShardingRule buildShardingRule() {
         return new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("item_id")
-                .addGenerateKeyColumn("t_order", "order_id").addGenerateKeyColumn("t_order_item", "item_id").build();
+                .addGenerateKeyColumn("t_order_item", "item_id").build();
     }
 }

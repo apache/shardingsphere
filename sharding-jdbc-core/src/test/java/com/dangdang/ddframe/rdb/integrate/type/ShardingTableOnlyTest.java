@@ -93,7 +93,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
                     "t_order_item_6",
                     "t_order_item_7",
                     "t_order_item_8",
-                    "t_order_item_9")).dataSourceRule(dataSourceRule).build();
+                    "t_order_item_9")).dataSourceRule(dataSourceRule).generateKeyColumn("item_id").build();
             ShardingRule shardingRule = ShardingRule.builder()
                     .dataSourceRule(dataSourceRule)
                     .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))

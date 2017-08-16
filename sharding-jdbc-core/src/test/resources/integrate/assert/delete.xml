@@ -29,12 +29,7 @@
         </sharding-rule>
     </sql>
  
-    <sql id="assertDeleteWithAlias">
-        <sharding-rule>
-            <data parameter="1000,2100" expected="delete/%s.xml" />
-        </sharding-rule>
-    </sql>
-    <sql id="assertDeleteWithoutAlias">
+    <sql id="assertDeleteWithShardingValue">
         <sharding-rule value="tbl">
             <data parameter="1000,10,'init'" expected="delete/%s_0.xml" />
             <data parameter="1001,10,'init'" expected="delete/%s_1.xml" />
