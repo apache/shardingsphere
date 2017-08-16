@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertSelectWithInnerJoin">
+        <sharding-rule value="tbl">
+            <data parameter="1000" expected="select_relation/SelectWithInnerJoin.xml" />
+        </sharding-rule>
+    </sql>
+    <!--// TODO verify sql-->
+    <!--<sql id="assertSelectWithJoinUsing">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="1000" expected="select_relation/SelectWithJoinUsing.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+</sqls>
