@@ -204,6 +204,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     private String parseRestSelectItem() {
         StringBuilder result = new StringBuilder();
         while (sqlParser.equalAny(Symbol.getOperators())) {
+            result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
+            sqlParser.getLexer().nextToken();
             result.append(parseCommonSelectItem());
         }
         return result.toString();

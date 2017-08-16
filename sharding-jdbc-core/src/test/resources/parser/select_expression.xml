@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <!--// TODO verify sql-->
-    <!--<assert id="assertSelectExpressionWithSingleTable">-->
-        <!--<tables>-->
-            <!--<table name="t_order" alias="o"/>-->
-        <!--</tables>-->
-        <!--<order-by-columns>-->
-            <!--<order-by-column owner="o" name="order_id" order-by-type="DESC" />-->
-        <!--</order-by-columns>-->
-    <!--</assert>-->
+    <assert id="assertSelectExpressionWithSingleTable">
+        <tables>
+            <table name="t_order" alias="o"/>
+        </tables>
+        <order-by-columns>
+            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+        </order-by-columns>
+    </assert>
     <assert id="assertSelectDateFuncWithSingleTable">
         <tables>
             <table name="t_order_item" alias="i"/>
