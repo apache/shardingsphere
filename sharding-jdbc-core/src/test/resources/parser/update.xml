@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertUpdateWithAlias" parameters="'update',1,1">
+        <tables>
+            <table name="t_order" alias="o" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                <value index="1" literal="1" type="int" />
+            </condition>
+            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                <value index="2" literal="1" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    <assert id="assertUpdateWithoutAlias" parameters="'update',1,1">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                <value index="1" literal="1" type="int" />
+            </condition>
+            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                <value index="2" literal="1" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+</asserts>
