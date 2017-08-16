@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
     <sql id="assertSelectWithInnerJoin" value="SELECT i.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = %s" />
-    <sql id="assertSelectWithJoinUsing" value="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = %s" />
+    <sql id="assertSelectWithJoinUsing" value="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = %s" type="MySQL,PostgreSQL" />
 </sqls>
