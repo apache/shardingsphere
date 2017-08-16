@@ -5,9 +5,9 @@
             <data expected="select_order_by/Select.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithOrderByForUnion">
+    <sql id="assertSelectWithOrderByForIndex">
         <sharding-rule value="tbl">
-            <data expected="select_order_by/SelectForUnion.xml" />
+            <data expected="select_order_by/SelectForIndex.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertSelectWithOrderByForAlias">

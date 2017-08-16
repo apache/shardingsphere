@@ -10,7 +10,7 @@
         </order-by-columns>
     </assert>
     
-    <assert id="assertSelectWithOrderByForUnion">
+    <assert id="assertSelectWithOrderByForIndex">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
