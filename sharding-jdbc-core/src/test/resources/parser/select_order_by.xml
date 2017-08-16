@@ -17,7 +17,7 @@
         </tables>
         <order-by-columns>
             <order-by-column owner="o" alias="ORDER_BY_DERIVED_0" name="order_id" order-by-type="DESC" />
-            <order-by-column index="2" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+            <order-by-column index="1" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
         </order-by-columns>
     </assert>
     

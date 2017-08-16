@@ -5,12 +5,11 @@
             <data expected="select_order_by/Select.xml" />
         </sharding-rule>
     </sql>
-    <!--// TODO verify sql-->
-    <!--<sql id="assertSelectWithOrderByForUnion">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data expected="select_order_by/SelectForUnion.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+    <sql id="assertSelectWithOrderByForUnion">
+        <sharding-rule value="tbl">
+            <data expected="select_order_by/SelectForUnion.xml" />
+        </sharding-rule>
+    </sql>
     <sql id="assertSelectWithOrderByForAlias">
         <sharding-rule value="tbl">
             <data expected="select_order_by/SelectForAlias.xml" />
