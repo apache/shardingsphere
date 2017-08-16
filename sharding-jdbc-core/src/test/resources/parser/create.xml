@@ -5,10 +5,9 @@
             <table name="t_temp" />
         </tables>
     </assert>
-    <!--// TODO verify SQL-->
-    <!--<assert id="assertCreateTableIfNotExist">-->
-        <!--<tables>-->
-            <!--<table name="t_temp" />-->
-        <!--</tables>-->
-    <!--</assert>-->
+    <assert id="assertCreateTableIfNotExist">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
 </asserts>

@@ -28,7 +28,6 @@ public enum PostgreSQLKeyword implements Keyword {
     
     SHOW,
     OF,
-    IF,
     ONLY,
     TRUE,
     FALSE,
