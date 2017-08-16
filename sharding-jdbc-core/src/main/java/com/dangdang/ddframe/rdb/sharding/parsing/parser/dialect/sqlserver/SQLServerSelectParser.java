@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
@@ -93,9 +92,9 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     protected SelectItem parseRowNumberSelectItem() {
         getSqlParser().skipParentheses();
         getSqlParser().accept(DefaultKeyword.OVER);
-        getSqlParser().skipUntil(DefaultKeyword.ORDER);
-        if (getSqlParser().equalAny(Assist.END)) {
-            throw new SQLParsingException(getSqlParser().getLexer(), DefaultKeyword.ORDER);
+        getSqlParser().accept(Symbol.LEFT_PAREN);
+        if (getSqlParser().equalAny(SQLServerKeyword.PARTITION)) {
+            throw new SQLParsingUnsupportedException(SQLServerKeyword.PARTITION);
         }
         boolean containSubquery = isContainSubquery();
         setContainSubquery(false);
