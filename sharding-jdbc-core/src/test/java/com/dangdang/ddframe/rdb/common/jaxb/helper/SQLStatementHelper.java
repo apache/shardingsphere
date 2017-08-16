@@ -47,18 +47,25 @@ public final class SQLStatementHelper {
         }
         for (File each : files) {
             if (each.isDirectory()) {
-                continue;
-            }
-            try {
-                SQLStatements statements = (SQLStatements) JAXBContext.newInstance(SQLStatements.class).createUnmarshaller().unmarshal(each);
-                for (SQLStatement statement : statements.getSqls()) {
-                    result.put(statement.getId(), statement);
+                for (File file : each.listFiles()) {
+                    fillStatementMap(result, file);
                 }
-            } catch (final JAXBException ex) {
-                throw new RuntimeException(ex);
+            } else {
+                fillStatementMap(result, each);
             }
         }
         return result;
+    }
+    
+    private static void fillStatementMap(final Map<String, SQLStatement> result, final File each) {
+        try {
+            SQLStatements statements = (SQLStatements) JAXBContext.newInstance(SQLStatements.class).createUnmarshaller().unmarshal(each);
+            for (SQLStatement statement : statements.getSqls()) {
+                result.put(statement.getId(), statement);
+            }
+        } catch (final JAXBException ex) {
+            throw new RuntimeException(ex);
+        }
     }
     
     public static Collection<SQLStatement> getUnsupportedSqlStatements() {
