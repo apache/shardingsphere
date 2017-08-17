@@ -39,21 +39,19 @@ import java.util.Collection;
 public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     
     public SQLParsingEngineTest(
-            final String testCaseName, final String[] parameters, final Tables expectedTables, 
+            final String testCaseName, final DatabaseType databaseType, final String[] parameters, final Tables expectedTables, 
             final Conditions expectedConditions, final SQLStatement expectedSQLStatement, final Limit expectedLimit) {
-        super(testCaseName, parameters, expectedTables, expectedConditions, expectedSQLStatement, expectedLimit);
+        super(testCaseName, databaseType, parameters, expectedTables, expectedConditions, expectedSQLStatement, expectedLimit);
     }
     
-    @Parameters(name = "{0}")
+    @Parameters(name = "{0}In{1}")
     public static Collection<Object[]> dataParameters() {
         return AbstractBaseParseTest.dataParameters();
     }
     
     @Test
     public void assertStatement() {
-        for (DatabaseType each : SQLStatementHelper.getTypes(getTestCaseName())) {
-            assertStatement(new SQLParsingEngine(each, SqlPlaceholderUtil.replaceStatement(SQLStatementHelper.getSql(getTestCaseName()), getParameters()), buildShardingRule()).parse());
-        }
+        assertStatement(new SQLParsingEngine(getDatabaseType(), SqlPlaceholderUtil.replaceStatement(SQLStatementHelper.getSql(getTestCaseName()), getParameters()), buildShardingRule()).parse());
     }
     
     @Test

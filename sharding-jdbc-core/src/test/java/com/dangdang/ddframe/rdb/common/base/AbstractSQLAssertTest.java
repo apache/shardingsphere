@@ -120,7 +120,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
                 }
                 File expectedDataSetFile = new File(url.getPath());
                 if (sql.toUpperCase().startsWith("SELECT")) {
-                    assertSelectSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
+                    assertDqlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
                 } else {
                     assertDmlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
                 }
@@ -141,7 +141,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return false;
     }
     
-    private void assertSelectSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SQLAssertData data, final File expectedDataSetFile)
+    private void assertDqlSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SQLAssertData data, final File expectedDataSetFile)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
             executeQueryWithPreparedStatement(shardingDataSource, getParameters(data), expectedDataSetFile);

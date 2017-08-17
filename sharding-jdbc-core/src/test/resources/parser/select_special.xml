@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertSelectStartWithInOracleSQL"  parameters="1001">
+    <assert id="assertSelectWithStartWith"  parameters="1001">
         <tables>
             <table name="t_order_item" />
         </tables>

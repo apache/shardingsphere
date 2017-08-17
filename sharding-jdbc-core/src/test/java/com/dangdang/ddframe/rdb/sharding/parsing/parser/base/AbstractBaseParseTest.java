@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.base;
 
+import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
@@ -35,7 +37,6 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -43,6 +44,9 @@ public abstract class AbstractBaseParseTest {
     
     @Getter(AccessLevel.PROTECTED)
     private final String testCaseName;
+    
+    @Getter(AccessLevel.PROTECTED)
+    private final DatabaseType databaseType;
     
     @Getter(AccessLevel.PROTECTED)
     private final String[] parameters;
@@ -66,9 +70,10 @@ public abstract class AbstractBaseParseTest {
     private final Limit expectedLimit;
     
     AbstractBaseParseTest(
-            final String testCaseName, final String[] parameters, final Tables expectedTables, 
+            final String testCaseName, final DatabaseType databaseType, final String[] parameters, final Tables expectedTables, 
             final Conditions expectedConditions, final SQLStatement expectedSQLStatement, final Limit expectedLimit) {
         this.testCaseName = testCaseName;
+        this.databaseType = databaseType;
         this.parameters = parameters;
         this.expectedTables = expectedTables;
         this.expectedConditions = expectedConditions;
@@ -102,11 +107,14 @@ public abstract class AbstractBaseParseTest {
     
     private static Collection<Object[]> dataParameters(final File file) {
         Asserts asserts = loadAsserts(file);
-        Object[][] result = new Object[asserts.getAsserts().size()][7];
+        List<Object[]> result = new ArrayList<>();
         for (int i = 0; i < asserts.getAsserts().size(); i++) {
-            result[i] = getDataParameter(asserts.getAsserts().get(i));
+            Assert assertObj = asserts.getAsserts().get(i);
+            for (DatabaseType each : SQLStatementHelper.getTypes(assertObj.getId())) {
+                result.add(getDataParameter(assertObj, each));
+            }
         }
-        return Arrays.asList(result);
+        return result;
     }
     
     private static Asserts loadAsserts(final File file) {
@@ -117,14 +125,15 @@ public abstract class AbstractBaseParseTest {
         }
     }
     
-    private static Object[] getDataParameter(final Assert assertObj) {
-        final Object[] result = new Object[6];
+    private static Object[] getDataParameter(final Assert assertObj, final DatabaseType dbType) {
+        final Object[] result = new Object[7];
         result[0] = assertObj.getId();
-        result[1] = ParserJAXBHelper.getParameters(assertObj);
-        result[2] = ParserJAXBHelper.getTables(assertObj);
-        result[3] = assertObj.getConditions();
-        result[4] = ParserJAXBHelper.getSelectStatement(assertObj);
-        result[5] = assertObj.getLimit();
+        result[1] = dbType;
+        result[2] = ParserJAXBHelper.getParameters(assertObj);
+        result[3] = ParserJAXBHelper.getTables(assertObj);
+        result[4] = assertObj.getConditions();
+        result[5] = ParserJAXBHelper.getSelectStatement(assertObj);
+        result[6] = assertObj.getLimit();
         return result;
     }
 }

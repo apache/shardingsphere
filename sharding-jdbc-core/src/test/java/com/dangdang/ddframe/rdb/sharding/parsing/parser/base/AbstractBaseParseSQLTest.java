@@ -1,5 +1,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.base;
 
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
@@ -28,10 +29,10 @@ import static org.junit.Assert.assertTrue;
 public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     
     protected AbstractBaseParseSQLTest(
-            final String testCaseName, final String[] parameters,  
+            final String testCaseName, final DatabaseType databaseType, final String[] parameters,  
             final Tables expectedTables, final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Conditions expectedConditions, 
             final SQLStatement expectedSQLStatement, final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit expectedLimit) {
-        super(testCaseName, parameters, expectedTables, expectedConditions, expectedSQLStatement, expectedLimit);
+        super(testCaseName, databaseType, parameters, expectedTables, expectedConditions, expectedSQLStatement, expectedLimit);
     }
     
     protected final void assertStatement(final SQLStatement actual) {

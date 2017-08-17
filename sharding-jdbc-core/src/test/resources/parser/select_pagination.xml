@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertSelectPaginationWithOffsetInPostgreSQL" parameters="1,2,9,10,5">
+    <assert id="assertSelectPaginationWithOffset" parameters="1,2,9,10,5">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -20,7 +20,7 @@
         </order-by-columns>
         <limit offset="5" offset-index="4" />
     </assert>
-    <assert id="assertSelectPaginationWithRowCount" parameters="1,2,9,10,5">
+    <assert id="assertSelectPaginationWithLimitOnly" parameters="1,2,9,10,5">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -40,7 +40,7 @@
         </order-by-columns>
         <limit row-count="5" row-count-index="4" />
     </assert>
-    <assert id="assertSelectPaginationWithOffsetAndRowCount" parameters="1,2,9,10,5,3">
+    <assert id="assertSelectPaginationWithLimit" parameters="1,2,9,10,5,3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -60,7 +60,7 @@
         </order-by-columns>
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </assert>
-    <assert id="assertSelectPaginationWithRowCountInSQLServer" parameters="3,1,2,9,10">
+    <assert id="assertSelectPaginationWithTop" parameters="3,1,2,9,10">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -81,7 +81,7 @@
         </order-by-columns>
         <limit row-count="3" row-count-index="0" />
     </assert>
-    <assert id="assertSelectPaginationWithOffsetAndRowCountInPostgreSQL" parameters="1,2,9,10,5,3">
+    <assert id="assertSelectPaginationWithOffsetAndLimit" parameters="1,2,9,10,5,3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -101,7 +101,7 @@
         </order-by-columns>
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </assert>
-    <assert id="assertSelectPaginationWithOffsetAndRowCountInSQLServer" parameters="3,1,2,9,10,6">
+    <assert id="assertSelectPaginationWithTopAndRange" parameters="3,1,2,9,10,6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -122,7 +122,7 @@
         </order-by-columns>
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </assert>
-    <assert id="assertSelectPaginationWithRowCountInOracle" parameters="1,2,9,10,3">
+    <assert id="assertSelectPaginationWithRowNumber" parameters="1,2,9,10,3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
@@ -143,7 +143,7 @@
         </order-by-columns>
         <limit row-count="3" row-count-index="4" />
     </assert>
-    <assert id="assertSelectPaginationWithOffsetAndRowCountInOracle" parameters="1,2,9,10,5,3">
+    <assert id="assertSelectPaginationWithRowNumberAndRange" parameters="1,2,9,10,5,3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
