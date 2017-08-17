@@ -396,7 +396,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     @Test
     public void assertGetGeneratedKeysForMultipleRoutedStatement() throws SQLException {
         for (Statement each : statements.values()) {
-            each.executeQuery("SELECT user_id AS uid FROM t_order WHERE order_id IN (1, 2)");
+            each.executeQuery("SELECT user_id AS usr_id FROM t_order WHERE order_id IN (1, 2)");
             assertFalse(each.getGeneratedKeys().next());
         }
     }

@@ -43,7 +43,7 @@ public final class UnsupportedOperationPreparedStatementTest extends AbstractSha
         for (ShardingDataSource each : getShardingDataSources().values()) {
             ShardingConnection shardingConnection = each.getConnection();
             shardingConnections.add(shardingConnection);
-            PreparedStatement preparedStatement = shardingConnection.prepareStatement("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+            PreparedStatement preparedStatement = shardingConnection.prepareStatement("SELECT user_id AS usr_id FROM t_order WHERE status = 'init'");
             statements.add(preparedStatement);
         }
     }

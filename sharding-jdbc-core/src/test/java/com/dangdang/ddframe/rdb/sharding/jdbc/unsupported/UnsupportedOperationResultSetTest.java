@@ -34,7 +34,7 @@ import java.util.List;
 
 public final class UnsupportedOperationResultSetTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private final String sql = "SELECT user_id AS uid FROM t_order WHERE status = 'init'";
+    private final String sql = "SELECT user_id AS usr_id FROM t_order WHERE status = 'init'";
     
     private List<ShardingConnection> shardingConnections = new ArrayList<>();
     

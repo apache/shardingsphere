@@ -136,7 +136,7 @@ public final class ShardingRuleBuilderTest {
         assertTrue(bindingTableRule.hasLogicTable("t_order_item"));
         assertFalse(bindingTableRule.hasLogicTable("t_log"));
         assertThat(actual.getDatabaseShardingStrategy().getShardingColumns().size(), is(1));
-        assertThat(actual.getDatabaseShardingStrategy().getShardingColumns().iterator().next(), is("uid"));
+        assertThat(actual.getDatabaseShardingStrategy().getShardingColumns().iterator().next(), is("usr_id"));
         assertThat(actual.getTableShardingStrategy().getShardingColumns().size(), is(1));
         assertThat(actual.getTableShardingStrategy().getShardingColumns().iterator().next(), is("oid"));
     }
@@ -176,7 +176,7 @@ public final class ShardingRuleBuilderTest {
     
     private StrategyConfig getDatabaseStrategyConfig(final String algorithmClassName) {
         StrategyConfig result = new StrategyConfig();
-        result.setShardingColumns("uid");
+        result.setShardingColumns("usr_id");
         result.setAlgorithmClassName(algorithmClassName);
         return result;
     }
