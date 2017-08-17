@@ -38,11 +38,6 @@ public enum DefaultKeyword implements Keyword {
     REVOKE,
     AS,
     DISTINCT,
-    MAX,
-    MIN,
-    SUM,
-    AVG,
-    COUNT,
     FROM,
     WHERE,
     ORDER,
@@ -77,18 +72,8 @@ public enum DefaultKeyword implements Keyword {
     STRAIGHT_JOIN,
     APPLY,
     ON,
-    IS,
-    IN,
-    BETWEEN,
-    LIKE,
-    AND,
-    OR,
-    XOR,
-    NULL,
-    NOT,
     NO,
     FOR,
-    ALL,
     UNION,
     CAST,
     USE,
@@ -104,7 +89,6 @@ public enum DefaultKeyword implements Keyword {
     ESCAPE,
     LOCK,
     SOME,
-    ANY,
     WHILE,
     DO,
     LEAVE,
@@ -148,7 +132,7 @@ public enum DefaultKeyword implements Keyword {
     DATA,
     
     /*
-     * Types
+    Types
      */
     CHAR,
     CHARACTER,
@@ -169,5 +153,55 @@ public enum DefaultKeyword implements Keyword {
     TIME,
     INTERVAL,
     BOOLEAN,
-    BLOB
+    BLOB,
+    
+    /*
+    Conditionals
+     */
+    AND,
+    OR,
+    XOR,
+    IS,
+    NOT,
+    NULL,
+    IN,
+    BETWEEN,
+    LIKE,
+    ANY,
+    ALL,
+    
+    /*
+    Functions
+     */
+    AVG,
+    MAX,
+    MIN,
+    SUM,
+    COUNT,
+    GREATEST,
+    LEAST,
+    ROUND,
+    TRUNC,
+    POSITION,
+    EXTRACT,
+    LENGTH,
+    CHAR_LENGTH,
+    SUBSTRING,
+    SUBSTR,
+    INSTR,
+    INITCAP,
+    UPPER,
+    LOWER,
+    TRIM,
+    LTRIM,
+    RTRIM,
+    BOTH,
+    LEADING,
+    TRAILING,
+    TRANSLATE,
+    CONVERT,
+    LPAD,
+    RPAD,
+    DECODE,
+    NVL
 }
