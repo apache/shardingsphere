@@ -15,4 +15,19 @@
             <table name="t_temp" />
         </tables>
     </assert>
+    <assert id="assertCreateTempGlobalTableForPostgreSQL">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
+    <assert id="assertCreateTempLocalTemporaryTableForPostgreSQL">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
+    <assert id="assertCreateUnloggedTableForPostgreSQL">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
 </asserts>
