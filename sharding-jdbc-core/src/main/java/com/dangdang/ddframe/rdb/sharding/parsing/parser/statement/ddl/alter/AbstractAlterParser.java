@@ -51,12 +51,12 @@ public abstract class AbstractAlterParser implements SQLStatementParser {
         if (!sqlParser.skipIfEqual(DefaultKeyword.TABLE)) {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
-        getSqlParser().skipAll(getSkipWordsBetweenKeywordAndTableName());
+        getSqlParser().skipAll(getSkipKeywordsBetweenAlterTableAndTableName());
         sqlParser.parseSingleTable(alterStatement);
         return alterStatement;
     }
     
-    protected Keyword[] getSkipWordsBetweenKeywordAndTableName() {
+    protected Keyword[] getSkipKeywordsBetweenAlterTableAndTableName() {
         return new Keyword[0];
     }
 }

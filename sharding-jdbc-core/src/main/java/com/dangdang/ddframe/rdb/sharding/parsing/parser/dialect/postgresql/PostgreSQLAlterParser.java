@@ -35,7 +35,7 @@ public final class PostgreSQLAlterParser extends AbstractAlterParser {
     }
     
     @Override
-    protected Keyword[] getSkipWordsBetweenKeywordAndTableName() {
+    protected Keyword[] getSkipKeywordsBetweenAlterTableAndTableName() {
         return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.EXISTS, PostgreSQLKeyword.ONLY};
     }
 }
