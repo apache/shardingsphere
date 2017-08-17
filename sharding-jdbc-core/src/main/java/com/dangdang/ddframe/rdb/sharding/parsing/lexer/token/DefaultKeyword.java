@@ -54,14 +54,7 @@ public enum DefaultKeyword implements Keyword {
     SET, 
     ADD,
     RENAME, 
-    PRIMARY,
-    KEY,
     INDEX,
-    CONSTRAINT,
-    CHECK,
-    UNIQUE,
-    FOREIGN,
-    REFERENCES,
     INNER,
     LEFT,
     RIGHT,
@@ -203,5 +196,17 @@ public enum DefaultKeyword implements Keyword {
     LPAD,
     RPAD,
     DECODE,
-    NVL
+    NVL,
+    
+    /*
+    Constraints
+     */
+    CONSTRAINT,
+    UNIQUE,
+    PRIMARY,
+    FOREIGN,
+    KEY,
+    CHECK,
+    REFERENCES,
+    CASCADE
 }

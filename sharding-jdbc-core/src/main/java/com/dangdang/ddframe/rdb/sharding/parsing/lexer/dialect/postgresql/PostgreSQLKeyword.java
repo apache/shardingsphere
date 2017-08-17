@@ -41,7 +41,6 @@ public enum PostgreSQLKeyword implements Keyword {
     SIBLINGS,
     RESTART,
     RECURSIVE,
-    CASCADE,
     CURRENT,
     RESTRICT,
     NOWAIT,
