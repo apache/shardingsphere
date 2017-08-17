@@ -28,6 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.CommonSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.StarSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -170,7 +171,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
         sqlParser.getLexer().nextToken();
         selectStatement.setContainStar(true);
-        return new CommonSelectItem(Symbol.STAR.getLiterals(), sqlParser.parseAlias());
+        sqlParser.parseAlias();
+        return new StarSelectItem(Optional.<String>absent());
     }
     
     private boolean isAggregationSelectItem() {
