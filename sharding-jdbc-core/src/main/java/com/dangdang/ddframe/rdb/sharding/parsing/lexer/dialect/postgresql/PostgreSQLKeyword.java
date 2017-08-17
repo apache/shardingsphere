@@ -27,7 +27,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 public enum PostgreSQLKeyword implements Keyword {
     
     SHOW,
-    OF,
     ONLY,
     TRUE,
     FALSE,
@@ -35,7 +34,6 @@ public enum PostgreSQLKeyword implements Keyword {
     FIRST,
     NEXT,
     LAST,
-    ROW,
     LIMIT,
     OFFSET,
     SIBLINGS,
@@ -50,7 +48,6 @@ public enum PostgreSQLKeyword implements Keyword {
     RETURNING,
     ROWS,
     SHARE,
-    TEMP,
     IDENTITY,
     WINDOW,
     STATISTICS,
@@ -60,7 +57,6 @@ public enum PostgreSQLKeyword implements Keyword {
     EXTENDED,
     MAIN,
     VALID,
-    VALIDATE,
     REPLICA,
     ALWAYS,
     RULE,

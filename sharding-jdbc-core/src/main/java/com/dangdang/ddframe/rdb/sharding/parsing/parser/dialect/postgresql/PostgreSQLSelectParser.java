@@ -54,8 +54,8 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         }
         if (getSqlParser().skipIfEqual(DefaultKeyword.FOR)) {
             getSqlParser().skipIfEqual(DefaultKeyword.UPDATE, PostgreSQLKeyword.SHARE);
-            if (getSqlParser().equalAny(PostgreSQLKeyword.OF)) {
-                throw new SQLParsingUnsupportedException(PostgreSQLKeyword.OF);
+            if (getSqlParser().equalAny(DefaultKeyword.OF)) {
+                throw new SQLParsingUnsupportedException(DefaultKeyword.OF);
             }
             getSqlParser().skipIfEqual(PostgreSQLKeyword.NOWAIT);
         }
@@ -118,7 +118,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
             throw new SQLParsingException(getSqlParser().getLexer());
         }
         getSqlParser().getLexer().nextToken();
-        getSqlParser().skipIfEqual(PostgreSQLKeyword.ROW, PostgreSQLKeyword.ROWS);
+        getSqlParser().skipIfEqual(DefaultKeyword.ROW, PostgreSQLKeyword.ROWS);
         return Optional.of(new LimitValue(offsetValue, offsetIndex));
     }
     

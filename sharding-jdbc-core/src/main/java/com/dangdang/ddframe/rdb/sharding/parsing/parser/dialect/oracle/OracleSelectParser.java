@@ -263,14 +263,14 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     private boolean isFlashbackQueryClauseForAs() {
-        return getSqlParser().skipIfEqual(DefaultKeyword.AS) && getSqlParser().skipIfEqual(OracleKeyword.OF)
+        return getSqlParser().skipIfEqual(DefaultKeyword.AS) && getSqlParser().skipIfEqual(DefaultKeyword.OF)
                 && (getSqlParser().skipIfEqual(OracleKeyword.SCN) || getSqlParser().skipIfEqual(OracleKeyword.TIMESTAMP));
     }
     
     private void skipForUpdate() {
         getSqlParser().getLexer().nextToken();
         getSqlParser().accept(DefaultKeyword.UPDATE);
-        if (getSqlParser().skipIfEqual(OracleKeyword.OF)) {
+        if (getSqlParser().skipIfEqual(DefaultKeyword.OF)) {
             do {
                 getSqlParser().parseExpression();
             } while (getSqlParser().skipIfEqual(Symbol.COMMA));

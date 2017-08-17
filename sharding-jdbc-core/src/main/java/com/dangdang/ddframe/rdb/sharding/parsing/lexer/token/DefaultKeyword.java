@@ -24,103 +24,163 @@ package com.dangdang.ddframe.rdb.sharding.parsing.lexer.token;
  */
 public enum DefaultKeyword implements Keyword {
     
-    SELECT,
-    DELETE,
-    INSERT,
-    UPDATE,
-    CREATE,
-    ALTER,
-    DROP,
-    TRUNCATE,
-    REPLACE,
-    DECLARE,
-    GRANT,
-    REVOKE,
-    AS,
-    DISTINCT,
+    /*
+    Common
+     */
+    SCHEMA,
+    DATABASE,
+    TABLE,
+    COLUMN,
+    VIEW,
+    INDEX,
+    TRIGGER,
+    PROCEDURE,
+    TABLESPACE,
+    FUNCTION,
+    SEQUENCE,
+    CURSOR,
     FROM,
+    TO,
+    OF,
+    IF,
+    ELSE,
+    THEN,
+    ON,
+    FOR,
+    WHEN,
+    WHILE,
+    DO,
+    NO,
+    BY,
+    WITH,
+    WITHOUT,
+    TEMPORARY,
+    TEMP,
+    COMMENT,
+    END,
+    
+    /*
+    Create
+    */
+    CREATE,
+    REPLACE,
+    BEFORE,
+    AFTER,
+    INSTEAD,
+    EACH,
+    ROW,
+    STATEMENT,
+    EXECUTE,
+    BITMAP,
+    NOSORT,
+    REVERSE,
+    COMPILE,
+    
+    /*
+    Alter
+     */
+    ALTER,
+    ADD,
+    MODIFY,
+    RENAME,
+    ENABLE,
+    DISABLE,
+    VALIDATE,
+    USER,
+    IDENTIFIED,
+    
+    /*
+    Truncate
+     */
+    TRUNCATE,
+    
+    /*
+    Drop
+     */
+    DROP,
+    CASCADE,
+    
+    /*
+    Insert
+     */
+    INSERT,
+    INTO,
+    VALUES,
+    
+    /*
+    Update
+     */
+    UPDATE,
+    SET,
+    
+    /*
+    Delete
+     */
+    DELETE,
+    
+    /*
+    Select
+     */
+    SELECT,
+    DISTINCT,
+    CASE,
+    AS,
+    LEFT, 
+    RIGHT,
+    FULL,
+    INNER,
+    OUTER,
+    CROSS,
+    JOIN,
+    USE,
+    USING,
+    STRAIGHT_JOIN,
+    APPLY,
+    NATURAL,
     WHERE,
     ORDER,
     ASC,
     DESC,
     GROUP,
-    BY, 
-    HAVING, 
-    INTO, 
-    VALUES, 
-    COLUMN, 
-    TABLE, 
-    TABLESPACE, 
-    SET, 
-    ADD,
-    RENAME, 
-    INDEX,
-    INNER,
-    LEFT,
-    RIGHT,
-    FULL,
-    OUTER,
-    CROSS, 
-    JOIN,
-    STRAIGHT_JOIN,
-    APPLY,
-    ON,
-    NO,
-    FOR,
+    HAVING,
     UNION,
+    
+    /*
+    Other Command
+     */
+    DECLARE,
+    GRANT,
+    FETCH,
+    REVOKE,
+    CLOSE,
+    
+    /*
+    Others
+     */
     CAST,
-    USE,
-    USING,
-    TO,
-    CASE,
-    WHEN,
-    THEN,
-    ELSE,
-    END,
-    EXISTS,
     NEW,
     ESCAPE,
     LOCK,
     SOME,
-    WHILE,
-    DO,
     LEAVE,
     ITERATE,
     REPEAT,
     UNTIL,
     OPEN,
-    CLOSE,
     OUT,
     INOUT,
     OVER,
-    FETCH,
-    WITH,
-    WITHOUT,
-    CURSOR,
     ADVISE,
     SIBLINGS,
     LOOP,
-    ENABLE,
-    DISABLE,
     EXPLAIN,
-    SCHEMA,
-    DATABASE,
-    VIEW,
-    SEQUENCE,
-    TRIGGER,
-    PROCEDURE,
-    FUNCTION,
     DEFAULT,
     EXCEPT,
     INTERSECT,
     MINUS,
-    USER,
     PASSWORD,
-    IF,
+    LOCAL,
     GLOBAL,
-    LOCAL, 
-    TEMPORARY,
-    COMMENT,
     STORAGE,
     DATA,
     
@@ -162,6 +222,7 @@ public enum DefaultKeyword implements Keyword {
     LIKE,
     ANY,
     ALL,
+    EXISTS,
     
     /*
     Functions
@@ -207,6 +268,5 @@ public enum DefaultKeyword implements Keyword {
     FOREIGN,
     KEY,
     CHECK,
-    REFERENCES,
-    CASCADE
+    REFERENCES
 }
