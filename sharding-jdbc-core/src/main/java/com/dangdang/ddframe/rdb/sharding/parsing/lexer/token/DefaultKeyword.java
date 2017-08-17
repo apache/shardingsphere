@@ -102,7 +102,6 @@ public enum DefaultKeyword implements Keyword {
     EXISTS,
     NEW,
     ESCAPE,
-    INTERVAL,
     LOCK,
     SOME,
     ANY,
@@ -146,5 +145,29 @@ public enum DefaultKeyword implements Keyword {
     TEMPORARY,
     COMMENT,
     STORAGE,
-    DATA
+    DATA,
+    
+    /*
+     * Types
+     */
+    CHAR,
+    CHARACTER,
+    VARYING,
+    VARCHAR,
+    VARCHAR2,
+    INTEGER,
+    INT,
+    SMALLINT,
+    DECIMAL,
+    DEC,
+    NUMERIC,
+    FLOAT,
+    REAL,
+    DOUBLE,
+    PRECISION,
+    DATE,
+    TIME,
+    INTERVAL,
+    BOOLEAN,
+    BLOB
 }

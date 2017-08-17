@@ -88,22 +88,19 @@ public abstract class AbstractSQLParser extends AbstractParser {
         String literals = getLexer().getCurrentToken().getLiterals();
         final int beginPosition = getLexer().getCurrentToken().getEndPosition() - literals.length();
         final SQLExpression expression = getExpression(literals);
-        if (skipIfEqual(Literals.IDENTIFIER)) {
-            if (skipIfEqual(Symbol.DOT)) {
-                String property = getLexer().getCurrentToken().getLiterals();
-                getLexer().nextToken();
-                return skipIfCompositeExpression() ? new SQLIgnoreExpression(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition()))
-                        : new SQLPropertyExpression(new SQLIdentifierExpression(literals), property);
-            }
-            if (equalAny(Symbol.LEFT_PAREN)) {
-                skipParentheses();
-                skipRestCompositeExpression();
-                return new SQLIgnoreExpression(
-                        getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition() - getLexer().getCurrentToken().getLiterals().length()).trim());
-            }
-            return skipIfCompositeExpression() ? new SQLIgnoreExpression(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition())) : expression;
-        }
         getLexer().nextToken();
+        if (skipIfEqual(Symbol.DOT)) {
+            String property = getLexer().getCurrentToken().getLiterals();
+            getLexer().nextToken();
+            return skipIfCompositeExpression() ? new SQLIgnoreExpression(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition()))
+                    : new SQLPropertyExpression(new SQLIdentifierExpression(literals), property);
+        }
+        if (equalAny(Symbol.LEFT_PAREN)) {
+            skipParentheses();
+            skipRestCompositeExpression();
+            return new SQLIgnoreExpression(
+                    getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition() - getLexer().getCurrentToken().getLiterals().length()).trim());
+        }
         return skipIfCompositeExpression() ? new SQLIgnoreExpression(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition())) : expression;
     }
     
