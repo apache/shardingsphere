@@ -62,7 +62,6 @@ public enum MySQLKeyword implements Keyword {
     DISCARD,
     IMPORT,
     VALIDATION, 
-    COALESCE,
     REORGANIZE,
     EXCHANGE,
     REBUILD,

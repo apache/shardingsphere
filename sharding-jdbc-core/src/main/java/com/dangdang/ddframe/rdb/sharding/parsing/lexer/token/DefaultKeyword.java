@@ -43,11 +43,8 @@ public enum DefaultKeyword implements Keyword {
     TO,
     OF,
     IF,
-    ELSE,
-    THEN,
     ON,
     FOR,
-    WHEN,
     WHILE,
     DO,
     NO,
@@ -57,7 +54,6 @@ public enum DefaultKeyword implements Keyword {
     TEMPORARY,
     TEMP,
     COMMENT,
-    END,
     
     /*
     Create
@@ -123,8 +119,12 @@ public enum DefaultKeyword implements Keyword {
      */
     SELECT,
     DISTINCT,
-    CASE,
     AS,
+    CASE,
+    WHEN,
+    ELSE,
+    THEN,
+    END,
     LEFT, 
     RIGHT,
     FULL,
@@ -183,6 +183,7 @@ public enum DefaultKeyword implements Keyword {
     GLOBAL,
     STORAGE,
     DATA,
+    COALESCE,
     
     /*
     Types
