@@ -56,5 +56,7 @@ public abstract class AbstractTruncateParser implements SQLStatementParser {
         return truncateStatement;
     }
     
-    protected abstract Keyword[] getSkipWordsBetweenKeywordAndTableName();
+    protected Keyword[] getSkipWordsBetweenKeywordAndTableName() {
+        return new Keyword[0];
+    }
 }
