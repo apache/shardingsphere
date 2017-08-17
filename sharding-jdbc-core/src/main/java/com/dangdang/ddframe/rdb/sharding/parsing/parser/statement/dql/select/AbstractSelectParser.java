@@ -215,7 +215,81 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return result.toString();
     }
     
-    protected final void parseWhere() {
+    private void parseFrom() {
+        if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
+            throw new SQLParsingUnsupportedException(DefaultKeyword.INTO);
+        }
+        if (sqlParser.skipIfEqual(DefaultKeyword.FROM)) {
+            parseTable();
+        }
+    }
+    
+    private void parseTable() {
+        if (sqlParser.skipIfEqual(Symbol.LEFT_PAREN)) {
+            if (!selectStatement.getTables().isEmpty()) {
+                throw new UnsupportedOperationException("Cannot support subquery for nested tables.");
+            }
+            containSubquery = true;
+            containStar = false;
+            sqlParser.skipUselessParentheses();
+            parse();
+            sqlParser.skipUselessParentheses();
+            if (getSqlParser().equalAny(DefaultKeyword.WHERE, Assist.END)) {
+                return;
+            }
+        }
+        customizedParseTableFactor();
+        parseJoinTable();
+    }
+    
+    protected void customizedParseTableFactor() {
+        parseTableFactor();
+    }
+    
+    protected final void parseTableFactor() {
+        sqlParser.skipAll(DefaultKeyword.AS);
+        final int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
+        String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
+        sqlParser.getLexer().nextToken();
+        // TODO 包含Schema解析
+        if (sqlParser.skipIfEqual(Symbol.DOT)) {
+            sqlParser.getLexer().nextToken();
+            sqlParser.parseAlias();
+            return;
+        }
+        // FIXME 根据shardingRule过滤table
+        selectStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
+        selectStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), sqlParser.parseAlias()));
+    }
+    
+    protected void parseJoinTable() {
+        if (sqlParser.skipJoin()) {
+            parseTable();
+            if (sqlParser.skipIfEqual(DefaultKeyword.ON)) {
+                do {
+                    parseTableCondition(sqlParser.getLexer().getCurrentToken().getEndPosition());
+                    sqlParser.accept(Symbol.EQ);
+                    parseTableCondition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
+                } while (sqlParser.skipIfEqual(DefaultKeyword.AND));
+            } else if (sqlParser.skipIfEqual(DefaultKeyword.USING)) {
+                sqlParser.skipParentheses();
+            }
+            parseJoinTable();
+        }
+    }
+    
+    private void parseTableCondition(final int startPosition) {
+        SQLExpression sqlExpression = sqlParser.parseExpression();
+        if (!(sqlExpression instanceof SQLPropertyExpression)) {
+            return;
+        }
+        SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
+        if (selectStatement.getTables().getTableNames().contains(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()))) {
+            selectStatement.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpression.getOwner().getName()));
+        }
+    }
+    
+    private void parseWhere() {
         if (selectStatement.getTables().isEmpty()) {
             return;
         }
@@ -339,80 +413,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             }
         }
         return Optional.absent();
-    }
-    
-    private void parseFrom() {
-        if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
-            throw new SQLParsingUnsupportedException(DefaultKeyword.INTO);
-        }
-        if (sqlParser.skipIfEqual(DefaultKeyword.FROM)) {
-            parseTable();
-        }
-    }
-    
-    private void parseTable() {
-        if (sqlParser.skipIfEqual(Symbol.LEFT_PAREN)) {
-            if (!selectStatement.getTables().isEmpty()) {
-                throw new UnsupportedOperationException("Cannot support subquery for nested tables.");
-            }
-            containSubquery = true;
-            containStar = false;
-            sqlParser.skipUselessParentheses();
-            parse();
-            sqlParser.skipUselessParentheses();
-            if (getSqlParser().equalAny(DefaultKeyword.WHERE, Assist.END)) {
-                return;
-            }
-        }
-        customizedParseTableFactor();
-        parseJoinTable();
-    }
-    
-    protected void customizedParseTableFactor() {
-        parseTableFactor();
-    }
-    
-    protected final void parseTableFactor() {
-        sqlParser.skipAll(DefaultKeyword.AS);
-        final int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
-        String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
-        sqlParser.getLexer().nextToken();
-        // TODO 包含Schema解析
-        if (sqlParser.skipIfEqual(Symbol.DOT)) {
-            sqlParser.getLexer().nextToken();
-            sqlParser.parseAlias();
-            return;
-        }
-        // FIXME 根据shardingRule过滤table
-        selectStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
-        selectStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), sqlParser.parseAlias()));
-    }
-    
-    protected void parseJoinTable() {
-        if (sqlParser.skipJoin()) {
-            parseTable();
-            if (sqlParser.skipIfEqual(DefaultKeyword.ON)) {
-                do {
-                    parseTableCondition(sqlParser.getLexer().getCurrentToken().getEndPosition());
-                    sqlParser.accept(Symbol.EQ);
-                    parseTableCondition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
-                } while (sqlParser.skipIfEqual(DefaultKeyword.AND));
-            } else if (sqlParser.skipIfEqual(DefaultKeyword.USING)) {
-                sqlParser.skipParentheses();
-            }
-            parseJoinTable();
-        }
-    }
-    
-    private void parseTableCondition(final int startPosition) {
-        SQLExpression sqlExpression = sqlParser.parseExpression();
-        if (!(sqlExpression instanceof SQLPropertyExpression)) {
-            return;
-        }
-        SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-        if (selectStatement.getTables().getTableNames().contains(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()))) {
-            selectStatement.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpression.getOwner().getName()));
-        }
     }
     
     protected abstract void customizedSelect();
