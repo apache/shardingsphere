@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertDropTable">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
+    <assert id="assertDropTableIfExist">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
+    <assert id="assertDropTemporaryTable">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
+    <assert id="assertDropTableRestrict">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
+    <assert id="assertDropTableCascade">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
+    <assert id="assertDropTableCascadeConstraintsAndPurgeForOracle">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
+</asserts>

@@ -48,12 +48,17 @@ public abstract class AbstractDropParser implements SQLStatementParser {
     @Override
     public DDLStatement parse() {
         sqlParser.getLexer().nextToken();
+        getSqlParser().skipAll(getSkipWordsBetweenDropAndTable());
         if (!sqlParser.skipIfEqual(DefaultKeyword.TABLE)) {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
         getSqlParser().skipAll(getSkipWordsBetweenKeywordAndTableName());
         sqlParser.parseSingleTable(dropStatement);
         return dropStatement;
+    }
+    
+    protected Keyword[] getSkipWordsBetweenDropAndTable() {
+        return new Keyword[0];
     }
     
     protected abstract Keyword[] getSkipWordsBetweenKeywordAndTableName();

@@ -33,7 +33,6 @@ public enum SQLServerKeyword implements Keyword {
     ROW_NUMBER,
     PARTITION, 
     ONLY, 
-    IF, 
     OUTPUT, 
     AUTO, 
     BEGIN, 
