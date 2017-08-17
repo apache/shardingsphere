@@ -68,7 +68,6 @@ public enum OracleKeyword implements Keyword {
     VERSIONS,
     WAIT,
     NOWAIT,
-    STORAGE,
     SAMPLE,
     CONTINUE,
     SYSDATE,

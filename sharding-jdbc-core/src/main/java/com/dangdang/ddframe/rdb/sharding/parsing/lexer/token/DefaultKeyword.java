@@ -57,7 +57,8 @@ public enum DefaultKeyword implements Keyword {
     TABLE, 
     TABLESPACE, 
     SET, 
-    ADD, 
+    ADD,
+    RENAME, 
     PRIMARY,
     KEY,
     INDEX,
@@ -85,6 +86,7 @@ public enum DefaultKeyword implements Keyword {
     XOR,
     NULL,
     NOT,
+    NO,
     FOR,
     ALL,
     UNION,
@@ -140,5 +142,7 @@ public enum DefaultKeyword implements Keyword {
     IF,
     GLOBAL,
     LOCAL, 
-    TEMPORARY
+    TEMPORARY,
+    COMMENT,
+    STORAGE
 }
