@@ -34,12 +34,12 @@ public final class MySQLDropParser extends AbstractDropParser {
     }
     
     @Override
-    protected Keyword[] getSkipKeywordsBetweenDropAndTable() {
+    protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {
         return new Keyword[] {DefaultKeyword.TEMPORARY};
     }
     
     @Override
-    protected Keyword[] getSkipKeywordsBetweenDropTableAndTableName() {
+    protected Keyword[] getSkippedKeywordsBetweenDropTableAndTableName() {
         return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.EXISTS};
     }
 }

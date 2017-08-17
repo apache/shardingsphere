@@ -34,12 +34,12 @@ public final class MySQLCreateParser extends AbstractCreateParser {
     }
     
     @Override
-    protected Keyword[] getSkipKeywordsBetweenCreateAndKeyword() {
+    protected Keyword[] getSkippedKeywordsBetweenCreateAndKeyword() {
         return new Keyword[] {DefaultKeyword.TEMPORARY};
     }
     
     @Override
-    protected Keyword[] getSkipKeywordsBetweenCreateTableAndTableName() {
+    protected Keyword[] getSkippedKeywordsBetweenCreateTableAndTableName() {
         return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.NOT, DefaultKeyword.EXISTS};
     }
 }

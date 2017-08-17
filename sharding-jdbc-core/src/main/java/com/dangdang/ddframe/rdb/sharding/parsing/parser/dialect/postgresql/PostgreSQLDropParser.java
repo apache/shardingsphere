@@ -34,7 +34,7 @@ public final class PostgreSQLDropParser extends AbstractDropParser {
     }
     
     @Override
-    protected Keyword[] getSkipKeywordsBetweenDropTableAndTableName() {
+    protected Keyword[] getSkippedKeywordsBetweenDropTableAndTableName() {
         return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.EXISTS};
     }
 }

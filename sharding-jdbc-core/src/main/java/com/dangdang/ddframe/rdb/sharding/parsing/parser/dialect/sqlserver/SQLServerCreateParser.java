@@ -33,12 +33,12 @@ public final class SQLServerCreateParser extends AbstractCreateParser {
     }
     
     @Override
-    protected Keyword[] getSkipKeywordsBetweenCreateAndKeyword() {
+    protected Keyword[] getSkippedKeywordsBetweenCreateAndKeyword() {
         return new Keyword[] {};
     }
     
     @Override
-    protected Keyword[] getSkipKeywordsBetweenCreateTableAndTableName() {
+    protected Keyword[] getSkippedKeywordsBetweenCreateTableAndTableName() {
         return new Keyword[] {};
     }
 }
