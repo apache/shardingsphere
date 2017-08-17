@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
@@ -34,7 +35,7 @@ public final class PostgreSQLAlterParser extends AbstractAlterParser {
     }
     
     @Override
-    protected Keyword[] getSkipWordsBetweenKeywordAndTableName() {
-        return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.NOT, DefaultKeyword.EXISTS};
+    protected Keyword[] getSkippedKeywordsBetweenAlterTableAndTableName() {
+        return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.EXISTS, PostgreSQLKeyword.ONLY};
     }
 }

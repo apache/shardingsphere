@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.truncate.AbstractTruncateParser;
 
@@ -30,10 +29,5 @@ public final class SQLServerTruncateParser extends AbstractTruncateParser {
     
     public SQLServerTruncateParser(final AbstractSQLParser sqlParser) {
         super(sqlParser);
-    }
-    
-    @Override
-    protected Keyword[] getSkipWordsBetweenKeywordAndTableName() {
-        return new Keyword[] {};
     }
 }

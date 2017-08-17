@@ -34,7 +34,7 @@ public final class PostgreSQLTruncateParser extends AbstractTruncateParser {
     }
     
     @Override
-    protected Keyword[] getSkipWordsBetweenKeywordAndTableName() {
+    protected Keyword[] getSkippedKeywordsBetweenTruncateTableAndTableName() {
         return new Keyword[] {PostgreSQLKeyword.ONLY};
     }
 }

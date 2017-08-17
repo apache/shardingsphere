@@ -48,16 +48,16 @@ public abstract class AbstractCreateParser implements SQLStatementParser {
     @Override
     public DDLStatement parse() {
         sqlParser.getLexer().nextToken();
-        getSqlParser().skipAll(getSkipWordsBetweenCreateAndKeyword());
+        getSqlParser().skipAll(getSkippedKeywordsBetweenCreateAndKeyword());
         if (!sqlParser.skipIfEqual(DefaultKeyword.TABLE)) {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
-        getSqlParser().skipAll(getSkipWordsBetweenKeywordAndTableName());
+        getSqlParser().skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
         sqlParser.parseSingleTable(createStatement);
         return createStatement;
     }
     
-    protected abstract Keyword[] getSkipWordsBetweenCreateAndKeyword();
+    protected abstract Keyword[] getSkippedKeywordsBetweenCreateAndKeyword();
     
-    protected abstract Keyword[] getSkipWordsBetweenKeywordAndTableName();
+    protected abstract Keyword[] getSkippedKeywordsBetweenCreateTableAndTableName();
 }

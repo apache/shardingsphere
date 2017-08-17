@@ -34,12 +34,12 @@ public final class OracleCreateParser extends AbstractCreateParser {
     }
     
     @Override
-    protected Keyword[] getSkipWordsBetweenCreateAndKeyword() {
+    protected Keyword[] getSkippedKeywordsBetweenCreateAndKeyword() {
         return new Keyword[] {DefaultKeyword.GLOBAL, DefaultKeyword.TEMPORARY};
     }
     
     @Override
-    protected Keyword[] getSkipWordsBetweenKeywordAndTableName() {
+    protected Keyword[] getSkippedKeywordsBetweenCreateTableAndTableName() {
         return new Keyword[] {};
     }
 }
