@@ -25,7 +25,7 @@
             <table name="t_temp" />
         </tables>
     </assert>
-    <assert id="assertDropTableCascadeConstraintsAndPurgeForOracle">
+    <assert id="assertDropTableCascadeConstraintsAndPurge">
         <tables>
             <table name="t_temp" />
         </tables>

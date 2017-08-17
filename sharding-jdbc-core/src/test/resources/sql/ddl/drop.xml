@@ -5,5 +5,5 @@
     <sql id="assertDropTemporaryTable" value="DROP TEMPORARY TABLE t_temp(id int)" type="MySQL" />
     <sql id="assertDropTableRestrict" value="DROP TABLE t_temp(id int) RESTRICT" type="MySQL,PostgreSQL" />
     <sql id="assertDropTableCascade" value="DROP TABLE t_temp(id int) CASCADE" type="MySQL,PostgreSQL" />
-    <sql id="assertDropTableCascadeConstraintsAndPurgeForOracle" value="DROP TABLE t_temp(id int) CASCADE CONSTRAINTS PURGE" type="Oracle" />
+    <sql id="assertDropTableCascadeConstraintsAndPurge" value="DROP TABLE t_temp(id int) CASCADE CONSTRAINTS PURGE" type="Oracle" />
 </sqls>

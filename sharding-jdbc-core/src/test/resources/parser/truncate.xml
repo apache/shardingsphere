@@ -5,7 +5,7 @@
             <table name="t_temp" />
         </tables>
     </assert>
-    <assert id="assertTruncateTableOnlyForPostgreSQL">
+    <assert id="assertTruncateTableOnly">
         <tables>
             <table name="t_temp" />
         </tables>
