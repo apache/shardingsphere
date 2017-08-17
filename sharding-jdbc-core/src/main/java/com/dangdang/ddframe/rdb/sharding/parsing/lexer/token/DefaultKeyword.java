@@ -119,6 +119,7 @@ public enum DefaultKeyword implements Keyword {
     OVER,
     FETCH,
     WITH,
+    WITHOUT,
     CURSOR,
     ADVISE,
     SIBLINGS,
@@ -144,5 +145,6 @@ public enum DefaultKeyword implements Keyword {
     LOCAL, 
     TEMPORARY,
     COMMENT,
-    STORAGE
+    STORAGE,
+    DATA
 }
