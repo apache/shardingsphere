@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertAlterTable">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
+    <assert id="assertAlterTableIfExistAndOnly">
+        <tables>
+            <table name="t_temp" />
+        </tables>
+    </assert>
+</asserts>

@@ -53,5 +53,6 @@ public enum MySQLKeyword implements Keyword {
     OPTIMIZE, 
     ANALYZE, 
     IGNORE, 
-    IDENTIFIED
+    IDENTIFIED,
+    MODIFY
 }

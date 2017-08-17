@@ -56,5 +56,7 @@ public abstract class AbstractAlterParser implements SQLStatementParser {
         return alterStatement;
     }
     
-    protected abstract Keyword[] getSkipWordsBetweenKeywordAndTableName();
+    protected Keyword[] getSkipWordsBetweenKeywordAndTableName() {
+        return new Keyword[0];
+    }
 }
