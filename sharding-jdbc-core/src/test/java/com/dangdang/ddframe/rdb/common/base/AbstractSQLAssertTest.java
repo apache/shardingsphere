@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.common.base;
 
+import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
+import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLAssertData;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.integrate.jaxb.helper.SQLAssertJAXBHelper;
-import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
-import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
-import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
@@ -34,6 +34,7 @@ import org.dbunit.dataset.ITableIterator;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.File;
@@ -47,29 +48,37 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil.replacePreparedStatement;
 import static com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil.replaceStatement;
 import static org.dbunit.Assertion.assertEquals;
 
+@RunWith(Parameterized.class)
 public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
+    
+    private final String testCaseName;
     
     private final String sql;
     
-    private final Set<DatabaseType> types;
+    private final DatabaseType type;
     
     private final List<SQLShardingRule> shardingRules;
     
-    protected AbstractSQLAssertTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SQLShardingRule> shardingRules) {
+    protected AbstractSQLAssertTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> shardingRules) {
+        this.testCaseName = testCaseName;
         this.sql = sql;
-        this.types = types;
+        this.type = type;
         this.shardingRules = shardingRules;
     }
     
-    @Parameterized.Parameters(name = "{0}")
+    @Parameterized.Parameters(name = "{0}In{2}")
     public static Collection<Object[]> dataParameters() {
         return SQLAssertJAXBHelper.getDataParameters("integrate/assert");
+    }
+    
+    @Override
+    public DatabaseType getCurrentDatabaseType() {
+        return type;
     }
     
     protected abstract ShardingTestStrategy getShardingStrategy();
@@ -88,7 +97,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     private void execute(final boolean isPreparedStatement) {
         for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
-            if (types.isEmpty() || types.contains(each.getKey())) {
+            if (getCurrentDatabaseType() == each.getKey()) {
                 try {
                     executeAndAssertSQL(isPreparedStatement, each.getValue());
                     //CHECKSTYLE:OFF

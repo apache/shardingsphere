@@ -3,15 +3,16 @@ package com.dangdang.ddframe.rdb.integrate.jaxb.helper;
 import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLAssert;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLAsserts;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class SQLAssertJAXBHelper {
     
@@ -46,11 +47,14 @@ public class SQLAssertJAXBHelper {
     
     private static Collection<Object[]> dataParameters(final File file) {
         SQLAsserts asserts = loadSqlAsserts(file);
-        Object[][] result = new Object[asserts.getSqlAsserts().size()][1];
+        List<Object[]> result = new ArrayList<>();
         for (int i = 0; i < asserts.getSqlAsserts().size(); i++) {
-            result[i] = getDataParameter(asserts.getSqlAsserts().get(i));
+            SQLAssert assertObj = asserts.getSqlAsserts().get(i);
+            for (DatabaseType each : SQLStatementHelper.getTypes(assertObj.getId())) {
+                result.add(getDataParameter(assertObj, each));
+            }
         }
-        return Arrays.asList(result);
+        return result;
     }
     
     private static SQLAsserts loadSqlAsserts(final File file) {
@@ -61,11 +65,11 @@ public class SQLAssertJAXBHelper {
         }
     }
     
-    private static Object[] getDataParameter(final SQLAssert sqlAssert) {
+    private static Object[] getDataParameter(final SQLAssert sqlAssert, final DatabaseType dbType) {
         final Object[] result = new Object[4];
         result[0] = sqlAssert.getId();
         result[1] = SQLStatementHelper.getSql(sqlAssert.getId());
-        result[2] = SQLStatementHelper.getTypes(sqlAssert.getId());
+        result[2] = dbType;
         result[3] = sqlAssert.getSqlShardingRules();
         return result;
     }

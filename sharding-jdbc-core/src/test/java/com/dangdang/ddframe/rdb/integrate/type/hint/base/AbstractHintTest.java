@@ -49,6 +49,11 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
     @Override
+    protected DatabaseType getCurrentDatabaseType() {
+        return null;
+    }
+    
+    @Override
     protected List<String> getDataSetFiles() {
         return Arrays.asList(
                 "integrate/dataset/db/init/db_0.xml",

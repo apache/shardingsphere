@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.common.base;
 
-import com.dangdang.ddframe.rdb.common.env.DatabaseTestMode;
 import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.common.env.DatabaseTestMode;
 import com.dangdang.ddframe.rdb.common.env.ShardingJdbcDatabaseTester;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -43,9 +43,9 @@ import java.util.Map;
 
 public abstract class AbstractSQLTest {
     
-    private static final DatabaseTestMode CURRENT_TEST_MODE = DatabaseTestMode.TEST;
-    
     private static boolean initialized;
+    
+    private static final DatabaseTestMode CURRENT_TEST_MODE = DatabaseTestMode.TEST;
     
     private final Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
     
@@ -93,20 +93,24 @@ public abstract class AbstractSQLTest {
     @Before
     public final void importDataSet() throws Exception {
         for (DatabaseType databaseType : CURRENT_TEST_MODE.databaseTypes()) {
-            DataBaseEnvironment dbEnv = new DataBaseEnvironment(databaseType);
-            for (String each : getDataSetFiles()) {
-                InputStream is = AbstractSQLTest.class.getClassLoader().getResourceAsStream(each);
-                IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
-                IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getDatabaseName(each)),
-                        dbEnv.getUsername(), dbEnv.getPassword(), dbEnv.getSchema(getDatabaseName(each)));
-                databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
-                databaseTester.setDataSet(dataSet);
-                databaseTester.onSetup();
+            if (databaseType == getCurrentDatabaseType() || null == getCurrentDatabaseType()) {
+                DataBaseEnvironment dbEnv = new DataBaseEnvironment(databaseType);
+                for (String each : getDataSetFiles()) {
+                    InputStream is = AbstractSQLTest.class.getClassLoader().getResourceAsStream(each);
+                    IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
+                    IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getDatabaseName(each)),
+                            dbEnv.getUsername(), dbEnv.getPassword(), dbEnv.getSchema(getDatabaseName(each)));
+                    databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
+                    databaseTester.setDataSet(dataSet);
+                    databaseTester.onSetup();
+                }
             }
         }
     }
     
     protected abstract List<String> getDataSetFiles();
+    
+    protected abstract DatabaseType getCurrentDatabaseType();
     
     protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap() {
         for (String each : getDataSetFiles()) {

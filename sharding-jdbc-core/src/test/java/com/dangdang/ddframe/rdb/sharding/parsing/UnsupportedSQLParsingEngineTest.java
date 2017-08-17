@@ -42,23 +42,25 @@ public final class UnsupportedSQLParsingEngineTest {
     
     private String sql;
     
-    private Set<DatabaseType> types;
+    private DatabaseType type;
     
-    public UnsupportedSQLParsingEngineTest(final String testCaseName, final String sql, final Set<DatabaseType> types) {
+    public UnsupportedSQLParsingEngineTest(final String testCaseName, final String sql, final DatabaseType type) {
         this.testCaseName = testCaseName;
         this.sql = sql;
-        this.types = types;
+        this.type = type;
     }
     
-    @Parameterized.Parameters(name = "{0}")
+    @Parameterized.Parameters(name = "{0}In{2}")
     public static Collection<Object[]> dataParameters() {
         Collection<Object[]> result = new ArrayList<>();
         for (SQLStatement each : SQLStatementHelper.getUnsupportedSqlStatements()) {
-            Object[] object = new Object[3];
-            object[0] = each.getId();
-            object[1] = each.getSql();
-            object[2] = getTypes(each.getTypes());
-            result.add(object);
+            for (DatabaseType dbType : getTypes(each.getTypes())) {
+                Object[] object = new Object[3];
+                object[0] = each.getId();
+                object[1] = each.getSql();
+                object[2] = dbType;
+                result.add(object);
+            }
         }
         return result;
     }
@@ -76,17 +78,15 @@ public final class UnsupportedSQLParsingEngineTest {
     
     @Test
     public void assertUnsupportedStatement() {
-        for (DatabaseType each : types) {
-            try {
-                new SQLParsingEngine(each, sql,
-                        new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id")
-                                .addGenerateKeyColumn("t_order", "order_id").build()).parse();
-                fail(String.format("Should have thrown an SQLParsingUnsupportedException because %s is invalid!", sql));
-                //CHECKSTYLE:OFF
-            } catch (final Exception exception) {
-                //CHECKSTYLE:ON
-                assertTrue(exception instanceof SQLParsingUnsupportedException);
-            }
+        try {
+            new SQLParsingEngine(type, sql,
+                    new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id")
+                            .addGenerateKeyColumn("t_order", "order_id").build()).parse();
+            fail(String.format("Should have thrown an SQLParsingUnsupportedException because %s is invalid!", sql));
+            //CHECKSTYLE:OFF
+        } catch (final Exception exception) {
+            //CHECKSTYLE:ON
+            assertTrue(exception instanceof SQLParsingUnsupportedException);
         }
     }
 }

@@ -17,11 +17,11 @@
 
 package com.dangdang.ddframe.rdb.integrate.type;
 
-import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.common.base.AbstractSQLAssertTest;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -34,8 +34,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSou
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -43,17 +41,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-@RunWith(Parameterized.class)
 public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
     
     private static boolean isShutdown;
     
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
-    public ShardingMasterSlaveTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SQLShardingRule> sqlShardingRules) {
-        super(testCaseName, sql, types, sqlShardingRules);
+    public ShardingMasterSlaveTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+        super(testCaseName, sql, type, sqlShardingRules);
     }
     
     @Override

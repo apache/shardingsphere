@@ -49,6 +49,11 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
                 "integrate/dataset/jdbc/jdbc_1.xml");
     }
     
+    @Override
+    protected DatabaseType getCurrentDatabaseType() {
+        return null;
+    }
+    
     protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
         if (!shardingDataSources.isEmpty() && !isShutdown) {
             return shardingDataSources;
