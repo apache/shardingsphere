@@ -73,6 +73,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final SelectStatement selectStatement;
     
+    private boolean containStar;
+    
     private int selectListLastPosition;
     
     @Setter
@@ -166,11 +168,11 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private SelectItem parseStarSelectItem() {
+        containStar = true;
         if (!containSubquery) {
             containStarForOutQuery = true;
         }
         sqlParser.getLexer().nextToken();
-        selectStatement.setContainStar(true);
         sqlParser.parseAlias();
         return new StarSelectItem(Optional.<String>absent());
     }
@@ -324,7 +326,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private Optional<String> getAlias(final String name) {
-        if (selectStatement.isContainStar()) {
+        if (containStar) {
             return Optional.absent();
         }
         String rawName = SQLUtil.getExactlyValue(name);
@@ -354,7 +356,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 throw new UnsupportedOperationException("Cannot support subquery for nested tables.");
             }
             containSubquery = true;
-            selectStatement.setContainStar(false);
+            containStar = false;
             sqlParser.skipUselessParentheses();
             parse();
             sqlParser.skipUselessParentheses();
@@ -467,7 +469,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private boolean isContainsItem(final OrderItem orderItem) {
-        if (selectStatement.isContainStar()) {
+        if (containStar) {
             return true;
         }
         for (SelectItem each : selectStatement.getItems()) {

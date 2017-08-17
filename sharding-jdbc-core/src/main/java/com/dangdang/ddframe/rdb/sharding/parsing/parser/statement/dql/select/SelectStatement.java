@@ -41,8 +41,6 @@ import java.util.Map;
 @ToString(callSuper = true)
 public final class SelectStatement extends DQLStatement {
     
-    private boolean containStar;
-    
     private int groupByLastPosition;
     
     private final List<SelectItem> items = new LinkedList<>();
