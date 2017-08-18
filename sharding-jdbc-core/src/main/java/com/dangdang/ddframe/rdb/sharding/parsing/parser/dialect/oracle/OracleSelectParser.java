@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
@@ -64,7 +65,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     private void skipStart(final SelectStatement selectStatement) {
         if (getSqlParser().skipIfEqual(OracleKeyword.START)) {
             getSqlParser().accept(DefaultKeyword.WITH);
-            getSqlParser().parseComparisonCondition(selectStatement);
+            getSqlParser().parseComparisonCondition(selectStatement, Collections.<SelectItem>emptyList());
         }
     }
     
@@ -75,7 +76,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
             if (getSqlParser().skipIfEqual(OracleKeyword.NOCYCLE)) {
                 getSqlParser().skipIfEqual(OracleKeyword.PRIOR);
             }
-            getSqlParser().parseComparisonCondition(selectStatement);
+            getSqlParser().parseComparisonCondition(selectStatement, Collections.<SelectItem>emptyList());
         }
     }
     

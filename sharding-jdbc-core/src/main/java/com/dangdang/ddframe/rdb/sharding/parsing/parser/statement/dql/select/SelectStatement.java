@@ -142,6 +142,7 @@ public final class SelectStatement extends DQLStatement {
      */
     public SelectStatement mergeSubQueryStatement() {
         SelectStatement result = processLimitForSubQuery();
+        processItems(result);
         processOrderByItems(result);
         return result;
     }
@@ -196,10 +197,17 @@ public final class SelectStatement extends DQLStatement {
         selectStatement.getSqlTokens().addAll(limitSQLTokens);
     }
     
-    private void processOrderByItems(final SelectStatement result) {
+    private void processItems(final SelectStatement subQueryStatement) {
         if (!containStar) {
-            result.getOrderByItems().clear();
-            result.getGroupByItems().clear();
+            subQueryStatement.getItems().clear();
+            subQueryStatement.getItems().addAll(getItems());
+        }
+    }
+    
+    private void processOrderByItems(final SelectStatement subQueryStatement) {
+        if (!containStar) {
+            subQueryStatement.getOrderByItems().clear();
+            subQueryStatement.getGroupByItems().clear();
         }
     }
 }

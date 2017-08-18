@@ -26,6 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -45,6 +46,7 @@ import com.dangdang.ddframe.rdb.sharding.util.NumberUtil;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -245,15 +247,25 @@ public abstract class AbstractSQLParser extends AbstractParser {
      * @param sqlStatement SQL语句对象
      */
     public final void parseWhere(final SQLStatement sqlStatement) {
+        parseWhere(sqlStatement, Collections.<SelectItem>emptyList());
+    }
+    
+    /**
+     * 解析查询条件.
+     *
+     * @param sqlStatement SQL语句对象
+     * @param items 选择项集合
+     */
+    public final void parseWhere(final SQLStatement sqlStatement, final List<SelectItem> items) {
         parseAlias();
         if (skipIfEqual(DefaultKeyword.WHERE)) {
-            parseConditions(sqlStatement);
+            parseConditions(sqlStatement, items);
         }
     }
     
-    private void parseConditions(final SQLStatement sqlStatement) {
+    private void parseConditions(final SQLStatement sqlStatement, final List<SelectItem> items) {
         do {
-            parseComparisonCondition(sqlStatement);
+            parseComparisonCondition(sqlStatement, items);
         } while (skipIfEqual(DefaultKeyword.AND));
         if (equalAny(DefaultKeyword.OR)) {
             throw new SQLParsingUnsupportedException(getLexer().getCurrentToken().getType());
@@ -261,7 +273,7 @@ public abstract class AbstractSQLParser extends AbstractParser {
     }
     
     // TODO 解析组合expr
-    public final void parseComparisonCondition(final SQLStatement sqlStatement) {
+    public final void parseComparisonCondition(final SQLStatement sqlStatement, final List<SelectItem> items) {
         skipIfEqual(Symbol.LEFT_PAREN);
         SQLExpression left = parseExpression(sqlStatement);
         if (equalAny(Symbol.EQ)) {
@@ -281,10 +293,10 @@ public abstract class AbstractSQLParser extends AbstractParser {
         }
         if (equalAny(Symbol.LT, Symbol.GT, Symbol.LT_EQ, Symbol.GT_EQ)) {
             if (left instanceof SQLIdentifierExpression && sqlStatement instanceof SelectStatement
-                    && isRowNumberCondition((SelectStatement) sqlStatement, ((SQLIdentifierExpression) left).getName())) {
+                    && isRowNumberCondition(items, ((SQLIdentifierExpression) left).getName())) {
                 parseRowNumberCondition((SelectStatement) sqlStatement);
             } else if (left instanceof SQLPropertyExpression && sqlStatement instanceof SelectStatement
-                    && isRowNumberCondition((SelectStatement) sqlStatement, ((SQLPropertyExpression) left).getName())) {
+                    && isRowNumberCondition(items, ((SQLPropertyExpression) left).getName())) {
                 parseRowNumberCondition((SelectStatement) sqlStatement);
             } else {
                 parseOtherCondition(sqlStatement);
@@ -337,7 +349,7 @@ public abstract class AbstractSQLParser extends AbstractParser {
         }
     }
     
-    protected boolean isRowNumberCondition(final SelectStatement selectStatement, final String columnLabel) {
+    protected boolean isRowNumberCondition(final List<SelectItem> items, final String columnLabel) {
         return false;
     }
     

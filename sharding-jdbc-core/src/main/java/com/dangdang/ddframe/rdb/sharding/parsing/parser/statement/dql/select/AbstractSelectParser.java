@@ -97,7 +97,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         parseBeforeSelectList(result);
         parseSelectList(result);
         parseFrom(result);
-        result.getItems().addAll(items);
         parseWhere(result);
         customizedBetweenWhereAndGroupBy(result);
         parseGroupBy(result);
@@ -129,6 +128,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             selectStatement.getItems().add(parseSelectItem(selectStatement));
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
         selectStatement.setSelectListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
+        items.addAll(selectStatement.getItems());
     }
     
     private SelectItem parseSelectItem(final SelectStatement selectStatement) {
@@ -218,7 +218,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private void parseTable(final SelectStatement selectStatement) {
-        items.addAll(selectStatement.getItems());
         if (sqlParser.skipIfEqual(Symbol.LEFT_PAREN)) {
             sqlParser.skipUselessParentheses();
             selectStatement.setSubQueryStatement(parseInternal());
@@ -282,7 +281,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         if (selectStatement.getTables().isEmpty()) {
             return;
         }
-        sqlParser.parseWhere(selectStatement);
+        sqlParser.parseWhere(selectStatement, items);
         parametersIndex = sqlParser.getParametersIndex();
     }
     

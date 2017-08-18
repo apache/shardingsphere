@@ -21,8 +21,9 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.google.common.base.Optional;
+
+import java.util.List;
 
 /**
  * SQLServer解析器.
@@ -36,9 +37,9 @@ public final class SQLServerParser extends AbstractSQLParser {
     }
     
     @Override
-    protected boolean isRowNumberCondition(final SelectStatement selectStatement, final String columnLabel) {
+    protected boolean isRowNumberCondition(final List<SelectItem> items, final String columnLabel) {
         Optional<String> rowNumberAlias = Optional.absent();
-        for (SelectItem each : selectStatement.getItems()) {
+        for (SelectItem each : items) {
             if (each.getAlias().isPresent() && "ROW_NUMBER".equalsIgnoreCase(each.getExpression())) {
                 rowNumberAlias = each.getAlias();
             }
