@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
@@ -50,7 +51,7 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
             assertOrderBy((SelectStatement) actual);
             assertGroupBy((SelectStatement) actual);
             assertAggregationSelectItem((SelectStatement) actual);
-            assertLimit((SelectStatement) actual, isPreparedStatement);
+            assertLimit(((SelectStatement) actual).getLimit(), isPreparedStatement);
         }
     }
     
@@ -103,6 +104,9 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     
     private Limit buildExpectedLimit(final boolean isPreparedStatement) {
         com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit limit = getExpectedLimit();
+        if (null == limit) {
+            return null;
+        }
         Limit result = new Limit(true);
         if (isPreparedStatement) {
             if (null != limit.getOffsetParameterIndex()) {
@@ -153,14 +157,17 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
         assertFalse(aggregationSelectItems.hasNext());
     }
     
-    private void assertLimit(final SelectStatement actual, final boolean isPreparedStatement) {
-        if (null != actual.getLimit()) {
-            if (null != actual.getLimit().getOffset()) {
-                assertTrue(new ReflectionEquals(buildExpectedLimit(isPreparedStatement).getOffset()).matches(actual.getLimit().getOffset()));
-            }
-            if (null != actual.getLimit().getRowCount()) {
-                assertTrue(new ReflectionEquals(buildExpectedLimit(isPreparedStatement).getRowCount()).matches(actual.getLimit().getRowCount()));
-            }
+    private void assertLimit(final Limit actual, final boolean isPreparedStatement) {
+        Limit expected = buildExpectedLimit(isPreparedStatement);
+        if (null == expected) {
+            assertNull(actual);
+            return;
+        }
+        if (null != expected.getRowCount()) {
+            assertTrue(new ReflectionEquals(expected.getRowCount()).matches(actual.getRowCount()));
+        }
+        if (null != expected.getOffset()) {
+            assertTrue(new ReflectionEquals(expected.getOffset()).matches(actual.getOffset()));
         }
     }
 }
