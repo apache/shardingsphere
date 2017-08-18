@@ -46,6 +46,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.Collection;
@@ -58,6 +59,7 @@ import java.util.List;
  * 
  * @author zhangliang 
  */
+@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractSelectParser implements SQLStatementParser {
     
@@ -76,15 +78,11 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     @Setter
     private int parametersIndex;
     
-    public AbstractSelectParser(final AbstractSQLParser sqlParser) {
-        this.sqlParser = sqlParser;
-    }
-    
     @Override
     public final SelectStatement parse() {
         SelectStatement result = parseInternal();
         if (result.containsSubQuery()) {
-            result = result.getSubQueryStatement();
+            result = result.mergeSubQueryStatement();
         }
         // TODO move to rewrite
         appendDerivedColumns(result);

@@ -136,11 +136,11 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * 获取子查询的Select SQL语句对象.
+     * 合并包含子查询的Select SQL语句对象.
      * 
-     * @return 子查询的Select SQL语句对象
+     * @return Select SQL语句对象
      */
-    public SelectStatement getSubQueryStatement() {
+    public SelectStatement mergeSubQueryStatement() {
         SelectStatement result = processLimitForSubQuery();
         processOrderByItems(result);
         return result;
