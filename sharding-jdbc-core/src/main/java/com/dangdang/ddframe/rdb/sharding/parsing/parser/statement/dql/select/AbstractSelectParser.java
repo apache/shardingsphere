@@ -73,19 +73,19 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final SelectStatement selectStatement;
     
-    private boolean containStar;
+    private boolean containStarForOutQuery;
+    
+    private boolean parseMainStatement;
+    
+    private boolean containStarForMainStatement;
     
     private int selectListLastPosition;
     
     @Setter
-    private int parametersIndex;
-    
-    @Setter
     private boolean containSubquery;
     
-    private boolean containStarForOutQuery;
-    
-    private boolean appendDerivedColumnsFlag;
+    @Setter
+    private int parametersIndex;
     
     public AbstractSelectParser(final AbstractSQLParser sqlParser) {
         this.sqlParser = sqlParser;
@@ -94,6 +94,14 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     @Override
     public final SelectStatement parse() {
+        parseInternal();
+        // TODO move to rewrite
+        appendDerivedColumns();
+        appendDerivedOrderBy();
+        return selectStatement;
+    }
+    
+    private void parseInternal() {
         sqlParser.getLexer().nextToken();
         parseDistinct();
         parseBeforeSelectList();
@@ -106,10 +114,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         parseOrderBy();
         customizedSelect();
         processUnsupportedTokens();
-        // TODO move to rewrite
-        appendDerivedColumns();
-        appendDerivedOrderBy();
-        return selectStatement;
     }
     
     private void parseDistinct() {
@@ -129,10 +133,13 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private void parseSelectList() {
+        containStarForMainStatement = false;
         do {
             parseSelectItem();
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
-        selectListLastPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
+        if (!parseMainStatement) {
+            selectListLastPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
+        }
     }
     
     private void parseSelectItem() {
@@ -168,9 +175,11 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private SelectItem parseStarSelectItem() {
-        containStar = true;
         if (!containSubquery) {
             containStarForOutQuery = true;
+        }
+        if (!parseMainStatement) {
+            containStarForMainStatement = true;
         }
         sqlParser.getLexer().nextToken();
         sqlParser.parseAlias();
@@ -226,18 +235,15 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private void parseTable() {
         if (sqlParser.skipIfEqual(Symbol.LEFT_PAREN)) {
-            if (!selectStatement.getTables().isEmpty()) {
-                throw new UnsupportedOperationException("Cannot support subquery for nested tables.");
-            }
             containSubquery = true;
-            containStar = false;
             sqlParser.skipUselessParentheses();
-            parse();
+            parseInternal();
             sqlParser.skipUselessParentheses();
             if (getSqlParser().equalAny(DefaultKeyword.WHERE, Assist.END)) {
                 return;
             }
         }
+        parseMainStatement = true;
         customizedParseTableFactor();
         parseJoinTable();
     }
@@ -400,7 +406,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private Optional<String> getAlias(final String name) {
-        if (containStar) {
+        if (containStarForMainStatement) {
             return Optional.absent();
         }
         String rawName = SQLUtil.getExactlyValue(name);
@@ -424,10 +430,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private void appendDerivedColumns() {
-        if (appendDerivedColumnsFlag) {
-            return;
-        }
-        appendDerivedColumnsFlag = true;
         ItemsToken itemsToken = new ItemsToken(selectListLastPosition);
         appendAvgDerivedColumns(itemsToken);
         appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByItems(), ORDER_BY_DERIVED_ALIAS);
@@ -469,7 +471,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private boolean isContainsItem(final OrderItem orderItem) {
-        if (containStar) {
+        if (containStarForMainStatement) {
             return true;
         }
         for (SelectItem each : selectStatement.getItems()) {
