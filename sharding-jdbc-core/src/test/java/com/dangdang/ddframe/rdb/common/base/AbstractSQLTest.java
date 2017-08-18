@@ -90,6 +90,10 @@ public abstract class AbstractSQLTest {
         }
     }
     
+    static List<DatabaseType> getCurrentDatabaseTypes() {
+        return CURRENT_TEST_MODE.databaseTypes();
+    }
+    
     @Before
     public final void importDataSet() throws Exception {
         for (DatabaseType databaseType : CURRENT_TEST_MODE.databaseTypes()) {

@@ -18,15 +18,13 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -41,80 +39,59 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
-    
-    private Collection<ShardingDataSource> shardingDataSources;
-    
-    @Before
-    public void init() throws SQLException {
-        shardingDataSources = getShardingDataSources().values();
+
+    public DataSourceAdapterTest(final DatabaseType databaseType) {
+        super(databaseType);
     }
-    
+
     @Test
     public void assertUnwrapSuccess() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources) {
-            assertThat(each.unwrap(Object.class), is((Object) each));
-        }
+        assertThat(getShardingDataSource().unwrap(Object.class), is((Object) getShardingDataSource()));
     }
-    
+
     @Test(expected = SQLException.class)
     public void assertUnwrapFailure() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources) {
-            each.unwrap(String.class);
-        }
+        getShardingDataSource().unwrap(String.class);
     }
-    
+
     @Test
     public void assertIsWrapperFor() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources) {
-            assertTrue(each.isWrapperFor(Object.class));
-        }
+        assertTrue(getShardingDataSource().isWrapperFor(Object.class));
     }
-    
+
     @Test
     public void assertIsNotWrapperFor() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources) {
-            assertFalse(each.isWrapperFor(String.class));
-        }
+        assertFalse(getShardingDataSource().isWrapperFor(String.class));
     }
-    
+
     @Test
     public void assertRecordMethodInvocationSuccess() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources) {
-            List<?> list = mock(List.class);
-            when(list.isEmpty()).thenReturn(true);
-            each.recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
-            each.replayMethodsInvocation(list);
-            verify(list).isEmpty();
-        }
+        List<?> list = mock(List.class);
+        when(list.isEmpty()).thenReturn(true);
+        getShardingDataSource().recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
+        getShardingDataSource().replayMethodsInvocation(list);
+        verify(list).isEmpty();
     }
-    
+
     @Test(expected = ShardingJdbcException.class)
     public void assertRecordMethodInvocationFailure() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources) {
-            each.recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
-        }
+        getShardingDataSource().recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
     }
-    
+
     @Test
     public void assertSetLogWriter() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources) {
-            assertThat(each.getLogWriter(), instanceOf(PrintWriter.class));
-            each.setLogWriter(null);
-            assertNull(each.getLogWriter());
-        }
+        assertThat(getShardingDataSource().getLogWriter(), instanceOf(PrintWriter.class));
+        getShardingDataSource().setLogWriter(null);
+        assertNull(getShardingDataSource().getLogWriter());
     }
-    
+
     @Test
     public void assertGetParentLogger() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources) {
-            assertThat(each.getParentLogger().getName(), is(Logger.GLOBAL_LOGGER_NAME));
-        }
+        assertThat(getShardingDataSource().getParentLogger().getName(), is(Logger.GLOBAL_LOGGER_NAME));
     }
-    
+
     @Test
     public void assertGetConnectionWithUsername() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources) {
-            assertThat(each.getConnection("username", "password"), instanceOf(ShardingConnection.class));
-        }
+        assertThat(getShardingDataSource().getConnection("username", "password"), instanceOf(ShardingConnection.class));
     }
 }

@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
 import com.dangdang.ddframe.rdb.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.util.JDBCTestSQL;
 import org.junit.After;
 import org.junit.Before;
@@ -48,16 +48,18 @@ public final class UnsupportedUpdateOperationResultSetTest extends AbstractShard
     
     private List<ResultSet> resultSets = new ArrayList<>();
     
+    public UnsupportedUpdateOperationResultSetTest(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Before
     public void init() throws SQLException {
-        for (ShardingDataSource each : getShardingDataSources().values()) {
-            ShardingConnection shardingConnection = each.getConnection();
-            shardingConnections.add(shardingConnection);
-            Statement statement = shardingConnection.createStatement();
-            statements.add(statement);
-            ResultSet resultSet = statement.executeQuery(JDBCTestSQL.SELECT_ORDER_BY_USER_ID_SQL);
-            resultSets.add(resultSet);
-        }
+        ShardingConnection shardingConnection = getShardingDataSource().getConnection();
+        shardingConnections.add(shardingConnection);
+        Statement statement = shardingConnection.createStatement();
+        statements.add(statement);
+        ResultSet resultSet = statement.executeQuery(JDBCTestSQL.SELECT_ORDER_BY_USER_ID_SQL);
+        resultSets.add(resultSet);
     }
     
     @After

@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
 import com.dangdang.ddframe.rdb.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,13 +37,15 @@ public final class UnsupportedOperationStatementTest extends AbstractShardingJDB
     
     private List<Statement> statements = new ArrayList<>();
     
+    public UnsupportedOperationStatementTest(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Before
     public void init() throws SQLException {
-        for (ShardingDataSource each : getShardingDataSources().values()) {
-            ShardingConnection connection = each.getConnection();
-            shardingConnections.add(connection);
-            statements.add(connection.createStatement());
-        }
+        ShardingConnection connection = getShardingDataSource().getConnection();
+        shardingConnections.add(connection);
+        statements.add(connection.createStatement());
     }
     
     @After

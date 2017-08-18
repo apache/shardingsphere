@@ -24,8 +24,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        DataSourceAdapterTest.class,
-        ConnectionAdapterTest.class,
+//        DataSourceAdapterTest.class,
+//        ConnectionAdapterTest.class,
         StatementAdapterTest.class,
         PreparedStatementAdapterTest.class,
         ResultSetAdapterTest.class,

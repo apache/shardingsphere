@@ -50,4 +50,6 @@ public class DatabaseTestSQL {
     public static final String SELECT_COUNT_AS_ORDERS_COUNT_SQL = "SELECT COUNT(*) AS orders_count FROM t_order WHERE status = ?";
     
     public static final String SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL = "SELECT item_id from t_order_item where user_id = %d and order_id= %s and status = 'BATCH'";
+    
+    public static final String SELECT_WITH_ALIAS_SQL = "SELECT user_id AS usr_id FROM t_order WHERE status = 'init'";
 }

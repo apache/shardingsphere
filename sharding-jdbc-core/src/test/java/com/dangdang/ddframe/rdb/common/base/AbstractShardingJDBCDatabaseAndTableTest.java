@@ -28,37 +28,31 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.routing.fixture.OrderShardingAlgorithm;
 import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RunWith(Parameterized.class)
 public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
-    
-    private static boolean isShutdown;
     
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
-    @Override
-    protected List<String> getDataSetFiles() {
-        return Arrays.asList(
-                "integrate/dataset/jdbc/jdbc_0.xml",
-                "integrate/dataset/jdbc/jdbc_1.xml");
+    private DatabaseType databaseType;
+    
+    public AbstractShardingJDBCDatabaseAndTableTest(final DatabaseType databaseType) {
+        this.databaseType = databaseType;
     }
     
-    @Override
-    protected DatabaseType getCurrentDatabaseType() {
-        return null;
-    }
-    
-    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
-        if (!shardingDataSources.isEmpty() && !isShutdown) {
-            return shardingDataSources;
-        }
-        isShutdown = false;
+    @Before
+    public void initShardingDataSources() {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
@@ -75,12 +69,31 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
                     .tableShardingStrategy(new TableShardingStrategy("order_id", new OrderShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
-        return shardingDataSources;
+    }
+    
+    @Override
+    protected List<String> getDataSetFiles() {
+        return Arrays.asList(
+                "integrate/dataset/jdbc/jdbc_0.xml",
+                "integrate/dataset/jdbc/jdbc_1.xml");
+    }
+    
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<DatabaseType> dataParameters() {
+        return getCurrentDatabaseTypes();
+    }
+    
+    @Override
+    protected DatabaseType getCurrentDatabaseType() {
+        return databaseType;
+    }
+    
+    protected ShardingDataSource getShardingDataSource() {
+        return shardingDataSources.get(databaseType);
     }
     
     @AfterClass
     public static void clear() {
-        isShutdown = true;
         if (!shardingDataSources.isEmpty()) {
             for (ShardingDataSource each : shardingDataSources.values()) {
                 each.close();

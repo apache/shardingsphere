@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 import com.dangdang.ddframe.rdb.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.util.JDBCTestSQL;
 import org.junit.After;
 import org.junit.Before;
@@ -53,17 +52,19 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     
     private final String columnName = "user_id";
     
+    public ResultSetGetterAdapterTest(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Before
     public void init() throws SQLException {
-        for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
-            ShardingConnection shardingConnection = each.getValue().getConnection();
-            shardingConnections.add(shardingConnection);
-            Statement statement = shardingConnection.createStatement();
-            statements.add(statement);
-            ResultSet resultSet = statement.executeQuery(JDBCTestSQL.SELECT_ORDER_BY_USER_ID_SQL);
-            resultSet.next();
-            resultSets.put(each.getKey(), resultSet);
-        }
+        ShardingConnection shardingConnection = getShardingDataSource().getConnection();
+        shardingConnections.add(shardingConnection);
+        Statement statement = shardingConnection.createStatement();
+        statements.add(statement);
+        ResultSet resultSet = statement.executeQuery(JDBCTestSQL.SELECT_ORDER_BY_USER_ID_SQL);
+        resultSet.next();
+        resultSets.put(getCurrentDatabaseType(), resultSet);
     }
     
     @After

@@ -20,47 +20,39 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 import com.dangdang.ddframe.rdb.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.util.JDBCTestSQL;
-import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
-    
-    private Map<DatabaseType, ShardingDataSource> shardingDataSources;
-    
+
     private String sql = JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL;
-    
-    @Before
-    public void init() throws SQLException {
-        shardingDataSources = getShardingDataSources();
+
+    public ConnectionAdapterTest(final DatabaseType databaseType) {
+        super(databaseType);
     }
-    
+
     @Test
     public void assertSetAutoCommit() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources.values()) {
-            try (ShardingConnection actual = each.getConnection()) {
-                assertTrue(actual.getAutoCommit());
-                actual.setAutoCommit(false);
-                actual.createStatement().executeQuery(sql);
-                assertAutoCommit(actual, false);
-                actual.setAutoCommit(true);
-                assertAutoCommit(actual, true);
-            }
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            assertTrue(actual.getAutoCommit());
+            actual.setAutoCommit(false);
+            actual.createStatement().executeQuery(sql);
+            assertAutoCommit(actual, false);
+            actual.setAutoCommit(true);
+            assertAutoCommit(actual, true);
         }
     }
-    
+
     private void assertAutoCommit(final ShardingConnection actual, final boolean autoCommit) throws SQLException {
         assertThat(actual.getAutoCommit(), is(autoCommit));
         assertThat(actual.getConnections().size(), is(2));
@@ -68,43 +60,37 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             assertThat(each.getAutoCommit(), is(autoCommit));
         }
     }
-    
+
     @Test
     // TODO 缺少断言，做柔性事务时补充
     public void assertCommit() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources.values()) {
-            try (ShardingConnection actual = each.getConnection()) {
-                actual.setAutoCommit(false);
-                actual.createStatement().executeQuery(sql);
-                actual.commit();
-            }
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.setAutoCommit(false);
+            actual.createStatement().executeQuery(sql);
+            actual.commit();
         }
     }
-    
+
     @Test
     // TODO 缺少断言，做柔性事务时补充
     public void assertRollback() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources.values()) {
-            try (ShardingConnection actual = each.getConnection()) {
-                actual.setAutoCommit(false);
-                actual.createStatement().executeQuery(sql);
-                actual.rollback();
-            }
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.setAutoCommit(false);
+            actual.createStatement().executeQuery(sql);
+            actual.rollback();
         }
     }
-    
+
     @Test
     public void assertClose() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources.values()) {
-            try (ShardingConnection actual = each.getConnection()) {
-                actual.createStatement().executeQuery(sql);
-                assertClose(actual, false);
-                actual.close();
-                assertClose(actual, true);
-            }
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.createStatement().executeQuery(sql);
+            assertClose(actual, false);
+            actual.close();
+            assertClose(actual, true);
         }
     }
-    
+
     private void assertClose(final ShardingConnection actual, final boolean closed) throws SQLException {
         assertThat(actual.isClosed(), is(closed));
         assertThat(actual.getConnections().size(), is(2));
@@ -112,52 +98,45 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             assertThat(each.isClosed(), is(closed));
         }
     }
-    
+
     @Test
+    @Ignore
     public void assertSetReadOnly() throws SQLException {
-        for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
-            try (ShardingConnection actual = each.getValue().getConnection()) {
-                assertTrue(actual.isReadOnly());
-                actual.setReadOnly(false);
-                actual.createStatement().executeQuery(sql);
-                assertReadOnly(actual, false, each.getKey());
-                if (DatabaseType.SQLServer != each.getKey()) {
-                    actual.setReadOnly(true);
-                    assertReadOnly(actual, true, each.getKey());
-                }
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            assertTrue(actual.isReadOnly());
+            actual.setReadOnly(false);
+            actual.createStatement().executeQuery(sql);
+            assertReadOnly(actual, false, getCurrentDatabaseType());
+            if (DatabaseType.SQLServer != getCurrentDatabaseType()) {
+                actual.setReadOnly(true);
+                assertReadOnly(actual, true, getCurrentDatabaseType());
             }
         }
     }
-    
+
     private void assertReadOnly(final ShardingConnection actual, final boolean readOnly, final DatabaseType type) throws SQLException {
         assertThat(actual.isReadOnly(), is(readOnly));
         assertThat(actual.getConnections().size(), is(2));
-        for (Connection each : actual.getConnections()) {
-            // H2数据库未实现setReadOnly方法
-            if (DatabaseType.H2 == type) {
-                assertFalse(each.isReadOnly());
-            } else {
-                assertThat(each.isReadOnly(), is(readOnly));
-            }
+        // H2数据库未实现setReadOnly方法
+        if (DatabaseType.H2 != type) {
+            assertThat(getShardingDataSource().getConnection().isReadOnly(), is(readOnly));
         }
     }
-    
+
     @Test
     public void assertSetTransactionIsolation() throws SQLException {
-        for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
-            try (ShardingConnection actual = each.getValue().getConnection()) {
-                assertThat(actual.getTransactionIsolation(), is(Connection.TRANSACTION_READ_UNCOMMITTED));
-                actual.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-                actual.createStatement().executeQuery(sql);
-                assertTransactionIsolation(actual, Connection.TRANSACTION_SERIALIZABLE);
-                if (DatabaseType.Oracle != each.getKey()) {
-                    actual.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-                    assertTransactionIsolation(actual, Connection.TRANSACTION_READ_COMMITTED);
-                }
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            assertThat(actual.getTransactionIsolation(), is(Connection.TRANSACTION_READ_UNCOMMITTED));
+            actual.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            actual.createStatement().executeQuery(sql);
+            assertTransactionIsolation(actual, Connection.TRANSACTION_SERIALIZABLE);
+            if (DatabaseType.Oracle != getCurrentDatabaseType()) {
+                actual.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+                assertTransactionIsolation(actual, Connection.TRANSACTION_READ_COMMITTED);
             }
         }
     }
-    
+
     private void assertTransactionIsolation(final ShardingConnection actual, final int transactionIsolation) throws SQLException {
         assertThat(actual.getTransactionIsolation(), is(transactionIsolation));
         assertThat(actual.getConnections().size(), is(2));
@@ -165,41 +144,33 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             assertThat(each.getTransactionIsolation(), is(transactionIsolation));
         }
     }
-    
+
     @Test
     public void assertGetWarnings() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources.values()) {
-            try (ShardingConnection actual = each.getConnection()) {
-                assertNull(actual.getWarnings());
-            }
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            assertNull(actual.getWarnings());
         }
     }
-    
+
     @Test
     public void assertClearWarnings() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources.values()) {
-            try (ShardingConnection actual = each.getConnection()) {
-                actual.clearWarnings();
-            }
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.clearWarnings();
         }
     }
-    
+
     @Test
     public void assertGetHoldability() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources.values()) {
-            try (ShardingConnection actual = each.getConnection()) {
-                assertThat(actual.getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
-            }
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            assertThat(actual.getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
         }
     }
-    
+
     @Test
     public void assertSetHoldability() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources.values()) {
-            try (ShardingConnection actual = each.getConnection()) {
-                actual.setHoldability(ResultSet.CONCUR_READ_ONLY);
-                assertThat(actual.getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
-            }
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.setHoldability(ResultSet.CONCUR_READ_ONLY);
+            assertThat(actual.getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
         }
     }
 }

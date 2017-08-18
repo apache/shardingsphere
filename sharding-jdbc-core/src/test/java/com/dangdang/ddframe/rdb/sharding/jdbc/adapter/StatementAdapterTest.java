@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 import com.dangdang.ddframe.rdb.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingStatement;
 import com.dangdang.ddframe.rdb.sharding.jdbc.util.JDBCTestSQL;
 import com.google.common.collect.Lists;
@@ -54,13 +53,15 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     private String sql = JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL;
     
+    public StatementAdapterTest(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Before
     public void init() throws SQLException {
-        for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
-            ShardingConnection shardingConnection = each.getValue().getConnection();
-            shardingConnections.add(shardingConnection);
-            statements.put(each.getKey(), shardingConnection.createStatement());
-        }
+        ShardingConnection shardingConnection = getShardingDataSource().getConnection();
+        shardingConnections.add(shardingConnection);
+        statements.put(getCurrentDatabaseType(), shardingConnection.createStatement());
     }
     
     @After

@@ -18,34 +18,25 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
 import com.dangdang.ddframe.rdb.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
-import org.junit.Before;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.Collection;
 
 public final class UnsupportedOperationDataSourceTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private Collection<ShardingDataSource> shardingDataSources;
-    
-    @Before
-    public void init() throws SQLException {
-        shardingDataSources = getShardingDataSources().values();
+    public UnsupportedOperationDataSourceTest(final DatabaseType databaseType) {
+        super(databaseType);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetLoginTimeout() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources) {
-            each.getLoginTimeout();
-        }
+        getShardingDataSource().getLoginTimeout();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetLoginTimeout() throws SQLException {
-        for (ShardingDataSource each : shardingDataSources) {
-            each.setLoginTimeout(0);
-        }
+        getShardingDataSource().setLoginTimeout(0);
     }
 }

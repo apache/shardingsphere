@@ -18,8 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
 import com.dangdang.ddframe.rdb.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +35,7 @@ import java.util.List;
 
 public final class UnsupportedOperationResultSetTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private final String sql = "SELECT user_id AS usr_id FROM t_order WHERE status = 'init'";
+    private final String sql = DatabaseTestSQL.SELECT_WITH_ALIAS_SQL;
     
     private List<ShardingConnection> shardingConnections = new ArrayList<>();
     
@@ -42,15 +43,17 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingJDB
     
     private List<ResultSet> resultSets = new ArrayList<>();
     
+    public UnsupportedOperationResultSetTest(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Before
     public void init() throws SQLException {
-        for (ShardingDataSource each : getShardingDataSources().values()) {
-            ShardingConnection connection = each.getConnection();
-            shardingConnections.add(connection);
-            Statement statement = connection.createStatement();
-            statements.add(statement);
-            resultSets.add(statement.executeQuery(sql));
-        }
+        ShardingConnection connection = getShardingDataSource().getConnection();
+        shardingConnections.add(connection);
+        Statement statement = connection.createStatement();
+        statements.add(statement);
+        resultSets.add(statement.executeQuery(sql));
     }
     
     @After

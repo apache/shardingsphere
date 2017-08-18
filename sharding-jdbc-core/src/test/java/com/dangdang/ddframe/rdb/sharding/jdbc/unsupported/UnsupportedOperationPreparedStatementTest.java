@@ -18,8 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
 import com.dangdang.ddframe.rdb.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,14 +39,16 @@ public final class UnsupportedOperationPreparedStatementTest extends AbstractSha
     
     private List<PreparedStatement> statements = new ArrayList<>();
     
+    public UnsupportedOperationPreparedStatementTest(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Before
     public void init() throws SQLException {
-        for (ShardingDataSource each : getShardingDataSources().values()) {
-            ShardingConnection shardingConnection = each.getConnection();
-            shardingConnections.add(shardingConnection);
-            PreparedStatement preparedStatement = shardingConnection.prepareStatement("SELECT user_id AS usr_id FROM t_order WHERE status = 'init'");
-            statements.add(preparedStatement);
-        }
+        ShardingConnection shardingConnection = getShardingDataSource().getConnection();
+        shardingConnections.add(shardingConnection);
+        PreparedStatement preparedStatement = shardingConnection.prepareStatement(DatabaseTestSQL.SELECT_WITH_ALIAS_SQL);
+        statements.add(preparedStatement);
     }
     
     @After
