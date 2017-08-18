@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.common.base.AbstractShardingJDBCDatabaseAndTable
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.util.JDBCTestSQL;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -29,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -100,7 +100,6 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
 
     @Test
-    @Ignore
     public void assertSetReadOnly() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             assertTrue(actual.isReadOnly());
@@ -117,9 +116,13 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     private void assertReadOnly(final ShardingConnection actual, final boolean readOnly, final DatabaseType type) throws SQLException {
         assertThat(actual.isReadOnly(), is(readOnly));
         assertThat(actual.getConnections().size(), is(2));
-        // H2数据库未实现setReadOnly方法
-        if (DatabaseType.H2 != type) {
-            assertThat(getShardingDataSource().getConnection().isReadOnly(), is(readOnly));
+        for (Connection each : actual.getConnections()) {
+            // H2数据库未实现setReadOnly方法
+            if (DatabaseType.H2 == type) {
+                assertFalse(each.isReadOnly());
+            } else {
+                assertThat(each.isReadOnly(), is(readOnly));
+            }
         }
     }
 
