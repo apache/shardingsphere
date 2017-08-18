@@ -29,6 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 
@@ -52,20 +53,20 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void parseBeforeSelectList() {
+    protected void parseBeforeSelectList(final SelectStatement selectStatement) {
         getSqlParser().skipAll(MySQLKeyword.HIGH_PRIORITY, DefaultKeyword.STRAIGHT_JOIN, MySQLKeyword.SQL_SMALL_RESULT, MySQLKeyword.SQL_BIG_RESULT, MySQLKeyword.SQL_BUFFER_RESULT, 
                 MySQLKeyword.SQL_CACHE, MySQLKeyword.SQL_NO_CACHE, MySQLKeyword.SQL_CALC_FOUND_ROWS);
     }
     
     @Override
-    protected void customizedSelect() {
-        parseLimit();
+    protected void customizedSelect(final SelectStatement selectStatement) {
+        parseLimit(selectStatement);
         if (getSqlParser().equalAny(DefaultKeyword.PROCEDURE)) {
             throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
         }
     }
     
-    private void parseLimit() {
+    private void parseLimit(final SelectStatement selectStatement) {
         if (!getSqlParser().skipIfEqual(MySQLKeyword.LIMIT)) {
             return;
         }
@@ -86,22 +87,22 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         }
         getSqlParser().getLexer().nextToken();
         if (getSqlParser().skipIfEqual(Symbol.COMMA)) {
-            getSelectStatement().setLimit(getLimitWithComma(valueIndex, valueBeginPosition, value, isParameterForValue));
+            selectStatement.setLimit(getLimitWithComma(valueIndex, valueBeginPosition, value, isParameterForValue, selectStatement));
             return;
         }
         if (getSqlParser().skipIfEqual(MySQLKeyword.OFFSET)) {
-            getSelectStatement().setLimit(getLimitWithOffset(valueIndex, valueBeginPosition, value, isParameterForValue));
+            selectStatement.setLimit(getLimitWithOffset(valueIndex, valueBeginPosition, value, isParameterForValue, selectStatement));
             return;
         }
         if (!isParameterForValue) {
-            getSelectStatement().getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
+            selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
         Limit limit = new Limit(true);
         limit.setRowCount(new LimitValue(value, valueIndex));
-        getSelectStatement().setLimit(limit);
+        selectStatement.setLimit(limit);
     }
     
-    private Limit getLimitWithComma(final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+    private Limit getLimitWithComma(final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue, final SelectStatement selectStatement) {
         int rowCountBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
         int rowCountValue;
         int rowCountIndex = -1;
@@ -119,10 +120,10 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         }
         getSqlParser().getLexer().nextToken();
         if (!isParameterForValue) {
-            getSelectStatement().getSqlTokens().add(new OffsetToken(valueBeginPosition, value));
+            selectStatement.getSqlTokens().add(new OffsetToken(valueBeginPosition, value));
         }
         if (!isParameterForRowCount) {
-            getSelectStatement().getSqlTokens().add(new RowCountToken(rowCountBeginPosition, rowCountValue));
+            selectStatement.getSqlTokens().add(new RowCountToken(rowCountBeginPosition, rowCountValue));
         }
         Limit result = new Limit(true);
         result.setRowCount(new LimitValue(rowCountValue, rowCountIndex));
@@ -130,7 +131,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         return result;
     }
     
-    private Limit getLimitWithOffset(final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+    private Limit getLimitWithOffset(final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue, final SelectStatement selectStatement) {
         int offsetBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
         int offsetValue = -1;
         int offsetIndex = -1;
@@ -147,10 +148,10 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         }
         getSqlParser().getLexer().nextToken();
         if (!isParameterForOffset) {
-            getSelectStatement().getSqlTokens().add(new OffsetToken(offsetBeginPosition, offsetValue));
+            selectStatement.getSqlTokens().add(new OffsetToken(offsetBeginPosition, offsetValue));
         }
         if (!isParameterForValue) {
-            getSelectStatement().getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
+            selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
         Limit result = new Limit(true);
         result.setRowCount(new LimitValue(value, index));
@@ -159,7 +160,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void parseJoinTable() {
+    protected void parseJoinTable(final SelectStatement selectStatement) {
         if (getSqlParser().equalAny(DefaultKeyword.USING)) {
             return;
         }
@@ -175,7 +176,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
             getSqlParser().getLexer().nextToken();
             parseIndexHint();
         }
-        super.parseJoinTable();
+        super.parseJoinTable(selectStatement);
     }
 
     private void parseIndexHint() {

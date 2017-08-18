@@ -27,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.dangdang.ddframe.rdb.sharding.util.NumberUtil;
@@ -44,11 +45,11 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedSelect() {
+    protected void customizedSelect(final SelectStatement selectStatement) {
         if (getSqlParser().equalAny(PostgreSQLKeyword.WINDOW)) {
             throw new SQLParsingUnsupportedException(PostgreSQLKeyword.WINDOW);
         }
-        parseLimit();
+        parseLimit(selectStatement);
         if (getSqlParser().skipIfEqual(DefaultKeyword.FETCH)) {
             throw new SQLParsingUnsupportedException(DefaultKeyword.FETCH);
         }
@@ -61,24 +62,24 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         }
     }
     
-    private void parseLimit() {
+    private void parseLimit(final SelectStatement selectStatement) {
         Optional<LimitValue> offset = Optional.absent();
         Optional<LimitValue> rowCount = Optional.absent();
         while (true) {
             if (getSqlParser().skipIfEqual(PostgreSQLKeyword.LIMIT)) {
-                rowCount = buildRowCount();
+                rowCount = buildRowCount(selectStatement);
             } else if (getSqlParser().skipIfEqual(PostgreSQLKeyword.OFFSET)) {
-                offset = buildOffset();
+                offset = buildOffset(selectStatement);
             } else {
                 break;
             }
         }
         if (offset.isPresent() || rowCount.isPresent()) {
-            setLimit(offset, rowCount);
+            setLimit(offset, rowCount, selectStatement);
         }
     }
     
-    private Optional<LimitValue> buildRowCount() {
+    private Optional<LimitValue> buildRowCount(final SelectStatement selectStatement) {
         int parameterIndex = getParametersIndex();
         int rowCountValue = -1;
         int rowCountIndex = -1;
@@ -89,7 +90,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
             if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
                 rowCountValue = NumberUtil.roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
                 valueBeginPosition = valueBeginPosition - (rowCountValue + "").length();
-                getSelectStatement().getSqlTokens().add(new RowCountToken(valueBeginPosition, rowCountValue));
+                selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, rowCountValue));
             } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
                 rowCountIndex = parameterIndex++;
                 setParametersIndex(parameterIndex);
@@ -102,7 +103,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         return Optional.of(new LimitValue(rowCountValue, rowCountIndex));
     }
     
-    private Optional<LimitValue> buildOffset() {
+    private Optional<LimitValue> buildOffset(final SelectStatement selectStatement) {
         int parameterIndex = getParametersIndex();
         int offsetValue = -1;
         int offsetIndex = -1;
@@ -110,7 +111,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
             offsetValue = NumberUtil.roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
             offsetBeginPosition = offsetBeginPosition - (offsetValue + "").length();
-            getSelectStatement().getSqlTokens().add(new OffsetToken(offsetBeginPosition, offsetValue));
+            selectStatement.getSqlTokens().add(new OffsetToken(offsetBeginPosition, offsetValue));
         } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
             offsetIndex = parameterIndex++;
             setParametersIndex(parameterIndex);
@@ -122,7 +123,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         return Optional.of(new LimitValue(offsetValue, offsetIndex));
     }
     
-    private void setLimit(final Optional<LimitValue> offset, final Optional<LimitValue> rowCount) {
+    private void setLimit(final Optional<LimitValue> offset, final Optional<LimitValue> rowCount, final SelectStatement selectStatement) {
         Limit limit = new Limit(true);
         if (offset.isPresent()) {
             limit.setOffset(offset.get());
@@ -130,6 +131,6 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         if (rowCount.isPresent()) {
             limit.setRowCount(rowCount.get());
         }
-        getSelectStatement().setLimit(limit);
+        selectStatement.setLimit(limit);
     }
 }

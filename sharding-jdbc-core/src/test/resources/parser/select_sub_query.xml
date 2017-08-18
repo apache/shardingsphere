@@ -3,7 +3,6 @@
     <assert id="assertSelectSubQuerySingleTableWithParentheses" parameters="1,2">
         <tables>
             <table name="t_order" alias="o" />
-            <table name="t" />
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="IN">
@@ -16,7 +15,6 @@
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
-            <table name="t" />
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="IN">
@@ -28,7 +26,6 @@
     <assert id="assertSelectSubQueryWithOrderBy">
         <tables>
             <table name="t_order"/>
-            <table name="t" />
         </tables>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="orders_count" />
@@ -37,7 +34,6 @@
     <assert id="assertSelectSubQueryWithGroupBy">
         <tables>
             <table name="t_order_item"/>
-            <table name="t" />
         </tables>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="order_items_count" />

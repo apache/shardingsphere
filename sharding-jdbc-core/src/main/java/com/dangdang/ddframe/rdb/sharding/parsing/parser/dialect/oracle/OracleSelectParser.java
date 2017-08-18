@@ -24,6 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,36 +51,36 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedBetweenWhereAndGroupBy() {
-        skipHierarchicalQueryClause();
+    protected void customizedBetweenWhereAndGroupBy(final SelectStatement selectStatement) {
+        skipHierarchicalQueryClause(selectStatement);
     }
     
-    private void skipHierarchicalQueryClause() {
-        skipConnect();
-        skipStart();
-        skipConnect();
+    private void skipHierarchicalQueryClause(final SelectStatement selectStatement) {
+        skipConnect(selectStatement);
+        skipStart(selectStatement);
+        skipConnect(selectStatement);
     }
     
-    private void skipStart() {
+    private void skipStart(final SelectStatement selectStatement) {
         if (getSqlParser().skipIfEqual(OracleKeyword.START)) {
             getSqlParser().accept(DefaultKeyword.WITH);
-            getSqlParser().parseComparisonCondition(getSelectStatement());
+            getSqlParser().parseComparisonCondition(selectStatement);
         }
     }
     
-    private void skipConnect() {
+    private void skipConnect(final SelectStatement selectStatement) {
         if (getSqlParser().skipIfEqual(OracleKeyword.CONNECT)) {
             getSqlParser().accept(DefaultKeyword.BY);
             getSqlParser().skipIfEqual(OracleKeyword.PRIOR);
             if (getSqlParser().skipIfEqual(OracleKeyword.NOCYCLE)) {
                 getSqlParser().skipIfEqual(OracleKeyword.PRIOR);
             }
-            getSqlParser().parseComparisonCondition(getSelectStatement());
+            getSqlParser().parseComparisonCondition(selectStatement);
         }
     }
     
     @Override
-    protected void customizedBetweenGroupByAndOrderBy() {
+    protected void customizedBetweenGroupByAndOrderBy(final SelectStatement selectStatement) {
         skipModelClause();
     }
     
@@ -163,17 +164,17 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedSelect() {
+    protected void customizedSelect(final SelectStatement selectStatement) {
         if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
             skipForUpdate();
         }
-        if (getSelectStatement().getOrderByItems().isEmpty()) {
-            parseOrderBy();
+        if (selectStatement.getOrderByItems().isEmpty()) {
+            parseOrderBy(selectStatement);
         }
     }
     
     @Override
-    protected void parseGroupBy() {
+    protected void parseGroupBy(final SelectStatement selectStatement) {
         if (getSqlParser().equalAny(DefaultKeyword.GROUP)) {
             getSqlParser().getLexer().nextToken();
             getSqlParser().accept(DefaultKeyword.BY);
@@ -181,7 +182,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
                 if (getSqlParser().equalAny(OracleKeyword.ROLLUP, OracleKeyword.CUBE, OracleKeyword.GROUPING)) {
                     throw new UnsupportedOperationException("Cannot support ROLLUP, CUBE, GROUPING SETS");
                 } 
-                addGroupByItem(getSqlParser().parseExpression());
+                addGroupByItem(getSqlParser().parseExpression(), selectStatement);
                 if (!getSqlParser().equalAny(Symbol.COMMA)) {
                     break;
                 }
@@ -190,26 +191,26 @@ public final class OracleSelectParser extends AbstractSelectParser {
             if (getSqlParser().skipIfEqual(DefaultKeyword.HAVING)) {
                 throw new UnsupportedOperationException("Cannot support Having");
             }
-            getSelectStatement().setGroupByLastPosition(getSqlParser().getLexer().getCurrentToken().getEndPosition() - getSqlParser().getLexer().getCurrentToken().getLiterals().length());
+            selectStatement.setGroupByLastPosition(getSqlParser().getLexer().getCurrentToken().getEndPosition() - getSqlParser().getLexer().getCurrentToken().getLiterals().length());
         }
     }
     
     @Override
-    protected void customizedParseTableFactor() {
+    protected void customizedParseTableFactor(final SelectStatement selectStatement) {
         if (getSqlParser().skipIfEqual(OracleKeyword.ONLY)) {
             getSqlParser().skipIfEqual(Symbol.LEFT_PAREN);
-            parseQueryTableExpression();
+            parseQueryTableExpression(selectStatement);
             getSqlParser().skipIfEqual(Symbol.RIGHT_PAREN);
             skipFlashbackQueryClause();
         } else {
-            parseQueryTableExpression();
+            parseQueryTableExpression(selectStatement);
             skipPivotClause();
             skipFlashbackQueryClause();
         }
     }
     
-    private void parseQueryTableExpression() {
-        parseTableFactor();
+    private void parseQueryTableExpression(final SelectStatement selectStatement) {
+        parseTableFactor(selectStatement);
         parseSample();
         skipPartition();
     }
@@ -283,7 +284,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void skipAfterOrderByItem() {
+    protected void skipAfterOrderByItem(final SelectStatement selectStatement) {
         if (getSqlParser().skipIfEqual(OracleKeyword.NULLS)) {
             getSqlParser().getLexer().nextToken();
             if (!getSqlParser().skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {

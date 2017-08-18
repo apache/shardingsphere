@@ -32,6 +32,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 
 /**
@@ -46,11 +47,11 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void parseBeforeSelectList() {
-        parseTop();
+    protected void parseBeforeSelectList(final SelectStatement selectStatement) {
+        parseTop(selectStatement);
     }
     
-    private void parseTop() {
+    private void parseTop(final SelectStatement selectStatement) {
         if (!getSqlParser().skipIfEqual(SQLServerKeyword.TOP)) {
             return;
         }
@@ -64,7 +65,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         if (sqlExpression instanceof SQLNumberExpression) {
             int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
             rowCountValue = new LimitValue(rowCount, -1);
-            getSelectStatement().getSqlTokens().add(new RowCountToken(beginPosition, rowCount));
+            selectStatement.getSqlTokens().add(new RowCountToken(beginPosition, rowCount));
         } else if (sqlExpression instanceof SQLPlaceholderExpression) {
             rowCountValue = new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex());
         } else {
@@ -74,12 +75,12 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
             throw new SQLParsingUnsupportedException(SQLServerKeyword.PERCENT);
         }
         getSqlParser().skipIfEqual(DefaultKeyword.WITH, SQLServerKeyword.TIES);
-        if (null == getSelectStatement().getLimit()) {
+        if (null == selectStatement.getLimit()) {
             Limit limit = new Limit(false);
             limit.setRowCount(rowCountValue);
-            getSelectStatement().setLimit(limit);
+            selectStatement.setLimit(limit);
         } else {
-            getSelectStatement().getLimit().setRowCount(rowCountValue);
+            selectStatement.getLimit().setRowCount(rowCountValue);
         }
     }
     
@@ -89,40 +90,37 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected SelectItem parseRowNumberSelectItem() {
+    protected SelectItem parseRowNumberSelectItem(final SelectStatement selectStatement) {
         getSqlParser().skipParentheses();
         getSqlParser().accept(DefaultKeyword.OVER);
         getSqlParser().accept(Symbol.LEFT_PAREN);
         if (getSqlParser().equalAny(SQLServerKeyword.PARTITION)) {
             throw new SQLParsingUnsupportedException(SQLServerKeyword.PARTITION);
         }
-        boolean containSubquery = isContainSubquery();
-        setContainSubquery(false);
-        parseOrderBy();
-        setContainSubquery(containSubquery);
+        parseOrderBy(selectStatement);
         getSqlParser().accept(Symbol.RIGHT_PAREN);
         return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getSqlParser().parseAlias());
     }
     
     @Override
-    protected void parseJoinTable() {
+    protected void parseJoinTable(final SelectStatement selectStatement) {
         if (getSqlParser().skipIfEqual(DefaultKeyword.WITH)) {
             getSqlParser().skipParentheses();
         }
-        super.parseJoinTable();
+        super.parseJoinTable(selectStatement);
     }
     
     @Override
-    protected void customizedSelect() {
+    protected void customizedSelect(final SelectStatement selectStatement) {
         if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
             parseFor();
         }
         if (getSqlParser().equalAny(SQLServerKeyword.OFFSET)) {
-            parseOffset();
+            parseOffset(selectStatement);
         }
     }
     
-    private void parseOffset() {
+    private void parseOffset(final SelectStatement selectStatement) {
         getSqlParser().getLexer().nextToken();
         int offsetValue = -1;
         int offsetIndex = -1;
@@ -156,7 +154,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         } else {
             limit.setOffset(new LimitValue(offsetValue, offsetIndex));
         }
-        getSelectStatement().setLimit(limit);
+        selectStatement.setLimit(limit);
     }
     
     private void parseFor() {

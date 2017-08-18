@@ -64,7 +64,6 @@
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
-            <table name="row_" />
         </tables>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -105,7 +104,6 @@
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
-            <table name="row_" />
         </tables>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -126,7 +124,6 @@
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
-            <table name="row_" />
         </tables>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -147,8 +144,6 @@
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
-            <table name="row_" />
-            <table name="t" />
         </tables>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">

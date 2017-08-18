@@ -50,6 +50,7 @@ public final class OracleParser extends AbstractSQLParser {
         for (SelectItem each : selectStatement.getItems()) {
             if (each.getAlias().isPresent() && "rownum".equalsIgnoreCase(each.getExpression())) {
                 rowNumberAlias = each.getAlias();
+                break;
             }
         }
         return "rownum".equalsIgnoreCase(columnLabel) || columnLabel.equalsIgnoreCase(rowNumberAlias.orNull());

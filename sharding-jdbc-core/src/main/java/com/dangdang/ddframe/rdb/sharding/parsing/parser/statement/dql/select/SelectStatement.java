@@ -27,9 +27,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Select SQL语句对象.
@@ -41,15 +43,21 @@ import java.util.Map;
 @ToString(callSuper = true)
 public final class SelectStatement extends DQLStatement {
     
+    private boolean containStar;
+    
+    private int selectListLastPosition;
+    
     private int groupByLastPosition;
     
-    private final List<SelectItem> items = new LinkedList<>();
+    private final Set<SelectItem> items = new HashSet<>();
     
     private final List<OrderItem> groupByItems = new LinkedList<>();
     
     private final List<OrderItem> orderByItems = new LinkedList<>();
     
     private Limit limit;
+    
+    private SelectStatement subStatement;
     
     /**
      * 获取聚合选择项集合.
