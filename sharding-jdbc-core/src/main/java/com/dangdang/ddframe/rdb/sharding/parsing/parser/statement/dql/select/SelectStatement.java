@@ -148,44 +148,52 @@ public final class SelectStatement extends DQLStatement {
     
     private SelectStatement processLimitForSubQuery() {
         SelectStatement result = this;
+        List<SQLToken> limitSQLTokens = getLimitTokens(result);
         Limit limit = result.getLimit();
-        List<SQLToken> limitSQLTokens = new LinkedList<>();
-        for (SQLToken each : result.getSqlTokens()) {
-            if (each instanceof RowCountToken || each instanceof OffsetToken) {
-                limitSQLTokens.add(each);
-            }
-        }
         while (result.containsSubQuery()) {
             result = result.subQueryStatement;
+            limitSQLTokens.addAll(getLimitTokens(result));
+            if (null == result.getLimit()) {
+                continue;
+            }
             if (null == limit) {
                 limit = result.getLimit();
             }
-            if (null != result.getLimit() && null != result.getLimit().getRowCount()) {
+            if (null != result.getLimit().getRowCount()) {
                 limit.setRowCount(result.getLimit().getRowCount());
             }
-            if (null != result.getLimit() && null != result.getLimit().getOffset()) {
+            if (null != result.getLimit().getOffset()) {
                 limit.setOffset(result.getLimit().getOffset());
             }
-            for (SQLToken each : result.getSqlTokens()) {
-                if (each instanceof RowCountToken || each instanceof OffsetToken) {
-                    limitSQLTokens.add(each);
-                }
+        }
+        resetLimitTokens(result, limitSQLTokens);
+        result.setLimit(limit);
+        return result;
+    }
+    
+    private List<SQLToken> getLimitTokens(final SelectStatement selectStatement) {
+        List<SQLToken> result = new LinkedList<>();
+        for (SQLToken each : selectStatement.getSqlTokens()) {
+            if (each instanceof RowCountToken || each instanceof OffsetToken) {
+                result.add(each);
             }
         }
-        result.setLimit(limit);
+        return result;
+    }
+    
+    private void resetLimitTokens(final SelectStatement selectStatement, final List<SQLToken> limitSQLTokens) {
         int count = 0;
         List<Integer> toBeRemovedIndexes = new LinkedList<>();
-        for (SQLToken each : result.getSqlTokens()) {
+        for (SQLToken each : selectStatement.getSqlTokens()) {
             if (each instanceof RowCountToken || each instanceof OffsetToken) {
                 toBeRemovedIndexes.add(count);
             }
             count++;
         }
         for (int each : toBeRemovedIndexes) {
-            result.getSqlTokens().remove(each);
+            selectStatement.getSqlTokens().remove(each);
         }
-        result.getSqlTokens().addAll(limitSQLTokens);
-        return result;
+        selectStatement.getSqlTokens().addAll(limitSQLTokens);
     }
     
     private void processOrderByItems(final SelectStatement result) {
