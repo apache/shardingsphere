@@ -38,13 +38,6 @@ public abstract class AbstractCreateParser implements SQLStatementParser {
     
     private final AbstractSQLParser sqlParser;
     
-    private final DDLStatement createStatement;
-    
-    public AbstractCreateParser(final AbstractSQLParser sqlParser) {
-        this.sqlParser = sqlParser;
-        createStatement = new DDLStatement();
-    }
-    
     @Override
     public DDLStatement parse() {
         sqlParser.getLexer().nextToken();
@@ -53,8 +46,9 @@ public abstract class AbstractCreateParser implements SQLStatementParser {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
         getSqlParser().skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
-        sqlParser.parseSingleTable(createStatement);
-        return createStatement;
+        DDLStatement result = new DDLStatement();
+        sqlParser.parseSingleTable(result);
+        return result;
     }
     
     protected abstract Keyword[] getSkippedKeywordsBetweenCreateAndKeyword();

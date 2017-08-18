@@ -38,13 +38,6 @@ public abstract class AbstractAlterParser implements SQLStatementParser {
     
     private final AbstractSQLParser sqlParser;
     
-    private final DDLStatement alterStatement;
-    
-    public AbstractAlterParser(final AbstractSQLParser sqlParser) {
-        this.sqlParser = sqlParser;
-        alterStatement = new DDLStatement();
-    }
-    
     @Override
     public DDLStatement parse() {
         sqlParser.getLexer().nextToken();
@@ -52,8 +45,9 @@ public abstract class AbstractAlterParser implements SQLStatementParser {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
         getSqlParser().skipAll(getSkippedKeywordsBetweenAlterTableAndTableName());
-        sqlParser.parseSingleTable(alterStatement);
-        return alterStatement;
+        DDLStatement result = new DDLStatement();
+        sqlParser.parseSingleTable(result);
+        return result;
     }
     
     protected Keyword[] getSkippedKeywordsBetweenAlterTableAndTableName() {

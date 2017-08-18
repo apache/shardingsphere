@@ -38,13 +38,6 @@ public abstract class AbstractDropParser implements SQLStatementParser {
     
     private final AbstractSQLParser sqlParser;
     
-    private final DDLStatement dropStatement;
-    
-    public AbstractDropParser(final AbstractSQLParser sqlParser) {
-        this.sqlParser = sqlParser;
-        dropStatement = new DDLStatement();
-    }
-    
     @Override
     public DDLStatement parse() {
         sqlParser.getLexer().nextToken();
@@ -53,8 +46,9 @@ public abstract class AbstractDropParser implements SQLStatementParser {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
         getSqlParser().skipAll(getSkippedKeywordsBetweenDropTableAndTableName());
-        sqlParser.parseSingleTable(dropStatement);
-        return dropStatement;
+        DDLStatement result = new DDLStatement();
+        sqlParser.parseSingleTable(result);
+        return result;
     }
     
     protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {

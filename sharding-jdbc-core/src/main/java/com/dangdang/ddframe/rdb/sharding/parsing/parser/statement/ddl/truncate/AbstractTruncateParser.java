@@ -37,20 +37,14 @@ public abstract class AbstractTruncateParser implements SQLStatementParser {
     
     private final AbstractSQLParser sqlParser;
     
-    private final DDLStatement truncateStatement;
-    
-    public AbstractTruncateParser(final AbstractSQLParser sqlParser) {
-        this.sqlParser = sqlParser;
-        truncateStatement = new DDLStatement();
-    }
-    
     @Override
     public DDLStatement parse() {
         sqlParser.getLexer().nextToken();
         sqlParser.skipIfEqual(DefaultKeyword.TABLE);
         getSqlParser().skipAll(getSkippedKeywordsBetweenTruncateTableAndTableName());
-        sqlParser.parseSingleTable(truncateStatement);
-        return truncateStatement;
+        DDLStatement result = new DDLStatement();
+        sqlParser.parseSingleTable(result);
+        return result;
     }
     
     protected Keyword[] getSkippedKeywordsBetweenTruncateTableAndTableName() {
