@@ -141,8 +141,13 @@ public final class SelectStatement extends DQLStatement {
      * @return 子查询的Select SQL语句对象
      */
     public SelectStatement getSubQueryStatement() {
+        SelectStatement result = processLimitForSubQuery();
+        processOrderByItems(result);
+        return result;
+    }
+    
+    private SelectStatement processLimitForSubQuery() {
         SelectStatement result = this;
-        boolean isRootQueryContainsStar = result.isContainStar();
         Limit limit = result.getLimit();
         List<SQLToken> limitSQLTokens = new LinkedList<>();
         for (SQLToken each : result.getSqlTokens()) {
@@ -167,10 +172,6 @@ public final class SelectStatement extends DQLStatement {
                 }
             }
         }
-        if (!isRootQueryContainsStar) {
-            result.getOrderByItems().clear();
-            result.getGroupByItems().clear();
-        }
         result.setLimit(limit);
         int count = 0;
         List<Integer> toBeRemovedIndexes = new LinkedList<>();
@@ -185,5 +186,12 @@ public final class SelectStatement extends DQLStatement {
         }
         result.getSqlTokens().addAll(limitSQLTokens);
         return result;
+    }
+    
+    private void processOrderByItems(final SelectStatement result) {
+        if (!containStar) {
+            result.getOrderByItems().clear();
+            result.getGroupByItems().clear();
+        }
     }
 }
