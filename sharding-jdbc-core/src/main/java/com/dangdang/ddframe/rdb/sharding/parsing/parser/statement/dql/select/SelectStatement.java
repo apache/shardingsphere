@@ -22,7 +22,11 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.DQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -57,7 +61,8 @@ public final class SelectStatement extends DQLStatement {
     
     private Limit limit;
     
-    private SelectStatement subStatement;
+    @Getter(AccessLevel.NONE)
+    private SelectStatement subQueryStatement;
     
     /**
      * 获取聚合选择项集合.
@@ -119,5 +124,66 @@ public final class SelectStatement extends DQLStatement {
                 each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             }
         }
+    }
+    
+    /**
+     * 判断是否包含子查询.
+     * 
+     * @return 是否包含子查询
+     */
+    public boolean containsSubQuery() {
+        return null != subQueryStatement;
+    }
+    
+    /**
+     * 获取子查询的Select SQL语句对象.
+     * 
+     * @return 子查询的Select SQL语句对象
+     */
+    public SelectStatement getSubQueryStatement() {
+        SelectStatement result = this;
+        boolean isRootQueryContainsStar = result.isContainStar();
+        Limit limit = result.getLimit();
+        List<SQLToken> limitSQLTokens = new LinkedList<>();
+        for (SQLToken each : result.getSqlTokens()) {
+            if (each instanceof RowCountToken || each instanceof OffsetToken) {
+                limitSQLTokens.add(each);
+            }
+        }
+        while (result.containsSubQuery()) {
+            result = result.subQueryStatement;
+            if (null == limit) {
+                limit = result.getLimit();
+            }
+            if (null != result.getLimit() && null != result.getLimit().getRowCount()) {
+                limit.setRowCount(result.getLimit().getRowCount());
+            }
+            if (null != result.getLimit() && null != result.getLimit().getOffset()) {
+                limit.setOffset(result.getLimit().getOffset());
+            }
+            for (SQLToken each : result.getSqlTokens()) {
+                if (each instanceof RowCountToken || each instanceof OffsetToken) {
+                    limitSQLTokens.add(each);
+                }
+            }
+        }
+        if (!isRootQueryContainsStar) {
+            result.getOrderByItems().clear();
+            result.getGroupByItems().clear();
+        }
+        result.setLimit(limit);
+        int count = 0;
+        List<Integer> toBeRemovedIndexes = new LinkedList<>();
+        for (SQLToken each : result.getSqlTokens()) {
+            if (each instanceof RowCountToken || each instanceof OffsetToken) {
+                toBeRemovedIndexes.add(count);
+            }
+            count++;
+        }
+        for (int each : toBeRemovedIndexes) {
+            result.getSqlTokens().remove(each);
+        }
+        result.getSqlTokens().addAll(limitSQLTokens);
+        return result;
     }
 }

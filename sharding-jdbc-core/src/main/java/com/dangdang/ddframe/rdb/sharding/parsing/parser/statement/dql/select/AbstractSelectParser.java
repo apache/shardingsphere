@@ -25,7 +25,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.CommonSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
@@ -40,10 +39,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpr
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -87,59 +83,12 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     @Override
     public final SelectStatement parse() {
         SelectStatement result = parseInternal();
-        if (null != result.getSubStatement()) {
-            result = processSubQuery(result);
+        if (result.containsSubQuery()) {
+            result = result.getSubQueryStatement();
         }
         // TODO move to rewrite
         appendDerivedColumns(result);
         appendDerivedOrderBy(result);
-        return result;
-    }
-    
-    // TODO refactor
-    private SelectStatement processSubQuery(SelectStatement result) {
-        boolean isRootQueryContainsStar = result.isContainStar();
-        Limit limit = result.getLimit();
-        List<SQLToken> limitSQLTokens = new LinkedList<>();
-        for (SQLToken each : result.getSqlTokens()) {
-            if (each instanceof RowCountToken || each instanceof OffsetToken) {
-                limitSQLTokens.add(each);
-            }
-        }
-        while (null != result.getSubStatement()) {
-            result = result.getSubStatement();
-            if (null == limit) {
-                limit = result.getLimit();
-            }
-            if (null != result.getLimit() && null != result.getLimit().getRowCount()) {
-                limit.setRowCount(result.getLimit().getRowCount());
-            }
-            if (null != result.getLimit() && null != result.getLimit().getOffset()) {
-                limit.setOffset(result.getLimit().getOffset());
-            }
-            for (SQLToken each : result.getSqlTokens()) {
-                if (each instanceof RowCountToken || each instanceof OffsetToken) {
-                    limitSQLTokens.add(each);
-                }
-            }
-        }
-        if (!isRootQueryContainsStar) {
-            result.getOrderByItems().clear();
-            result.getGroupByItems().clear();
-        }
-        result.setLimit(limit);
-        int count = 0;
-        List<Integer> toBeRemovedIndexes = new LinkedList<>();
-        for (SQLToken each : result.getSqlTokens()) {
-            if (each instanceof RowCountToken || each instanceof OffsetToken) {
-                toBeRemovedIndexes.add(count);
-            }
-            count++;
-        }
-        for (int each : toBeRemovedIndexes) {
-            result.getSqlTokens().remove(each);
-        }
-        result.getSqlTokens().addAll(limitSQLTokens);
         return result;
     }
     
@@ -274,7 +223,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         items.addAll(selectStatement.getItems());
         if (sqlParser.skipIfEqual(Symbol.LEFT_PAREN)) {
             sqlParser.skipUselessParentheses();
-            selectStatement.setSubStatement(parseInternal());
+            selectStatement.setSubQueryStatement(parseInternal());
             sqlParser.skipUselessParentheses();
             if (getSqlParser().equalAny(DefaultKeyword.WHERE, Assist.END)) {
                 return;
