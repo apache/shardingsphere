@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.common.util;
 
-import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.common.env.DatabaseEnvironment;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -31,7 +31,7 @@ import java.sql.Connection;
 
 public class DBUnitUtil {
     
-    public static IDatabaseConnection getConnection(final DataBaseEnvironment dbEnv, final Connection connection) throws DatabaseUnitException {
+    public static IDatabaseConnection getConnection(final DatabaseEnvironment dbEnv, final Connection connection) throws DatabaseUnitException {
         switch (dbEnv.getDatabaseType()) {
             case H2:
                 return new H2Connection(connection, "PUBLIC");

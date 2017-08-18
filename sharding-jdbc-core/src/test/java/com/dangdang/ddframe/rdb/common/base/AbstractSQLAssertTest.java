@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.common.base;
 
-import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.common.env.DatabaseEnvironment;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLAssertData;
@@ -130,8 +130,8 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
                 File expectedDataSetFile = new File(url.getPath());
                 if (sql.toUpperCase().startsWith("SELECT")) {
                     assertDqlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
-                } else {
-                    assertDmlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
+                } else  {
+                    assertDmlAndDdlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
                 }
             }
         }
@@ -159,7 +159,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
     }
     
-    private void assertDmlSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SQLAssertData data, final File expectedDataSetFile)
+    private void assertDmlAndDdlSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SQLAssertData data, final File expectedDataSetFile)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
             executeWithPreparedStatement(shardingDataSource, getParameters(data));
@@ -222,7 +222,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
             expectedDataSet.addReplacementObject("[null]", null);
             for (ITable each : expectedDataSet.getTables()) {
                 String tableName = each.getTableMetaData().getTableName();
-                ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
+                ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
                         .createTable(tableName, preparedStatement);
                 assertEquals(expectedDataSet.getTable(tableName), actualTable);
             }
@@ -247,7 +247,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
             expectedDataSet.addReplacementObject("[null]", null);
             for (ITable each : expectedDataSet.getTables()) {
                 String tableName = each.getTableMetaData().getTableName();
-                ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
+                ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
                         .createQueryTable(tableName, querySql);
                 assertEquals(expectedDataSet.getTable(tableName), actualTable);
             }
@@ -261,7 +261,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
                 ITable expectedTable = expectedTableIterator.getTable();
                 String actualTableName = expectedTable.getTableMetaData().getTableName();
                 String verifySql = "SELECT * FROM " + actualTableName + " WHERE status = '" + getStatus(file) + "'";
-                ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
+                ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
                         .createQueryTable(actualTableName, verifySql);
                 assertEquals(expectedTable, actualTable);
             }

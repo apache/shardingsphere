@@ -251,8 +251,10 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             preparedStatement.setString(4, "BATCH");
             preparedStatement.addBatch();
             int[] result = preparedStatement.executeBatch();
-            for (int rs : result) {
-                assertThat(rs, is(1));
+            if (DatabaseType.Oracle != getCurrentDatabaseType()) {
+                for (int rs : result) {
+                    assertThat(rs, is(1));
+                }
             }
         }
         EventBusInstance.getInstance().unregister(listener);

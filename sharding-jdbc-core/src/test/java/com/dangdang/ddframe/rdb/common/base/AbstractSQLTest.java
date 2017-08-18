@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.common.base;
 
-import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.common.env.DatabaseEnvironment;
 import com.dangdang.ddframe.rdb.common.env.DatabaseTestMode;
 import com.dangdang.ddframe.rdb.common.env.ShardingJdbcDatabaseTester;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
@@ -98,7 +98,7 @@ public abstract class AbstractSQLTest {
     public final void importDataSet() throws Exception {
         for (DatabaseType databaseType : CURRENT_TEST_MODE.databaseTypes()) {
             if (databaseType == getCurrentDatabaseType() || null == getCurrentDatabaseType()) {
-                DataBaseEnvironment dbEnv = new DataBaseEnvironment(databaseType);
+                DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType);
                 for (String each : getDataSetFiles()) {
                     InputStream is = AbstractSQLTest.class.getClassLoader().getResourceAsStream(each);
                     IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
@@ -131,7 +131,7 @@ public abstract class AbstractSQLTest {
     }
     
     private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
-        DataBaseEnvironment dbEnv = new DataBaseEnvironment(type);
+        DatabaseEnvironment dbEnv = new DatabaseEnvironment(type);
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName(dbEnv.getDriverClassName());
         result.setUrl(dbEnv.getURL(dbName));

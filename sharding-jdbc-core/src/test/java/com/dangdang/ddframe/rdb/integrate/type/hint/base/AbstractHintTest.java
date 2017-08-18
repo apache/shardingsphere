@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.integrate.type.hint.base;
 
 import com.dangdang.ddframe.rdb.common.base.AbstractSQLTest;
-import com.dangdang.ddframe.rdb.common.env.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.common.env.DatabaseEnvironment;
 import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.integrate.type.hint.helper.DynamicShardingValueHelper;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -115,7 +115,7 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
             for (Object param : params) {
                 ps.setObject(i++, param);
             }
-            ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(type), connection).createTable("t_order", ps);
+            ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(type), connection).createTable("t_order", ps);
             IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractHintTest.class.getClassLoader()
                     .getResourceAsStream(expectedDataSetFile)));
             assertEquals(expectedDataSet.getTable("t_order"), actualTable);

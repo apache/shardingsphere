@@ -23,7 +23,7 @@ import lombok.Getter;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class DataBaseEnvironment {
+public final class DatabaseEnvironment {
     
     private static final int INIT_CAPACITY = 5;
     
@@ -40,7 +40,7 @@ public final class DataBaseEnvironment {
     @Getter
     private final DatabaseType databaseType;
     
-    public DataBaseEnvironment(final DatabaseType databaseType) {
+    public DatabaseEnvironment(final DatabaseType databaseType) {
         this.databaseType = databaseType;
         fillData();
     }
