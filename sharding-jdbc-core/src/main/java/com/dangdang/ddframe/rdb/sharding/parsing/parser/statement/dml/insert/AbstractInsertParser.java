@@ -41,6 +41,7 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -51,16 +52,14 @@ import java.util.List;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public abstract class AbstractInsertParser implements SQLStatementParser {
-    
-    @Getter(AccessLevel.PROTECTED)
-    private final AbstractSQLParser sqlParser;
     
     @Getter(AccessLevel.PROTECTED)
     private final ShardingRule shardingRule;
     
     @Getter(AccessLevel.PROTECTED)
-    private final InsertStatement insertStatement;
+    private final AbstractSQLParser sqlParser;
     
     private int columnsListLastPosition;
     
@@ -70,34 +69,29 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     
     private int generateKeyColumnIndex = -1;
     
-    public AbstractInsertParser(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
-        this.sqlParser = sqlParser;
-        this.shardingRule = shardingRule;
-        insertStatement = new InsertStatement();
-    }
-    
     @Override
     public final DMLStatement parse() {
         sqlParser.getLexer().nextToken();
-        parseInto();
-        parseColumns();
+        InsertStatement result = new InsertStatement();
+        parseInto(result);
+        parseColumns(result);
         if (sqlParser.equalAny(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot INSERT SELECT");
         }
         if (sqlParser.skipIfEqual(getValuesKeywords())) {
             afterValuesPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
-            parseValues();
+            parseValues(result);
             if (sqlParser.equalAny(Symbol.COMMA)) {
-                parseMultipleValues();
+                parseMultipleValues(result);
             }
         } else if (sqlParser.skipIfEqual(getCustomizedInsertKeywords())) {
-            parseCustomizedInsert();
+            parseCustomizedInsert(result);
         }
-        appendGenerateKey();
-        return insertStatement;
+        appendGenerateKey(result);
+        return result;
     }
     
-    private void parseInto() {
+    private void parseInto(final InsertStatement insertStatement) {
         if (sqlParser.equalAny(getUnsupportedKeywordsBeforeInto())) {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
@@ -124,7 +118,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         return new Keyword[0];
     }
     
-    private void parseColumns() {
+    private void parseColumns(final InsertStatement insertStatement) {
         Collection<Column> result = new LinkedList<>();
         if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
             String tableName = insertStatement.getTables().getSingleTableName();
@@ -150,7 +144,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         return new Keyword[] {DefaultKeyword.VALUES};
     }
     
-    private void parseValues() {
+    private void parseValues(final InsertStatement insertStatement) {
         sqlParser.accept(Symbol.LEFT_PAREN);
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         do {
@@ -181,13 +175,13 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         return result;
     }
     
-    private void parseMultipleValues() {
+    private void parseMultipleValues(final InsertStatement insertStatement) {
         insertStatement.getMultipleConditions().add(new Conditions(insertStatement.getConditions()));
         MultipleInsertValuesToken valuesToken = new MultipleInsertValuesToken(afterValuesPosition);
         valuesToken.getValues().add(sqlParser.getLexer().getInput().substring(afterValuesPosition, sqlParser.getLexer().getCurrentToken().getEndPosition() - Symbol.COMMA.getLiterals().length()));
         while (sqlParser.skipIfEqual(Symbol.COMMA)) {
             int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
-            parseValues();
+            parseValues(insertStatement);
             insertStatement.getMultipleConditions().add(new Conditions(insertStatement.getConditions()));
             int endPosition = sqlParser.equalAny(Symbol.COMMA)
                     ? sqlParser.getLexer().getCurrentToken().getEndPosition() - Symbol.COMMA.getLiterals().length() : sqlParser.getLexer().getCurrentToken().getEndPosition();
@@ -200,10 +194,10 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         return new Keyword[0];
     }
     
-    protected void parseCustomizedInsert() {
+    protected void parseCustomizedInsert(final InsertStatement insertStatement) {
     }
     
-    private void appendGenerateKey() {
+    private void appendGenerateKey(final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
         if (!generateKeyColumn.isPresent() || null != insertStatement.getGeneratedKey()) {

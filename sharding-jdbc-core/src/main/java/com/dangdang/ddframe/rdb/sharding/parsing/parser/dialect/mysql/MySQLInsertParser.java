@@ -33,6 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpr
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.AbstractInsertParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.InsertStatement;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 
 /**
@@ -47,13 +48,13 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     @Override
-    protected void parseCustomizedInsert() {
-        parseInsertSet();
+    protected void parseCustomizedInsert(final InsertStatement insertStatement) {
+        parseInsertSet(insertStatement);
     }
     
-    private void parseInsertSet() {
+    private void parseInsertSet(final InsertStatement insertStatement) {
         do {
-            Column column = new Column(SQLUtil.getExactlyValue(getSqlParser().getLexer().getCurrentToken().getLiterals()), getInsertStatement().getTables().getSingleTableName());
+            Column column = new Column(SQLUtil.getExactlyValue(getSqlParser().getLexer().getCurrentToken().getLiterals()), insertStatement.getTables().getSingleTableName());
             getSqlParser().getLexer().nextToken();
             getSqlParser().accept(Symbol.EQ);
             SQLExpression sqlExpression;
@@ -73,7 +74,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             }
             getSqlParser().getLexer().nextToken();
             if (getSqlParser().equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
-                getInsertStatement().getConditions().add(new Condition(column, sqlExpression), getShardingRule());
+                insertStatement.getConditions().add(new Condition(column, sqlExpression), getShardingRule());
             } else {
                 getSqlParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }

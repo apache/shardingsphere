@@ -28,25 +28,20 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Update语句解析器.
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private final AbstractSQLParser sqlParser;
     
-    private final DMLStatement updateStatement;
-    
     @Getter(AccessLevel.NONE)
     private int parametersIndex;
-    
-    public AbstractUpdateParser(final AbstractSQLParser sqlParser) {
-        this.sqlParser = sqlParser;
-        updateStatement = new DMLStatement();
-    }
     
     @Override
     public DMLStatement parse() {
@@ -55,12 +50,13 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
         if (sqlParser.equalAny(getUnsupportedKeywordsBetweenUpdateAndTable())) {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
-        sqlParser.parseSingleTable(updateStatement);
-        parseSetItems();
+        DMLStatement result = new DMLStatement();
+        sqlParser.parseSingleTable(result);
+        parseSetItems(result);
         sqlParser.skipUntil(DefaultKeyword.WHERE);
         sqlParser.setParametersIndex(parametersIndex);
-        sqlParser.parseWhere(updateStatement);
-        return updateStatement;
+        sqlParser.parseWhere(result);
+        return result;
     }
     
     protected Keyword[] getSkippedKeywordsBetweenUpdateAndTable() {
@@ -71,20 +67,20 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
         return new Keyword[0];
     }
     
-    private void parseSetItems() {
+    private void parseSetItems(final DMLStatement updateStatement) {
         sqlParser.accept(DefaultKeyword.SET);
         do {
-            parseSetItem();
+            parseSetItem(updateStatement);
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
     }
     
-    private void parseSetItem() {
-        parseSetColumn();
+    private void parseSetItem(final DMLStatement updateStatement) {
+        parseSetColumn(updateStatement);
         sqlParser.skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
-        parseSetValue();
+        parseSetValue(updateStatement);
     }
     
-    private void parseSetColumn() {
+    private void parseSetColumn(final DMLStatement updateStatement) {
         if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
             sqlParser.skipParentheses();
             return;
@@ -100,7 +96,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
         }
     }
     
-    private void parseSetValue() {
+    private void parseSetValue(final DMLStatement updateStatement) {
         sqlParser.parseExpression(updateStatement);
         parametersIndex = sqlParser.getParametersIndex();
     }
