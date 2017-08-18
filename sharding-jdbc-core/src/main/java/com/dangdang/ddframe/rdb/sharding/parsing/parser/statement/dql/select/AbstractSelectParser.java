@@ -126,25 +126,26 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private void parseSelectList(final SelectStatement selectStatement) {
         do {
-            parseSelectItem(selectStatement);
+            selectStatement.getItems().add(parseSelectItem(selectStatement));
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
         selectStatement.setSelectListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
     }
     
-    private void parseSelectItem(final SelectStatement selectStatement) {
+    private SelectItem parseSelectItem(final SelectStatement selectStatement) {
         sqlParser.skipIfEqual(getSkippedKeywordsBeforeSelectItem());
         SelectItem result;
         if (isRowNumberSelectItem()) {
             result = parseRowNumberSelectItem(selectStatement);
         } else if (isStarSelectItem()) {
-            result = parseStarSelectItem(selectStatement);
+            selectStatement.setContainStar(true);
+            result = parseStarSelectItem();
         } else if (isAggregationSelectItem()) {
             result = parseAggregationSelectItem();
             parseRestSelectItem(selectStatement);
         } else {
             result = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem(selectStatement) + parseRestSelectItem(selectStatement)), sqlParser.parseAlias());
         }
-        selectStatement.getItems().add(result);
+        return result;
     }
     
     protected Keyword[] getSkippedKeywordsBeforeSelectItem() {
@@ -163,8 +164,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(sqlParser.getLexer().getCurrentToken().getLiterals()));
     }
     
-    private SelectItem parseStarSelectItem(final SelectStatement selectStatement) {
-        selectStatement.setContainStar(true);
+    private SelectItem parseStarSelectItem() {
         sqlParser.getLexer().nextToken();
         sqlParser.parseAlias();
         return new StarSelectItem(Optional.<String>absent());
