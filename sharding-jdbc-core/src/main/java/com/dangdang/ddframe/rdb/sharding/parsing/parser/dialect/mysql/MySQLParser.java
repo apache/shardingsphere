@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 
@@ -28,7 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
  */
 public final class MySQLParser extends AbstractSQLParser {
     
-    public MySQLParser(final String sql, final ShardingRule shardingRule) {
-        super(new MySQLLexer(sql), shardingRule);
+    public MySQLParser(final String sql) {
+        super(new MySQLLexer(sql));
     }
 }

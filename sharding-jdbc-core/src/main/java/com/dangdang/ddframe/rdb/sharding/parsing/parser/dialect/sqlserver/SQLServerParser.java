@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
@@ -32,8 +31,8 @@ import java.util.List;
  */
 public final class SQLServerParser extends AbstractSQLParser {
     
-    public SQLServerParser(final String sql, final ShardingRule shardingRule) {
-        super(new SQLServerLexer(sql), shardingRule);
+    public SQLServerParser(final String sql) {
+        super(new SQLServerLexer(sql));
     }
     
     @Override

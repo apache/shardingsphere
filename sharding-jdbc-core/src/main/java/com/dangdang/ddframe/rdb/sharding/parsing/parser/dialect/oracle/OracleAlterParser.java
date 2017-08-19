@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter.AbstractAlterParser;
 
@@ -27,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter.Abst
  */
 public final class OracleAlterParser extends AbstractAlterParser {
     
-    public OracleAlterParser(final AbstractSQLParser sqlParser) {
-        super(sqlParser);
+    public OracleAlterParser(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
+        super(shardingRule, sqlParser);
     }
 }

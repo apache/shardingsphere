@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
@@ -38,6 +39,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public abstract class AbstractUpdateParser implements SQLStatementParser {
     
+    private final ShardingRule shardingRule;
+    
     private final AbstractSQLParser sqlParser;
     
     @Getter(AccessLevel.NONE)
@@ -51,11 +54,11 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
         DMLStatement result = new DMLStatement();
-        sqlParser.parseSingleTable(result);
+        sqlParser.parseSingleTable(shardingRule, result);
         parseSetItems(result);
         sqlParser.skipUntil(DefaultKeyword.WHERE);
         sqlParser.setParametersIndex(parametersIndex);
-        sqlParser.parseWhere(result);
+        sqlParser.parseWhere(shardingRule, result);
         return result;
     }
     

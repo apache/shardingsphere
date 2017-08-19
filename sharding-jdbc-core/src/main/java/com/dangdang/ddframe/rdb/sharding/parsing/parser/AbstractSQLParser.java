@@ -57,11 +57,8 @@ import java.util.List;
  */
 public abstract class AbstractSQLParser extends AbstractParser {
     
-    private final ShardingRule shardingRule;
-    
-    public AbstractSQLParser(final Lexer lexer, final ShardingRule shardingRule) {
+    public AbstractSQLParser(final Lexer lexer) {
         super(lexer);
-        this.shardingRule = shardingRule;
         getLexer().nextToken();
     }
     
@@ -181,9 +178,10 @@ public abstract class AbstractSQLParser extends AbstractParser {
     /**
      * 解析单表.
      *
+     * @param shardingRule 分库分表规则配置
      * @param sqlStatement SQL语句对象
      */
-    public final void parseSingleTable(final SQLStatement sqlStatement) {
+    public final void parseSingleTable(final ShardingRule shardingRule, final SQLStatement sqlStatement) {
         boolean hasParentheses = false;
         if (skipIfEqual(Symbol.LEFT_PAREN)) {
             if (equalAny(DefaultKeyword.SELECT)) {
@@ -246,10 +244,11 @@ public abstract class AbstractSQLParser extends AbstractParser {
     /**
      * 解析查询条件.
      *
+     * @param shardingRule 分库分表规则配置
      * @param sqlStatement SQL语句对象
      */
-    public final void parseWhere(final SQLStatement sqlStatement) {
-        parseWhere(sqlStatement, Collections.<SelectItem>emptyList());
+    public final void parseWhere(final ShardingRule shardingRule, final SQLStatement sqlStatement) {
+        parseWhere(shardingRule, sqlStatement, Collections.<SelectItem>emptyList());
     }
     
     /**
@@ -258,16 +257,16 @@ public abstract class AbstractSQLParser extends AbstractParser {
      * @param sqlStatement SQL语句对象
      * @param items 选择项集合
      */
-    public final void parseWhere(final SQLStatement sqlStatement, final List<SelectItem> items) {
+    public final void parseWhere(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         parseAlias();
         if (skipIfEqual(DefaultKeyword.WHERE)) {
-            parseConditions(sqlStatement, items);
+            parseConditions(shardingRule, sqlStatement, items);
         }
     }
     
-    private void parseConditions(final SQLStatement sqlStatement, final List<SelectItem> items) {
+    private void parseConditions(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         do {
-            parseComparisonCondition(sqlStatement, items);
+            parseComparisonCondition(shardingRule, sqlStatement, items);
         } while (skipIfEqual(DefaultKeyword.AND));
         if (equalAny(DefaultKeyword.OR)) {
             throw new SQLParsingUnsupportedException(getLexer().getCurrentToken().getType());
@@ -275,21 +274,21 @@ public abstract class AbstractSQLParser extends AbstractParser {
     }
     
     // TODO 解析组合expr
-    public final void parseComparisonCondition(final SQLStatement sqlStatement, final List<SelectItem> items) {
+    public final void parseComparisonCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         skipIfEqual(Symbol.LEFT_PAREN);
         SQLExpression left = parseExpression(sqlStatement);
         if (equalAny(Symbol.EQ)) {
-            parseEqualCondition(sqlStatement, left);
+            parseEqualCondition(shardingRule, sqlStatement, left);
             skipIfEqual(Symbol.RIGHT_PAREN);
             return;
         }
         if (equalAny(DefaultKeyword.IN)) {
-            parseInCondition(sqlStatement, left);
+            parseInCondition(shardingRule, sqlStatement, left);
             skipIfEqual(Symbol.RIGHT_PAREN);
             return;
         }
         if (equalAny(DefaultKeyword.BETWEEN)) {
-            parseBetweenCondition(sqlStatement, left);
+            parseBetweenCondition(shardingRule, sqlStatement, left);
             skipIfEqual(Symbol.RIGHT_PAREN);
             return;
         }
@@ -309,7 +308,7 @@ public abstract class AbstractSQLParser extends AbstractParser {
         skipIfEqual(Symbol.RIGHT_PAREN);
     }
     
-    private void parseEqualCondition(final SQLStatement sqlStatement, final SQLExpression left) {
+    private void parseEqualCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
         getLexer().nextToken();
         SQLExpression right = parseExpression(sqlStatement);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
@@ -322,7 +321,7 @@ public abstract class AbstractSQLParser extends AbstractParser {
         }
     }
     
-    private void parseInCondition(final SQLStatement sqlStatement, final SQLExpression left) {
+    private void parseInCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
         getLexer().nextToken();
         accept(Symbol.LEFT_PAREN);
         List<SQLExpression> rights = new LinkedList<>();
@@ -339,7 +338,7 @@ public abstract class AbstractSQLParser extends AbstractParser {
         getLexer().nextToken();
     }
     
-    private void parseBetweenCondition(final SQLStatement sqlStatement, final SQLExpression left) {
+    private void parseBetweenCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
         getLexer().nextToken();
         List<SQLExpression> rights = new LinkedList<>();
         rights.add(parseExpression(sqlStatement));

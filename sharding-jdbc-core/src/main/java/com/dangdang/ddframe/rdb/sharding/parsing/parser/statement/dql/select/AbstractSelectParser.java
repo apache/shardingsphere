@@ -287,7 +287,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private void parseWhere(final SelectStatement selectStatement) {
-        sqlParser.parseWhere(selectStatement, items);
+        sqlParser.parseWhere(shardingRule, selectStatement, items);
         parametersIndex = sqlParser.getParametersIndex();
     }
     

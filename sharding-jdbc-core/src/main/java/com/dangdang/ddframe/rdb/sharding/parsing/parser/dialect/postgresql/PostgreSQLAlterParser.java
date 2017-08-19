@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
@@ -30,8 +31,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter.Abst
  */
 public final class PostgreSQLAlterParser extends AbstractAlterParser {
     
-    public PostgreSQLAlterParser(final AbstractSQLParser sqlParser) {
-        super(sqlParser);
+    public PostgreSQLAlterParser(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
+        super(shardingRule, sqlParser);
     }
     
     @Override

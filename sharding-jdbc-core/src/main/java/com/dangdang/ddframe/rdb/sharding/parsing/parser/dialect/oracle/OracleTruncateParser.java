@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.truncate.AbstractTruncateParser;
 
@@ -27,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.truncate.A
  */
 public final class OracleTruncateParser extends AbstractTruncateParser {
     
-    public OracleTruncateParser(final AbstractSQLParser sqlParser) {
-        super(sqlParser);
+    public OracleTruncateParser(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
+        super(shardingRule, sqlParser);
     }
 }

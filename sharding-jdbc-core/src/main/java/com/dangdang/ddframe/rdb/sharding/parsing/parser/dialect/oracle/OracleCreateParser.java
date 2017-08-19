@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
@@ -29,8 +30,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.create.Abs
  */
 public final class OracleCreateParser extends AbstractCreateParser {
     
-    public OracleCreateParser(final AbstractSQLParser sqlParser) {
-        super(sqlParser);
+    public OracleCreateParser(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
+        super(shardingRule, sqlParser);
     }
     
     @Override

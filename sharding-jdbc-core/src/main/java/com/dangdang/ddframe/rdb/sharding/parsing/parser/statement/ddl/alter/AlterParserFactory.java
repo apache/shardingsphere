@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLAlterParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
@@ -40,21 +41,22 @@ public final class AlterParserFactory {
     /**
      * Alter Table语句解析器.
      * 
+     * @param shardingRule 分库分表规则配置
      * @param sqlParser SQL解析器
      * @return Alter语句解析器
      */
-    public static AbstractAlterParser newInstance(final AbstractSQLParser sqlParser) {
+    public static AbstractAlterParser newInstance(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
-            return new MySQLAlterParser(sqlParser);
+            return new MySQLAlterParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof OracleParser) {
-            return new OracleAlterParser(sqlParser);
+            return new OracleAlterParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerAlterParser(sqlParser);
+            return new SQLServerAlterParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLAlterParser(sqlParser);
+            return new PostgreSQLAlterParser(shardingRule, sqlParser);
         }
         throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 

@@ -70,22 +70,22 @@ public final class SQLParsingEngine {
             return InsertParserFactory.newInstance(shardingRule, sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.UPDATE)) {
-            return UpdateParserFactory.newInstance(sqlParser).parse();
+            return UpdateParserFactory.newInstance(shardingRule, sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.DELETE)) {
-            return DeleteParserFactory.newInstance(sqlParser).parse();
+            return DeleteParserFactory.newInstance(shardingRule, sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.CREATE)) {
-            return CreateParserFactory.newInstance(sqlParser).parse();
+            return CreateParserFactory.newInstance(shardingRule, sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.ALTER)) {
-            return AlterParserFactory.newInstance(sqlParser).parse();
+            return AlterParserFactory.newInstance(shardingRule, sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.DROP)) {
-            return DropParserFactory.newInstance(sqlParser).parse();
+            return DropParserFactory.newInstance(shardingRule, sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.TRUNCATE)) {
-            return TruncateParserFactory.newInstance(sqlParser).parse();
+            return TruncateParserFactory.newInstance(shardingRule, sqlParser).parse();
         }
         throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
     }
@@ -94,13 +94,13 @@ public final class SQLParsingEngine {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLParser(sql, shardingRule);
+                return new MySQLParser(sql);
             case Oracle:
-                return new OracleParser(sql, shardingRule);
+                return new OracleParser(sql);
             case SQLServer:
-                return new SQLServerParser(sql, shardingRule);
+                return new SQLServerParser(sql);
             case PostgreSQL:
-                return new PostgreSQLParser(sql, shardingRule);
+                return new PostgreSQLParser(sql);
             default:
                 throw new UnsupportedOperationException(dbType.name());
         }

@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
@@ -30,8 +31,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete.Abs
  */
 public final class SQLServerDeleteParser extends AbstractDeleteParser {
     
-    public SQLServerDeleteParser(final AbstractSQLParser sqlParser) {
-        super(sqlParser);
+    public SQLServerDeleteParser(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
+        super(shardingRule, sqlParser);
     }
     
     @Override

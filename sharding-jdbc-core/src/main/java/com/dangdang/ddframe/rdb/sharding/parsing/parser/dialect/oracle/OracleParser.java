@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
@@ -33,8 +32,8 @@ import java.util.List;
  */
 public final class OracleParser extends AbstractSQLParser {
     
-    public OracleParser(final String sql, final ShardingRule shardingRule) {
-        super(new OracleLexer(sql), shardingRule);
+    public OracleParser(final String sql) {
+        super(new OracleLexer(sql));
     }
     
     @Override

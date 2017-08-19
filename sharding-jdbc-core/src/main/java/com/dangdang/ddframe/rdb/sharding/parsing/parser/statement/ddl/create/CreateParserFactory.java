@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.create;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLCreateParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
@@ -40,21 +41,22 @@ public final class CreateParserFactory {
     /**
      * 创建Create Table语句解析器.
      * 
+     * @param shardingRule 分库分表规则配置
      * @param sqlParser SQL解析器
      * @return Create语句解析器
      */
-    public static AbstractCreateParser newInstance(final AbstractSQLParser sqlParser) {
+    public static AbstractCreateParser newInstance(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
-            return new MySQLCreateParser(sqlParser);
+            return new MySQLCreateParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof OracleParser) {
-            return new OracleCreateParser(sqlParser);
+            return new OracleCreateParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerCreateParser(sqlParser);
+            return new SQLServerCreateParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLCreateParser(sqlParser);
+            return new PostgreSQLCreateParser(shardingRule, sqlParser);
         }
         throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 

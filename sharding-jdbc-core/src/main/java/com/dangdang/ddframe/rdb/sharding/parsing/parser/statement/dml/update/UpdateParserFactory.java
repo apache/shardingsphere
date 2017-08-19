@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLUpdateParser;
@@ -40,21 +41,22 @@ public final class UpdateParserFactory {
     /**
      * 创建Update语句解析器.
      * 
+     * @param shardingRule 分库分表规则配置
      * @param sqlParser SQL解析器
      * @return Update语句解析器
      */
-    public static AbstractUpdateParser newInstance(final AbstractSQLParser sqlParser) {
+    public static AbstractUpdateParser newInstance(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
-            return new MySQLUpdateParser(sqlParser);
+            return new MySQLUpdateParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof OracleParser) {
-            return new OracleUpdateParser(sqlParser);
+            return new OracleUpdateParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerUpdateParser(sqlParser);
+            return new SQLServerUpdateParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLUpdateParser(sqlParser);
+            return new PostgreSQLUpdateParser(shardingRule, sqlParser);
         }
         throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 

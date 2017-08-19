@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.drop;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
@@ -36,6 +37,8 @@ import lombok.RequiredArgsConstructor;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractDropParser implements SQLStatementParser {
     
+    private final ShardingRule shardingRule;
+    
     private final AbstractSQLParser sqlParser;
     
     @Override
@@ -47,7 +50,7 @@ public abstract class AbstractDropParser implements SQLStatementParser {
         }
         getSqlParser().skipAll(getSkippedKeywordsBetweenDropTableAndTableName());
         DDLStatement result = new DDLStatement();
-        sqlParser.parseSingleTable(result);
+        sqlParser.parseSingleTable(shardingRule, result);
         return result;
     }
     
