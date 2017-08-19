@@ -291,6 +291,52 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     protected void customizedBetweenWhereAndGroupBy(final SelectStatement selectStatement) {
     }
     
+    protected void parseGroupBy(final SelectStatement selectStatement) {
+        if (sqlParser.skipIfEqual(DefaultKeyword.GROUP)) {
+            sqlParser.accept(DefaultKeyword.BY);
+            while (true) {
+                addGroupByItem(sqlParser.parseExpression(), selectStatement);
+                if (!sqlParser.equalAny(Symbol.COMMA)) {
+                    break;
+                }
+                sqlParser.getLexer().nextToken();
+            }
+            while (sqlParser.equalAny(DefaultKeyword.WITH) || sqlParser.getLexer().getCurrentToken().getLiterals().equalsIgnoreCase("ROLLUP")) {
+                sqlParser.getLexer().nextToken();
+            }
+            if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
+                throw new UnsupportedOperationException("Cannot support Having");
+            }
+            selectStatement.setGroupByLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - getSqlParser().getLexer().getCurrentToken().getLiterals().length());
+        } else if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
+            throw new UnsupportedOperationException("Cannot support Having");
+        }
+    }
+    
+    protected final void addGroupByItem(final SQLExpression sqlExpression, final SelectStatement selectStatement) {
+        OrderType orderByType = OrderType.ASC;
+        if (sqlParser.equalAny(DefaultKeyword.ASC)) {
+            sqlParser.getLexer().nextToken();
+        } else if (sqlParser.skipIfEqual(DefaultKeyword.DESC)) {
+            orderByType = OrderType.DESC;
+        }
+        OrderItem orderItem;
+        if (sqlExpression instanceof SQLPropertyExpression) {
+            SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
+            orderItem = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType,
+                    getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner() + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName())), selectStatement));
+        } else if (sqlExpression instanceof SQLIdentifierExpression) {
+            SQLIdentifierExpression sqlIdentifierExpression = (SQLIdentifierExpression) sqlExpression;
+            orderItem = new OrderItem(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), selectStatement));
+        } else if (sqlExpression instanceof SQLIgnoreExpression) {
+            SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
+            orderItem = new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getAlias(sqlIgnoreExpression.getExpression(), selectStatement));
+        } else {
+            return;
+        }
+        selectStatement.getGroupByItems().add(orderItem);
+    }
+    
     protected void customizedBetweenGroupByAndOrderBy(final SelectStatement selectStatement) {
     }
     
@@ -337,52 +383,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected void skipAfterOrderByItem(final SelectStatement selectStatement) {
-    }
-    
-    protected void parseGroupBy(final SelectStatement selectStatement) {
-        if (sqlParser.skipIfEqual(DefaultKeyword.GROUP)) {
-            sqlParser.accept(DefaultKeyword.BY);
-            while (true) {
-                addGroupByItem(sqlParser.parseExpression(), selectStatement);
-                if (!sqlParser.equalAny(Symbol.COMMA)) {
-                    break;
-                }
-                sqlParser.getLexer().nextToken();
-            }
-            while (sqlParser.equalAny(DefaultKeyword.WITH) || sqlParser.getLexer().getCurrentToken().getLiterals().equalsIgnoreCase("ROLLUP")) {
-                sqlParser.getLexer().nextToken();
-            }
-            if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
-                throw new UnsupportedOperationException("Cannot support Having");
-            }
-            selectStatement.setGroupByLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - getSqlParser().getLexer().getCurrentToken().getLiterals().length());
-        } else if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
-            throw new UnsupportedOperationException("Cannot support Having");
-        }
-    }
-    
-    protected final void addGroupByItem(final SQLExpression sqlExpression, final SelectStatement selectStatement) {
-        OrderType orderByType = OrderType.ASC;
-        if (sqlParser.equalAny(DefaultKeyword.ASC)) {
-            sqlParser.getLexer().nextToken();
-        } else if (sqlParser.skipIfEqual(DefaultKeyword.DESC)) {
-            orderByType = OrderType.DESC;
-        }
-        OrderItem orderItem;
-        if (sqlExpression instanceof SQLPropertyExpression) {
-            SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-            orderItem = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType,
-                    getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner() + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName())), selectStatement));
-        } else if (sqlExpression instanceof SQLIdentifierExpression) {
-            SQLIdentifierExpression sqlIdentifierExpression = (SQLIdentifierExpression) sqlExpression;
-            orderItem = new OrderItem(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), selectStatement));
-        } else if (sqlExpression instanceof SQLIgnoreExpression) {
-            SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
-            orderItem = new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getAlias(sqlIgnoreExpression.getExpression(), selectStatement));
-        } else {
-            return;
-        }
-        selectStatement.getGroupByItems().add(orderItem);
     }
     
     private Optional<String> getAlias(final String name, final SelectStatement selectStatement) {
