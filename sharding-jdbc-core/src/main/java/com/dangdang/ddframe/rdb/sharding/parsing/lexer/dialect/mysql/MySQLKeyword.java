@@ -92,5 +92,6 @@ public enum MySQLKeyword implements Keyword {
     STATS_PERSISTENT,
     STATS_SAMPLE_PAGES, 
     DISK,
-    MEMORY
+    MEMORY,
+    ROLLUP
 }

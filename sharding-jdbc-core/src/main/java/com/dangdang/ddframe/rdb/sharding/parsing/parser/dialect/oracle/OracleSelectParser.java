@@ -264,24 +264,8 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void parseGroupBy(final SelectStatement selectStatement) {
-        if (getSqlParser().skipIfEqual(DefaultKeyword.GROUP)) {
-            getSqlParser().accept(DefaultKeyword.BY);
-            while (true) {
-                if (getSqlParser().equalAny(OracleKeyword.ROLLUP, OracleKeyword.CUBE, OracleKeyword.GROUPING)) {
-                    throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
-                }
-                addGroupByItem(getSqlParser().parseExpression(), selectStatement);
-                if (!getSqlParser().equalAny(Symbol.COMMA)) {
-                    break;
-                }
-                getSqlParser().getLexer().nextToken();
-            }
-            if (getSqlParser().equalAny(DefaultKeyword.HAVING)) {
-                throw new SQLParsingUnsupportedException(DefaultKeyword.HAVING);
-            }
-            selectStatement.setGroupByLastPosition(getSqlParser().getLexer().getCurrentToken().getEndPosition() - getSqlParser().getLexer().getCurrentToken().getLiterals().length());
-        }
+    protected Keyword[] getUnsupportedKeywordBeforeGroupByItem() {
+        return new Keyword[] {OracleKeyword.ROLLUP, OracleKeyword.CUBE, OracleKeyword.GROUPING};
     }
     
     @Override

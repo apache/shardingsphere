@@ -60,6 +60,11 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
+    protected Keyword[] getSkippedKeywordAfterGroupBy() {
+        return new Keyword[] {DefaultKeyword.WITH, MySQLKeyword.ROLLUP};
+    }
+    
+    @Override
     protected void parseRest(final SelectStatement selectStatement) {
         parseLimit(selectStatement);
         if (getSqlParser().equalAny(DefaultKeyword.PROCEDURE)) {

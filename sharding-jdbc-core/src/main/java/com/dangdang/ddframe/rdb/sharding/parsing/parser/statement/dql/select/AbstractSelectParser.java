@@ -103,6 +103,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         parseWhere(result);
         parseBetweenWhereAndGroupBy(result);
         parseGroupBy(result);
+        parseHaving();
         parseBetweenGroupByAndOrderBy(result);
         parseOrderBy(result);
         parseRest(result);
@@ -291,7 +292,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     protected void parseBetweenWhereAndGroupBy(final SelectStatement selectStatement) {
     }
     
-    protected void parseGroupBy(final SelectStatement selectStatement) {
+    private void parseGroupBy(final SelectStatement selectStatement) {
         if (sqlParser.skipIfEqual(DefaultKeyword.GROUP)) {
             sqlParser.accept(DefaultKeyword.BY);
             while (true) {
@@ -301,19 +302,15 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 }
                 sqlParser.getLexer().nextToken();
             }
-            while (sqlParser.equalAny(DefaultKeyword.WITH) || sqlParser.getLexer().getCurrentToken().getLiterals().equalsIgnoreCase("ROLLUP")) {
-                sqlParser.getLexer().nextToken();
-            }
-            if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
-                throw new UnsupportedOperationException("Cannot support Having");
-            }
+            sqlParser.skipAll(getSkippedKeywordAfterGroupBy());
             selectStatement.setGroupByLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - getSqlParser().getLexer().getCurrentToken().getLiterals().length());
-        } else if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
-            throw new UnsupportedOperationException("Cannot support Having");
         }
     }
     
-    protected final void addGroupByItem(final SQLExpression sqlExpression, final SelectStatement selectStatement) {
+    private void addGroupByItem(final SQLExpression sqlExpression, final SelectStatement selectStatement) {
+        if (sqlParser.equalAny(getUnsupportedKeywordBeforeGroupByItem())) {
+            throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
+        }
         OrderType orderByType = OrderType.ASC;
         if (sqlParser.equalAny(DefaultKeyword.ASC)) {
             sqlParser.getLexer().nextToken();
@@ -335,6 +332,20 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             return;
         }
         selectStatement.getGroupByItems().add(orderItem);
+    }
+    
+    protected Keyword[] getUnsupportedKeywordBeforeGroupByItem() {
+        return new Keyword[0];
+    }
+    
+    protected Keyword[] getSkippedKeywordAfterGroupBy() {
+        return new Keyword[0];
+    }
+    
+    private void parseHaving() {
+        if (sqlParser.equalAny(DefaultKeyword.HAVING)) {
+            throw new SQLParsingUnsupportedException(DefaultKeyword.HAVING);
+        }
     }
     
     protected void parseBetweenGroupByAndOrderBy(final SelectStatement selectStatement) {
