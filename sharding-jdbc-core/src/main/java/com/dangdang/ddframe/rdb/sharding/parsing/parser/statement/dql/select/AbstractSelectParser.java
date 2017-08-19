@@ -358,23 +358,23 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         } else if (sqlParser.skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderType.DESC;
         }
-        OrderItem result;
         if (sqlExpression instanceof SQLNumberExpression) {
-            result = new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderByType, getNullOrderType());
-        } else if (sqlExpression instanceof SQLIdentifierExpression) {
-            result = new OrderItem(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), 
-                    orderByType, getNullOrderType(), getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), selectStatement));
-        } else if (sqlExpression instanceof SQLPropertyExpression) {
-            SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-            result = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, getNullOrderType(), 
-                    getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), selectStatement));
-        } else if (sqlExpression instanceof SQLIgnoreExpression) {
-            SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
-            result = new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getNullOrderType(), getAlias(sqlIgnoreExpression.getExpression(), selectStatement));
-        } else {
-            throw new SQLParsingException(sqlParser.getLexer());
+            return new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderByType, getNullOrderType());
         }
-        return result;
+        if (sqlExpression instanceof SQLIdentifierExpression) {
+            return new OrderItem(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), 
+                    orderByType, getNullOrderType(), getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), selectStatement));
+        }
+        if (sqlExpression instanceof SQLPropertyExpression) {
+            SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
+            return new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, getNullOrderType(), 
+                    getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), selectStatement));
+        }
+        if (sqlExpression instanceof SQLIgnoreExpression) {
+            SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
+            return new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getNullOrderType(), getAlias(sqlIgnoreExpression.getExpression(), selectStatement));
+        }
+        throw new SQLParsingException(sqlParser.getLexer());
     }
     
     protected abstract OrderType getNullOrderType();
