@@ -69,8 +69,8 @@ public final class GroupByStreamResultSetMergerTest {
         aggregationSelectItem2.getDerivedAggregationSelectItems().add(derivedAggregationSelectItem2);
         selectStatement.getItems().add(aggregationSelectItem1);
         selectStatement.getItems().add(aggregationSelectItem2);
-        selectStatement.getGroupByItems().add(new OrderItem(3, OrderType.ASC));
-        selectStatement.getOrderByItems().add(new OrderItem(3, OrderType.ASC));
+        selectStatement.getGroupByItems().add(new OrderItem(3, OrderType.ASC, OrderType.ASC));
+        selectStatement.getOrderByItems().add(new OrderItem(3, OrderType.ASC, OrderType.ASC));
     }
     
     private ResultSet mockResultSet() throws SQLException {

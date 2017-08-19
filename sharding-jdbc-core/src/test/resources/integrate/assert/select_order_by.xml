@@ -15,4 +15,16 @@
             <data expected="select_order_by/SelectForAlias.xml" />
         </sharding-rule>
     </sql>
+    <!-- // TODO add null data -->
+    <sql id="assertSelectWithOrderByForNullsFirst">
+        <sharding-rule value="tbl">
+            <data expected="select_order_by/SelectForAlias.xml" />
+        </sharding-rule>
+    </sql>
+    <!-- // TODO add null data -->
+    <sql id="assertSelectWithOrderByForNullsLast">
+        <sharding-rule value="tbl">
+            <data expected="select_order_by/SelectForAlias.xml" />
+        </sharding-rule>
+    </sql>
 </sqls>

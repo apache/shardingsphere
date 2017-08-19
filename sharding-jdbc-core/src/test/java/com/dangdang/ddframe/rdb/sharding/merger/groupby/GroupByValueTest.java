@@ -47,7 +47,7 @@ public final class GroupByValueTest {
     
     @Test
     public void assertGetGroupByValues() throws SQLException {
-        List<?> actual =  new GroupByValue(resultSet, Arrays.asList(new OrderItem(1, OrderType.ASC), new OrderItem(3, OrderType.DESC))).getGroupValues();
+        List<?> actual =  new GroupByValue(resultSet, Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(3, OrderType.DESC, OrderType.ASC))).getGroupValues();
         List<?> expected =  Arrays.asList("1", "3");
         assertTrue(actual.equals(expected));
     }

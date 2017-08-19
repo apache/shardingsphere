@@ -38,16 +38,16 @@ public final class SelectStatementTest {
     @Test
     public void assertIsSameGroupByAndOrderByItemsWhenSame() throws SQLException {
         SelectStatement actual = new SelectStatement();
-        actual.getOrderByItems().add(new OrderItem("col", OrderType.ASC, Optional.<String>absent()));
-        actual.getGroupByItems().add(new OrderItem("col", OrderType.ASC, Optional.<String>absent()));
+        actual.getOrderByItems().add(new OrderItem("col", OrderType.ASC, OrderType.ASC, Optional.<String>absent()));
+        actual.getGroupByItems().add(new OrderItem("col", OrderType.ASC, OrderType.ASC, Optional.<String>absent()));
         assertTrue(actual.isSameGroupByAndOrderByItems());
     }
     
     @Test
     public void assertIsSameGroupByAndOrderByItemsWhenDifferent() throws SQLException {
         SelectStatement actual = new SelectStatement();
-        actual.getOrderByItems().add(new OrderItem("order_col", OrderType.ASC, Optional.<String>absent()));
-        actual.getGroupByItems().add(new OrderItem("group_col", OrderType.ASC, Optional.<String>absent()));
+        actual.getOrderByItems().add(new OrderItem("order_col", OrderType.ASC, OrderType.ASC, Optional.<String>absent()));
+        actual.getGroupByItems().add(new OrderItem("group_col", OrderType.ASC, OrderType.ASC, Optional.<String>absent()));
         assertFalse(actual.isSameGroupByAndOrderByItems());
     }
 }

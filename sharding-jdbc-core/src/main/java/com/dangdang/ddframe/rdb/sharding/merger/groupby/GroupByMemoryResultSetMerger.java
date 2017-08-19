@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.groupby;
 
-import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.common.AbstractMemoryResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.common.MemoryResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AggregationUnit;
@@ -47,15 +46,12 @@ public final class GroupByMemoryResultSetMerger extends AbstractMemoryResultSetM
     
     private final SelectStatement selectStatement;
     
-    private final OrderType nullOrderType;
-    
     private final Iterator<MemoryResultSetRow> memoryResultSetRows;
     
     public GroupByMemoryResultSetMerger(
-            final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets, final SelectStatement selectStatement, final OrderType nullOrderType) throws SQLException {
+            final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
         super(labelAndIndexMap);
         this.selectStatement = selectStatement;
-        this.nullOrderType = nullOrderType;
         memoryResultSetRows = init(resultSets);
     }
     
@@ -124,7 +120,7 @@ public final class GroupByMemoryResultSetMerger extends AbstractMemoryResultSetM
     
     private List<MemoryResultSetRow> getMemoryResultSetRows(final Map<GroupByValue, MemoryResultSetRow> dataMap) {
         List<MemoryResultSetRow> result = new ArrayList<>(dataMap.values());
-        Collections.sort(result, new GroupByRowComparator(selectStatement, nullOrderType));
+        Collections.sort(result, new GroupByRowComparator(selectStatement));
         return result;
     }
     

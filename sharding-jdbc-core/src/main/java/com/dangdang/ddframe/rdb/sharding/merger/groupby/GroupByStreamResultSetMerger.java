@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.groupby;
 
-import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AggregationUnit;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AggregationUnitFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByStreamResultSetMerger;
@@ -52,8 +51,8 @@ public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMe
     private List<?> currentGroupByValues;
     
     public GroupByStreamResultSetMerger(
-            final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets, final SelectStatement selectStatement, final OrderType nullOrderType) throws SQLException {
-        super(resultSets, selectStatement.getOrderByItems(), nullOrderType);
+            final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
+        super(resultSets, selectStatement.getOrderByItems());
         this.labelAndIndexMap = labelAndIndexMap;
         this.selectStatement = selectStatement;
         currentRow = new ArrayList<>(labelAndIndexMap.size());

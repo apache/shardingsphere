@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByMemoryResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.iterator.IteratorStreamResultSetMerger;
@@ -79,13 +78,13 @@ public final class MergeEngine {
     private ResultSetMerger build() throws SQLException {
         if (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) {
             if (selectStatement.isSameGroupByAndOrderByItems()) {
-                return new GroupByStreamResultSetMerger(columnLabelIndexMap, resultSets, selectStatement, getNullOrderType());
+                return new GroupByStreamResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
             } else {
-                return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement, getNullOrderType());
+                return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
             }
         }
         if (!selectStatement.getOrderByItems().isEmpty()) {
-            return new OrderByStreamResultSetMerger(resultSets, selectStatement.getOrderByItems(), getNullOrderType());
+            return new OrderByStreamResultSetMerger(resultSets, selectStatement.getOrderByItems());
         }
         return new IteratorStreamResultSetMerger(resultSets);
     }
@@ -96,12 +95,5 @@ public final class MergeEngine {
             result = new LimitDecoratorResultSetMerger(result, selectStatement.getLimit());
         }
         return result;
-    }
-    
-    private OrderType getNullOrderType() {
-        if (DatabaseType.MySQL == databaseType || DatabaseType.Oracle == databaseType || DatabaseType.H2 == databaseType) {
-            return OrderType.ASC;
-        }
-        return OrderType.DESC;
     }
 }

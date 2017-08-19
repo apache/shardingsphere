@@ -18,12 +18,14 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
@@ -269,12 +271,16 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void skipAfterOrderByItem(final SelectStatement selectStatement) {
-        // TODO support order for null
-        if (getSqlParser().skipIfEqual(OracleKeyword.NULLS)) {
-            if (!getSqlParser().skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {
-                throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
-            }
+    protected OrderType getNullOrderType() {
+        if (!getSqlParser().skipIfEqual(OracleKeyword.NULLS)) {
+            return OrderType.ASC;
         }
+        if (getSqlParser().skipIfEqual(OracleKeyword.FIRST)) {
+            return OrderType.ASC;
+        }
+        if (getSqlParser().skipIfEqual(OracleKeyword.LAST)) {
+            return OrderType.DESC;
+        }
+        throw new SQLParsingException(getSqlParser().getLexer());
     }
 }

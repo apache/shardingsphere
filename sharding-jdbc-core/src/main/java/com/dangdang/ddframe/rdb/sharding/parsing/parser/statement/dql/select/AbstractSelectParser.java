@@ -307,14 +307,15 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         OrderItem orderItem;
         if (sqlExpression instanceof SQLPropertyExpression) {
             SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-            orderItem = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType,
+            orderItem = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, getNullOrderType(), 
                     getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner() + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName())), selectStatement));
         } else if (sqlExpression instanceof SQLIdentifierExpression) {
             SQLIdentifierExpression sqlIdentifierExpression = (SQLIdentifierExpression) sqlExpression;
-            orderItem = new OrderItem(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), selectStatement));
+            orderItem = new OrderItem(
+                    SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), orderByType, getNullOrderType(), getAlias(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), selectStatement));
         } else if (sqlExpression instanceof SQLIgnoreExpression) {
             SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
-            orderItem = new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getAlias(sqlIgnoreExpression.getExpression(), selectStatement));
+            orderItem = new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getNullOrderType(), getAlias(sqlIgnoreExpression.getExpression(), selectStatement));
         } else {
             return;
         }
@@ -359,26 +360,24 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
         OrderItem result;
         if (sqlExpression instanceof SQLNumberExpression) {
-            result = new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderByType);
+            result = new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderByType, getNullOrderType());
         } else if (sqlExpression instanceof SQLIdentifierExpression) {
             result = new OrderItem(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), 
-                    orderByType, getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), selectStatement));
+                    orderByType, getNullOrderType(), getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), selectStatement));
         } else if (sqlExpression instanceof SQLPropertyExpression) {
             SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-            result = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, 
+            result = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, getNullOrderType(), 
                     getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), selectStatement));
         } else if (sqlExpression instanceof SQLIgnoreExpression) {
             SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
-            result = new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getAlias(sqlIgnoreExpression.getExpression(), selectStatement));
+            result = new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getNullOrderType(), getAlias(sqlIgnoreExpression.getExpression(), selectStatement));
         } else {
             throw new SQLParsingException(sqlParser.getLexer());
         }
-        skipAfterOrderByItem(selectStatement);
         return result;
     }
     
-    protected void skipAfterOrderByItem(final SelectStatement selectStatement) {
-    }
+    protected abstract OrderType getNullOrderType();
     
     private Optional<String> getAlias(final String name, final SelectStatement selectStatement) {
         if (selectStatement.isContainStar()) {

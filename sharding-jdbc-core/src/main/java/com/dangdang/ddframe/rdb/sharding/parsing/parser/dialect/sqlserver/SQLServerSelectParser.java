@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
@@ -183,5 +184,10 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
             getSqlParser().skipParentheses();
         }
         super.parseJoinTable(selectStatement);
+    }
+    
+    @Override
+    protected OrderType getNullOrderType() {
+        return OrderType.DESC;
     }
 }

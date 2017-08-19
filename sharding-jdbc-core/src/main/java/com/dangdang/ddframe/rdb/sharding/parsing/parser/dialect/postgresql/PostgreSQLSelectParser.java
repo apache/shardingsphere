@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
@@ -141,6 +142,11 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
             throw new SQLParsingUnsupportedException(DefaultKeyword.OF);
         }
         getSqlParser().skipIfEqual(PostgreSQLKeyword.NOWAIT);
+    }
+    
+    @Override
+    protected OrderType getNullOrderType() {
+        return OrderType.DESC;
     }
     
     @Override

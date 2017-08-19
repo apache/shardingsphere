@@ -54,7 +54,7 @@ public final class OrderByStreamResultSetMergerTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         resultSets = Lists.newArrayList(resultSet, mock(ResultSet.class), mock(ResultSet.class));
         selectStatement = new SelectStatement();
-        selectStatement.getOrderByItems().add(new OrderItem(1, OrderType.ASC));
+        selectStatement.getOrderByItems().add(new OrderItem(1, OrderType.ASC, OrderType.ASC));
     }
     
     @Test

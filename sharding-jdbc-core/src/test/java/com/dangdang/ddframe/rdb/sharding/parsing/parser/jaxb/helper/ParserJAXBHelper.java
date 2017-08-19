@@ -46,12 +46,15 @@ public class ParserJAXBHelper {
                 @Override
                 public OrderItem apply(final OrderByColumn input) {
                     if (Strings.isNullOrEmpty(input.getName())) {
-                        return new OrderItem(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase()));
+                        // TODO nullOrderType should config in xml
+                        return new OrderItem(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase()), OrderType.ASC);
                     }
                     if (Strings.isNullOrEmpty(input.getOwner())) {
-                        return new OrderItem(input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                        // TODO nullOrderType should config in xml
+                        return new OrderItem(input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), OrderType.ASC, Optional.fromNullable(input.getAlias()));
                     }
-                    return new OrderItem(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                    // TODO nullOrderType should config in xml
+                    return new OrderItem(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), OrderType.ASC, Optional.fromNullable(input.getAlias()));
                 }
             });
             result.getOrderByItems().addAll(orderItems);
@@ -62,9 +65,11 @@ public class ParserJAXBHelper {
                 @Override
                 public OrderItem apply(final GroupByColumn input) {
                     if (null == input.getOwner()) {
-                        return new OrderItem(input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                        // TODO nullOrderType should config in xml
+                        return new OrderItem(input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), OrderType.ASC, Optional.fromNullable(input.getAlias()));
                     }
-                    return new OrderItem(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                    // TODO nullOrderType should config in xml
+                    return new OrderItem(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), OrderType.ASC, Optional.fromNullable(input.getAlias()));
                 }
             }));
         }

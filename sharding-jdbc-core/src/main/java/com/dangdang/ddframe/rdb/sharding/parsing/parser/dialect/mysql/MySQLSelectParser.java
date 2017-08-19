@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
@@ -205,6 +206,11 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     @Override
     protected Keyword[] getSkippedKeywordAfterGroupBy() {
         return new Keyword[] {DefaultKeyword.WITH, MySQLKeyword.ROLLUP};
+    }
+    
+    @Override
+    protected OrderType getNullOrderType() {
+        return OrderType.ASC;
     }
     
     @Override

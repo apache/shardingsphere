@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.orderby;
 
-import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.google.common.base.Preconditions;
@@ -42,8 +41,6 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     private final ResultSet resultSet;
     
     private final List<OrderItem> orderByItems;
-    
-    private final OrderType nullOrderType;
     
     private List<Comparable<?>> orderValues;
     
@@ -73,7 +70,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     public int compareTo(final OrderByValue o) {
         for (int i = 0; i < orderByItems.size(); i++) {
             OrderItem thisOrderBy = orderByItems.get(i);
-            int result = ResultSetUtil.compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderBy.getType(), nullOrderType);
+            int result = ResultSetUtil.compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderBy.getType(), thisOrderBy.getNullOrderType());
             if (0 != result) {
                 return result;
             }
