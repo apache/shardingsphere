@@ -210,8 +210,10 @@ public abstract class AbstractSQLParser extends AbstractParser {
         if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
-        sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
-        sqlStatement.getTables().add(table);
+        if (shardingRule.tryFindTableRule(table.getName()).isPresent() || shardingRule.findBindingTableRule(table.getName()).isPresent()) {
+            sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
+            sqlStatement.getTables().add(table);
+        }
     }
     
     /**

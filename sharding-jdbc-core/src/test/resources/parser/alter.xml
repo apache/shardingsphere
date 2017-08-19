@@ -2,12 +2,12 @@
 <asserts>
     <assert id="assertAlterTable">
         <tables>
-            <table name="t_temp" />
+            <table name="t_order" />
         </tables>
     </assert>
     <assert id="assertAlterTableIfExistAndOnly">
         <tables>
-            <table name="t_temp" />
+            <table name="t_order" />
         </tables>
     </assert>
 </asserts>

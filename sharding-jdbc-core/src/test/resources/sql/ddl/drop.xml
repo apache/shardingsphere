@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertDropTable" value="DROP TABLE t_temp(id int)" />
-    <sql id="assertDropTableIfExist" value="DROP TABLE IF EXISTS t_temp(id int)" type="MySQL,PostgreSQL,SQLServer" />
-    <sql id="assertDropTemporaryTable" value="DROP TEMPORARY TABLE t_temp(id int)" type="MySQL" />
-    <sql id="assertDropTableRestrict" value="DROP TABLE t_temp(id int) RESTRICT" type="MySQL,PostgreSQL" />
-    <sql id="assertDropTableCascade" value="DROP TABLE t_temp(id int) CASCADE" type="MySQL,PostgreSQL" />
-    <sql id="assertDropTableCascadeConstraintsAndPurge" value="DROP TABLE t_temp(id int) CASCADE CONSTRAINTS PURGE" type="Oracle" />
+    <sql id="assertDropTable" value="DROP TABLE t_order(id int)" />
+    <sql id="assertDropTableIfExist" value="DROP TABLE IF EXISTS t_order(id int)" type="MySQL,PostgreSQL,SQLServer" />
+    <sql id="assertDropTemporaryTable" value="DROP TEMPORARY TABLE t_order(id int)" type="MySQL" />
+    <sql id="assertDropTableRestrict" value="DROP TABLE t_order(id int) RESTRICT" type="MySQL,PostgreSQL" />
+    <sql id="assertDropTableCascade" value="DROP TABLE t_order(id int) CASCADE" type="MySQL,PostgreSQL" />
+    <sql id="assertDropTableCascadeConstraintsAndPurge" value="DROP TABLE t_order(id int) CASCADE CONSTRAINTS PURGE" type="Oracle" />
 </sqls>

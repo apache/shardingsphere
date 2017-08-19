@@ -2,32 +2,32 @@
 <asserts>
     <assert id="assertCreateTable">
         <tables>
-            <table name="t_temp" />
+            <table name="t_order" />
         </tables>
     </assert>
     <assert id="assertCreateTableIfNotExist">
         <tables>
-            <table name="t_temp" />
+            <table name="t_order" />
         </tables>
     </assert>
     <assert id="assertCreateTemporaryTable">
         <tables>
-            <table name="t_temp" />
+            <table name="t_order" />
         </tables>
     </assert>
     <assert id="assertCreateTempGlobalTable">
         <tables>
-            <table name="t_temp" />
+            <table name="t_order" />
         </tables>
     </assert>
     <assert id="assertCreateTempLocalTemporaryTable">
         <tables>
-            <table name="t_temp" />
+            <table name="t_order" />
         </tables>
     </assert>
     <assert id="assertCreateUnloggedTable">
         <tables>
-            <table name="t_temp" />
+            <table name="t_order" />
         </tables>
     </assert>
 </asserts>
