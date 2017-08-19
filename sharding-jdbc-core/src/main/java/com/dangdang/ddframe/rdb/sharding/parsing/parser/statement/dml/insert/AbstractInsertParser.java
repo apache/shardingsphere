@@ -43,6 +43,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,7 +79,10 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         if (sqlParser.equalAny(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot INSERT SELECT");
         }
-        if (sqlParser.skipIfEqual(getValuesKeywords())) {
+        Collection<Keyword> valueKeywords = new LinkedList<>();
+        valueKeywords.add(DefaultKeyword.VALUES);
+        valueKeywords.addAll(Arrays.asList(getSynonymousKeywordsForValues()));
+        if (getSqlParser().skipIfEqual(valueKeywords.toArray(new Keyword[valueKeywords.size()]))) {
             afterValuesPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
             parseValues(result);
             if (sqlParser.equalAny(Symbol.COMMA)) {
@@ -140,8 +144,8 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         insertStatement.getColumns().addAll(result);
     }
     
-    protected Keyword[] getValuesKeywords() {
-        return new Keyword[] {DefaultKeyword.VALUES};
+    protected Keyword[] getSynonymousKeywordsForValues() {
+        return new Keyword[0];
     }
     
     private void parseValues(final InsertStatement insertStatement) {

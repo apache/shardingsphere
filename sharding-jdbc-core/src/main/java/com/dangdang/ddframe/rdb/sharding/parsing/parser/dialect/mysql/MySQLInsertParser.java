@@ -87,8 +87,8 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     @Override
-    protected Keyword[] getValuesKeywords() {
-        return new Keyword[] {DefaultKeyword.VALUES, MySQLKeyword.VALUE};
+    protected Keyword[] getSynonymousKeywordsForValues() {
+        return new Keyword[] {MySQLKeyword.VALUE};
     }
     
     @Override

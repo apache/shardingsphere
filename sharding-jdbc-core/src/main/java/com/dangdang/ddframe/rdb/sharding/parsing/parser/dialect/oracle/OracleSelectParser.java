@@ -28,7 +28,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -62,8 +61,8 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected Collection<Keyword> getCustomizedDistinctKeywords() {
-        return Collections.<Keyword>singletonList(DefaultKeyword.UNIQUE);
+    protected Keyword[] getSynonymousKeywordsForDistinct() {
+        return new Keyword[] {DefaultKeyword.UNIQUE};
     }
     
     @Override

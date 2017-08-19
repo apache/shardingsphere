@@ -44,14 +44,13 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -111,15 +110,16 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     protected final void parseDistinct() {
         sqlParser.skipAll(DefaultKeyword.ALL);
-        Collection<Keyword> distinctKeywords = Lists.newLinkedList(getCustomizedDistinctKeywords());
+        Collection<Keyword> distinctKeywords = new LinkedList<>();
         distinctKeywords.add(DefaultKeyword.DISTINCT);
+        distinctKeywords.addAll(Arrays.asList(getSynonymousKeywordsForDistinct()));
         if (getSqlParser().equalAny(distinctKeywords.toArray(new Keyword[distinctKeywords.size()]))) {
             throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
         }
     }
     
-    protected Collection<Keyword> getCustomizedDistinctKeywords() {
-        return Collections.emptyList();
+    protected Keyword[] getSynonymousKeywordsForDistinct() {
+        return new Keyword[0];
     }
     
     protected void parseBeforeSelectList(final SelectStatement selectStatement) {

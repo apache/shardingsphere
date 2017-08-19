@@ -34,9 +34,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.Sel
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * MySQL Select语句解析器.
  *
@@ -49,8 +46,8 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected Collection<Keyword> getCustomizedDistinctKeywords() {
-        return Collections.<Keyword>singletonList(MySQLKeyword.DISTINCTROW);
+    protected Keyword[] getSynonymousKeywordsForDistinct() {
+        return new Keyword[] {MySQLKeyword.DISTINCTROW};
     }
     
     @Override
