@@ -59,10 +59,7 @@ public final class SQLParsingEngine {
      */
     public SQLStatement parse() {
         AbstractSQLParser sqlParser = getSQLParser();
-        sqlParser.skipIfEqual(Symbol.SEMI);
-        if (sqlParser.equalAny(DefaultKeyword.WITH)) {
-            skipWith(sqlParser);
-        }
+        skipToSQLBegin(sqlParser);
         if (sqlParser.equalAny(DefaultKeyword.SELECT)) {
             return SelectParserFactory.newInstance(shardingRule, sqlParser).parse();
         }
@@ -103,6 +100,14 @@ public final class SQLParsingEngine {
                 return new PostgreSQLParser(sql);
             default:
                 throw new UnsupportedOperationException(dbType.name());
+        }
+    }
+    
+    private void skipToSQLBegin(final AbstractSQLParser sqlParser) {
+        sqlParser.getLexer().nextToken();
+        sqlParser.skipIfEqual(Symbol.SEMI);
+        if (sqlParser.equalAny(DefaultKeyword.WITH)) {
+            skipWith(sqlParser);
         }
     }
     

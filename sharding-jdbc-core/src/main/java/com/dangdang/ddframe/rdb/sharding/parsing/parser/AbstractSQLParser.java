@@ -59,7 +59,6 @@ public abstract class AbstractSQLParser extends AbstractParser {
     
     public AbstractSQLParser(final Lexer lexer) {
         super(lexer);
-        getLexer().nextToken();
     }
     
     /**
