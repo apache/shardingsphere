@@ -250,9 +250,9 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             parseTable(selectStatement);
             if (sqlParser.skipIfEqual(DefaultKeyword.ON)) {
                 do {
-                    parseTableCondition(sqlParser.getLexer().getCurrentToken().getEndPosition(), selectStatement);
+                    parseTableCondition(selectStatement);
                     sqlParser.accept(Symbol.EQ);
-                    parseTableCondition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length(), selectStatement);
+                    parseTableCondition(selectStatement);
                 } while (sqlParser.skipIfEqual(DefaultKeyword.AND));
             } else if (sqlParser.skipIfEqual(DefaultKeyword.USING)) {
                 sqlParser.skipParentheses();
@@ -261,7 +261,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
     }
     
-    private void parseTableCondition(final int startPosition, final SelectStatement selectStatement) {
+    private void parseTableCondition(final SelectStatement selectStatement) {
+        int startPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
         SQLExpression sqlExpression = sqlParser.parseExpression();
         if (!(sqlExpression instanceof SQLPropertyExpression)) {
             return;
