@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.merger.groupby;
 
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.MergeEngine;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMerger;
@@ -89,14 +88,14 @@ public final class GroupByStreamResultSetMergerTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
+        mergeEngine = new MergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
+        mergeEngine = new MergeEngine(resultSets, selectStatement);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);
@@ -138,7 +137,7 @@ public final class GroupByStreamResultSetMergerTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
+        mergeEngine = new MergeEngine(resultSets, selectStatement);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);

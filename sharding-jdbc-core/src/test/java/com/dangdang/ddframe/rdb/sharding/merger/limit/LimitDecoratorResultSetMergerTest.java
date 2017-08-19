@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.limit;
 
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.merger.MergeEngine;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
@@ -62,7 +61,7 @@ public final class LimitDecoratorResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, true, false);
         }
-        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
+        mergeEngine = new MergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
@@ -75,7 +74,7 @@ public final class LimitDecoratorResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, true, false);
         }
-        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
+        mergeEngine = new MergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -95,7 +94,7 @@ public final class LimitDecoratorResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, true, false);
         }
-        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
+        mergeEngine = new MergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -111,7 +110,7 @@ public final class LimitDecoratorResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, true, false);
         }
-        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
+        mergeEngine = new MergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());

@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByMemoryResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.iterator.IteratorStreamResultSetMerger;
@@ -40,16 +39,13 @@ import java.util.TreeMap;
  */
 public final class MergeEngine {
     
-    private final DatabaseType databaseType;
-    
     private final List<ResultSet> resultSets;
     
     private final SelectStatement selectStatement;
     
     private final Map<String, Integer> columnLabelIndexMap;
     
-    public MergeEngine(final DatabaseType databaseType, final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
-        this.databaseType = databaseType;
+    public MergeEngine(final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
         this.resultSets = resultSets;
         this.selectStatement = selectStatement;
         columnLabelIndexMap = getColumnLabelIndexMap(resultSets.get(0));
