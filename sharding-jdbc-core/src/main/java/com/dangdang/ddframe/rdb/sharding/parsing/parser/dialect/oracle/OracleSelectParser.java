@@ -43,6 +43,25 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
+    protected SelectStatement parseInternal() {
+        SelectStatement result = new SelectStatement();
+        getSqlParser().getLexer().nextToken();
+        parseDistinct();
+        parseBeforeSelectList(result);
+        parseSelectList(result);
+        parseFrom(result);
+        parseWhere(result);
+        skipHierarchicalQueryClause(result);
+        parseGroupBy(result);
+        parseHaving();
+        skipModelClause();
+        parseOrderBy(result);
+        parseRest(result);
+        parseUnsupportedTokens();
+        return result;
+    }
+    
+    @Override
     protected Collection<Keyword> getCustomizedDistinctKeywords() {
         return Collections.<Keyword>singletonList(DefaultKeyword.UNIQUE);
     }
@@ -50,11 +69,6 @@ public final class OracleSelectParser extends AbstractSelectParser {
     @Override
     protected Keyword[] getSkippedKeywordsBeforeSelectItem() {
         return new Keyword[] {OracleKeyword.CONNECT_BY_ROOT};
-    }
-    
-    @Override
-    protected void parseBetweenWhereAndGroupBy(final SelectStatement selectStatement) {
-        skipHierarchicalQueryClause(selectStatement);
     }
     
     private void skipHierarchicalQueryClause(final SelectStatement selectStatement) {
@@ -79,11 +93,6 @@ public final class OracleSelectParser extends AbstractSelectParser {
             }
             getSqlParser().parseComparisonCondition(getShardingRule(), selectStatement, Collections.<SelectItem>emptyList());
         }
-    }
-    
-    @Override
-    protected void parseBetweenGroupByAndOrderBy(final SelectStatement selectStatement) {
-        skipModelClause();
     }
     
     private void skipModelClause() {
