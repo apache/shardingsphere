@@ -36,15 +36,23 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ShardingRuleMockBuilder {
     
-    private final List<String> shardingColumns = new ArrayList<>();
+    private final List<TableRule> tableRules = new LinkedList<>();
+    
+    private final List<String> shardingColumns = new LinkedList<>();
     
     private final Multimap<String, String> generateKeyColumnsMap = LinkedHashMultimap.create();
     
     private final List<String> bindTables = new ArrayList<>();
+    
+    public ShardingRuleMockBuilder addTableRules(final TableRule tableRule) {
+        tableRules.add(tableRule);
+        return this;
+    }
     
     public ShardingRuleMockBuilder addShardingColumns(final String shardingColumnName) {
         shardingColumns.add(shardingColumnName);
@@ -74,6 +82,7 @@ public class ShardingRuleMockBuilder {
                 return builder.build();
             }
         }));
+        tableRules.addAll(this.tableRules);
         if (tableRules.isEmpty()) {
             tableRules.add(new TableRule.TableRuleBuilder("mock").actualTables(Collections.singletonList("mock")).dataSourceRule(dataSourceRule).build());
         }
