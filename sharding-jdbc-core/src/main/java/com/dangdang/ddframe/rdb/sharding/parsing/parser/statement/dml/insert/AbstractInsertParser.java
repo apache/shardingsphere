@@ -97,7 +97,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         }
         sqlParser.skipUntil(DefaultKeyword.INTO);
         sqlParser.getLexer().nextToken();
-        sqlParser.parseSingleTable(shardingRule, insertStatement);
+        sqlParser.parseSingleTable(insertStatement);
         skipBetweenTableAndValues();
     }
     

@@ -46,7 +46,7 @@ public abstract class AbstractDeleteParser implements SQLStatementParser {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
         DMLStatement result = new DMLStatement();
-        sqlParser.parseSingleTable(shardingRule, result);
+        sqlParser.parseSingleTable(result);
         sqlParser.skipUntil(DefaultKeyword.WHERE);
         sqlParser.parseWhere(shardingRule, result);
         return result;

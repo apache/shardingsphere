@@ -54,7 +54,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
         DMLStatement result = new DMLStatement();
-        sqlParser.parseSingleTable(shardingRule, result);
+        sqlParser.parseSingleTable(result);
         parseSetItems(result);
         sqlParser.skipUntil(DefaultKeyword.WHERE);
         sqlParser.setParametersIndex(parametersIndex);

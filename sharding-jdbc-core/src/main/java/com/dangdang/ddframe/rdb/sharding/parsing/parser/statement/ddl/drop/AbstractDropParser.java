@@ -50,7 +50,7 @@ public abstract class AbstractDropParser implements SQLStatementParser {
         }
         getSqlParser().skipAll(getSkippedKeywordsBetweenDropTableAndTableName());
         DDLStatement result = new DDLStatement();
-        sqlParser.parseSingleTable(shardingRule, result);
+        sqlParser.parseSingleTable(result);
         return result;
     }
     

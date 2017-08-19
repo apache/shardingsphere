@@ -46,7 +46,7 @@ public abstract class AbstractTruncateParser implements SQLStatementParser {
         sqlParser.skipIfEqual(DefaultKeyword.TABLE);
         getSqlParser().skipAll(getSkippedKeywordsBetweenTruncateTableAndTableName());
         DDLStatement result = new DDLStatement();
-        sqlParser.parseSingleTable(shardingRule, result);
+        sqlParser.parseSingleTable(result);
         return result;
     }
     

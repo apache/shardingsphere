@@ -177,10 +177,9 @@ public abstract class AbstractSQLParser extends AbstractParser {
     /**
      * 解析单表.
      *
-     * @param shardingRule 分库分表规则配置
      * @param sqlStatement SQL语句对象
      */
-    public final void parseSingleTable(final ShardingRule shardingRule, final SQLStatement sqlStatement) {
+    public final void parseSingleTable(final SQLStatement sqlStatement) {
         boolean hasParentheses = false;
         if (skipIfEqual(Symbol.LEFT_PAREN)) {
             if (equalAny(DefaultKeyword.SELECT)) {
@@ -207,10 +206,8 @@ public abstract class AbstractSQLParser extends AbstractParser {
         if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
-        if (shardingRule.tryFindTableRule(table.getName()).isPresent() || shardingRule.findBindingTableRule(table.getName()).isPresent()) {
-            sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
-            sqlStatement.getTables().add(table);
-        }
+        sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
+        sqlStatement.getTables().add(table);
     }
     
     /**

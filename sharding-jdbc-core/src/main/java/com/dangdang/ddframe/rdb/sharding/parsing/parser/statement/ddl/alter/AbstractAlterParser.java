@@ -49,7 +49,7 @@ public abstract class AbstractAlterParser implements SQLStatementParser {
         }
         getSqlParser().skipAll(getSkippedKeywordsBetweenAlterTableAndTableName());
         DDLStatement result = new DDLStatement();
-        sqlParser.parseSingleTable(shardingRule, result);
+        sqlParser.parseSingleTable(result);
         return result;
     }
     

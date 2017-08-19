@@ -50,7 +50,7 @@ public abstract class AbstractCreateParser implements SQLStatementParser {
         }
         getSqlParser().skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
         DDLStatement result = new DDLStatement();
-        sqlParser.parseSingleTable(shardingRule, result);
+        sqlParser.parseSingleTable(result);
         return result;
     }
     
