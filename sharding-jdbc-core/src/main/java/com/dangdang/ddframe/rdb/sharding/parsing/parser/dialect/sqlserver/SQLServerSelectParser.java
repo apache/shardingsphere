@@ -48,20 +48,17 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected SelectStatement parseInternal() {
-        SelectStatement result = new SelectStatement();
-        getSqlParser().getLexer().nextToken();
+    protected void parseInternal(final SelectStatement selectStatement) {
         parseDistinct();
-        parseTop(result);
-        parseSelectList(result);
-        parseFrom(result);
-        parseWhere(result);
-        parseGroupBy(result);
+        parseTop(selectStatement);
+        parseSelectList(selectStatement);
+        parseFrom(selectStatement);
+        parseWhere(selectStatement);
+        parseGroupBy(selectStatement);
         parseHaving();
-        parseOrderBy(result);
-        parseOffset(result);
+        parseOrderBy(selectStatement);
+        parseOffset(selectStatement);
         parseFor();
-        return result;
     }
     
     private void parseTop(final SelectStatement selectStatement) {

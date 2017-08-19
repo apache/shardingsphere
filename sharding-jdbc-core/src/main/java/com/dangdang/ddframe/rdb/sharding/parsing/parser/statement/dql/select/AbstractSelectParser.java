@@ -92,19 +92,14 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return result;
     }
     
-    protected SelectStatement parseInternal() {
+    private SelectStatement parseInternal() {
         SelectStatement result = new SelectStatement();
         sqlParser.getLexer().nextToken();
-        parseDistinct();
-        parseSelectList(result);
-        parseFrom(result);
-        parseWhere(result);
-        parseGroupBy(result);
-        parseHaving();
-        parseOrderBy(result);
-        parseRest();
+        parseInternal(result);
         return result;
     }
+    
+    protected abstract void parseInternal(final SelectStatement selectStatement);
     
     protected final void parseDistinct() {
         sqlParser.skipAll(DefaultKeyword.ALL);
