@@ -192,7 +192,10 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
             result.append(sqlParser.skipParentheses());
         } else if (sqlParser.equalAny(Symbol.DOT)) {
-            selectStatement.getSqlTokens().add(new TableToken(position, literals));
+            String tableName = SQLUtil.getExactlyValue(literals);
+            if (shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {
+                selectStatement.getSqlTokens().add(new TableToken(position, literals));
+            }
             result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
             sqlParser.getLexer().nextToken();
             result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
