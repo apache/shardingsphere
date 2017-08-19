@@ -278,18 +278,19 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected final void parseGroupBy(final SelectStatement selectStatement) {
-        if (sqlParser.skipIfEqual(DefaultKeyword.GROUP)) {
-            sqlParser.accept(DefaultKeyword.BY);
-            while (true) {
-                addGroupByItem(sqlParser.parseExpression(), selectStatement);
-                if (!sqlParser.equalAny(Symbol.COMMA)) {
-                    break;
-                }
-                sqlParser.getLexer().nextToken();
-            }
-            sqlParser.skipAll(getSkippedKeywordAfterGroupBy());
-            selectStatement.setGroupByLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
+        if (!sqlParser.skipIfEqual(DefaultKeyword.GROUP)) {
+            return;
         }
+        sqlParser.accept(DefaultKeyword.BY);
+        while (true) {
+            addGroupByItem(sqlParser.parseExpression(), selectStatement);
+            if (!sqlParser.equalAny(Symbol.COMMA)) {
+                break;
+            }
+            sqlParser.getLexer().nextToken();
+        }
+        sqlParser.skipAll(getSkippedKeywordAfterGroupBy());
+        selectStatement.setGroupByLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
     }
     
     private void addGroupByItem(final SQLExpression sqlExpression, final SelectStatement selectStatement) {

@@ -95,65 +95,67 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     private void parseOffset(final SelectStatement selectStatement) {
-        if (getSqlParser().skipIfEqual(SQLServerKeyword.OFFSET)) {
-            int offsetValue = -1;
-            int offsetIndex = -1;
+        if (!getSqlParser().skipIfEqual(SQLServerKeyword.OFFSET)) {
+            return;
+        }
+        int offsetValue = -1;
+        int offsetIndex = -1;
+        if (getSqlParser().equalAny(Literals.INT)) {
+            offsetValue = Integer.parseInt(getSqlParser().getLexer().getCurrentToken().getLiterals());
+        } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
+            offsetIndex = getParametersIndex();
+            getSqlParser().increaseParametersIndex();
+        } else {
+            throw new SQLParsingException(getSqlParser().getLexer());
+        }
+        getSqlParser().getLexer().nextToken();
+        Limit limit = new Limit(true);
+        if (getSqlParser().skipIfEqual(DefaultKeyword.FETCH)) {
+            getSqlParser().getLexer().nextToken();
+            int rowCountValue = -1;
+            int rowCountIndex = -1;
+            getSqlParser().getLexer().nextToken();
             if (getSqlParser().equalAny(Literals.INT)) {
-                offsetValue = Integer.parseInt(getSqlParser().getLexer().getCurrentToken().getLiterals());
+                rowCountValue = Integer.parseInt(getSqlParser().getLexer().getCurrentToken().getLiterals());
             } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
-                offsetIndex = getParametersIndex();
+                rowCountIndex = getParametersIndex();
                 getSqlParser().increaseParametersIndex();
             } else {
                 throw new SQLParsingException(getSqlParser().getLexer());
             }
             getSqlParser().getLexer().nextToken();
-            Limit limit = new Limit(true);
-            if (getSqlParser().skipIfEqual(DefaultKeyword.FETCH)) {
-                getSqlParser().getLexer().nextToken();
-                int rowCountValue = -1;
-                int rowCountIndex = -1;
-                getSqlParser().getLexer().nextToken();
-                if (getSqlParser().equalAny(Literals.INT)) {
-                    rowCountValue = Integer.parseInt(getSqlParser().getLexer().getCurrentToken().getLiterals());
-                } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
-                    rowCountIndex = getParametersIndex();
-                    getSqlParser().increaseParametersIndex();
-                } else {
-                    throw new SQLParsingException(getSqlParser().getLexer());
-                }
-                getSqlParser().getLexer().nextToken();
-                getSqlParser().getLexer().nextToken();
-                limit.setRowCount(new LimitValue(rowCountValue, rowCountIndex));
-                limit.setOffset(new LimitValue(offsetValue, offsetIndex));
-            } else {
-                limit.setOffset(new LimitValue(offsetValue, offsetIndex));
-            }
-            selectStatement.setLimit(limit);
+            getSqlParser().getLexer().nextToken();
+            limit.setRowCount(new LimitValue(rowCountValue, rowCountIndex));
+            limit.setOffset(new LimitValue(offsetValue, offsetIndex));
+        } else {
+            limit.setOffset(new LimitValue(offsetValue, offsetIndex));
         }
+        selectStatement.setLimit(limit);
     }
     
     private void parseFor() {
-        if (getSqlParser().skipIfEqual(DefaultKeyword.FOR)) {
-            if (getSqlParser().equalAny(SQLServerKeyword.BROWSE)) {
-                getSqlParser().getLexer().nextToken();
-            } else if (getSqlParser().skipIfEqual(SQLServerKeyword.XML)) {
-                while (true) {
-                    if (getSqlParser().equalAny(SQLServerKeyword.AUTO, SQLServerKeyword.TYPE, SQLServerKeyword.XMLSCHEMA)) {
-                        getSqlParser().getLexer().nextToken();
-                    } else if (getSqlParser().skipIfEqual(SQLServerKeyword.ELEMENTS)) {
-                        getSqlParser().skipIfEqual(SQLServerKeyword.XSINIL);
-                    } else {
-                        break;
-                    }
-                    if (getSqlParser().equalAny(Symbol.COMMA)) {
-                        getSqlParser().getLexer().nextToken();
-                    } else {
-                        break;
-                    }
+        if (!getSqlParser().skipIfEqual(DefaultKeyword.FOR)) {
+            return;
+        }
+        if (getSqlParser().equalAny(SQLServerKeyword.BROWSE)) {
+            getSqlParser().getLexer().nextToken();
+        } else if (getSqlParser().skipIfEqual(SQLServerKeyword.XML)) {
+            while (true) {
+                if (getSqlParser().equalAny(SQLServerKeyword.AUTO, SQLServerKeyword.TYPE, SQLServerKeyword.XMLSCHEMA)) {
+                    getSqlParser().getLexer().nextToken();
+                } else if (getSqlParser().skipIfEqual(SQLServerKeyword.ELEMENTS)) {
+                    getSqlParser().skipIfEqual(SQLServerKeyword.XSINIL);
+                } else {
+                    break;
                 }
-            } else {
-                throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
+                if (getSqlParser().equalAny(Symbol.COMMA)) {
+                    getSqlParser().getLexer().nextToken();
+                } else {
+                    break;
+                }
             }
+        } else {
+            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
         }
     }
     

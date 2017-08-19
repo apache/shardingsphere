@@ -133,13 +133,14 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     }
     
     private void parseFor() {
-        if (getSqlParser().skipIfEqual(DefaultKeyword.FOR)) {
-            getSqlParser().skipIfEqual(DefaultKeyword.UPDATE, PostgreSQLKeyword.SHARE);
-            if (getSqlParser().equalAny(DefaultKeyword.OF)) {
-                throw new SQLParsingUnsupportedException(DefaultKeyword.OF);
-            }
-            getSqlParser().skipIfEqual(PostgreSQLKeyword.NOWAIT);
+        if (!getSqlParser().skipIfEqual(DefaultKeyword.FOR)) {
+            return;
         }
+        getSqlParser().skipIfEqual(DefaultKeyword.UPDATE, PostgreSQLKeyword.SHARE);
+        if (getSqlParser().equalAny(DefaultKeyword.OF)) {
+            throw new SQLParsingUnsupportedException(DefaultKeyword.OF);
+        }
+        getSqlParser().skipIfEqual(PostgreSQLKeyword.NOWAIT);
     }
     
     @Override
