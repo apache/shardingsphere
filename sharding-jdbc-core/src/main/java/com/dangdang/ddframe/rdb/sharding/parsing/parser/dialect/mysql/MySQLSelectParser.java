@@ -60,7 +60,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedSelect(final SelectStatement selectStatement) {
+    protected void parseRest(final SelectStatement selectStatement) {
         parseLimit(selectStatement);
         if (getSqlParser().equalAny(DefaultKeyword.PROCEDURE)) {
             throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());

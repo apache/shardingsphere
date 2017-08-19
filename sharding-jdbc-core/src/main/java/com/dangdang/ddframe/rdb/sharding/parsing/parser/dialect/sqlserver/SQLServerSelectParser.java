@@ -112,7 +112,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedSelect(final SelectStatement selectStatement) {
+    protected void parseRest(final SelectStatement selectStatement) {
         if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
             parseFor();
         }

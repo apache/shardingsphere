@@ -53,7 +53,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedBetweenWhereAndGroupBy(final SelectStatement selectStatement) {
+    protected void parseBetweenWhereAndGroupBy(final SelectStatement selectStatement) {
         skipHierarchicalQueryClause(selectStatement);
     }
     
@@ -82,7 +82,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedBetweenGroupByAndOrderBy(final SelectStatement selectStatement) {
+    protected void parseBetweenGroupByAndOrderBy(final SelectStatement selectStatement) {
         skipModelClause();
     }
     
@@ -166,7 +166,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedSelect(final SelectStatement selectStatement) {
+    protected void parseRest(final SelectStatement selectStatement) {
         if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
             skipForUpdate();
         }

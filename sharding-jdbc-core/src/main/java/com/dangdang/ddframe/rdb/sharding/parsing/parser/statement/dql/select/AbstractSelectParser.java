@@ -101,11 +101,11 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         parseSelectList(result);
         parseFrom(result);
         parseWhere(result);
-        customizedBetweenWhereAndGroupBy(result);
+        parseBetweenWhereAndGroupBy(result);
         parseGroupBy(result);
-        customizedBetweenGroupByAndOrderBy(result);
+        parseBetweenGroupByAndOrderBy(result);
         parseOrderBy(result);
-        customizedSelect(result);
+        parseRest(result);
         processUnsupportedTokens();
         return result;
     }
@@ -288,7 +288,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         parametersIndex = sqlParser.getParametersIndex();
     }
     
-    protected void customizedBetweenWhereAndGroupBy(final SelectStatement selectStatement) {
+    protected void parseBetweenWhereAndGroupBy(final SelectStatement selectStatement) {
     }
     
     protected void parseGroupBy(final SelectStatement selectStatement) {
@@ -337,7 +337,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         selectStatement.getGroupByItems().add(orderItem);
     }
     
-    protected void customizedBetweenGroupByAndOrderBy(final SelectStatement selectStatement) {
+    protected void parseBetweenGroupByAndOrderBy(final SelectStatement selectStatement) {
     }
     
     protected final void parseOrderBy(final SelectStatement selectStatement) {
@@ -401,7 +401,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return Optional.absent();
     }
     
-    protected abstract void customizedSelect(final SelectStatement selectStatement);
+    protected abstract void parseRest(final SelectStatement selectStatement);
     
     private void processUnsupportedTokens() {
         if (sqlParser.equalAny(DefaultKeyword.UNION, DefaultKeyword.EXCEPT, DefaultKeyword.INTERSECT, DefaultKeyword.MINUS)) {
