@@ -175,6 +175,21 @@ public final class OracleSelectParser extends AbstractSelectParser {
         }
     }
     
+    private void skipForUpdate() {
+        getSqlParser().getLexer().nextToken();
+        getSqlParser().accept(DefaultKeyword.UPDATE);
+        if (getSqlParser().skipIfEqual(DefaultKeyword.OF)) {
+            do {
+                getSqlParser().parseExpression();
+            } while (getSqlParser().skipIfEqual(Symbol.COMMA));
+        }
+        if (getSqlParser().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {
+            getSqlParser().getLexer().nextToken();
+        } else if (getSqlParser().skipIfEqual(OracleKeyword.SKIP)) {
+            getSqlParser().accept(OracleKeyword.LOCKED);
+        }
+    }
+    
     @Override
     protected void parseGroupBy(final SelectStatement selectStatement) {
         if (getSqlParser().equalAny(DefaultKeyword.GROUP)) {
@@ -241,20 +256,6 @@ public final class OracleSelectParser extends AbstractSelectParser {
         }
     }
     
-    private void skipPivotClause() {
-        if (getSqlParser().skipIfEqual(OracleKeyword.PIVOT)) {
-            getSqlParser().skipIfEqual(OracleKeyword.XML);
-            getSqlParser().skipParentheses();
-        } else if (getSqlParser().skipIfEqual(OracleKeyword.UNPIVOT)) {
-            if (getSqlParser().skipIfEqual(OracleKeyword.INCLUDE)) {
-                getSqlParser().accept(OracleKeyword.NULLS);
-            } else if (getSqlParser().skipIfEqual(OracleKeyword.EXCLUDE)) {
-                getSqlParser().accept(OracleKeyword.NULLS);
-            }
-            getSqlParser().skipParentheses();
-        }
-    }
-    
     private void skipFlashbackQueryClause() {
         if (isFlashbackQueryClauseForVersions() || isFlashbackQueryClauseForAs()) {
             throw new UnsupportedOperationException("Cannot support Flashback Query");
@@ -270,18 +271,17 @@ public final class OracleSelectParser extends AbstractSelectParser {
                 && (getSqlParser().skipIfEqual(OracleKeyword.SCN) || getSqlParser().skipIfEqual(OracleKeyword.TIMESTAMP));
     }
     
-    private void skipForUpdate() {
-        getSqlParser().getLexer().nextToken();
-        getSqlParser().accept(DefaultKeyword.UPDATE);
-        if (getSqlParser().skipIfEqual(DefaultKeyword.OF)) {
-            do {
-                getSqlParser().parseExpression();
-            } while (getSqlParser().skipIfEqual(Symbol.COMMA));
-        }
-        if (getSqlParser().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {
-            getSqlParser().getLexer().nextToken();
-        } else if (getSqlParser().skipIfEqual(OracleKeyword.SKIP)) {
-            getSqlParser().accept(OracleKeyword.LOCKED);
+    private void skipPivotClause() {
+        if (getSqlParser().skipIfEqual(OracleKeyword.PIVOT)) {
+            getSqlParser().skipIfEqual(OracleKeyword.XML);
+            getSqlParser().skipParentheses();
+        } else if (getSqlParser().skipIfEqual(OracleKeyword.UNPIVOT)) {
+            if (getSqlParser().skipIfEqual(OracleKeyword.INCLUDE)) {
+                getSqlParser().accept(OracleKeyword.NULLS);
+            } else if (getSqlParser().skipIfEqual(OracleKeyword.EXCLUDE)) {
+                getSqlParser().accept(OracleKeyword.NULLS);
+            }
+            getSqlParser().skipParentheses();
         }
     }
     
