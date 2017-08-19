@@ -232,24 +232,21 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 return;
             }
         }
-        customizedParseTableFactor(selectStatement);
+        parseTableFactor(selectStatement);
         parseJoinTable(selectStatement);
     }
     
-    protected void customizedParseTableFactor(final SelectStatement selectStatement) {
-        parseTableFactor(selectStatement);
+    protected void parseTableFactor(final SelectStatement selectStatement) {
+        parseTableFactorInternal(selectStatement);
     }
     
-    protected final void parseTableFactor(final SelectStatement selectStatement) {
+    protected final void parseTableFactorInternal(final SelectStatement selectStatement) {
         sqlParser.skipAll(DefaultKeyword.AS);
         final int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
         String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
         sqlParser.getLexer().nextToken();
-        // TODO 包含Schema解析
-        if (sqlParser.skipIfEqual(Symbol.DOT)) {
-            sqlParser.getLexer().nextToken();
-            sqlParser.parseAlias();
-            return;
+        if (sqlParser.equalAny(Symbol.DOT)) {
+            throw new UnsupportedOperationException("Cannot support SQL for `schema.table`");
         }
         String tableName = SQLUtil.getExactlyValue(literals);
         Optional<String> alias = sqlParser.parseAlias();

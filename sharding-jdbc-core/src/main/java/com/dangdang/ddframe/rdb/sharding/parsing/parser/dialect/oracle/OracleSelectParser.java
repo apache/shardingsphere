@@ -213,7 +213,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedParseTableFactor(final SelectStatement selectStatement) {
+    protected void parseTableFactor(final SelectStatement selectStatement) {
         if (getSqlParser().skipIfEqual(OracleKeyword.ONLY)) {
             getSqlParser().skipIfEqual(Symbol.LEFT_PAREN);
             parseQueryTableExpression(selectStatement);
@@ -227,7 +227,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void parseQueryTableExpression(final SelectStatement selectStatement) {
-        parseTableFactor(selectStatement);
+        parseTableFactorInternal(selectStatement);
         parseSample();
         skipPartition();
     }
