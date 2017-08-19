@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
@@ -70,6 +71,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     private static final String ORDER_BY_DERIVED_ALIAS = "ORDER_BY_DERIVED_%s";
     
     private static final String GROUP_BY_DERIVED_ALIAS = "GROUP_BY_DERIVED_%s";
+    
+    private final ShardingRule shardingRule;
     
     private final AbstractSQLParser sqlParser;
     
@@ -245,9 +248,12 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             sqlParser.parseAlias();
             return;
         }
-        // FIXME 根据shardingRule过滤table
-        selectStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
-        selectStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), sqlParser.parseAlias()));
+        String tableName = SQLUtil.getExactlyValue(literals);
+        Optional<String> alias = sqlParser.parseAlias();
+        if (shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {
+            selectStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
+            selectStatement.getTables().add(new Table(tableName, alias));
+        }
     }
     
     protected void parseJoinTable(final SelectStatement selectStatement) {
@@ -278,9 +284,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private void parseWhere(final SelectStatement selectStatement) {
-        if (selectStatement.getTables().isEmpty()) {
-            return;
-        }
         sqlParser.parseWhere(selectStatement, items);
         parametersIndex = sqlParser.getParametersIndex();
     }

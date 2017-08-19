@@ -64,7 +64,7 @@ public final class SQLParsingEngine {
             skipWith(sqlParser);
         }
         if (sqlParser.equalAny(DefaultKeyword.SELECT)) {
-            return SelectParserFactory.newInstance(sqlParser).parse();
+            return SelectParserFactory.newInstance(shardingRule, sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.INSERT)) {
             return InsertParserFactory.newInstance(shardingRule, sqlParser).parse();

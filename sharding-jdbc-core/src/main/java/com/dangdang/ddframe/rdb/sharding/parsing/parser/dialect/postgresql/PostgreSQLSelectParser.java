@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
@@ -40,8 +41,8 @@ import com.google.common.base.Optional;
  */
 public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
-    public PostgreSQLSelectParser(final AbstractSQLParser sqlParser) {
-        super(sqlParser);
+    public PostgreSQLSelectParser(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
+        super(shardingRule, sqlParser);
     }
     
     @Override

@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
 import com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseSQLTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseTest;
@@ -33,7 +34,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 @RunWith(Parameterized.class)
 public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
@@ -62,7 +65,8 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     }
     
     private ShardingRule buildShardingRule() {
-        return new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("item_id")
+        TableRule orderTableRule = TableRule.builder("t_order").actualTables(Collections.singletonList("t_order")).dataSourceNames(Arrays.asList("db0", "db1")).build();
+        return new ShardingRuleMockBuilder().addTableRules(orderTableRule).addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("item_id")
                 .addGenerateKeyColumn("t_order_item", "item_id").build();
     }
 }

@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLSelectParser;
@@ -40,21 +41,22 @@ public final class SelectParserFactory {
     /**
      * 创建Select语句解析器.
      * 
+     * @param shardingRule 分库分表规则配置
      * @param sqlParser SQL解析器
      * @return Select语句解析器
      */
-    public static AbstractSelectParser newInstance(final AbstractSQLParser sqlParser) {
+    public static AbstractSelectParser newInstance(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
-            return new MySQLSelectParser(sqlParser);
+            return new MySQLSelectParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof OracleParser) {
-            return new OracleSelectParser(sqlParser);
+            return new OracleSelectParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerSelectParser(sqlParser);
+            return new SQLServerSelectParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLSelectParser(sqlParser);
+            return new PostgreSQLSelectParser(shardingRule, sqlParser);
         }
         throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 

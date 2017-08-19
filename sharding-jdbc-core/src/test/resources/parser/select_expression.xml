@@ -170,7 +170,6 @@
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
-            <table name="t_config" alias="c"/>
         </tables>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
