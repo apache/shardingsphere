@@ -51,6 +51,8 @@ public enum DefaultKeyword implements Keyword {
     BY,
     WITH,
     WITHOUT,
+    TRUE,
+    FALSE,
     TEMPORARY,
     TEMP,
     COMMENT,

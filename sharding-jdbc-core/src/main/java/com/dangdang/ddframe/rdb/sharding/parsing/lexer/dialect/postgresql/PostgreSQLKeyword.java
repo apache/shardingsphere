@@ -28,8 +28,6 @@ public enum PostgreSQLKeyword implements Keyword {
     
     SHOW,
     ONLY,
-    TRUE,
-    FALSE,
     ARRAY,
     FIRST,
     NEXT,
