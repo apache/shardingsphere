@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
@@ -46,21 +47,20 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void parseRest(final SelectStatement selectStatement) {
-        if (getSqlParser().equalAny(PostgreSQLKeyword.WINDOW)) {
-            throw new SQLParsingUnsupportedException(PostgreSQLKeyword.WINDOW);
-        }
-        parseLimit(selectStatement);
-        if (getSqlParser().skipIfEqual(DefaultKeyword.FETCH)) {
-            throw new SQLParsingUnsupportedException(DefaultKeyword.FETCH);
-        }
-        if (getSqlParser().skipIfEqual(DefaultKeyword.FOR)) {
-            getSqlParser().skipIfEqual(DefaultKeyword.UPDATE, PostgreSQLKeyword.SHARE);
-            if (getSqlParser().equalAny(DefaultKeyword.OF)) {
-                throw new SQLParsingUnsupportedException(DefaultKeyword.OF);
-            }
-            getSqlParser().skipIfEqual(PostgreSQLKeyword.NOWAIT);
-        }
+    protected SelectStatement parseInternal() {
+        SelectStatement result = new SelectStatement();
+        getSqlParser().getLexer().nextToken();
+        parseDistinct();
+        parseSelectList(result);
+        parseFrom(result);
+        parseWhere(result);
+        parseGroupBy(result);
+        parseHaving();
+        parseOrderBy(result);
+        parseLimit(result);
+        parseFor();
+        parseRest();
+        return result;
     }
     
     private void parseLimit(final SelectStatement selectStatement) {
@@ -133,5 +133,20 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
             limit.setRowCount(rowCount.get());
         }
         selectStatement.setLimit(limit);
+    }
+    
+    private void parseFor() {
+        if (getSqlParser().skipIfEqual(DefaultKeyword.FOR)) {
+            getSqlParser().skipIfEqual(DefaultKeyword.UPDATE, PostgreSQLKeyword.SHARE);
+            if (getSqlParser().equalAny(DefaultKeyword.OF)) {
+                throw new SQLParsingUnsupportedException(DefaultKeyword.OF);
+            }
+            getSqlParser().skipIfEqual(PostgreSQLKeyword.NOWAIT);
+        }
+    }
+    
+    @Override
+    protected Keyword[] getUnsupportedKeywordsRest() {
+        return new Keyword[] {PostgreSQLKeyword.WINDOW, DefaultKeyword.FETCH};
     }
 }

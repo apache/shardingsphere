@@ -96,15 +96,13 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         SelectStatement result = new SelectStatement();
         sqlParser.getLexer().nextToken();
         parseDistinct();
-        parseBeforeSelectList(result);
         parseSelectList(result);
         parseFrom(result);
         parseWhere(result);
         parseGroupBy(result);
         parseHaving();
         parseOrderBy(result);
-        parseRest(result);
-        parseUnsupportedTokens();
+        parseRest();
         return result;
     }
     
@@ -113,16 +111,13 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         Collection<Keyword> distinctKeywords = new LinkedList<>();
         distinctKeywords.add(DefaultKeyword.DISTINCT);
         distinctKeywords.addAll(Arrays.asList(getSynonymousKeywordsForDistinct()));
-        if (getSqlParser().equalAny(distinctKeywords.toArray(new Keyword[distinctKeywords.size()]))) {
-            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
+        if (sqlParser.equalAny(distinctKeywords.toArray(new Keyword[distinctKeywords.size()]))) {
+            throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
     }
     
     protected Keyword[] getSynonymousKeywordsForDistinct() {
         return new Keyword[0];
-    }
-    
-    protected void parseBeforeSelectList(final SelectStatement selectStatement) {
     }
     
     protected final void parseSelectList(final SelectStatement selectStatement) {
@@ -214,7 +209,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected final void parseFrom(final SelectStatement selectStatement) {
-        if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
+        if (sqlParser.equalAny(DefaultKeyword.INTO)) {
             throw new SQLParsingUnsupportedException(DefaultKeyword.INTO);
         }
         if (sqlParser.skipIfEqual(DefaultKeyword.FROM)) {
@@ -227,7 +222,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             sqlParser.skipUselessParentheses();
             selectStatement.setSubQueryStatement(parseInternal());
             sqlParser.skipUselessParentheses();
-            if (getSqlParser().equalAny(DefaultKeyword.WHERE, Assist.END)) {
+            if (sqlParser.equalAny(DefaultKeyword.WHERE, Assist.END)) {
                 return;
             }
         }
@@ -298,7 +293,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 sqlParser.getLexer().nextToken();
             }
             sqlParser.skipAll(getSkippedKeywordAfterGroupBy());
-            selectStatement.setGroupByLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - getSqlParser().getLexer().getCurrentToken().getLiterals().length());
+            selectStatement.setGroupByLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
         }
     }
     
@@ -404,12 +399,17 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return Optional.absent();
     }
     
-    protected abstract void parseRest(final SelectStatement selectStatement);
-    
-    protected final void parseUnsupportedTokens() {
-        if (sqlParser.equalAny(DefaultKeyword.UNION, DefaultKeyword.EXCEPT, DefaultKeyword.INTERSECT, DefaultKeyword.MINUS)) {
+    protected final void parseRest() {
+        Collection<Keyword> unsupportedRestKeywords = new LinkedList<>();
+        unsupportedRestKeywords.addAll(Arrays.asList(DefaultKeyword.UNION, DefaultKeyword.INTERSECT, DefaultKeyword.EXCEPT, DefaultKeyword.MINUS));
+        unsupportedRestKeywords.addAll(Arrays.asList(getUnsupportedKeywordsRest()));
+        if (sqlParser.equalAny(unsupportedRestKeywords.toArray(new Keyword[unsupportedRestKeywords.size()]))) {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
         }
+    }
+    
+    protected Keyword[] getUnsupportedKeywordsRest() {
+        return new Keyword[0];
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {

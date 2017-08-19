@@ -28,7 +28,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
@@ -46,27 +45,25 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected Keyword[] getSynonymousKeywordsForDistinct() {
-        return new Keyword[] {MySQLKeyword.DISTINCTROW};
+    protected SelectStatement parseInternal() {
+        SelectStatement result = new SelectStatement();
+        getSqlParser().getLexer().nextToken();
+        parseDistinct();
+        skipBeforeSelectList();
+        parseSelectList(result);
+        parseFrom(result);
+        parseWhere(result);
+        parseGroupBy(result);
+        parseHaving();
+        parseOrderBy(result);
+        parseLimit(result);
+        parseRest();
+        return result;
     }
     
-    @Override
-    protected void parseBeforeSelectList(final SelectStatement selectStatement) {
+    private void skipBeforeSelectList() {
         getSqlParser().skipAll(MySQLKeyword.HIGH_PRIORITY, DefaultKeyword.STRAIGHT_JOIN, MySQLKeyword.SQL_SMALL_RESULT, MySQLKeyword.SQL_BIG_RESULT, MySQLKeyword.SQL_BUFFER_RESULT, 
                 MySQLKeyword.SQL_CACHE, MySQLKeyword.SQL_NO_CACHE, MySQLKeyword.SQL_CALC_FOUND_ROWS);
-    }
-    
-    @Override
-    protected Keyword[] getSkippedKeywordAfterGroupBy() {
-        return new Keyword[] {DefaultKeyword.WITH, MySQLKeyword.ROLLUP};
-    }
-    
-    @Override
-    protected void parseRest(final SelectStatement selectStatement) {
-        parseLimit(selectStatement);
-        if (getSqlParser().equalAny(DefaultKeyword.PROCEDURE)) {
-            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
-        }
     }
     
     private void parseLimit(final SelectStatement selectStatement) {
@@ -163,26 +160,31 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     }
     
     @Override
+    protected Keyword[] getSynonymousKeywordsForDistinct() {
+        return new Keyword[] {MySQLKeyword.DISTINCTROW};
+    }
+    
+    @Override
     protected void parseJoinTable(final SelectStatement selectStatement) {
         if (getSqlParser().equalAny(DefaultKeyword.USING)) {
             return;
         }
         if (getSqlParser().equalAny(DefaultKeyword.USE)) {
             getSqlParser().getLexer().nextToken();
-            parseIndexHint();
+            skipIndexHint();
         }
         if (getSqlParser().equalAny(OracleKeyword.IGNORE)) {
             getSqlParser().getLexer().nextToken();
-            parseIndexHint();
+            skipIndexHint();
         }
         if (getSqlParser().equalAny(OracleKeyword.FORCE)) {
             getSqlParser().getLexer().nextToken();
-            parseIndexHint();
+            skipIndexHint();
         }
         super.parseJoinTable(selectStatement);
     }
-
-    private void parseIndexHint() {
+    
+    private void skipIndexHint() {
         if (getSqlParser().equalAny(DefaultKeyword.INDEX)) {
             getSqlParser().getLexer().nextToken();
         } else {
@@ -201,5 +203,15 @@ public final class MySQLSelectParser extends AbstractSelectParser {
             }
         }
         getSqlParser().skipParentheses();
+    }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordAfterGroupBy() {
+        return new Keyword[] {DefaultKeyword.WITH, MySQLKeyword.ROLLUP};
+    }
+    
+    @Override
+    protected Keyword[] getUnsupportedKeywordsRest() {
+        return new Keyword[] {DefaultKeyword.PROCEDURE, DefaultKeyword.INTO};
     }
 }

@@ -46,7 +46,6 @@ public final class OracleSelectParser extends AbstractSelectParser {
         SelectStatement result = new SelectStatement();
         getSqlParser().getLexer().nextToken();
         parseDistinct();
-        parseBeforeSelectList(result);
         parseSelectList(result);
         parseFrom(result);
         parseWhere(result);
@@ -55,19 +54,9 @@ public final class OracleSelectParser extends AbstractSelectParser {
         parseHaving();
         skipModelClause();
         parseOrderBy(result);
-        parseRest(result);
-        parseUnsupportedTokens();
+        skipFor();
+        parseRest();
         return result;
-    }
-    
-    @Override
-    protected Keyword[] getSynonymousKeywordsForDistinct() {
-        return new Keyword[] {DefaultKeyword.UNIQUE};
-    }
-    
-    @Override
-    protected Keyword[] getSkippedKeywordsBeforeSelectItem() {
-        return new Keyword[] {OracleKeyword.CONNECT_BY_ROOT};
     }
     
     private void skipHierarchicalQueryClause(final SelectStatement selectStatement) {
@@ -173,28 +162,20 @@ public final class OracleSelectParser extends AbstractSelectParser {
         throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
     }
     
-    @Override
-    protected void parseRest(final SelectStatement selectStatement) {
-        if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
-            skipForUpdate();
-        }
-        if (selectStatement.getOrderByItems().isEmpty()) {
-            parseOrderBy(selectStatement);
-        }
-    }
-    
-    private void skipForUpdate() {
-        getSqlParser().getLexer().nextToken();
-        getSqlParser().accept(DefaultKeyword.UPDATE);
-        if (getSqlParser().skipIfEqual(DefaultKeyword.OF)) {
-            do {
-                getSqlParser().parseExpression();
-            } while (getSqlParser().skipIfEqual(Symbol.COMMA));
-        }
-        if (getSqlParser().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {
+    private void skipFor() {
+        if (getSqlParser().skipIfEqual(DefaultKeyword.FOR)) {
             getSqlParser().getLexer().nextToken();
-        } else if (getSqlParser().skipIfEqual(OracleKeyword.SKIP)) {
-            getSqlParser().accept(OracleKeyword.LOCKED);
+            getSqlParser().accept(DefaultKeyword.UPDATE);
+            if (getSqlParser().skipIfEqual(DefaultKeyword.OF)) {
+                do {
+                    getSqlParser().parseExpression();
+                } while (getSqlParser().skipIfEqual(Symbol.COMMA));
+            }
+            if (getSqlParser().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {
+                getSqlParser().getLexer().nextToken();
+            } else if (getSqlParser().skipIfEqual(OracleKeyword.SKIP)) {
+                getSqlParser().accept(OracleKeyword.LOCKED);
+            }
         }
     }
     
@@ -269,6 +250,16 @@ public final class OracleSelectParser extends AbstractSelectParser {
             }
             getSqlParser().skipParentheses();
         }
+    }
+    
+    @Override
+    protected Keyword[] getSynonymousKeywordsForDistinct() {
+        return new Keyword[] {DefaultKeyword.UNIQUE};
+    }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBeforeSelectItem() {
+        return new Keyword[] {OracleKeyword.CONNECT_BY_ROOT};
     }
     
     @Override
