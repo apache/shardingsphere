@@ -270,6 +270,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     protected void skipAfterOrderByItem(final SelectStatement selectStatement) {
+        // TODO support order for null
         if (getSqlParser().skipIfEqual(OracleKeyword.NULLS)) {
             if (!getSqlParser().skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {
                 throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
