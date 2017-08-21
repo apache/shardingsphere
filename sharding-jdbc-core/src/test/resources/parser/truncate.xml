@@ -2,12 +2,12 @@
 <asserts>
     <assert id="assertTruncateTable">
         <tables>
-            <table name="t_order" />
+            <table name="t_log" />
         </tables>
     </assert>
     <assert id="assertTruncateTableOnly">
         <tables>
-            <table name="t_order" />
+            <table name="t_log" />
         </tables>
     </assert>
 </asserts>
