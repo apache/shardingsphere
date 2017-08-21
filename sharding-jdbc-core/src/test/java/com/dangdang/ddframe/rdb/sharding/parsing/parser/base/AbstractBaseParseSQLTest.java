@@ -45,22 +45,23 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     }
     
     private void assertSQLStatement(final SQLStatement actual, final boolean isPreparedStatement) {
-        assertExpectedTables(actual);
-        assertExpectedConditions(actual, isPreparedStatement);
+        assertExpectedTables(actual.getTables());
+        assertExpectedConditions(actual.getConditions(), isPreparedStatement);
         if (actual instanceof SelectStatement) {
-            assertOrderBy((SelectStatement) actual);
-            assertGroupBy((SelectStatement) actual);
-            assertAggregationSelectItem((SelectStatement) actual);
-            assertLimit(((SelectStatement) actual).getLimit(), isPreparedStatement);
+            SelectStatement selectStatement = (SelectStatement) actual;
+            assertOrderBy(selectStatement.getOrderByItems());
+            assertGroupBy(selectStatement.getGroupByItems());
+            assertAggregationSelectItem(selectStatement.getAggregationSelectItems());
+            assertLimit(selectStatement.getLimit(), isPreparedStatement);
         }
     }
     
-    private void assertExpectedTables(final SQLStatement actual) {
-        assertTrue(new ReflectionEquals(getExpectedTables()).matches(actual.getTables()));
+    private void assertExpectedTables(final Tables actual) {
+        assertTrue(new ReflectionEquals(getExpectedTables()).matches(actual));
     }
     
-    private void assertExpectedConditions(final SQLStatement actual, final boolean isPreparedStatement) {
-        assertTrue(new ReflectionEquals(buildExpectedConditions(isPreparedStatement)).matches(actual.getConditions()));
+    private void assertExpectedConditions(final Conditions actual, final boolean isPreparedStatement) {
+        assertTrue(new ReflectionEquals(buildExpectedConditions(isPreparedStatement)).matches(actual));
     }
     
     private Conditions buildExpectedConditions(final boolean isPreparedStatement) {
@@ -127,9 +128,9 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
         return result;
     }
     
-    private void assertOrderBy(final SelectStatement actual) {
+    private void assertOrderBy(final List<OrderItem> actual) {
         Iterator<OrderItem> orderByColumns = getExpectedOrderByColumns().iterator();
-        for (OrderItem each : actual.getOrderByItems()) {
+        for (OrderItem each : actual) {
             OrderItem expectedOrderItem = orderByColumns.next();
             // TODO assert nullOrderType
             assertTrue(new ReflectionEquals(expectedOrderItem, "nullOrderType").matches(each));
@@ -137,9 +138,9 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
         assertFalse(orderByColumns.hasNext());
     }
     
-    private void assertGroupBy(final SelectStatement actual) {
+    private void assertGroupBy(final List<OrderItem> actual) {
         Iterator<OrderItem> groupByColumns = getExpectedGroupByColumns().iterator();
-        for (OrderItem each : actual.getGroupByItems()) {
+        for (OrderItem each : actual) {
             OrderItem groupByColumn = groupByColumns.next();
             // TODO assert nullOrderType
             assertTrue(new ReflectionEquals(groupByColumn, "nullOrderType").matches(each));
@@ -147,9 +148,9 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
         assertFalse(groupByColumns.hasNext());
     }
     
-    private void assertAggregationSelectItem(final SelectStatement actual) {
+    private void assertAggregationSelectItem(final List<AggregationSelectItem> actual) {
         Iterator<AggregationSelectItem> aggregationSelectItems = getExpectedAggregationSelectItems().iterator();
-        for (AggregationSelectItem each : actual.getAggregationSelectItems()) {
+        for (AggregationSelectItem each : actual) {
             AggregationSelectItem expected = aggregationSelectItems.next();
             assertTrue(new ReflectionEquals(expected, "derivedAggregationSelectItems").matches(each));
             for (int i = 0; i < each.getDerivedAggregationSelectItems().size(); i++) {
