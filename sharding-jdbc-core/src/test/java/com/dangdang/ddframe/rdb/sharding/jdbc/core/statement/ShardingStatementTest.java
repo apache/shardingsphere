@@ -180,13 +180,7 @@ public final class ShardingStatementTest extends AbstractShardingJDBCDatabaseAnd
                     Connection connection = getShardingDataSource().getConnection();
                     Statement stmt = connection.createStatement()) {
                 assertFalse(stmt.execute(String.format(sql3, 1, 1, "init")));
-                if (DatabaseType.MySQL != getCurrentDatabaseType() && DatabaseType.SQLServer != getCurrentDatabaseType()) {
-                    assertFalse(stmt.getGeneratedKeys().next());
-                }
                 assertFalse(stmt.execute(String.format(sql3, 1, 1, "init"), Statement.NO_GENERATED_KEYS));
-                if (DatabaseType.MySQL != getCurrentDatabaseType() && DatabaseType.SQLServer != getCurrentDatabaseType()) {
-                    assertFalse(stmt.getGeneratedKeys().next());
-                }
                 assertFalse(stmt.execute(String.format(sql3, 1, 1, "init"), Statement.RETURN_GENERATED_KEYS));
                 ResultSet generatedKeysResultSet = stmt.getGeneratedKeys();
                 assertTrue(generatedKeysResultSet.next());
@@ -203,10 +197,12 @@ public final class ShardingStatementTest extends AbstractShardingJDBCDatabaseAnd
                 generatedKeysResultSet = stmt.getGeneratedKeys();
                 assertTrue(generatedKeysResultSet.next());
                 assertThat(generatedKeysResultSet.getLong(1), is(6L));
-                assertFalse(stmt.execute(String.format(sql3, 1, 1, "init"), new String[]{"no"}));
-                generatedKeysResultSet = stmt.getGeneratedKeys();
-                assertTrue(generatedKeysResultSet.next());
-                assertThat(generatedKeysResultSet.getLong(1), is(7L));
+                if (DatabaseType.Oracle != getCurrentDatabaseType()) {
+                    assertFalse(stmt.execute(String.format(sql3, 1, 1, "init"), new String[]{"no"}));
+                    generatedKeysResultSet = stmt.getGeneratedKeys();
+                    assertTrue(generatedKeysResultSet.next());
+                    assertThat(generatedKeysResultSet.getLong(1), is(7L));
+                }
             }
         }
     }
