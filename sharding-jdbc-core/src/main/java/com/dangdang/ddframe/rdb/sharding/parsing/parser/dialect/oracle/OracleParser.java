@@ -20,10 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.google.common.base.Optional;
-
-import java.util.List;
 
 /**
  * Oracle解析器.
@@ -34,17 +30,5 @@ public final class OracleParser extends AbstractSQLParser {
     
     public OracleParser(final String sql) {
         super(new CommonParser(new OracleLexer(sql)));
-    }
-    
-    @Override
-    protected boolean isRowNumberCondition(final List<SelectItem> items, final String columnLabel) {
-        Optional<String> rowNumberAlias = Optional.absent();
-        for (SelectItem each : items) {
-            if (each.getAlias().isPresent() && "rownum".equalsIgnoreCase(each.getExpression())) {
-                rowNumberAlias = each.getAlias();
-                break;
-            }
-        }
-        return "rownum".equalsIgnoreCase(columnLabel) || columnLabel.equalsIgnoreCase(rowNumberAlias.orNull());
     }
 }

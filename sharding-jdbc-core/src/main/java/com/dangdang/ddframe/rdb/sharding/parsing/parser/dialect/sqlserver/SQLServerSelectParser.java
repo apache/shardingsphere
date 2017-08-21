@@ -46,7 +46,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 public final class SQLServerSelectParser extends AbstractSelectParser {
     
     public SQLServerSelectParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
-        super(shardingRule, commonParser, sqlParser);
+        super(shardingRule, commonParser, sqlParser, new SQLServerWhereSQLParser(commonParser));
     }
     
     @Override

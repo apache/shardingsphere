@@ -30,6 +30,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
@@ -43,7 +44,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 public final class MySQLSelectParser extends AbstractSelectParser {
     
     public MySQLSelectParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
-        super(shardingRule, commonParser, sqlParser);
+        super(shardingRule, commonParser, sqlParser, new WhereSQLParser(commonParser));
     }
     
     @Override

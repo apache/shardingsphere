@@ -41,6 +41,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpr
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AliasSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ExpressionSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
@@ -80,6 +81,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final ExpressionSQLParser expressionSQLParser;
     
+    private final WhereSQLParser whereSQLParser;
+    
     private final AbstractSQLParser sqlParser;
     
     private final List<SelectItem> items = new LinkedList<>();
@@ -87,12 +90,13 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     @Setter
     private int parametersIndex;
     
-    public AbstractSelectParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
+    public AbstractSelectParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser, final WhereSQLParser whereSQLParser) {
         this.shardingRule = shardingRule;
         this.commonParser = commonParser;
         this.sqlParser = sqlParser;
         aliasSQLParser = new AliasSQLParser(commonParser);
         expressionSQLParser = new ExpressionSQLParser(commonParser);
+        this.whereSQLParser = whereSQLParser;
     }
     
     @Override
@@ -277,7 +281,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected final void parseWhere(final SelectStatement selectStatement) {
-        sqlParser.parseWhere(shardingRule, selectStatement, items);
+        whereSQLParser.parseWhere(shardingRule, selectStatement, items);
         parametersIndex = selectStatement.getParametersIndex();
     }
     

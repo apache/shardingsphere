@@ -20,10 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.google.common.base.Optional;
-
-import java.util.List;
 
 /**
  * SQLServer解析器.
@@ -34,16 +30,5 @@ public final class SQLServerParser extends AbstractSQLParser {
     
     public SQLServerParser(final String sql) {
         super(new CommonParser(new SQLServerLexer(sql)));
-    }
-    
-    @Override
-    protected boolean isRowNumberCondition(final List<SelectItem> items, final String columnLabel) {
-        Optional<String> rowNumberAlias = Optional.absent();
-        for (SelectItem each : items) {
-            if (each.getAlias().isPresent() && "ROW_NUMBER".equalsIgnoreCase(each.getExpression())) {
-                rowNumberAlias = each.getAlias();
-            }
-        }
-        return columnLabel.equalsIgnoreCase(rowNumberAlias.orNull());
     }
 }

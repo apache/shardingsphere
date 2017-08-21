@@ -23,14 +23,18 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ExpressionSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
+
+import java.util.Collections;
 
 /**
  * Update语句解析器.
@@ -47,6 +51,8 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private final ExpressionSQLParser expressionSQLParser;
     
+    private final WhereSQLParser whereSQLParser;
+    
     @Getter(AccessLevel.NONE)
     private int parametersIndex;
     
@@ -55,6 +61,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
         this.commonParser = commonParser;
         this.sqlParser = sqlParser;
         expressionSQLParser = new ExpressionSQLParser(commonParser);
+        whereSQLParser = new WhereSQLParser(commonParser);
     }
     
     @Override
@@ -69,7 +76,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
         parseSetItems(result);
         commonParser.skipUntil(DefaultKeyword.WHERE);
         result.setParametersIndex(parametersIndex);
-        sqlParser.parseWhere(shardingRule, result);
+        whereSQLParser.parseWhere(shardingRule, result, Collections.<SelectItem>emptyList());
         return result;
     }
     

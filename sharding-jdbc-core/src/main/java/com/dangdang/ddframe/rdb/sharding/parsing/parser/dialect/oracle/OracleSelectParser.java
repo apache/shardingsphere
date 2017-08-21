@@ -41,7 +41,7 @@ import java.util.Collections;
 public final class OracleSelectParser extends AbstractSelectParser {
     
     public OracleSelectParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
-        super(shardingRule, commonParser, sqlParser);
+        super(shardingRule, commonParser, sqlParser, new OracleWhereSQLParser(commonParser));
     }
     
     @Override
@@ -70,7 +70,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
             return;
         }
         getCommonParser().accept(DefaultKeyword.WITH);
-        getSqlParser().parseComparisonCondition(getShardingRule(), selectStatement, Collections.<SelectItem>emptyList());
+        getWhereSQLParser().parseComparisonCondition(getShardingRule(), selectStatement, Collections.<SelectItem>emptyList());
     }
     
     private void skipConnect(final SelectStatement selectStatement) {
@@ -82,7 +82,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         if (getCommonParser().skipIfEqual(OracleKeyword.NOCYCLE)) {
             getCommonParser().skipIfEqual(OracleKeyword.PRIOR);
         }
-        getSqlParser().parseComparisonCondition(getShardingRule(), selectStatement, Collections.<SelectItem>emptyList());
+        getWhereSQLParser().parseComparisonCondition(getShardingRule(), selectStatement, Collections.<SelectItem>emptyList());
     }
     
     private void skipModelClause(final SelectStatement selectStatement) {
