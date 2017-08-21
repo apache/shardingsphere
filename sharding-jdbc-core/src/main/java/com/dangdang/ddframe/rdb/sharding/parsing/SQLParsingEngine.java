@@ -36,6 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.Ins
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.truncate.TruncateParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.UpdateParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -116,7 +117,8 @@ public final class SQLParsingEngine {
         do {
             sqlParser.skipUntil(DefaultKeyword.AS);
             sqlParser.accept(DefaultKeyword.AS);
-            sqlParser.skipParentheses();
+            // TODO with 中包含 ? 无法获取
+            sqlParser.skipParentheses(new SelectStatement());
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
     }
 }

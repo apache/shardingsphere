@@ -57,7 +57,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
         sqlParser.parseSingleTable(result);
         parseSetItems(result);
         sqlParser.skipUntil(DefaultKeyword.WHERE);
-        sqlParser.setParametersIndex(parametersIndex);
+        result.setParametersIndex(parametersIndex);
         sqlParser.parseWhere(shardingRule, result);
         return result;
     }
@@ -85,7 +85,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private void parseSetColumn(final DMLStatement updateStatement) {
         if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
-            sqlParser.skipParentheses();
+            sqlParser.skipParentheses(updateStatement);
             return;
         }
         int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition();
@@ -101,6 +101,6 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private void parseSetValue(final DMLStatement updateStatement) {
         sqlParser.parseExpression(updateStatement);
-        parametersIndex = sqlParser.getParametersIndex();
+        parametersIndex = updateStatement.getParametersIndex();
     }
 }

@@ -58,4 +58,25 @@ public interface SQLStatement {
      * @return SQL标记集合
      */
     List<SQLToken> getSqlTokens();
+    
+    /**
+     * 获取索引偏移量.
+     *
+     * @return 索引偏移量
+     */
+    int getParametersIndex();
+    
+    /**
+     * 设置索引偏移量.
+     *
+     * @param parametersIndex 索引偏移量
+     */
+    void setParametersIndex(int parametersIndex);
+    
+    /**
+     * 增加索引偏移量.
+     *
+     * @return 增加后的索引偏移量
+     */
+    int increaseParametersIndex();
 }

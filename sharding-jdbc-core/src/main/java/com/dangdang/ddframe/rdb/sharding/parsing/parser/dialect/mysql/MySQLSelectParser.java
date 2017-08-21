@@ -169,20 +169,20 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         }
         if (getSqlParser().equalAny(DefaultKeyword.USE)) {
             getSqlParser().getLexer().nextToken();
-            skipIndexHint();
+            skipIndexHint(selectStatement);
         }
         if (getSqlParser().equalAny(OracleKeyword.IGNORE)) {
             getSqlParser().getLexer().nextToken();
-            skipIndexHint();
+            skipIndexHint(selectStatement);
         }
         if (getSqlParser().equalAny(OracleKeyword.FORCE)) {
             getSqlParser().getLexer().nextToken();
-            skipIndexHint();
+            skipIndexHint(selectStatement);
         }
         super.parseJoinTable(selectStatement);
     }
     
-    private void skipIndexHint() {
+    private void skipIndexHint(final SelectStatement selectStatement) {
         if (getSqlParser().equalAny(DefaultKeyword.INDEX)) {
             getSqlParser().getLexer().nextToken();
         } else {
@@ -200,7 +200,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
                 getSqlParser().accept(DefaultKeyword.BY);
             }
         }
-        getSqlParser().skipParentheses();
+        getSqlParser().skipParentheses(selectStatement);
     }
     
     @Override

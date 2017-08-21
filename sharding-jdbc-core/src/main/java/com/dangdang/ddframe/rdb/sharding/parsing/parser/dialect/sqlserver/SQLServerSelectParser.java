@@ -70,7 +70,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         if (!getSqlParser().skipIfEqual(Symbol.LEFT_PAREN)) {
             beginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition() - getSqlParser().getLexer().getCurrentToken().getLiterals().length();
         }
-        SQLExpression sqlExpression = getSqlParser().parseExpression();
+        SQLExpression sqlExpression = getSqlParser().parseExpression(selectStatement);
         getSqlParser().skipIfEqual(Symbol.RIGHT_PAREN);
         LimitValue rowCountValue;
         if (sqlExpression instanceof SQLNumberExpression) {
@@ -105,7 +105,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
             offsetValue = Integer.parseInt(getSqlParser().getLexer().getCurrentToken().getLiterals());
         } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
             offsetIndex = getParametersIndex();
-            getSqlParser().increaseParametersIndex();
+            selectStatement.increaseParametersIndex();
         } else {
             throw new SQLParsingException(getSqlParser().getLexer());
         }
@@ -120,7 +120,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
                 rowCountValue = Integer.parseInt(getSqlParser().getLexer().getCurrentToken().getLiterals());
             } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
                 rowCountIndex = getParametersIndex();
-                getSqlParser().increaseParametersIndex();
+                selectStatement.increaseParametersIndex();
             } else {
                 throw new SQLParsingException(getSqlParser().getLexer());
             }
@@ -167,7 +167,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     protected SelectItem parseRowNumberSelectItem(final SelectStatement selectStatement) {
-        getSqlParser().skipParentheses();
+        getSqlParser().skipParentheses(selectStatement);
         getSqlParser().accept(DefaultKeyword.OVER);
         getSqlParser().accept(Symbol.LEFT_PAREN);
         if (getSqlParser().equalAny(SQLServerKeyword.PARTITION)) {
@@ -181,7 +181,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     @Override
     protected void parseJoinTable(final SelectStatement selectStatement) {
         if (getSqlParser().skipIfEqual(DefaultKeyword.WITH)) {
-            getSqlParser().skipParentheses();
+            getSqlParser().skipParentheses(selectStatement);
         }
         super.parseJoinTable(selectStatement);
     }

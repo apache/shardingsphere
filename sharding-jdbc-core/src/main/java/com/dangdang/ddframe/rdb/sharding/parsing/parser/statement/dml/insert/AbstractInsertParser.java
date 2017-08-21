@@ -102,18 +102,18 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         sqlParser.skipUntil(DefaultKeyword.INTO);
         sqlParser.getLexer().nextToken();
         sqlParser.parseSingleTable(insertStatement);
-        skipBetweenTableAndValues();
+        skipBetweenTableAndValues(insertStatement);
     }
     
     protected Keyword[] getUnsupportedKeywordsBeforeInto() {
         return new Keyword[0];
     }
     
-    private void skipBetweenTableAndValues() {
+    private void skipBetweenTableAndValues(final InsertStatement insertStatement) {
         while (sqlParser.skipIfEqual(getSkippedKeywordsBetweenTableAndValues())) {
             sqlParser.getLexer().nextToken();
             if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
-                sqlParser.skipParentheses();
+                sqlParser.skipParentheses(insertStatement);
             }
         }
     }
@@ -152,7 +152,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         sqlParser.accept(Symbol.LEFT_PAREN);
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         do {
-            sqlExpressions.add(sqlParser.parseExpression());
+            sqlExpressions.add(sqlParser.parseExpression(insertStatement));
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
         valuesListLastPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
         int count = 0;

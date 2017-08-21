@@ -62,6 +62,7 @@ public final class SelectStatement extends DQLStatement {
     private Limit limit;
     
     @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private SelectStatement subQueryStatement;
     
     /**
@@ -124,6 +125,16 @@ public final class SelectStatement extends DQLStatement {
                 each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             }
         }
+    }
+    
+    /**
+     * 设置子查询的Select SQL语句对象.
+     * 
+     * @param subQueryStatement 子查询的Select SQL语句对象
+     */
+    public void setSubQueryStatement(final SelectStatement subQueryStatement) {
+        this.subQueryStatement = subQueryStatement;
+        setParametersIndex(subQueryStatement.getParametersIndex());
     }
     
     /**

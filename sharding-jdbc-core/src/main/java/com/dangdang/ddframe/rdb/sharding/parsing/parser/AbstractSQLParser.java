@@ -69,43 +69,38 @@ public abstract class AbstractSQLParser extends AbstractParser {
      */
     public final SQLExpression parseExpression(final SQLStatement sqlStatement) {
         int beginPosition = getLexer().getCurrentToken().getEndPosition();
-        SQLExpression result = parseExpression();
+        SQLExpression result = parseExpressionInternal(sqlStatement);
         if (result instanceof SQLPropertyExpression) {
             setTableToken(sqlStatement, beginPosition, (SQLPropertyExpression) result);
         }
         return result;
     }
     
-    /**
-     * 解析表达式.
-     *
-     * @return 表达式
-     */
     // TODO 完善Expression解析的各种场景
-    public final SQLExpression parseExpression() {
+    private SQLExpression parseExpressionInternal(final SQLStatement sqlStatement) {
         String literals = getLexer().getCurrentToken().getLiterals();
         final int beginPosition = getLexer().getCurrentToken().getEndPosition() - literals.length();
-        final SQLExpression expression = getExpression(literals);
+        final SQLExpression expression = getExpression(literals, sqlStatement);
         getLexer().nextToken();
         if (skipIfEqual(Symbol.DOT)) {
             String property = getLexer().getCurrentToken().getLiterals();
             getLexer().nextToken();
-            return skipIfCompositeExpression() ? new SQLIgnoreExpression(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition()))
+            return skipIfCompositeExpression(sqlStatement) ? new SQLIgnoreExpression(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition()))
                     : new SQLPropertyExpression(new SQLIdentifierExpression(literals), property);
         }
         if (equalAny(Symbol.LEFT_PAREN)) {
-            skipParentheses();
-            skipRestCompositeExpression();
+            skipParentheses(sqlStatement);
+            skipRestCompositeExpression(sqlStatement);
             return new SQLIgnoreExpression(
                     getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition() - getLexer().getCurrentToken().getLiterals().length()).trim());
         }
-        return skipIfCompositeExpression() ? new SQLIgnoreExpression(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition())) : expression;
+        return skipIfCompositeExpression(sqlStatement) ? new SQLIgnoreExpression(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition())) : expression;
     }
     
-    private SQLExpression getExpression(final String literals) {
+    private SQLExpression getExpression(final String literals, final SQLStatement sqlStatement) {
         if (equalAny(Symbol.QUESTION)) {
-            increaseParametersIndex();
-            return new SQLPlaceholderExpression(getParametersIndex() - 1);
+            sqlStatement.increaseParametersIndex();
+            return new SQLPlaceholderExpression(sqlStatement.getParametersIndex() - 1);
         }
         if (equalAny(Literals.CHARS)) {
             return new SQLTextExpression(literals);
@@ -125,28 +120,28 @@ public abstract class AbstractSQLParser extends AbstractParser {
         return new SQLIgnoreExpression(literals);
     }
     
-    private boolean skipIfCompositeExpression() {
+    private boolean skipIfCompositeExpression(final SQLStatement sqlStatement) {
         if (equalAny(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH, Symbol.PERCENT, Symbol.AMP, Symbol.BAR, Symbol.DOUBLE_AMP, Symbol.DOUBLE_BAR, Symbol.CARET, Symbol.DOT, Symbol.LEFT_PAREN)) {
-            skipParentheses();
-            skipRestCompositeExpression();
+            skipParentheses(sqlStatement);
+            skipRestCompositeExpression(sqlStatement);
             return true;
         }
         return false;
     }
     
-    private void skipRestCompositeExpression() {
+    private void skipRestCompositeExpression(final SQLStatement sqlStatement) {
         while (skipIfEqual(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH, Symbol.PERCENT, Symbol.AMP, Symbol.BAR, Symbol.DOUBLE_AMP, Symbol.DOUBLE_BAR, Symbol.CARET, Symbol.DOT)) {
             if (equalAny(Symbol.QUESTION)) {
-                increaseParametersIndex();
+                sqlStatement.increaseParametersIndex();
             }
             getLexer().nextToken();
-            skipParentheses();
+            skipParentheses(sqlStatement);
         }
     }
     
     private void setTableToken(final SQLStatement sqlStatement, final int beginPosition, final SQLPropertyExpression propertyExpr) {
         String owner = propertyExpr.getOwner().getName();
-        if (!sqlStatement.getTables().isEmpty() && sqlStatement.getTables().getSingleTableName().equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
+        if (sqlStatement.getTables().getTableNames().contains(SQLUtil.getExactlyValue(propertyExpr.getOwner().getName()))) {
             sqlStatement.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner));
         }
     }
