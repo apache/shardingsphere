@@ -30,9 +30,13 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShard
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,8 +44,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
-    
-    private static boolean isShutdown;
     
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
@@ -61,10 +63,9 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
     
     @Override
     protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
-        if (!shardingDataSources.isEmpty() && !isShutdown) {
+        if (!shardingDataSources.isEmpty()) {
             return shardingDataSources;
         }
-        isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
@@ -101,9 +102,48 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
         return shardingDataSources;
     }
     
+    @Before
+    public void initDdlTables() {
+        if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("DROP")) {
+            if (getSql().contains("TEMP")) {
+                executeSql("CREATE TEMPORARY TABLE t_log(id int, status varchar(10))");
+            } else {
+                executeSql("CREATE TABLE t_log(id int, status varchar(10))");
+            }
+        }
+    }
+    
+    @After
+    public void cleanupDdlTables() {
+        if (getSql().contains("TEMP")) {
+            return;
+        }
+        if (getSql().startsWith("CREATE") || getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE")) {
+            executeSql("DROP TABLE t_log");
+        }
+    }
+    
+    private void executeSql(final String sql) {
+        for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
+            if (getCurrentDatabaseType() == each.getKey()) {
+                try (Connection conn = each.getValue().getConnection();
+                     Statement statement = conn.createStatement()) {
+                    statement.execute(sql);
+                    //CHECKSTYLE:OFF
+                } catch (final Exception ex) {
+                    //CHECKSTYLE:ON
+                    if (ex.getMessage().startsWith("Dynamic table")) {
+                        continue;
+                    }
+                    ex.printStackTrace();
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+    }
+    
     @AfterClass
     public static void clear() {
-        isShutdown = true;
         if (!shardingDataSources.isEmpty()) {
             for (ShardingDataSource each : shardingDataSources.values()) {
                 each.close();

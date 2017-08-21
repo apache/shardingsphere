@@ -28,6 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.ITableIterator;
@@ -58,6 +59,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     private final String testCaseName;
     
+    @Getter
     private final String sql;
     
     private final DatabaseType type;
@@ -119,15 +121,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
                 continue;
             }
             for (SQLAssertData each : sqlShardingRule.getData()) {
-                String strategyName = getShardingStrategy().name();
-                // TODO DML和DQL保持一直，去掉DML中XML名称里面的placeholder
-                String expected = null == each.getExpected() ? "integrate/dataset/EmptyTable.xml"
-                        : String.format("integrate/dataset/%s/expect/" + each.getExpected(), strategyName, strategyName);
-                URL url = AbstractSQLAssertTest.class.getClassLoader().getResource(expected);
-                if (null == url) {
-                    throw new RuntimeException("Wrong expected file:" + expected);
-                }
-                File expectedDataSetFile = new File(url.getPath());
+                File expectedDataSetFile = getExpectedFile(each.getExpected());
                 if (sql.toUpperCase().startsWith("SELECT")) {
                     assertDqlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
                 } else  {
@@ -135,6 +129,18 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
                 }
             }
         }
+    }
+    
+    private File getExpectedFile(final String expected) {
+        String strategyName = getShardingStrategy().name();
+        // TODO DML和DQL保持一直，去掉DML中XML名称里面的placeholder
+        String expectedFile = null == expected ? "integrate/dataset/EmptyTable.xml"
+                : String.format("integrate/dataset/%s/expect/" + expected, strategyName, strategyName);
+        URL url = AbstractSQLAssertTest.class.getClassLoader().getResource(expectedFile);
+        if (null == url) {
+            throw new RuntimeException("Wrong expected file:" + expectedFile);
+        }
+        return new File(url.getPath());
     }
     
     private boolean needAssert(final SQLShardingRule sqlShardingRule) {
@@ -255,6 +261,9 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     }
     
     private void assertResult(final Connection connection, final File file) throws MalformedURLException, SQLException, DatabaseUnitException {
+        if (sql.contains("TEMP")) {
+            return;
+        }
         ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
         try (Connection conn = connection) {
             while (expectedTableIterator.next()) {

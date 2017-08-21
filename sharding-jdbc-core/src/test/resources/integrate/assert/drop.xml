@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertDropTable">
+        <sharding-rule value="tbl">
+            <data expected="drop/tbl.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertDropTableIfExist">
+        <sharding-rule value="tbl">
+            <data expected="drop/tbl.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertDropTableRestrict">
+        <sharding-rule value="tbl">
+            <data expected="drop/tbl.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertDropTableCascade">
+        <sharding-rule value="tbl">
+            <data expected="drop/tbl.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertDropTableCascadeConstraintsAndPurge">
+        <sharding-rule value="tbl">
+            <data expected="drop/tbl.xml" />
+        </sharding-rule>
+    </sql>
+</sqls>
