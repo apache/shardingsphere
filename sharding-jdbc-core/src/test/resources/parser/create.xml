@@ -15,12 +15,12 @@
             <table name="t_order" />
         </tables>
     </assert>
-    <assert id="assertCreateTempGlobalTable">
+    <assert id="assertCreateGlobalTemporaryTable">
         <tables>
             <table name="t_order" />
         </tables>
     </assert>
-    <assert id="assertCreateTempLocalTemporaryTable">
+    <assert id="assertCreateLocalTempTable">
         <tables>
             <table name="t_order" />
         </tables>

@@ -46,11 +46,10 @@
         </order-by-columns>
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </assert>
-    <assert id="assertSelectPaginationWithGroupByAndOrderByInSQLServer" parameters="3,1,2,9,10,6">
+    <assert id="assertSelectPaginationWithTopAndGroupByAndOrderBy" parameters="3,1,2,9,10,6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
-            <table name="row_" />
         </tables>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -70,35 +69,10 @@
         </order-by-columns>
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </assert>
-    <assert id="assertSelectPaginationWithDiffGroupByAndOrderByInSQLServer" parameters="3,1,2,9,10,6">
+    <assert id="assertSelectPaginationWithTopAndGroupByAndOrderByAndParentheses" parameters="3,1,2,9,10,6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
-            <table name="row_" />
-        </tables>
-        <conditions>
-            <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="1" literal="1" type="int" />
-                <value index="2" literal="2" type="int" />
-            </condition>
-            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="3" literal="9" type="int" />
-                <value index="4" literal="10" type="int" />
-            </condition>
-        </conditions>
-        <group-by-columns>
-            <group-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="i" order-by-type="ASC" />
-        </group-by-columns>
-        <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-by-type="DESC" />
-        </order-by-columns>
-        <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
-    </assert>
-    <assert id="assertSelectPaginationWithGroupByAndOrderByAndParenthesesInSQLServer" parameters="3,1,2,9,10,6">
-        <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-            <table name="row_" />
         </tables>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -118,11 +92,10 @@
         </order-by-columns>
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </assert>
-    <assert id="assertSelectPaginationWithDiffGroupByAndOrderByAndParenthesesInSQLServer" parameters="3,1,2,9,10,6">
+    <assert id="assertSelectPaginationWithTopAndDiffGroupByAndOrderBy" parameters="3,1,2,9,10,6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
-            <table name="row_" />
         </tables>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -142,12 +115,33 @@
         </order-by-columns>
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </assert>
-    <assert id="assertSelectPaginationWithGroupByAndOrderByInOracle" parameters="1,2,9,10,5,3">
+    <assert id="assertSelectPaginationWithTopAndDiffGroupByAndOrderByAndParentheses" parameters="3,1,2,9,10,6">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="1" literal="1" type="int" />
+                <value index="2" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="3" literal="9" type="int" />
+                <value index="4" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <group-by-columns>
+            <group-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="i" order-by-type="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-by-type="DESC" />
+        </order-by-columns>
+        <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
+    </assert>
+    <assert id="assertSelectPaginationWithRowNumberAndGroupByAndOrderBy" parameters="1,2,9,10,5,3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
-            <table name="row_" />
-            <table name="t" />
         </tables>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -167,12 +161,10 @@
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </assert>
-    <assert id="assertSelectPaginationWithDiffGroupByAndOrderByInOracle" parameters="1,2,9,10,5,3">
+    <assert id="assertSelectPaginationWithRowNumberAndDiffGroupByAndOrderBy" parameters="1,2,9,10,5,3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
-            <table name="row_" />
-            <table name="t" />
         </tables>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">

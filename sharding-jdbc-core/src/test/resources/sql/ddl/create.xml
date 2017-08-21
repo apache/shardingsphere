@@ -4,6 +4,6 @@
     <sql id="assertCreateTableIfNotExist" value="CREATE TABLE IF NOT EXISTS t_order(id int)" type="MySQL,PostgreSQL" />
     <sql id="assertCreateTemporaryTable" value="CREATE TEMPORARY TABLE IF NOT EXISTS t_order(id int)" type="MySQL,PostgreSQL" />
     <sql id="assertCreateGlobalTemporaryTable" value="CREATE GLOBAL TEMPORARY TABLE t_order(id int)" type="Oracle,PostgreSQL" />
-    <sql id="assertCreateTempLocalTempTable" value="CREATE LOCAL TEMP TABLE t_order(id int)" type="PostgreSQL" />
+    <sql id="assertCreateLocalTempTable" value="CREATE LOCAL TEMP TABLE t_order(id int)" type="PostgreSQL" />
     <sql id="assertCreateUnloggedTable" value="CREATE UNLOGGED TABLE t_order(id int)" type="PostgreSQL" />
 </sqls>
