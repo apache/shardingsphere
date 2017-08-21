@@ -39,6 +39,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifier
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIgnoreExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AliasSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
@@ -47,7 +48,6 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.Arrays;
@@ -60,7 +60,6 @@ import java.util.List;
  * 
  * @author zhangliang 
  */
-@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractSelectParser implements SQLStatementParser {
     
@@ -76,12 +75,21 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final CommonParser commonParser;
     
+    private final AliasSQLParser aliasSQLParser;
+    
     private final AbstractSQLParser sqlParser;
     
     private final List<SelectItem> items = new LinkedList<>();
     
     @Setter
     private int parametersIndex;
+    
+    public AbstractSelectParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
+        this.shardingRule = shardingRule;
+        this.commonParser = commonParser;
+        this.sqlParser = sqlParser;
+        aliasSQLParser = new AliasSQLParser(commonParser);
+    }
     
     @Override
     public final SelectStatement parse() {
@@ -138,7 +146,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             result = parseAggregationSelectItem(selectStatement);
             parseRestSelectItem(selectStatement);
         } else {
-            result = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem(selectStatement) + parseRestSelectItem(selectStatement)), sqlParser.parseAlias());
+            result = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem(selectStatement) + parseRestSelectItem(selectStatement)), aliasSQLParser.parseAlias());
         }
         return result;
     }
@@ -161,7 +169,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private SelectItem parseStarSelectItem() {
         commonParser.getLexer().nextToken();
-        sqlParser.parseAlias();
+        aliasSQLParser.parseAlias();
         return new StarSelectItem(Optional.<String>absent());
     }
     
@@ -172,7 +180,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
         AggregationType aggregationType = AggregationType.valueOf(commonParser.getLexer().getCurrentToken().getLiterals().toUpperCase());
         commonParser.getLexer().nextToken();
-        return new AggregationSelectItem(aggregationType, commonParser.skipParentheses(selectStatement), sqlParser.parseAlias());
+        return new AggregationSelectItem(aggregationType, commonParser.skipParentheses(selectStatement), aliasSQLParser.parseAlias());
     }
     
     private String parseCommonSelectItem(final SelectStatement selectStatement) {
@@ -241,7 +249,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             throw new UnsupportedOperationException("Cannot support SQL for `schema.table`");
         }
         String tableName = SQLUtil.getExactlyValue(literals);
-        Optional<String> alias = sqlParser.parseAlias();
+        Optional<String> alias = aliasSQLParser.parseAlias();
         if (shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {
             selectStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
             selectStatement.getTables().add(new Table(tableName, alias));

@@ -36,6 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpr
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AliasSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
@@ -45,7 +46,6 @@ import com.dangdang.ddframe.rdb.sharding.util.NumberUtil;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -56,11 +56,17 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
 public abstract class AbstractSQLParser {
     
+    @Getter
     private final CommonParser commonParser;
+    
+    private final AliasSQLParser aliasSQLParser;
+    
+    public AbstractSQLParser(final CommonParser commonParser) {
+        this.commonParser = commonParser;
+        aliasSQLParser = new AliasSQLParser(commonParser);
+    }
     
     /**
      * 解析表达式.
@@ -151,30 +157,6 @@ public abstract class AbstractSQLParser {
     }
     
     /**
-     * 解析别名.
-     *
-     * @return 别名
-     */
-    public Optional<String> parseAlias() {
-        if (commonParser.skipIfEqual(DefaultKeyword.AS)) {
-            if (commonParser.equalAny(Symbol.values())) {
-                return Optional.absent();
-            }
-            String result = SQLUtil.getExactlyValue(commonParser.getLexer().getCurrentToken().getLiterals());
-            commonParser.getLexer().nextToken();
-            return Optional.of(result);
-        }
-        // TODO 增加哪些数据库识别哪些关键字作为别名的配置
-        if (commonParser.equalAny(
-                Literals.IDENTIFIER, Literals.CHARS, DefaultKeyword.USER, DefaultKeyword.END, DefaultKeyword.CASE, DefaultKeyword.KEY, DefaultKeyword.INTERVAL, DefaultKeyword.CONSTRAINT)) {
-            String result = SQLUtil.getExactlyValue(commonParser.getLexer().getCurrentToken().getLiterals());
-            commonParser.getLexer().nextToken();
-            return Optional.of(result);
-        }
-        return Optional.absent();
-    }
-    
-    /**
      * 解析单表.
      *
      * @param sqlStatement SQL语句对象
@@ -196,12 +178,12 @@ public abstract class AbstractSQLParser {
             if (hasParentheses) {
                 commonParser.accept(Symbol.RIGHT_PAREN);
             }
-            table = new Table(SQLUtil.getExactlyValue(literals), parseAlias());
+            table = new Table(SQLUtil.getExactlyValue(literals), aliasSQLParser.parseAlias());
         } else {
             if (hasParentheses) {
                 commonParser.accept(Symbol.RIGHT_PAREN);
             }
-            table = new Table(SQLUtil.getExactlyValue(literals), parseAlias());
+            table = new Table(SQLUtil.getExactlyValue(literals), aliasSQLParser.parseAlias());
         }
         if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
@@ -254,7 +236,7 @@ public abstract class AbstractSQLParser {
      * @param items 选择项集合
      */
     public final void parseWhere(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
-        parseAlias();
+        aliasSQLParser.parseAlias();
         if (commonParser.skipIfEqual(DefaultKeyword.WHERE)) {
             parseConditions(shardingRule, sqlStatement, items);
         }

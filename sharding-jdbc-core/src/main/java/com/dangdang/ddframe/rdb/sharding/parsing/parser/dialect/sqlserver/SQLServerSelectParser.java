@@ -176,7 +176,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         }
         parseOrderBy(selectStatement);
         getCommonParser().accept(Symbol.RIGHT_PAREN);
-        return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getSqlParser().parseAlias());
+        return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getAliasSQLParser().parseAlias());
     }
     
     @Override
