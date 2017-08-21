@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.truncate.AbstractTruncateParser;
 
@@ -29,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.truncate.A
  */
 public final class SQLServerTruncateParser extends AbstractTruncateParser {
     
-    public SQLServerTruncateParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
-        super(shardingRule, commonParser, sqlParser);
+    public SQLServerTruncateParser(final ShardingRule shardingRule, final CommonParser commonParser) {
+        super(shardingRule, commonParser);
     }
 }

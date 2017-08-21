@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -48,8 +47,6 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private final CommonParser commonParser;
     
-    private final AbstractSQLParser sqlParser;
-    
     private final ExpressionSQLParser expressionSQLParser;
     
     private final TableSQLParser tableSQLParser;
@@ -59,10 +56,9 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     @Getter(AccessLevel.NONE)
     private int parametersIndex;
     
-    public AbstractUpdateParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
+    public AbstractUpdateParser(final ShardingRule shardingRule, final CommonParser commonParser) {
         this.shardingRule = shardingRule;
         this.commonParser = commonParser;
-        this.sqlParser = sqlParser;
         expressionSQLParser = new ExpressionSQLParser(commonParser);
         tableSQLParser = new TableSQLParser(commonParser);
         whereSQLParser = new WhereSQLParser(commonParser);

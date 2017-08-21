@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
@@ -41,14 +40,11 @@ public abstract class AbstractAlterParser implements SQLStatementParser {
     
     private final CommonParser commonParser;
     
-    private final AbstractSQLParser sqlParser;
-    
     private final TableSQLParser tableSQLParser;
     
-    public AbstractAlterParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
+    public AbstractAlterParser(final ShardingRule shardingRule, final CommonParser commonParser) {
         this.shardingRule = shardingRule;
         this.commonParser = commonParser;
-        this.sqlParser = sqlParser;
         tableSQLParser = new TableSQLParser(commonParser);
     }
     

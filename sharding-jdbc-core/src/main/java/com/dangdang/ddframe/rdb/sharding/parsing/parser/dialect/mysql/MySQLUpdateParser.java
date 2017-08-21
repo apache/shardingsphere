@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeywor
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.AbstractUpdateParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 
 /**
  * MySQL Update语句解析器.
@@ -31,8 +30,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
  */
 public final class MySQLUpdateParser extends AbstractUpdateParser {
     
-    public MySQLUpdateParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
-        super(shardingRule, commonParser, sqlParser);
+    public MySQLUpdateParser(final ShardingRule shardingRule, final CommonParser commonParser) {
+        super(shardingRule, commonParser);
     }
     
     @Override

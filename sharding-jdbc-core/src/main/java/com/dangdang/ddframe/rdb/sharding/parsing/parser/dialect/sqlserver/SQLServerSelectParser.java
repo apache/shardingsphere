@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServ
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
@@ -45,8 +44,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
  */
 public final class SQLServerSelectParser extends AbstractSelectParser {
     
-    public SQLServerSelectParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
-        super(shardingRule, commonParser, sqlParser, new SQLServerWhereSQLParser(commonParser));
+    public SQLServerSelectParser(final ShardingRule shardingRule, final CommonParser commonParser) {
+        super(shardingRule, commonParser, new SQLServerWhereSQLParser(commonParser));
     }
     
     @Override

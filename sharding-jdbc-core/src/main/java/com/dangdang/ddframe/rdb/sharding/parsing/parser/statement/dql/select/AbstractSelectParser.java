@@ -24,7 +24,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -86,17 +85,14 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final WhereSQLParser whereSQLParser;
     
-    private final AbstractSQLParser sqlParser;
-    
     private final List<SelectItem> items = new LinkedList<>();
     
     @Setter
     private int parametersIndex;
     
-    public AbstractSelectParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser, final WhereSQLParser whereSQLParser) {
+    public AbstractSelectParser(final ShardingRule shardingRule, final CommonParser commonParser, final WhereSQLParser whereSQLParser) {
         this.shardingRule = shardingRule;
         this.commonParser = commonParser;
-        this.sqlParser = sqlParser;
         aliasSQLParser = new AliasSQLParser(commonParser);
         expressionSQLParser = new ExpressionSQLParser(commonParser);
         this.whereSQLParser = whereSQLParser;

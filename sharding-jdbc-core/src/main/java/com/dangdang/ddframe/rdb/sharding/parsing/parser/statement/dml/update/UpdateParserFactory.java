@@ -18,15 +18,14 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLLexer;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexer;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLUpdateParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleUpdateParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLUpdateParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerUpdateParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -43,22 +42,22 @@ public final class UpdateParserFactory {
      * 创建Update语句解析器.
      * 
      * @param shardingRule 分库分表规则配置
-     * @param sqlParser SQL解析器
+     * @param commonParser 解析器
      * @return Update语句解析器
      */
-    public static AbstractUpdateParser newInstance(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
-        if (sqlParser instanceof MySQLParser) {
-            return new MySQLUpdateParser(shardingRule, commonParser, sqlParser);
+    public static AbstractUpdateParser newInstance(final ShardingRule shardingRule, final CommonParser commonParser) {
+        if (commonParser.getLexer() instanceof MySQLLexer) {
+            return new MySQLUpdateParser(shardingRule, commonParser);
         }
-        if (sqlParser instanceof OracleParser) {
-            return new OracleUpdateParser(shardingRule, commonParser, sqlParser);
+        if (commonParser.getLexer() instanceof OracleLexer) {
+            return new OracleUpdateParser(shardingRule, commonParser);
         }
-        if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerUpdateParser(shardingRule, commonParser, sqlParser);
+        if (commonParser.getLexer() instanceof SQLServerLexer) {
+            return new SQLServerUpdateParser(shardingRule, commonParser);
         }
-        if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLUpdateParser(shardingRule, commonParser, sqlParser);
+        if (commonParser.getLexer() instanceof PostgreSQLLexer) {
+            return new PostgreSQLUpdateParser(shardingRule, commonParser);
         }
-        throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
+        throw new UnsupportedOperationException(String.format("Cannot support lexer class [%s].", commonParser.getLexer().getClass()));
     } 
 }
