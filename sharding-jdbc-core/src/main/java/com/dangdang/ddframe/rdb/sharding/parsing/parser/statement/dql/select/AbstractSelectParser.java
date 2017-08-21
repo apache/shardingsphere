@@ -132,7 +132,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             selectStatement.setContainStar(true);
             result = parseStarSelectItem();
         } else if (isAggregationSelectItem()) {
-            result = parseAggregationSelectItem();
+            result = parseAggregationSelectItem(selectStatement);
             parseRestSelectItem(selectStatement);
         } else {
             result = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem(selectStatement) + parseRestSelectItem(selectStatement)), sqlParser.parseAlias());
@@ -166,10 +166,10 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return sqlParser.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
     }
     
-    private SelectItem parseAggregationSelectItem() {
+    private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
         AggregationType aggregationType = AggregationType.valueOf(sqlParser.getLexer().getCurrentToken().getLiterals().toUpperCase());
         sqlParser.getLexer().nextToken();
-        return new AggregationSelectItem(aggregationType, sqlParser.skipParentheses(), sqlParser.parseAlias());
+        return new AggregationSelectItem(aggregationType, sqlParser.skipParentheses(selectStatement), sqlParser.parseAlias());
     }
     
     private String parseCommonSelectItem(final SelectStatement selectStatement) {
@@ -179,7 +179,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         result.append(literals);
         sqlParser.getLexer().nextToken();
         if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
-            result.append(sqlParser.skipParentheses());
+            result.append(sqlParser.skipParentheses(selectStatement));
         } else if (sqlParser.equalAny(Symbol.DOT)) {
             String tableName = SQLUtil.getExactlyValue(literals);
             if (shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {
@@ -250,32 +250,20 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             parseTable(selectStatement);
             if (sqlParser.skipIfEqual(DefaultKeyword.ON)) {
                 do {
-                    parseTableCondition(selectStatement);
+                    sqlParser.parseExpression(selectStatement);
                     sqlParser.accept(Symbol.EQ);
-                    parseTableCondition(selectStatement);
+                    sqlParser.parseExpression(selectStatement);
                 } while (sqlParser.skipIfEqual(DefaultKeyword.AND));
             } else if (sqlParser.skipIfEqual(DefaultKeyword.USING)) {
-                sqlParser.skipParentheses();
+                sqlParser.skipParentheses(selectStatement);
             }
             parseJoinTable(selectStatement);
         }
     }
     
-    private void parseTableCondition(final SelectStatement selectStatement) {
-        int startPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
-        SQLExpression sqlExpression = sqlParser.parseExpression();
-        if (!(sqlExpression instanceof SQLPropertyExpression)) {
-            return;
-        }
-        SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-        if (selectStatement.getTables().getTableNames().contains(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()))) {
-            selectStatement.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpression.getOwner().getName()));
-        }
-    }
-    
     protected final void parseWhere(final SelectStatement selectStatement) {
         sqlParser.parseWhere(shardingRule, selectStatement, items);
-        parametersIndex = sqlParser.getParametersIndex();
+        parametersIndex = selectStatement.getParametersIndex();
     }
     
     protected final void parseGroupBy(final SelectStatement selectStatement) {
@@ -284,7 +272,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
         sqlParser.accept(DefaultKeyword.BY);
         while (true) {
-            addGroupByItem(sqlParser.parseExpression(), selectStatement);
+            addGroupByItem(sqlParser.parseExpression(selectStatement), selectStatement);
             if (!sqlParser.equalAny(Symbol.COMMA)) {
                 break;
             }

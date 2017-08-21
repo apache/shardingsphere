@@ -52,9 +52,9 @@ public final class OracleSelectParser extends AbstractSelectParser {
         skipHierarchicalQueryClause(selectStatement);
         parseGroupBy(selectStatement);
         parseHaving();
-        skipModelClause();
+        skipModelClause(selectStatement);
         parseOrderBy(selectStatement);
-        skipFor();
+        skipFor(selectStatement);
         parseRest();
     }
     
@@ -84,7 +84,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         getSqlParser().parseComparisonCondition(getShardingRule(), selectStatement, Collections.<SelectItem>emptyList());
     }
     
-    private void skipModelClause() {
+    private void skipModelClause(final SelectStatement selectStatement) {
         if (!getSqlParser().skipIfEqual(OracleKeyword.MODEL)) {
             return;
         }
@@ -96,11 +96,11 @@ public final class OracleSelectParser extends AbstractSelectParser {
         while (getSqlParser().skipIfEqual(OracleKeyword.REFERENCE)) {
             getSqlParser().getLexer().nextToken();
             getSqlParser().accept(DefaultKeyword.ON);
-            getSqlParser().skipParentheses();
+            getSqlParser().skipParentheses(selectStatement);
             skipModelColumnClause();
             skipCellReferenceOptions();
         }
-        skipMainModelClause();
+        skipMainModelClause(selectStatement);
     }
     
     private void skipCellReferenceOptions() {
@@ -115,21 +115,21 @@ public final class OracleSelectParser extends AbstractSelectParser {
         }
     }
     
-    private void skipMainModelClause() {
+    private void skipMainModelClause(final SelectStatement selectStatement) {
         if (getSqlParser().skipIfEqual(OracleKeyword.MAIN)) {
             getSqlParser().getLexer().nextToken();
         }
-        skipQueryPartitionClause();
+        skipQueryPartitionClause(selectStatement);
         getSqlParser().accept(OracleKeyword.DIMENSION);
         getSqlParser().accept(DefaultKeyword.BY);
-        getSqlParser().skipParentheses();
+        getSqlParser().skipParentheses(selectStatement);
         getSqlParser().accept(OracleKeyword.MEASURES);
-        getSqlParser().skipParentheses();
+        getSqlParser().skipParentheses(selectStatement);
         skipCellReferenceOptions();
-        skipModelRulesClause();
+        skipModelRulesClause(selectStatement);
     }
     
-    private void skipModelRulesClause() {
+    private void skipModelRulesClause(final SelectStatement selectStatement) {
         if (getSqlParser().skipIfEqual(OracleKeyword.RULES)) {
             getSqlParser().skipIfEqual(DefaultKeyword.UPDATE);
             getSqlParser().skipIfEqual(OracleKeyword.UPSERT);
@@ -140,15 +140,15 @@ public final class OracleSelectParser extends AbstractSelectParser {
             }
         }
         if (getSqlParser().skipIfEqual(DefaultKeyword.ITERATE)) {
-            getSqlParser().skipParentheses();
+            getSqlParser().skipParentheses(selectStatement);
             if (getSqlParser().skipIfEqual(DefaultKeyword.UNTIL)) {
-                getSqlParser().skipParentheses();
+                getSqlParser().skipParentheses(selectStatement);
             }
         }
-        getSqlParser().skipParentheses();
+        getSqlParser().skipParentheses(selectStatement);
     }
     
-    private void skipQueryPartitionClause() {
+    private void skipQueryPartitionClause(final SelectStatement selectStatement) {
         if (!getSqlParser().skipIfEqual(OracleKeyword.PARTITION)) {
             return;
         }
@@ -156,21 +156,21 @@ public final class OracleSelectParser extends AbstractSelectParser {
         if (!getSqlParser().equalAny(Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support PARTITION BY without ()");
         }
-        getSqlParser().skipParentheses();
+        getSqlParser().skipParentheses(selectStatement);
     }
     
     private void skipModelColumnClause() {
         throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
     }
     
-    private void skipFor() {
+    private void skipFor(final SelectStatement selectStatement) {
         if (!getSqlParser().skipIfEqual(DefaultKeyword.FOR)) {
             return;
         }
         getSqlParser().accept(DefaultKeyword.UPDATE);
         if (getSqlParser().skipIfEqual(DefaultKeyword.OF)) {
             do {
-                getSqlParser().parseExpression();
+                getSqlParser().parseExpression(selectStatement);
             } while (getSqlParser().skipIfEqual(Symbol.COMMA));
         }
         if (getSqlParser().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {
@@ -189,40 +189,40 @@ public final class OracleSelectParser extends AbstractSelectParser {
             skipFlashbackQueryClause();
         } else {
             parseQueryTableExpression(selectStatement);
-            skipPivotClause();
+            skipPivotClause(selectStatement);
             skipFlashbackQueryClause();
         }
     }
     
     private void parseQueryTableExpression(final SelectStatement selectStatement) {
         parseTableFactorInternal(selectStatement);
-        parseSample();
-        skipPartition();
+        parseSample(selectStatement);
+        skipPartition(selectStatement);
     }
     
-    private void parseSample() {
+    private void parseSample(final SelectStatement selectStatement) {
         if (!getSqlParser().skipIfEqual(OracleKeyword.SAMPLE)) {
             return;
         }
         getSqlParser().skipIfEqual(OracleKeyword.BLOCK);
-        getSqlParser().skipParentheses();
+        getSqlParser().skipParentheses(selectStatement);
         if (getSqlParser().skipIfEqual(OracleKeyword.SEED)) {
-            getSqlParser().skipParentheses();
+            getSqlParser().skipParentheses(selectStatement);
         }
     }
     
-    private void skipPartition() {
-        skipPartition(OracleKeyword.PARTITION);
-        skipPartition(OracleKeyword.SUBPARTITION);
+    private void skipPartition(final SelectStatement selectStatement) {
+        skipPartition(selectStatement, OracleKeyword.PARTITION);
+        skipPartition(selectStatement, OracleKeyword.SUBPARTITION);
     }
     
-    private void skipPartition(final OracleKeyword keyword) {
+    private void skipPartition(final SelectStatement selectStatement, final OracleKeyword keyword) {
         if (!getSqlParser().skipIfEqual(keyword)) {
             return;
         }
-        getSqlParser().skipParentheses();
+        getSqlParser().skipParentheses(selectStatement);
         if (getSqlParser().skipIfEqual(DefaultKeyword.FOR)) {
-            getSqlParser().skipParentheses();
+            getSqlParser().skipParentheses(selectStatement);
         }
     }
     
@@ -241,17 +241,17 @@ public final class OracleSelectParser extends AbstractSelectParser {
                 && (getSqlParser().skipIfEqual(OracleKeyword.SCN) || getSqlParser().skipIfEqual(OracleKeyword.TIMESTAMP));
     }
     
-    private void skipPivotClause() {
+    private void skipPivotClause(final SelectStatement selectStatement) {
         if (getSqlParser().skipIfEqual(OracleKeyword.PIVOT)) {
             getSqlParser().skipIfEqual(OracleKeyword.XML);
-            getSqlParser().skipParentheses();
+            getSqlParser().skipParentheses(selectStatement);
         } else if (getSqlParser().skipIfEqual(OracleKeyword.UNPIVOT)) {
             if (getSqlParser().skipIfEqual(OracleKeyword.INCLUDE)) {
                 getSqlParser().accept(OracleKeyword.NULLS);
             } else if (getSqlParser().skipIfEqual(OracleKeyword.EXCLUDE)) {
                 getSqlParser().accept(OracleKeyword.NULLS);
             }
-            getSqlParser().skipParentheses();
+            getSqlParser().skipParentheses(selectStatement);
         }
     }
     

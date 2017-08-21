@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -41,23 +42,13 @@ public abstract class AbstractParser {
     
     private final Lexer lexer;
     
-    private int parametersIndex;
-    
-    /**
-     * 增加索引偏移量.
-     * 
-     * @return 增加后的索引偏移量
-     */
-    public int increaseParametersIndex() {
-        return ++parametersIndex;
-    }
-    
     /**
      * 跳过小括号内所有的词法标记.
      *
+     * @param sqlStatement SQL语句对象
      * @return 小括号内所有的词法标记
      */
-    public final String skipParentheses() {
+    public final String skipParentheses(final SQLStatement sqlStatement) {
         StringBuilder result = new StringBuilder("");
         int count = 0;
         if (Symbol.LEFT_PAREN == lexer.getCurrentToken().getType()) {
@@ -66,7 +57,7 @@ public abstract class AbstractParser {
             lexer.nextToken();
             while (true) {
                 if (equalAny(Symbol.QUESTION)) {
-                    increaseParametersIndex();
+                    sqlStatement.increaseParametersIndex();
                 }
                 if (Assist.END == lexer.getCurrentToken().getType() || (Symbol.RIGHT_PAREN == lexer.getCurrentToken().getType() && 0 == count)) {
                     break;
