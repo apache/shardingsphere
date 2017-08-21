@@ -41,6 +41,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpr
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AliasSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ExpressionSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
@@ -81,6 +82,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final ExpressionSQLParser expressionSQLParser;
     
+    private final TableSQLParser tableSQLParser;
+    
     private final WhereSQLParser whereSQLParser;
     
     private final AbstractSQLParser sqlParser;
@@ -97,6 +100,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         aliasSQLParser = new AliasSQLParser(commonParser);
         expressionSQLParser = new ExpressionSQLParser(commonParser);
         this.whereSQLParser = whereSQLParser;
+        tableSQLParser = new TableSQLParser(commonParser);
     }
     
     @Override
@@ -265,7 +269,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected void parseJoinTable(final SelectStatement selectStatement) {
-        if (sqlParser.skipJoin()) {
+        if (tableSQLParser.skipJoin()) {
             parseTable(selectStatement);
             if (commonParser.skipIfEqual(DefaultKeyword.ON)) {
                 do {

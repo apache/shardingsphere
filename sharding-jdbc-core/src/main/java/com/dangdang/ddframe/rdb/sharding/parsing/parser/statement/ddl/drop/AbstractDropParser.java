@@ -23,18 +23,17 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.DDLStatement;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Drop语句解析器.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractDropParser implements SQLStatementParser {
     
@@ -43,6 +42,15 @@ public abstract class AbstractDropParser implements SQLStatementParser {
     private final CommonParser commonParser;
     
     private final AbstractSQLParser sqlParser;
+    
+    private final TableSQLParser tableSQLParser;
+    
+    public AbstractDropParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
+        this.shardingRule = shardingRule;
+        this.commonParser = commonParser;
+        this.sqlParser = sqlParser;
+        tableSQLParser = new TableSQLParser(commonParser);
+    }
     
     @Override
     public DDLStatement parse() {
@@ -53,7 +61,7 @@ public abstract class AbstractDropParser implements SQLStatementParser {
         }
         commonParser.skipAll(getSkippedKeywordsBetweenDropTableAndTableName());
         DDLStatement result = new DDLStatement();
-        sqlParser.parseSingleTable(result);
+        tableSQLParser.parseSingleTable(result);
         return result;
     }
     

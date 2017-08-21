@@ -26,6 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ExpressionSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
@@ -51,6 +52,8 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private final ExpressionSQLParser expressionSQLParser;
     
+    private final TableSQLParser tableSQLParser;
+    
     private final WhereSQLParser whereSQLParser;
     
     @Getter(AccessLevel.NONE)
@@ -61,6 +64,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
         this.commonParser = commonParser;
         this.sqlParser = sqlParser;
         expressionSQLParser = new ExpressionSQLParser(commonParser);
+        tableSQLParser = new TableSQLParser(commonParser);
         whereSQLParser = new WhereSQLParser(commonParser);
     }
     
@@ -72,7 +76,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
             throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
         }
         DMLStatement result = new DMLStatement();
-        sqlParser.parseSingleTable(result);
+        tableSQLParser.parseSingleTable(result);
         parseSetItems(result);
         commonParser.skipUntil(DefaultKeyword.WHERE);
         result.setParametersIndex(parametersIndex);

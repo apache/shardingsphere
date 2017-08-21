@@ -34,6 +34,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ExpressionSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
@@ -67,6 +68,8 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     
     private final ExpressionSQLParser expressionSQLParser;
     
+    private final TableSQLParser tableSQLParser;
+    
     private int columnsListLastPosition;
     
     private int afterValuesPosition;
@@ -80,6 +83,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         this.commonParser = commonParser;
         this.sqlParser = sqlParser;
         expressionSQLParser = new ExpressionSQLParser(commonParser);
+        tableSQLParser = new TableSQLParser(commonParser);
     }
     
     @Override
@@ -113,7 +117,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         }
         commonParser.skipUntil(DefaultKeyword.INTO);
         commonParser.getLexer().nextToken();
-        sqlParser.parseSingleTable(insertStatement);
+        tableSQLParser.parseSingleTable(insertStatement);
         skipBetweenTableAndValues(insertStatement);
     }
     
