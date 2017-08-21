@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.executor.type.batch;
 
 import com.codahale.metrics.Timer.Context;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.BaseStatementUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecuteCallback;
@@ -38,6 +39,8 @@ import java.util.Map;
 public final class BatchPreparedStatementExecutor {
     
     private final ExecutorEngine executorEngine;
+    
+    private final DatabaseType dbType;
     
     private final SQLType sqlType;
     
@@ -70,7 +73,11 @@ public final class BatchPreparedStatementExecutor {
         int count = 0;
         for (BatchPreparedStatementUnit each : batchPreparedStatementUnits) {
             for (Map.Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
-                result[entry.getKey()] += null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
+                if (DatabaseType.Oracle == dbType) {
+                    result[entry.getKey()] = results.get(count)[entry.getValue()];
+                } else {
+                    result[entry.getKey()] += null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
+                }
             }
             count++;
         }
