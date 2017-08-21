@@ -115,7 +115,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
     
     @After
     public void cleanupDdlTables() {
-        if (getSql().contains("TEMP")) {
+        if (getSql().contains("TEMP") && DatabaseType.Oracle != getCurrentDatabaseType()) {
             return;
         }
         if (getSql().startsWith("CREATE") || getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE")) {
