@@ -73,10 +73,11 @@ public final class BatchPreparedStatementExecutor {
         int count = 0;
         for (BatchPreparedStatementUnit each : batchPreparedStatementUnits) {
             for (Map.Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
+                int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
                 if (DatabaseType.Oracle == dbType) {
-                    result[entry.getKey()] = results.get(count)[entry.getValue()];
+                    result[entry.getKey()] = value;
                 } else {
-                    result[entry.getKey()] += null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
+                    result[entry.getKey()] += value;
                 }
             }
             count++;
