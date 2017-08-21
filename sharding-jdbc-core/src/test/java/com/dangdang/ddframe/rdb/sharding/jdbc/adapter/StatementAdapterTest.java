@@ -163,7 +163,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().execute(sql);
             if (DatabaseType.Oracle == each.getKey()) {
-                assertThat(each.getValue().getUpdateCount(), is(-10));
+                assertThat(each.getValue().getUpdateCount(), is(-4));
             } else {
                 assertThat(each.getValue().getUpdateCount(), is(4));
             }
@@ -176,7 +176,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().execute(sql);
             if (DatabaseType.Oracle == each.getKey()) {
-                assertThat(each.getValue().getUpdateCount(), is(-10));
+                assertThat(each.getValue().getUpdateCount(), is(-4));
             } else {
                 assertThat(each.getValue().getUpdateCount(), is(0));
             }
