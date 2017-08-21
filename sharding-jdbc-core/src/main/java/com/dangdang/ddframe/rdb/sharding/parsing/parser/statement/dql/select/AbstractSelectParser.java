@@ -40,6 +40,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIgnoreExpr
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AliasSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ExpressionSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
@@ -77,6 +78,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final AliasSQLParser aliasSQLParser;
     
+    private final ExpressionSQLParser expressionSQLParser;
+    
     private final AbstractSQLParser sqlParser;
     
     private final List<SelectItem> items = new LinkedList<>();
@@ -89,6 +92,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         this.commonParser = commonParser;
         this.sqlParser = sqlParser;
         aliasSQLParser = new AliasSQLParser(commonParser);
+        expressionSQLParser = new ExpressionSQLParser(commonParser);
     }
     
     @Override
@@ -146,7 +150,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             result = parseAggregationSelectItem(selectStatement);
             parseRestSelectItem(selectStatement);
         } else {
-            result = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem(selectStatement) + parseRestSelectItem(selectStatement)), aliasSQLParser.parseAlias());
+            result = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem(selectStatement) + parseRestSelectItem(selectStatement)), aliasSQLParser.parse());
         }
         return result;
     }
@@ -169,7 +173,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private SelectItem parseStarSelectItem() {
         commonParser.getLexer().nextToken();
-        aliasSQLParser.parseAlias();
+        aliasSQLParser.parse();
         return new StarSelectItem(Optional.<String>absent());
     }
     
@@ -180,7 +184,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
         AggregationType aggregationType = AggregationType.valueOf(commonParser.getLexer().getCurrentToken().getLiterals().toUpperCase());
         commonParser.getLexer().nextToken();
-        return new AggregationSelectItem(aggregationType, commonParser.skipParentheses(selectStatement), aliasSQLParser.parseAlias());
+        return new AggregationSelectItem(aggregationType, commonParser.skipParentheses(selectStatement), aliasSQLParser.parse());
     }
     
     private String parseCommonSelectItem(final SelectStatement selectStatement) {
@@ -249,7 +253,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             throw new UnsupportedOperationException("Cannot support SQL for `schema.table`");
         }
         String tableName = SQLUtil.getExactlyValue(literals);
-        Optional<String> alias = aliasSQLParser.parseAlias();
+        Optional<String> alias = aliasSQLParser.parse();
         if (shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {
             selectStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
             selectStatement.getTables().add(new Table(tableName, alias));
@@ -261,9 +265,9 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             parseTable(selectStatement);
             if (commonParser.skipIfEqual(DefaultKeyword.ON)) {
                 do {
-                    sqlParser.parseExpression(selectStatement);
+                    expressionSQLParser.parse(selectStatement);
                     commonParser.accept(Symbol.EQ);
-                    sqlParser.parseExpression(selectStatement);
+                    expressionSQLParser.parse(selectStatement);
                 } while (commonParser.skipIfEqual(DefaultKeyword.AND));
             } else if (commonParser.skipIfEqual(DefaultKeyword.USING)) {
                 commonParser.skipParentheses(selectStatement);
@@ -283,7 +287,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
         commonParser.accept(DefaultKeyword.BY);
         while (true) {
-            addGroupByItem(sqlParser.parseExpression(selectStatement), selectStatement);
+            addGroupByItem(expressionSQLParser.parse(selectStatement), selectStatement);
             if (!commonParser.equalAny(Symbol.COMMA)) {
                 break;
             }
@@ -350,7 +354,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private OrderItem parseSelectOrderByItem(final SelectStatement selectStatement) {
-        SQLExpression sqlExpression = sqlParser.parseExpression(selectStatement);
+        SQLExpression sqlExpression = expressionSQLParser.parse(selectStatement);
         OrderType orderByType = OrderType.ASC;
         if (commonParser.skipIfEqual(DefaultKeyword.ASC)) {
             orderByType = OrderType.ASC;

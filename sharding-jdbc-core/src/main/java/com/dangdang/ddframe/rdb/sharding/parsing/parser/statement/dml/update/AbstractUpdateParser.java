@@ -24,20 +24,19 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ExpressionSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Update语句解析器.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private final ShardingRule shardingRule;
@@ -46,8 +45,17 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private final AbstractSQLParser sqlParser;
     
+    private final ExpressionSQLParser expressionSQLParser;
+    
     @Getter(AccessLevel.NONE)
     private int parametersIndex;
+    
+    public AbstractUpdateParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
+        this.shardingRule = shardingRule;
+        this.commonParser = commonParser;
+        this.sqlParser = sqlParser;
+        expressionSQLParser = new ExpressionSQLParser(commonParser);
+    }
     
     @Override
     public DMLStatement parse() {
@@ -103,7 +111,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     }
     
     private void parseSetValue(final DMLStatement updateStatement) {
-        sqlParser.parseExpression(updateStatement);
+        expressionSQLParser.parse(updateStatement);
         parametersIndex = updateStatement.getParametersIndex();
     }
 }

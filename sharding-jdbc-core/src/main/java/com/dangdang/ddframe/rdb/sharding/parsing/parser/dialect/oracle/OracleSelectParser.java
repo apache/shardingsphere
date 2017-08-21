@@ -171,7 +171,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         getCommonParser().accept(DefaultKeyword.UPDATE);
         if (getCommonParser().skipIfEqual(DefaultKeyword.OF)) {
             do {
-                getSqlParser().parseExpression(selectStatement);
+                getExpressionSQLParser().parse(selectStatement);
             } while (getCommonParser().skipIfEqual(Symbol.COMMA));
         }
         if (getCommonParser().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {

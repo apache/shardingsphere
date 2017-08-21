@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public class AliasSQLParser implements SQLParser {
+public final class AliasSQLParser implements SQLParser {
     
     private final CommonParser commonParser;
     
@@ -23,7 +23,7 @@ public class AliasSQLParser implements SQLParser {
      *
      * @return 别名
      */
-    public Optional<String> parseAlias() {
+    public Optional<String> parse() {
         if (commonParser.skipIfEqual(DefaultKeyword.AS)) {
             if (commonParser.equalAny(Symbol.values())) {
                 return Optional.absent();

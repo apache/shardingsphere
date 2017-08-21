@@ -71,7 +71,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         if (!getCommonParser().skipIfEqual(Symbol.LEFT_PAREN)) {
             beginPosition = getCommonParser().getLexer().getCurrentToken().getEndPosition() - getCommonParser().getLexer().getCurrentToken().getLiterals().length();
         }
-        SQLExpression sqlExpression = getSqlParser().parseExpression(selectStatement);
+        SQLExpression sqlExpression = getExpressionSQLParser().parse(selectStatement);
         getCommonParser().skipIfEqual(Symbol.RIGHT_PAREN);
         LimitValue rowCountValue;
         if (sqlExpression instanceof SQLNumberExpression) {
@@ -176,7 +176,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         }
         parseOrderBy(selectStatement);
         getCommonParser().accept(Symbol.RIGHT_PAREN);
-        return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getAliasSQLParser().parseAlias());
+        return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getAliasSQLParser().parse());
     }
     
     @Override

@@ -33,6 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ExpressionSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
@@ -42,7 +43,6 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,7 +54,6 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public abstract class AbstractInsertParser implements SQLStatementParser {
     
     @Getter(AccessLevel.PROTECTED)
@@ -66,6 +65,8 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     @Getter(AccessLevel.PROTECTED)
     private final AbstractSQLParser sqlParser;
     
+    private final ExpressionSQLParser expressionSQLParser;
+    
     private int columnsListLastPosition;
     
     private int afterValuesPosition;
@@ -73,6 +74,13 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     private int valuesListLastPosition;
     
     private int generateKeyColumnIndex = -1;
+    
+    public AbstractInsertParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
+        this.shardingRule = shardingRule;
+        this.commonParser = commonParser;
+        this.sqlParser = sqlParser;
+        expressionSQLParser = new ExpressionSQLParser(commonParser);
+    }
     
     @Override
     public final DMLStatement parse() {
@@ -156,7 +164,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         commonParser.accept(Symbol.LEFT_PAREN);
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         do {
-            sqlExpressions.add(sqlParser.parseExpression(insertStatement));
+            sqlExpressions.add(expressionSQLParser.parse(insertStatement));
         } while (commonParser.skipIfEqual(Symbol.COMMA));
         valuesListLastPosition = commonParser.getLexer().getCurrentToken().getEndPosition() - commonParser.getLexer().getCurrentToken().getLiterals().length();
         int count = 0;
