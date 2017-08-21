@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.truncate;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLTruncateParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
@@ -42,21 +43,22 @@ public final class TruncateParserFactory {
      * Truncate Table语句解析器.
      * 
      * @param shardingRule 分库分表规则配置
+     * @param commonParser 解析器
      * @param sqlParser SQL解析器
      * @return Truncate语句解析器
      */
-    public static AbstractTruncateParser newInstance(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
+    public static AbstractTruncateParser newInstance(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
-            return new MySQLTruncateParser(shardingRule, sqlParser);
+            return new MySQLTruncateParser(shardingRule, commonParser, sqlParser);
         }
         if (sqlParser instanceof OracleParser) {
-            return new OracleTruncateParser(shardingRule, sqlParser);
+            return new OracleTruncateParser(shardingRule, commonParser, sqlParser);
         }
         if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerTruncateParser(shardingRule, sqlParser);
+            return new SQLServerTruncateParser(shardingRule, commonParser, sqlParser);
         }
         if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLTruncateParser(shardingRule, sqlParser);
+            return new PostgreSQLTruncateParser(shardingRule, commonParser, sqlParser);
         }
         throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 

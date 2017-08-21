@@ -26,7 +26,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.util.Set;
 
@@ -37,8 +36,7 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public abstract class AbstractParser {
+public final class CommonParser {
     
     private final Lexer lexer;
     
@@ -48,7 +46,7 @@ public abstract class AbstractParser {
      * @param sqlStatement SQL语句对象
      * @return 小括号内所有的词法标记
      */
-    public final String skipParentheses(final SQLStatement sqlStatement) {
+    public String skipParentheses(final SQLStatement sqlStatement) {
         StringBuilder result = new StringBuilder("");
         int count = 0;
         if (Symbol.LEFT_PAREN == lexer.getCurrentToken().getType()) {
@@ -78,7 +76,7 @@ public abstract class AbstractParser {
     /**
      * 跳过无用的嵌套小括号.
      */
-    public final void skipUselessParentheses() {
+    public void skipUselessParentheses() {
         while (skipIfEqual(Symbol.LEFT_PAREN)) { }
         while (skipIfEqual(Symbol.RIGHT_PAREN)) { }
     }
@@ -88,7 +86,7 @@ public abstract class AbstractParser {
      *
      * @param tokenType 待判断的词法标记类型
      */
-    public final void accept(final TokenType tokenType) {
+    public void accept(final TokenType tokenType) {
         if (lexer.getCurrentToken().getType() != tokenType) {
             throw new SQLParsingException(lexer, tokenType);
         }
@@ -101,7 +99,7 @@ public abstract class AbstractParser {
      * @param tokenTypes 待判断的词法标记类型
      * @return 是否有相等的词法标记类型
      */
-    public final boolean equalAny(final TokenType... tokenTypes) {
+    public boolean equalAny(final TokenType... tokenTypes) {
         for (TokenType each : tokenTypes) {
             if (each == lexer.getCurrentToken().getType()) {
                 return true;
@@ -116,7 +114,7 @@ public abstract class AbstractParser {
      * @param tokenTypes 待跳过的词法标记类型
      * @return 是否跳过(或可理解为是否相等)
      */
-    public final boolean skipIfEqual(final TokenType... tokenTypes) {
+    public boolean skipIfEqual(final TokenType... tokenTypes) {
         if (equalAny(tokenTypes)) {
             lexer.nextToken();
             return true;
@@ -129,7 +127,7 @@ public abstract class AbstractParser {
      *
      * @param tokenTypes 待跳过的词法标记类型
      */
-    public final void skipAll(final TokenType... tokenTypes) {
+    public void skipAll(final TokenType... tokenTypes) {
         Set<TokenType> tokenTypeSet = Sets.newHashSet(tokenTypes);
         while (tokenTypeSet.contains(lexer.getCurrentToken().getType())) {
             lexer.nextToken();
@@ -141,7 +139,7 @@ public abstract class AbstractParser {
      *
      * @param tokenTypes 跳转至的词法标记类型
      */
-    public final void skipUntil(final TokenType... tokenTypes) {
+    public void skipUntil(final TokenType... tokenTypes) {
         Set<TokenType> tokenTypeSet = Sets.newHashSet(tokenTypes);
         tokenTypeSet.add(Assist.END);
         while (!tokenTypeSet.contains(lexer.getCurrentToken().getType())) {

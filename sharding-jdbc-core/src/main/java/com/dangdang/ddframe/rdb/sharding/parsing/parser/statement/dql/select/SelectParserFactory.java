@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
@@ -45,18 +46,18 @@ public final class SelectParserFactory {
      * @param sqlParser SQL解析器
      * @return Select语句解析器
      */
-    public static AbstractSelectParser newInstance(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
+    public static AbstractSelectParser newInstance(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
-            return new MySQLSelectParser(shardingRule, sqlParser);
+            return new MySQLSelectParser(shardingRule, commonParser, sqlParser);
         }
         if (sqlParser instanceof OracleParser) {
-            return new OracleSelectParser(shardingRule, sqlParser);
+            return new OracleSelectParser(shardingRule, commonParser, sqlParser);
         }
         if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerSelectParser(shardingRule, sqlParser);
+            return new SQLServerSelectParser(shardingRule, commonParser, sqlParser);
         }
         if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLSelectParser(shardingRule, sqlParser);
+            return new PostgreSQLSelectParser(shardingRule, commonParser, sqlParser);
         }
         throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 

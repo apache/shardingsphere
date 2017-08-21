@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.DDLStatement;
 import lombok.AccessLevel;
@@ -38,13 +39,15 @@ public abstract class AbstractTruncateParser implements SQLStatementParser {
     
     private final ShardingRule shardingRule;
     
+    private final CommonParser commonParser;
+    
     private final AbstractSQLParser sqlParser;
     
     @Override
     public DDLStatement parse() {
-        sqlParser.getLexer().nextToken();
-        sqlParser.skipIfEqual(DefaultKeyword.TABLE);
-        getSqlParser().skipAll(getSkippedKeywordsBetweenTruncateTableAndTableName());
+        commonParser.getLexer().nextToken();
+        commonParser.skipIfEqual(DefaultKeyword.TABLE);
+        commonParser.skipAll(getSkippedKeywordsBetweenTruncateTableAndTableName());
         DDLStatement result = new DDLStatement();
         sqlParser.parseSingleTable(result);
         return result;

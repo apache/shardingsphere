@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyw
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.AbstractInsertParser;
 
 /**
@@ -31,8 +32,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.Abs
  */
 public final class OracleInsertParser extends AbstractInsertParser {
     
-    public OracleInsertParser(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
-        super(shardingRule, sqlParser);
+    public OracleInsertParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
+        super(shardingRule, commonParser, sqlParser);
     }
     
     @Override

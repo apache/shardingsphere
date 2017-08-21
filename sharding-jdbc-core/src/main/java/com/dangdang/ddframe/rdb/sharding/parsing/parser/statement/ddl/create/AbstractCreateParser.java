@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.DDLStatement;
@@ -39,16 +40,18 @@ public abstract class AbstractCreateParser implements SQLStatementParser {
     
     private final ShardingRule shardingRule;
     
+    private final CommonParser commonParser;
+    
     private final AbstractSQLParser sqlParser;
     
     @Override
     public DDLStatement parse() {
-        sqlParser.getLexer().nextToken();
-        getSqlParser().skipAll(getSkippedKeywordsBetweenCreateAndKeyword());
-        if (!sqlParser.skipIfEqual(DefaultKeyword.TABLE)) {
-            throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
+        commonParser.getLexer().nextToken();
+        commonParser.skipAll(getSkippedKeywordsBetweenCreateAndKeyword());
+        if (!commonParser.skipIfEqual(DefaultKeyword.TABLE)) {
+            throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
         }
-        getSqlParser().skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
+        commonParser.skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
         DDLStatement result = new DDLStatement();
         sqlParser.parseSingleTable(result);
         return result;

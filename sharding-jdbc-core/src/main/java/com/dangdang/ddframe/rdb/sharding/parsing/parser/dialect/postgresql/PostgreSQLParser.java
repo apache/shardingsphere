@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 
 /**
  * PostgreSQL解析器.
@@ -28,6 +29,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
 public final class PostgreSQLParser extends AbstractSQLParser {
     
     public PostgreSQLParser(final String sql) {
-        super(new PostgreSQLLexer(sql));
+        super(new CommonParser(new PostgreSQLLexer(sql)));
     }
 }

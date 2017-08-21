@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleInsertParser;
@@ -42,21 +43,22 @@ public final class InsertParserFactory {
      * 创建Insert语句解析器.
      * 
      * @param shardingRule 分库分表规则配置
+     * @param commonParser 基础解析器
      * @param sqlParser SQL解析器
      * @return Insert语句解析器
      */
-    public static AbstractInsertParser newInstance(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
+    public static AbstractInsertParser newInstance(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
-            return new MySQLInsertParser(shardingRule, sqlParser);
+            return new MySQLInsertParser(shardingRule, commonParser, sqlParser);
         }
         if (sqlParser instanceof OracleParser) {
-            return new OracleInsertParser(shardingRule, sqlParser);
+            return new OracleInsertParser(shardingRule, commonParser, sqlParser);
         }
         if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerInsertParser(shardingRule, sqlParser);
+            return new SQLServerInsertParser(shardingRule, commonParser, sqlParser);
         }
         if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLInsertParser(shardingRule, sqlParser);
+            return new PostgreSQLInsertParser(shardingRule, commonParser, sqlParser);
         }
         throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 

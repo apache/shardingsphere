@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.DDLStatement;
@@ -39,15 +40,17 @@ public abstract class AbstractAlterParser implements SQLStatementParser {
     
     private final ShardingRule shardingRule;
     
+    private final CommonParser commonParser;
+    
     private final AbstractSQLParser sqlParser;
     
     @Override
     public DDLStatement parse() {
-        sqlParser.getLexer().nextToken();
-        if (!sqlParser.skipIfEqual(DefaultKeyword.TABLE)) {
-            throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
+        commonParser.getLexer().nextToken();
+        if (!commonParser.skipIfEqual(DefaultKeyword.TABLE)) {
+            throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
         }
-        getSqlParser().skipAll(getSkippedKeywordsBetweenAlterTableAndTableName());
+        commonParser.skipAll(getSkippedKeywordsBetweenAlterTableAndTableName());
         DDLStatement result = new DDLStatement();
         sqlParser.parseSingleTable(result);
         return result;

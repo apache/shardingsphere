@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.google.common.base.Optional;
 
@@ -33,12 +34,12 @@ import java.util.List;
 public final class OracleParser extends AbstractSQLParser {
     
     public OracleParser(final String sql) {
-        super(new OracleLexer(sql));
+        super(new CommonParser(new OracleLexer(sql)));
     }
     
     @Override
     public Optional<String> parseAlias() {
-        if (equalAny(OracleKeyword.CONNECT)) {
+        if (getCommonParser().equalAny(OracleKeyword.CONNECT)) {
             return Optional.absent();
         }
         return super.parseAlias();

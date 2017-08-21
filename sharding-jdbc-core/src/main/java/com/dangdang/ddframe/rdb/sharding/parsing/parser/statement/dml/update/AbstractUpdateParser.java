@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
@@ -41,6 +42,8 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private final ShardingRule shardingRule;
     
+    private final CommonParser commonParser;
+    
     private final AbstractSQLParser sqlParser;
     
     @Getter(AccessLevel.NONE)
@@ -48,15 +51,15 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     @Override
     public DMLStatement parse() {
-        sqlParser.getLexer().nextToken();
-        sqlParser.skipAll(getSkippedKeywordsBetweenUpdateAndTable());
-        if (sqlParser.equalAny(getUnsupportedKeywordsBetweenUpdateAndTable())) {
-            throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
+        commonParser.getLexer().nextToken();
+        commonParser.skipAll(getSkippedKeywordsBetweenUpdateAndTable());
+        if (commonParser.equalAny(getUnsupportedKeywordsBetweenUpdateAndTable())) {
+            throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
         }
         DMLStatement result = new DMLStatement();
         sqlParser.parseSingleTable(result);
         parseSetItems(result);
-        sqlParser.skipUntil(DefaultKeyword.WHERE);
+        commonParser.skipUntil(DefaultKeyword.WHERE);
         result.setParametersIndex(parametersIndex);
         sqlParser.parseWhere(shardingRule, result);
         return result;
@@ -71,31 +74,31 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     }
     
     private void parseSetItems(final DMLStatement updateStatement) {
-        sqlParser.accept(DefaultKeyword.SET);
+        commonParser.accept(DefaultKeyword.SET);
         do {
             parseSetItem(updateStatement);
-        } while (sqlParser.skipIfEqual(Symbol.COMMA));
+        } while (commonParser.skipIfEqual(Symbol.COMMA));
     }
     
     private void parseSetItem(final DMLStatement updateStatement) {
         parseSetColumn(updateStatement);
-        sqlParser.skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
+        commonParser.skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
         parseSetValue(updateStatement);
     }
     
     private void parseSetColumn(final DMLStatement updateStatement) {
-        if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
-            sqlParser.skipParentheses(updateStatement);
+        if (commonParser.equalAny(Symbol.LEFT_PAREN)) {
+            commonParser.skipParentheses(updateStatement);
             return;
         }
-        int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition();
-        String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
-        sqlParser.getLexer().nextToken();
-        if (sqlParser.skipIfEqual(Symbol.DOT)) {
+        int beginPosition = commonParser.getLexer().getCurrentToken().getEndPosition();
+        String literals = commonParser.getLexer().getCurrentToken().getLiterals();
+        commonParser.getLexer().nextToken();
+        if (commonParser.skipIfEqual(Symbol.DOT)) {
             if (updateStatement.getTables().getSingleTableName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
                 updateStatement.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals));
             }
-            sqlParser.getLexer().nextToken();
+            commonParser.getLexer().nextToken();
         }
     }
     

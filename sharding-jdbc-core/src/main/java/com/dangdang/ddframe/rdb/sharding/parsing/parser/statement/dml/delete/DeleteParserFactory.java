@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleDeleteParser;
@@ -42,21 +43,22 @@ public final class DeleteParserFactory {
      * 创建Delete语句解析器.
      * 
      * @param shardingRule 分库分表规则配置
+     * @param commonParser 解析器
      * @param sqlParser SQL解析器
      * @return Delete语句解析器
      */
-    public static AbstractDeleteParser newInstance(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
+    public static AbstractDeleteParser newInstance(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
-            return new MySQLDeleteParser(shardingRule, sqlParser);
+            return new MySQLDeleteParser(shardingRule, commonParser, sqlParser);
         }
         if (sqlParser instanceof OracleParser) {
-            return new OracleDeleteParser(shardingRule, sqlParser);
+            return new OracleDeleteParser(shardingRule, commonParser, sqlParser);
         }
         if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerDeleteParser(shardingRule, sqlParser);
+            return new SQLServerDeleteParser(shardingRule, commonParser, sqlParser);
         }
         if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLDeleteParser(shardingRule, sqlParser);
+            return new PostgreSQLDeleteParser(shardingRule, commonParser, sqlParser);
         }
         throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 

@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLParser;
@@ -61,31 +62,32 @@ public final class SQLParsingEngine {
     public SQLStatement parse() {
         AbstractSQLParser sqlParser = getSQLParser();
         skipToSQLBegin(sqlParser);
-        if (sqlParser.equalAny(DefaultKeyword.SELECT)) {
-            return SelectParserFactory.newInstance(shardingRule, sqlParser).parse();
+        CommonParser commonParser = sqlParser.getCommonParser();
+        if (commonParser.equalAny(DefaultKeyword.SELECT)) {
+            return SelectParserFactory.newInstance(shardingRule, commonParser, sqlParser).parse();
         }
-        if (sqlParser.equalAny(DefaultKeyword.INSERT)) {
-            return InsertParserFactory.newInstance(shardingRule, sqlParser).parse();
+        if (commonParser.equalAny(DefaultKeyword.INSERT)) {
+            return InsertParserFactory.newInstance(shardingRule, commonParser, sqlParser).parse();
         }
-        if (sqlParser.equalAny(DefaultKeyword.UPDATE)) {
-            return UpdateParserFactory.newInstance(shardingRule, sqlParser).parse();
+        if (commonParser.equalAny(DefaultKeyword.UPDATE)) {
+            return UpdateParserFactory.newInstance(shardingRule, commonParser, sqlParser).parse();
         }
-        if (sqlParser.equalAny(DefaultKeyword.DELETE)) {
-            return DeleteParserFactory.newInstance(shardingRule, sqlParser).parse();
+        if (commonParser.equalAny(DefaultKeyword.DELETE)) {
+            return DeleteParserFactory.newInstance(shardingRule, commonParser, sqlParser).parse();
         }
-        if (sqlParser.equalAny(DefaultKeyword.CREATE)) {
-            return CreateParserFactory.newInstance(shardingRule, sqlParser).parse();
+        if (commonParser.equalAny(DefaultKeyword.CREATE)) {
+            return CreateParserFactory.newInstance(shardingRule, commonParser, sqlParser).parse();
         }
-        if (sqlParser.equalAny(DefaultKeyword.ALTER)) {
-            return AlterParserFactory.newInstance(shardingRule, sqlParser).parse();
+        if (commonParser.equalAny(DefaultKeyword.ALTER)) {
+            return AlterParserFactory.newInstance(shardingRule, commonParser, sqlParser).parse();
         }
-        if (sqlParser.equalAny(DefaultKeyword.DROP)) {
-            return DropParserFactory.newInstance(shardingRule, sqlParser).parse();
+        if (commonParser.equalAny(DefaultKeyword.DROP)) {
+            return DropParserFactory.newInstance(shardingRule, commonParser, sqlParser).parse();
         }
-        if (sqlParser.equalAny(DefaultKeyword.TRUNCATE)) {
-            return TruncateParserFactory.newInstance(shardingRule, sqlParser).parse();
+        if (commonParser.equalAny(DefaultKeyword.TRUNCATE)) {
+            return TruncateParserFactory.newInstance(shardingRule, commonParser, sqlParser).parse();
         }
-        throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
+        throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
     }
     
     private AbstractSQLParser getSQLParser() {
@@ -105,20 +107,20 @@ public final class SQLParsingEngine {
     }
     
     private void skipToSQLBegin(final AbstractSQLParser sqlParser) {
-        sqlParser.getLexer().nextToken();
-        sqlParser.skipIfEqual(Symbol.SEMI);
-        if (sqlParser.equalAny(DefaultKeyword.WITH)) {
+        sqlParser.getCommonParser().getLexer().nextToken();
+        sqlParser.getCommonParser().skipIfEqual(Symbol.SEMI);
+        if (sqlParser.getCommonParser().equalAny(DefaultKeyword.WITH)) {
             skipWith(sqlParser);
         }
     }
     
     private void skipWith(final AbstractSQLParser sqlParser) {
-        sqlParser.getLexer().nextToken();
+        sqlParser.getCommonParser().getLexer().nextToken();
         do {
-            sqlParser.skipUntil(DefaultKeyword.AS);
-            sqlParser.accept(DefaultKeyword.AS);
+            sqlParser.getCommonParser().skipUntil(DefaultKeyword.AS);
+            sqlParser.getCommonParser().accept(DefaultKeyword.AS);
             // TODO with 中包含 ? 无法获取
-            sqlParser.skipParentheses(new SelectStatement());
-        } while (sqlParser.skipIfEqual(Symbol.COMMA));
+            sqlParser.getCommonParser().skipParentheses(new SelectStatement());
+        } while (sqlParser.getCommonParser().skipIfEqual(Symbol.COMMA));
     }
 }

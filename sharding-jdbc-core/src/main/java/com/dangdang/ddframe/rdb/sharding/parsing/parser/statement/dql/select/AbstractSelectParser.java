@@ -25,6 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.CommonSelectItem;
@@ -73,6 +74,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final ShardingRule shardingRule;
     
+    private final CommonParser commonParser;
+    
     private final AbstractSQLParser sqlParser;
     
     private final List<SelectItem> items = new LinkedList<>();
@@ -94,7 +97,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private SelectStatement parseInternal() {
         SelectStatement result = new SelectStatement();
-        sqlParser.getLexer().nextToken();
+        commonParser.getLexer().nextToken();
         parseInternal(result);
         return result;
     }
@@ -102,12 +105,12 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     protected abstract void parseInternal(final SelectStatement selectStatement);
     
     protected final void parseDistinct() {
-        sqlParser.skipAll(DefaultKeyword.ALL);
+        commonParser.skipAll(DefaultKeyword.ALL);
         Collection<Keyword> distinctKeywords = new LinkedList<>();
         distinctKeywords.add(DefaultKeyword.DISTINCT);
         distinctKeywords.addAll(Arrays.asList(getSynonymousKeywordsForDistinct()));
-        if (sqlParser.equalAny(distinctKeywords.toArray(new Keyword[distinctKeywords.size()]))) {
-            throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
+        if (commonParser.equalAny(distinctKeywords.toArray(new Keyword[distinctKeywords.size()]))) {
+            throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
         }
     }
     
@@ -118,13 +121,13 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     protected final void parseSelectList(final SelectStatement selectStatement) {
         do {
             selectStatement.getItems().add(parseSelectItem(selectStatement));
-        } while (sqlParser.skipIfEqual(Symbol.COMMA));
-        selectStatement.setSelectListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
+        } while (commonParser.skipIfEqual(Symbol.COMMA));
+        selectStatement.setSelectListLastPosition(commonParser.getLexer().getCurrentToken().getEndPosition() - commonParser.getLexer().getCurrentToken().getLiterals().length());
         items.addAll(selectStatement.getItems());
     }
     
     private SelectItem parseSelectItem(final SelectStatement selectStatement) {
-        sqlParser.skipIfEqual(getSkippedKeywordsBeforeSelectItem());
+        commonParser.skipIfEqual(getSkippedKeywordsBeforeSelectItem());
         SelectItem result;
         if (isRowNumberSelectItem()) {
             result = parseRowNumberSelectItem(selectStatement);
@@ -153,71 +156,71 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private boolean isStarSelectItem() {
-        return Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(sqlParser.getLexer().getCurrentToken().getLiterals()));
+        return Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(commonParser.getLexer().getCurrentToken().getLiterals()));
     }
     
     private SelectItem parseStarSelectItem() {
-        sqlParser.getLexer().nextToken();
+        commonParser.getLexer().nextToken();
         sqlParser.parseAlias();
         return new StarSelectItem(Optional.<String>absent());
     }
     
     private boolean isAggregationSelectItem() {
-        return sqlParser.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
+        return commonParser.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
     }
     
     private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
-        AggregationType aggregationType = AggregationType.valueOf(sqlParser.getLexer().getCurrentToken().getLiterals().toUpperCase());
-        sqlParser.getLexer().nextToken();
-        return new AggregationSelectItem(aggregationType, sqlParser.skipParentheses(selectStatement), sqlParser.parseAlias());
+        AggregationType aggregationType = AggregationType.valueOf(commonParser.getLexer().getCurrentToken().getLiterals().toUpperCase());
+        commonParser.getLexer().nextToken();
+        return new AggregationSelectItem(aggregationType, commonParser.skipParentheses(selectStatement), sqlParser.parseAlias());
     }
     
     private String parseCommonSelectItem(final SelectStatement selectStatement) {
-        String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
-        int position = sqlParser.getLexer().getCurrentToken().getEndPosition() - literals.length();
+        String literals = commonParser.getLexer().getCurrentToken().getLiterals();
+        int position = commonParser.getLexer().getCurrentToken().getEndPosition() - literals.length();
         StringBuilder result = new StringBuilder();
         result.append(literals);
-        sqlParser.getLexer().nextToken();
-        if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
-            result.append(sqlParser.skipParentheses(selectStatement));
-        } else if (sqlParser.equalAny(Symbol.DOT)) {
+        commonParser.getLexer().nextToken();
+        if (commonParser.equalAny(Symbol.LEFT_PAREN)) {
+            result.append(commonParser.skipParentheses(selectStatement));
+        } else if (commonParser.equalAny(Symbol.DOT)) {
             String tableName = SQLUtil.getExactlyValue(literals);
             if (shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {
                 selectStatement.getSqlTokens().add(new TableToken(position, literals));
             }
-            result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
-            sqlParser.getLexer().nextToken();
-            result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
-            sqlParser.getLexer().nextToken();
+            result.append(commonParser.getLexer().getCurrentToken().getLiterals());
+            commonParser.getLexer().nextToken();
+            result.append(commonParser.getLexer().getCurrentToken().getLiterals());
+            commonParser.getLexer().nextToken();
         }
         return result.toString();
     }
     
     private String parseRestSelectItem(final SelectStatement selectStatement) {
         StringBuilder result = new StringBuilder();
-        while (sqlParser.equalAny(Symbol.getOperators())) {
-            result.append(sqlParser.getLexer().getCurrentToken().getLiterals());
-            sqlParser.getLexer().nextToken();
+        while (commonParser.equalAny(Symbol.getOperators())) {
+            result.append(commonParser.getLexer().getCurrentToken().getLiterals());
+            commonParser.getLexer().nextToken();
             result.append(parseCommonSelectItem(selectStatement));
         }
         return result.toString();
     }
     
     protected final void parseFrom(final SelectStatement selectStatement) {
-        if (sqlParser.equalAny(DefaultKeyword.INTO)) {
+        if (commonParser.equalAny(DefaultKeyword.INTO)) {
             throw new SQLParsingUnsupportedException(DefaultKeyword.INTO);
         }
-        if (sqlParser.skipIfEqual(DefaultKeyword.FROM)) {
+        if (commonParser.skipIfEqual(DefaultKeyword.FROM)) {
             parseTable(selectStatement);
         }
     }
     
     private void parseTable(final SelectStatement selectStatement) {
-        if (sqlParser.skipIfEqual(Symbol.LEFT_PAREN)) {
-            sqlParser.skipUselessParentheses();
+        if (commonParser.skipIfEqual(Symbol.LEFT_PAREN)) {
+            commonParser.skipUselessParentheses();
             selectStatement.setSubQueryStatement(parseInternal());
-            sqlParser.skipUselessParentheses();
-            if (sqlParser.equalAny(DefaultKeyword.WHERE, Assist.END)) {
+            commonParser.skipUselessParentheses();
+            if (commonParser.equalAny(DefaultKeyword.WHERE, Assist.END)) {
                 return;
             }
         }
@@ -230,11 +233,11 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected final void parseTableFactorInternal(final SelectStatement selectStatement) {
-        sqlParser.skipAll(DefaultKeyword.AS);
-        final int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length();
-        String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
-        sqlParser.getLexer().nextToken();
-        if (sqlParser.equalAny(Symbol.DOT)) {
+        commonParser.skipAll(DefaultKeyword.AS);
+        final int beginPosition = commonParser.getLexer().getCurrentToken().getEndPosition() - commonParser.getLexer().getCurrentToken().getLiterals().length();
+        String literals = commonParser.getLexer().getCurrentToken().getLiterals();
+        commonParser.getLexer().nextToken();
+        if (commonParser.equalAny(Symbol.DOT)) {
             throw new UnsupportedOperationException("Cannot support SQL for `schema.table`");
         }
         String tableName = SQLUtil.getExactlyValue(literals);
@@ -248,14 +251,14 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     protected void parseJoinTable(final SelectStatement selectStatement) {
         if (sqlParser.skipJoin()) {
             parseTable(selectStatement);
-            if (sqlParser.skipIfEqual(DefaultKeyword.ON)) {
+            if (commonParser.skipIfEqual(DefaultKeyword.ON)) {
                 do {
                     sqlParser.parseExpression(selectStatement);
-                    sqlParser.accept(Symbol.EQ);
+                    commonParser.accept(Symbol.EQ);
                     sqlParser.parseExpression(selectStatement);
-                } while (sqlParser.skipIfEqual(DefaultKeyword.AND));
-            } else if (sqlParser.skipIfEqual(DefaultKeyword.USING)) {
-                sqlParser.skipParentheses(selectStatement);
+                } while (commonParser.skipIfEqual(DefaultKeyword.AND));
+            } else if (commonParser.skipIfEqual(DefaultKeyword.USING)) {
+                commonParser.skipParentheses(selectStatement);
             }
             parseJoinTable(selectStatement);
         }
@@ -267,29 +270,29 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected final void parseGroupBy(final SelectStatement selectStatement) {
-        if (!sqlParser.skipIfEqual(DefaultKeyword.GROUP)) {
+        if (!commonParser.skipIfEqual(DefaultKeyword.GROUP)) {
             return;
         }
-        sqlParser.accept(DefaultKeyword.BY);
+        commonParser.accept(DefaultKeyword.BY);
         while (true) {
             addGroupByItem(sqlParser.parseExpression(selectStatement), selectStatement);
-            if (!sqlParser.equalAny(Symbol.COMMA)) {
+            if (!commonParser.equalAny(Symbol.COMMA)) {
                 break;
             }
-            sqlParser.getLexer().nextToken();
+            commonParser.getLexer().nextToken();
         }
-        sqlParser.skipAll(getSkippedKeywordAfterGroupBy());
-        selectStatement.setGroupByLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
+        commonParser.skipAll(getSkippedKeywordAfterGroupBy());
+        selectStatement.setGroupByLastPosition(commonParser.getLexer().getCurrentToken().getEndPosition() - commonParser.getLexer().getCurrentToken().getLiterals().length());
     }
     
     private void addGroupByItem(final SQLExpression sqlExpression, final SelectStatement selectStatement) {
-        if (sqlParser.equalAny(getUnsupportedKeywordBeforeGroupByItem())) {
-            throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
+        if (commonParser.equalAny(getUnsupportedKeywordBeforeGroupByItem())) {
+            throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
         }
         OrderType orderByType = OrderType.ASC;
-        if (sqlParser.equalAny(DefaultKeyword.ASC)) {
-            sqlParser.getLexer().nextToken();
-        } else if (sqlParser.skipIfEqual(DefaultKeyword.DESC)) {
+        if (commonParser.equalAny(DefaultKeyword.ASC)) {
+            commonParser.getLexer().nextToken();
+        } else if (commonParser.skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderType.DESC;
         }
         OrderItem orderItem;
@@ -319,31 +322,31 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected final void parseHaving() {
-        if (sqlParser.equalAny(DefaultKeyword.HAVING)) {
+        if (commonParser.equalAny(DefaultKeyword.HAVING)) {
             throw new SQLParsingUnsupportedException(DefaultKeyword.HAVING);
         }
     }
     
     protected final void parseOrderBy(final SelectStatement selectStatement) {
-        if (!sqlParser.skipIfEqual(DefaultKeyword.ORDER)) {
+        if (!commonParser.skipIfEqual(DefaultKeyword.ORDER)) {
             return;
         }
         List<OrderItem> result = new LinkedList<>();
-        sqlParser.skipIfEqual(DefaultKeyword.SIBLINGS);
-        sqlParser.accept(DefaultKeyword.BY);
+        commonParser.skipIfEqual(DefaultKeyword.SIBLINGS);
+        commonParser.accept(DefaultKeyword.BY);
         do {
             result.add(parseSelectOrderByItem(selectStatement));
         }
-        while (sqlParser.skipIfEqual(Symbol.COMMA));
+        while (commonParser.skipIfEqual(Symbol.COMMA));
         selectStatement.getOrderByItems().addAll(result);
     }
     
     private OrderItem parseSelectOrderByItem(final SelectStatement selectStatement) {
         SQLExpression sqlExpression = sqlParser.parseExpression(selectStatement);
         OrderType orderByType = OrderType.ASC;
-        if (sqlParser.skipIfEqual(DefaultKeyword.ASC)) {
+        if (commonParser.skipIfEqual(DefaultKeyword.ASC)) {
             orderByType = OrderType.ASC;
-        } else if (sqlParser.skipIfEqual(DefaultKeyword.DESC)) {
+        } else if (commonParser.skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderType.DESC;
         }
         if (sqlExpression instanceof SQLNumberExpression) {
@@ -362,7 +365,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
             return new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, getNullOrderType(), getAlias(sqlIgnoreExpression.getExpression(), selectStatement));
         }
-        throw new SQLParsingException(sqlParser.getLexer());
+        throw new SQLParsingException(commonParser.getLexer());
     }
     
     protected abstract OrderType getNullOrderType();
@@ -387,8 +390,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         Collection<Keyword> unsupportedRestKeywords = new LinkedList<>();
         unsupportedRestKeywords.addAll(Arrays.asList(DefaultKeyword.UNION, DefaultKeyword.INTERSECT, DefaultKeyword.EXCEPT, DefaultKeyword.MINUS));
         unsupportedRestKeywords.addAll(Arrays.asList(getUnsupportedKeywordsRest()));
-        if (sqlParser.equalAny(unsupportedRestKeywords.toArray(new Keyword[unsupportedRestKeywords.size()]))) {
-            throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
+        if (commonParser.equalAny(unsupportedRestKeywords.toArray(new Keyword[unsupportedRestKeywords.size()]))) {
+            throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
         }
     }
     

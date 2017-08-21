@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
@@ -45,6 +44,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.NumberUtil;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -55,11 +56,11 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public abstract class AbstractSQLParser extends AbstractParser {
+@RequiredArgsConstructor
+@Getter
+public abstract class AbstractSQLParser {
     
-    public AbstractSQLParser(final Lexer lexer) {
-        super(lexer);
-    }
+    private final CommonParser commonParser;
     
     /**
      * 解析表达式.
@@ -68,7 +69,7 @@ public abstract class AbstractSQLParser extends AbstractParser {
      * @return 表达式
      */
     public final SQLExpression parseExpression(final SQLStatement sqlStatement) {
-        int beginPosition = getLexer().getCurrentToken().getEndPosition();
+        int beginPosition = commonParser.getLexer().getCurrentToken().getEndPosition();
         SQLExpression result = parseExpressionInternal(sqlStatement);
         if (result instanceof SQLPropertyExpression) {
             setTableToken(sqlStatement, beginPosition, (SQLPropertyExpression) result);
@@ -78,51 +79,54 @@ public abstract class AbstractSQLParser extends AbstractParser {
     
     // TODO 完善Expression解析的各种场景
     private SQLExpression parseExpressionInternal(final SQLStatement sqlStatement) {
-        String literals = getLexer().getCurrentToken().getLiterals();
-        final int beginPosition = getLexer().getCurrentToken().getEndPosition() - literals.length();
+        String literals = commonParser.getLexer().getCurrentToken().getLiterals();
+        final int beginPosition = commonParser.getLexer().getCurrentToken().getEndPosition() - literals.length();
         final SQLExpression expression = getExpression(literals, sqlStatement);
-        getLexer().nextToken();
-        if (skipIfEqual(Symbol.DOT)) {
-            String property = getLexer().getCurrentToken().getLiterals();
-            getLexer().nextToken();
-            return skipIfCompositeExpression(sqlStatement) ? new SQLIgnoreExpression(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition()))
+        commonParser.getLexer().nextToken();
+        if (commonParser.skipIfEqual(Symbol.DOT)) {
+            String property = commonParser.getLexer().getCurrentToken().getLiterals();
+            commonParser.getLexer().nextToken();
+            return skipIfCompositeExpression(sqlStatement)
+                    ? new SQLIgnoreExpression(commonParser.getLexer().getInput().substring(beginPosition, commonParser.getLexer().getCurrentToken().getEndPosition()))
                     : new SQLPropertyExpression(new SQLIdentifierExpression(literals), property);
         }
-        if (equalAny(Symbol.LEFT_PAREN)) {
-            skipParentheses(sqlStatement);
+        if (commonParser.equalAny(Symbol.LEFT_PAREN)) {
+            commonParser.skipParentheses(sqlStatement);
             skipRestCompositeExpression(sqlStatement);
-            return new SQLIgnoreExpression(
-                    getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition() - getLexer().getCurrentToken().getLiterals().length()).trim());
+            return new SQLIgnoreExpression(commonParser.getLexer().getInput().substring(beginPosition, 
+                    commonParser.getLexer().getCurrentToken().getEndPosition() - commonParser.getLexer().getCurrentToken().getLiterals().length()).trim());
         }
-        return skipIfCompositeExpression(sqlStatement) ? new SQLIgnoreExpression(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition())) : expression;
+        return skipIfCompositeExpression(sqlStatement)
+                ? new SQLIgnoreExpression(commonParser.getLexer().getInput().substring(beginPosition, commonParser.getLexer().getCurrentToken().getEndPosition())) : expression;
     }
     
     private SQLExpression getExpression(final String literals, final SQLStatement sqlStatement) {
-        if (equalAny(Symbol.QUESTION)) {
+        if (commonParser.equalAny(Symbol.QUESTION)) {
             sqlStatement.increaseParametersIndex();
             return new SQLPlaceholderExpression(sqlStatement.getParametersIndex() - 1);
         }
-        if (equalAny(Literals.CHARS)) {
+        if (commonParser.equalAny(Literals.CHARS)) {
             return new SQLTextExpression(literals);
         }
-        if (equalAny(Literals.INT)) {
+        if (commonParser.equalAny(Literals.INT)) {
             return new SQLNumberExpression(NumberUtil.getExactlyNumber(literals, 10));
         }
-        if (equalAny(Literals.FLOAT)) {
+        if (commonParser.equalAny(Literals.FLOAT)) {
             return new SQLNumberExpression(Double.parseDouble(literals));
         }
-        if (equalAny(Literals.HEX)) {
+        if (commonParser.equalAny(Literals.HEX)) {
             return new SQLNumberExpression(NumberUtil.getExactlyNumber(literals, 16));
         }
-        if (equalAny(Literals.IDENTIFIER)) {
+        if (commonParser.equalAny(Literals.IDENTIFIER)) {
             return new SQLIdentifierExpression(SQLUtil.getExactlyValue(literals));
         }
         return new SQLIgnoreExpression(literals);
     }
     
     private boolean skipIfCompositeExpression(final SQLStatement sqlStatement) {
-        if (equalAny(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH, Symbol.PERCENT, Symbol.AMP, Symbol.BAR, Symbol.DOUBLE_AMP, Symbol.DOUBLE_BAR, Symbol.CARET, Symbol.DOT, Symbol.LEFT_PAREN)) {
-            skipParentheses(sqlStatement);
+        if (commonParser.equalAny(
+                Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH, Symbol.PERCENT, Symbol.AMP, Symbol.BAR, Symbol.DOUBLE_AMP, Symbol.DOUBLE_BAR, Symbol.CARET, Symbol.DOT, Symbol.LEFT_PAREN)) {
+            commonParser.skipParentheses(sqlStatement);
             skipRestCompositeExpression(sqlStatement);
             return true;
         }
@@ -130,12 +134,12 @@ public abstract class AbstractSQLParser extends AbstractParser {
     }
     
     private void skipRestCompositeExpression(final SQLStatement sqlStatement) {
-        while (skipIfEqual(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH, Symbol.PERCENT, Symbol.AMP, Symbol.BAR, Symbol.DOUBLE_AMP, Symbol.DOUBLE_BAR, Symbol.CARET, Symbol.DOT)) {
-            if (equalAny(Symbol.QUESTION)) {
+        while (commonParser.skipIfEqual(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH, Symbol.PERCENT, Symbol.AMP, Symbol.BAR, Symbol.DOUBLE_AMP, Symbol.DOUBLE_BAR, Symbol.CARET, Symbol.DOT)) {
+            if (commonParser.equalAny(Symbol.QUESTION)) {
                 sqlStatement.increaseParametersIndex();
             }
-            getLexer().nextToken();
-            skipParentheses(sqlStatement);
+            commonParser.getLexer().nextToken();
+            commonParser.skipParentheses(sqlStatement);
         }
     }
     
@@ -152,18 +156,19 @@ public abstract class AbstractSQLParser extends AbstractParser {
      * @return 别名
      */
     public Optional<String> parseAlias() {
-        if (skipIfEqual(DefaultKeyword.AS)) {
-            if (equalAny(Symbol.values())) {
+        if (commonParser.skipIfEqual(DefaultKeyword.AS)) {
+            if (commonParser.equalAny(Symbol.values())) {
                 return Optional.absent();
             }
-            String result = SQLUtil.getExactlyValue(getLexer().getCurrentToken().getLiterals());
-            getLexer().nextToken();
+            String result = SQLUtil.getExactlyValue(commonParser.getLexer().getCurrentToken().getLiterals());
+            commonParser.getLexer().nextToken();
             return Optional.of(result);
         }
         // TODO 增加哪些数据库识别哪些关键字作为别名的配置
-        if (equalAny(Literals.IDENTIFIER, Literals.CHARS, DefaultKeyword.USER, DefaultKeyword.END, DefaultKeyword.CASE, DefaultKeyword.KEY, DefaultKeyword.INTERVAL, DefaultKeyword.CONSTRAINT)) {
-            String result = SQLUtil.getExactlyValue(getLexer().getCurrentToken().getLiterals());
-            getLexer().nextToken();
+        if (commonParser.equalAny(
+                Literals.IDENTIFIER, Literals.CHARS, DefaultKeyword.USER, DefaultKeyword.END, DefaultKeyword.CASE, DefaultKeyword.KEY, DefaultKeyword.INTERVAL, DefaultKeyword.CONSTRAINT)) {
+            String result = SQLUtil.getExactlyValue(commonParser.getLexer().getCurrentToken().getLiterals());
+            commonParser.getLexer().nextToken();
             return Optional.of(result);
         }
         return Optional.absent();
@@ -176,25 +181,25 @@ public abstract class AbstractSQLParser extends AbstractParser {
      */
     public final void parseSingleTable(final SQLStatement sqlStatement) {
         boolean hasParentheses = false;
-        if (skipIfEqual(Symbol.LEFT_PAREN)) {
-            if (equalAny(DefaultKeyword.SELECT)) {
+        if (commonParser.skipIfEqual(Symbol.LEFT_PAREN)) {
+            if (commonParser.equalAny(DefaultKeyword.SELECT)) {
                 throw new UnsupportedOperationException("Cannot support subquery");
             }
             hasParentheses = true;
         }
         Table table;
-        final int beginPosition = getLexer().getCurrentToken().getEndPosition() - getLexer().getCurrentToken().getLiterals().length();
-        String literals = getLexer().getCurrentToken().getLiterals();
-        getLexer().nextToken();
-        if (skipIfEqual(Symbol.DOT)) {
-            getLexer().nextToken();
+        final int beginPosition = commonParser.getLexer().getCurrentToken().getEndPosition() - commonParser.getLexer().getCurrentToken().getLiterals().length();
+        String literals = commonParser.getLexer().getCurrentToken().getLiterals();
+        commonParser.getLexer().nextToken();
+        if (commonParser.skipIfEqual(Symbol.DOT)) {
+            commonParser.getLexer().nextToken();
             if (hasParentheses) {
-                accept(Symbol.RIGHT_PAREN);
+                commonParser.accept(Symbol.RIGHT_PAREN);
             }
             table = new Table(SQLUtil.getExactlyValue(literals), parseAlias());
         } else {
             if (hasParentheses) {
-                accept(Symbol.RIGHT_PAREN);
+                commonParser.accept(Symbol.RIGHT_PAREN);
             }
             table = new Table(SQLUtil.getExactlyValue(literals), parseAlias());
         }
@@ -211,21 +216,21 @@ public abstract class AbstractSQLParser extends AbstractParser {
      * @return 是否表关联.
      */
     public final boolean skipJoin() {
-        if (skipIfEqual(DefaultKeyword.LEFT, DefaultKeyword.RIGHT, DefaultKeyword.FULL)) {
-            skipIfEqual(DefaultKeyword.OUTER);
-            accept(DefaultKeyword.JOIN);
+        if (commonParser.skipIfEqual(DefaultKeyword.LEFT, DefaultKeyword.RIGHT, DefaultKeyword.FULL)) {
+            commonParser.skipIfEqual(DefaultKeyword.OUTER);
+            commonParser.accept(DefaultKeyword.JOIN);
             return true;
-        } else if (skipIfEqual(DefaultKeyword.INNER)) {
-            accept(DefaultKeyword.JOIN);
+        } else if (commonParser.skipIfEqual(DefaultKeyword.INNER)) {
+            commonParser.accept(DefaultKeyword.JOIN);
             return true;
-        } else if (skipIfEqual(DefaultKeyword.JOIN, Symbol.COMMA, DefaultKeyword.STRAIGHT_JOIN)) {
+        } else if (commonParser.skipIfEqual(DefaultKeyword.JOIN, Symbol.COMMA, DefaultKeyword.STRAIGHT_JOIN)) {
             return true;
-        } else if (skipIfEqual(DefaultKeyword.CROSS)) {
-            if (skipIfEqual(DefaultKeyword.JOIN, DefaultKeyword.APPLY)) {
+        } else if (commonParser.skipIfEqual(DefaultKeyword.CROSS)) {
+            if (commonParser.skipIfEqual(DefaultKeyword.JOIN, DefaultKeyword.APPLY)) {
                 return true;
             }
-        } else if (skipIfEqual(DefaultKeyword.OUTER)) {
-            if (skipIfEqual(DefaultKeyword.APPLY)) {
+        } else if (commonParser.skipIfEqual(DefaultKeyword.OUTER)) {
+            if (commonParser.skipIfEqual(DefaultKeyword.APPLY)) {
                 return true;
             }
         }
@@ -250,7 +255,7 @@ public abstract class AbstractSQLParser extends AbstractParser {
      */
     public final void parseWhere(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         parseAlias();
-        if (skipIfEqual(DefaultKeyword.WHERE)) {
+        if (commonParser.skipIfEqual(DefaultKeyword.WHERE)) {
             parseConditions(shardingRule, sqlStatement, items);
         }
     }
@@ -258,32 +263,32 @@ public abstract class AbstractSQLParser extends AbstractParser {
     private void parseConditions(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         do {
             parseComparisonCondition(shardingRule, sqlStatement, items);
-        } while (skipIfEqual(DefaultKeyword.AND));
-        if (equalAny(DefaultKeyword.OR)) {
-            throw new SQLParsingUnsupportedException(getLexer().getCurrentToken().getType());
+        } while (commonParser.skipIfEqual(DefaultKeyword.AND));
+        if (commonParser.equalAny(DefaultKeyword.OR)) {
+            throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
         }
     }
     
     // TODO 解析组合expr
     public final void parseComparisonCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
-        skipIfEqual(Symbol.LEFT_PAREN);
+        commonParser.skipIfEqual(Symbol.LEFT_PAREN);
         SQLExpression left = parseExpression(sqlStatement);
-        if (equalAny(Symbol.EQ)) {
+        if (commonParser.equalAny(Symbol.EQ)) {
             parseEqualCondition(shardingRule, sqlStatement, left);
-            skipIfEqual(Symbol.RIGHT_PAREN);
+            commonParser.skipIfEqual(Symbol.RIGHT_PAREN);
             return;
         }
-        if (equalAny(DefaultKeyword.IN)) {
+        if (commonParser.equalAny(DefaultKeyword.IN)) {
             parseInCondition(shardingRule, sqlStatement, left);
-            skipIfEqual(Symbol.RIGHT_PAREN);
+            commonParser.skipIfEqual(Symbol.RIGHT_PAREN);
             return;
         }
-        if (equalAny(DefaultKeyword.BETWEEN)) {
+        if (commonParser.equalAny(DefaultKeyword.BETWEEN)) {
             parseBetweenCondition(shardingRule, sqlStatement, left);
-            skipIfEqual(Symbol.RIGHT_PAREN);
+            commonParser.skipIfEqual(Symbol.RIGHT_PAREN);
             return;
         }
-        if (equalAny(Symbol.LT, Symbol.GT, Symbol.LT_EQ, Symbol.GT_EQ)) {
+        if (commonParser.equalAny(Symbol.LT, Symbol.GT, Symbol.LT_EQ, Symbol.GT_EQ)) {
             if (left instanceof SQLIdentifierExpression && sqlStatement instanceof SelectStatement
                     && isRowNumberCondition(items, ((SQLIdentifierExpression) left).getName())) {
                 parseRowNumberCondition((SelectStatement) sqlStatement);
@@ -293,14 +298,14 @@ public abstract class AbstractSQLParser extends AbstractParser {
             } else {
                 parseOtherCondition(sqlStatement);
             }
-        } else if (equalAny(Symbol.LT_GT, DefaultKeyword.LIKE)) {
+        } else if (commonParser.equalAny(Symbol.LT_GT, DefaultKeyword.LIKE)) {
             parseOtherCondition(sqlStatement);
         }
-        skipIfEqual(Symbol.RIGHT_PAREN);
+        commonParser.skipIfEqual(Symbol.RIGHT_PAREN);
     }
     
     private void parseEqualCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
-        getLexer().nextToken();
+        commonParser.getLexer().nextToken();
         SQLExpression right = parseExpression(sqlStatement);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if ((sqlStatement.getTables().isSingleTable() || left instanceof SQLPropertyExpression)
@@ -313,27 +318,27 @@ public abstract class AbstractSQLParser extends AbstractParser {
     }
     
     private void parseInCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
-        getLexer().nextToken();
-        accept(Symbol.LEFT_PAREN);
+        commonParser.getLexer().nextToken();
+        commonParser.accept(Symbol.LEFT_PAREN);
         List<SQLExpression> rights = new LinkedList<>();
         do {
-            if (equalAny(Symbol.COMMA)) {
-                getLexer().nextToken();
+            if (commonParser.equalAny(Symbol.COMMA)) {
+                commonParser.getLexer().nextToken();
             }
             rights.add(parseExpression(sqlStatement));
-        } while (!equalAny(Symbol.RIGHT_PAREN));
+        } while (!commonParser.equalAny(Symbol.RIGHT_PAREN));
         Optional<Column> column = find(sqlStatement.getTables(), left);
         if (column.isPresent()) {
             sqlStatement.getConditions().add(new Condition(column.get(), rights), shardingRule);
         }
-        getLexer().nextToken();
+        commonParser.getLexer().nextToken();
     }
     
     private void parseBetweenCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
-        getLexer().nextToken();
+        commonParser.getLexer().nextToken();
         List<SQLExpression> rights = new LinkedList<>();
         rights.add(parseExpression(sqlStatement));
-        accept(DefaultKeyword.AND);
+        commonParser.accept(DefaultKeyword.AND);
         rights.add(parseExpression(sqlStatement));
         Optional<Column> column = find(sqlStatement.getTables(), left);
         if (column.isPresent()) {
@@ -346,8 +351,8 @@ public abstract class AbstractSQLParser extends AbstractParser {
     }
     
     private void parseRowNumberCondition(final SelectStatement selectStatement) {
-        Symbol symbol = (Symbol) getLexer().getCurrentToken().getType();
-        getLexer().nextToken();
+        Symbol symbol = (Symbol) commonParser.getLexer().getCurrentToken().getType();
+        commonParser.getLexer().nextToken();
         SQLExpression sqlExpression = parseExpression(selectStatement);
         if (null == selectStatement.getLimit()) {
             selectStatement.setLimit(new Limit(false));
@@ -356,8 +361,8 @@ public abstract class AbstractSQLParser extends AbstractParser {
             if (sqlExpression instanceof SQLNumberExpression) {
                 int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
                 selectStatement.getLimit().setRowCount(new LimitValue(rowCount, -1));
-                selectStatement.getSqlTokens().add(
-                        new RowCountToken(getLexer().getCurrentToken().getEndPosition() - String.valueOf(rowCount).length() - getLexer().getCurrentToken().getLiterals().length(), rowCount));
+                selectStatement.getSqlTokens().add(new RowCountToken(
+                        commonParser.getLexer().getCurrentToken().getEndPosition() - String.valueOf(rowCount).length() - commonParser.getLexer().getCurrentToken().getLiterals().length(), rowCount));
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
                 selectStatement.getLimit().setRowCount(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
             }
@@ -365,8 +370,8 @@ public abstract class AbstractSQLParser extends AbstractParser {
             if (sqlExpression instanceof SQLNumberExpression) {
                 int offset = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
                 selectStatement.getLimit().setOffset(new LimitValue(offset, -1));
-                selectStatement.getSqlTokens().add(
-                        new OffsetToken(getLexer().getCurrentToken().getEndPosition() - String.valueOf(offset).length() - getLexer().getCurrentToken().getLiterals().length(), offset));
+                selectStatement.getSqlTokens().add(new OffsetToken(
+                        commonParser.getLexer().getCurrentToken().getEndPosition() - String.valueOf(offset).length() - commonParser.getLexer().getCurrentToken().getLiterals().length(), offset));
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
                 selectStatement.getLimit().setOffset(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
             }
@@ -374,7 +379,7 @@ public abstract class AbstractSQLParser extends AbstractParser {
     }
     
     private void parseOtherCondition(final SQLStatement sqlStatement) {
-        getLexer().nextToken();
+        commonParser.getLexer().nextToken();
         parseExpression(sqlStatement);
     }
     

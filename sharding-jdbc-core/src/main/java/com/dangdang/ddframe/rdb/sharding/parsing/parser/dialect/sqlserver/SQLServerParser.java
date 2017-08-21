@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.google.common.base.Optional;
 
@@ -32,7 +33,7 @@ import java.util.List;
 public final class SQLServerParser extends AbstractSQLParser {
     
     public SQLServerParser(final String sql) {
-        super(new SQLServerLexer(sql));
+        super(new CommonParser(new SQLServerLexer(sql)));
     }
     
     @Override

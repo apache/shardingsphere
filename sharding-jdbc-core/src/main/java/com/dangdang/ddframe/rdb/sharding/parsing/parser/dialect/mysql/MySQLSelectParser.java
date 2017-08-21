@@ -26,6 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.AbstractSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
@@ -41,8 +42,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
  */
 public final class MySQLSelectParser extends AbstractSelectParser {
     
-    public MySQLSelectParser(final ShardingRule shardingRule, final AbstractSQLParser sqlParser) {
-        super(shardingRule, sqlParser);
+    public MySQLSelectParser(final ShardingRule shardingRule, final CommonParser commonParser, final AbstractSQLParser sqlParser) {
+        super(shardingRule, commonParser, sqlParser);
     }
     
     @Override
@@ -60,35 +61,35 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     }
     
     private void skipBeforeSelectList() {
-        getSqlParser().skipAll(MySQLKeyword.HIGH_PRIORITY, DefaultKeyword.STRAIGHT_JOIN, MySQLKeyword.SQL_SMALL_RESULT, MySQLKeyword.SQL_BIG_RESULT, MySQLKeyword.SQL_BUFFER_RESULT, 
+        getCommonParser().skipAll(MySQLKeyword.HIGH_PRIORITY, DefaultKeyword.STRAIGHT_JOIN, MySQLKeyword.SQL_SMALL_RESULT, MySQLKeyword.SQL_BIG_RESULT, MySQLKeyword.SQL_BUFFER_RESULT, 
                 MySQLKeyword.SQL_CACHE, MySQLKeyword.SQL_NO_CACHE, MySQLKeyword.SQL_CALC_FOUND_ROWS);
     }
     
     private void parseLimit(final SelectStatement selectStatement) {
-        if (!getSqlParser().skipIfEqual(MySQLKeyword.LIMIT)) {
+        if (!getCommonParser().skipIfEqual(MySQLKeyword.LIMIT)) {
             return;
         }
         int valueIndex = -1;
-        int valueBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
+        int valueBeginPosition = getCommonParser().getLexer().getCurrentToken().getEndPosition();
         int value;
         boolean isParameterForValue = false;
-        if (getSqlParser().equalAny(Literals.INT)) {
-            value = Integer.parseInt(getSqlParser().getLexer().getCurrentToken().getLiterals());
+        if (getCommonParser().equalAny(Literals.INT)) {
+            value = Integer.parseInt(getCommonParser().getLexer().getCurrentToken().getLiterals());
             valueBeginPosition = valueBeginPosition - (value + "").length();
-        } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
+        } else if (getCommonParser().equalAny(Symbol.QUESTION)) {
             valueIndex = getParametersIndex();
             value = -1;
             valueBeginPosition--;
             isParameterForValue = true;
         } else {
-            throw new SQLParsingException(getSqlParser().getLexer());
+            throw new SQLParsingException(getCommonParser().getLexer());
         }
-        getSqlParser().getLexer().nextToken();
-        if (getSqlParser().skipIfEqual(Symbol.COMMA)) {
+        getCommonParser().getLexer().nextToken();
+        if (getCommonParser().skipIfEqual(Symbol.COMMA)) {
             selectStatement.setLimit(getLimitWithComma(valueIndex, valueBeginPosition, value, isParameterForValue, selectStatement));
             return;
         }
-        if (getSqlParser().skipIfEqual(MySQLKeyword.OFFSET)) {
+        if (getCommonParser().skipIfEqual(MySQLKeyword.OFFSET)) {
             selectStatement.setLimit(getLimitWithOffset(valueIndex, valueBeginPosition, value, isParameterForValue, selectStatement));
             return;
         }
@@ -101,22 +102,22 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     }
     
     private Limit getLimitWithComma(final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue, final SelectStatement selectStatement) {
-        int rowCountBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
+        int rowCountBeginPosition = getCommonParser().getLexer().getCurrentToken().getEndPosition();
         int rowCountValue;
         int rowCountIndex = -1;
         boolean isParameterForRowCount = false;
-        if (getSqlParser().equalAny(Literals.INT)) {
-            rowCountValue = Integer.parseInt(getSqlParser().getLexer().getCurrentToken().getLiterals());
+        if (getCommonParser().equalAny(Literals.INT)) {
+            rowCountValue = Integer.parseInt(getCommonParser().getLexer().getCurrentToken().getLiterals());
             rowCountBeginPosition = rowCountBeginPosition - (rowCountValue + "").length();
-        } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
+        } else if (getCommonParser().equalAny(Symbol.QUESTION)) {
             rowCountIndex = -1 == index ? getParametersIndex() : index + 1;
             rowCountValue = -1;
             rowCountBeginPosition--;
             isParameterForRowCount = true;
         } else {
-            throw new SQLParsingException(getSqlParser().getLexer());
+            throw new SQLParsingException(getCommonParser().getLexer());
         }
-        getSqlParser().getLexer().nextToken();
+        getCommonParser().getLexer().nextToken();
         if (!isParameterForValue) {
             selectStatement.getSqlTokens().add(new OffsetToken(valueBeginPosition, value));
         }
@@ -130,21 +131,21 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     }
     
     private Limit getLimitWithOffset(final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue, final SelectStatement selectStatement) {
-        int offsetBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
+        int offsetBeginPosition = getCommonParser().getLexer().getCurrentToken().getEndPosition();
         int offsetValue = -1;
         int offsetIndex = -1;
         boolean isParameterForOffset = false;
-        if (getSqlParser().equalAny(Literals.INT)) {
-            offsetValue = Integer.parseInt(getSqlParser().getLexer().getCurrentToken().getLiterals());
+        if (getCommonParser().equalAny(Literals.INT)) {
+            offsetValue = Integer.parseInt(getCommonParser().getLexer().getCurrentToken().getLiterals());
             offsetBeginPosition = offsetBeginPosition - (offsetValue + "").length();
-        } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
+        } else if (getCommonParser().equalAny(Symbol.QUESTION)) {
             offsetIndex = -1 == index ? getParametersIndex() : index + 1;
             offsetBeginPosition--;
             isParameterForOffset = true;
         } else {
-            throw new SQLParsingException(getSqlParser().getLexer());
+            throw new SQLParsingException(getCommonParser().getLexer());
         }
-        getSqlParser().getLexer().nextToken();
+        getCommonParser().getLexer().nextToken();
         if (!isParameterForOffset) {
             selectStatement.getSqlTokens().add(new OffsetToken(offsetBeginPosition, offsetValue));
         }
@@ -164,43 +165,43 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseJoinTable(final SelectStatement selectStatement) {
-        if (getSqlParser().equalAny(DefaultKeyword.USING)) {
+        if (getCommonParser().equalAny(DefaultKeyword.USING)) {
             return;
         }
-        if (getSqlParser().equalAny(DefaultKeyword.USE)) {
-            getSqlParser().getLexer().nextToken();
+        if (getCommonParser().equalAny(DefaultKeyword.USE)) {
+            getCommonParser().getLexer().nextToken();
             skipIndexHint(selectStatement);
         }
-        if (getSqlParser().equalAny(OracleKeyword.IGNORE)) {
-            getSqlParser().getLexer().nextToken();
+        if (getCommonParser().equalAny(OracleKeyword.IGNORE)) {
+            getCommonParser().getLexer().nextToken();
             skipIndexHint(selectStatement);
         }
-        if (getSqlParser().equalAny(OracleKeyword.FORCE)) {
-            getSqlParser().getLexer().nextToken();
+        if (getCommonParser().equalAny(OracleKeyword.FORCE)) {
+            getCommonParser().getLexer().nextToken();
             skipIndexHint(selectStatement);
         }
         super.parseJoinTable(selectStatement);
     }
     
     private void skipIndexHint(final SelectStatement selectStatement) {
-        if (getSqlParser().equalAny(DefaultKeyword.INDEX)) {
-            getSqlParser().getLexer().nextToken();
+        if (getCommonParser().equalAny(DefaultKeyword.INDEX)) {
+            getCommonParser().getLexer().nextToken();
         } else {
-            getSqlParser().accept(DefaultKeyword.KEY);
+            getCommonParser().accept(DefaultKeyword.KEY);
         }
-        if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
-            getSqlParser().getLexer().nextToken();
-            if (getSqlParser().equalAny(DefaultKeyword.JOIN)) {
-                getSqlParser().getLexer().nextToken();
-            } else if (getSqlParser().equalAny(DefaultKeyword.ORDER)) {
-                getSqlParser().getLexer().nextToken();
-                getSqlParser().accept(DefaultKeyword.BY);
+        if (getCommonParser().equalAny(DefaultKeyword.FOR)) {
+            getCommonParser().getLexer().nextToken();
+            if (getCommonParser().equalAny(DefaultKeyword.JOIN)) {
+                getCommonParser().getLexer().nextToken();
+            } else if (getCommonParser().equalAny(DefaultKeyword.ORDER)) {
+                getCommonParser().getLexer().nextToken();
+                getCommonParser().accept(DefaultKeyword.BY);
             } else {
-                getSqlParser().accept(DefaultKeyword.GROUP);
-                getSqlParser().accept(DefaultKeyword.BY);
+                getCommonParser().accept(DefaultKeyword.GROUP);
+                getCommonParser().accept(DefaultKeyword.BY);
             }
         }
-        getSqlParser().skipParentheses(selectStatement);
+        getCommonParser().skipParentheses(selectStatement);
     }
     
     @Override
