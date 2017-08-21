@@ -28,6 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseTe
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.TableToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,14 +38,15 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @RunWith(Parameterized.class)
 public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     
     public SQLParsingEngineTest(
-            final String testCaseName, final DatabaseType databaseType, final String[] parameters, final Tables expectedTables, 
-            final Conditions expectedConditions, final SQLStatement expectedSQLStatement, final Limit expectedLimit) {
-        super(testCaseName, databaseType, parameters, expectedTables, expectedConditions, expectedSQLStatement, expectedLimit);
+            final String testCaseName, final DatabaseType databaseType, final String[] parameters, final Tables expectedTables,
+            final List<TableToken> tableTokens, final Conditions expectedConditions, final SQLStatement expectedSQLStatement, final Limit expectedLimit) {
+        super(testCaseName, databaseType, parameters, expectedTables, tableTokens, expectedConditions, expectedSQLStatement, expectedLimit);
     }
     
     @Parameters(name = "{0}In{1}")

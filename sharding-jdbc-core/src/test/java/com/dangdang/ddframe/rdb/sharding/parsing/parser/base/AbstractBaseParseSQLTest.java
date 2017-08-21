@@ -17,8 +17,11 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpres
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Value;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.TableToken;
 import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,10 +33,10 @@ import static org.junit.Assert.assertTrue;
 public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     
     protected AbstractBaseParseSQLTest(
-            final String testCaseName, final DatabaseType databaseType, final String[] parameters,  
-            final Tables expectedTables, final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Conditions expectedConditions, 
+            final String testCaseName, final DatabaseType databaseType, final String[] parameters,
+            final Tables expectedTables, final List<TableToken> expectedSqlTokens, final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Conditions expectedConditions,
             final SQLStatement expectedSQLStatement, final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit expectedLimit) {
-        super(testCaseName, databaseType, parameters, expectedTables, expectedConditions, expectedSQLStatement, expectedLimit);
+        super(testCaseName, databaseType, parameters, expectedTables, expectedSqlTokens, expectedConditions, expectedSQLStatement, expectedLimit);
     }
     
     protected final void assertStatement(final SQLStatement actual) {
@@ -45,8 +48,9 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     }
     
     private void assertSQLStatement(final SQLStatement actual, final boolean isPreparedStatement) {
-        assertExpectedTables(actual.getTables());
-        assertExpectedConditions(actual.getConditions(), isPreparedStatement);
+        assertTables(actual.getTables());
+        assertConditions(actual.getConditions(), isPreparedStatement);
+        assertSqlTokens(actual.getSqlTokens());
         if (actual instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) actual;
             assertOrderBy(selectStatement.getOrderByItems());
@@ -56,11 +60,11 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
         }
     }
     
-    private void assertExpectedTables(final Tables actual) {
+    private void assertTables(final Tables actual) {
         assertTrue(new ReflectionEquals(getExpectedTables()).matches(actual));
     }
     
-    private void assertExpectedConditions(final Conditions actual, final boolean isPreparedStatement) {
+    private void assertConditions(final Conditions actual, final boolean isPreparedStatement) {
         assertTrue(new ReflectionEquals(buildExpectedConditions(isPreparedStatement)).matches(actual));
     }
     
@@ -102,6 +106,29 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
         }
         return result;
     }
+    
+    private void assertSqlTokens(final List<SQLToken> actual) {
+        // TODO add more sql tokens
+        if (null == getExpectedTableTokens()) {
+            return;
+        }
+        Iterator<com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken> sqlTokenIterator = buildExpectedTableTokens().iterator();
+        for (SQLToken each : actual) {
+            com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken expected = sqlTokenIterator.next();
+            assertTrue(new ReflectionEquals(expected).matches(each));
+        }
+        assertFalse(sqlTokenIterator.hasNext());
+    }
+    
+    private List<com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken> buildExpectedTableTokens() {
+        List<com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken> result = new ArrayList<>();
+        for (SQLToken each : getExpectedTableTokens()) {
+            TableToken tableToken = (TableToken) each;
+            result.add(new com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken(tableToken.getBeginPosition(), tableToken.getOriginalLiterals()));
+        }
+        return result;
+    }
+    
     
     private Limit buildExpectedLimit(final boolean isPreparedStatement) {
         com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit limit = getExpectedLimit();
