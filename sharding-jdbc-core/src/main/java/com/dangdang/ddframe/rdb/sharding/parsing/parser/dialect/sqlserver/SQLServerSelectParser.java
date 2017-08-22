@@ -19,11 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLOrderBySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
@@ -53,6 +50,8 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     private final SQLServerOffsetParser sqlServerOffsetParser;
     
+    private final SQLServerForParser sqlServerForParser;
+    
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new SQLServerWhereSQLParser(lexerEngine));
         distinctSQLParser = new DistinctSQLParser(lexerEngine);
@@ -62,6 +61,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new MySQLOrderBySQLParser(lexerEngine);
         sqlServerOffsetParser = new SQLServerOffsetParser(lexerEngine);
+        sqlServerForParser = new SQLServerForParser(lexerEngine);
     }
     
     @Override
@@ -75,33 +75,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);
         sqlServerOffsetParser.parse(selectStatement);
-        parseFor();
-    }
-    
-    private void parseFor() {
-        if (!getLexerEngine().skipIfEqual(DefaultKeyword.FOR)) {
-            return;
-        }
-        if (getLexerEngine().equalAny(SQLServerKeyword.BROWSE)) {
-            getLexerEngine().nextToken();
-        } else if (getLexerEngine().skipIfEqual(SQLServerKeyword.XML)) {
-            while (true) {
-                if (getLexerEngine().equalAny(SQLServerKeyword.AUTO, SQLServerKeyword.TYPE, SQLServerKeyword.XMLSCHEMA)) {
-                    getLexerEngine().nextToken();
-                } else if (getLexerEngine().skipIfEqual(SQLServerKeyword.ELEMENTS)) {
-                    getLexerEngine().skipIfEqual(SQLServerKeyword.XSINIL);
-                } else {
-                    break;
-                }
-                if (getLexerEngine().equalAny(Symbol.COMMA)) {
-                    getLexerEngine().nextToken();
-                } else {
-                    break;
-                }
-            }
-        } else {
-            throw new SQLParsingUnsupportedException(getLexerEngine().getCurrentToken().getType());
-        }
+        sqlServerForParser.parse();
     }
     
     @Override

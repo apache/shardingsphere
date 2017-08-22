@@ -27,19 +27,17 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
+import lombok.RequiredArgsConstructor;
 
 /**
  * SQLServer Top解析器.
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class SQLServerOffsetParser implements SQLParser {
     
     private final LexerEngine lexerEngine;
-    
-    public SQLServerOffsetParser(final LexerEngine lexerEngine) {
-        this.lexerEngine = lexerEngine;
-    }
     
     /**
      * 解析Offset.
