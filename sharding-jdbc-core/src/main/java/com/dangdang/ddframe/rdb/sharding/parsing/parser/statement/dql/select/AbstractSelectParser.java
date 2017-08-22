@@ -174,12 +174,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         parametersIndex = selectStatement.getParametersIndex();
     }
     
-    protected final void parseHaving() {
-        if (lexerEngine.equalAny(DefaultKeyword.HAVING)) {
-            throw new SQLParsingUnsupportedException(DefaultKeyword.HAVING);
-        }
-    }
-    
     protected final void parseRest() {
         Collection<Keyword> unsupportedRestKeywords = new LinkedList<>();
         unsupportedRestKeywords.addAll(Arrays.asList(DefaultKeyword.UNION, DefaultKeyword.INTERSECT, DefaultKeyword.EXCEPT, DefaultKeyword.MINUS));

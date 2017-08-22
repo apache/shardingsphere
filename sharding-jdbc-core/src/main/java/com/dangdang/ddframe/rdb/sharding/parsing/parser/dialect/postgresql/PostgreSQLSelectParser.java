@@ -31,6 +31,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
@@ -53,6 +54,8 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
     private final GroupBySQLParser groupBySQLParser;
     
+    private final HavingSQLParser havingSQLParser;
+    
     private final AbstractOrderBySQLParser orderBySQLParser;
     
     public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
@@ -60,6 +63,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         distinctSQLParser = new DistinctSQLParser(lexerEngine);
         selectListSQLParser = new SelectListSQLParser(shardingRule, lexerEngine);
         groupBySQLParser = new GroupBySQLParser(lexerEngine);
+        havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new PostgreSQLOrderBySQLParser(lexerEngine);
     }
     
@@ -70,7 +74,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         parseFrom(selectStatement);
         parseWhere(selectStatement);
         groupBySQLParser.parse(selectStatement);
-        parseHaving();
+        havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);
         parseLimit(selectStatement);
         parseFor();
