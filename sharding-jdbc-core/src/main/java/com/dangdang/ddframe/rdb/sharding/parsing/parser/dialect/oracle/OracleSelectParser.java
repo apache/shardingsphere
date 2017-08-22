@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
@@ -52,6 +51,8 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     private final HavingSQLParser havingSQLParser;
     
+    private final OracleModelClauseParser modelClauseParser;
+    
     private final AbstractOrderBySQLParser orderBySQLParser;
     
     private final OracleForParser forParser;
@@ -66,6 +67,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(shardingRule, lexerEngine);
         groupBySQLParser = new OracleGroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
+        modelClauseParser = new OracleModelClauseParser(lexerEngine);
         orderBySQLParser = new OracleOrderBySQLParser(lexerEngine);
         forParser = new OracleForParser(lexerEngine);
         selectRestSQLParser = new SelectRestSQLParser(lexerEngine);
@@ -80,89 +82,10 @@ public final class OracleSelectParser extends AbstractSelectParser {
         hierarchicalQueryClauseParser.parse(selectStatement);
         groupBySQLParser.parse(selectStatement);
         havingSQLParser.parse();
-        skipModelClause(selectStatement);
+        modelClauseParser.parse(selectStatement);
         orderBySQLParser.parse(selectStatement);
         forParser.parse(selectStatement);
         selectRestSQLParser.parse();
-    }
-    
-    private void skipModelClause(final SelectStatement selectStatement) {
-        if (!getLexerEngine().skipIfEqual(OracleKeyword.MODEL)) {
-            return;
-        }
-        skipCellReferenceOptions();
-        getLexerEngine().skipIfEqual(OracleKeyword.RETURN);
-        getLexerEngine().skipIfEqual(DefaultKeyword.ALL);
-        getLexerEngine().skipIfEqual(OracleKeyword.UPDATED);
-        getLexerEngine().skipIfEqual(OracleKeyword.ROWS);
-        while (getLexerEngine().skipIfEqual(OracleKeyword.REFERENCE)) {
-            getLexerEngine().nextToken();
-            getLexerEngine().accept(DefaultKeyword.ON);
-            getLexerEngine().skipParentheses(selectStatement);
-            skipModelColumnClause();
-            skipCellReferenceOptions();
-        }
-        skipMainModelClause(selectStatement);
-    }
-    
-    private void skipCellReferenceOptions() {
-        if (getLexerEngine().skipIfEqual(OracleKeyword.IGNORE)) {
-            getLexerEngine().accept(OracleKeyword.NAV);
-        } else if (getLexerEngine().skipIfEqual(OracleKeyword.KEEP)) {
-            getLexerEngine().accept(OracleKeyword.NAV);
-        }
-        if (getLexerEngine().skipIfEqual(DefaultKeyword.UNIQUE)) {
-            getLexerEngine().skipIfEqual(OracleKeyword.DIMENSION, OracleKeyword.SINGLE);
-            getLexerEngine().skipIfEqual(OracleKeyword.REFERENCE);
-        }
-    }
-    
-    private void skipMainModelClause(final SelectStatement selectStatement) {
-        if (getLexerEngine().skipIfEqual(OracleKeyword.MAIN)) {
-            getLexerEngine().nextToken();
-        }
-        skipQueryPartitionClause(selectStatement);
-        getLexerEngine().accept(OracleKeyword.DIMENSION);
-        getLexerEngine().accept(DefaultKeyword.BY);
-        getLexerEngine().skipParentheses(selectStatement);
-        getLexerEngine().accept(OracleKeyword.MEASURES);
-        getLexerEngine().skipParentheses(selectStatement);
-        skipCellReferenceOptions();
-        skipModelRulesClause(selectStatement);
-    }
-    
-    private void skipModelRulesClause(final SelectStatement selectStatement) {
-        if (getLexerEngine().skipIfEqual(OracleKeyword.RULES)) {
-            getLexerEngine().skipIfEqual(DefaultKeyword.UPDATE);
-            getLexerEngine().skipIfEqual(OracleKeyword.UPSERT);
-            if (getLexerEngine().skipIfEqual(OracleKeyword.AUTOMATIC)) {
-                getLexerEngine().accept(DefaultKeyword.ORDER);
-            } else if (getLexerEngine().skipIfEqual(OracleKeyword.SEQUENTIAL)) {
-                getLexerEngine().accept(DefaultKeyword.ORDER);
-            }
-        }
-        if (getLexerEngine().skipIfEqual(DefaultKeyword.ITERATE)) {
-            getLexerEngine().skipParentheses(selectStatement);
-            if (getLexerEngine().skipIfEqual(DefaultKeyword.UNTIL)) {
-                getLexerEngine().skipParentheses(selectStatement);
-            }
-        }
-        getLexerEngine().skipParentheses(selectStatement);
-    }
-    
-    private void skipQueryPartitionClause(final SelectStatement selectStatement) {
-        if (!getLexerEngine().skipIfEqual(OracleKeyword.PARTITION)) {
-            return;
-        }
-        getLexerEngine().accept(DefaultKeyword.BY);
-        if (!getLexerEngine().equalAny(Symbol.LEFT_PAREN)) {
-            throw new UnsupportedOperationException("Cannot support PARTITION BY without ()");
-        }
-        getLexerEngine().skipParentheses(selectStatement);
-    }
-    
-    private void skipModelColumnClause() {
-        throw new SQLParsingUnsupportedException(getLexerEngine().getCurrentToken().getType());
     }
     
     @Override
