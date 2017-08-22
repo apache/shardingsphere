@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
@@ -51,6 +50,8 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
     private  final PostgreSQLLimitSQLParser limitSQLParser;
     
+    private  final PostgreSQLForSQLParser forSQLParser;
+    
     public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new WhereSQLParser(lexerEngine));
         distinctSQLParser = new DistinctSQLParser(lexerEngine);
@@ -59,6 +60,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new PostgreSQLOrderBySQLParser(lexerEngine);
         limitSQLParser = new PostgreSQLLimitSQLParser(lexerEngine);
+        forSQLParser = new PostgreSQLForSQLParser(lexerEngine);
     }
     
     @Override
@@ -71,19 +73,8 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);
         limitSQLParser.parse(selectStatement);
-        parseFor();
+        forSQLParser.parse();
         parseRest();
-    }
-    
-    private void parseFor() {
-        if (!getLexerEngine().skipIfEqual(DefaultKeyword.FOR)) {
-            return;
-        }
-        getLexerEngine().skipIfEqual(DefaultKeyword.UPDATE, PostgreSQLKeyword.SHARE);
-        if (getLexerEngine().equalAny(DefaultKeyword.OF)) {
-            throw new SQLParsingUnsupportedException(DefaultKeyword.OF);
-        }
-        getLexerEngine().skipIfEqual(PostgreSQLKeyword.NOWAIT);
     }
     
     @Override
