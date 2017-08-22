@@ -40,7 +40,6 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -74,9 +73,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     private final WhereSQLParser whereSQLParser;
     
     private final List<SelectItem> items = new LinkedList<>();
-    
-    @Setter
-    private int parametersIndex;
     
     public AbstractSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final WhereSQLParser whereSQLParser) {
         this.shardingRule = shardingRule;
@@ -168,7 +164,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     protected final void parseWhere(final SelectStatement selectStatement) {
         whereSQLParser.parseWhere(shardingRule, selectStatement, items);
-        parametersIndex = selectStatement.getParametersIndex();
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {
