@@ -21,12 +21,8 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLOrderBySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
@@ -55,6 +51,8 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     private final AbstractOrderBySQLParser orderBySQLParser;
     
+    private final SQLServerOffsetParser sqlServerOffsetParser;
+    
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new SQLServerWhereSQLParser(lexerEngine));
         distinctSQLParser = new DistinctSQLParser(lexerEngine);
@@ -63,6 +61,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         groupBySQLParser = new GroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new MySQLOrderBySQLParser(lexerEngine);
+        sqlServerOffsetParser = new SQLServerOffsetParser(lexerEngine);
     }
     
     @Override
@@ -75,47 +74,8 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         groupBySQLParser.parse(selectStatement);
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);
-        parseOffset(selectStatement);
+        sqlServerOffsetParser.parse(selectStatement);
         parseFor();
-    }
-    
-    private void parseOffset(final SelectStatement selectStatement) {
-        if (!getLexerEngine().skipIfEqual(SQLServerKeyword.OFFSET)) {
-            return;
-        }
-        int offsetValue = -1;
-        int offsetIndex = -1;
-        if (getLexerEngine().equalAny(Literals.INT)) {
-            offsetValue = Integer.parseInt(getLexerEngine().getCurrentToken().getLiterals());
-        } else if (getLexerEngine().equalAny(Symbol.QUESTION)) {
-            offsetIndex = getParametersIndex();
-            selectStatement.increaseParametersIndex();
-        } else {
-            throw new SQLParsingException(getLexerEngine());
-        }
-        getLexerEngine().nextToken();
-        Limit limit = new Limit(true);
-        if (getLexerEngine().skipIfEqual(DefaultKeyword.FETCH)) {
-            getLexerEngine().nextToken();
-            int rowCountValue = -1;
-            int rowCountIndex = -1;
-            getLexerEngine().nextToken();
-            if (getLexerEngine().equalAny(Literals.INT)) {
-                rowCountValue = Integer.parseInt(getLexerEngine().getCurrentToken().getLiterals());
-            } else if (getLexerEngine().equalAny(Symbol.QUESTION)) {
-                rowCountIndex = getParametersIndex();
-                selectStatement.increaseParametersIndex();
-            } else {
-                throw new SQLParsingException(getLexerEngine());
-            }
-            getLexerEngine().nextToken();
-            getLexerEngine().nextToken();
-            limit.setRowCount(new LimitValue(rowCountValue, rowCountIndex));
-            limit.setOffset(new LimitValue(offsetValue, offsetIndex));
-        } else {
-            limit.setOffset(new LimitValue(offsetValue, offsetIndex));
-        }
-        selectStatement.setLimit(limit);
     }
     
     private void parseFor() {
