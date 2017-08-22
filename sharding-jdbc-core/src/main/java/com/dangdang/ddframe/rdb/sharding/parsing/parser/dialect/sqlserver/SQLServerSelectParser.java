@@ -27,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
@@ -42,6 +43,8 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     private final SQLServerTopParser sqlServerTopParser;
     
     private final SelectListSQLParser selectListSQLParser;
+    
+    private final WhereSQLParser whereSQLParser;
     
     private final GroupBySQLParser groupBySQLParser;
     
@@ -60,6 +63,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         distinctSQLParser = new DistinctSQLParser(lexerEngine);
         sqlServerTopParser = new SQLServerTopParser(lexerEngine);
         selectListSQLParser = new SQLServerSelectListSQLParser(shardingRule, lexerEngine);
+        whereSQLParser = new SQLServerWhereSQLParser(lexerEngine);
         groupBySQLParser = new GroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new MySQLOrderBySQLParser(lexerEngine);
@@ -74,7 +78,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         sqlServerTopParser.parse(selectStatement);
         selectListSQLParser.parse(selectStatement, getItems());
         parseFrom(selectStatement);
-        parseWhere(selectStatement);
+        whereSQLParser.parse(getShardingRule(), selectStatement, getItems());
         groupBySQLParser.parse(selectStatement);
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);

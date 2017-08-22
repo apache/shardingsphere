@@ -30,6 +30,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
@@ -46,6 +47,8 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     private final SelectListSQLParser selectListSQLParser;
     
+    private final WhereSQLParser whereSQLParser;
+    
     private final GroupBySQLParser groupBySQLParser;
     
     private final HavingSQLParser havingSQLParser;
@@ -58,6 +61,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         super(shardingRule, lexerEngine, new OracleWhereSQLParser(lexerEngine));
         distinctSQLParser = new OracleDistinctSQLParser(lexerEngine);
         selectListSQLParser = new OracleSelectListSQLParser(shardingRule, lexerEngine);
+        whereSQLParser = new OracleWhereSQLParser(lexerEngine);
         groupBySQLParser = new OracleGroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new OracleOrderBySQLParser(lexerEngine);
@@ -69,7 +73,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         distinctSQLParser.parse();
         selectListSQLParser.parse(selectStatement, getItems());
         parseFrom(selectStatement);
-        parseWhere(selectStatement);
+        whereSQLParser.parse(getShardingRule(), selectStatement, getItems());
         skipHierarchicalQueryClause(selectStatement);
         groupBySQLParser.parse(selectStatement);
         havingSQLParser.parse();
@@ -90,7 +94,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
             return;
         }
         getLexerEngine().accept(DefaultKeyword.WITH);
-        getWhereSQLParser().parseComparisonCondition(getShardingRule(), selectStatement, Collections.<SelectItem>emptyList());
+        whereSQLParser.parseComparisonCondition(getShardingRule(), selectStatement, Collections.<SelectItem>emptyList());
     }
     
     private void skipConnect(final SelectStatement selectStatement) {
@@ -102,7 +106,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         if (getLexerEngine().skipIfEqual(OracleKeyword.NOCYCLE)) {
             getLexerEngine().skipIfEqual(OracleKeyword.PRIOR);
         }
-        getWhereSQLParser().parseComparisonCondition(getShardingRule(), selectStatement, Collections.<SelectItem>emptyList());
+        whereSQLParser.parseComparisonCondition(getShardingRule(), selectStatement, Collections.<SelectItem>emptyList());
     }
     
     private void skipModelClause(final SelectStatement selectStatement) {

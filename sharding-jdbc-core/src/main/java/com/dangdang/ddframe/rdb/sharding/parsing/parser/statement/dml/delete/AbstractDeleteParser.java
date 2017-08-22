@@ -64,7 +64,7 @@ public abstract class AbstractDeleteParser implements SQLStatementParser {
         DMLStatement result = new DMLStatement();
         tableSQLParser.parseSingleTable(result);
         lexerEngine.skipUntil(DefaultKeyword.WHERE);
-        whereParser.parseWhere(shardingRule, result, Collections.<SelectItem>emptyList());
+        whereParser.parse(shardingRule, result, Collections.<SelectItem>emptyList());
         return result;
     }
     

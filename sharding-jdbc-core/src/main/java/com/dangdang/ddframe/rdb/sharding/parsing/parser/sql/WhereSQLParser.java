@@ -48,12 +48,12 @@ public class WhereSQLParser implements SQLParser {
     }
     
     /**
-     * 解析查询条件.
+     * 解析WHERE.
      *
      * @param sqlStatement SQL语句对象
      * @param items 选择项集合
      */
-    public void parseWhere(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
+    public void parse(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         aliasSQLParser.parse();
         if (lexerEngine.skipIfEqual(DefaultKeyword.WHERE)) {
             parseConditions(shardingRule, sqlStatement, items);

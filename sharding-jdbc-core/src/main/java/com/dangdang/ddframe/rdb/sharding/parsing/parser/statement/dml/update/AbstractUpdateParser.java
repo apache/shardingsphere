@@ -76,7 +76,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
         parseSetItems(result);
         lexerEngine.skipUntil(DefaultKeyword.WHERE);
         result.setParametersIndex(parametersIndex);
-        whereSQLParser.parseWhere(shardingRule, result, Collections.<SelectItem>emptyList());
+        whereSQLParser.parse(shardingRule, result, Collections.<SelectItem>emptyList());
         return result;
     }
     

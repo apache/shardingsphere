@@ -70,8 +70,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final TableSQLParser tableSQLParser;
     
-    private final WhereSQLParser whereSQLParser;
-    
     private final List<SelectItem> items = new LinkedList<>();
     
     public AbstractSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final WhereSQLParser whereSQLParser) {
@@ -79,7 +77,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         this.lexerEngine = lexerEngine;
         aliasSQLParser = new AliasSQLParser(lexerEngine);
         expressionSQLParser = new ExpressionSQLParser(lexerEngine);
-        this.whereSQLParser = whereSQLParser;
         tableSQLParser = new TableSQLParser(lexerEngine);
     }
     
@@ -160,10 +157,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             }
             parseJoinTable(selectStatement);
         }
-    }
-    
-    protected final void parseWhere(final SelectStatement selectStatement) {
-        whereSQLParser.parseWhere(shardingRule, selectStatement, items);
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {
