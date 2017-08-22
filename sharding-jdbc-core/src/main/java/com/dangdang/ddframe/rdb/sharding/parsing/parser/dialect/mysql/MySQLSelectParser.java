@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
@@ -33,6 +32,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
@@ -56,6 +56,8 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     
     private final AbstractOrderBySQLParser orderBySQLParser;
     
+    private final SelectRestSQLParser selectRestSQLParser;
+    
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new WhereSQLParser(lexerEngine));
         distinctSQLParser = new MySQLDistinctSQLParser(lexerEngine);
@@ -63,6 +65,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         groupBySQLParser = new MySQLGroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new MySQLOrderBySQLParser(lexerEngine);
+        selectRestSQLParser = new MySQLSelectRestSQLParser(lexerEngine);
     }
     
     @Override
@@ -76,7 +79,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);
         parseLimit(selectStatement);
-        parseRest();
+        selectRestSQLParser.parse();
     }
     
     private void skipBeforeSelectList() {
@@ -216,10 +219,5 @@ public final class MySQLSelectParser extends AbstractSelectParser {
             }
         }
         getLexerEngine().skipParentheses(selectStatement);
-    }
-    
-    @Override
-    protected Keyword[] getUnsupportedKeywordsRest() {
-        return new Keyword[] {DefaultKeyword.PROCEDURE, DefaultKeyword.INTO};
     }
 }

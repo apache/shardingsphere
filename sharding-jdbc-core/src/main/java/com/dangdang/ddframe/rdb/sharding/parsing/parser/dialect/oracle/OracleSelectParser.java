@@ -29,6 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
@@ -51,6 +52,8 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     private final AbstractOrderBySQLParser orderBySQLParser;
     
+    private final SelectRestSQLParser selectRestSQLParser;
+    
     public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new OracleWhereSQLParser(lexerEngine));
         distinctSQLParser = new OracleDistinctSQLParser(lexerEngine);
@@ -58,6 +61,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         groupBySQLParser = new OracleGroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new OracleOrderBySQLParser(lexerEngine);
+        selectRestSQLParser = new SelectRestSQLParser(lexerEngine);
     }
     
     @Override
@@ -72,7 +76,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         skipModelClause(selectStatement);
         orderBySQLParser.parse(selectStatement);
         skipFor(selectStatement);
-        parseRest();
+        selectRestSQLParser.parse();
     }
     
     private void skipHierarchicalQueryClause(final SelectStatement selectStatement) {

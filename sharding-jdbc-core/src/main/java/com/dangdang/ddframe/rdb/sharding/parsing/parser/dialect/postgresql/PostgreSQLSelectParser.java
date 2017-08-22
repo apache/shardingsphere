@@ -19,14 +19,12 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
@@ -52,6 +50,8 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
     private  final PostgreSQLForSQLParser forSQLParser;
     
+    private final SelectRestSQLParser selectRestSQLParser;
+    
     public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new WhereSQLParser(lexerEngine));
         distinctSQLParser = new DistinctSQLParser(lexerEngine);
@@ -61,6 +61,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         orderBySQLParser = new PostgreSQLOrderBySQLParser(lexerEngine);
         limitSQLParser = new PostgreSQLLimitSQLParser(lexerEngine);
         forSQLParser = new PostgreSQLForSQLParser(lexerEngine);
+        selectRestSQLParser = new PostgreSQLSelectRestSQLParser(lexerEngine);
     }
     
     @Override
@@ -74,11 +75,6 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         orderBySQLParser.parse(selectStatement);
         limitSQLParser.parse(selectStatement);
         forSQLParser.parse();
-        parseRest();
-    }
-    
-    @Override
-    protected Keyword[] getUnsupportedKeywordsRest() {
-        return new Keyword[] {PostgreSQLKeyword.WINDOW, DefaultKeyword.FETCH};
+        selectRestSQLParser.parse();
     }
 }

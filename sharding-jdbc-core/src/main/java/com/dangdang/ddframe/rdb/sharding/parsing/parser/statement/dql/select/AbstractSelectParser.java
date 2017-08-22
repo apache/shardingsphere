@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -43,8 +42,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -172,19 +169,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     protected final void parseWhere(final SelectStatement selectStatement) {
         whereSQLParser.parseWhere(shardingRule, selectStatement, items);
         parametersIndex = selectStatement.getParametersIndex();
-    }
-    
-    protected final void parseRest() {
-        Collection<Keyword> unsupportedRestKeywords = new LinkedList<>();
-        unsupportedRestKeywords.addAll(Arrays.asList(DefaultKeyword.UNION, DefaultKeyword.INTERSECT, DefaultKeyword.EXCEPT, DefaultKeyword.MINUS));
-        unsupportedRestKeywords.addAll(Arrays.asList(getUnsupportedKeywordsRest()));
-        if (lexerEngine.equalAny(unsupportedRestKeywords.toArray(new Keyword[unsupportedRestKeywords.size()]))) {
-            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
-        }
-    }
-    
-    protected Keyword[] getUnsupportedKeywordsRest() {
-        return new Keyword[0];
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {

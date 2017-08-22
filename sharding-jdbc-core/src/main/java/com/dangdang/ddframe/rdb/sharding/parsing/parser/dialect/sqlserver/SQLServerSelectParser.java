@@ -26,6 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
@@ -48,9 +49,11 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     private final AbstractOrderBySQLParser orderBySQLParser;
     
-    private final SQLServerOffsetParser offsetParser;
+    private final SQLServerOffsetSQLParser offsetSQLParser;
     
-    private final SQLServerForParser forParser;
+    private final SQLServerForSQLParser forSQLParser;
+    
+    private final SelectRestSQLParser selectRestSQLParser;
     
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new SQLServerWhereSQLParser(lexerEngine));
@@ -60,8 +63,9 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         groupBySQLParser = new GroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new MySQLOrderBySQLParser(lexerEngine);
-        offsetParser = new SQLServerOffsetParser(lexerEngine);
-        forParser = new SQLServerForParser(lexerEngine);
+        offsetSQLParser = new SQLServerOffsetSQLParser(lexerEngine);
+        forSQLParser = new SQLServerForSQLParser(lexerEngine);
+        selectRestSQLParser = new SelectRestSQLParser(lexerEngine);
     }
     
     @Override
@@ -74,8 +78,9 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         groupBySQLParser.parse(selectStatement);
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);
-        offsetParser.parse(selectStatement);
-        forParser.parse();
+        offsetSQLParser.parse(selectStatement);
+        forSQLParser.parse();
+        selectRestSQLParser.parse();
     }
     
     @Override

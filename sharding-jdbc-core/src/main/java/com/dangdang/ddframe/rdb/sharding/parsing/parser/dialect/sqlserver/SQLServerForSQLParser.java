@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class SQLServerForParser implements SQLParser {
+public final class SQLServerForSQLParser implements SQLParser {
     
     private final LexerEngine lexerEngine;
     
