@@ -33,6 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
@@ -44,13 +45,16 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
  */
 public final class SQLServerSelectParser extends AbstractSelectParser {
     
+    private final DistinctSQLParser distinctSQLParser;
+    
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new SQLServerWhereSQLParser(lexerEngine));
+        distinctSQLParser = new DistinctSQLParser(lexerEngine);
     }
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-        parseDistinct();
+        distinctSQLParser.parse();
         parseTop(selectStatement);
         parseSelectList(selectStatement);
         parseFrom(selectStatement);

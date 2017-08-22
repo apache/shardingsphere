@@ -19,16 +19,17 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
@@ -42,13 +43,16 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
  */
 public final class MySQLSelectParser extends AbstractSelectParser {
     
+    private final DistinctSQLParser distinctSQLParser;
+    
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new WhereSQLParser(lexerEngine));
+        distinctSQLParser = new MySQLDistinctSQLParser(lexerEngine);
     }
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-        parseDistinct();
+        distinctSQLParser.parse();
         skipBeforeSelectList();
         parseSelectList(selectStatement);
         parseFrom(selectStatement);
@@ -156,11 +160,6 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         result.setRowCount(new LimitValue(value, index));
         result.setOffset(new LimitValue(offsetValue, offsetIndex));
         return result;
-    }
-    
-    @Override
-    protected Keyword[] getSynonymousKeywordsForDistinct() {
-        return new Keyword[] {MySQLKeyword.DISTINCTROW};
     }
     
     @Override

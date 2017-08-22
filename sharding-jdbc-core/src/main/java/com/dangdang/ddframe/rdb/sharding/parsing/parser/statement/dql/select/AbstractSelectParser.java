@@ -120,20 +120,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     protected abstract void parseInternal(final SelectStatement selectStatement);
     
-    protected final void parseDistinct() {
-        lexerEngine.skipAll(DefaultKeyword.ALL);
-        Collection<Keyword> distinctKeywords = new LinkedList<>();
-        distinctKeywords.add(DefaultKeyword.DISTINCT);
-        distinctKeywords.addAll(Arrays.asList(getSynonymousKeywordsForDistinct()));
-        if (lexerEngine.equalAny(distinctKeywords.toArray(new Keyword[distinctKeywords.size()]))) {
-            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
-        }
-    }
-    
-    protected Keyword[] getSynonymousKeywordsForDistinct() {
-        return new Keyword[0];
-    }
-    
     protected final void parseSelectList(final SelectStatement selectStatement) {
         do {
             selectStatement.getItems().add(parseSelectItem(selectStatement));
