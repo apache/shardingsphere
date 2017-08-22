@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
@@ -41,6 +40,8 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     
     private final DistinctSQLParser distinctSQLParser;
     
+    private final MySQLSelectOptionSQLParser selectOptionSQLParser;
+    
     private final SelectListSQLParser selectListSQLParser;
     
     private final WhereSQLParser whereSQLParser;
@@ -58,6 +59,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
         distinctSQLParser = new MySQLDistinctSQLParser(lexerEngine);
+        selectOptionSQLParser = new MySQLSelectOptionSQLParser(lexerEngine);
         selectListSQLParser = new SelectListSQLParser(shardingRule, lexerEngine);
         whereSQLParser = new WhereSQLParser(lexerEngine);
         groupBySQLParser = new MySQLGroupBySQLParser(lexerEngine);
@@ -70,7 +72,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
         distinctSQLParser.parse();
-        skipBeforeSelectList();
+        selectOptionSQLParser.parse();
         selectListSQLParser.parse(selectStatement, getItems());
         parseFrom(selectStatement);
         whereSQLParser.parse(getShardingRule(), selectStatement, getItems());
@@ -79,11 +81,6 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         orderBySQLParser.parse(selectStatement);
         limitSQLParser.parse(selectStatement);
         selectRestSQLParser.parse();
-    }
-    
-    private void skipBeforeSelectList() {
-        getLexerEngine().skipAll(MySQLKeyword.HIGH_PRIORITY, DefaultKeyword.STRAIGHT_JOIN, MySQLKeyword.SQL_SMALL_RESULT, MySQLKeyword.SQL_BIG_RESULT, MySQLKeyword.SQL_BUFFER_RESULT, 
-                MySQLKeyword.SQL_CACHE, MySQLKeyword.SQL_NO_CACHE, MySQLKeyword.SQL_CALC_FOUND_ROWS);
     }
     
     @Override
