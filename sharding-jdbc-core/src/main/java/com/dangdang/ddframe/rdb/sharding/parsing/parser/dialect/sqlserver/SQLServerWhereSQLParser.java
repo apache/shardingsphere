@@ -14,8 +14,8 @@ import java.util.List;
  */
 public final class SQLServerWhereSQLParser extends WhereSQLParser {
     
-    public SQLServerWhereSQLParser(final LexerEngine commonParser) {
-        super(commonParser);
+    public SQLServerWhereSQLParser(final LexerEngine lexerEngine) {
+        super(lexerEngine);
     }
     
     @Override

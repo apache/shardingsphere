@@ -31,8 +31,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete.Abs
  */
 public final class SQLServerDeleteParser extends AbstractDeleteParser {
     
-    public SQLServerDeleteParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser);
+    public SQLServerDeleteParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
     
     @Override

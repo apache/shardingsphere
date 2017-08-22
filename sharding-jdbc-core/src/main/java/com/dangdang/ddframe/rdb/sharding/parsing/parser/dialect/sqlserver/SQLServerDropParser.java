@@ -30,8 +30,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.drop.Abstr
  */
 public final class SQLServerDropParser extends AbstractDropParser {
     
-    public SQLServerDropParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser);
+    public SQLServerDropParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
     
     @Override

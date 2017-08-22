@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.Abs
  */
 public final class SQLServerInsertParser extends AbstractInsertParser {
     
-    public SQLServerInsertParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser);
+    public SQLServerInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
 }

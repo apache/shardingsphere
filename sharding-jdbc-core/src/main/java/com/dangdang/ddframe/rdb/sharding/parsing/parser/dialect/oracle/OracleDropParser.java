@@ -29,8 +29,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.drop.Abstr
  */
 public final class OracleDropParser extends AbstractDropParser {
     
-    public OracleDropParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser);
+    public OracleDropParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
     
     @Override

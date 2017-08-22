@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter.Abst
  */
 public final class MySQLAlterParser extends AbstractAlterParser {
     
-    public MySQLAlterParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser);
+    public MySQLAlterParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
 }

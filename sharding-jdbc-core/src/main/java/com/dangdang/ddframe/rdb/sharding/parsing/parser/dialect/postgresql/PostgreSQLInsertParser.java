@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.Abs
  */
 public final class PostgreSQLInsertParser extends AbstractInsertParser {
     
-    public PostgreSQLInsertParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser);
+    public PostgreSQLInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
 }

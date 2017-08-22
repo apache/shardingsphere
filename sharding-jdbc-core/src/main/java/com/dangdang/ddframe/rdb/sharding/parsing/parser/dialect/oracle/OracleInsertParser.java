@@ -31,8 +31,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.Abs
  */
 public final class OracleInsertParser extends AbstractInsertParser {
     
-    public OracleInsertParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser);
+    public OracleInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
     
     @Override

@@ -26,8 +26,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete.Abs
 
 public class OracleDeleteParser extends AbstractDeleteParser {
     
-    public OracleDeleteParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser);
+    public OracleDeleteParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
     
     @Override

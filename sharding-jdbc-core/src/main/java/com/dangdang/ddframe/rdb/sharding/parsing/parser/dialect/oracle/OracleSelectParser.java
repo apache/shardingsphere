@@ -39,8 +39,8 @@ import java.util.Collections;
  */
 public final class OracleSelectParser extends AbstractSelectParser {
     
-    public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser, new OracleWhereSQLParser(commonParser));
+    public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine, new OracleWhereSQLParser(lexerEngine));
     }
     
     @Override

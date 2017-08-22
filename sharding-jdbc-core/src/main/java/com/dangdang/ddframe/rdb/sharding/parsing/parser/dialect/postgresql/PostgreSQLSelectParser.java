@@ -44,8 +44,8 @@ import com.google.common.base.Optional;
  */
 public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
-    public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser, new WhereSQLParser(commonParser));
+    public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine, new WhereSQLParser(lexerEngine));
     }
     
     @Override

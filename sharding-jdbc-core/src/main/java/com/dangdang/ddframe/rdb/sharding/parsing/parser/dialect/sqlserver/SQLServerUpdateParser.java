@@ -30,8 +30,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.Abs
  */
 public final class SQLServerUpdateParser extends AbstractUpdateParser {
     
-    public SQLServerUpdateParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser);
+    public SQLServerUpdateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
     
     @Override

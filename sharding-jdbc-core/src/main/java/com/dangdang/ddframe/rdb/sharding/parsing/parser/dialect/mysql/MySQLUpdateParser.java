@@ -30,8 +30,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.Abs
  */
 public final class MySQLUpdateParser extends AbstractUpdateParser {
     
-    public MySQLUpdateParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser);
+    public MySQLUpdateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
     
     @Override

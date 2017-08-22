@@ -42,8 +42,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
  */
 public final class MySQLSelectParser extends AbstractSelectParser {
     
-    public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
-        super(shardingRule, commonParser, new WhereSQLParser(commonParser));
+    public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine, new WhereSQLParser(lexerEngine));
     }
     
     @Override

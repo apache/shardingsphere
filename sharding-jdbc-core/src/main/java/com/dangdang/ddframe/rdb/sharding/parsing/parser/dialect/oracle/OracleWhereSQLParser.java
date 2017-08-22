@@ -14,8 +14,8 @@ import java.util.List;
  */
 public final class OracleWhereSQLParser extends WhereSQLParser {
     
-    public OracleWhereSQLParser(final LexerEngine commonParser) {
-        super(commonParser);
+    public OracleWhereSQLParser(final LexerEngine lexerEngine) {
+        super(lexerEngine);
     }
     
     @Override
