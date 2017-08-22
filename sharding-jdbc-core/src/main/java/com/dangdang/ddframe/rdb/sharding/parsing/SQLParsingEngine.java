@@ -20,10 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngineFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
@@ -51,37 +48,13 @@ public final class SQLParsingEngine {
     
     private final ShardingRule shardingRule;
     
-    private final LexerEngine lexerEngine;
-    
-    public SQLParsingEngine(final DatabaseType dbType, final String sql, final ShardingRule shardingRule) {
-        this.dbType = dbType;
-        this.sql = sql;
-        this.shardingRule = shardingRule;
-        lexerEngine = getLexerEngine();
-    }
-    
-    private LexerEngine getLexerEngine() {
-        switch (dbType) {
-            case H2:
-            case MySQL:
-                return new LexerEngine(new MySQLLexer(sql));
-            case Oracle:
-                return new LexerEngine(new OracleLexer(sql));
-            case SQLServer:
-                return new LexerEngine(new SQLServerLexer(sql));
-            case PostgreSQL:
-                return new LexerEngine(new PostgreSQLLexer(sql));
-            default:
-                throw new UnsupportedOperationException(dbType.name());
-        }
-    }
-    
     /**
      * 解析SQL.
      * 
      * @return SQL语句对象
      */
     public SQLStatement parse() {
+        LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
         lexerEngine.nextToken();
         if (lexerEngine.equalAny(DefaultKeyword.SELECT)) {
             return SelectParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
