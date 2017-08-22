@@ -14,7 +14,7 @@ Sharding-JDBC直接封装JDBC API，可以理解为增强版的JDBC驱动，旧�
 * 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等。
 * 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。
 
-Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式。SQL解析使用Druid解析器，是目前性能最高的SQL解析器。
+Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式。采用"半理解"理念的SQL解析引擎，以达到性能与兼容性的最大平衡。
 
 Sharding-JDBC功能灵活且全面：
 

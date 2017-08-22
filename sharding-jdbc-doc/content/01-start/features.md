@@ -46,9 +46,10 @@ next = "/01-start/limitations/"
 3. Metrics统计监控
 
 ## 性能
-1. 基于Druid的高性能SQL解析
+1. 半理解"理念的SQL解析引擎
 2. 多线程处理结果归并
 3. 性能损失率约0.02%
 
 ## 稳定性
-完善的疲劳测试，普通查询无Full GC（GROUP BY除外）
+1. 完善的疲劳测试，普通查询无Full GC（GROUP BY除外）
+2. 多数据库、分片策略和语句的完整单元测试

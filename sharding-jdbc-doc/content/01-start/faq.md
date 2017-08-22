@@ -14,11 +14,11 @@ next = "/01-start/features/"
 
 Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考[lombok官网](https://projectlombok.org/download.html)。
 
-### 2. java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption().....异常的解决方法？
+### 2. 1.5.0版本之前出现java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption().....异常的解决方法？
 
 回答：
 
-目前Sharding-JDBC使用Druid作为SQL解析的基础库，请确保业务代码中使用的Druid与Sharding-JDBC使用的版本一致，目前Sharding-JDBC使用的是`1.0.12`版本。
+Sharding-JDBC在1.5.0版本之前使用Druid作为SQL解析的基础库，需确保业务代码中使用的Druid与Sharding-JDBC使用的版本一致，之前使用的Druid是`1.0.12`版本。
 
 ### 3. 使用Spring命名空间时在网上相应地址找不到xsd?
 
