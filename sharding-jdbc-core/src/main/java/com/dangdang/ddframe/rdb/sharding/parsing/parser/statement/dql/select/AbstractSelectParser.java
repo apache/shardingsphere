@@ -108,9 +108,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private void parseTable(final SelectStatement selectStatement) {
         if (lexerEngine.skipIfEqual(Symbol.LEFT_PAREN)) {
-            lexerEngine.skipUselessParentheses();
             selectStatement.setSubQueryStatement(parseInternal());
-            lexerEngine.skipUselessParentheses();
             if (lexerEngine.equalAny(DefaultKeyword.WHERE, Assist.END)) {
                 return;
             }
