@@ -75,15 +75,15 @@ public class ParserAssertHelper {
         return result;
     }
     
-    public static void assertSqlTokens(final List<TableToken> tableTokens, final List<SQLToken> actual) {
+    public static void assertSqlTokens(final List<TableToken> expected, final List<SQLToken> actual) {
         // TODO add more sql tokens
-        if (null == tableTokens) {
+        if (null == expected) {
             return;
         }
-        Iterator<com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken> sqlTokenIterator = buildExpectedTableTokens(tableTokens).iterator();
+        Iterator<com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken> sqlTokenIterator = buildExpectedTableTokens(expected).iterator();
         for (SQLToken each : actual) {
-            com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken expected = sqlTokenIterator.next();
-            assertTrue(new ReflectionEquals(expected).matches(each));
+            com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken tableToken = sqlTokenIterator.next();
+            assertTrue(new ReflectionEquals(tableToken).matches(each));
         }
         assertFalse(sqlTokenIterator.hasNext());
     }
