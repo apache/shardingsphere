@@ -18,24 +18,18 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.CommonSelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLOrderBySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 
 /**
  * SQLServer Select语句解析器.
@@ -44,138 +38,53 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
  */
 public final class SQLServerSelectParser extends AbstractSelectParser {
     
+    private final DistinctSQLParser distinctSQLParser;
+    
+    private final SQLServerTopParser sqlServerTopParser;
+    
+    private final SelectListSQLParser selectListSQLParser;
+    
+    private final WhereSQLParser whereSQLParser;
+    
+    private final GroupBySQLParser groupBySQLParser;
+    
+    private final HavingSQLParser havingSQLParser;
+    
+    private final AbstractOrderBySQLParser orderBySQLParser;
+    
+    private final SQLServerOffsetSQLParser offsetSQLParser;
+    
+    private final SQLServerForSQLParser forSQLParser;
+    
+    private final SelectRestSQLParser selectRestSQLParser;
+    
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new SQLServerWhereSQLParser(lexerEngine));
+        distinctSQLParser = new DistinctSQLParser(lexerEngine);
+        sqlServerTopParser = new SQLServerTopParser(lexerEngine);
+        selectListSQLParser = new SQLServerSelectListSQLParser(shardingRule, lexerEngine);
+        whereSQLParser = new SQLServerWhereSQLParser(lexerEngine);
+        groupBySQLParser = new GroupBySQLParser(lexerEngine);
+        havingSQLParser = new HavingSQLParser(lexerEngine);
+        orderBySQLParser = new MySQLOrderBySQLParser(lexerEngine);
+        offsetSQLParser = new SQLServerOffsetSQLParser(lexerEngine);
+        forSQLParser = new SQLServerForSQLParser(lexerEngine);
+        selectRestSQLParser = new SelectRestSQLParser(lexerEngine);
     }
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-        parseDistinct();
-        parseTop(selectStatement);
-        parseSelectList(selectStatement);
+        distinctSQLParser.parse();
+        sqlServerTopParser.parse(selectStatement);
+        selectListSQLParser.parse(selectStatement, getItems());
         parseFrom(selectStatement);
-        parseWhere(selectStatement);
-        parseGroupBy(selectStatement);
-        parseHaving();
-        parseOrderBy(selectStatement);
-        parseOffset(selectStatement);
-        parseFor();
-    }
-    
-    private void parseTop(final SelectStatement selectStatement) {
-        if (!getLexerEngine().skipIfEqual(SQLServerKeyword.TOP)) {
-            return;
-        }
-        int beginPosition = getLexerEngine().getCurrentToken().getEndPosition();
-        if (!getLexerEngine().skipIfEqual(Symbol.LEFT_PAREN)) {
-            beginPosition = getLexerEngine().getCurrentToken().getEndPosition() - getLexerEngine().getCurrentToken().getLiterals().length();
-        }
-        SQLExpression sqlExpression = getExpressionSQLParser().parse(selectStatement);
-        getLexerEngine().skipIfEqual(Symbol.RIGHT_PAREN);
-        LimitValue rowCountValue;
-        if (sqlExpression instanceof SQLNumberExpression) {
-            int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
-            rowCountValue = new LimitValue(rowCount, -1);
-            selectStatement.getSqlTokens().add(new RowCountToken(beginPosition, rowCount));
-        } else if (sqlExpression instanceof SQLPlaceholderExpression) {
-            rowCountValue = new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex());
-        } else {
-            throw new SQLParsingException(getLexerEngine());
-        }
-        if (getLexerEngine().equalAny(SQLServerKeyword.PERCENT)) {
-            throw new SQLParsingUnsupportedException(SQLServerKeyword.PERCENT);
-        }
-        getLexerEngine().skipIfEqual(DefaultKeyword.WITH, SQLServerKeyword.TIES);
-        if (null == selectStatement.getLimit()) {
-            Limit limit = new Limit(false);
-            limit.setRowCount(rowCountValue);
-            selectStatement.setLimit(limit);
-        } else {
-            selectStatement.getLimit().setRowCount(rowCountValue);
-        }
-    }
-    
-    private void parseOffset(final SelectStatement selectStatement) {
-        if (!getLexerEngine().skipIfEqual(SQLServerKeyword.OFFSET)) {
-            return;
-        }
-        int offsetValue = -1;
-        int offsetIndex = -1;
-        if (getLexerEngine().equalAny(Literals.INT)) {
-            offsetValue = Integer.parseInt(getLexerEngine().getCurrentToken().getLiterals());
-        } else if (getLexerEngine().equalAny(Symbol.QUESTION)) {
-            offsetIndex = getParametersIndex();
-            selectStatement.increaseParametersIndex();
-        } else {
-            throw new SQLParsingException(getLexerEngine());
-        }
-        getLexerEngine().nextToken();
-        Limit limit = new Limit(true);
-        if (getLexerEngine().skipIfEqual(DefaultKeyword.FETCH)) {
-            getLexerEngine().nextToken();
-            int rowCountValue = -1;
-            int rowCountIndex = -1;
-            getLexerEngine().nextToken();
-            if (getLexerEngine().equalAny(Literals.INT)) {
-                rowCountValue = Integer.parseInt(getLexerEngine().getCurrentToken().getLiterals());
-            } else if (getLexerEngine().equalAny(Symbol.QUESTION)) {
-                rowCountIndex = getParametersIndex();
-                selectStatement.increaseParametersIndex();
-            } else {
-                throw new SQLParsingException(getLexerEngine());
-            }
-            getLexerEngine().nextToken();
-            getLexerEngine().nextToken();
-            limit.setRowCount(new LimitValue(rowCountValue, rowCountIndex));
-            limit.setOffset(new LimitValue(offsetValue, offsetIndex));
-        } else {
-            limit.setOffset(new LimitValue(offsetValue, offsetIndex));
-        }
-        selectStatement.setLimit(limit);
-    }
-    
-    private void parseFor() {
-        if (!getLexerEngine().skipIfEqual(DefaultKeyword.FOR)) {
-            return;
-        }
-        if (getLexerEngine().equalAny(SQLServerKeyword.BROWSE)) {
-            getLexerEngine().nextToken();
-        } else if (getLexerEngine().skipIfEqual(SQLServerKeyword.XML)) {
-            while (true) {
-                if (getLexerEngine().equalAny(SQLServerKeyword.AUTO, SQLServerKeyword.TYPE, SQLServerKeyword.XMLSCHEMA)) {
-                    getLexerEngine().nextToken();
-                } else if (getLexerEngine().skipIfEqual(SQLServerKeyword.ELEMENTS)) {
-                    getLexerEngine().skipIfEqual(SQLServerKeyword.XSINIL);
-                } else {
-                    break;
-                }
-                if (getLexerEngine().equalAny(Symbol.COMMA)) {
-                    getLexerEngine().nextToken();
-                } else {
-                    break;
-                }
-            }
-        } else {
-            throw new SQLParsingUnsupportedException(getLexerEngine().getCurrentToken().getType());
-        }
-    }
-    
-    @Override
-    protected boolean isRowNumberSelectItem() {
-        return getLexerEngine().skipIfEqual(SQLServerKeyword.ROW_NUMBER);
-    }
-    
-    @Override
-    protected SelectItem parseRowNumberSelectItem(final SelectStatement selectStatement) {
-        getLexerEngine().skipParentheses(selectStatement);
-        getLexerEngine().accept(DefaultKeyword.OVER);
-        getLexerEngine().accept(Symbol.LEFT_PAREN);
-        if (getLexerEngine().equalAny(SQLServerKeyword.PARTITION)) {
-            throw new SQLParsingUnsupportedException(SQLServerKeyword.PARTITION);
-        }
-        parseOrderBy(selectStatement);
-        getLexerEngine().accept(Symbol.RIGHT_PAREN);
-        return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getAliasSQLParser().parse());
+        whereSQLParser.parse(getShardingRule(), selectStatement, getItems());
+        groupBySQLParser.parse(selectStatement);
+        havingSQLParser.parse();
+        orderBySQLParser.parse(selectStatement);
+        offsetSQLParser.parse(selectStatement);
+        forSQLParser.parse();
+        selectRestSQLParser.parse();
     }
     
     @Override
@@ -184,10 +93,5 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
             getLexerEngine().skipParentheses(selectStatement);
         }
         super.parseJoinTable(selectStatement);
-    }
-    
-    @Override
-    protected OrderType getNullOrderType() {
-        return OrderType.DESC;
     }
 }
