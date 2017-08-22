@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
@@ -29,7 +28,10 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
@@ -45,21 +47,30 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     
     private final DistinctSQLParser distinctSQLParser;
     
+    private final SelectListSQLParser selectListSQLParser;
+    
+    private final GroupBySQLParser groupBySQLParser;
+    
+    private final AbstractOrderBySQLParser orderBySQLParser;
+    
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new WhereSQLParser(lexerEngine));
         distinctSQLParser = new MySQLDistinctSQLParser(lexerEngine);
+        selectListSQLParser = new SelectListSQLParser(shardingRule, lexerEngine);
+        groupBySQLParser = new MySQLGroupBySQLParser(lexerEngine);
+        orderBySQLParser = new MySQLOrderBySQLParser(lexerEngine);
     }
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
         distinctSQLParser.parse();
         skipBeforeSelectList();
-        parseSelectList(selectStatement);
+        selectListSQLParser.parse(selectStatement, getItems());
         parseFrom(selectStatement);
         parseWhere(selectStatement);
-        parseGroupBy(selectStatement);
+        groupBySQLParser.parse(selectStatement);
         parseHaving();
-        parseOrderBy(selectStatement);
+        orderBySQLParser.parse(selectStatement);
         parseLimit(selectStatement);
         parseRest();
     }
@@ -201,16 +212,6 @@ public final class MySQLSelectParser extends AbstractSelectParser {
             }
         }
         getLexerEngine().skipParentheses(selectStatement);
-    }
-    
-    @Override
-    protected Keyword[] getSkippedKeywordAfterGroupBy() {
-        return new Keyword[] {DefaultKeyword.WITH, MySQLKeyword.ROLLUP};
-    }
-    
-    @Override
-    protected OrderType getNullOrderType() {
-        return OrderType.ASC;
     }
     
     @Override
