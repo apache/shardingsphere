@@ -19,13 +19,12 @@ package com.dangdang.ddframe.rdb.sharding.parsing;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter.AlterParserFactory;
@@ -36,7 +35,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete.Del
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.insert.InsertParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.UpdateParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -84,7 +82,7 @@ public final class SQLParsingEngine {
      * @return SQL语句对象
      */
     public SQLStatement parse() {
-        skipToSQLBegin();
+        lexerEngine.nextToken();
         if (lexerEngine.equalAny(DefaultKeyword.SELECT)) {
             return SelectParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
         }
@@ -110,23 +108,5 @@ public final class SQLParsingEngine {
             return TruncateParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
         }
         throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
-    }
-    
-    private void skipToSQLBegin() {
-        lexerEngine.nextToken();
-        lexerEngine.skipIfEqual(Symbol.SEMI);
-        if (lexerEngine.equalAny(DefaultKeyword.WITH)) {
-            skipWith();
-        }
-    }
-    
-    private void skipWith() {
-        lexerEngine.nextToken();
-        do {
-            lexerEngine.skipUntil(DefaultKeyword.AS);
-            lexerEngine.accept(DefaultKeyword.AS);
-            // TODO with 中包含 ? 无法获取
-            lexerEngine.skipParentheses(new SelectStatement());
-        } while (lexerEngine.skipIfEqual(Symbol.COMMA));
     }
 }

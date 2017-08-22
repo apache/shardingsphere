@@ -122,14 +122,6 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         // TODO
 //         parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1) SELECT field1 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1");
         parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT /*+ index(field1) */ INTO TABLE_XXX (`field1`) VALUES (1) RETURNING field1*2 LOG ERRORS INTO TABLE_LOG");
-        /* // TODO 不支持
-        parseWithSpecialSyntax(DatabaseType.SQLServer, 
-                "WITH field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx GROUP BY field1) INSERT TOP(10) INTO OUTPUT TABLE_XXX (`field1`) VALUES (1)");
-        */
-        parseWithSpecialSyntax(DatabaseType.PostgreSQL, 
-                "WITH RECURSIVE field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) INSERT INTO TABLE_XXX (field1) VALUES (1) RETURNING id");
-        parseWithSpecialSyntax(DatabaseType.PostgreSQL,
-                "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) INSERT INTO TABLE_XXX (field1) VALUES (1) RETURNING *");
     }
     
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
