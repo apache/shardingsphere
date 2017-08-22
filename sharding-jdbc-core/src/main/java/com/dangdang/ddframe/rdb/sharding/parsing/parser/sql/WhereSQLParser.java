@@ -3,7 +3,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
@@ -35,16 +35,16 @@ import java.util.List;
  */
 public class WhereSQLParser implements SQLParser {
     
-    private final CommonParser commonParser;
+    private final LexerEngine lexerEngine;
     
     private final AliasSQLParser aliasSQLParser;
     
     private final ExpressionSQLParser expressionSQLParser;
     
-    public WhereSQLParser(final CommonParser commonParser) {
-        this.commonParser = commonParser;
-        aliasSQLParser = new AliasSQLParser(commonParser);
-        expressionSQLParser = new ExpressionSQLParser(commonParser);
+    public WhereSQLParser(final LexerEngine lexerEngine) {
+        this.lexerEngine = lexerEngine;
+        aliasSQLParser = new AliasSQLParser(lexerEngine);
+        expressionSQLParser = new ExpressionSQLParser(lexerEngine);
     }
     
     /**
@@ -55,7 +55,7 @@ public class WhereSQLParser implements SQLParser {
      */
     public void parseWhere(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         aliasSQLParser.parse();
-        if (commonParser.skipIfEqual(DefaultKeyword.WHERE)) {
+        if (lexerEngine.skipIfEqual(DefaultKeyword.WHERE)) {
             parseConditions(shardingRule, sqlStatement, items);
         }
     }
@@ -63,32 +63,32 @@ public class WhereSQLParser implements SQLParser {
     private void parseConditions(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         do {
             parseComparisonCondition(shardingRule, sqlStatement, items);
-        } while (commonParser.skipIfEqual(DefaultKeyword.AND));
-        if (commonParser.equalAny(DefaultKeyword.OR)) {
-            throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
+        } while (lexerEngine.skipIfEqual(DefaultKeyword.AND));
+        if (lexerEngine.equalAny(DefaultKeyword.OR)) {
+            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
         }
     }
     
     // TODO 解析组合expr
     public void parseComparisonCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
-        commonParser.skipIfEqual(Symbol.LEFT_PAREN);
+        lexerEngine.skipIfEqual(Symbol.LEFT_PAREN);
         SQLExpression left = expressionSQLParser.parse(sqlStatement);
-        if (commonParser.equalAny(Symbol.EQ)) {
+        if (lexerEngine.equalAny(Symbol.EQ)) {
             parseEqualCondition(shardingRule, sqlStatement, left);
-            commonParser.skipIfEqual(Symbol.RIGHT_PAREN);
+            lexerEngine.skipIfEqual(Symbol.RIGHT_PAREN);
             return;
         }
-        if (commonParser.equalAny(DefaultKeyword.IN)) {
+        if (lexerEngine.equalAny(DefaultKeyword.IN)) {
             parseInCondition(shardingRule, sqlStatement, left);
-            commonParser.skipIfEqual(Symbol.RIGHT_PAREN);
+            lexerEngine.skipIfEqual(Symbol.RIGHT_PAREN);
             return;
         }
-        if (commonParser.equalAny(DefaultKeyword.BETWEEN)) {
+        if (lexerEngine.equalAny(DefaultKeyword.BETWEEN)) {
             parseBetweenCondition(shardingRule, sqlStatement, left);
-            commonParser.skipIfEqual(Symbol.RIGHT_PAREN);
+            lexerEngine.skipIfEqual(Symbol.RIGHT_PAREN);
             return;
         }
-        if (commonParser.equalAny(Symbol.LT, Symbol.GT, Symbol.LT_EQ, Symbol.GT_EQ)) {
+        if (lexerEngine.equalAny(Symbol.LT, Symbol.GT, Symbol.LT_EQ, Symbol.GT_EQ)) {
             if (left instanceof SQLIdentifierExpression && sqlStatement instanceof SelectStatement
                     && isRowNumberCondition(items, ((SQLIdentifierExpression) left).getName())) {
                 parseRowNumberCondition((SelectStatement) sqlStatement);
@@ -98,14 +98,14 @@ public class WhereSQLParser implements SQLParser {
             } else {
                 parseOtherCondition(sqlStatement);
             }
-        } else if (commonParser.equalAny(Symbol.LT_GT, DefaultKeyword.LIKE)) {
+        } else if (lexerEngine.equalAny(Symbol.LT_GT, DefaultKeyword.LIKE)) {
             parseOtherCondition(sqlStatement);
         }
-        commonParser.skipIfEqual(Symbol.RIGHT_PAREN);
+        lexerEngine.skipIfEqual(Symbol.RIGHT_PAREN);
     }
     
     private void parseEqualCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
-        commonParser.getLexer().nextToken();
+        lexerEngine.nextToken();
         SQLExpression right = expressionSQLParser.parse(sqlStatement);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if ((sqlStatement.getTables().isSingleTable() || left instanceof SQLPropertyExpression)
@@ -118,27 +118,27 @@ public class WhereSQLParser implements SQLParser {
     }
     
     private void parseInCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
-        commonParser.getLexer().nextToken();
-        commonParser.accept(Symbol.LEFT_PAREN);
+        lexerEngine.nextToken();
+        lexerEngine.accept(Symbol.LEFT_PAREN);
         List<SQLExpression> rights = new LinkedList<>();
         do {
-            if (commonParser.equalAny(Symbol.COMMA)) {
-                commonParser.getLexer().nextToken();
+            if (lexerEngine.equalAny(Symbol.COMMA)) {
+                lexerEngine.nextToken();
             }
             rights.add(expressionSQLParser.parse(sqlStatement));
-        } while (!commonParser.equalAny(Symbol.RIGHT_PAREN));
+        } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN));
         Optional<Column> column = find(sqlStatement.getTables(), left);
         if (column.isPresent()) {
             sqlStatement.getConditions().add(new Condition(column.get(), rights), shardingRule);
         }
-        commonParser.getLexer().nextToken();
+        lexerEngine.nextToken();
     }
     
     private void parseBetweenCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
-        commonParser.getLexer().nextToken();
+        lexerEngine.nextToken();
         List<SQLExpression> rights = new LinkedList<>();
         rights.add(expressionSQLParser.parse(sqlStatement));
-        commonParser.accept(DefaultKeyword.AND);
+        lexerEngine.accept(DefaultKeyword.AND);
         rights.add(expressionSQLParser.parse(sqlStatement));
         Optional<Column> column = find(sqlStatement.getTables(), left);
         if (column.isPresent()) {
@@ -151,8 +151,8 @@ public class WhereSQLParser implements SQLParser {
     }
     
     private void parseRowNumberCondition(final SelectStatement selectStatement) {
-        Symbol symbol = (Symbol) commonParser.getLexer().getCurrentToken().getType();
-        commonParser.getLexer().nextToken();
+        Symbol symbol = (Symbol) lexerEngine.getCurrentToken().getType();
+        lexerEngine.nextToken();
         SQLExpression sqlExpression = expressionSQLParser.parse(selectStatement);
         if (null == selectStatement.getLimit()) {
             selectStatement.setLimit(new Limit(false));
@@ -162,7 +162,7 @@ public class WhereSQLParser implements SQLParser {
                 int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
                 selectStatement.getLimit().setRowCount(new LimitValue(rowCount, -1));
                 selectStatement.getSqlTokens().add(new RowCountToken(
-                        commonParser.getLexer().getCurrentToken().getEndPosition() - String.valueOf(rowCount).length() - commonParser.getLexer().getCurrentToken().getLiterals().length(), rowCount));
+                        lexerEngine.getCurrentToken().getEndPosition() - String.valueOf(rowCount).length() - lexerEngine.getCurrentToken().getLiterals().length(), rowCount));
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
                 selectStatement.getLimit().setRowCount(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
             }
@@ -171,7 +171,7 @@ public class WhereSQLParser implements SQLParser {
                 int offset = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
                 selectStatement.getLimit().setOffset(new LimitValue(offset, -1));
                 selectStatement.getSqlTokens().add(new OffsetToken(
-                        commonParser.getLexer().getCurrentToken().getEndPosition() - String.valueOf(offset).length() - commonParser.getLexer().getCurrentToken().getLiterals().length(), offset));
+                        lexerEngine.getCurrentToken().getEndPosition() - String.valueOf(offset).length() - lexerEngine.getCurrentToken().getLiterals().length(), offset));
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
                 selectStatement.getLimit().setOffset(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
             }
@@ -179,7 +179,7 @@ public class WhereSQLParser implements SQLParser {
     }
     
     private void parseOtherCondition(final SQLStatement sqlStatement) {
-        commonParser.getLexer().nextToken();
+        lexerEngine.nextToken();
         expressionSQLParser.parse(sqlStatement);
     }
     

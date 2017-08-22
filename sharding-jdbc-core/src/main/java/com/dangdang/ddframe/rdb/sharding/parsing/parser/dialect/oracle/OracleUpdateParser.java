@@ -20,12 +20,12 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.update.AbstractUpdateParser;
 
 public class OracleUpdateParser extends AbstractUpdateParser {
     
-    public OracleUpdateParser(final ShardingRule shardingRule, final CommonParser commonParser) {
+    public OracleUpdateParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
         super(shardingRule, commonParser);
     }
     

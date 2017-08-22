@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.Postgr
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter.AlterParserFactory;
@@ -53,72 +53,80 @@ public final class SQLParsingEngine {
     
     private final ShardingRule shardingRule;
     
+    private final LexerEngine lexerEngine;
+    
+    public SQLParsingEngine(final DatabaseType dbType, final String sql, final ShardingRule shardingRule) {
+        this.dbType = dbType;
+        this.sql = sql;
+        this.shardingRule = shardingRule;
+        lexerEngine = getLexerEngine();
+    }
+    
+    private LexerEngine getLexerEngine() {
+        switch (dbType) {
+            case H2:
+            case MySQL:
+                return new LexerEngine(new MySQLLexer(sql));
+            case Oracle:
+                return new LexerEngine(new OracleLexer(sql));
+            case SQLServer:
+                return new LexerEngine(new SQLServerLexer(sql));
+            case PostgreSQL:
+                return new LexerEngine(new PostgreSQLLexer(sql));
+            default:
+                throw new UnsupportedOperationException(dbType.name());
+        }
+    }
+    
     /**
      * 解析SQL.
      * 
      * @return SQL语句对象
      */
     public SQLStatement parse() {
-        CommonParser commonParser = getCommonParser();
-        skipToSQLBegin(commonParser);
-        if (commonParser.equalAny(DefaultKeyword.SELECT)) {
-            return SelectParserFactory.newInstance(shardingRule, commonParser).parse();
+        skipToSQLBegin();
+        if (lexerEngine.equalAny(DefaultKeyword.SELECT)) {
+            return SelectParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
         }
-        if (commonParser.equalAny(DefaultKeyword.INSERT)) {
-            return InsertParserFactory.newInstance(shardingRule, commonParser).parse();
+        if (lexerEngine.equalAny(DefaultKeyword.INSERT)) {
+            return InsertParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
         }
-        if (commonParser.equalAny(DefaultKeyword.UPDATE)) {
-            return UpdateParserFactory.newInstance(shardingRule, commonParser).parse();
+        if (lexerEngine.equalAny(DefaultKeyword.UPDATE)) {
+            return UpdateParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
         }
-        if (commonParser.equalAny(DefaultKeyword.DELETE)) {
-            return DeleteParserFactory.newInstance(shardingRule, commonParser).parse();
+        if (lexerEngine.equalAny(DefaultKeyword.DELETE)) {
+            return DeleteParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
         }
-        if (commonParser.equalAny(DefaultKeyword.CREATE)) {
-            return CreateParserFactory.newInstance(shardingRule, commonParser).parse();
+        if (lexerEngine.equalAny(DefaultKeyword.CREATE)) {
+            return CreateParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
         }
-        if (commonParser.equalAny(DefaultKeyword.ALTER)) {
-            return AlterParserFactory.newInstance(shardingRule, commonParser).parse();
+        if (lexerEngine.equalAny(DefaultKeyword.ALTER)) {
+            return AlterParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
         }
-        if (commonParser.equalAny(DefaultKeyword.DROP)) {
-            return DropParserFactory.newInstance(shardingRule, commonParser).parse();
+        if (lexerEngine.equalAny(DefaultKeyword.DROP)) {
+            return DropParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
         }
-        if (commonParser.equalAny(DefaultKeyword.TRUNCATE)) {
-            return TruncateParserFactory.newInstance(shardingRule, commonParser).parse();
+        if (lexerEngine.equalAny(DefaultKeyword.TRUNCATE)) {
+            return TruncateParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
         }
-        throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
+        throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
     }
     
-    private CommonParser getCommonParser() {
-        switch (dbType) {
-            case H2:
-            case MySQL:
-                return new CommonParser(new MySQLLexer(sql));
-            case Oracle:
-                return new CommonParser(new OracleLexer(sql));
-            case SQLServer:
-                return new CommonParser(new SQLServerLexer(sql));
-            case PostgreSQL:
-                return new CommonParser(new PostgreSQLLexer(sql));
-            default:
-                throw new UnsupportedOperationException(dbType.name());
+    private void skipToSQLBegin() {
+        lexerEngine.nextToken();
+        lexerEngine.skipIfEqual(Symbol.SEMI);
+        if (lexerEngine.equalAny(DefaultKeyword.WITH)) {
+            skipWith();
         }
     }
     
-    private void skipToSQLBegin(final CommonParser parser) {
-        parser.getLexer().nextToken();
-        parser.skipIfEqual(Symbol.SEMI);
-        if (parser.equalAny(DefaultKeyword.WITH)) {
-            skipWith(parser);
-        }
-    }
-    
-    private void skipWith(final CommonParser parser) {
-        parser.getLexer().nextToken();
+    private void skipWith() {
+        lexerEngine.nextToken();
         do {
-            parser.skipUntil(DefaultKeyword.AS);
-            parser.accept(DefaultKeyword.AS);
+            lexerEngine.skipUntil(DefaultKeyword.AS);
+            lexerEngine.accept(DefaultKeyword.AS);
             // TODO with 中包含 ? 无法获取
-            parser.skipParentheses(new SelectStatement());
-        } while (parser.skipIfEqual(Symbol.COMMA));
+            lexerEngine.skipParentheses(new SelectStatement());
+        } while (lexerEngine.skipIfEqual(Symbol.COMMA));
     }
 }

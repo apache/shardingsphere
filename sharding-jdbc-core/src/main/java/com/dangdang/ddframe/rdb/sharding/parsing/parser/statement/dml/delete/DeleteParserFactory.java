@@ -18,11 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLDeleteParser;
@@ -40,24 +37,25 @@ public final class DeleteParserFactory {
     
     /**
      * 创建Delete语句解析器.
-     * 
+     *
+     * @param dbType 数据库类型
      * @param shardingRule 分库分表规则配置
-     * @param commonParser 解析器
+     * @param lexerEngine 解析器
      * @return Delete语句解析器
      */
-    public static AbstractDeleteParser newInstance(final ShardingRule shardingRule, final CommonParser commonParser) {
-        if (commonParser.getLexer() instanceof MySQLLexer) {
-            return new MySQLDeleteParser(shardingRule, commonParser);
+    public static AbstractDeleteParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        switch (dbType) {
+            case H2:
+            case MySQL:
+                return new MySQLDeleteParser(shardingRule, lexerEngine);
+            case Oracle:
+                return new OracleDeleteParser(shardingRule, lexerEngine);
+            case SQLServer:
+                return new SQLServerDeleteParser(shardingRule, lexerEngine);
+            case PostgreSQL:
+                return new PostgreSQLDeleteParser(shardingRule, lexerEngine);
+            default:
+                throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }
-        if (commonParser.getLexer() instanceof OracleLexer) {
-            return new OracleDeleteParser(shardingRule, commonParser);
-        }
-        if (commonParser.getLexer() instanceof SQLServerLexer) {
-            return new SQLServerDeleteParser(shardingRule, commonParser);
-        }
-        if (commonParser.getLexer() instanceof PostgreSQLLexer) {
-            return new PostgreSQLDeleteParser(shardingRule, commonParser);
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support lexer class [%s].", commonParser.getLexer().getClass()));
-    } 
+    }
 }

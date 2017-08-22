@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.drop;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
@@ -38,24 +38,24 @@ public abstract class AbstractDropParser implements SQLStatementParser {
     
     private final ShardingRule shardingRule;
     
-    private final CommonParser commonParser;
+    private final LexerEngine lexerEngine;
     
     private final TableSQLParser tableSQLParser;
     
-    public AbstractDropParser(final ShardingRule shardingRule, final CommonParser commonParser) {
+    public AbstractDropParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
-        this.commonParser = commonParser;
-        tableSQLParser = new TableSQLParser(commonParser);
+        this.lexerEngine = lexerEngine;
+        tableSQLParser = new TableSQLParser(lexerEngine);
     }
     
     @Override
     public DDLStatement parse() {
-        commonParser.getLexer().nextToken();
-        commonParser.skipAll(getSkippedKeywordsBetweenDropAndTable());
-        if (!commonParser.skipIfEqual(DefaultKeyword.TABLE)) {
-            throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
+        lexerEngine.nextToken();
+        lexerEngine.skipAll(getSkippedKeywordsBetweenDropAndTable());
+        if (!lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
+            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
         }
-        commonParser.skipAll(getSkippedKeywordsBetweenDropTableAndTableName());
+        lexerEngine.skipAll(getSkippedKeywordsBetweenDropTableAndTableName());
         DDLStatement result = new DDLStatement();
         tableSQLParser.parseSingleTable(result);
         return result;

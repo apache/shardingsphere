@@ -18,11 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLSelectParser;
@@ -40,24 +37,25 @@ public final class SelectParserFactory {
     
     /**
      * 创建Select语句解析器.
-     * 
+     *
+     * @param dbType 数据库类型
      * @param shardingRule 分库分表规则配置
-     * @param commonParser 解析器
+     * @param lexerEngine 解析器
      * @return Select语句解析器
      */
-    public static AbstractSelectParser newInstance(final ShardingRule shardingRule, final CommonParser commonParser) {
-        if (commonParser.getLexer() instanceof MySQLLexer) {
-            return new MySQLSelectParser(shardingRule, commonParser);
+    public static AbstractSelectParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        switch (dbType) {
+            case H2:
+            case MySQL:
+                return new MySQLSelectParser(shardingRule, lexerEngine);
+            case Oracle:
+                return new OracleSelectParser(shardingRule, lexerEngine);
+            case SQLServer:
+                return new SQLServerSelectParser(shardingRule, lexerEngine);
+            case PostgreSQL:
+                return new PostgreSQLSelectParser(shardingRule, lexerEngine);
+            default:
+                throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }
-        if (commonParser.getLexer() instanceof OracleLexer) {
-            return new OracleSelectParser(shardingRule, commonParser);
-        }
-        if (commonParser.getLexer() instanceof SQLServerLexer) {
-            return new SQLServerSelectParser(shardingRule, commonParser);
-        }
-        if (commonParser.getLexer() instanceof PostgreSQLLexer) {
-            return new PostgreSQLSelectParser(shardingRule, commonParser);
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support lexer class [%s].", commonParser.getLexer().getClass()));
-    } 
+    }
 }

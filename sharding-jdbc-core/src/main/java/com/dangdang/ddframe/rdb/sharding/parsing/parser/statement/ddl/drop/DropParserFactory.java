@@ -18,11 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.drop;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLDropParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleDropParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLDropParser;
@@ -39,25 +36,26 @@ import lombok.NoArgsConstructor;
 public final class DropParserFactory {
     
     /**
-     * Drop Table语句解析器.
-     * 
+     * 创建Drop语句解析器.
+     *
+     * @param dbType 数据库类型
      * @param shardingRule 分库分表规则配置
-     * @param commonParser 解析器
+     * @param lexerEngine 解析器
      * @return Drop语句解析器
      */
-    public static AbstractDropParser newInstance(final ShardingRule shardingRule, final CommonParser commonParser) {
-        if (commonParser.getLexer() instanceof MySQLLexer) {
-            return new MySQLDropParser(shardingRule, commonParser);
+    public static AbstractDropParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        switch (dbType) {
+            case H2:
+            case MySQL:
+                return new MySQLDropParser(shardingRule, lexerEngine);
+            case Oracle:
+                return new OracleDropParser(shardingRule, lexerEngine);
+            case SQLServer:
+                return new SQLServerDropParser(shardingRule, lexerEngine);
+            case PostgreSQL:
+                return new PostgreSQLDropParser(shardingRule, lexerEngine);
+            default:
+                throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }
-        if (commonParser.getLexer() instanceof OracleLexer) {
-            return new OracleDropParser(shardingRule, commonParser);
-        }
-        if (commonParser.getLexer() instanceof SQLServerLexer) {
-            return new SQLServerDropParser(shardingRule, commonParser);
-        }
-        if (commonParser.getLexer() instanceof PostgreSQLLexer) {
-            return new PostgreSQLDropParser(shardingRule, commonParser);
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support lexer class [%s].", commonParser.getLexer().getClass()));
-    } 
+    }
 }

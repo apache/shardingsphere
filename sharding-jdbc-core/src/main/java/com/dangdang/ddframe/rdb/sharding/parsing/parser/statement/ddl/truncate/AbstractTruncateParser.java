@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.truncate;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.DDLStatement;
@@ -37,21 +37,21 @@ public abstract class AbstractTruncateParser implements SQLStatementParser {
     
     private final ShardingRule shardingRule;
     
-    private final CommonParser commonParser;
+    private final LexerEngine lexerEngine;
     
     private final TableSQLParser tableSQLParser;
     
-    public AbstractTruncateParser(final ShardingRule shardingRule, final CommonParser commonParser) {
+    public AbstractTruncateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
-        this.commonParser = commonParser;
-        tableSQLParser = new TableSQLParser(commonParser);
+        this.lexerEngine = lexerEngine;
+        tableSQLParser = new TableSQLParser(lexerEngine);
     }
     
     @Override
     public DDLStatement parse() {
-        commonParser.getLexer().nextToken();
-        commonParser.skipIfEqual(DefaultKeyword.TABLE);
-        commonParser.skipAll(getSkippedKeywordsBetweenTruncateTableAndTableName());
+        lexerEngine.nextToken();
+        lexerEngine.skipIfEqual(DefaultKeyword.TABLE);
+        lexerEngine.skipAll(getSkippedKeywordsBetweenTruncateTableAndTableName());
         DDLStatement result = new DDLStatement();
         tableSQLParser.parseSingleTable(result);
         return result;

@@ -1,6 +1,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.google.common.base.Optional;
@@ -14,7 +14,7 @@ import java.util.List;
  */
 public final class OracleWhereSQLParser extends WhereSQLParser {
     
-    public OracleWhereSQLParser(final CommonParser commonParser) {
+    public OracleWhereSQLParser(final LexerEngine commonParser) {
         super(commonParser);
     }
     

@@ -1,6 +1,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.google.common.base.Optional;
@@ -14,7 +14,7 @@ import java.util.List;
  */
 public final class SQLServerWhereSQLParser extends WhereSQLParser {
     
-    public SQLServerWhereSQLParser(final CommonParser commonParser) {
+    public SQLServerWhereSQLParser(final LexerEngine commonParser) {
         super(commonParser);
     }
     

@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyw
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -39,7 +39,7 @@ import java.util.Collections;
  */
 public final class OracleSelectParser extends AbstractSelectParser {
     
-    public OracleSelectParser(final ShardingRule shardingRule, final CommonParser commonParser) {
+    public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
         super(shardingRule, commonParser, new OracleWhereSQLParser(commonParser));
     }
     
@@ -65,38 +65,38 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipStart(final SelectStatement selectStatement) {
-        if (!getCommonParser().skipIfEqual(OracleKeyword.START)) {
+        if (!getLexerEngine().skipIfEqual(OracleKeyword.START)) {
             return;
         }
-        getCommonParser().accept(DefaultKeyword.WITH);
+        getLexerEngine().accept(DefaultKeyword.WITH);
         getWhereSQLParser().parseComparisonCondition(getShardingRule(), selectStatement, Collections.<SelectItem>emptyList());
     }
     
     private void skipConnect(final SelectStatement selectStatement) {
-        if (!getCommonParser().skipIfEqual(OracleKeyword.CONNECT)) {
+        if (!getLexerEngine().skipIfEqual(OracleKeyword.CONNECT)) {
             return;
         }
-        getCommonParser().accept(DefaultKeyword.BY);
-        getCommonParser().skipIfEqual(OracleKeyword.PRIOR);
-        if (getCommonParser().skipIfEqual(OracleKeyword.NOCYCLE)) {
-            getCommonParser().skipIfEqual(OracleKeyword.PRIOR);
+        getLexerEngine().accept(DefaultKeyword.BY);
+        getLexerEngine().skipIfEqual(OracleKeyword.PRIOR);
+        if (getLexerEngine().skipIfEqual(OracleKeyword.NOCYCLE)) {
+            getLexerEngine().skipIfEqual(OracleKeyword.PRIOR);
         }
         getWhereSQLParser().parseComparisonCondition(getShardingRule(), selectStatement, Collections.<SelectItem>emptyList());
     }
     
     private void skipModelClause(final SelectStatement selectStatement) {
-        if (!getCommonParser().skipIfEqual(OracleKeyword.MODEL)) {
+        if (!getLexerEngine().skipIfEqual(OracleKeyword.MODEL)) {
             return;
         }
         skipCellReferenceOptions();
-        getCommonParser().skipIfEqual(OracleKeyword.RETURN);
-        getCommonParser().skipIfEqual(DefaultKeyword.ALL);
-        getCommonParser().skipIfEqual(OracleKeyword.UPDATED);
-        getCommonParser().skipIfEqual(OracleKeyword.ROWS);
-        while (getCommonParser().skipIfEqual(OracleKeyword.REFERENCE)) {
-            getCommonParser().getLexer().nextToken();
-            getCommonParser().accept(DefaultKeyword.ON);
-            getCommonParser().skipParentheses(selectStatement);
+        getLexerEngine().skipIfEqual(OracleKeyword.RETURN);
+        getLexerEngine().skipIfEqual(DefaultKeyword.ALL);
+        getLexerEngine().skipIfEqual(OracleKeyword.UPDATED);
+        getLexerEngine().skipIfEqual(OracleKeyword.ROWS);
+        while (getLexerEngine().skipIfEqual(OracleKeyword.REFERENCE)) {
+            getLexerEngine().nextToken();
+            getLexerEngine().accept(DefaultKeyword.ON);
+            getLexerEngine().skipParentheses(selectStatement);
             skipModelColumnClause();
             skipCellReferenceOptions();
         }
@@ -104,88 +104,88 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipCellReferenceOptions() {
-        if (getCommonParser().skipIfEqual(OracleKeyword.IGNORE)) {
-            getCommonParser().accept(OracleKeyword.NAV);
-        } else if (getCommonParser().skipIfEqual(OracleKeyword.KEEP)) {
-            getCommonParser().accept(OracleKeyword.NAV);
+        if (getLexerEngine().skipIfEqual(OracleKeyword.IGNORE)) {
+            getLexerEngine().accept(OracleKeyword.NAV);
+        } else if (getLexerEngine().skipIfEqual(OracleKeyword.KEEP)) {
+            getLexerEngine().accept(OracleKeyword.NAV);
         }
-        if (getCommonParser().skipIfEqual(DefaultKeyword.UNIQUE)) {
-            getCommonParser().skipIfEqual(OracleKeyword.DIMENSION, OracleKeyword.SINGLE);
-            getCommonParser().skipIfEqual(OracleKeyword.REFERENCE);
+        if (getLexerEngine().skipIfEqual(DefaultKeyword.UNIQUE)) {
+            getLexerEngine().skipIfEqual(OracleKeyword.DIMENSION, OracleKeyword.SINGLE);
+            getLexerEngine().skipIfEqual(OracleKeyword.REFERENCE);
         }
     }
     
     private void skipMainModelClause(final SelectStatement selectStatement) {
-        if (getCommonParser().skipIfEqual(OracleKeyword.MAIN)) {
-            getCommonParser().getLexer().nextToken();
+        if (getLexerEngine().skipIfEqual(OracleKeyword.MAIN)) {
+            getLexerEngine().nextToken();
         }
         skipQueryPartitionClause(selectStatement);
-        getCommonParser().accept(OracleKeyword.DIMENSION);
-        getCommonParser().accept(DefaultKeyword.BY);
-        getCommonParser().skipParentheses(selectStatement);
-        getCommonParser().accept(OracleKeyword.MEASURES);
-        getCommonParser().skipParentheses(selectStatement);
+        getLexerEngine().accept(OracleKeyword.DIMENSION);
+        getLexerEngine().accept(DefaultKeyword.BY);
+        getLexerEngine().skipParentheses(selectStatement);
+        getLexerEngine().accept(OracleKeyword.MEASURES);
+        getLexerEngine().skipParentheses(selectStatement);
         skipCellReferenceOptions();
         skipModelRulesClause(selectStatement);
     }
     
     private void skipModelRulesClause(final SelectStatement selectStatement) {
-        if (getCommonParser().skipIfEqual(OracleKeyword.RULES)) {
-            getCommonParser().skipIfEqual(DefaultKeyword.UPDATE);
-            getCommonParser().skipIfEqual(OracleKeyword.UPSERT);
-            if (getCommonParser().skipIfEqual(OracleKeyword.AUTOMATIC)) {
-                getCommonParser().accept(DefaultKeyword.ORDER);
-            } else if (getCommonParser().skipIfEqual(OracleKeyword.SEQUENTIAL)) {
-                getCommonParser().accept(DefaultKeyword.ORDER);
+        if (getLexerEngine().skipIfEqual(OracleKeyword.RULES)) {
+            getLexerEngine().skipIfEqual(DefaultKeyword.UPDATE);
+            getLexerEngine().skipIfEqual(OracleKeyword.UPSERT);
+            if (getLexerEngine().skipIfEqual(OracleKeyword.AUTOMATIC)) {
+                getLexerEngine().accept(DefaultKeyword.ORDER);
+            } else if (getLexerEngine().skipIfEqual(OracleKeyword.SEQUENTIAL)) {
+                getLexerEngine().accept(DefaultKeyword.ORDER);
             }
         }
-        if (getCommonParser().skipIfEqual(DefaultKeyword.ITERATE)) {
-            getCommonParser().skipParentheses(selectStatement);
-            if (getCommonParser().skipIfEqual(DefaultKeyword.UNTIL)) {
-                getCommonParser().skipParentheses(selectStatement);
+        if (getLexerEngine().skipIfEqual(DefaultKeyword.ITERATE)) {
+            getLexerEngine().skipParentheses(selectStatement);
+            if (getLexerEngine().skipIfEqual(DefaultKeyword.UNTIL)) {
+                getLexerEngine().skipParentheses(selectStatement);
             }
         }
-        getCommonParser().skipParentheses(selectStatement);
+        getLexerEngine().skipParentheses(selectStatement);
     }
     
     private void skipQueryPartitionClause(final SelectStatement selectStatement) {
-        if (!getCommonParser().skipIfEqual(OracleKeyword.PARTITION)) {
+        if (!getLexerEngine().skipIfEqual(OracleKeyword.PARTITION)) {
             return;
         }
-        getCommonParser().accept(DefaultKeyword.BY);
-        if (!getCommonParser().equalAny(Symbol.LEFT_PAREN)) {
+        getLexerEngine().accept(DefaultKeyword.BY);
+        if (!getLexerEngine().equalAny(Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support PARTITION BY without ()");
         }
-        getCommonParser().skipParentheses(selectStatement);
+        getLexerEngine().skipParentheses(selectStatement);
     }
     
     private void skipModelColumnClause() {
-        throw new SQLParsingUnsupportedException(getCommonParser().getLexer().getCurrentToken().getType());
+        throw new SQLParsingUnsupportedException(getLexerEngine().getCurrentToken().getType());
     }
     
     private void skipFor(final SelectStatement selectStatement) {
-        if (!getCommonParser().skipIfEqual(DefaultKeyword.FOR)) {
+        if (!getLexerEngine().skipIfEqual(DefaultKeyword.FOR)) {
             return;
         }
-        getCommonParser().accept(DefaultKeyword.UPDATE);
-        if (getCommonParser().skipIfEqual(DefaultKeyword.OF)) {
+        getLexerEngine().accept(DefaultKeyword.UPDATE);
+        if (getLexerEngine().skipIfEqual(DefaultKeyword.OF)) {
             do {
                 getExpressionSQLParser().parse(selectStatement);
-            } while (getCommonParser().skipIfEqual(Symbol.COMMA));
+            } while (getLexerEngine().skipIfEqual(Symbol.COMMA));
         }
-        if (getCommonParser().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {
-            getCommonParser().getLexer().nextToken();
-        } else if (getCommonParser().skipIfEqual(OracleKeyword.SKIP)) {
-            getCommonParser().accept(OracleKeyword.LOCKED);
+        if (getLexerEngine().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {
+            getLexerEngine().nextToken();
+        } else if (getLexerEngine().skipIfEqual(OracleKeyword.SKIP)) {
+            getLexerEngine().accept(OracleKeyword.LOCKED);
         }
     }
     
     @Override
     protected void parseTableFactor(final SelectStatement selectStatement) {
-        if (getCommonParser().skipIfEqual(OracleKeyword.ONLY)) {
-            getCommonParser().skipIfEqual(Symbol.LEFT_PAREN);
+        if (getLexerEngine().skipIfEqual(OracleKeyword.ONLY)) {
+            getLexerEngine().skipIfEqual(Symbol.LEFT_PAREN);
             parseQueryTableExpression(selectStatement);
-            getCommonParser().skipIfEqual(Symbol.RIGHT_PAREN);
+            getLexerEngine().skipIfEqual(Symbol.RIGHT_PAREN);
             skipFlashbackQueryClause();
         } else {
             parseQueryTableExpression(selectStatement);
@@ -201,13 +201,13 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void parseSample(final SelectStatement selectStatement) {
-        if (!getCommonParser().skipIfEqual(OracleKeyword.SAMPLE)) {
+        if (!getLexerEngine().skipIfEqual(OracleKeyword.SAMPLE)) {
             return;
         }
-        getCommonParser().skipIfEqual(OracleKeyword.BLOCK);
-        getCommonParser().skipParentheses(selectStatement);
-        if (getCommonParser().skipIfEqual(OracleKeyword.SEED)) {
-            getCommonParser().skipParentheses(selectStatement);
+        getLexerEngine().skipIfEqual(OracleKeyword.BLOCK);
+        getLexerEngine().skipParentheses(selectStatement);
+        if (getLexerEngine().skipIfEqual(OracleKeyword.SEED)) {
+            getLexerEngine().skipParentheses(selectStatement);
         }
     }
     
@@ -217,12 +217,12 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipPartition(final SelectStatement selectStatement, final OracleKeyword keyword) {
-        if (!getCommonParser().skipIfEqual(keyword)) {
+        if (!getLexerEngine().skipIfEqual(keyword)) {
             return;
         }
-        getCommonParser().skipParentheses(selectStatement);
-        if (getCommonParser().skipIfEqual(DefaultKeyword.FOR)) {
-            getCommonParser().skipParentheses(selectStatement);
+        getLexerEngine().skipParentheses(selectStatement);
+        if (getLexerEngine().skipIfEqual(DefaultKeyword.FOR)) {
+            getLexerEngine().skipParentheses(selectStatement);
         }
     }
     
@@ -233,25 +233,25 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     private boolean isFlashbackQueryClauseForVersions() {
-        return getCommonParser().skipIfEqual(OracleKeyword.VERSIONS) && getCommonParser().skipIfEqual(DefaultKeyword.BETWEEN);
+        return getLexerEngine().skipIfEqual(OracleKeyword.VERSIONS) && getLexerEngine().skipIfEqual(DefaultKeyword.BETWEEN);
     }
     
     private boolean isFlashbackQueryClauseForAs() {
-        return getCommonParser().skipIfEqual(DefaultKeyword.AS) && getCommonParser().skipIfEqual(DefaultKeyword.OF)
-                && (getCommonParser().skipIfEqual(OracleKeyword.SCN) || getCommonParser().skipIfEqual(OracleKeyword.TIMESTAMP));
+        return getLexerEngine().skipIfEqual(DefaultKeyword.AS) && getLexerEngine().skipIfEqual(DefaultKeyword.OF)
+                && (getLexerEngine().skipIfEqual(OracleKeyword.SCN) || getLexerEngine().skipIfEqual(OracleKeyword.TIMESTAMP));
     }
     
     private void skipPivotClause(final SelectStatement selectStatement) {
-        if (getCommonParser().skipIfEqual(OracleKeyword.PIVOT)) {
-            getCommonParser().skipIfEqual(OracleKeyword.XML);
-            getCommonParser().skipParentheses(selectStatement);
-        } else if (getCommonParser().skipIfEqual(OracleKeyword.UNPIVOT)) {
-            if (getCommonParser().skipIfEqual(OracleKeyword.INCLUDE)) {
-                getCommonParser().accept(OracleKeyword.NULLS);
-            } else if (getCommonParser().skipIfEqual(OracleKeyword.EXCLUDE)) {
-                getCommonParser().accept(OracleKeyword.NULLS);
+        if (getLexerEngine().skipIfEqual(OracleKeyword.PIVOT)) {
+            getLexerEngine().skipIfEqual(OracleKeyword.XML);
+            getLexerEngine().skipParentheses(selectStatement);
+        } else if (getLexerEngine().skipIfEqual(OracleKeyword.UNPIVOT)) {
+            if (getLexerEngine().skipIfEqual(OracleKeyword.INCLUDE)) {
+                getLexerEngine().accept(OracleKeyword.NULLS);
+            } else if (getLexerEngine().skipIfEqual(OracleKeyword.EXCLUDE)) {
+                getLexerEngine().accept(OracleKeyword.NULLS);
             }
-            getCommonParser().skipParentheses(selectStatement);
+            getLexerEngine().skipParentheses(selectStatement);
         }
     }
     
@@ -272,15 +272,15 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     protected OrderType getNullOrderType() {
-        if (!getCommonParser().skipIfEqual(OracleKeyword.NULLS)) {
+        if (!getLexerEngine().skipIfEqual(OracleKeyword.NULLS)) {
             return OrderType.ASC;
         }
-        if (getCommonParser().skipIfEqual(OracleKeyword.FIRST)) {
+        if (getLexerEngine().skipIfEqual(OracleKeyword.FIRST)) {
             return OrderType.ASC;
         }
-        if (getCommonParser().skipIfEqual(OracleKeyword.LAST)) {
+        if (getLexerEngine().skipIfEqual(OracleKeyword.LAST)) {
             return OrderType.DESC;
         }
-        throw new SQLParsingException(getCommonParser().getLexer());
+        throw new SQLParsingException(getLexerEngine());
     }
 }

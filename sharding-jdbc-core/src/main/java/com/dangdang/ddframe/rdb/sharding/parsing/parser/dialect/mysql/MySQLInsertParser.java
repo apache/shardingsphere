@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
@@ -43,7 +43,7 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
  */
 public final class MySQLInsertParser extends AbstractInsertParser {
     
-    public MySQLInsertParser(final ShardingRule shardingRule, final CommonParser commonParser) {
+    public MySQLInsertParser(final ShardingRule shardingRule, final LexerEngine commonParser) {
         super(shardingRule, commonParser);
     }
     
@@ -54,31 +54,31 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     
     private void parseInsertSet(final InsertStatement insertStatement) {
         do {
-            Column column = new Column(SQLUtil.getExactlyValue(getCommonParser().getLexer().getCurrentToken().getLiterals()), insertStatement.getTables().getSingleTableName());
-            getCommonParser().getLexer().nextToken();
-            getCommonParser().accept(Symbol.EQ);
+            Column column = new Column(SQLUtil.getExactlyValue(getLexerEngine().getCurrentToken().getLiterals()), insertStatement.getTables().getSingleTableName());
+            getLexerEngine().nextToken();
+            getLexerEngine().accept(Symbol.EQ);
             SQLExpression sqlExpression;
-            if (getCommonParser().equalAny(Literals.INT)) {
-                sqlExpression = new SQLNumberExpression(Integer.parseInt(getCommonParser().getLexer().getCurrentToken().getLiterals()));
-            } else if (getCommonParser().equalAny(Literals.FLOAT)) {
-                sqlExpression = new SQLNumberExpression(Double.parseDouble(getCommonParser().getLexer().getCurrentToken().getLiterals()));
-            } else if (getCommonParser().equalAny(Literals.CHARS)) {
-                sqlExpression = new SQLTextExpression(getCommonParser().getLexer().getCurrentToken().getLiterals());
-            } else if (getCommonParser().equalAny(DefaultKeyword.NULL)) {
+            if (getLexerEngine().equalAny(Literals.INT)) {
+                sqlExpression = new SQLNumberExpression(Integer.parseInt(getLexerEngine().getCurrentToken().getLiterals()));
+            } else if (getLexerEngine().equalAny(Literals.FLOAT)) {
+                sqlExpression = new SQLNumberExpression(Double.parseDouble(getLexerEngine().getCurrentToken().getLiterals()));
+            } else if (getLexerEngine().equalAny(Literals.CHARS)) {
+                sqlExpression = new SQLTextExpression(getLexerEngine().getCurrentToken().getLiterals());
+            } else if (getLexerEngine().equalAny(DefaultKeyword.NULL)) {
                 sqlExpression = new SQLIgnoreExpression(DefaultKeyword.NULL.name());
-            } else if (getCommonParser().equalAny(Symbol.QUESTION)) {
+            } else if (getLexerEngine().equalAny(Symbol.QUESTION)) {
                 sqlExpression = new SQLPlaceholderExpression(insertStatement.getParametersIndex());
                 insertStatement.increaseParametersIndex();
             } else {
                 throw new UnsupportedOperationException("");
             }
-            getCommonParser().getLexer().nextToken();
-            if (getCommonParser().equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
+            getLexerEngine().nextToken();
+            if (getLexerEngine().equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
                 insertStatement.getConditions().add(new Condition(column, sqlExpression), getShardingRule());
             } else {
-                getCommonParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
+                getLexerEngine().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }
-        } while (getCommonParser().skipIfEqual(Symbol.COMMA));
+        } while (getLexerEngine().skipIfEqual(Symbol.COMMA));
     }
     
     @Override

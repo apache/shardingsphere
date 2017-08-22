@@ -15,30 +15,53 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser;
+package com.dangdang.ddframe.rdb.sharding.parsing.lexer;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Token;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.google.common.collect.Sets;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Set;
 
 /**
- * 解析器.
+ * 词法解析器引擎.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-@Getter
-public final class CommonParser {
+public final class LexerEngine {
     
     private final Lexer lexer;
+    
+    /**
+     * 获取输入的字符串.
+     * 
+     * @return 输入的字符串
+     */
+    public String getInput() {
+        return lexer.getInput();
+    }
+    
+    /**
+     * 分析下一个词法标记.
+     */
+    public void nextToken() {
+        lexer.nextToken();
+    }
+    
+    /**
+     * 获取当前词法标记.
+     * 
+     * @return 词法标记
+     */
+    public Token getCurrentToken() {
+        return lexer.getCurrentToken();
+    }
     
     /**
      * 跳过小括号内所有的词法标记.

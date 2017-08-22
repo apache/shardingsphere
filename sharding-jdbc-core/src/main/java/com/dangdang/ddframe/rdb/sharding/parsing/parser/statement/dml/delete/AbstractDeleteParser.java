@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
@@ -41,29 +41,29 @@ public abstract class AbstractDeleteParser implements SQLStatementParser {
     
     private final ShardingRule shardingRule;
     
-    private final CommonParser commonParser;
+    private final LexerEngine lexerEngine;
     
     private final TableSQLParser tableSQLParser;
     
     private final WhereSQLParser whereParser;
     
-    public AbstractDeleteParser(final ShardingRule shardingRule, final CommonParser commonParser) {
+    public AbstractDeleteParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
-        this.commonParser = commonParser;
-        whereParser = new WhereSQLParser(commonParser);
-        tableSQLParser = new TableSQLParser(commonParser);
+        this.lexerEngine = lexerEngine;
+        whereParser = new WhereSQLParser(lexerEngine);
+        tableSQLParser = new TableSQLParser(lexerEngine);
     }
     
     @Override
     public DMLStatement parse() {
-        commonParser.getLexer().nextToken();
-        commonParser.skipAll(getSkippedKeywordsBetweenDeleteAndTable());
-        if (commonParser.equalAny(getUnsupportedKeywordsBetweenDeleteAndTable())) {
-            throw new SQLParsingUnsupportedException(commonParser.getLexer().getCurrentToken().getType());
+        lexerEngine.nextToken();
+        lexerEngine.skipAll(getSkippedKeywordsBetweenDeleteAndTable());
+        if (lexerEngine.equalAny(getUnsupportedKeywordsBetweenDeleteAndTable())) {
+            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
         }
         DMLStatement result = new DMLStatement();
         tableSQLParser.parseSingleTable(result);
-        commonParser.skipUntil(DefaultKeyword.WHERE);
+        lexerEngine.skipUntil(DefaultKeyword.WHERE);
         whereParser.parseWhere(shardingRule, result, Collections.<SelectItem>emptyList());
         return result;
     }

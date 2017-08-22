@@ -18,11 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.create;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.CommonParser;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLCreateParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleCreateParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLCreateParser;
@@ -39,25 +36,26 @@ import lombok.NoArgsConstructor;
 public final class CreateParserFactory {
     
     /**
-     * 创建Create Table语句解析器.
-     * 
+     * 创建Create语句解析器.
+     *
+     * @param dbType 数据库类型
      * @param shardingRule 分库分表规则配置
-     * @param commonParser 解析器
+     * @param lexerEngine 解析器
      * @return Create语句解析器
      */
-    public static AbstractCreateParser newInstance(final ShardingRule shardingRule, final CommonParser commonParser) {
-        if (commonParser.getLexer() instanceof MySQLLexer) {
-            return new MySQLCreateParser(shardingRule, commonParser);
+    public static AbstractCreateParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        switch (dbType) {
+            case H2:
+            case MySQL:
+                return new MySQLCreateParser(shardingRule, lexerEngine);
+            case Oracle:
+                return new OracleCreateParser(shardingRule, lexerEngine);
+            case SQLServer:
+                return new SQLServerCreateParser(shardingRule, lexerEngine);
+            case PostgreSQL:
+                return new PostgreSQLCreateParser(shardingRule, lexerEngine);
+            default:
+                throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }
-        if (commonParser.getLexer() instanceof OracleLexer) {
-            return new OracleCreateParser(shardingRule, commonParser);
-        }
-        if (commonParser.getLexer() instanceof SQLServerLexer) {
-            return new SQLServerCreateParser(shardingRule, commonParser);
-        }
-        if (commonParser.getLexer() instanceof PostgreSQLLexer) {
-            return new PostgreSQLCreateParser(shardingRule, commonParser);
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support lexer class [%s].", commonParser.getLexer().getClass()));
-    } 
+    }
 }
