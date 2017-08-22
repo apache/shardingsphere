@@ -25,11 +25,8 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseSQLTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Conditions;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.TableToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Assert;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.helper.ParserJAXBHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -38,15 +35,16 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @RunWith(Parameterized.class)
 public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     
+    private final String[] parameters;
+    
     public SQLParsingEngineTest(
-            final String testCaseName, final DatabaseType databaseType, final String[] parameters, final Tables expectedTables,
-            final List<TableToken> tableTokens, final Conditions expectedConditions, final SQLStatement expectedSQLStatement, final Limit expectedLimit) {
-        super(testCaseName, databaseType, parameters, expectedTables, tableTokens, expectedConditions, expectedSQLStatement, expectedLimit);
+            final String testCaseName, final DatabaseType databaseType, final Assert assertObj) {
+        super(testCaseName, databaseType, assertObj);
+        parameters = ParserJAXBHelper.getParameters(assertObj.getParameters());
     }
     
     @Parameters(name = "{0}In{1}")
@@ -56,7 +54,7 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     
     @Test
     public void assertStatement() {
-        assertStatement(new SQLParsingEngine(getDatabaseType(), SqlPlaceholderUtil.replaceStatement(SQLStatementHelper.getSql(getTestCaseName()), getParameters()), buildShardingRule()).parse());
+        assertStatement(new SQLParsingEngine(getDatabaseType(), SqlPlaceholderUtil.replaceStatement(SQLStatementHelper.getSql(getTestCaseName()), parameters), buildShardingRule()).parse());
     }
     
     @Test

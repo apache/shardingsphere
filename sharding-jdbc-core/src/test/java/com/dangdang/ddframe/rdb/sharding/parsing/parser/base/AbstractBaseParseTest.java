@@ -19,17 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.base;
 
 import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Asserts;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Conditions;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.TableToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.helper.ParserJAXBHelper;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -50,48 +41,13 @@ public abstract class AbstractBaseParseTest {
     private final DatabaseType databaseType;
     
     @Getter(AccessLevel.PROTECTED)
-    private final String[] parameters;
-
-    @Getter(AccessLevel.PROTECTED)
-    private final Tables expectedTables;
-    
-    @Getter(AccessLevel.PROTECTED)
-    private final List<TableToken> expectedTableTokens;
-    
-    @Getter(AccessLevel.PROTECTED)
-    private final Conditions expectedConditions;
-    
-    @Getter(AccessLevel.PROTECTED)
-    private final List<OrderItem> expectedOrderByColumns;
-    
-    @Getter(AccessLevel.PROTECTED)
-    private final List<OrderItem> expectedGroupByColumns;
-    
-    @Getter(AccessLevel.PROTECTED)
-    private final List<AggregationSelectItem> expectedAggregationSelectItems;
-    
-    @Getter(AccessLevel.PROTECTED)
-    private final Limit expectedLimit;
+    private final Assert assertObj;
     
     AbstractBaseParseTest(
-            final String testCaseName, final DatabaseType databaseType, final String[] parameters, final Tables expectedTables,
-            final List<TableToken> expectedTableTokens, final Conditions expectedConditions, final SQLStatement expectedSQLStatement, final Limit expectedLimit) {
+            final String testCaseName, final DatabaseType databaseType, final Assert assertObj) {
         this.testCaseName = testCaseName;
         this.databaseType = databaseType;
-        this.parameters = parameters;
-        this.expectedTables = expectedTables;
-        this.expectedTableTokens = expectedTableTokens;
-        this.expectedConditions = expectedConditions;
-        this.expectedLimit = expectedLimit;
-        if (expectedSQLStatement instanceof SelectStatement) {
-            expectedOrderByColumns = ((SelectStatement) expectedSQLStatement).getOrderByItems();
-            expectedGroupByColumns = ((SelectStatement) expectedSQLStatement).getGroupByItems();
-            expectedAggregationSelectItems = ((SelectStatement) expectedSQLStatement).getAggregationSelectItems();
-        } else {
-            expectedOrderByColumns = null;
-            expectedGroupByColumns = null;
-            expectedAggregationSelectItems = null;
-        }
+        this.assertObj = assertObj;
     }
     
     protected static Collection<Object[]> dataParameters() {
@@ -131,15 +87,10 @@ public abstract class AbstractBaseParseTest {
     }
     
     private static Object[] getDataParameter(final Assert assertObj, final DatabaseType dbType) {
-        final Object[] result = new Object[8];
+        final Object[] result = new Object[3];
         result[0] = assertObj.getId();
         result[1] = dbType;
-        result[2] = ParserJAXBHelper.getParameters(assertObj);
-        result[3] = ParserJAXBHelper.getTables(assertObj);
-        result[4] = assertObj.getTableTokens();
-        result[5] = assertObj.getConditions();
-        result[6] = ParserJAXBHelper.getSelectStatement(assertObj);
-        result[7] = assertObj.getLimit();
+        result[2] = assertObj;
         return result;
     }
 }

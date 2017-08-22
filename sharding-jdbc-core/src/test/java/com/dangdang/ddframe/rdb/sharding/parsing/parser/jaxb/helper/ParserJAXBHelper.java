@@ -19,19 +19,19 @@ import java.util.List;
 
 public class ParserJAXBHelper {
     
-    public static String[] getParameters(final Assert assertObj) {
-        if (null == assertObj.getParameters()) {
+    public static String[] getParameters(final String parameters) {
+        if (Strings.isNullOrEmpty(parameters)) {
             return new String[]{};
         }
-        return assertObj.getParameters().split(",");
+        return parameters.split(",");
     }
     
-    public static Tables getTables(final Assert assertObj) {
+    public static Tables getTables(final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Tables tables) {
         Tables result = new Tables();
-        if (null == assertObj.getTables()) {
+        if (null == tables) {
             return result;
         }
-        for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Table each : assertObj.getTables().getTables()) {
+        for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Table each : tables.getTables()) {
             Table table = new Table(each.getName(), Optional.fromNullable(each.getAlias()));
             result.add(table);
         }
