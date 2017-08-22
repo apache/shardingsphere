@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Order By解析对象.
+ * Order By解析器.
  *
  * @author zhangliang
  */

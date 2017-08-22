@@ -9,7 +9,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 
 /**
- * Table解析对象.
+ * Table解析器.
  *
  * @author zhangliang
  */

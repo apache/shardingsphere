@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * WHERE语句解析对象.
+ * WHERE语句解析器.
  *
  * @author zhangliang
  */

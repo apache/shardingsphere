@@ -31,7 +31,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AliasSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ExpressionSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
@@ -72,7 +71,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final List<SelectItem> items = new LinkedList<>();
     
-    public AbstractSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final WhereSQLParser whereSQLParser) {
+    public AbstractSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
         aliasSQLParser = new AliasSQLParser(lexerEngine);

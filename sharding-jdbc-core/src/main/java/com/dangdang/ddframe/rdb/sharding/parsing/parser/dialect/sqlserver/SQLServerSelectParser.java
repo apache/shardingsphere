@@ -59,7 +59,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     private final SelectRestSQLParser selectRestSQLParser;
     
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new SQLServerWhereSQLParser(lexerEngine));
+        super(shardingRule, lexerEngine);
         distinctSQLParser = new DistinctSQLParser(lexerEngine);
         sqlServerTopParser = new SQLServerTopParser(lexerEngine);
         selectListSQLParser = new SQLServerSelectListSQLParser(shardingRule, lexerEngine);

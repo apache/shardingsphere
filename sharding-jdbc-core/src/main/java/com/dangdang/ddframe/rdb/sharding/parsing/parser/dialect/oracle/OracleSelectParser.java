@@ -58,7 +58,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     private final SelectRestSQLParser selectRestSQLParser;
     
     public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new OracleWhereSQLParser(lexerEngine));
+        super(shardingRule, lexerEngine);
         distinctSQLParser = new OracleDistinctSQLParser(lexerEngine);
         selectListSQLParser = new OracleSelectListSQLParser(shardingRule, lexerEngine);
         whereSQLParser = new OracleWhereSQLParser(lexerEngine);

@@ -17,7 +17,7 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 表达式解析对象.
+ * 表达式解析器.
  *
  * @author zhangliang
  */

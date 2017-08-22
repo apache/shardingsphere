@@ -17,7 +17,7 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 
 /**
- * Group By解析对象.
+ * Group By解析器.
  *
  * @author zhangliang
  */
