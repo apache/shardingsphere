@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngineFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter.AlterParserFactory;
@@ -56,30 +57,29 @@ public final class SQLParsingEngine {
     public SQLStatement parse() {
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
         lexerEngine.nextToken();
-        if (lexerEngine.equalAny(DefaultKeyword.SELECT)) {
-            return SelectParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
+        TokenType tokenType = lexerEngine.getCurrentToken().getType();
+        if (!(tokenType instanceof DefaultKeyword)) {
+            throw new SQLParsingUnsupportedException(tokenType);
         }
-        if (lexerEngine.equalAny(DefaultKeyword.INSERT)) {
-            return InsertParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
+        switch ((DefaultKeyword) tokenType) {
+            case SELECT:
+                return SelectParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
+            case INSERT:
+                return InsertParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
+            case UPDATE:
+                return UpdateParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
+            case DELETE:
+                return DeleteParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
+            case CREATE:
+                return CreateParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
+            case ALTER:
+                return AlterParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
+            case DROP:
+                return DropParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
+            case TRUNCATE:
+                return TruncateParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
+            default:
+                throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
         }
-        if (lexerEngine.equalAny(DefaultKeyword.UPDATE)) {
-            return UpdateParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
-        }
-        if (lexerEngine.equalAny(DefaultKeyword.DELETE)) {
-            return DeleteParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
-        }
-        if (lexerEngine.equalAny(DefaultKeyword.CREATE)) {
-            return CreateParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
-        }
-        if (lexerEngine.equalAny(DefaultKeyword.ALTER)) {
-            return AlterParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
-        }
-        if (lexerEngine.equalAny(DefaultKeyword.DROP)) {
-            return DropParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
-        }
-        if (lexerEngine.equalAny(DefaultKeyword.TRUNCATE)) {
-            return TruncateParserFactory.newInstance(dbType, shardingRule, lexerEngine).parse();
-        }
-        throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
     }
 }
