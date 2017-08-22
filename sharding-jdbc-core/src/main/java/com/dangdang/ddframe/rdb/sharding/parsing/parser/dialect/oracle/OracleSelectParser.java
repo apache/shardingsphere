@@ -54,6 +54,8 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     private final AbstractOrderBySQLParser orderBySQLParser;
     
+    private final OracleForParser forParser;
+    
     private final SelectRestSQLParser selectRestSQLParser;
     
     public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
@@ -65,6 +67,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         groupBySQLParser = new OracleGroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new OracleOrderBySQLParser(lexerEngine);
+        forParser = new OracleForParser(lexerEngine);
         selectRestSQLParser = new SelectRestSQLParser(lexerEngine);
     }
     
@@ -79,7 +82,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         havingSQLParser.parse();
         skipModelClause(selectStatement);
         orderBySQLParser.parse(selectStatement);
-        skipFor(selectStatement);
+        forParser.parse(selectStatement);
         selectRestSQLParser.parse();
     }
     
@@ -160,23 +163,6 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     private void skipModelColumnClause() {
         throw new SQLParsingUnsupportedException(getLexerEngine().getCurrentToken().getType());
-    }
-    
-    private void skipFor(final SelectStatement selectStatement) {
-        if (!getLexerEngine().skipIfEqual(DefaultKeyword.FOR)) {
-            return;
-        }
-        getLexerEngine().accept(DefaultKeyword.UPDATE);
-        if (getLexerEngine().skipIfEqual(DefaultKeyword.OF)) {
-            do {
-                getExpressionSQLParser().parse(selectStatement);
-            } while (getLexerEngine().skipIfEqual(Symbol.COMMA));
-        }
-        if (getLexerEngine().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {
-            getLexerEngine().nextToken();
-        } else if (getLexerEngine().skipIfEqual(OracleKeyword.SKIP)) {
-            getLexerEngine().accept(OracleKeyword.LOCKED);
-        }
     }
     
     @Override
