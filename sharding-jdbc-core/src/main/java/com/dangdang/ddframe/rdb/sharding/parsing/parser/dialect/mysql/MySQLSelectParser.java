@@ -19,8 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
@@ -57,7 +55,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     private final SelectRestSQLParser selectRestSQLParser;
     
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine);
+        super(shardingRule, lexerEngine, new MySQLTableSQLParser(shardingRule, lexerEngine));
         distinctSQLParser = new MySQLDistinctSQLParser(lexerEngine);
         selectOptionSQLParser = new MySQLSelectOptionSQLParser(lexerEngine);
         selectListSQLParser = new SelectListSQLParser(shardingRule, lexerEngine);
@@ -81,46 +79,5 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         orderBySQLParser.parse(selectStatement);
         limitSQLParser.parse(selectStatement);
         selectRestSQLParser.parse();
-    }
-    
-    @Override
-    protected void parseJoinTable(final SelectStatement selectStatement) {
-        if (getLexerEngine().equalAny(DefaultKeyword.USING)) {
-            return;
-        }
-        if (getLexerEngine().equalAny(DefaultKeyword.USE)) {
-            getLexerEngine().nextToken();
-            skipIndexHint(selectStatement);
-        }
-        if (getLexerEngine().equalAny(OracleKeyword.IGNORE)) {
-            getLexerEngine().nextToken();
-            skipIndexHint(selectStatement);
-        }
-        if (getLexerEngine().equalAny(OracleKeyword.FORCE)) {
-            getLexerEngine().nextToken();
-            skipIndexHint(selectStatement);
-        }
-        super.parseJoinTable(selectStatement);
-    }
-    
-    private void skipIndexHint(final SelectStatement selectStatement) {
-        if (getLexerEngine().equalAny(DefaultKeyword.INDEX)) {
-            getLexerEngine().nextToken();
-        } else {
-            getLexerEngine().accept(DefaultKeyword.KEY);
-        }
-        if (getLexerEngine().equalAny(DefaultKeyword.FOR)) {
-            getLexerEngine().nextToken();
-            if (getLexerEngine().equalAny(DefaultKeyword.JOIN)) {
-                getLexerEngine().nextToken();
-            } else if (getLexerEngine().equalAny(DefaultKeyword.ORDER)) {
-                getLexerEngine().nextToken();
-                getLexerEngine().accept(DefaultKeyword.BY);
-            } else {
-                getLexerEngine().accept(DefaultKeyword.GROUP);
-                getLexerEngine().accept(DefaultKeyword.BY);
-            }
-        }
-        getLexerEngine().skipParentheses(selectStatement);
     }
 }

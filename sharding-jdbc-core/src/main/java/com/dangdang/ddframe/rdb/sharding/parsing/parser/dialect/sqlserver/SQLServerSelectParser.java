@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLOrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
@@ -59,7 +58,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     private final SelectRestSQLParser selectRestSQLParser;
     
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine);
+        super(shardingRule, lexerEngine, new SQLServerTableSQLParser(shardingRule, lexerEngine));
         distinctSQLParser = new DistinctSQLParser(lexerEngine);
         sqlServerTopParser = new SQLServerTopParser(lexerEngine);
         selectListSQLParser = new SQLServerSelectListSQLParser(shardingRule, lexerEngine);
@@ -85,13 +84,5 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         offsetSQLParser.parse(selectStatement);
         forSQLParser.parse();
         selectRestSQLParser.parse();
-    }
-    
-    @Override
-    protected void parseJoinTable(final SelectStatement selectStatement) {
-        if (getLexerEngine().skipIfEqual(DefaultKeyword.WITH)) {
-            getLexerEngine().skipParentheses(selectStatement);
-        }
-        super.parseJoinTable(selectStatement);
     }
 }

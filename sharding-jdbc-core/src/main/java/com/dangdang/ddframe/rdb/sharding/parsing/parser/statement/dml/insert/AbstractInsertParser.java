@@ -78,7 +78,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
         expressionSQLParser = new ExpressionSQLParser(lexerEngine);
-        tableSQLParser = new TableSQLParser(lexerEngine);
+        tableSQLParser = new TableSQLParser(shardingRule, lexerEngine);
     }
     
     @Override

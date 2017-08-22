@@ -51,7 +51,7 @@ public abstract class AbstractDeleteParser implements SQLStatementParser {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
         whereParser = new WhereSQLParser(lexerEngine);
-        tableSQLParser = new TableSQLParser(lexerEngine);
+        tableSQLParser = new TableSQLParser(shardingRule, lexerEngine);
     }
     
     @Override

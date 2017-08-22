@@ -45,7 +45,7 @@ public abstract class AbstractAlterParser implements SQLStatementParser {
     public AbstractAlterParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        tableSQLParser = new TableSQLParser(lexerEngine);
+        tableSQLParser = new TableSQLParser(shardingRule, lexerEngine);
     }
     
     @Override

@@ -45,7 +45,7 @@ public abstract class AbstractDropParser implements SQLStatementParser {
     public AbstractDropParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        tableSQLParser = new TableSQLParser(lexerEngine);
+        tableSQLParser = new TableSQLParser(shardingRule, lexerEngine);
     }
     
     @Override

@@ -26,7 +26,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AliasSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ExpressionSQLParser;
@@ -34,8 +33,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
-import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -63,20 +60,20 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final LexerEngine lexerEngine;
     
+    private final TableSQLParser tableSQLParser;
+    
     private final AliasSQLParser aliasSQLParser;
     
     private final ExpressionSQLParser expressionSQLParser;
     
-    private final TableSQLParser tableSQLParser;
-    
     private final List<SelectItem> items = new LinkedList<>();
     
-    public AbstractSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public AbstractSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final TableSQLParser tableSQLParser) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
+        this.tableSQLParser = tableSQLParser;
         aliasSQLParser = new AliasSQLParser(lexerEngine);
         expressionSQLParser = new ExpressionSQLParser(lexerEngine);
-        tableSQLParser = new TableSQLParser(lexerEngine);
     }
     
     @Override
@@ -118,44 +115,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 return;
             }
         }
-        parseTableFactor(selectStatement);
-        parseJoinTable(selectStatement);
-    }
-    
-    protected void parseTableFactor(final SelectStatement selectStatement) {
-        parseTableFactorInternal(selectStatement);
-    }
-    
-    protected final void parseTableFactorInternal(final SelectStatement selectStatement) {
-        lexerEngine.skipAll(DefaultKeyword.AS);
-        final int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-        String literals = lexerEngine.getCurrentToken().getLiterals();
-        lexerEngine.nextToken();
-        if (lexerEngine.equalAny(Symbol.DOT)) {
-            throw new UnsupportedOperationException("Cannot support SQL for `schema.table`");
-        }
-        String tableName = SQLUtil.getExactlyValue(literals);
-        Optional<String> alias = aliasSQLParser.parse();
-        if (shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {
-            selectStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
-            selectStatement.getTables().add(new Table(tableName, alias));
-        }
-    }
-    
-    protected void parseJoinTable(final SelectStatement selectStatement) {
-        if (tableSQLParser.skipJoin()) {
-            parseTable(selectStatement);
-            if (lexerEngine.skipIfEqual(DefaultKeyword.ON)) {
-                do {
-                    expressionSQLParser.parse(selectStatement);
-                    lexerEngine.accept(Symbol.EQ);
-                    expressionSQLParser.parse(selectStatement);
-                } while (lexerEngine.skipIfEqual(DefaultKeyword.AND));
-            } else if (lexerEngine.skipIfEqual(DefaultKeyword.USING)) {
-                lexerEngine.skipParentheses(selectStatement);
-            }
-            parseJoinTable(selectStatement);
-        }
+        tableSQLParser.parseTableFactor(selectStatement);
+        tableSQLParser.parseJoinTable(selectStatement);
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {
