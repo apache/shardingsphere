@@ -56,7 +56,7 @@ SQL Hint 对于分片字段非SQL决定，而由其他外置条件决定的场�
       
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/intro/</guid>
       <description>Sharding-JDBC直接封装JDBC API，可以理解为增强版的JDBC驱动，旧代码迁移成本几乎为零：
- 可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC。 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等。 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。  Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式。SQL解析使用Druid解析器，是目前性能最高的SQL解析器。
+ 可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC。 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等。 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。  Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式。采用&amp;rdquo;半理解&amp;rdquo;理念的SQL解析引擎，以达到性能与兼容性的最大平衡。
 Sharding-JDBC功能灵活且全面：
  分片策略灵活，可支持=，BETWEEN，IN等多维度分片，也可支持多分片键共用。 SQL解析功能完善，支持聚合，分组，排序，Limit等查询，并且支持Binding Table以及笛卡尔积的表查询。 支持柔性事务(目前仅最大努力送达型)。 支持读写分离。 支持分布式生成全局主键。  Sharding-JDBC配置多样：
  可支持YAML和Spring命名空间配置 灵活多样的inline方式  以下是常见的分库分表产品和Sharding-JDBC的对比：
@@ -71,8 +71,8 @@ Sharding-JDBC功能灵活且全面：
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/01-start/faq/</guid>
       <description>1. 阅读源码时为什么会出现编译错误? 回答：
 Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考lombok官网。
-2. java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&amp;hellip;..异常的解决方法？ 回答：
-目前Sharding-JDBC使用Druid作为SQL解析的基础库，请确保业务代码中使用的Druid与Sharding-JDBC使用的版本一致，目前Sharding-JDBC使用的是1.0.12版本。
+2. 1.5.0版本之前出现java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&amp;hellip;..异常的解决方法？ 回答：
+Sharding-JDBC在1.5.0版本之前使用Druid作为SQL解析的基础库，需确保业务代码中使用的Druid与Sharding-JDBC使用的版本一致，之前使用的Druid是1.0.12版本。
 3. 使用Spring命名空间时在网上相应地址找不到xsd? 回答：
 Spring命名空间使用规范并未强制要求将xsd文件部署至公网地址，因此我们并未将http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd部署至公网，但不影响正常使用。
 sharding-jdbc-config-spring的jar包中META-INF\spring.schemas配置了xsd文件的位置：META-INF\namespace\rdb.xsd，需确保jar包中该文件存在。
@@ -136,7 +136,7 @@ TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;).actual
       <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
       
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/01-start/features/</guid>
-      <description>功能性需求 分库分表  分片规则自由定制 支持多分片键 支持通过=，BETWEEN，IN分片 支持级联表 支持多表笛卡尔积查询 支持多表结果归并 支持聚合查询结果归并 支持AVG函数改写为SUM/COUNT 支持ORDER BY结果归并 支持GROUP BY结果归并 支持LIMIT分页查询以及多库表结果改写及归并  柔性事务  最大努力送达型 TCC型(TBD)  易用性  JDBC协议适配
+      <description> 功能性需求 分库分表  分片规则自由定制 支持多分片键 支持通过=，BETWEEN，IN分片 支持级联表 支持多表笛卡尔积查询 支持多表结果归并 支持聚合查询结果归并 支持AVG函数改写为SUM/COUNT 支持ORDER BY结果归并 支持GROUP BY结果归并 支持LIMIT分页查询以及多库表结果改写及归并  柔性事务  最大努力送达型 TCC型(TBD)  易用性  JDBC协议适配
 1.1. 全ORM支持
 1.2. 全数据库连接池支持
 1.3. 多数据库支持(目前支持MySQL，Oracle，SQLServer和PostgreSQL)
@@ -145,7 +145,7 @@ TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;).actual
 2.2. YAML命名空间支持
 2.3. 基于动态语言的分片策略配置
  Metrics统计监控
-  性能  基于Druid的高性能SQL解析 多线程处理结果归并 性能损失率约0.02%  稳定性 完善的疲劳测试，普通查询无Full GC（GROUP BY除外）</description>
+  性能  半理解&amp;rdquo;理念的SQL解析引擎 多线程处理结果归并 性能损失率约0.02%  稳定性  完善的疲劳测试，普通查询无Full GC（GROUP BY除外） 多数据库、分片策略和语句的完整单元测试  </description>
     </item>
     
     <item>

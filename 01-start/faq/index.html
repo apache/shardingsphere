@@ -376,7 +376,7 @@
 <li>
 <ul>
 <li><a href="#1-阅读源码时为什么会出现编译错误">1. 阅读源码时为什么会出现编译错误?</a></li>
-<li><a href="#2-java-lang-nosuchmethoderror-com-alibaba-druid-sql-ast-expr-sqlaggregateexpr-getoption-异常的解决方法">2. java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&hellip;..异常的解决方法？</a></li>
+<li><a href="#2-1-5-0版本之前出现java-lang-nosuchmethoderror-com-alibaba-druid-sql-ast-expr-sqlaggregateexpr-getoption-异常的解决方法">2. 1.5.0版本之前出现java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&hellip;..异常的解决方法？</a></li>
 <li><a href="#3-使用spring命名空间时在网上相应地址找不到xsd">3. 使用Spring命名空间时在网上相应地址找不到xsd?</a></li>
 <li><a href="#4-cloud-not-resolve-placeholder-in-string-value-异常的解决方法">4. Cloud not resolve placeholder &hellip; in string value &hellip;异常的解决方法?</a></li>
 <li><a href="#5-inline表达式返回结果为何出现浮点数">5. inline表达式返回结果为何出现浮点数？</a></li>
@@ -408,11 +408,11 @@
 
 <p>Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考<a href="https://projectlombok.org/download.html">lombok官网</a>。</p>
 
-<h3 id="2-java-lang-nosuchmethoderror-com-alibaba-druid-sql-ast-expr-sqlaggregateexpr-getoption-异常的解决方法">2. java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&hellip;..异常的解决方法？</h3>
+<h3 id="2-1-5-0版本之前出现java-lang-nosuchmethoderror-com-alibaba-druid-sql-ast-expr-sqlaggregateexpr-getoption-异常的解决方法">2. 1.5.0版本之前出现java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&hellip;..异常的解决方法？</h3>
 
 <p>回答：</p>
 
-<p>目前Sharding-JDBC使用Druid作为SQL解析的基础库，请确保业务代码中使用的Druid与Sharding-JDBC使用的版本一致，目前Sharding-JDBC使用的是<code>1.0.12</code>版本。</p>
+<p>Sharding-JDBC在1.5.0版本之前使用Druid作为SQL解析的基础库，需确保业务代码中使用的Druid与Sharding-JDBC使用的版本一致，之前使用的Druid是<code>1.0.12</code>版本。</p>
 
 <h3 id="3-使用spring命名空间时在网上相应地址找不到xsd">3. 使用Spring命名空间时在网上相应地址找不到xsd?</h3>
 
