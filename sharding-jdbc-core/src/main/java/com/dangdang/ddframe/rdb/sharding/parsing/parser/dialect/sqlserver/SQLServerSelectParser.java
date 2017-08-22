@@ -48,9 +48,9 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     private final AbstractOrderBySQLParser orderBySQLParser;
     
-    private final SQLServerOffsetParser sqlServerOffsetParser;
+    private final SQLServerOffsetParser offsetParser;
     
-    private final SQLServerForParser sqlServerForParser;
+    private final SQLServerForParser forParser;
     
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new SQLServerWhereSQLParser(lexerEngine));
@@ -60,8 +60,8 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         groupBySQLParser = new GroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new MySQLOrderBySQLParser(lexerEngine);
-        sqlServerOffsetParser = new SQLServerOffsetParser(lexerEngine);
-        sqlServerForParser = new SQLServerForParser(lexerEngine);
+        offsetParser = new SQLServerOffsetParser(lexerEngine);
+        forParser = new SQLServerForParser(lexerEngine);
     }
     
     @Override
@@ -74,8 +74,8 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         groupBySQLParser.parse(selectStatement);
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);
-        sqlServerOffsetParser.parse(selectStatement);
-        sqlServerForParser.parse();
+        offsetParser.parse(selectStatement);
+        forParser.parse();
     }
     
     @Override
