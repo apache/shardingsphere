@@ -18,9 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectClauseParserFacadeFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
@@ -38,7 +36,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     private final SQLServerForSQLParser forSQLParser;
     
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, SelectClauseParserFacadeFactory.newInstance(DatabaseType.SQLServer, shardingRule, lexerEngine));
+        super(shardingRule, lexerEngine, new SQLServerSelectClauseParserFacade(shardingRule, lexerEngine));
         sqlServerTopParser = new SQLServerTopParser(lexerEngine);
         offsetSQLParser = new SQLServerOffsetSQLParser(lexerEngine);
         forSQLParser = new SQLServerForSQLParser(lexerEngine);

@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectClauseParserFacade;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.AbstractSelectClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
@@ -60,7 +60,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final LexerEngine lexerEngine;
     
-    private final SelectClauseParserFacade selectClauseParserFacade;
+    private final AbstractSelectClauseParserFacade abstractSelectClauseParserFacade;
     
     private final List<SelectItem> items = new LinkedList<>();
     
@@ -86,11 +86,11 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     protected abstract void parseInternal(final SelectStatement selectStatement);
     
     protected final void parseDistinct() {
-        selectClauseParserFacade.getDistinctClauseParser().parse();
+        abstractSelectClauseParserFacade.getDistinctClauseParser().parse();
     }
     
     protected final void parseSelectList(final SelectStatement selectStatement, final List<SelectItem> items) {
-        selectClauseParserFacade.getSelectListClauseParser().parse(selectStatement, items);
+        abstractSelectClauseParserFacade.getSelectListClauseParser().parse(selectStatement, items);
     }
     
     protected final void parseFrom(final SelectStatement selectStatement) {
@@ -109,28 +109,28 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 return;
             }
         }
-        selectClauseParserFacade.getTableClauseParser().parseTableFactor(selectStatement);
-        selectClauseParserFacade.getTableClauseParser().parseJoinTable(selectStatement);
+        abstractSelectClauseParserFacade.getTableClauseParser().parseTableFactor(selectStatement);
+        abstractSelectClauseParserFacade.getTableClauseParser().parseJoinTable(selectStatement);
     }
     
     protected final void parseWhere(final ShardingRule shardingRule, final SelectStatement selectStatement, final List<SelectItem> items) {
-        selectClauseParserFacade.getWhereClauseParser().parse(shardingRule, selectStatement, items);
+        abstractSelectClauseParserFacade.getWhereClauseParser().parse(shardingRule, selectStatement, items);
     }
     
     protected final void parseGroupBy(final SelectStatement selectStatement) {
-        selectClauseParserFacade.getGroupByClauseParser().parse(selectStatement);
+        abstractSelectClauseParserFacade.getGroupByClauseParser().parse(selectStatement);
     }
     
     protected final void parseHaving() {
-        selectClauseParserFacade.getHavingClauseParser().parse();
+        abstractSelectClauseParserFacade.getHavingClauseParser().parse();
     }
     
     protected final void parseOrderBy(final SelectStatement selectStatement) {
-        selectClauseParserFacade.getOrderByClauseParser().parse(selectStatement);
+        abstractSelectClauseParserFacade.getOrderByClauseParser().parse(selectStatement);
     }
     
     protected final void parseSelectRest() {
-        selectClauseParserFacade.getSelectRestClauseParser().parse();
+        abstractSelectClauseParserFacade.getSelectRestClauseParser().parse();
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {

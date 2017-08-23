@@ -18,9 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectClauseParserFacadeFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
@@ -36,7 +34,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     private final PostgreSQLForSQLParser forSQLParser;
     
     public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, SelectClauseParserFacadeFactory.newInstance(DatabaseType.PostgreSQL, shardingRule, lexerEngine));
+        super(shardingRule, lexerEngine, new PostgreSQLSelectClauseParserFacade(shardingRule, lexerEngine));
         limitSQLParser = new PostgreSQLLimitSQLParser(lexerEngine);
         forSQLParser = new PostgreSQLForSQLParser(lexerEngine);
     }

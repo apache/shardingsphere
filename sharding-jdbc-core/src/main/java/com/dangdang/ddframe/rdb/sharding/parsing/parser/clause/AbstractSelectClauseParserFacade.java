@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class SelectClauseParserFacade {
+public abstract class AbstractSelectClauseParserFacade {
     
     private final DistinctClauseParser distinctClauseParser;
     
