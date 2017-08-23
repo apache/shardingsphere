@@ -74,8 +74,16 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         groupBySQLParser.parse(selectStatement);
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);
-        limitSQLParser.parse(selectStatement);
-        forSQLParser.parse();
+        parseLimit(selectStatement);
+        parseFor();
         selectRestSQLParser.parse();
+    }
+    
+    private void parseLimit(final SelectStatement selectStatement) {
+        limitSQLParser.parse(selectStatement);
+    }
+    
+    private void parseFor() {
+        forSQLParser.parse();
     }
 }
