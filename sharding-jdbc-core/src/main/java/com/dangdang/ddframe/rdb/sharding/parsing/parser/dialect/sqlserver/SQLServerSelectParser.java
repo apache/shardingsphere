@@ -25,7 +25,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
@@ -37,8 +36,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.Sel
 public final class SQLServerSelectParser extends AbstractSelectParser {
     
     private final SQLServerTopParser sqlServerTopParser;
-    
-    private final WhereSQLParser whereSQLParser;
     
     private final GroupBySQLParser groupBySQLParser;
     
@@ -53,9 +50,10 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     private final SelectRestSQLParser selectRestSQLParser;
     
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new DistinctSQLParser(lexerEngine), new SQLServerSelectListSQLParser(shardingRule, lexerEngine), new SQLServerTableSQLParser(shardingRule, lexerEngine));
+        super(shardingRule, lexerEngine, 
+                new DistinctSQLParser(lexerEngine), new SQLServerSelectListSQLParser(shardingRule, lexerEngine), new SQLServerTableSQLParser(shardingRule, lexerEngine), 
+                new SQLServerWhereSQLParser(lexerEngine));
         sqlServerTopParser = new SQLServerTopParser(lexerEngine);
-        whereSQLParser = new SQLServerWhereSQLParser(lexerEngine);
         groupBySQLParser = new GroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new MySQLOrderBySQLParser(lexerEngine);
@@ -70,7 +68,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         parseTop(selectStatement);
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);
-        whereSQLParser.parse(getShardingRule(), selectStatement, getItems());
+        parseWhere(getShardingRule(), selectStatement, getItems());
         groupBySQLParser.parse(selectStatement);
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);

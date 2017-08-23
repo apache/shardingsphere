@@ -37,8 +37,6 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     
     private final MySQLSelectOptionSQLParser selectOptionSQLParser;
     
-    private final WhereSQLParser whereSQLParser;
-    
     private final GroupBySQLParser groupBySQLParser;
     
     private final HavingSQLParser havingSQLParser;
@@ -50,9 +48,9 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     private final SelectRestSQLParser selectRestSQLParser;
     
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new MySQLDistinctSQLParser(lexerEngine), new SelectListSQLParser(shardingRule, lexerEngine), new MySQLTableSQLParser(shardingRule, lexerEngine));
+        super(shardingRule, lexerEngine, 
+                new MySQLDistinctSQLParser(lexerEngine), new SelectListSQLParser(shardingRule, lexerEngine), new MySQLTableSQLParser(shardingRule, lexerEngine), new WhereSQLParser(lexerEngine));
         selectOptionSQLParser = new MySQLSelectOptionSQLParser(lexerEngine);
-        whereSQLParser = new WhereSQLParser(lexerEngine);
         groupBySQLParser = new MySQLGroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new MySQLOrderBySQLParser(lexerEngine);
@@ -66,7 +64,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         selectOptionSQLParser.parse();
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);
-        whereSQLParser.parse(getShardingRule(), selectStatement, getItems());
+        parseWhere(getShardingRule(), selectStatement, getItems());
         groupBySQLParser.parse(selectStatement);
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);

@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
@@ -33,8 +32,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.Sel
  * @author zhangliang
  */
 public final class OracleSelectParser extends AbstractSelectParser {
-    
-    private final WhereSQLParser whereSQLParser;
     
     private final OracleHierarchicalQueryClauseParser hierarchicalQueryClauseParser;
     
@@ -51,8 +48,9 @@ public final class OracleSelectParser extends AbstractSelectParser {
     private final SelectRestSQLParser selectRestSQLParser;
     
     public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new OracleDistinctSQLParser(lexerEngine), new OracleSelectListSQLParser(shardingRule, lexerEngine), new OracleTableSQLParser(shardingRule, lexerEngine));
-        whereSQLParser = new OracleWhereSQLParser(lexerEngine);
+        super(shardingRule, lexerEngine, 
+                new OracleDistinctSQLParser(lexerEngine), new OracleSelectListSQLParser(shardingRule, lexerEngine), 
+                new OracleTableSQLParser(shardingRule, lexerEngine), new OracleWhereSQLParser(lexerEngine));
         hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(shardingRule, lexerEngine);
         groupBySQLParser = new OracleGroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
@@ -67,7 +65,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         parseDistinct();
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);
-        whereSQLParser.parse(getShardingRule(), selectStatement, getItems());
+        parseWhere(getShardingRule(), selectStatement, getItems());
         hierarchicalQueryClauseParser.parse(selectStatement);
         groupBySQLParser.parse(selectStatement);
         havingSQLParser.parse();

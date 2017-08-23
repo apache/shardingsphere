@@ -30,6 +30,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
@@ -68,6 +69,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final TableSQLParser tableSQLParser;
     
+    private final WhereSQLParser whereSQLParser;
+    
     private final List<SelectItem> items = new LinkedList<>();
     
     @Override
@@ -91,6 +94,14 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     protected abstract void parseInternal(final SelectStatement selectStatement);
     
+    protected final void parseDistinct() {
+        distinctSQLParser.parse();
+    }
+    
+    protected final void parseSelectList(final SelectStatement selectStatement, final List<SelectItem> items) {
+        selectListSQLParser.parse(selectStatement, items);
+    }
+    
     protected final void parseFrom(final SelectStatement selectStatement) {
         if (lexerEngine.equalAny(DefaultKeyword.INTO)) {
             throw new SQLParsingUnsupportedException(DefaultKeyword.INTO);
@@ -111,12 +122,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         tableSQLParser.parseJoinTable(selectStatement);
     }
     
-    protected final void parseDistinct() {
-        distinctSQLParser.parse();
-    }
-    
-    protected final void parseSelectList(final SelectStatement selectStatement, final List<SelectItem> items) {
-        selectListSQLParser.parse(selectStatement, items);
+    protected final void parseWhere(final ShardingRule shardingRule, final SelectStatement selectStatement, final List<SelectItem> items) {
+        whereSQLParser.parse(shardingRule, selectStatement, items);
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {
