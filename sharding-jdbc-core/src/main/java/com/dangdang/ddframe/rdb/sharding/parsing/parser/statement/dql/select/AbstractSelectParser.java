@@ -28,6 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.Aggre
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
@@ -35,6 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +46,7 @@ import java.util.List;
  * 
  * @author zhangliang 
  */
+@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractSelectParser implements SQLStatementParser {
     
@@ -61,16 +64,11 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final DistinctSQLParser distinctSQLParser;
     
+    private final SelectListSQLParser selectListSQLParser;
+    
     private final TableSQLParser tableSQLParser;
     
     private final List<SelectItem> items = new LinkedList<>();
-    
-    public AbstractSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final DistinctSQLParser distinctSQLParser, final TableSQLParser tableSQLParser) {
-        this.shardingRule = shardingRule;
-        this.lexerEngine = lexerEngine;
-        this.distinctSQLParser = distinctSQLParser;
-        this.tableSQLParser = tableSQLParser;
-    }
     
     @Override
     public final SelectStatement parse() {
@@ -115,6 +113,10 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     protected final void parseDistinct() {
         distinctSQLParser.parse();
+    }
+    
+    protected final void parseSelectList(final SelectStatement selectStatement, final List<SelectItem> items) {
+        selectListSQLParser.parse(selectStatement, items);
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {
