@@ -25,14 +25,14 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public abstract class AbstractOrderBySQLParser implements SQLParser {
+public class OrderBySQLParser implements SQLParser {
     
     @Getter
     private final LexerEngine lexerEngine;
     
     private final ExpressionSQLParser expressionSQLParser;
     
-    public AbstractOrderBySQLParser(final LexerEngine lexerEngine) {
+    public OrderBySQLParser(final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
         expressionSQLParser = new ExpressionSQLParser(lexerEngine);
     }
@@ -83,7 +83,9 @@ public abstract class AbstractOrderBySQLParser implements SQLParser {
         throw new SQLParsingException(lexerEngine);
     }
     
-    protected abstract OrderType getNullOrderType();
+    protected OrderType getNullOrderType() {
+        return OrderType.ASC;
+    }
     
     private Optional<String> getAlias(final String name, final SelectStatement selectStatement) {
         if (selectStatement.isContainStar()) {

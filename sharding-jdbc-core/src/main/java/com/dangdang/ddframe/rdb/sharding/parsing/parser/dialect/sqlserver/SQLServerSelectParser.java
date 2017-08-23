@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLOrderBySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
@@ -49,7 +49,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     private final HavingSQLParser havingSQLParser;
     
-    private final AbstractOrderBySQLParser orderBySQLParser;
+    private final OrderBySQLParser orderBySQLParser;
     
     private final SQLServerOffsetSQLParser offsetSQLParser;
     

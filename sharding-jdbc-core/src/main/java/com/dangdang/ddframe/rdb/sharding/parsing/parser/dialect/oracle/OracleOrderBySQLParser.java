@@ -4,14 +4,14 @@ import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AbstractOrderBySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
 
 /**
  * Oracle Order By解析器.
  *
  * @author zhangliang
  */
-public final class OracleOrderBySQLParser extends AbstractOrderBySQLParser {
+public final class OracleOrderBySQLParser extends OrderBySQLParser {
     
     public OracleOrderBySQLParser(final LexerEngine lexerEngine) {
         super(lexerEngine);
