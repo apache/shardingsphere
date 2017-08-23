@@ -37,8 +37,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.Sel
  */
 public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
-    private final GroupBySQLParser groupBySQLParser;
-    
     private final HavingSQLParser havingSQLParser;
     
     private final OrderBySQLParser orderBySQLParser;
@@ -51,8 +49,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
     public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new DistinctSQLParser(lexerEngine), 
-                new SelectListSQLParser(shardingRule, lexerEngine), new TableSQLParser(shardingRule, lexerEngine), new WhereSQLParser(lexerEngine));
-        groupBySQLParser = new GroupBySQLParser(lexerEngine);
+                new SelectListSQLParser(shardingRule, lexerEngine), new TableSQLParser(shardingRule, lexerEngine), new WhereSQLParser(lexerEngine), new GroupBySQLParser(lexerEngine));
         havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new PostgreSQLOrderBySQLParser(lexerEngine);
         limitSQLParser = new PostgreSQLLimitSQLParser(lexerEngine);
@@ -66,7 +63,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);
         parseWhere(getShardingRule(), selectStatement, getItems());
-        groupBySQLParser.parse(selectStatement);
+        parseGroupBy(selectStatement);
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);
         parseLimit(selectStatement);

@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
@@ -35,8 +34,6 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     private final OracleHierarchicalQueryClauseParser hierarchicalQueryClauseParser;
     
-    private final GroupBySQLParser groupBySQLParser;
-    
     private final HavingSQLParser havingSQLParser;
     
     private final OracleModelClauseParser modelClauseParser;
@@ -49,10 +46,9 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, 
-                new OracleDistinctSQLParser(lexerEngine), new OracleSelectListSQLParser(shardingRule, lexerEngine), 
-                new OracleTableSQLParser(shardingRule, lexerEngine), new OracleWhereSQLParser(lexerEngine));
+                new OracleDistinctSQLParser(lexerEngine), new OracleSelectListSQLParser(shardingRule, lexerEngine), new OracleTableSQLParser(shardingRule, lexerEngine), 
+                new OracleWhereSQLParser(lexerEngine), new OracleGroupBySQLParser(lexerEngine));
         hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(shardingRule, lexerEngine);
-        groupBySQLParser = new OracleGroupBySQLParser(lexerEngine);
         havingSQLParser = new HavingSQLParser(lexerEngine);
         modelClauseParser = new OracleModelClauseParser(lexerEngine);
         orderBySQLParser = new OracleOrderBySQLParser(lexerEngine);
@@ -67,7 +63,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         parseFrom(selectStatement);
         parseWhere(getShardingRule(), selectStatement, getItems());
         hierarchicalQueryClauseParser.parse(selectStatement);
-        groupBySQLParser.parse(selectStatement);
+        parseGroupBy(selectStatement);
         havingSQLParser.parse();
         modelClauseParser.parse(selectStatement);
         orderBySQLParser.parse(selectStatement);
