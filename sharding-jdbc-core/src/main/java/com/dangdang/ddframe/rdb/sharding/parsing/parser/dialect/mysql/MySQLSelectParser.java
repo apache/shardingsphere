@@ -58,14 +58,22 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
         parseDistinct();
-        selectOptionSQLParser.parse();
+        parseSelectOption();
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);
         parseWhere(getShardingRule(), selectStatement, getItems());
         parseGroupBy(selectStatement);
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);
-        limitSQLParser.parse(selectStatement);
+        parseLimit(selectStatement);
         selectRestSQLParser.parse();
+    }
+    
+    private void parseSelectOption() {
+        selectOptionSQLParser.parse();
+    }
+    
+    private void parseLimit(final SelectStatement selectStatement) {
+        limitSQLParser.parse(selectStatement);
     }
 }
