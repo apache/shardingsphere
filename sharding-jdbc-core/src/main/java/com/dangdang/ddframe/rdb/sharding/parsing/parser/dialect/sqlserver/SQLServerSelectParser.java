@@ -71,7 +71,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
         parseDistinct();
-        sqlServerTopParser.parse(selectStatement);
+        parseTop(selectStatement);
         selectListSQLParser.parse(selectStatement, getItems());
         parseFrom(selectStatement);
         whereSQLParser.parse(getShardingRule(), selectStatement, getItems());
@@ -81,5 +81,9 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         offsetSQLParser.parse(selectStatement);
         forSQLParser.parse();
         selectRestSQLParser.parse();
+    }
+    
+    private void parseTop(final SelectStatement selectStatement) {
+        sqlServerTopParser.parse(selectStatement);
     }
 }
