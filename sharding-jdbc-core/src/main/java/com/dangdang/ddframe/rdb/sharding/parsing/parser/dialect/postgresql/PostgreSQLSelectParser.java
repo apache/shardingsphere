@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
@@ -37,19 +36,16 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.Sel
  */
 public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
-    private final OrderBySQLParser orderBySQLParser;
+    private final PostgreSQLLimitSQLParser limitSQLParser;
     
-    private  final PostgreSQLLimitSQLParser limitSQLParser;
-    
-    private  final PostgreSQLForSQLParser forSQLParser;
+    private final PostgreSQLForSQLParser forSQLParser;
     
     private final SelectRestSQLParser selectRestSQLParser;
     
     public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new DistinctSQLParser(lexerEngine), 
                 new SelectListSQLParser(shardingRule, lexerEngine), new TableSQLParser(shardingRule, lexerEngine), new WhereSQLParser(lexerEngine), new GroupBySQLParser(lexerEngine), 
-                new HavingSQLParser(lexerEngine));
-        orderBySQLParser = new PostgreSQLOrderBySQLParser(lexerEngine);
+                new HavingSQLParser(lexerEngine), new PostgreSQLOrderBySQLParser(lexerEngine));
         limitSQLParser = new PostgreSQLLimitSQLParser(lexerEngine);
         forSQLParser = new PostgreSQLForSQLParser(lexerEngine);
         selectRestSQLParser = new PostgreSQLSelectRestSQLParser(lexerEngine);
@@ -63,7 +59,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         parseWhere(getShardingRule(), selectStatement, getItems());
         parseGroupBy(selectStatement);
         parseHaving();
-        orderBySQLParser.parse(selectStatement);
+        parseOrderBy(selectStatement);
         parseLimit(selectStatement);
         parseFor();
         selectRestSQLParser.parse();

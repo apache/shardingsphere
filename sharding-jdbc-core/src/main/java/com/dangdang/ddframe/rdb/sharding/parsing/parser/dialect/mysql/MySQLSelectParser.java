@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
@@ -36,8 +35,6 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     
     private final MySQLSelectOptionSQLParser selectOptionSQLParser;
     
-    private final OrderBySQLParser orderBySQLParser;
-    
     private final MySQLLimitSQLParser limitSQLParser;
     
     private final SelectRestSQLParser selectRestSQLParser;
@@ -45,9 +42,8 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, 
                 new MySQLDistinctSQLParser(lexerEngine), new SelectListSQLParser(shardingRule, lexerEngine), new MySQLTableSQLParser(shardingRule, lexerEngine), 
-                new WhereSQLParser(lexerEngine), new MySQLGroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine));
+                new WhereSQLParser(lexerEngine), new MySQLGroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine), new MySQLOrderBySQLParser(lexerEngine));
         selectOptionSQLParser = new MySQLSelectOptionSQLParser(lexerEngine);
-        orderBySQLParser = new MySQLOrderBySQLParser(lexerEngine);
         limitSQLParser = new MySQLLimitSQLParser(lexerEngine);
         selectRestSQLParser = new MySQLSelectRestSQLParser(lexerEngine);
     }
@@ -61,7 +57,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         parseWhere(getShardingRule(), selectStatement, getItems());
         parseGroupBy(selectStatement);
         parseHaving();
-        orderBySQLParser.parse(selectStatement);
+        parseOrderBy(selectStatement);
         parseLimit(selectStatement);
         selectRestSQLParser.parse();
     }

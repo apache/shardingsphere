@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
@@ -36,8 +35,6 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     private final OracleModelClauseParser modelClauseParser;
     
-    private final OrderBySQLParser orderBySQLParser;
-    
     private final OracleForParser forParser;
     
     private final SelectRestSQLParser selectRestSQLParser;
@@ -45,10 +42,9 @@ public final class OracleSelectParser extends AbstractSelectParser {
     public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, 
                 new OracleDistinctSQLParser(lexerEngine), new OracleSelectListSQLParser(shardingRule, lexerEngine), new OracleTableSQLParser(shardingRule, lexerEngine), 
-                new OracleWhereSQLParser(lexerEngine), new OracleGroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine));
+                new OracleWhereSQLParser(lexerEngine), new OracleGroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine), new OracleOrderBySQLParser(lexerEngine));
         hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(shardingRule, lexerEngine);
         modelClauseParser = new OracleModelClauseParser(lexerEngine);
-        orderBySQLParser = new OracleOrderBySQLParser(lexerEngine);
         forParser = new OracleForParser(lexerEngine);
         selectRestSQLParser = new SelectRestSQLParser(lexerEngine);
     }
@@ -63,7 +59,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         parseGroupBy(selectStatement);
         parseHaving();
         parseModelClause(selectStatement);
-        orderBySQLParser.parse(selectStatement);
+        parseOrderBy(selectStatement);
         parseFor(selectStatement);
         selectRestSQLParser.parse();
     }
