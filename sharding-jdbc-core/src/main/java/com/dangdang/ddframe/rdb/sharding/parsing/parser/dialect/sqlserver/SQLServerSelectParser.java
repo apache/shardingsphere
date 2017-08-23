@@ -69,12 +69,20 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         parseGroupBy(selectStatement);
         havingSQLParser.parse();
         orderBySQLParser.parse(selectStatement);
-        offsetSQLParser.parse(selectStatement);
-        forSQLParser.parse();
+        parseOffset(selectStatement);
+        parseFor();
         selectRestSQLParser.parse();
     }
     
     private void parseTop(final SelectStatement selectStatement) {
         sqlServerTopParser.parse(selectStatement);
+    }
+    
+    private void parseOffset(final SelectStatement selectStatement) {
+        offsetSQLParser.parse(selectStatement);
+    }
+    
+    private void parseFor() {
+        forSQLParser.parse();
     }
 }
