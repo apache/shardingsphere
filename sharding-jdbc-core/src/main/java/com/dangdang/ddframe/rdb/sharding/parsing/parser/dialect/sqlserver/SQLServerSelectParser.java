@@ -18,11 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.DistinctClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.GroupByClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.HavingClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectRestClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectClauseParserFacadeFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
@@ -40,9 +38,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     private final SQLServerForSQLParser forSQLParser;
     
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new DistinctClauseParser(lexerEngine), new SQLServerSelectListClauseParser(shardingRule, lexerEngine), 
-                new SQLServerTableClauseParser(shardingRule, lexerEngine), new SQLServerWhereClauseParser(lexerEngine), new GroupByClauseParser(lexerEngine), 
-                new HavingClauseParser(lexerEngine), new SQLServerOrderByClauseParser(lexerEngine), new SelectRestClauseParser(lexerEngine));
+        super(shardingRule, lexerEngine, SelectClauseParserFacadeFactory.newInstance(DatabaseType.SQLServer, shardingRule, lexerEngine));
         sqlServerTopParser = new SQLServerTopParser(lexerEngine);
         offsetSQLParser = new SQLServerOffsetSQLParser(lexerEngine);
         forSQLParser = new SQLServerForSQLParser(lexerEngine);

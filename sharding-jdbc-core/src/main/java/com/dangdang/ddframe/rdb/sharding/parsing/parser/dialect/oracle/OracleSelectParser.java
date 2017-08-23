@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.HavingClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectRestClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectClauseParserFacadeFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
@@ -38,9 +38,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     private final OracleForParser forParser;
     
     public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new OracleDistinctClauseParser(lexerEngine), new OracleSelectListClauseParser(shardingRule, lexerEngine), 
-                new OracleTableClauseParser(shardingRule, lexerEngine), new OracleWhereClauseParser(lexerEngine), new OracleGroupByClauseParser(lexerEngine),
-                new HavingClauseParser(lexerEngine), new OracleOrderByClauseParser(lexerEngine), new SelectRestClauseParser(lexerEngine));
+        super(shardingRule, lexerEngine, SelectClauseParserFacadeFactory.newInstance(DatabaseType.Oracle, shardingRule, lexerEngine));
         hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(shardingRule, lexerEngine);
         modelClauseParser = new OracleModelClauseParser(lexerEngine);
         forParser = new OracleForParser(lexerEngine);
