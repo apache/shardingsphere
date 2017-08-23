@@ -27,7 +27,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AliasSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ExpressionSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
@@ -62,8 +61,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final TableSQLParser tableSQLParser;
     
-    private final AliasSQLParser aliasSQLParser;
-    
     private final ExpressionSQLParser expressionSQLParser;
     
     private final List<SelectItem> items = new LinkedList<>();
@@ -72,7 +69,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
         this.tableSQLParser = tableSQLParser;
-        aliasSQLParser = new AliasSQLParser(lexerEngine);
         expressionSQLParser = new ExpressionSQLParser(lexerEngine);
     }
     
