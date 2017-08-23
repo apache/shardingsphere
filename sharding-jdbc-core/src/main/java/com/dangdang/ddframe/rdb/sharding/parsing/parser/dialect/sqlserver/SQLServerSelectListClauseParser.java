@@ -8,22 +8,22 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.CommonSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.OrderBySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.OrderByClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
 /**
- * SQLServer Select List解析器.
+ * SQLServer 选择项从句解析器.
  *
  * @author zhangliang
  */
-public final class SQLServerSelectListSQLParser extends SelectListSQLParser {
+public final class SQLServerSelectListClauseParser extends SelectListClauseParser {
     
-    private OrderBySQLParser orderBySQLParser;
+    private OrderByClauseParser orderByClauseParser;
     
-    public SQLServerSelectListSQLParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public SQLServerSelectListClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
-        orderBySQLParser = new SQLServerOrderBySQLParser(lexerEngine);
+        orderByClauseParser = new SQLServerOrderByClauseParser(lexerEngine);
     }
     
     @Override
@@ -39,8 +39,8 @@ public final class SQLServerSelectListSQLParser extends SelectListSQLParser {
         if (getLexerEngine().equalAny(SQLServerKeyword.PARTITION)) {
             throw new SQLParsingUnsupportedException(SQLServerKeyword.PARTITION);
         }
-        orderBySQLParser.parse(selectStatement);
+        orderByClauseParser.parse(selectStatement);
         getLexerEngine().accept(Symbol.RIGHT_PAREN);
-        return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getAliasSQLParser().parse());
+        return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getAliasClauseParser().parse());
     }
 }

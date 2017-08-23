@@ -11,29 +11,28 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Distinct解析器.
+ * SELECT剩余语句解析器.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public class DistinctSQLParser implements SQLClauseParser {
+public class SelectRestClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析Distinct.
+     * 解析剩余语句.
      */
     public final void parse() {
-        lexerEngine.skipAll(DefaultKeyword.ALL);
-        Collection<Keyword> distinctKeywords = new LinkedList<>();
-        distinctKeywords.add(DefaultKeyword.DISTINCT);
-        distinctKeywords.addAll(Arrays.asList(getSynonymousKeywordsForDistinct()));
-        if (lexerEngine.equalAny(distinctKeywords.toArray(new Keyword[distinctKeywords.size()]))) {
+        Collection<Keyword> unsupportedRestKeywords = new LinkedList<>();
+        unsupportedRestKeywords.addAll(Arrays.asList(DefaultKeyword.UNION, DefaultKeyword.INTERSECT, DefaultKeyword.EXCEPT, DefaultKeyword.MINUS));
+        unsupportedRestKeywords.addAll(Arrays.asList(getUnsupportedKeywordsRest()));
+        if (lexerEngine.equalAny(unsupportedRestKeywords.toArray(new Keyword[unsupportedRestKeywords.size()]))) {
             throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
         }
     }
     
-    protected Keyword[] getSynonymousKeywordsForDistinct() {
+    protected Keyword[] getUnsupportedKeywordsRest() {
         return new Keyword[0];
     }
 }

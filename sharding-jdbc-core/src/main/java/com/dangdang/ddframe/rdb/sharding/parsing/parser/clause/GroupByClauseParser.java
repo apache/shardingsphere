@@ -17,19 +17,19 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 
 /**
- * Group By解析器.
+ * 分组从句解析器.
  *
  * @author zhangliang
  */
-public class GroupBySQLParser implements SQLClauseParser {
+public class GroupByClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
-    private final ExpressionSQLParser expressionSQLParser;
+    private final ExpressionClauseParser expressionClauseParser;
     
-    public GroupBySQLParser(final LexerEngine lexerEngine) {
+    public GroupByClauseParser(final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
-        expressionSQLParser = new ExpressionSQLParser(lexerEngine);
+        expressionClauseParser = new ExpressionClauseParser(lexerEngine);
     }
     
     /**
@@ -43,7 +43,7 @@ public class GroupBySQLParser implements SQLClauseParser {
         }
         lexerEngine.accept(DefaultKeyword.BY);
         while (true) {
-            addGroupByItem(expressionSQLParser.parse(selectStatement), selectStatement);
+            addGroupByItem(expressionClauseParser.parse(selectStatement), selectStatement);
             if (!lexerEngine.equalAny(Symbol.COMMA)) {
                 break;
             }

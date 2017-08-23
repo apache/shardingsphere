@@ -3,17 +3,17 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
 /**
- * SQLServer Table解析器.
+ * SQLServer 表从句解析器.
  *
  * @author zhangliang
  */
-public final class SQLServerTableSQLParser extends TableSQLParser {
+public final class SQLServerTableClauseParser extends TableClauseParser {
     
-    public SQLServerTableSQLParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public SQLServerTableClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
     

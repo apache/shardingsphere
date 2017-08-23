@@ -29,22 +29,22 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * WHERE语句解析器.
+ * WHERE从句解析器.
  *
  * @author zhangliang
  */
-public class WhereSQLParser implements SQLClauseParser {
+public class WhereClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
-    private final AliasSQLParser aliasSQLParser;
+    private final AliasClauseParser aliasClauseParser;
     
-    private final ExpressionSQLParser expressionSQLParser;
+    private final ExpressionClauseParser expressionClauseParser;
     
-    public WhereSQLParser(final LexerEngine lexerEngine) {
+    public WhereClauseParser(final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
-        aliasSQLParser = new AliasSQLParser(lexerEngine);
-        expressionSQLParser = new ExpressionSQLParser(lexerEngine);
+        aliasClauseParser = new AliasClauseParser(lexerEngine);
+        expressionClauseParser = new ExpressionClauseParser(lexerEngine);
     }
     
     /**
@@ -54,7 +54,7 @@ public class WhereSQLParser implements SQLClauseParser {
      * @param items 选择项集合
      */
     public void parse(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
-        aliasSQLParser.parse();
+        aliasClauseParser.parse();
         if (lexerEngine.skipIfEqual(DefaultKeyword.WHERE)) {
             parseConditions(shardingRule, sqlStatement, items);
         }
@@ -72,7 +72,7 @@ public class WhereSQLParser implements SQLClauseParser {
     // TODO 解析组合expr
     public void parseComparisonCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         lexerEngine.skipIfEqual(Symbol.LEFT_PAREN);
-        SQLExpression left = expressionSQLParser.parse(sqlStatement);
+        SQLExpression left = expressionClauseParser.parse(sqlStatement);
         if (lexerEngine.equalAny(Symbol.EQ)) {
             parseEqualCondition(shardingRule, sqlStatement, left);
             lexerEngine.skipIfEqual(Symbol.RIGHT_PAREN);
@@ -106,7 +106,7 @@ public class WhereSQLParser implements SQLClauseParser {
     
     private void parseEqualCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
         lexerEngine.nextToken();
-        SQLExpression right = expressionSQLParser.parse(sqlStatement);
+        SQLExpression right = expressionClauseParser.parse(sqlStatement);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if ((sqlStatement.getTables().isSingleTable() || left instanceof SQLPropertyExpression)
                 && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
@@ -125,7 +125,7 @@ public class WhereSQLParser implements SQLClauseParser {
             if (lexerEngine.equalAny(Symbol.COMMA)) {
                 lexerEngine.nextToken();
             }
-            rights.add(expressionSQLParser.parse(sqlStatement));
+            rights.add(expressionClauseParser.parse(sqlStatement));
         } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN));
         Optional<Column> column = find(sqlStatement.getTables(), left);
         if (column.isPresent()) {
@@ -137,9 +137,9 @@ public class WhereSQLParser implements SQLClauseParser {
     private void parseBetweenCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
         lexerEngine.nextToken();
         List<SQLExpression> rights = new LinkedList<>();
-        rights.add(expressionSQLParser.parse(sqlStatement));
+        rights.add(expressionClauseParser.parse(sqlStatement));
         lexerEngine.accept(DefaultKeyword.AND);
-        rights.add(expressionSQLParser.parse(sqlStatement));
+        rights.add(expressionClauseParser.parse(sqlStatement));
         Optional<Column> column = find(sqlStatement.getTables(), left);
         if (column.isPresent()) {
             sqlStatement.getConditions().add(new Condition(column.get(), rights.get(0), rights.get(1)), shardingRule);
@@ -153,7 +153,7 @@ public class WhereSQLParser implements SQLClauseParser {
     private void parseRowNumberCondition(final SelectStatement selectStatement) {
         Symbol symbol = (Symbol) lexerEngine.getCurrentToken().getType();
         lexerEngine.nextToken();
-        SQLExpression sqlExpression = expressionSQLParser.parse(selectStatement);
+        SQLExpression sqlExpression = expressionClauseParser.parse(selectStatement);
         if (null == selectStatement.getLimit()) {
             selectStatement.setLimit(new Limit(false));
         }
@@ -180,7 +180,7 @@ public class WhereSQLParser implements SQLClauseParser {
     
     private void parseOtherCondition(final SQLStatement sqlStatement) {
         lexerEngine.nextToken();
-        expressionSQLParser.parse(sqlStatement);
+        expressionClauseParser.parse(sqlStatement);
     }
     
     private Optional<Column> find(final Tables tables, final SQLExpression sqlExpression) {

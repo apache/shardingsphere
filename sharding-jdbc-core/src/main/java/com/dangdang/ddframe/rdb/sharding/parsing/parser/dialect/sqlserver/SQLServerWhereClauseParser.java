@@ -2,19 +2,19 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
 import com.google.common.base.Optional;
 
 import java.util.List;
 
 /**
- * SQLServer WHERE语句解析对象.
+ * SQLServer WHERE从句解析对象.
  *
  * @author zhangliang
  */
-public final class SQLServerWhereSQLParser extends WhereSQLParser {
+public final class SQLServerWhereClauseParser extends WhereClauseParser {
     
-    public SQLServerWhereSQLParser(final LexerEngine lexerEngine) {
+    public SQLServerWhereClauseParser(final LexerEngine lexerEngine) {
         super(lexerEngine);
     }
     

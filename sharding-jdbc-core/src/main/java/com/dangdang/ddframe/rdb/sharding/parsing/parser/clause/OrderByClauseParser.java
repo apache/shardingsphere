@@ -21,20 +21,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Order By解析器.
+ * 排序从句解析器.
  *
  * @author zhangliang
  */
-public class OrderBySQLParser implements SQLClauseParser {
+public class OrderByClauseParser implements SQLClauseParser {
     
     @Getter
     private final LexerEngine lexerEngine;
     
-    private final ExpressionSQLParser expressionSQLParser;
+    private final ExpressionClauseParser expressionClauseParser;
     
-    public OrderBySQLParser(final LexerEngine lexerEngine) {
+    public OrderByClauseParser(final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
-        expressionSQLParser = new ExpressionSQLParser(lexerEngine);
+        expressionClauseParser = new ExpressionClauseParser(lexerEngine);
     }
     
     /**
@@ -57,7 +57,7 @@ public class OrderBySQLParser implements SQLClauseParser {
     }
     
     private OrderItem parseSelectOrderByItem(final SelectStatement selectStatement) {
-        SQLExpression sqlExpression = expressionSQLParser.parse(selectStatement);
+        SQLExpression sqlExpression = expressionClauseParser.parse(selectStatement);
         OrderType orderByType = OrderType.ASC;
         if (lexerEngine.skipIfEqual(DefaultKeyword.ASC)) {
             orderByType = OrderType.ASC;

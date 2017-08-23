@@ -20,16 +20,16 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectRestSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectRestClauseParser;
 
 /**
  * PostgreSQL SELECT剩余语句解析器.
  *
  * @author zhangliang
  */
-public final class MySQLSelectRestSQLParser extends SelectRestSQLParser {
+public final class MySQLSelectRestClauseParser extends SelectRestClauseParser {
     
-    public MySQLSelectRestSQLParser(final LexerEngine lexerEngine) {
+    public MySQLSelectRestClauseParser(final LexerEngine lexerEngine) {
         super(lexerEngine);
     }
     

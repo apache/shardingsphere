@@ -32,8 +32,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.ExpressionSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.ExpressionClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
@@ -62,9 +62,9 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     @Getter(AccessLevel.PROTECTED)
     private final LexerEngine lexerEngine;
     
-    private final ExpressionSQLParser expressionSQLParser;
+    private final ExpressionClauseParser expressionClauseParser;
     
-    private final TableSQLParser tableSQLParser;
+    private final TableClauseParser tableClauseParser;
     
     private int columnsListLastPosition;
     
@@ -77,8 +77,8 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     public AbstractInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        expressionSQLParser = new ExpressionSQLParser(lexerEngine);
-        tableSQLParser = new TableSQLParser(shardingRule, lexerEngine);
+        expressionClauseParser = new ExpressionClauseParser(lexerEngine);
+        tableClauseParser = new TableClauseParser(shardingRule, lexerEngine);
     }
     
     @Override
@@ -112,7 +112,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         }
         lexerEngine.skipUntil(DefaultKeyword.INTO);
         lexerEngine.nextToken();
-        tableSQLParser.parseSingleTable(insertStatement);
+        tableClauseParser.parseSingleTable(insertStatement);
         skipBetweenTableAndValues(insertStatement);
     }
     
@@ -163,7 +163,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         lexerEngine.accept(Symbol.LEFT_PAREN);
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         do {
-            sqlExpressions.add(expressionSQLParser.parse(insertStatement));
+            sqlExpressions.add(expressionClauseParser.parse(insertStatement));
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         valuesListLastPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         int count = 0;

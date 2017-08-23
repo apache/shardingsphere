@@ -23,8 +23,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
 import lombok.RequiredArgsConstructor;
@@ -43,15 +43,15 @@ public abstract class AbstractDeleteParser implements SQLStatementParser {
     
     private final LexerEngine lexerEngine;
     
-    private final TableSQLParser tableSQLParser;
+    private final TableClauseParser tableClauseParser;
     
-    private final WhereSQLParser whereParser;
+    private final WhereClauseParser whereParser;
     
     public AbstractDeleteParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        whereParser = new WhereSQLParser(lexerEngine);
-        tableSQLParser = new TableSQLParser(shardingRule, lexerEngine);
+        whereParser = new WhereClauseParser(lexerEngine);
+        tableClauseParser = new TableClauseParser(shardingRule, lexerEngine);
     }
     
     @Override
@@ -62,7 +62,7 @@ public abstract class AbstractDeleteParser implements SQLStatementParser {
             throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
         }
         DMLStatement result = new DMLStatement();
-        tableSQLParser.parseSingleTable(result);
+        tableClauseParser.parseSingleTable(result);
         lexerEngine.skipUntil(DefaultKeyword.WHERE);
         whereParser.parse(shardingRule, result, Collections.<SelectItem>emptyList());
         return result;

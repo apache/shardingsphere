@@ -4,16 +4,16 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.GroupBySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.GroupByClauseParser;
 
 /**
- * MySQL Group By解析器.
+ * MySQL分组从句解析器.
  *
  * @author zhangliang
  */
-public final class MySQLGroupBySQLParser extends GroupBySQLParser {
+public final class MySQLGroupByClauseParser extends GroupByClauseParser {
     
-    public MySQLGroupBySQLParser(final LexerEngine lexerEngine) {
+    public MySQLGroupByClauseParser(final LexerEngine lexerEngine) {
         super(lexerEngine);
     }
     

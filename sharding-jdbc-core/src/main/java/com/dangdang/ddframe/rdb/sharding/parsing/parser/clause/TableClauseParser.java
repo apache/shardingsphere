@@ -13,26 +13,26 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 
 /**
- * Table解析器.
+ * 表从句解析器.
  *
  * @author zhangliang
  */
-public class TableSQLParser implements SQLClauseParser {
+public class TableClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
     @Getter
     private final LexerEngine lexerEngine;
     
-    private final AliasSQLParser aliasSQLParser;
+    private final AliasClauseParser aliasClauseParser;
     
-    private final ExpressionSQLParser expressionSQLParser;
+    private final ExpressionClauseParser expressionClauseParser;
     
-    public TableSQLParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public TableClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        aliasSQLParser = new AliasSQLParser(lexerEngine);
-        expressionSQLParser = new ExpressionSQLParser(lexerEngine);
+        aliasClauseParser = new AliasClauseParser(lexerEngine);
+        expressionClauseParser = new ExpressionClauseParser(lexerEngine);
     }
     
     /**
@@ -57,12 +57,12 @@ public class TableSQLParser implements SQLClauseParser {
             if (hasParentheses) {
                 lexerEngine.accept(Symbol.RIGHT_PAREN);
             }
-            table = new Table(SQLUtil.getExactlyValue(literals), aliasSQLParser.parse());
+            table = new Table(SQLUtil.getExactlyValue(literals), aliasClauseParser.parse());
         } else {
             if (hasParentheses) {
                 lexerEngine.accept(Symbol.RIGHT_PAREN);
             }
-            table = new Table(SQLUtil.getExactlyValue(literals), aliasSQLParser.parse());
+            table = new Table(SQLUtil.getExactlyValue(literals), aliasClauseParser.parse());
         }
         if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
@@ -116,7 +116,7 @@ public class TableSQLParser implements SQLClauseParser {
             throw new UnsupportedOperationException("Cannot support SQL for `schema.table`");
         }
         String tableName = SQLUtil.getExactlyValue(literals);
-        Optional<String> alias = aliasSQLParser.parse();
+        Optional<String> alias = aliasClauseParser.parse();
         if (shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {
             selectStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
             selectStatement.getTables().add(new Table(tableName, alias));
@@ -137,9 +137,9 @@ public class TableSQLParser implements SQLClauseParser {
             parseJoinTable(selectStatement);
             if (lexerEngine.skipIfEqual(DefaultKeyword.ON)) {
                 do {
-                    expressionSQLParser.parse(selectStatement);
+                    expressionClauseParser.parse(selectStatement);
                     lexerEngine.accept(Symbol.EQ);
-                    expressionSQLParser.parse(selectStatement);
+                    expressionClauseParser.parse(selectStatement);
                 } while (lexerEngine.skipIfEqual(DefaultKeyword.AND));
             } else if (lexerEngine.skipIfEqual(DefaultKeyword.USING)) {
                 lexerEngine.skipParentheses(selectStatement);

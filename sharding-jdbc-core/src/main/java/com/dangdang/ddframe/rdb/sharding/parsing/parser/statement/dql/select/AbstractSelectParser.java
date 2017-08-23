@@ -27,14 +27,14 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.DistinctSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.GroupBySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.HavingSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.OrderBySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectRestSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.DistinctClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.GroupByClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.HavingClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.OrderByClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectRestClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
@@ -67,21 +67,21 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final LexerEngine lexerEngine;
     
-    private final DistinctSQLParser distinctSQLParser;
+    private final DistinctClauseParser distinctClauseParser;
     
-    private final SelectListSQLParser selectListSQLParser;
+    private final SelectListClauseParser selectListClauseParser;
     
-    private final TableSQLParser tableSQLParser;
+    private final TableClauseParser tableClauseParser;
     
-    private final WhereSQLParser whereSQLParser;
+    private final WhereClauseParser whereClauseParser;
     
-    private final GroupBySQLParser groupBySQLParser;
+    private final GroupByClauseParser groupByClauseParser;
     
-    private final HavingSQLParser havingSQLParser;
+    private final HavingClauseParser havingClauseParser;
     
-    private final OrderBySQLParser orderBySQLParser;
+    private final OrderByClauseParser orderByClauseParser;
     
-    private final SelectRestSQLParser selectRestSQLParser;
+    private final SelectRestClauseParser selectRestClauseParser;
     
     private final List<SelectItem> items = new LinkedList<>();
     
@@ -107,11 +107,11 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     protected abstract void parseInternal(final SelectStatement selectStatement);
     
     protected final void parseDistinct() {
-        distinctSQLParser.parse();
+        distinctClauseParser.parse();
     }
     
     protected final void parseSelectList(final SelectStatement selectStatement, final List<SelectItem> items) {
-        selectListSQLParser.parse(selectStatement, items);
+        selectListClauseParser.parse(selectStatement, items);
     }
     
     protected final void parseFrom(final SelectStatement selectStatement) {
@@ -130,28 +130,28 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 return;
             }
         }
-        tableSQLParser.parseTableFactor(selectStatement);
-        tableSQLParser.parseJoinTable(selectStatement);
+        tableClauseParser.parseTableFactor(selectStatement);
+        tableClauseParser.parseJoinTable(selectStatement);
     }
     
     protected final void parseWhere(final ShardingRule shardingRule, final SelectStatement selectStatement, final List<SelectItem> items) {
-        whereSQLParser.parse(shardingRule, selectStatement, items);
+        whereClauseParser.parse(shardingRule, selectStatement, items);
     }
     
     protected final void parseGroupBy(final SelectStatement selectStatement) {
-        groupBySQLParser.parse(selectStatement);
+        groupByClauseParser.parse(selectStatement);
     }
     
     protected final void parseHaving() {
-        havingSQLParser.parse();
+        havingClauseParser.parse();
     }
     
     protected final void parseOrderBy(final SelectStatement selectStatement) {
-        orderBySQLParser.parse(selectStatement);
+        orderByClauseParser.parse(selectStatement);
     }
     
     protected final void parseSelectRest() {
-        selectRestSQLParser.parse();
+        selectRestClauseParser.parse();
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {

@@ -19,30 +19,30 @@ import lombok.Getter;
 import java.util.List;
 
 /**
- * Select List解析器.
+ * 选择项从句解析器.
  *
  * @author zhangliang
  */
 @Getter
-public class SelectListSQLParser implements SQLClauseParser {
+public class SelectListClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
     private final LexerEngine lexerEngine;
     
-    private final AliasSQLParser aliasSQLParser;
+    private final AliasClauseParser aliasClauseParser;
     
-    public SelectListSQLParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public SelectListClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        aliasSQLParser = new AliasSQLParser(lexerEngine);
+        aliasClauseParser = new AliasClauseParser(lexerEngine);
     }
     
     /**
-     * 解析Select List.
+     * 解析选择项.
      * 
      * @param selectStatement Select SQL语句对象
-     * @param items 已有的Select List集合
+     * @param items 已有的选择项集合
      */
     public void parse(final SelectStatement selectStatement, final List<SelectItem> items) {
         do {
@@ -64,7 +64,7 @@ public class SelectListSQLParser implements SQLClauseParser {
             result = parseAggregationSelectItem(selectStatement);
             parseRestSelectItem(selectStatement);
         } else {
-            result = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem(selectStatement) + parseRestSelectItem(selectStatement)), aliasSQLParser.parse());
+            result = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem(selectStatement) + parseRestSelectItem(selectStatement)), aliasClauseParser.parse());
         }
         return result;
     }
@@ -87,7 +87,7 @@ public class SelectListSQLParser implements SQLClauseParser {
     
     private SelectItem parseStarSelectItem() {
         lexerEngine.nextToken();
-        aliasSQLParser.parse();
+        aliasClauseParser.parse();
         return new StarSelectItem(Optional.<String>absent());
     }
     
@@ -98,7 +98,7 @@ public class SelectListSQLParser implements SQLClauseParser {
     private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
         lexerEngine.nextToken();
-        return new AggregationSelectItem(aggregationType, lexerEngine.skipParentheses(selectStatement), aliasSQLParser.parse());
+        return new AggregationSelectItem(aggregationType, lexerEngine.skipParentheses(selectStatement), aliasClauseParser.parse());
     }
     
     private String parseCommonSelectItem(final SelectStatement selectStatement) {

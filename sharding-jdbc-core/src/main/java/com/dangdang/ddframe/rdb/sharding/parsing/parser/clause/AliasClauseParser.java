@@ -9,12 +9,12 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 别名解析器.
+ * 别名从句解析器.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class AliasSQLParser implements SQLClauseParser {
+public final class AliasClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     

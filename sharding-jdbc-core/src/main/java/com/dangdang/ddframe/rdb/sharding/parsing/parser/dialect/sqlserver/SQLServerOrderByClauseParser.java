@@ -2,16 +2,16 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.OrderBySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.OrderByClauseParser;
 
 /**
- * SQLServer Order By解析器.
+ * SQLServer排序从句解析器.
  *
  * @author zhangliang
  */
-public final class SQLServerOrderBySQLParser extends OrderBySQLParser {
+public final class SQLServerOrderByClauseParser extends OrderByClauseParser {
     
-    public SQLServerOrderBySQLParser(final LexerEngine lexerEngine) {
+    public SQLServerOrderByClauseParser(final LexerEngine lexerEngine) {
         super(lexerEngine);
     }
     

@@ -19,12 +19,12 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.DistinctSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.GroupBySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.HavingSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.DistinctClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.GroupByClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.HavingClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
@@ -40,9 +40,9 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     private final PostgreSQLForSQLParser forSQLParser;
     
     public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new DistinctSQLParser(lexerEngine), 
-                new SelectListSQLParser(shardingRule, lexerEngine), new TableSQLParser(shardingRule, lexerEngine), new WhereSQLParser(lexerEngine), new GroupBySQLParser(lexerEngine), 
-                new HavingSQLParser(lexerEngine), new PostgreSQLOrderBySQLParser(lexerEngine), new PostgreSQLSelectRestSQLParser(lexerEngine));
+        super(shardingRule, lexerEngine, new DistinctClauseParser(lexerEngine), 
+                new SelectListClauseParser(shardingRule, lexerEngine), new TableClauseParser(shardingRule, lexerEngine), new WhereClauseParser(lexerEngine), new GroupByClauseParser(lexerEngine), 
+                new HavingClauseParser(lexerEngine), new PostgreSQLOrderByClauseParser(lexerEngine), new PostgreSQLSelectRestClauseParser(lexerEngine));
         limitSQLParser = new PostgreSQLLimitSQLParser(lexerEngine);
         forSQLParser = new PostgreSQLForSQLParser(lexerEngine);
     }

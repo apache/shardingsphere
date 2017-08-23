@@ -17,12 +17,12 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 表达式解析器.
+ * 表达式从句解析器.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ExpressionSQLParser implements SQLClauseParser {
+public final class ExpressionClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     

@@ -19,9 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.HavingSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.HavingClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
@@ -37,9 +37,9 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     private final MySQLLimitSQLParser limitSQLParser;
     
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new MySQLDistinctSQLParser(lexerEngine), new SelectListSQLParser(shardingRule, lexerEngine), new MySQLTableSQLParser(shardingRule, lexerEngine), 
-                new WhereSQLParser(lexerEngine), new MySQLGroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine), new MySQLOrderBySQLParser(lexerEngine), 
-                new MySQLSelectRestSQLParser(lexerEngine));
+        super(shardingRule, lexerEngine, new MySQLDistinctClauseParser(lexerEngine), new SelectListClauseParser(shardingRule, lexerEngine), new MySQLTableClauseParser(shardingRule, lexerEngine), 
+                new WhereClauseParser(lexerEngine), new MySQLGroupByClauseParser(lexerEngine), new HavingClauseParser(lexerEngine), new MySQLOrderByClauseParser(lexerEngine), 
+                new MySQLSelectRestClauseParser(lexerEngine));
         selectOptionSQLParser = new MySQLSelectOptionSQLParser(lexerEngine);
         limitSQLParser = new MySQLLimitSQLParser(lexerEngine);
     }

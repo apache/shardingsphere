@@ -2,19 +2,19 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
 import com.google.common.base.Optional;
 
 import java.util.List;
 
 /**
- * Oracle WHERE语句解析对象.
+ * Oracle WHERE从句解析对象.
  *
  * @author zhangliang
  */
-public final class OracleWhereSQLParser extends WhereSQLParser {
+public final class OracleWhereClauseParser extends WhereClauseParser {
     
-    public OracleWhereSQLParser(final LexerEngine lexerEngine) {
+    public OracleWhereClauseParser(final LexerEngine lexerEngine) {
         super(lexerEngine);
     }
     

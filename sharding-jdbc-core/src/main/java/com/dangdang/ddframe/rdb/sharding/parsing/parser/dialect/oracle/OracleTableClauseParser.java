@@ -5,17 +5,17 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
 /**
- * Oracle Table解析器.
+ * Oracle 表从句解析器.
  *
  * @author zhangliang
  */
-public final class OracleTableSQLParser extends TableSQLParser {
+public final class OracleTableClauseParser extends TableClauseParser {
     
-    public OracleTableSQLParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public OracleTableClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
     

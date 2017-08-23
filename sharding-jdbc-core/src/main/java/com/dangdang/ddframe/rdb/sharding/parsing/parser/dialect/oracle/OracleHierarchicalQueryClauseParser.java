@@ -6,7 +6,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyw
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
 import java.util.Collections;
@@ -22,12 +22,12 @@ public final class OracleHierarchicalQueryClauseParser implements SQLClauseParse
     
     private final LexerEngine lexerEngine;
     
-    private final WhereSQLParser whereSQLParser;
+    private final WhereClauseParser whereClauseParser;
     
     public OracleHierarchicalQueryClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        whereSQLParser = new WhereSQLParser(lexerEngine);
+        whereClauseParser = new WhereClauseParser(lexerEngine);
         
     }
     
@@ -47,7 +47,7 @@ public final class OracleHierarchicalQueryClauseParser implements SQLClauseParse
             return;
         }
         lexerEngine.accept(DefaultKeyword.WITH);
-        whereSQLParser.parseComparisonCondition(shardingRule, selectStatement, Collections.<SelectItem>emptyList());
+        whereClauseParser.parseComparisonCondition(shardingRule, selectStatement, Collections.<SelectItem>emptyList());
     }
     
     private void skipConnect(final SelectStatement selectStatement) {
@@ -59,6 +59,6 @@ public final class OracleHierarchicalQueryClauseParser implements SQLClauseParse
         if (lexerEngine.skipIfEqual(OracleKeyword.NOCYCLE)) {
             lexerEngine.skipIfEqual(OracleKeyword.PRIOR);
         }
-        whereSQLParser.parseComparisonCondition(shardingRule, selectStatement, Collections.<SelectItem>emptyList());
+        whereClauseParser.parseComparisonCondition(shardingRule, selectStatement, Collections.<SelectItem>emptyList());
     }
 }

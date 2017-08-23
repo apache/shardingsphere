@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.ExpressionSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.ExpressionClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
@@ -42,11 +42,11 @@ public final class SQLServerTopParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
-    private final ExpressionSQLParser expressionSQLParser;
+    private final ExpressionClauseParser expressionClauseParser;
     
     public SQLServerTopParser(final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
-        expressionSQLParser = new ExpressionSQLParser(lexerEngine);
+        expressionClauseParser = new ExpressionClauseParser(lexerEngine);
     }
     
     /**
@@ -62,7 +62,7 @@ public final class SQLServerTopParser implements SQLClauseParser {
         if (!lexerEngine.skipIfEqual(Symbol.LEFT_PAREN)) {
             beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         }
-        SQLExpression sqlExpression = expressionSQLParser.parse(selectStatement);
+        SQLExpression sqlExpression = expressionClauseParser.parse(selectStatement);
         lexerEngine.skipIfEqual(Symbol.RIGHT_PAREN);
         LimitValue rowCountValue;
         if (sqlExpression instanceof SQLNumberExpression) {

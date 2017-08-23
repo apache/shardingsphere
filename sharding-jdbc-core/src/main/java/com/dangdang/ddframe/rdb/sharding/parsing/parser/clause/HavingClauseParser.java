@@ -6,12 +6,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import lombok.RequiredArgsConstructor;
 
 /**
- * Having解析器.
+ * Having从句解析器.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class HavingSQLParser implements SQLClauseParser {
+public final class HavingClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
