@@ -62,12 +62,24 @@ public final class OracleSelectParser extends AbstractSelectParser {
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);
         parseWhere(getShardingRule(), selectStatement, getItems());
-        hierarchicalQueryClauseParser.parse(selectStatement);
+        parseHierarchicalQueryClause(selectStatement);
         parseGroupBy(selectStatement);
         havingSQLParser.parse();
-        modelClauseParser.parse(selectStatement);
+        parseModelClause(selectStatement);
         orderBySQLParser.parse(selectStatement);
-        forParser.parse(selectStatement);
+        parseFor(selectStatement);
         selectRestSQLParser.parse();
+    }
+    
+    private void parseHierarchicalQueryClause(final SelectStatement selectStatement) {
+        hierarchicalQueryClauseParser.parse(selectStatement);
+    }
+    
+    private void parseModelClause(final SelectStatement selectStatement) {
+        modelClauseParser.parse(selectStatement);
+    }
+    
+    private void parseFor(final SelectStatement selectStatement) {
+        forParser.parse(selectStatement);
     }
 }
