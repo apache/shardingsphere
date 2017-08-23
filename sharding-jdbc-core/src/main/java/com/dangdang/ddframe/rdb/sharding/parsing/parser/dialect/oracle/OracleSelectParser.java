@@ -34,8 +34,6 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     private final OracleHierarchicalQueryClauseParser hierarchicalQueryClauseParser;
     
-    private final HavingSQLParser havingSQLParser;
-    
     private final OracleModelClauseParser modelClauseParser;
     
     private final OrderBySQLParser orderBySQLParser;
@@ -47,9 +45,8 @@ public final class OracleSelectParser extends AbstractSelectParser {
     public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, 
                 new OracleDistinctSQLParser(lexerEngine), new OracleSelectListSQLParser(shardingRule, lexerEngine), new OracleTableSQLParser(shardingRule, lexerEngine), 
-                new OracleWhereSQLParser(lexerEngine), new OracleGroupBySQLParser(lexerEngine));
+                new OracleWhereSQLParser(lexerEngine), new OracleGroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine));
         hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(shardingRule, lexerEngine);
-        havingSQLParser = new HavingSQLParser(lexerEngine);
         modelClauseParser = new OracleModelClauseParser(lexerEngine);
         orderBySQLParser = new OracleOrderBySQLParser(lexerEngine);
         forParser = new OracleForParser(lexerEngine);
@@ -64,7 +61,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         parseWhere(getShardingRule(), selectStatement, getItems());
         parseHierarchicalQueryClause(selectStatement);
         parseGroupBy(selectStatement);
-        havingSQLParser.parse();
+        parseHaving();
         parseModelClause(selectStatement);
         orderBySQLParser.parse(selectStatement);
         parseFor(selectStatement);

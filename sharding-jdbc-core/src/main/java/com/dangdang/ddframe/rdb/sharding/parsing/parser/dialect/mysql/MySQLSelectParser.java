@@ -36,8 +36,6 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     
     private final MySQLSelectOptionSQLParser selectOptionSQLParser;
     
-    private final HavingSQLParser havingSQLParser;
-    
     private final OrderBySQLParser orderBySQLParser;
     
     private final MySQLLimitSQLParser limitSQLParser;
@@ -47,9 +45,8 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, 
                 new MySQLDistinctSQLParser(lexerEngine), new SelectListSQLParser(shardingRule, lexerEngine), new MySQLTableSQLParser(shardingRule, lexerEngine), 
-                new WhereSQLParser(lexerEngine), new MySQLGroupBySQLParser(lexerEngine));
+                new WhereSQLParser(lexerEngine), new MySQLGroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine));
         selectOptionSQLParser = new MySQLSelectOptionSQLParser(lexerEngine);
-        havingSQLParser = new HavingSQLParser(lexerEngine);
         orderBySQLParser = new MySQLOrderBySQLParser(lexerEngine);
         limitSQLParser = new MySQLLimitSQLParser(lexerEngine);
         selectRestSQLParser = new MySQLSelectRestSQLParser(lexerEngine);
@@ -63,7 +60,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         parseFrom(selectStatement);
         parseWhere(getShardingRule(), selectStatement, getItems());
         parseGroupBy(selectStatement);
-        havingSQLParser.parse();
+        parseHaving();
         orderBySQLParser.parse(selectStatement);
         parseLimit(selectStatement);
         selectRestSQLParser.parse();
