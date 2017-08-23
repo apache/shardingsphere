@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
@@ -40,15 +39,12 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
     private final PostgreSQLForSQLParser forSQLParser;
     
-    private final SelectRestSQLParser selectRestSQLParser;
-    
     public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new DistinctSQLParser(lexerEngine), 
                 new SelectListSQLParser(shardingRule, lexerEngine), new TableSQLParser(shardingRule, lexerEngine), new WhereSQLParser(lexerEngine), new GroupBySQLParser(lexerEngine), 
-                new HavingSQLParser(lexerEngine), new PostgreSQLOrderBySQLParser(lexerEngine));
+                new HavingSQLParser(lexerEngine), new PostgreSQLOrderBySQLParser(lexerEngine), new PostgreSQLSelectRestSQLParser(lexerEngine));
         limitSQLParser = new PostgreSQLLimitSQLParser(lexerEngine);
         forSQLParser = new PostgreSQLForSQLParser(lexerEngine);
-        selectRestSQLParser = new PostgreSQLSelectRestSQLParser(lexerEngine);
     }
     
     @Override
@@ -62,7 +58,7 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
         parseOrderBy(selectStatement);
         parseLimit(selectStatement);
         parseFor();
-        selectRestSQLParser.parse();
+        parseSelectRest();
     }
     
     private void parseLimit(final SelectStatement selectStatement) {

@@ -39,16 +39,13 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     private final SQLServerForSQLParser forSQLParser;
     
-    private final SelectRestSQLParser selectRestSQLParser;
-    
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, 
-                new DistinctSQLParser(lexerEngine), new SQLServerSelectListSQLParser(shardingRule, lexerEngine), new SQLServerTableSQLParser(shardingRule, lexerEngine), 
-                new SQLServerWhereSQLParser(lexerEngine), new GroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine), new SQLServerOrderBySQLParser(lexerEngine));
+        super(shardingRule, lexerEngine, new DistinctSQLParser(lexerEngine), new SQLServerSelectListSQLParser(shardingRule, lexerEngine), new SQLServerTableSQLParser(shardingRule, lexerEngine), 
+                new SQLServerWhereSQLParser(lexerEngine), new GroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine), new SQLServerOrderBySQLParser(lexerEngine), 
+                new SelectRestSQLParser(lexerEngine));
         sqlServerTopParser = new SQLServerTopParser(lexerEngine);
         offsetSQLParser = new SQLServerOffsetSQLParser(lexerEngine);
         forSQLParser = new SQLServerForSQLParser(lexerEngine);
-        selectRestSQLParser = new SelectRestSQLParser(lexerEngine);
     }
     
     @Override
@@ -63,7 +60,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         parseOrderBy(selectStatement);
         parseOffset(selectStatement);
         parseFor();
-        selectRestSQLParser.parse();
+        parseSelectRest();
     }
     
     private void parseTop(final SelectStatement selectStatement) {

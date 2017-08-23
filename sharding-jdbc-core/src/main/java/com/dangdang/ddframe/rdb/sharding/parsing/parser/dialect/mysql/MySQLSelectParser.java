@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
@@ -37,15 +36,12 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     
     private final MySQLLimitSQLParser limitSQLParser;
     
-    private final SelectRestSQLParser selectRestSQLParser;
-    
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, 
-                new MySQLDistinctSQLParser(lexerEngine), new SelectListSQLParser(shardingRule, lexerEngine), new MySQLTableSQLParser(shardingRule, lexerEngine), 
-                new WhereSQLParser(lexerEngine), new MySQLGroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine), new MySQLOrderBySQLParser(lexerEngine));
+        super(shardingRule, lexerEngine, new MySQLDistinctSQLParser(lexerEngine), new SelectListSQLParser(shardingRule, lexerEngine), new MySQLTableSQLParser(shardingRule, lexerEngine), 
+                new WhereSQLParser(lexerEngine), new MySQLGroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine), new MySQLOrderBySQLParser(lexerEngine), 
+                new MySQLSelectRestSQLParser(lexerEngine));
         selectOptionSQLParser = new MySQLSelectOptionSQLParser(lexerEngine);
         limitSQLParser = new MySQLLimitSQLParser(lexerEngine);
-        selectRestSQLParser = new MySQLSelectRestSQLParser(lexerEngine);
     }
     
     @Override
@@ -59,7 +55,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
         parseHaving();
         parseOrderBy(selectStatement);
         parseLimit(selectStatement);
-        selectRestSQLParser.parse();
+        parseSelectRest();
     }
     
     private void parseSelectOption() {

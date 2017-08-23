@@ -32,6 +32,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
@@ -79,6 +80,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     private final HavingSQLParser havingSQLParser;
     
     private final OrderBySQLParser orderBySQLParser;
+    
+    private final SelectRestSQLParser selectRestSQLParser;
     
     private final List<SelectItem> items = new LinkedList<>();
     
@@ -145,6 +148,10 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     protected final void parseOrderBy(final SelectStatement selectStatement) {
         orderBySQLParser.parse(selectStatement);
+    }
+    
+    protected final void parseSelectRest() {
+        selectRestSQLParser.parse();
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {

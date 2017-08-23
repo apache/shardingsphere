@@ -37,16 +37,13 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     private final OracleForParser forParser;
     
-    private final SelectRestSQLParser selectRestSQLParser;
-    
     public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, 
-                new OracleDistinctSQLParser(lexerEngine), new OracleSelectListSQLParser(shardingRule, lexerEngine), new OracleTableSQLParser(shardingRule, lexerEngine), 
-                new OracleWhereSQLParser(lexerEngine), new OracleGroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine), new OracleOrderBySQLParser(lexerEngine));
+        super(shardingRule, lexerEngine, new OracleDistinctSQLParser(lexerEngine), new OracleSelectListSQLParser(shardingRule, lexerEngine), new OracleTableSQLParser(shardingRule, lexerEngine), 
+                new OracleWhereSQLParser(lexerEngine), new OracleGroupBySQLParser(lexerEngine), new HavingSQLParser(lexerEngine), new OracleOrderBySQLParser(lexerEngine), 
+                new SelectRestSQLParser(lexerEngine));
         hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(shardingRule, lexerEngine);
         modelClauseParser = new OracleModelClauseParser(lexerEngine);
         forParser = new OracleForParser(lexerEngine);
-        selectRestSQLParser = new SelectRestSQLParser(lexerEngine);
     }
     
     @Override
@@ -61,7 +58,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
         parseModelClause(selectStatement);
         parseOrderBy(selectStatement);
         parseFor(selectStatement);
-        selectRestSQLParser.parse();
+        parseSelectRest();
     }
     
     private void parseHierarchicalQueryClause(final SelectStatement selectStatement) {
