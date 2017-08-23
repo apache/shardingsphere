@@ -19,12 +19,12 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.DistinctSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.GroupBySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.HavingSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 

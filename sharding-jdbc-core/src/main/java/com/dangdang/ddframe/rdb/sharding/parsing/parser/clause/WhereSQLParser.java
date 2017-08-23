@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.clause;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public class WhereSQLParser implements SQLParser {
+public class WhereSQLParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     

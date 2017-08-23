@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.clause;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
@@ -17,7 +17,7 @@ import lombok.Getter;
  *
  * @author zhangliang
  */
-public class TableSQLParser implements SQLParser {
+public class TableSQLParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     

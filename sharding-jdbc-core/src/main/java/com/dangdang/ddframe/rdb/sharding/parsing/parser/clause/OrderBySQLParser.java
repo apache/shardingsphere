@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.clause;
 
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public class OrderBySQLParser implements SQLParser {
+public class OrderBySQLParser implements SQLClauseParser {
     
     @Getter
     private final LexerEngine lexerEngine;

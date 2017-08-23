@@ -2,7 +2,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereSQLParser;
 import com.google.common.base.Optional;
 
 import java.util.List;

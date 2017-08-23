@@ -5,8 +5,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 
 import java.util.Collections;
@@ -16,7 +16,7 @@ import java.util.Collections;
  *
  * @author zhangliang
  */
-public final class OracleHierarchicalQueryClauseParser implements SQLParser {
+public final class OracleHierarchicalQueryClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     

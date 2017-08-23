@@ -28,8 +28,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ExpressionSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.ExpressionSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 
@@ -38,7 +38,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
  *
  * @author zhangliang
  */
-public final class SQLServerTopParser implements SQLParser {
+public final class SQLServerTopParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     

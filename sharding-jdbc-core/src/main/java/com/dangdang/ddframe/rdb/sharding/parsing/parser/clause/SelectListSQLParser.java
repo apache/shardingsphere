@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.clause;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
@@ -24,7 +24,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
-public class SelectListSQLParser implements SQLParser {
+public class SelectListSQLParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     

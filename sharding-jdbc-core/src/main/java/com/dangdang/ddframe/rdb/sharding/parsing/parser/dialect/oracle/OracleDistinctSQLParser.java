@@ -3,7 +3,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.DistinctSQLParser;
 
 /**
  * Oracle Distinct解析器.
