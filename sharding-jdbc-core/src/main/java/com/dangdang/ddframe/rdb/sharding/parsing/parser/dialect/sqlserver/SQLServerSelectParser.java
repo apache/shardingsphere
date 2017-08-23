@@ -37,8 +37,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.Sel
  */
 public final class SQLServerSelectParser extends AbstractSelectParser {
     
-    private final DistinctSQLParser distinctSQLParser;
-    
     private final SQLServerTopParser sqlServerTopParser;
     
     private final SelectListSQLParser selectListSQLParser;
@@ -58,8 +56,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     private final SelectRestSQLParser selectRestSQLParser;
     
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new SQLServerTableSQLParser(shardingRule, lexerEngine));
-        distinctSQLParser = new DistinctSQLParser(lexerEngine);
+        super(shardingRule, lexerEngine, new DistinctSQLParser(lexerEngine), new SQLServerTableSQLParser(shardingRule, lexerEngine));
         sqlServerTopParser = new SQLServerTopParser(lexerEngine);
         selectListSQLParser = new SQLServerSelectListSQLParser(shardingRule, lexerEngine);
         whereSQLParser = new SQLServerWhereSQLParser(lexerEngine);
@@ -73,7 +70,7 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-        distinctSQLParser.parse();
+        parseDistinct();
         sqlServerTopParser.parse(selectStatement);
         selectListSQLParser.parse(selectStatement, getItems());
         parseFrom(selectStatement);

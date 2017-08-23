@@ -27,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.TableSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
@@ -58,13 +59,16 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final LexerEngine lexerEngine;
     
+    private final DistinctSQLParser distinctSQLParser;
+    
     private final TableSQLParser tableSQLParser;
     
     private final List<SelectItem> items = new LinkedList<>();
     
-    public AbstractSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final TableSQLParser tableSQLParser) {
+    public AbstractSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final DistinctSQLParser distinctSQLParser, final TableSQLParser tableSQLParser) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
+        this.distinctSQLParser = distinctSQLParser;
         this.tableSQLParser = tableSQLParser;
     }
     
@@ -107,6 +111,10 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
         tableSQLParser.parseTableFactor(selectStatement);
         tableSQLParser.parseJoinTable(selectStatement);
+    }
+    
+    protected final void parseDistinct() {
+        distinctSQLParser.parse();
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {

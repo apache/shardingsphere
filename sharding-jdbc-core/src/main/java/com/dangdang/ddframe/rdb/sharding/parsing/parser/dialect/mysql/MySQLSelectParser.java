@@ -19,10 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
@@ -35,8 +34,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.Sel
  * @author zhangliang
  */
 public final class MySQLSelectParser extends AbstractSelectParser {
-    
-    private final DistinctSQLParser distinctSQLParser;
     
     private final MySQLSelectOptionSQLParser selectOptionSQLParser;
     
@@ -55,8 +52,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     private final SelectRestSQLParser selectRestSQLParser;
     
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new MySQLTableSQLParser(shardingRule, lexerEngine));
-        distinctSQLParser = new MySQLDistinctSQLParser(lexerEngine);
+        super(shardingRule, lexerEngine, new MySQLDistinctSQLParser(lexerEngine), new MySQLTableSQLParser(shardingRule, lexerEngine));
         selectOptionSQLParser = new MySQLSelectOptionSQLParser(lexerEngine);
         selectListSQLParser = new SelectListSQLParser(shardingRule, lexerEngine);
         whereSQLParser = new WhereSQLParser(lexerEngine);
@@ -69,7 +65,7 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-        distinctSQLParser.parse();
+        parseDistinct();
         selectOptionSQLParser.parse();
         selectListSQLParser.parse(selectStatement, getItems());
         parseFrom(selectStatement);

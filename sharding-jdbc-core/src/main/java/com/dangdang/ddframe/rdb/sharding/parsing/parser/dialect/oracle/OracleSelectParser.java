@@ -19,10 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.DistinctSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.GroupBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.HavingSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.OrderBySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectListSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SelectRestSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.WhereSQLParser;
@@ -35,8 +34,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.Sel
  * @author zhangliang
  */
 public final class OracleSelectParser extends AbstractSelectParser {
-    
-    private final DistinctSQLParser distinctSQLParser;
     
     private final SelectListSQLParser selectListSQLParser;
     
@@ -57,8 +54,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     private final SelectRestSQLParser selectRestSQLParser;
     
     public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new OracleTableSQLParser(shardingRule, lexerEngine));
-        distinctSQLParser = new OracleDistinctSQLParser(lexerEngine);
+        super(shardingRule, lexerEngine, new OracleDistinctSQLParser(lexerEngine), new OracleTableSQLParser(shardingRule, lexerEngine));
         selectListSQLParser = new OracleSelectListSQLParser(shardingRule, lexerEngine);
         whereSQLParser = new OracleWhereSQLParser(lexerEngine);
         hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(shardingRule, lexerEngine);
@@ -72,7 +68,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-        distinctSQLParser.parse();
+        parseDistinct();
         selectListSQLParser.parse(selectStatement, getItems());
         parseFrom(selectStatement);
         whereSQLParser.parse(getShardingRule(), selectStatement, getItems());
