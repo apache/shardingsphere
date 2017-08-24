@@ -6,4 +6,6 @@
     <sql id="assertSelectFetchInPostgreSQL" value="SELECT * FROM t_order FETCH NEXT 1 ROW ONLY" type="PostgreSQL"/>
     <sql id="assertSelectForInPostgreSQL" value="SELECT * FROM t_order FOR UPDATE OF t_order" type="PostgreSQL"/>
     <sql id="assertSelectRowNumberAndPartitionInSQLServer" value="SELECT ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY order_id ASC) AS row_, user_id, order_id FROM t_order" type="SQLServer"/>
+    <sql id="assertSelectWithStartWith" value="SELECT * FROM t_order_item START WITH order_id = %s CONNECT BY NOCYCLE PRIOR item_id=item_id-1" type="Oracle"/>
+    <sql id="assertSelectWithModelIn" value="SELECT order_id_value,order_item_id_value FROM (select 1001 as order_id_value, 100001 as order_item_id_value from dual) MODEL RETURN UPDATED ROWS DIMENSION BY(order_item_id_value) MEASURES(order_id_value) RULES(order_id_value[1] = 10001)" type="Oracle"/>
 </sqls>

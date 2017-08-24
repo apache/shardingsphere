@@ -41,7 +41,7 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new OracleSelectClauseParserFacade(shardingRule, lexerEngine));
-        hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(shardingRule, lexerEngine);
+        hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(lexerEngine);
         modelClauseParser = new OracleModelClauseParser(lexerEngine);
         forClauseParser = new OracleForClauseParser(lexerEngine);
     }
@@ -52,21 +52,21 @@ public final class OracleSelectParser extends AbstractSelectParser {
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);
         parseWhere(getShardingRule(), selectStatement, getItems());
-        parseHierarchicalQueryClause(selectStatement);
+        parseHierarchicalQueryClause();
         parseGroupBy(selectStatement);
         parseHaving();
-        parseModelClause(selectStatement);
+        parseModelClause();
         parseOrderBy(selectStatement);
         parseFor(selectStatement);
         parseSelectRest();
     }
     
-    private void parseHierarchicalQueryClause(final SelectStatement selectStatement) {
-        hierarchicalQueryClauseParser.parse(selectStatement);
+    private void parseHierarchicalQueryClause() {
+        hierarchicalQueryClauseParser.parse();
     }
     
-    private void parseModelClause(final SelectStatement selectStatement) {
-        modelClauseParser.parse(selectStatement);
+    private void parseModelClause() {
+        modelClauseParser.parse();
     }
     
     private void parseFor(final SelectStatement selectStatement) {
