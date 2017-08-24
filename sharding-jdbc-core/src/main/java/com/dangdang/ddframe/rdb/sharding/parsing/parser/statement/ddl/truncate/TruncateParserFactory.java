@@ -20,10 +20,10 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.truncate;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLTruncateParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleTruncateParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLTruncateParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerTruncateParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.sql.MySQLTruncateParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.sql.OracleTruncateParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.sql.PostgreSQLTruncateParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.sql.SQLServerTruncateParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

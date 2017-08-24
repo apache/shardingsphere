@@ -20,10 +20,10 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.delete;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLDeleteParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleDeleteParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLDeleteParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerDeleteParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.sql.MySQLDeleteParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.sql.OracleDeleteParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.sql.PostgreSQLDeleteParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.sql.SQLServerDeleteParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
