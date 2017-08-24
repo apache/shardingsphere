@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleForParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleForClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleHierarchicalQueryClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleModelClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleSelectClauseParserFacade;
@@ -37,13 +37,13 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     private final OracleModelClauseParser modelClauseParser;
     
-    private final OracleForParser forParser;
+    private final OracleForClauseParser forClauseParser;
     
     public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new OracleSelectClauseParserFacade(shardingRule, lexerEngine));
         hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(shardingRule, lexerEngine);
         modelClauseParser = new OracleModelClauseParser(lexerEngine);
-        forParser = new OracleForParser(lexerEngine);
+        forClauseParser = new OracleForClauseParser(lexerEngine);
     }
     
     @Override
@@ -70,6 +70,6 @@ public final class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void parseFor(final SelectStatement selectStatement) {
-        forParser.parse(selectStatement);
+        forClauseParser.parse(selectStatement);
     }
 }

@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class MySQLSelectOptionSQLParser implements SQLClauseParser {
+public final class MySQLSelectOptionClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     

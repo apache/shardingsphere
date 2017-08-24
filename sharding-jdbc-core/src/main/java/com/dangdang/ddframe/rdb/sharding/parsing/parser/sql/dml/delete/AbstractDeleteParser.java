@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.Selec
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.DMLStatement;
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +37,7 @@ import java.util.Collections;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public abstract class AbstractDeleteParser implements SQLStatementParser {
+public abstract class AbstractDeleteParser implements SQLParser {
     
     private final ShardingRule shardingRule;
     

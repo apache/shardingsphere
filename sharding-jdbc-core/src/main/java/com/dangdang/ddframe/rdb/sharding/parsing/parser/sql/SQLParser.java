@@ -22,7 +22,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
  *
  * @author zhangliang
  */
-public interface SQLStatementParser {
+public interface SQLParser {
     
     /**
      * 解析SQL语句.

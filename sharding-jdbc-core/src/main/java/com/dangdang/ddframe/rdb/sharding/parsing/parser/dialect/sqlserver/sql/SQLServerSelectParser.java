@@ -19,10 +19,10 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerForSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerOffsetSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerForClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerOffsetClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerSelectClauseParserFacade;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerTopParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerTopClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 
@@ -33,17 +33,17 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectSta
  */
 public final class SQLServerSelectParser extends AbstractSelectParser {
     
-    private final SQLServerTopParser sqlServerTopParser;
+    private final SQLServerTopClauseParser topClauseParser;
     
-    private final SQLServerOffsetSQLParser offsetSQLParser;
+    private final SQLServerOffsetClauseParser offsetClauseParser;
     
-    private final SQLServerForSQLParser forSQLParser;
+    private final SQLServerForClauseParser forClauseParser;
     
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new SQLServerSelectClauseParserFacade(shardingRule, lexerEngine));
-        sqlServerTopParser = new SQLServerTopParser(lexerEngine);
-        offsetSQLParser = new SQLServerOffsetSQLParser(lexerEngine);
-        forSQLParser = new SQLServerForSQLParser(lexerEngine);
+        topClauseParser = new SQLServerTopClauseParser(lexerEngine);
+        offsetClauseParser = new SQLServerOffsetClauseParser(lexerEngine);
+        forClauseParser = new SQLServerForClauseParser(lexerEngine);
     }
     
     @Override
@@ -62,14 +62,14 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     private void parseTop(final SelectStatement selectStatement) {
-        sqlServerTopParser.parse(selectStatement);
+        topClauseParser.parse(selectStatement);
     }
     
     private void parseOffset(final SelectStatement selectStatement) {
-        offsetSQLParser.parse(selectStatement);
+        offsetClauseParser.parse(selectStatement);
     }
     
     private void parseFor() {
-        forSQLParser.parse();
+        forClauseParser.parse();
     }
 }

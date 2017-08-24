@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ddl.DDLStatement;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,7 +33,7 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractTruncateParser implements SQLStatementParser {
+public abstract class AbstractTruncateParser implements SQLParser {
     
     private final ShardingRule shardingRule;
     

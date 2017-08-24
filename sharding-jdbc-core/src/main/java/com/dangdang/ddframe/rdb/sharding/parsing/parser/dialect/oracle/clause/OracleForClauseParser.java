@@ -13,13 +13,13 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectSta
  *
  * @author zhangliang
  */
-public final class OracleForParser implements SQLClauseParser {
+public final class OracleForClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
     private final ExpressionClauseParser expressionClauseParser;
     
-    public OracleForParser(final LexerEngine lexerEngine) {
+    public OracleForClauseParser(final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
         expressionClauseParser = new ExpressionClauseParser(lexerEngine);
     }

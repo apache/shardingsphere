@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clause.PostgreSQLForSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clause.PostgreSQLLimitSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clause.PostgreSQLForClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clause.PostgreSQLLimitClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clause.PostgreSQLSelectClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
@@ -32,14 +32,14 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectSta
  */
 public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
-    private final PostgreSQLLimitSQLParser limitSQLParser;
+    private final PostgreSQLLimitClauseParser limitClauseParser;
     
-    private final PostgreSQLForSQLParser forSQLParser;
+    private final PostgreSQLForClauseParser forClauseParser;
     
     public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new PostgreSQLSelectClauseParserFacade(shardingRule, lexerEngine));
-        limitSQLParser = new PostgreSQLLimitSQLParser(lexerEngine);
-        forSQLParser = new PostgreSQLForSQLParser(lexerEngine);
+        limitClauseParser = new PostgreSQLLimitClauseParser(lexerEngine);
+        forClauseParser = new PostgreSQLForClauseParser(lexerEngine);
     }
     
     @Override
@@ -57,10 +57,10 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     }
     
     private void parseLimit(final SelectStatement selectStatement) {
-        limitSQLParser.parse(selectStatement);
+        limitClauseParser.parse(selectStatement);
     }
     
     private void parseFor() {
-        forSQLParser.parse();
+        forClauseParser.parse();
     }
 }

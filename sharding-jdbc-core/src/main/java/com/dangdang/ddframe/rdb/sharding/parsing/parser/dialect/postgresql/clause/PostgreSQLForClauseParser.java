@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class PostgreSQLForSQLParser implements SQLClauseParser {
+public final class PostgreSQLForClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     

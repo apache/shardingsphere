@@ -19,9 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLLimitSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLLimitClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLSelectClauseParserFacade;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLSelectOptionSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLSelectOptionClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 
@@ -32,14 +32,14 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectSta
  */
 public final class MySQLSelectParser extends AbstractSelectParser {
     
-    private final MySQLSelectOptionSQLParser selectOptionSQLParser;
+    private final MySQLSelectOptionClauseParser selectOptionClauseParser;
     
-    private final MySQLLimitSQLParser limitSQLParser;
+    private final MySQLLimitClauseParser limitClauseParser;
     
     public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new MySQLSelectClauseParserFacade(shardingRule, lexerEngine));
-        selectOptionSQLParser = new MySQLSelectOptionSQLParser(lexerEngine);
-        limitSQLParser = new MySQLLimitSQLParser(lexerEngine);
+        selectOptionClauseParser = new MySQLSelectOptionClauseParser(lexerEngine);
+        limitClauseParser = new MySQLLimitClauseParser(lexerEngine);
     }
     
     @Override
@@ -57,10 +57,10 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     }
     
     private void parseSelectOption() {
-        selectOptionSQLParser.parse();
+        selectOptionClauseParser.parse();
     }
     
     private void parseLimit(final SelectStatement selectStatement) {
-        limitSQLParser.parse(selectStatement);
+        limitClauseParser.parse(selectStatement);
     }
 }

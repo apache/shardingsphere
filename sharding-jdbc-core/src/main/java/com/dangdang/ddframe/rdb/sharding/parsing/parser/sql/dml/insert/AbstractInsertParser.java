@@ -34,7 +34,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpr
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.ExpressionClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
@@ -54,7 +54,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public abstract class AbstractInsertParser implements SQLStatementParser {
+public abstract class AbstractInsertParser implements SQLParser {
     
     @Getter(AccessLevel.PROTECTED)
     private final ShardingRule shardingRule;

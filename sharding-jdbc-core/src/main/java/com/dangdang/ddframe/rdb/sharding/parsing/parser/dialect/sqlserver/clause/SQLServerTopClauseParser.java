@@ -38,13 +38,13 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
  *
  * @author zhangliang
  */
-public final class SQLServerTopParser implements SQLClauseParser {
+public final class SQLServerTopClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
     private final ExpressionClauseParser expressionClauseParser;
     
-    public SQLServerTopParser(final LexerEngine lexerEngine) {
+    public SQLServerTopClauseParser(final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
         expressionClauseParser = new ExpressionClauseParser(lexerEngine);
     }

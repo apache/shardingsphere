@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
 import com.google.common.base.Optional;
@@ -46,7 +46,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractSelectParser implements SQLStatementParser {
+public abstract class AbstractSelectParser implements SQLParser {
     
     private static final String DERIVED_COUNT_ALIAS = "AVG_DERIVED_COUNT_%s";
     

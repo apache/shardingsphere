@@ -39,7 +39,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class PostgreSQLLimitSQLParser implements SQLClauseParser {
+public final class PostgreSQLLimitClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     

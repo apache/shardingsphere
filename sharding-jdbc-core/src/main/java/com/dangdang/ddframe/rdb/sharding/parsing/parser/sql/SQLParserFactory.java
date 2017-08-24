@@ -40,7 +40,7 @@ import lombok.NoArgsConstructor;
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLStatementParserFactory {
+public final class SQLParserFactory {
     
     /**
      * 创建SQL语句解析器.
@@ -51,7 +51,7 @@ public final class SQLStatementParserFactory {
      * @param lexerEngine 词法解析器引擎
      * @return SQL语句解析器
      */
-    public static SQLStatementParser newInstance(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public static SQLParser newInstance(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         if (!(tokenType instanceof DefaultKeyword)) {
             throw new SQLParsingUnsupportedException(tokenType);
         }

@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngineFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatementParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParserFactory;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -47,6 +47,6 @@ public final class SQLParsingEngine {
     public SQLStatement parse() {
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
         lexerEngine.nextToken();
-        return SQLStatementParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine).parse();
+        return SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine).parse();
     }
 }

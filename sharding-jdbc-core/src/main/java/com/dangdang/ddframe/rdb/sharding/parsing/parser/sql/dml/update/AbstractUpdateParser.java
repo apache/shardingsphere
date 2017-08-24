@@ -27,7 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.ExpressionClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
@@ -41,7 +41,7 @@ import java.util.Collections;
  *
  * @author zhangliang
  */
-public abstract class AbstractUpdateParser implements SQLStatementParser {
+public abstract class AbstractUpdateParser implements SQLParser {
     
     private final ShardingRule shardingRule;
     
