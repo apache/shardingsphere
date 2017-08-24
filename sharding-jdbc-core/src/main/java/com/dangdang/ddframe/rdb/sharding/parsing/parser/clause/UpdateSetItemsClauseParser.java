@@ -8,17 +8,17 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 
 /**
- * SET从句解析器.
+ * UPDATE SET从句解析器.
  *
  * @author zhangliang
  */
-public final class SetItemsClauseParser implements SQLClauseParser {
+public final class UpdateSetItemsClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
     private final ExpressionClauseParser expressionClauseParser;
     
-    public SetItemsClauseParser(final LexerEngine lexerEngine) {
+    public UpdateSetItemsClauseParser(final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
         expressionClauseParser = new ExpressionClauseParser(lexerEngine);
     }

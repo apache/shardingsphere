@@ -3,7 +3,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.claus
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractUpdateClauseParserFacade;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SetItemsClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.UpdateSetItemsClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerTableClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerWhereClauseParser;
 
@@ -15,6 +15,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause
 public final class SQLServerUpdateClauseParserFacade extends AbstractUpdateClauseParserFacade {
     
     public SQLServerUpdateClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new SQLServerTableClauseParser(shardingRule, lexerEngine), new SetItemsClauseParser(lexerEngine), new SQLServerWhereClauseParser(lexerEngine));
+        super(new SQLServerTableClauseParser(shardingRule, lexerEngine), new UpdateSetItemsClauseParser(lexerEngine), new SQLServerWhereClauseParser(lexerEngine));
     }
 }

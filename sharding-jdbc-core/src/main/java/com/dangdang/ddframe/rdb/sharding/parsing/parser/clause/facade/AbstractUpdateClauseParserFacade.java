@@ -1,6 +1,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SetItemsClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.UpdateSetItemsClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
 import lombok.Getter;
@@ -17,7 +17,7 @@ public abstract class AbstractUpdateClauseParserFacade {
     
     private final TableClauseParser tableClauseParser;
     
-    private final SetItemsClauseParser setItemsClauseParser;
+    private final UpdateSetItemsClauseParser updateSetItemsClauseParser;
     
     private final WhereClauseParser whereClauseParser;
 }
