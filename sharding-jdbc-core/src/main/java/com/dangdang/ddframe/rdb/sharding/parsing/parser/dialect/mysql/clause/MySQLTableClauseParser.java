@@ -19,7 +19,7 @@ public final class MySQLTableClauseParser extends TableClauseParser {
     }
     
     @Override
-    public void parseJoinTable(final SelectStatement selectStatement) {
+    protected void beforeParseJoinTable(final SelectStatement selectStatement) {
         if (getLexerEngine().equalAny(DefaultKeyword.USING)) {
             return;
         }
@@ -35,7 +35,6 @@ public final class MySQLTableClauseParser extends TableClauseParser {
             getLexerEngine().nextToken();
             skipIndexHint(selectStatement);
         }
-        super.parseJoinTable(selectStatement);
     }
     
     private void skipIndexHint(final SelectStatement selectStatement) {

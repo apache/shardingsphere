@@ -114,7 +114,8 @@ public class TableClauseParser implements SQLClauseParser {
      * 
      * @param selectStatement Select SQL语句对象
      */
-    public void parseJoinTable(final SelectStatement selectStatement) {
+    public final void parseJoinTable(final SelectStatement selectStatement) {
+        beforeParseJoinTable(selectStatement);
         if (skipJoin()) {
             if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
                 throw new UnsupportedOperationException("Cannot support sub query for join table.");
@@ -132,5 +133,8 @@ public class TableClauseParser implements SQLClauseParser {
             }
             parseJoinTable(selectStatement);
         }
+    }
+    
+    protected void beforeParseJoinTable(final SelectStatement selectStatement) {
     }
 }

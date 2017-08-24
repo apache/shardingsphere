@@ -18,10 +18,9 @@ public final class SQLServerTableClauseParser extends TableClauseParser {
     }
     
     @Override
-    public void parseJoinTable(final SelectStatement selectStatement) {
+    protected void beforeParseJoinTable(final SelectStatement selectStatement) {
         if (getLexerEngine().skipIfEqual(DefaultKeyword.WITH)) {
             getLexerEngine().skipParentheses(selectStatement);
         }
-        super.parseJoinTable(selectStatement);
     }
 }
