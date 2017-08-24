@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clause.PostgreSQLInsertClauseParserFacade;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clause.facade.PostgreSQLInsertClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert.AbstractInsertParser;
 
 /**

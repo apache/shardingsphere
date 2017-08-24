@@ -27,7 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLInsertClauseParserFacade;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.facade.MySQLInsertClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIgnoreExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;

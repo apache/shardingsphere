@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleForClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleHierarchicalQueryClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleModelClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleSelectClauseParserFacade;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.facade.OracleSelectClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 

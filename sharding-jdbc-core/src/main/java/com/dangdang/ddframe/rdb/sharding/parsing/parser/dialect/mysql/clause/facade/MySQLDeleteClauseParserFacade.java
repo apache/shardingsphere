@@ -1,9 +1,10 @@
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.facade;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.AbstractDeleteClauseParserFacade;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractDeleteClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLTableClauseParser;
 
 /**
  * MySQL的DELETE从句解析器门面类.

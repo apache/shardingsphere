@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerUpdateClauseParserFacade;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.facade.SQLServerUpdateClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.update.AbstractUpdateParser;
 
 /**

@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerInsertClauseParserFacade;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.facade.SQLServerInsertClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert.AbstractInsertParser;
 
 /**

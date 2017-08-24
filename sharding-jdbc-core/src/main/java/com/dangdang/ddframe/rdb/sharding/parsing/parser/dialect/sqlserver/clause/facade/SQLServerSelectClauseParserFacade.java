@@ -1,12 +1,16 @@
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.facade;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.AbstractSelectClauseParserFacade;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractSelectClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.DistinctClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.GroupByClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.HavingClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectRestClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerOrderByClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerSelectListClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerTableClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerWhereClauseParser;
 
 /**
  * SQLServer的SELECT从句解析器门面类.

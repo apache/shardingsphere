@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleInsertClauseParserFacade;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.facade.OracleInsertClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert.AbstractInsertParser;
 
 /**

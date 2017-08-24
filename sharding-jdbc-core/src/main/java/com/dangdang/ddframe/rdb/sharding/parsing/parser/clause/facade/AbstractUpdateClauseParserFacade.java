@@ -1,5 +1,8 @@
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.clause;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade;
 
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SetItemsClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
