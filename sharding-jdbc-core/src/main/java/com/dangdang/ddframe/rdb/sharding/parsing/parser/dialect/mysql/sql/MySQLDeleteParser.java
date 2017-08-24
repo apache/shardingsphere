@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeywor
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLDeleteClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.delete.AbstractDeleteParser;
 
 /**
@@ -32,7 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.delete.AbstractD
 public final class MySQLDeleteParser extends AbstractDeleteParser {
     
     public MySQLDeleteParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine);
+        super(shardingRule, lexerEngine, new MySQLDeleteClauseParserFacade(shardingRule, lexerEngine));
     }
     
     @Override
