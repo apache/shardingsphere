@@ -106,8 +106,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     @Test(expected = UnsupportedOperationException.class)
     public void parseStatementWithDeleteMultipleTable() {
         ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.MySQL, "DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2", shardingRule)
-                .parse();
+        new SQLParsingEngine(DatabaseType.MySQL, "DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2", shardingRule).parse();
     }
     
     @Test(expected = UnsupportedOperationException.class)
