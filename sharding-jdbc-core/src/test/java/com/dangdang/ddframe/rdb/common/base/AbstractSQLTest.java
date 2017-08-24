@@ -18,9 +18,10 @@
 package com.dangdang.ddframe.rdb.common.base;
 
 import com.dangdang.ddframe.rdb.common.env.DatabaseEnvironment;
-import com.dangdang.ddframe.rdb.common.env.DatabaseTestMode;
 import com.dangdang.ddframe.rdb.common.env.ShardingJdbcDatabaseTester;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.IDataSet;
@@ -31,6 +32,7 @@ import org.junit.Before;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -40,29 +42,51 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public abstract class AbstractSQLTest {
     
-    private static boolean initialized;
-    
-    private static final DatabaseTestMode CURRENT_TEST_MODE = DatabaseTestMode.TEST;
+    private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseType.H2);
     
     private final Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
     
     static {
-        createSchema();
+        init();
     }
     
-    private static synchronized void createSchema() {
-        if (!initialized) {
-            for (DatabaseType each : CURRENT_TEST_MODE.databaseTypes()) {
-                if (DatabaseType.H2 == each) {
+    private static synchronized void init() {
+        try {
+            Properties prop = new Properties();
+            prop.load(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
+            boolean initialized = prop.getProperty("initialized") == null ? false : Boolean.valueOf(prop.getProperty("initialized"));
+            String databases = prop.getProperty("databases");
+            if (!Strings.isNullOrEmpty(databases)) {
+                for (String each : databases.split(",")) {
+                    databaseTypes.add(findDatabaseType(each.trim()));
+                }
+            }
+            if (initialized) {
+                createSchema(DatabaseType.H2);
+            } else {
+                for (DatabaseType each : getDatabaseTypes()) {
                     createSchema(each);
                 }
             }
+        } catch (final IOException ex) {
+            ex.printStackTrace();
         }
-        initialized = true;
     }
+    
+    private static DatabaseType findDatabaseType(final String databaseType) {
+        for (DatabaseType each : DatabaseType.values()) {
+            if (each.name().equalsIgnoreCase(databaseType)) {
+                return each;
+            }
+        }
+        throw new RuntimeException("Can't find database type of:" + databaseType);
+    }
+    
     
     private static void createSchema(final DatabaseType dbType) {
         try {
@@ -90,13 +114,13 @@ public abstract class AbstractSQLTest {
         }
     }
     
-    static List<DatabaseType> getCurrentDatabaseTypes() {
-        return CURRENT_TEST_MODE.databaseTypes();
+    static Set<DatabaseType> getDatabaseTypes() {
+        return databaseTypes;
     }
     
     @Before
     public final void importDataSet() throws Exception {
-        for (DatabaseType databaseType : CURRENT_TEST_MODE.databaseTypes()) {
+        for (DatabaseType databaseType : getDatabaseTypes()) {
             if (databaseType == getCurrentDatabaseType() || null == getCurrentDatabaseType()) {
                 DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType);
                 for (String each : getDataSetFiles()) {
@@ -119,7 +143,7 @@ public abstract class AbstractSQLTest {
     protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap() {
         for (String each : getDataSetFiles()) {
             String dbName = getDatabaseName(each);
-            for (DatabaseType type : CURRENT_TEST_MODE.databaseTypes()) {
+            for (DatabaseType type : getDatabaseTypes()) {
                 createDataSources(dbName, type);
             }
         }

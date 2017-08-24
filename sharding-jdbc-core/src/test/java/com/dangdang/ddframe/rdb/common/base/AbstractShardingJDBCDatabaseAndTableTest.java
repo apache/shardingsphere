@@ -80,7 +80,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     
     @Parameterized.Parameters(name = "{0}")
     public static Collection<DatabaseType> dataParameters() {
-        return getCurrentDatabaseTypes();
+        return getDatabaseTypes();
     }
     
     @Override
