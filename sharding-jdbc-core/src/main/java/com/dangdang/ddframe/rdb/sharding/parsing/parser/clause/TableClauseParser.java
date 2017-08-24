@@ -80,14 +80,10 @@ public class TableClauseParser implements SQLClauseParser {
             selectStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
             selectStatement.getTables().add(new Table(tableName, alias));
         }
+        parseJoinTable(selectStatement);
     }
     
-    /**
-     * 解析关联表.
-     * 
-     * @param selectStatement Select SQL语句对象
-     */
-    public final void parseJoinTable(final SelectStatement selectStatement) {
+    private void parseJoinTable(final SelectStatement selectStatement) {
         beforeParseJoinTable(selectStatement);
         if (skipJoin()) {
             if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
