@@ -53,13 +53,13 @@ public final class DatabaseEnvironment {
         SCHEMA.put(DatabaseType.H2, null);
         
         DRIVER_CLASS_NAME.put(DatabaseType.MySQL, com.mysql.jdbc.Driver.class.getName());
-        URL.put(DatabaseType.MySQL, "jdbc:mysql://localhost:3306/%s");
+        URL.put(DatabaseType.MySQL, "jdbc:mysql://db.mysql:3306/%s");
         USERNAME.put(DatabaseType.MySQL, "root");
         PASSWORD.put(DatabaseType.MySQL, "");
         SCHEMA.put(DatabaseType.MySQL, null);
         
         DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, org.postgresql.Driver.class.getName());
-        URL.put(DatabaseType.PostgreSQL, "jdbc:postgresql://localhost:5432/%s");
+        URL.put(DatabaseType.PostgreSQL, "jdbc:postgresql://db.psql:5432/%s");
         USERNAME.put(DatabaseType.PostgreSQL, "postgres");
         PASSWORD.put(DatabaseType.PostgreSQL, "");
         SCHEMA.put(DatabaseType.PostgreSQL, null);
