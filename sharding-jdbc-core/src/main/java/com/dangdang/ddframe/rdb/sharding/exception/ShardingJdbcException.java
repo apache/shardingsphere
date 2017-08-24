@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.exception;
 
 /**
- * JDBC分片抛出的异常基类.
+ * Base exception for Sharding-JDBC.
  * 
  * @author zhangliang
  */
@@ -26,14 +26,31 @@ public class ShardingJdbcException extends RuntimeException {
     
     private static final long serialVersionUID = -1343739516839252250L;
     
+    /**
+     * Constructs an exception with formatted error message and arguments. 
+     * 
+     * @param errorMessage formatted error message
+     * @param args arguments of error message
+     */
     public ShardingJdbcException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }
-
+    
+    /**
+     * Constructs an exception with error message and cause.
+     * 
+     * @param message error message
+     * @param cause error cause
+     */
     public ShardingJdbcException(final String message, final Exception cause) {
         super(message, cause);
     }
     
+    /**
+     * Constructs an exception with cause.
+     *
+     * @param cause error cause
+     */
     public ShardingJdbcException(final Exception cause) {
         super(cause);
     }
