@@ -81,6 +81,7 @@ public class TableClauseParser implements SQLClauseParser {
             selectStatement.getTables().add(new Table(tableName, alias));
         }
         parseJoinTable(selectStatement);
+        afterParseTableFactor(selectStatement);
     }
     
     private void parseJoinTable(final SelectStatement selectStatement) {
@@ -127,5 +128,8 @@ public class TableClauseParser implements SQLClauseParser {
             }
         }
         return false;
+    }
+    
+    protected void afterParseTableFactor(final SelectStatement selectStatement) {
     }
 }

@@ -23,18 +23,18 @@ public final class OracleTableClauseParser extends TableClauseParser {
     public void parseTableFactor(final SelectStatement selectStatement) {
         if (getLexerEngine().skipIfEqual(OracleKeyword.ONLY)) {
             getLexerEngine().skipIfEqual(Symbol.LEFT_PAREN);
-            parseQueryTableExpression(selectStatement);
+            parseTableFactorInternal(selectStatement);
             getLexerEngine().skipIfEqual(Symbol.RIGHT_PAREN);
             skipFlashbackQueryClause();
         } else {
-            parseQueryTableExpression(selectStatement);
+            parseTableFactorInternal(selectStatement);
             skipPivotClause(selectStatement);
             skipFlashbackQueryClause();
         }
     }
     
-    private void parseQueryTableExpression(final SelectStatement selectStatement) {
-        parseTableFactorInternal(selectStatement);
+    @Override
+    protected void afterParseTableFactor(final SelectStatement selectStatement) {
         parseSample(selectStatement);
         skipPartition(selectStatement);
     }
