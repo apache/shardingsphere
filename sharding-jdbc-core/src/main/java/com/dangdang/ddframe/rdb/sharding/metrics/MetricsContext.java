@@ -29,11 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 度量上下文持有者.
- * 
- * <p>
- * 多个ShardingDataSource使用静态度量上下文会造成数据污染, 所以将度量上下文对象绑定到ThreadLocal中.
- * </p>
+ * Metrics context.
  * 
  * @author gaohongtao
  * @author zhangliang
@@ -46,9 +42,9 @@ public final class MetricsContext {
     private static final String LOGGER_NAME = "Sharding-JDBC-Metrics";
     
     /**
-     * 初始化度量上下文持有者.
+     * Initialize metrics context holder.
      * 
-     * @param shardingProperties Sharding-JDBC的配置属性
+     * @param shardingProperties properties for Sharding-JDBC
      */
     public static void init(final ShardingProperties shardingProperties) {
         HOLDER.remove();
@@ -68,20 +64,19 @@ public final class MetricsContext {
     }
     
     /**
-     * 开始计时.
-     *
-     * @param name 度量目标名称
-     *
-     * @return 计时上下文
+     * Start timing.
+     * 
+     * @param name Metrics target name
+     * @return timer context
      */
     public static Timer.Context start(final String name) {
         return null == HOLDER.get() ? null : HOLDER.get().timer(MetricRegistry.name(name)).time();
     }
     
     /**
-     * 停止计时.
+     * Stop timing.
      *
-     * @param context 计时上下文
+     * @param context timer context
      */
     public static void stop(final Timer.Context context) {
         if (null != context) {
@@ -90,7 +85,7 @@ public final class MetricsContext {
     }
     
     /**
-     * 清理数据.
+     * Clear metrics context holder.
      */
     public static void clear() {
         HOLDER.remove();
