@@ -19,3 +19,4 @@ chapter = true
  - 分库分表后主键如何生成？[分布式主键](/02-guide/key-generator/)将给你答案。
  - 分库后事务如何保证？[事务支持](/02-guide/transaction/)将介绍Sharding-JDBC如何通过使用柔性事务的方式来实现分布式事务。
  - 分页是否影响性能？Oracle和SQLServer的分页涉及到子查询又该如何处理？请阅读[分页及子查询](/02-guide/subquery/)。
+ - Sharding-JDBC如何运行单元测试和整合测试？请阅读[测试引擎](/02-guide/test-framework/)。

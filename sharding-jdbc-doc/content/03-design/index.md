@@ -3,7 +3,7 @@ icon = "<b>3. </b>"
 date = "2016-12-12T16:06:17+08:00"
 title = "设计规划"
 weight = 0
-prev = "/02-guide/subquery/"
+prev = "/02-guide/test-framework/"
 next = "/03-design/architecture/"
 chapter = true
 
