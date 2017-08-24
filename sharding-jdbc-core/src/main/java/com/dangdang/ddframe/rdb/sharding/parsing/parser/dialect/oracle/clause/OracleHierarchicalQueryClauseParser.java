@@ -27,7 +27,7 @@ public final class OracleHierarchicalQueryClauseParser implements SQLClauseParse
     public OracleHierarchicalQueryClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        whereClauseParser = new WhereClauseParser(lexerEngine);
+        whereClauseParser = new OracleWhereClauseParser(lexerEngine);
         
     }
     

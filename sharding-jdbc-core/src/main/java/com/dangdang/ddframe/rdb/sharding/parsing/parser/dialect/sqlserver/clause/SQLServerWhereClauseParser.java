@@ -24,6 +24,7 @@ public final class SQLServerWhereClauseParser extends WhereClauseParser {
         for (SelectItem each : items) {
             if (each.getAlias().isPresent() && "ROW_NUMBER".equalsIgnoreCase(each.getExpression())) {
                 rowNumberAlias = each.getAlias();
+                break;
             }
         }
         return columnLabel.equalsIgnoreCase(rowNumberAlias.orNull());
