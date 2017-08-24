@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractUpdateClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.DMLStatement;
 import lombok.RequiredArgsConstructor;
@@ -48,9 +47,7 @@ public abstract class AbstractUpdateParser implements SQLParser {
     public DMLStatement parse() {
         lexerEngine.nextToken();
         lexerEngine.skipAll(getSkippedKeywordsBetweenUpdateAndTable());
-        if (lexerEngine.equalAny(getUnsupportedKeywordsBetweenUpdateAndTable())) {
-            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
-        }
+        lexerEngine.unsupportedIfEqual(getUnsupportedKeywordsBetweenUpdateAndTable());
         DMLStatement result = new DMLStatement();
         updateClauseParserFacade.getTableReferencesClauseParser().parse(result, true);
         updateClauseParserFacade.getUpdateSetItemsClauseParser().parse(result);

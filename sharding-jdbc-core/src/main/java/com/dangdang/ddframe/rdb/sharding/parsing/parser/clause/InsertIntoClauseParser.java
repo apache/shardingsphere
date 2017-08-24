@@ -4,7 +4,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert.InsertStatement;
 import lombok.RequiredArgsConstructor;
 
@@ -26,9 +25,7 @@ public class InsertIntoClauseParser implements SQLClauseParser {
      * @param insertStatement DML语句对象
      */
     public void parse(final InsertStatement insertStatement) {
-        if (lexerEngine.equalAny(getUnsupportedKeywordsBeforeInto())) {
-            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
-        }
+        lexerEngine.unsupportedIfEqual(getUnsupportedKeywordsBeforeInto());
         lexerEngine.skipUntil(DefaultKeyword.INTO);
         lexerEngine.nextToken();
         tableReferencesClauseParser.parse(insertStatement, true);

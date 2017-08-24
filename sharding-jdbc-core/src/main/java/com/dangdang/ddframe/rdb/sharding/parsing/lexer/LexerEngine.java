@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Token;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
@@ -159,6 +160,28 @@ public final class LexerEngine {
         tokenTypeSet.add(Assist.END);
         while (!tokenTypeSet.contains(lexer.getCurrentToken().getType())) {
             lexer.nextToken();
+        }
+    }
+    
+    /**
+     * 如果当前词法标记类型等于传入值, 则抛出不支持异常.
+     * 
+     * @param tokenTypes 待判断的词法标记类型
+     */
+    public void unsupportedIfEqual(final TokenType... tokenTypes) {
+        if (equalAny(tokenTypes)) {
+            throw new SQLParsingUnsupportedException(lexer.getCurrentToken().getType());
+        }
+    }
+    
+    /**
+     * 如果当前词法标记类型不等于传入值, 则抛出不支持异常, 否则跳过当前词法标记.
+     *
+     * @param tokenTypes 待判断的词法标记类型
+     */
+    public void unsupportedIfNotSkip(final TokenType... tokenTypes) {
+        if (!skipIfEqual(tokenTypes)) {
+            throw new SQLParsingUnsupportedException(lexer.getCurrentToken().getType());
         }
     }
 }

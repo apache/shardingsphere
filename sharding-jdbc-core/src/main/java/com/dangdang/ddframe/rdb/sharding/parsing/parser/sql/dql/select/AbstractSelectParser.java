@@ -27,7 +27,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractSe
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
@@ -94,9 +93,7 @@ public abstract class AbstractSelectParser implements SQLParser {
     }
     
     protected final void parseFrom(final SelectStatement selectStatement) {
-        if (lexerEngine.equalAny(DefaultKeyword.INTO)) {
-            throw new SQLParsingUnsupportedException(DefaultKeyword.INTO);
-        }
+        lexerEngine.unsupportedIfEqual(DefaultKeyword.INTO);
         if (lexerEngine.skipIfEqual(DefaultKeyword.FROM)) {
             parseTable(selectStatement);
         }

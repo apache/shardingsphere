@@ -6,7 +6,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyw
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferencesClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 
 /**
@@ -42,21 +41,15 @@ public final class OracleTableReferencesClauseParser extends TableReferencesClau
     }
     
     private void parseDbLink() {
-        if (getLexerEngine().equalAny(Symbol.AT)) {
-            throw new SQLParsingUnsupportedException(getLexerEngine().getCurrentToken().getType());
-        }
+        getLexerEngine().unsupportedIfEqual(Symbol.AT);
     }
     
     private void parsePartitionExtensionClause() {
-        if (getLexerEngine().equalAny(OracleKeyword.PARTITION, OracleKeyword.SUBPARTITION)) {
-            throw new SQLParsingUnsupportedException(getLexerEngine().getCurrentToken().getType());
-        }
+        getLexerEngine().unsupportedIfEqual(OracleKeyword.PARTITION, OracleKeyword.SUBPARTITION);
     }
     
     private void parseSampleClause() {
-        if (getLexerEngine().equalAny(OracleKeyword.SAMPLE)) {
-            throw new SQLParsingUnsupportedException(getLexerEngine().getCurrentToken().getType());
-        }
+        getLexerEngine().unsupportedIfEqual(OracleKeyword.SAMPLE);
     }
     
     private void parseFlashbackQueryClause() {

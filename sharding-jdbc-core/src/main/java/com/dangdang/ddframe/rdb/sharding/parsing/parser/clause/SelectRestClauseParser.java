@@ -3,7 +3,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.clause;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
@@ -27,9 +26,7 @@ public class SelectRestClauseParser implements SQLClauseParser {
         Collection<Keyword> unsupportedRestKeywords = new LinkedList<>();
         unsupportedRestKeywords.addAll(Arrays.asList(DefaultKeyword.UNION, DefaultKeyword.INTERSECT, DefaultKeyword.EXCEPT, DefaultKeyword.MINUS));
         unsupportedRestKeywords.addAll(Arrays.asList(getUnsupportedKeywordsRest()));
-        if (lexerEngine.equalAny(unsupportedRestKeywords.toArray(new Keyword[unsupportedRestKeywords.size()]))) {
-            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
-        }
+        lexerEngine.unsupportedIfEqual(unsupportedRestKeywords.toArray(new Keyword[unsupportedRestKeywords.size()]));
     }
     
     protected Keyword[] getUnsupportedKeywordsRest() {

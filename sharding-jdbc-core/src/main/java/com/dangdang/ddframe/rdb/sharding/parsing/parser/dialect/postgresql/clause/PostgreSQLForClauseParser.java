@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clau
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
 import lombok.RequiredArgsConstructor;
 
@@ -42,9 +41,7 @@ public final class PostgreSQLForClauseParser implements SQLClauseParser {
             return;
         }
         lexerEngine.skipIfEqual(DefaultKeyword.UPDATE, PostgreSQLKeyword.SHARE);
-        if (lexerEngine.equalAny(DefaultKeyword.OF)) {
-            throw new SQLParsingUnsupportedException(DefaultKeyword.OF);
-        }
+        lexerEngine.unsupportedIfEqual(DefaultKeyword.OF);
         lexerEngine.skipIfEqual(PostgreSQLKeyword.NOWAIT);
     }
 }

@@ -6,7 +6,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeywor
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferencesClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 
 /**
@@ -28,9 +27,7 @@ public final class MySQLTableReferencesClauseParser extends TableReferencesClaus
     }
     
     private void parsePartition() {
-        if (getLexerEngine().equalAny(MySQLKeyword.PARTITION)) {
-            throw new SQLParsingUnsupportedException(MySQLKeyword.PARTITION);
-        }
+        getLexerEngine().unsupportedIfEqual(MySQLKeyword.PARTITION);
     }
     
     private void parseIndexHint(final SQLStatement sqlStatement) {

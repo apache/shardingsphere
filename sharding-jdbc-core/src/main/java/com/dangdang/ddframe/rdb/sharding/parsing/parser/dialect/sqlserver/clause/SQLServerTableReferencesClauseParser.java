@@ -6,7 +6,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServ
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferencesClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 
 /**
@@ -28,9 +27,7 @@ public final class SQLServerTableReferencesClauseParser extends TableReferencesC
     }
     
     private void parseTableSampleClause() {
-        if (getLexerEngine().equalAny(SQLServerKeyword.TABLESAMPLE)) {
-            throw new SQLParsingUnsupportedException(SQLServerKeyword.TABLESAMPLE);
-        }
+        getLexerEngine().unsupportedIfEqual(SQLServerKeyword.TABLESAMPLE);
     }
     
     private void parseTableHint(final SQLStatement sqlStatement) {

@@ -1,9 +1,9 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.clause;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
@@ -11,7 +11,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
@@ -65,9 +64,7 @@ public class WhereClauseParser implements SQLClauseParser {
         do {
             parseComparisonCondition(shardingRule, sqlStatement, items);
         } while (lexerEngine.skipIfEqual(DefaultKeyword.AND));
-        if (lexerEngine.equalAny(DefaultKeyword.OR)) {
-            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
-        }
+        lexerEngine.unsupportedIfEqual(DefaultKeyword.OR);
     }
     
     // TODO 解析组合expr

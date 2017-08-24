@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractDeleteClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.DMLStatement;
 import lombok.RequiredArgsConstructor;
@@ -48,9 +47,7 @@ public abstract class AbstractDeleteParser implements SQLParser {
     public DMLStatement parse() {
         lexerEngine.nextToken();
         lexerEngine.skipAll(getSkippedKeywordsBetweenDeleteAndTable());
-        if (lexerEngine.equalAny(getUnsupportedKeywordsBetweenDeleteAndTable())) {
-            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
-        }
+        lexerEngine.unsupportedIfEqual(getUnsupportedKeywordsBetweenDeleteAndTable());
         DMLStatement result = new DMLStatement();
         deleteClauseParserFacade.getTableReferencesClauseParser().parse(result, true);
         lexerEngine.skipUntil(DefaultKeyword.WHERE);

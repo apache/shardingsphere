@@ -5,11 +5,10 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.CommonSelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.OrderByClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.CommonSelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 
 /**
@@ -36,9 +35,7 @@ public final class SQLServerSelectListClauseParser extends SelectListClauseParse
         getLexerEngine().skipParentheses(selectStatement);
         getLexerEngine().accept(DefaultKeyword.OVER);
         getLexerEngine().accept(Symbol.LEFT_PAREN);
-        if (getLexerEngine().equalAny(SQLServerKeyword.PARTITION)) {
-            throw new SQLParsingUnsupportedException(SQLServerKeyword.PARTITION);
-        }
+        getLexerEngine().unsupportedIfEqual(SQLServerKeyword.PARTITION);
         orderByClauseParser.parse(selectStatement);
         getLexerEngine().accept(Symbol.RIGHT_PAREN);
         return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getAliasClauseParser().parse());

@@ -21,15 +21,14 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.ExpressionClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.ExpressionClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 
@@ -74,9 +73,7 @@ public final class SQLServerTopClauseParser implements SQLClauseParser {
         } else {
             throw new SQLParsingException(lexerEngine);
         }
-        if (lexerEngine.equalAny(SQLServerKeyword.PERCENT)) {
-            throw new SQLParsingUnsupportedException(SQLServerKeyword.PERCENT);
-        }
+        lexerEngine.unsupportedIfEqual(SQLServerKeyword.PERCENT);
         lexerEngine.skipIfEqual(DefaultKeyword.WITH, SQLServerKeyword.TIES);
         if (null == selectStatement.getLimit()) {
             Limit limit = new Limit(false);

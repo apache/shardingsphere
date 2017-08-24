@@ -3,7 +3,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.clause;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
@@ -28,9 +27,7 @@ public class DistinctClauseParser implements SQLClauseParser {
         Collection<Keyword> distinctKeywords = new LinkedList<>();
         distinctKeywords.add(DefaultKeyword.DISTINCT);
         distinctKeywords.addAll(Arrays.asList(getSynonymousKeywordsForDistinct()));
-        if (lexerEngine.equalAny(distinctKeywords.toArray(new Keyword[distinctKeywords.size()]))) {
-            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
-        }
+        lexerEngine.unsupportedIfEqual(distinctKeywords.toArray(new Keyword[distinctKeywords.size()]));
     }
     
     protected Keyword[] getSynonymousKeywordsForDistinct() {

@@ -18,10 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ddl.alter;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferencesClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ddl.DDLStatement;
@@ -51,9 +50,7 @@ public abstract class AbstractAlterParser implements SQLParser {
     @Override
     public DDLStatement parse() {
         lexerEngine.nextToken();
-        if (!lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
-            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
-        }
+        lexerEngine.unsupportedIfNotSkip(DefaultKeyword.TABLE);
         lexerEngine.skipAll(getSkippedKeywordsBetweenAlterTableAndTableName());
         DDLStatement result = new DDLStatement();
         tableReferencesClauseParser.parse(result, true);
