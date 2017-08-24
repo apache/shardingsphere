@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractInsertClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
@@ -62,18 +61,9 @@ public abstract class AbstractInsertParser implements SQLParser {
             throw new UnsupportedOperationException("Cannot INSERT SELECT");
         }
         insertClauseParserFacade.getInsertValuesClauseParser().parse(result);
-        if (lexerEngine.skipIfEqual(getCustomizedInsertKeywords())) {
-            parseCustomizedInsert(result);
-        }
+        insertClauseParserFacade.getInsertSetClauseParser().parse(result);
         appendGenerateKey(result);
         return result;
-    }
-    
-    protected Keyword[] getCustomizedInsertKeywords() {
-        return new Keyword[0];
-    }
-    
-    protected void parseCustomizedInsert(final InsertStatement insertStatement) {
     }
     
     private void appendGenerateKey(final InsertStatement insertStatement) {

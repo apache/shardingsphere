@@ -5,6 +5,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.InsertColumnsClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractInsertClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLInsertIntoClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLInsertSetClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLInsertValuesClauseParser;
 
 /**
@@ -15,6 +16,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MyS
 public final class MySQLInsertClauseParserFacade extends AbstractInsertClauseParserFacade {
     
     public MySQLInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new MySQLInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(shardingRule, lexerEngine), new MySQLInsertValuesClauseParser(shardingRule, lexerEngine));
+        super(new MySQLInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(shardingRule, lexerEngine), 
+                new MySQLInsertValuesClauseParser(shardingRule, lexerEngine), new MySQLInsertSetClauseParser(shardingRule, lexerEngine));
     }
 }
