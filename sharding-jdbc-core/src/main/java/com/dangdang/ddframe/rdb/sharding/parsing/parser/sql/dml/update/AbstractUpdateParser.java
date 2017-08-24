@@ -21,13 +21,12 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SetItemsClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.AbstractUpdateClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.DMLStatement;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 
@@ -36,25 +35,14 @@ import java.util.Collections;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public abstract class AbstractUpdateParser implements SQLParser {
     
     private final ShardingRule shardingRule;
     
     private final LexerEngine lexerEngine;
     
-    private final TableClauseParser tableClauseParser;
-    
-    private final SetItemsClauseParser setItemsClauseParser;
-    
-    private final WhereClauseParser whereClauseParser;
-    
-    public AbstractUpdateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        this.shardingRule = shardingRule;
-        this.lexerEngine = lexerEngine;
-        tableClauseParser = new TableClauseParser(shardingRule, lexerEngine);
-        setItemsClauseParser = new SetItemsClauseParser(lexerEngine);
-        whereClauseParser = new WhereClauseParser(lexerEngine);
-    }
+    private final AbstractUpdateClauseParserFacade updateClauseParserFacade;
     
     @Override
     public DMLStatement parse() {
@@ -64,10 +52,10 @@ public abstract class AbstractUpdateParser implements SQLParser {
             throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
         }
         DMLStatement result = new DMLStatement();
-        tableClauseParser.parseSingleTable(result);
-        setItemsClauseParser.parse(result);
+        updateClauseParserFacade.getTableClauseParser().parseSingleTable(result);
+        updateClauseParserFacade.getSetItemsClauseParser().parse(result);
         lexerEngine.skipUntil(DefaultKeyword.WHERE);
-        whereClauseParser.parse(shardingRule, result, Collections.<SelectItem>emptyList());
+        updateClauseParserFacade.getWhereClauseParser().parse(shardingRule, result, Collections.<SelectItem>emptyList());
         return result;
     }
     
