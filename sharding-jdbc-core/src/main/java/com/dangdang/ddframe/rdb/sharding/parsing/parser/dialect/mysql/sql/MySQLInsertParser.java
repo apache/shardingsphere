@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
@@ -80,11 +79,6 @@ public final class MySQLInsertParser extends AbstractInsertParser {
                 getLexerEngine().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }
         } while (getLexerEngine().skipIfEqual(Symbol.COMMA));
-    }
-    
-    @Override
-    protected Keyword[] getSynonymousKeywordsForValues() {
-        return new Keyword[] {MySQLKeyword.VALUE};
     }
     
     @Override

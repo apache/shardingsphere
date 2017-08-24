@@ -57,6 +57,10 @@ public final class InsertStatement extends DMLStatement {
     
     private int generateKeyColumnIndex = -1;
     
+    private int afterValuesPosition;
+    
+    private int valuesListLastPosition;
+    
     private GeneratedKey generatedKey;
     
     /**
