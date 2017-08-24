@@ -68,7 +68,7 @@ public class WhereClauseParser implements SQLClauseParser {
     }
     
     // TODO 解析组合expr
-    public void parseComparisonCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
+    private void parseComparisonCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         lexerEngine.skipIfEqual(Symbol.LEFT_PAREN);
         SQLExpression left = expressionClauseParser.parse(sqlStatement);
         if (lexerEngine.equalAny(Symbol.EQ)) {
