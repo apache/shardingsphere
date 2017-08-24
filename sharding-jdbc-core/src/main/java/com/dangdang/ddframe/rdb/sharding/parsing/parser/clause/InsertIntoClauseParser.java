@@ -18,7 +18,7 @@ public class InsertIntoClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
-    private final TableReferenceClauseParser tableReferenceClauseParser;
+    private final TableReferencesClauseParser tableReferencesClauseParser;
     
     /**
      * 解析INSERT INTO.
@@ -31,7 +31,7 @@ public class InsertIntoClauseParser implements SQLClauseParser {
         }
         lexerEngine.skipUntil(DefaultKeyword.INTO);
         lexerEngine.nextToken();
-        tableReferenceClauseParser.parseSingleTable(insertStatement);
+        tableReferencesClauseParser.parseSingleTable(insertStatement);
         skipBetweenTableAndValues(insertStatement);
     }
     

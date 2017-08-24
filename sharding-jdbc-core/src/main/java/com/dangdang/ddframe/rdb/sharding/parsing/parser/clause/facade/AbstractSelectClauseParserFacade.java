@@ -6,7 +6,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.HavingClauseParse
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.OrderByClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectRestClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferenceClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferencesClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public abstract class AbstractSelectClauseParserFacade {
     
     private final SelectListClauseParser selectListClauseParser;
     
-    private final TableReferenceClauseParser tableReferenceClauseParser;
+    private final TableReferencesClauseParser tableReferencesClauseParser;
     
     private final WhereClauseParser whereClauseParser;
     

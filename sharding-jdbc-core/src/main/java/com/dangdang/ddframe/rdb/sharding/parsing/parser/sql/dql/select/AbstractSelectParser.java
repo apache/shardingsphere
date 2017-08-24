@@ -109,7 +109,7 @@ public abstract class AbstractSelectParser implements SQLParser {
                 return;
             }
         }
-        abstractSelectClauseParserFacade.getTableReferenceClauseParser().parseTableFactor(selectStatement);
+        abstractSelectClauseParserFacade.getTableReferencesClauseParser().parseTableFactor(selectStatement);
     }
     
     protected final void parseWhere(final ShardingRule shardingRule, final SelectStatement selectStatement, final List<SelectItem> items) {

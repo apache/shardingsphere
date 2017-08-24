@@ -14,7 +14,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.InsertIntoClauseP
 public final class MySQLInsertIntoClauseParser extends InsertIntoClauseParser {
     
     public MySQLInsertIntoClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(lexerEngine, new MySQLTableReferenceClauseParser(shardingRule, lexerEngine));
+        super(lexerEngine, new MySQLTableReferencesClauseParser(shardingRule, lexerEngine));
     }
     
     @Override

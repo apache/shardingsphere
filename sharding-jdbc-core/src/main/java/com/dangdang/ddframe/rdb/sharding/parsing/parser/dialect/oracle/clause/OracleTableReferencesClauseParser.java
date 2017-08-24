@@ -5,7 +5,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferenceClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferencesClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 
 /**
@@ -13,9 +13,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectSta
  *
  * @author zhangliang
  */
-public final class OracleTableReferenceClauseParser extends TableReferenceClauseParser {
+public final class OracleTableReferencesClauseParser extends TableReferencesClauseParser {
     
-    public OracleTableReferenceClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public OracleTableReferencesClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
     

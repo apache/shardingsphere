@@ -10,7 +10,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractSe
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLDistinctClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLGroupByClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLSelectRestClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLTableReferenceClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLTableReferencesClauseParser;
 
 /**
  * MySQL的SELECT从句解析器门面类.
@@ -21,7 +21,7 @@ public final class MySQLSelectClauseParserFacade extends AbstractSelectClausePar
     
     public MySQLSelectClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(new MySQLDistinctClauseParser(lexerEngine), new SelectListClauseParser(shardingRule, lexerEngine),
-                new MySQLTableReferenceClauseParser(shardingRule, lexerEngine), new WhereClauseParser(lexerEngine), new MySQLGroupByClauseParser(lexerEngine),
+                new MySQLTableReferencesClauseParser(shardingRule, lexerEngine), new WhereClauseParser(lexerEngine), new MySQLGroupByClauseParser(lexerEngine),
                 new HavingClauseParser(lexerEngine), new OrderByClauseParser(lexerEngine), new MySQLSelectRestClauseParser(lexerEngine));
     }
 }

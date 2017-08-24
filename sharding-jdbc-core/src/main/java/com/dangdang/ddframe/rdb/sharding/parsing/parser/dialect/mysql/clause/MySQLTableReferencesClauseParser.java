@@ -4,7 +4,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferenceClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferencesClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 
 /**
@@ -12,9 +12,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectSta
  *
  * @author zhangliang
  */
-public final class MySQLTableReferenceClauseParser extends TableReferenceClauseParser {
+public final class MySQLTableReferencesClauseParser extends TableReferencesClauseParser {
     
-    public MySQLTableReferenceClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public MySQLTableReferencesClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
     

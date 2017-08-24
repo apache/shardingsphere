@@ -7,7 +7,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.DistinctClausePar
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.GroupByClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.HavingClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferenceClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferencesClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clause.PostgreSQLOrderByClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clause.PostgreSQLSelectRestClauseParser;
@@ -21,7 +21,7 @@ public final class PostgreSQLSelectClauseParserFacade extends AbstractSelectClau
     
     public PostgreSQLSelectClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(new DistinctClauseParser(lexerEngine), new SelectListClauseParser(shardingRule, lexerEngine),
-                new TableReferenceClauseParser(shardingRule, lexerEngine), new WhereClauseParser(lexerEngine), new GroupByClauseParser(lexerEngine), new HavingClauseParser(lexerEngine), 
+                new TableReferencesClauseParser(shardingRule, lexerEngine), new WhereClauseParser(lexerEngine), new GroupByClauseParser(lexerEngine), new HavingClauseParser(lexerEngine), 
                 new PostgreSQLOrderByClauseParser(lexerEngine), new PostgreSQLSelectRestClauseParser(lexerEngine));
     }
 }

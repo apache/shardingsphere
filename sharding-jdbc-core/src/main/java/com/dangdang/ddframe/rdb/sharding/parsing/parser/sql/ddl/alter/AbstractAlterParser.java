@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferenceClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferencesClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ddl.DDLStatement;
 import lombok.AccessLevel;
@@ -40,12 +40,12 @@ public abstract class AbstractAlterParser implements SQLParser {
     
     private final LexerEngine lexerEngine;
     
-    private final TableReferenceClauseParser tableReferenceClauseParser;
+    private final TableReferencesClauseParser tableReferencesClauseParser;
     
     public AbstractAlterParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        tableReferenceClauseParser = new TableReferenceClauseParser(shardingRule, lexerEngine);
+        tableReferencesClauseParser = new TableReferencesClauseParser(shardingRule, lexerEngine);
     }
     
     @Override
@@ -56,7 +56,7 @@ public abstract class AbstractAlterParser implements SQLParser {
         }
         lexerEngine.skipAll(getSkippedKeywordsBetweenAlterTableAndTableName());
         DDLStatement result = new DDLStatement();
-        tableReferenceClauseParser.parseSingleTable(result);
+        tableReferencesClauseParser.parseSingleTable(result);
         return result;
     }
     

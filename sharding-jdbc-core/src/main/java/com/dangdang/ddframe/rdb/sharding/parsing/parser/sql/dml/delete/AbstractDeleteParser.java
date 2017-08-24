@@ -52,7 +52,7 @@ public abstract class AbstractDeleteParser implements SQLParser {
             throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
         }
         DMLStatement result = new DMLStatement();
-        deleteClauseParserFacade.getTableReferenceClauseParser().parseSingleTable(result);
+        deleteClauseParserFacade.getTableReferencesClauseParser().parseSingleTable(result);
         lexerEngine.skipUntil(DefaultKeyword.WHERE);
         deleteClauseParserFacade.getWhereClauseParser().parse(shardingRule, result, Collections.<SelectItem>emptyList());
         return result;

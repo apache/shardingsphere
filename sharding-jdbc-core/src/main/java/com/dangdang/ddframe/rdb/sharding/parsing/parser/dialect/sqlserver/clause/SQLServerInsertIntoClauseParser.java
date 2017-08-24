@@ -12,6 +12,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.InsertIntoClauseP
 public final class SQLServerInsertIntoClauseParser extends InsertIntoClauseParser {
     
     public SQLServerInsertIntoClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(lexerEngine, new SQLServerTableReferenceClauseParser(shardingRule, lexerEngine));
+        super(lexerEngine, new SQLServerTableReferencesClauseParser(shardingRule, lexerEngine));
     }
 }

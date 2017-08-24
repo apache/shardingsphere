@@ -15,7 +15,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.InsertIntoClauseP
 public final class OracleInsertIntoClauseParser extends InsertIntoClauseParser {
     
     public OracleInsertIntoClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(lexerEngine, new OracleTableReferenceClauseParser(shardingRule, lexerEngine));
+        super(lexerEngine, new OracleTableReferencesClauseParser(shardingRule, lexerEngine));
     }
     
     @Override
