@@ -58,33 +58,6 @@ public class TableClauseParser implements SQLClauseParser {
     }
     
     /**
-     * 跳过表关联.
-     *
-     * @return 是否表关联.
-     */
-    public boolean skipJoin() {
-        if (lexerEngine.skipIfEqual(DefaultKeyword.LEFT, DefaultKeyword.RIGHT, DefaultKeyword.FULL)) {
-            lexerEngine.skipIfEqual(DefaultKeyword.OUTER);
-            lexerEngine.accept(DefaultKeyword.JOIN);
-            return true;
-        } else if (lexerEngine.skipIfEqual(DefaultKeyword.INNER)) {
-            lexerEngine.accept(DefaultKeyword.JOIN);
-            return true;
-        } else if (lexerEngine.skipIfEqual(DefaultKeyword.JOIN, Symbol.COMMA, DefaultKeyword.STRAIGHT_JOIN)) {
-            return true;
-        } else if (lexerEngine.skipIfEqual(DefaultKeyword.CROSS)) {
-            if (lexerEngine.skipIfEqual(DefaultKeyword.JOIN, DefaultKeyword.APPLY)) {
-                return true;
-            }
-        } else if (lexerEngine.skipIfEqual(DefaultKeyword.OUTER)) {
-            if (lexerEngine.skipIfEqual(DefaultKeyword.APPLY)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
      * 解析表.
      * 
      * @param selectStatement Select SQL语句对象
@@ -136,5 +109,27 @@ public class TableClauseParser implements SQLClauseParser {
     }
     
     protected void beforeParseJoinTable(final SelectStatement selectStatement) {
+    }
+    
+    private boolean skipJoin() {
+        if (lexerEngine.skipIfEqual(DefaultKeyword.LEFT, DefaultKeyword.RIGHT, DefaultKeyword.FULL)) {
+            lexerEngine.skipIfEqual(DefaultKeyword.OUTER);
+            lexerEngine.accept(DefaultKeyword.JOIN);
+            return true;
+        } else if (lexerEngine.skipIfEqual(DefaultKeyword.INNER)) {
+            lexerEngine.accept(DefaultKeyword.JOIN);
+            return true;
+        } else if (lexerEngine.skipIfEqual(DefaultKeyword.JOIN, Symbol.COMMA, DefaultKeyword.STRAIGHT_JOIN)) {
+            return true;
+        } else if (lexerEngine.skipIfEqual(DefaultKeyword.CROSS)) {
+            if (lexerEngine.skipIfEqual(DefaultKeyword.JOIN, DefaultKeyword.APPLY)) {
+                return true;
+            }
+        } else if (lexerEngine.skipIfEqual(DefaultKeyword.OUTER)) {
+            if (lexerEngine.skipIfEqual(DefaultKeyword.APPLY)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
