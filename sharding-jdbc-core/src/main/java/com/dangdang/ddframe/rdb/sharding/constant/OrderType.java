@@ -1,11 +1,19 @@
 package com.dangdang.ddframe.rdb.sharding.constant;
 
 /**
- * 排序类型.
+ * Order by type.
  *
  * @author zhangliang
  */
 public enum OrderType {
     
-    ASC, DESC
+    /**
+     * Ascending.
+     */
+    ASC,
+    
+    /**
+     * Descending.
+     */
+    DESC
 }

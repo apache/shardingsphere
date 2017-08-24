@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 分片运算符.
+ * Supported sharding operator.
  *
  * @author zhangliang
  */

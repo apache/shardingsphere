@@ -24,7 +24,7 @@ import com.google.common.collect.Iterators;
 import java.util.Arrays;
 
 /**
- * 支持的数据库类型.
+ * Supported database.
  * 
  * @author zhangliang
  */
@@ -39,10 +39,10 @@ public enum DatabaseType {
     }
     
     /**
-     * 获取数据库类型枚举.
+     * Get database type enum via database name string.
      * 
-     * @param databaseProductName 数据库类型
-     * @return 数据库类型枚举
+     * @param databaseProductName database name string
+     * @return database enum
      */
     public static DatabaseType valueFrom(final String databaseProductName) {
         Optional<DatabaseType> databaseTypeOptional = Iterators.tryFind(Arrays.asList(DatabaseType.values()).iterator(), new Predicate<DatabaseType>() {

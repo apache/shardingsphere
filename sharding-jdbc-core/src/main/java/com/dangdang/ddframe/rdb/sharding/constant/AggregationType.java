@@ -1,7 +1,7 @@
 package com.dangdang.ddframe.rdb.sharding.constant;
 
 /**
- * 聚合函数类型.
+ * Aggregation function enum.
  *
  * @author zhangliang
  */
