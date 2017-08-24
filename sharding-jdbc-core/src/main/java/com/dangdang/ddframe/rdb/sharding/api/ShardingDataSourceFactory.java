@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 /**
- * 分片数据源工厂.
+ * Sharding data source factory.
  * 
  * @author zhangliang 
  */
@@ -34,21 +34,21 @@ import java.util.Properties;
 public final class ShardingDataSourceFactory {
     
     /**
-     * 创建分片数据源.
+     * Create sharding data source.
      * 
-     * @param shardingRule 分片规则
-     * @return 分片数据源
+     * @param shardingRule rule for databases and tables sharding
+     * @return sharding data source
      */
     public static DataSource createDataSource(final ShardingRule shardingRule) {
         return new ShardingDataSource(shardingRule);
     }
     
     /**
-     * 创建分片数据源.
+     * Create sharding data source.
      * 
-     * @param shardingRule 分片规则
-     * @param props 属性配置
-     * @return 分片数据源
+     * @param shardingRule rule for databases and tables sharding
+     * @param props properties for data source
+     * @return sharding data source
      */
     public static DataSource createDataSource(final ShardingRule shardingRule, final Properties props) {
         return new ShardingDataSource(shardingRule, props);

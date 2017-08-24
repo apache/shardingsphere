@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 轮询负载均衡策略.
+ * Round-robin slave database load-balance strategy.
  *
  * @author zhangliang
  */

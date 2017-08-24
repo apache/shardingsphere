@@ -18,7 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
 /**
- * 动态表的分库分表数据单元.
+ * Dynamic Sharding data unit node.
+ * 
+ * <p>Dynamic data node do not need configure actual tables, it will get actual tables depended on sharding algorithm.</p>
  * 
  * @author zhangliang
  */
@@ -26,6 +28,11 @@ public final class DynamicDataNode extends DataNode {
     
     private static final String DYNAMIC_TABLE_PLACEHOLDER = "SHARDING_JDBC DYNAMIC_TABLE_PLACEHOLDER";
     
+    /**
+     * Constructs a data node with data source name, actual table is unnecessary.
+     * 
+     * @param dataSourceName data source name
+     */
     public DynamicDataNode(final String dataSourceName) {
         super(dataSourceName, DYNAMIC_TABLE_PLACEHOLDER);
     }

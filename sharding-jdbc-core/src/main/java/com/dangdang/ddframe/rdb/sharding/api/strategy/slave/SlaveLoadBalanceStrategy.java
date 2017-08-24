@@ -21,18 +21,18 @@ import javax.sql.DataSource;
 import java.util.List;
 
 /**
- * 从库负载均衡策略.
+ * Slave database load-balance strategy.
  *
  * @author zhangliang
  */
 public interface SlaveLoadBalanceStrategy {
     
     /**
-     * 根据负载均衡策略获取从库数据源.
+     * Get data source.
      * 
-     * @param name 读写分离数据源名称
-     * @param slaveDataSources 从库数据源列表
-     * @return 选中的从库数据源
+     * @param name master-slave logic data source name
+     * @param slaveDataSources slave data sources's names
+     * @return selected slave data source
      */
     DataSource getDataSource(String name, List<DataSource> slaveDataSources);
 }

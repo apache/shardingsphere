@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 
-import java.util.Collection;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 
+import java.util.Collection;
+
 /**
- * 无需分表的分片算法.
+ * Table sharding algorithm for none sharding interface.
  * 
  * @author zhangliang
  */

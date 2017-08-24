@@ -27,7 +27,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Binding表规则配置对象.
+ * Binding table rule configuration.
+ * 
+ * <p>Binding table is same sharding rule with different tables, use one of them can deduce other name of actual tables and data sources.</p>
  * 
  * @author zhangliang
  */
@@ -38,10 +40,10 @@ public final class BindingTableRule {
     private final List<TableRule> tableRules;
     
     /**
-     * 判断此绑定表规则是否包含该逻辑表.
+     * Adjust contains this logic table in this rule.
      * 
-     * @param logicTableName 逻辑表名称
-     * @return 此绑定表规则是否包含该逻辑表
+     * @param logicTableName logic table name
+     * @return contains this logic table or not
      */
     public boolean hasLogicTable(final String logicTableName) {
         for (TableRule each : tableRules) {
@@ -53,12 +55,12 @@ public final class BindingTableRule {
     }
     
     /**
-     * 根据其他Binding表真实表名称获取相应的真实Binding表名称.
+     * Deduce actual table name from other actual table name in same binding table rule.
      * 
-     * @param dataSource 数据源名称
-     * @param logicTable 逻辑表名称
-     * @param otherActualTable 其他真实Binding表名称
-     * @return 真实Binding表名称
+     * @param dataSource data source name
+     * @param logicTable logic table name
+     * @param otherActualTable other actual table name in same binding table rule
+     * @return actual table name
      */
     public String getBindingActualTable(final String dataSource, final String logicTable, final String otherActualTable) {
         int index = -1;

@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * 数据源配置对象.
+ * Data source rule configuration.
  * 
  * @author zhangliang
  */
@@ -42,6 +42,12 @@ public final class DataSourceRule {
         this(dataSourceMap, null);
     }
     
+    /**
+     * Constructs a data source rule with data source map and default data source.
+     * 
+     * @param dataSourceMap map for data source name and data source object
+     * @param defaultDataSourceName default data source name, if not indicate data source name, will fetch this data source
+     */
     public DataSourceRule(final Map<String, DataSource> dataSourceMap, final String defaultDataSourceName) {
         Preconditions.checkState(!dataSourceMap.isEmpty(), "Must have one data source at least.");
         this.dataSourceMap = dataSourceMap;
@@ -58,38 +64,38 @@ public final class DataSourceRule {
     }
     
     /**
-     * 获取数据源实例.
+     * Get data source instance.
      * 
-     * @param name 数据源名称
-     * @return 数据源实例
+     * @param name data source name
+     * @return data source instance
      */
     public DataSource getDataSource(final String name) {
         return dataSourceMap.get(name);
     }
     
     /**
-     * 获取默认数据源实例.
+     * Get default data source instance.
      *
-     * @return 默认数据源实例
+     * @return default data source instance
      */
-    // TODO getDefaultDataSource暂时不支持读写分离
+    // TODO support master-slave
     public Optional<DataSource> getDefaultDataSource() {
         return Optional.fromNullable(dataSourceMap.get(defaultDataSourceName));
     }
     
     /**
-     * 获取所有数据源名称.
+     * Get all data source's names.
      * 
-     * @return 所有数据源名称
+     * @return all data source's names
      */
     public Collection<String> getDataSourceNames() {
         return dataSourceMap.keySet();
     }
     
     /**
-     * 获取所有数据源.
+     * Get all data sources.
      * 
-     * @return 所有数据源
+     * @return all data sources
      */
     public Collection<DataSource> getDataSources() {
         return dataSourceMap.values();

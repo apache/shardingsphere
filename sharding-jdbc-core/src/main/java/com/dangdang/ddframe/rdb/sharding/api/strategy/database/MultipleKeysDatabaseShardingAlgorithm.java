@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
 
 /**
- * 多片键分库算法接口.
+ * Database sharding algorithm for multiple sharding keys interface.
  * 
  * @author zhangliang
  */

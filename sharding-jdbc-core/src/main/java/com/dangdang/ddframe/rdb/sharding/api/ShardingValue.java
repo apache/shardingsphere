@@ -17,22 +17,21 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import java.util.Collection;
-import java.util.Collections;
-
+import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
-import com.google.common.collect.Range;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * 分片值.
+ * Sharding value.
  * 
  * <p>
- * 目前支持{@code =, IN, BETWEEN};
- * 不支持{@code , >, <=, >=, LIKE, NOT, NOT IN}.
+ * Support {@code =, IN, BETWEEN};
+ * Not support {@code <, >, <=, >=, LIKE, NOT, NOT IN}.
  * </p>
  * 
  * @author zhangliang
@@ -65,9 +64,9 @@ public final class ShardingValue<T extends Comparable<?>> {
     }
     
     /**
-     * 获取分片值类型.
+     * Get sharding value type.
      * 
-     * @return 分片值类型
+     * @return sharding value type
      */
     public ShardingValueType getType() {
         if (null != value) {
@@ -80,11 +79,25 @@ public final class ShardingValue<T extends Comparable<?>> {
     }
     
     /**
-     * 分片值类型.
+     * Sharding value type.
      * 
      * @author zhangliang
      */
     public enum ShardingValueType {
-        SINGLE, LIST, RANGE
+        
+        /**
+         * Sharding for {@code =}.
+         */
+        SINGLE,
+        
+        /**
+         * Sharding for {@code IN}.
+         */
+        LIST,
+        
+        /**
+         * Sharding for {@code BETWEEN}.
+         */
+        RANGE
     }
 }

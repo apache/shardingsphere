@@ -26,7 +26,7 @@ import lombok.ToString;
 import java.util.List;
 
 /**
- * 分库分表数据单元.
+ * Sharding data unit node.
  * 
  * @author zhangliang
  */
@@ -42,6 +42,11 @@ public class DataNode {
     
     private final String tableName;
     
+    /**
+     * Constructs a data node with well-formatted string.
+     * 
+     * @param dataNode string of data node. use {@code .} to split data source name and table name.
+     */
     public DataNode(final String dataNode) {
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
         dataSourceName = segments.get(0);
@@ -49,10 +54,10 @@ public class DataNode {
     }
     
     /**
-     * 判断字符串是否为合法的分库分表数据单元字符串.
+     * Adjust the format of data node string is valid or not.
      * 
-     * @param dataNodeStr 待判断的字符串
-     * @return 是否为合法的分库分表数据单元字符串
+     * @param dataNodeStr string to be adjusted
+     * @return format of data node string is valid or not
      */
     public static boolean isValidDataNode(final String dataNodeStr) {
         return dataNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).splitToList(dataNodeStr).size();

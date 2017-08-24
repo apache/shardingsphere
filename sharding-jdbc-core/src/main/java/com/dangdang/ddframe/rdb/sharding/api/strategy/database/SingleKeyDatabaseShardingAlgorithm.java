@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
 
 /**
- * 单分片键的分库算法接口.
+ * Database sharding algorithm for single sharding key interface.
  * 
  * @author zhangliang
  */

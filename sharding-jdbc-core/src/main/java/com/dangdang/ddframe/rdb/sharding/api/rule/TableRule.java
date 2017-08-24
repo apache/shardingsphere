@@ -33,7 +33,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * 表规则配置对象.
+ * Table rule configuration.
  * 
  * @author zhangliang
  */
@@ -56,22 +56,20 @@ public final class TableRule {
     private final KeyGenerator keyGenerator;
     
     /**
-     * 全属性构造器.
+     * Constructs a full properties table rule.
      *
-     * <p>用于Spring非命名空间的配置.</p>
+     * <p>Should not use for spring namespace.</p>
      *
-     * <p>未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.</p>
-     *
-     * @deprecated 未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.
-     * @param logicTable 逻辑表名称
-     * @param dynamic 是否为动态表
-     * @param actualTables 真实表集合
-     * @param dataSourceRule 数据源分片规则
-     * @param dataSourceNames 数据源名称集合
-     * @param databaseShardingStrategy 数据库分片策略
-     * @param tableShardingStrategy 表分片策略
-     * @param generateKeyColumn 自增列名称
-     * @param keyGenerator 列主键生成器
+     * @deprecated should be private
+     * @param logicTable logic table name
+     * @param dynamic is dynamic table
+     * @param actualTables names of actual tables
+     * @param dataSourceRule data source rule
+     * @param dataSourceNames names of data sources
+     * @param databaseShardingStrategy database sharding strategy
+     * @param tableShardingStrategy table sharding strategy
+     * @param generateKeyColumn generate key column name
+     * @param keyGenerator key generator
      */
     @Deprecated
     public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames,
@@ -96,10 +94,10 @@ public final class TableRule {
     }
     
     /**
-     * 获取表规则配置对象构建器.
+     * Get table rule builder.
      *
-     * @param logicTable 逻辑表名称 
-     * @return 表规则配置对象构建器
+     * @param logicTable logic table name
+     * @return table rule builder
      */
     public static TableRuleBuilder builder(final String logicTable) {
         return new TableRuleBuilder(logicTable);
@@ -140,11 +138,11 @@ public final class TableRule {
     }
     
     /**
-     * 根据数据源名称过滤获取真实数据单元.
+     * Get actual data nodes via target data source and actual tables.
      *
-     * @param targetDataSource 数据源名称
-     * @param targetTables 真实表名称集合
-     * @return 真实数据单元
+     * @param targetDataSource target data source name
+     * @param targetTables target actual tables.
+     * @return actual data nodes
      */
     public Collection<DataNode> getActualDataNodes(final String targetDataSource, final Collection<String> targetTables) {
         return dynamic ? getDynamicDataNodes(targetDataSource, targetTables) : getStaticDataNodes(targetDataSource, targetTables);
@@ -169,9 +167,9 @@ public final class TableRule {
     }
     
     /**
-     * 获取真实数据源.
+     * Get actual data source names.
      *
-     * @return 真实表名称
+     * @return actual data source names
      */
     public Collection<String> getActualDatasourceNames() {
         Collection<String> result = new LinkedHashSet<>(actualTables.size());
@@ -182,10 +180,10 @@ public final class TableRule {
     }
     
     /**
-     * 根据数据源名称过滤获取真实表名称.
+     * Get actual table names via target data source name.
      *
-     * @param targetDataSource 数据源名称
-     * @return 真实表名称
+     * @param targetDataSource target data source name
+     * @return names of actual tables
      */
     public Collection<String> getActualTableNames(final String targetDataSource) {
         Collection<String> result = new LinkedHashSet<>(actualTables.size());
@@ -209,7 +207,7 @@ public final class TableRule {
     }
     
     /**
-     * 表规则配置对象构建器.
+     * Table rule builder..
      */
     @RequiredArgsConstructor
     public static class TableRuleBuilder {
@@ -233,10 +231,10 @@ public final class TableRule {
         private Class<? extends KeyGenerator> keyGeneratorClass;
         
         /**
-         * 构建是否为动态表.
+         * Build is dynamic table.
          *
-         * @param dynamic 是否为动态表
-         * @return 真实表集合
+         * @param dynamic is dynamic table
+         * @return this builder
          */
         public TableRuleBuilder dynamic(final boolean dynamic) {
             this.dynamic = dynamic;
@@ -244,10 +242,10 @@ public final class TableRule {
         }
         
         /**
-         * 构建真实表集合.
+         * Build actual tables.
          *
-         * @param actualTables 真实表集合
-         * @return 真实表集合
+         * @param actualTables actual tables
+         * @return this builder
          */
         public TableRuleBuilder actualTables(final List<String> actualTables) {
             this.actualTables = actualTables;
@@ -255,10 +253,10 @@ public final class TableRule {
         }
         
         /**
-         * 构建数据源分片规则.
+         * Build data source rule.
          *
-         * @param dataSourceRule 数据源分片规则
-         * @return 规则配置对象构建器
+         * @param dataSourceRule data source rule
+         * @return this builder
          */
         public TableRuleBuilder dataSourceRule(final DataSourceRule dataSourceRule) {
             this.dataSourceRule = dataSourceRule;
@@ -266,10 +264,10 @@ public final class TableRule {
         }
         
         /**
-         * 构建数据源分片规则.
+         * Build data sources's names.
          *
-         * @param dataSourceNames 数据源名称集合
-         * @return 规则配置对象构建器
+         * @param dataSourceNames data sources's names
+         * @return this builder
          */
         public TableRuleBuilder dataSourceNames(final Collection<String> dataSourceNames) {
             this.dataSourceNames = dataSourceNames;
@@ -277,10 +275,10 @@ public final class TableRule {
         }
         
         /**
-         * 构建数据库分片策略.
+         * Build database sharding strategy.
          *
-         * @param databaseShardingStrategy 数据库分片策略
-         * @return 规则配置对象构建器
+         * @param databaseShardingStrategy database sharding strategy
+         * @return this builder
          */
         public TableRuleBuilder databaseShardingStrategy(final DatabaseShardingStrategy databaseShardingStrategy) {
             this.databaseShardingStrategy = databaseShardingStrategy;
@@ -288,10 +286,10 @@ public final class TableRule {
         }
         
         /**
-         * 构建表分片策略.
+         * Build table sharding strategy.
          *
-         * @param tableShardingStrategy 表分片策略
-         * @return 规则配置对象构建器
+         * @param tableShardingStrategy table sharding strategy
+         * @return this builder
          */
         public TableRuleBuilder tableShardingStrategy(final TableShardingStrategy tableShardingStrategy) {
             this.tableShardingStrategy = tableShardingStrategy;
@@ -299,10 +297,10 @@ public final class TableRule {
         }
         
         /**
-         * 自增列.
+         * Build generate key column.
          * 
-         * @param generateKeyColumn 自增列名称
-         * @return 规则配置对象构建器
+         * @param generateKeyColumn generate key column
+         * @return this builder
          */
         public TableRuleBuilder generateKeyColumn(final String generateKeyColumn) {
             this.generateKeyColumn = generateKeyColumn;
@@ -310,11 +308,11 @@ public final class TableRule {
         }
         
         /**
-         * 自增列.
+         * Build generate key column.
          *
-         * @param generateKeyColumn 自增列名称
-         * @param keyGeneratorClass 列主键生成器类
-         * @return 规则配置对象构建器
+         * @param generateKeyColumn generate key column
+         * @param keyGeneratorClass key generator class
+         * @return this builder
          */
         public TableRuleBuilder generateKeyColumn(final String generateKeyColumn, final Class<? extends KeyGenerator> keyGeneratorClass) {
             this.generateKeyColumn = generateKeyColumn;
@@ -323,9 +321,9 @@ public final class TableRule {
         }
         
         /**
-         * 构建表规则配置对象.
+         * Build table rule.
          *
-         * @return 表规则配置对象
+         * @return built table rule
          */
         public TableRule build() {
             KeyGenerator keyGenerator = null;

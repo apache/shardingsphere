@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 通过线索传递分片值的管理器.
+ * The manager that use hint to inject sharding key directly through <code>ThreadLocal</code>.
  *
  * @author gaohongtao
  * @author zhangliang
@@ -54,9 +54,9 @@ public final class HintManager implements AutoCloseable {
     private boolean databaseShardingOnly;
     
     /**
-     * 获取线索分片管理器实例.
+     * Get a new instance for <code>HintManager</code>.
      * 
-     * @return 线索分片管理器实例
+     * @return  {@code HintManager} instance
      */
     public static HintManager getInstance() {
         HintManager result = new HintManager();
@@ -65,11 +65,11 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
-     * 设置分库分片值.
+     * Set sharding value for database sharding only.
      * 
-     * <p>分片操作符为等号.该方法适用于只分库的场景</p>
+     * <p>The sharding operator is {@code =}</p>
      * 
-     * @param value 分片值
+     * @param value sharding value
      */
     public void setDatabaseShardingValue(final Comparable<?> value) {
         databaseShardingOnly = true;
@@ -77,25 +77,25 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
-     * 添加分库分片值.
+     * Add sharding value for database.
      * 
-     * <p>分片操作符为等号.</p>
+     * <p>The sharding operator is {@code =}/p>
      *
-     * @param logicTable 逻辑表名称
-     * @param shardingColumn 分片键
-     * @param value 分片值
+     * @param logicTable logic table name
+     * @param shardingColumn sharding column name
+     * @param value sharding value
      */
     public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> value) {
         addDatabaseShardingValue(logicTable, shardingColumn, ShardingOperator.EQUAL, value);
     }
     
     /**
-     * 添加分库分片值.
+     * Add sharding value for database.
      *
-     * @param logicTable 逻辑表名称
-     * @param shardingColumn 分片键
-     * @param operator 分片操作符
-     * @param values 分片值
+     * @param logicTable logic table name
+     * @param shardingColumn sharding column name
+     * @param operator sharding operator
+     * @param values sharding value
      */
     public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
         shardingHint = true;
@@ -103,25 +103,25 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
-     * 添加分表分片值.
+     * Add sharding value for table.
      * 
-     * <p>分片操作符为等号.</p>
+     * <p>The sharding operator is {@code =}</p>
      *
-     * @param logicTable 逻辑表名称
-     * @param shardingColumn 分片键
-     * @param value 分片值
+     * @param logicTable logic table name
+     * @param shardingColumn sharding column name
+     * @param value sharding value
      */
     public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> value) {
         addTableShardingValue(logicTable, shardingColumn, ShardingOperator.EQUAL, value);
     }
     
     /**
-     * 添加分表分片值.
+     * Add sharding value for table.
      *
-     * @param logicTable 逻辑表名称
-     * @param shardingColumn 分片键
-     * @param operator 分片操作符
-     * @param values 分片值
+     * @param logicTable logic table name
+     * @param shardingColumn sharding column name
+     * @param operator sharding operator
+     * @param values sharding value
      */
     public void addTableShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
         shardingHint = true;
@@ -144,27 +144,27 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
-     * 获取分库分片键值.
+     * Get sharding value for database.
      * 
-     * @param shardingKey 分片键
-     * @return 分库分片键值
+     * @param shardingKey sharding key
+     * @return sharding value for database
      */
     public ShardingValue<?> getDatabaseShardingValue(final ShardingKey shardingKey) {
         return databaseShardingValues.get(shardingKey);
     }
     
     /**
-     * 获取分表分片键值.
-     * 
-     * @param shardingKey 分片键
-     * @return 分表分片键值
+     * Get sharding value for table.
+     *
+     * @param shardingKey sharding key
+     * @return sharding value for table
      */
     public ShardingValue<?> getTableShardingValue(final ShardingKey shardingKey) {
         return tableShardingValues.get(shardingKey);
     }
     
     /**
-     * 设置数据库操作只路由至主库.
+     * Set CRUD operation force route to master database only.
      */
     public void setMasterRouteOnly() {
         masterRouteOnly = true;
