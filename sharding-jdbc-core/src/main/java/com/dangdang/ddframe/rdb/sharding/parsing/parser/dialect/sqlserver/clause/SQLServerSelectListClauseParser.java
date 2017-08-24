@@ -10,7 +10,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.Selec
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.OrderByClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 
 /**
  * SQLServer 选择项从句解析器.

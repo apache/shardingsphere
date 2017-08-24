@@ -23,8 +23,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.Or
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleHierarchicalQueryClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleModelClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleSelectClauseParserFacade;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.AbstractSelectParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.select.SelectStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.AbstractSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 
 /**
  * Oracle Select语句解析器.

@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.AllLexerTests;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer.TokenizerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AllStatementParserTests;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.AllStatementParserTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

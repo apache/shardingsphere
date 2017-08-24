@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.alter.AbstractAlterParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ddl.alter.AbstractAlterParser;
 
 /**
  * SQLServer Alter语句解析器.

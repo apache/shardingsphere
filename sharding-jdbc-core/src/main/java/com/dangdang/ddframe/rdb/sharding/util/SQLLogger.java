@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.util;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -1,8 +1,8 @@
 package com.dangdang.ddframe.rdb.sharding.parsing;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dml.DMLStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.dql.DQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.DMLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.DQLStatement;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

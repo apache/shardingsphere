@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.router;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 
 import java.util.List;

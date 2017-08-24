@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.ddl.truncate.AbstractTruncateParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ddl.truncate.AbstractTruncateParser;
 
 /**
  * MySQL Truncate语句解析器.
