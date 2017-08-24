@@ -21,7 +21,7 @@ public final class MySQLTableReferencesClauseParser extends TableReferencesClaus
     }
     
     @Override
-    protected void parseTableSource(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
+    protected void parseTableReference(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
         parseTableFactor(sqlStatement, isSingleTableOnly);
         parsePartition();
         parseIndexHint(sqlStatement);

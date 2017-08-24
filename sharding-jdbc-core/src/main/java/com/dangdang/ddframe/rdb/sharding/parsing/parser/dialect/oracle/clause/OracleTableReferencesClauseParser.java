@@ -21,7 +21,7 @@ public final class OracleTableReferencesClauseParser extends TableReferencesClau
     }
     
     @Override
-    protected void parseTableSource(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
+    protected void parseTableReference(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
         if (getLexerEngine().skipIfEqual(OracleKeyword.ONLY)) {
             getLexerEngine().skipIfEqual(Symbol.LEFT_PAREN);
             parseQueryTableExpression(sqlStatement, isSingleTableOnly);

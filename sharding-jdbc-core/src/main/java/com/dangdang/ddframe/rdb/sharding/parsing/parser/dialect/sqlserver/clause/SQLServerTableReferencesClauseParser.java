@@ -21,7 +21,7 @@ public final class SQLServerTableReferencesClauseParser extends TableReferencesC
     }
     
     @Override
-    protected void parseTableSource(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
+    protected void parseTableReference(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
         parseTableFactor(sqlStatement, isSingleTableOnly);
         parseTableSampleClause();
         parseTableHint(sqlStatement);

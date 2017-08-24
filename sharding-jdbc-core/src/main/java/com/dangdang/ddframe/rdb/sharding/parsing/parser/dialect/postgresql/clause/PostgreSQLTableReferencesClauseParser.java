@@ -18,7 +18,7 @@ public final class PostgreSQLTableReferencesClauseParser extends TableReferences
     }
     
     @Override
-    protected void parseTableSource(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
+    protected void parseTableReference(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
         parseOnly();
         parseTableFactor(sqlStatement, isSingleTableOnly);
     }

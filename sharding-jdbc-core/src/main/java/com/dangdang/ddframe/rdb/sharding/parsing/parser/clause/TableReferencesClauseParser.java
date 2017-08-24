@@ -47,11 +47,11 @@ public class TableReferencesClauseParser implements SQLClauseParser {
      */
     public final void parse(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
         do {
-            parseTableSource(sqlStatement, isSingleTableOnly);
+            parseTableReference(sqlStatement, isSingleTableOnly);
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
     }
     
-    protected void parseTableSource(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
+    protected void parseTableReference(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
         parseTableFactor(sqlStatement, isSingleTableOnly);
     }
     
