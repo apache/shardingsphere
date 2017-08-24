@@ -376,9 +376,9 @@
 <li><a href="#全局不支持项">全局不支持项</a>
 <ul>
 <li><a href="#动态表">动态表</a></li>
-<li><a href="#除dql和dml以外的语句">除DQL和DML以外的语句</a></li>
 <li><a href="#有限支持子查询">有限支持子查询</a></li>
 <li><a href="#不支持包含冗余括号的sql">不支持包含冗余括号的SQL</a></li>
+<li><a href="#不支持or">不支持OR</a></li>
 </ul></li>
 <li><a href="#支持的sql">支持的SQL</a>
 <ul>
@@ -389,12 +389,8 @@
 <li><a href="#table-reference">table_reference</a></li>
 <li><a href="#示例">示例</a></li>
 </ul></li>
-<li><a href="#dml">DML</a>
-<ul>
-<li><a href="#insert">INSERT</a></li>
-<li><a href="#update">UPDATE</a></li>
-<li><a href="#delete">DELETE</a></li>
-</ul></li>
+<li><a href="#dml">DML</a></li>
+<li><a href="#ddl">DDL</a></li>
 </ul></li>
 <li><a href="#不支持的sql">不支持的SQL</a></li>
 </ul></li>
@@ -425,15 +421,13 @@
 <p>未配置逻辑表和真实表对应关系的真实表，称为动态表。凡是动态表且未在SQL或Hint中包含分片键的SQL均不支持。
 原因是未找到分片键则需全路由，但由于未配置逻辑表和真实表的对应关系，无法全路由。</p>
 
-<h3 id="除dql和dml以外的语句">除DQL和DML以外的语句</h3>
-
-<p>Sharding-JDBC定位于CRUD操作，目前仅针对DQL和DML语句进行支持。</p>
-
 <h3 id="有限支持子查询">有限支持子查询</h3>
 
 <p>子查询支持详情请参考<a href="http://dangdangdotcom.github.io/sharding-jdbc/02-guide/subquery/">分页及子查询</a>。</p>
 
 <h3 id="不支持包含冗余括号的sql">不支持包含冗余括号的SQL</h3>
+
+<h3 id="不支持or">不支持OR</h3>
 
 <h2 id="支持的sql">支持的SQL</h2>
 
@@ -502,8 +496,6 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 <h3 id="dml">DML</h3>
 
-<h4 id="insert">INSERT</h4>
-
 <table>
 <thead>
 <tr>
@@ -525,30 +517,22 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 <td>否</td>
 <td>通过Hint注入分片键</td>
 </tr>
-</tbody>
-</table>
 
-<h4 id="update">UPDATE</h4>
-
-<table>
-<thead>
-<tr>
-<th>SQL</th>
-<th>无条件支持</th>
-<th>必要条件</th>
-</tr>
-</thead>
-
-<tbody>
 <tr>
 <td>UPDATE tbl_name SET col1 = val1 WHERE col2 = val2</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>DELETE FROM tbl_name WHERE col1 = val1</td>
 <td>是</td>
 <td></td>
 </tr>
 </tbody>
 </table>
 
-<h4 id="delete">DELETE</h4>
+<h3 id="ddl">DDL</h3>
 
 <table>
 <thead>
@@ -561,7 +545,25 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 <tbody>
 <tr>
-<td>DELETE FROM tbl_name WHERE col1 = val1</td>
+<td>CREATE TABLE tbl_name (col1 int,&hellip;)</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>ALTER TABLE tbl_name ADD col1 varchar(10)</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>DROP TABLE tbl_name</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>TRUNCATE TABLE tbl_name</td>
 <td>是</td>
 <td></td>
 </tr>
@@ -592,6 +594,10 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 <tr>
 <td>SELECT DISTINCT * FROM tbl_name WHERE column1 = value1</td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name WHERE column1 = value1 OR column1 = value2</td>
 </tr>
 
 <tr>
