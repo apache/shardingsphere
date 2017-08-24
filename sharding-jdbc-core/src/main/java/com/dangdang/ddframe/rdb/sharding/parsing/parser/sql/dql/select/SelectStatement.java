@@ -25,6 +25,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.DQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -64,6 +66,28 @@ public final class SelectStatement extends DQLStatement {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private SelectStatement subQueryStatement;
+    
+    /**
+     * 获取别名.
+     * 
+     * @param name 名称
+     * @return 别名
+     */
+    public Optional<String> getAlias(final String name) {
+        if (containStar) {
+            return Optional.absent();
+        }
+        String rawName = SQLUtil.getExactlyValue(name);
+        for (SelectItem each : items) {
+            if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
+                return each.getAlias();
+            }
+            if (rawName.equalsIgnoreCase(each.getAlias().orNull())) {
+                return Optional.of(rawName);
+            }
+        }
+        return Optional.absent();
+    }
     
     /**
      * 获取聚合选择项集合.
