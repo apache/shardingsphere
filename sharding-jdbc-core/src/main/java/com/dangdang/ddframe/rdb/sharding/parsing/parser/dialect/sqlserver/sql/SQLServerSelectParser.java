@@ -19,10 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerForClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerOffsetClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.facade.SQLServerSelectClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerTopClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.facade.SQLServerSelectClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 
@@ -37,13 +36,10 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     private final SQLServerOffsetClauseParser offsetClauseParser;
     
-    private final SQLServerForClauseParser forClauseParser;
-    
     public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new SQLServerSelectClauseParserFacade(shardingRule, lexerEngine));
         topClauseParser = new SQLServerTopClauseParser(lexerEngine);
         offsetClauseParser = new SQLServerOffsetClauseParser(lexerEngine);
-        forClauseParser = new SQLServerForClauseParser(lexerEngine);
     }
     
     @Override
@@ -57,7 +53,6 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
         parseHaving();
         parseOrderBy(selectStatement);
         parseOffset(selectStatement);
-        parseFor();
         parseSelectRest();
     }
     
@@ -67,9 +62,5 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     private void parseOffset(final SelectStatement selectStatement) {
         offsetClauseParser.parse(selectStatement);
-    }
-    
-    private void parseFor() {
-        forClauseParser.parse();
     }
 }
