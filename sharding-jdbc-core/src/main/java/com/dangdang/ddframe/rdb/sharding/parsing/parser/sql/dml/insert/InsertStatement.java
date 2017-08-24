@@ -53,6 +53,10 @@ public final class InsertStatement extends DMLStatement {
     
     private final List<Conditions> multipleConditions = new LinkedList<>();
     
+    private int columnsListLastPosition;
+    
+    private int generateKeyColumnIndex = -1;
+    
     private GeneratedKey generatedKey;
     
     /**

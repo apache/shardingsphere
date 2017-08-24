@@ -21,7 +21,7 @@ public class InsertIntoClauseParser implements SQLClauseParser {
     private final TableClauseParser tableClauseParser;
     
     /**
-     * 解析SET.
+     * 解析INSERT INTO.
      *
      * @param insertStatement DML语句对象
      */
