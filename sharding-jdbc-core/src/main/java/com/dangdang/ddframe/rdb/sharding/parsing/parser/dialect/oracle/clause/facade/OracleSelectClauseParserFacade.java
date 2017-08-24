@@ -9,7 +9,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.Or
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleGroupByClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleOrderByClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleSelectListClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleTableClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleTableReferenceClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleWhereClauseParser;
 
 /**
@@ -21,7 +21,7 @@ public final class OracleSelectClauseParserFacade extends AbstractSelectClausePa
     
     public OracleSelectClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(new OracleDistinctClauseParser(lexerEngine), new OracleSelectListClauseParser(shardingRule, lexerEngine),
-                new OracleTableClauseParser(shardingRule, lexerEngine), new OracleWhereClauseParser(lexerEngine), new OracleGroupByClauseParser(lexerEngine),
+                new OracleTableReferenceClauseParser(shardingRule, lexerEngine), new OracleWhereClauseParser(lexerEngine), new OracleGroupByClauseParser(lexerEngine),
                 new HavingClauseParser(lexerEngine), new OracleOrderByClauseParser(lexerEngine), new SelectRestClauseParser(lexerEngine));
     }
 }

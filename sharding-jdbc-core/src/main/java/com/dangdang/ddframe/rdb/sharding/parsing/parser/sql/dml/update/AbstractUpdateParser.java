@@ -52,7 +52,7 @@ public abstract class AbstractUpdateParser implements SQLParser {
             throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
         }
         DMLStatement result = new DMLStatement();
-        updateClauseParserFacade.getTableClauseParser().parseSingleTable(result);
+        updateClauseParserFacade.getTableReferenceClauseParser().parseSingleTable(result);
         updateClauseParserFacade.getUpdateSetItemsClauseParser().parse(result);
         lexerEngine.skipUntil(DefaultKeyword.WHERE);
         updateClauseParserFacade.getWhereClauseParser().parse(shardingRule, result, Collections.<SelectItem>emptyList());

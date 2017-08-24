@@ -3,7 +3,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.claus
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractDeleteClauseParserFacade;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerTableClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerTableReferenceClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerWhereClauseParser;
 
 /**
@@ -14,6 +14,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause
 public final class SQLServerDeleteClauseParserFacade extends AbstractDeleteClauseParserFacade {
     
     public SQLServerDeleteClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new SQLServerTableClauseParser(shardingRule, lexerEngine), new SQLServerWhereClauseParser(lexerEngine));
+        super(new SQLServerTableReferenceClauseParser(shardingRule, lexerEngine), new SQLServerWhereClauseParser(lexerEngine));
     }
 }

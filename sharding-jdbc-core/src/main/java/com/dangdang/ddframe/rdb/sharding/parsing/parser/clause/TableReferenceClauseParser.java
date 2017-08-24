@@ -17,7 +17,7 @@ import lombok.Getter;
  *
  * @author zhangliang
  */
-public class TableClauseParser implements SQLClauseParser {
+public class TableReferenceClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
@@ -28,7 +28,7 @@ public class TableClauseParser implements SQLClauseParser {
     
     private final ExpressionClauseParser expressionClauseParser;
     
-    public TableClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public TableReferenceClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
         aliasClauseParser = new AliasClauseParser(lexerEngine);

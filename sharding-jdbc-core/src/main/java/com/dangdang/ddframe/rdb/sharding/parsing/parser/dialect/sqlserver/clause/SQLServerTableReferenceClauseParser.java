@@ -3,7 +3,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.claus
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferenceClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 
 /**
@@ -11,9 +11,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectSta
  *
  * @author zhangliang
  */
-public final class SQLServerTableClauseParser extends TableClauseParser {
+public final class SQLServerTableReferenceClauseParser extends TableReferenceClauseParser {
     
-    public SQLServerTableClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public SQLServerTableReferenceClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
     
