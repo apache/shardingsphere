@@ -50,6 +50,7 @@ public class WhereClauseParser implements SQLClauseParser {
     /**
      * 解析WHERE.
      *
+     * @param shardingRule 分片规则
      * @param sqlStatement SQL语句对象
      * @param items 选择项集合
      */

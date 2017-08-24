@@ -73,7 +73,7 @@ public class ShardingValueWrapper {
      * 
      * @param format 时间格式化格式
      * @return 时间类型的值
-     * @throws ParseException
+     * @throws ParseException 解析异常
      */
     public Date dateValue(final String format) throws ParseException {
         if (value instanceof Number) {
@@ -90,7 +90,7 @@ public class ShardingValueWrapper {
      * 将字符串转换为时间.
      * 
      * @return 时间类型的值
-     * @throws ParseException
+     * @throws ParseException 解析异常
      */
     public Date dateValue() throws ParseException {
         return dateValue(null);

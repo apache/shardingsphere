@@ -42,15 +42,16 @@ public interface TransactionLogStorage {
     void remove(String id);
     
     /**
-     * 读取需要处理的事务日志.
+     * 读取待处理的事务日志.
      * 
-     * <p>需要处理的事务日志为: </p>
+     * <p>待处理的事务日志为: </p>
      * <p>1. 异步处理次数小于最大处理次数.</p>
      * <p>2. 异步处理的事务日志早于异步处理的间隔时间.</p>
      * 
      * @param size 获取日志的数量
      * @param maxDeliveryTryTimes 事务送达的最大尝试次数
      * @param maxDeliveryTryDelayMillis 执行送达事务的延迟毫秒数.
+     * @return 待处理的事务日志集合
      */
     List<TransactionLog> findEligibleTransactionLogs(int size, int maxDeliveryTryTimes, long maxDeliveryTryDelayMillis);
     
@@ -67,6 +68,7 @@ public interface TransactionLogStorage {
      * @param connection 业务数据库连接
      * @param transactionLog 事务日志
      * @param maxDeliveryTryTimes 事务送达的最大尝试次数
+     * @return 是否成功处理事务.
      */
     boolean processData(Connection connection, TransactionLog transactionLog, int maxDeliveryTryTimes);
 }
