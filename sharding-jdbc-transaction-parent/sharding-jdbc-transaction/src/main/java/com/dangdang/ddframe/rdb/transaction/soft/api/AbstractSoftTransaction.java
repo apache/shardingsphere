@@ -59,6 +59,8 @@ public abstract class AbstractSoftTransaction {
     
     /**
      * 结束柔性事务.
+     * 
+     * @throws SQLException SQL异常
      */
     public final void end() throws SQLException {
         if (connection != null) {

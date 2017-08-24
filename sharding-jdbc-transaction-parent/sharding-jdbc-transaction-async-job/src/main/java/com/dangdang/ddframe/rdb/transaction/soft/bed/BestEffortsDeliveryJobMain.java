@@ -34,6 +34,7 @@ public final class BestEffortsDeliveryJobMain {
      * 启动入口.
      * 
      * @param args 启动参数
+     * @throws Exception 异常
      */
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {

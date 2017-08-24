@@ -76,6 +76,7 @@ public class SoftTransactionConfiguration {
      * 
      * @param dataSourceName 数据源名称
      * @return 事务管理器管理的数据库连接
+     * @throws SQLException SQL异常
      */
     public Connection getTargetConnection(final String dataSourceName) throws SQLException {
         if (!(targetDataSource instanceof ShardingDataSource)) {

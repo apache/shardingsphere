@@ -53,6 +53,8 @@ public final class SoftTransactionManager {
     
     /**
      * 初始化事务管理器.
+     * 
+     * @throws SQLException SQL异常
      */
     public void init() throws SQLException {
         EventBusInstance.getInstance().register(new BestEffortsDeliveryListener());

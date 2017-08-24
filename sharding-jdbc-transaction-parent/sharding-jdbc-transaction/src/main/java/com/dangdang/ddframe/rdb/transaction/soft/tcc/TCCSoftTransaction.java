@@ -34,6 +34,7 @@ public final class TCCSoftTransaction extends AbstractSoftTransaction {
      * 开启柔性事务.
      * 
      * @param connection 数据库连接对象
+     * @throws SQLException SQL异常
      */
     public void begin(final Connection connection) throws SQLException {
         beginInternal(connection, SoftTransactionType.TryConfirmCancel);
