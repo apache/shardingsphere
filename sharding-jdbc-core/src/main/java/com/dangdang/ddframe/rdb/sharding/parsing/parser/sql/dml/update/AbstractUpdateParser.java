@@ -18,21 +18,16 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.update;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.ExpressionClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SetItemsClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.DMLStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
-import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
-import lombok.AccessLevel;
-import lombok.Getter;
 
 import java.util.Collections;
 
@@ -47,20 +42,17 @@ public abstract class AbstractUpdateParser implements SQLParser {
     
     private final LexerEngine lexerEngine;
     
-    private final ExpressionClauseParser expressionClauseParser;
-    
     private final TableClauseParser tableClauseParser;
     
-    private final WhereClauseParser whereClauseParser;
+    private final SetItemsClauseParser setItemsClauseParser;
     
-    @Getter(AccessLevel.NONE)
-    private int parametersIndex;
+    private final WhereClauseParser whereClauseParser;
     
     public AbstractUpdateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        expressionClauseParser = new ExpressionClauseParser(lexerEngine);
         tableClauseParser = new TableClauseParser(shardingRule, lexerEngine);
+        setItemsClauseParser = new SetItemsClauseParser(lexerEngine);
         whereClauseParser = new WhereClauseParser(lexerEngine);
     }
     
@@ -73,9 +65,8 @@ public abstract class AbstractUpdateParser implements SQLParser {
         }
         DMLStatement result = new DMLStatement();
         tableClauseParser.parseSingleTable(result);
-        parseSetItems(result);
+        setItemsClauseParser.parse(result);
         lexerEngine.skipUntil(DefaultKeyword.WHERE);
-        result.setParametersIndex(parametersIndex);
         whereClauseParser.parse(shardingRule, result, Collections.<SelectItem>emptyList());
         return result;
     }
@@ -86,39 +77,5 @@ public abstract class AbstractUpdateParser implements SQLParser {
     
     protected Keyword[] getUnsupportedKeywordsBetweenUpdateAndTable() {
         return new Keyword[0];
-    }
-    
-    private void parseSetItems(final DMLStatement updateStatement) {
-        lexerEngine.accept(DefaultKeyword.SET);
-        do {
-            parseSetItem(updateStatement);
-        } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-    }
-    
-    private void parseSetItem(final DMLStatement updateStatement) {
-        parseSetColumn(updateStatement);
-        lexerEngine.skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
-        parseSetValue(updateStatement);
-    }
-    
-    private void parseSetColumn(final DMLStatement updateStatement) {
-        if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
-            lexerEngine.skipParentheses(updateStatement);
-            return;
-        }
-        int beginPosition = lexerEngine.getCurrentToken().getEndPosition();
-        String literals = lexerEngine.getCurrentToken().getLiterals();
-        lexerEngine.nextToken();
-        if (lexerEngine.skipIfEqual(Symbol.DOT)) {
-            if (updateStatement.getTables().getSingleTableName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                updateStatement.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals));
-            }
-            lexerEngine.nextToken();
-        }
-    }
-    
-    private void parseSetValue(final DMLStatement updateStatement) {
-        expressionClauseParser.parse(updateStatement);
-        parametersIndex = updateStatement.getParametersIndex();
     }
 }
