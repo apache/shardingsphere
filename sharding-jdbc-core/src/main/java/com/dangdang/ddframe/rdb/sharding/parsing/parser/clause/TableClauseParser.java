@@ -41,34 +41,20 @@ public class TableClauseParser implements SQLClauseParser {
      * @param sqlStatement SQL语句对象
      */
     public void parseSingleTable(final SQLStatement sqlStatement) {
-        boolean hasParentheses = false;
-        if (lexerEngine.skipIfEqual(Symbol.LEFT_PAREN)) {
-            if (lexerEngine.equalAny(DefaultKeyword.SELECT)) {
-                throw new UnsupportedOperationException("Cannot support subquery");
-            }
-            hasParentheses = true;
-        }
-        Table table;
+        lexerEngine.skipAll(DefaultKeyword.AS);
         final int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         String literals = lexerEngine.getCurrentToken().getLiterals();
         lexerEngine.nextToken();
-        if (lexerEngine.skipIfEqual(Symbol.DOT)) {
-            lexerEngine.nextToken();
-            if (hasParentheses) {
-                lexerEngine.accept(Symbol.RIGHT_PAREN);
-            }
-            table = new Table(SQLUtil.getExactlyValue(literals), aliasClauseParser.parse());
-        } else {
-            if (hasParentheses) {
-                lexerEngine.accept(Symbol.RIGHT_PAREN);
-            }
-            table = new Table(SQLUtil.getExactlyValue(literals), aliasClauseParser.parse());
+        if (lexerEngine.equalAny(Symbol.DOT)) {
+            throw new UnsupportedOperationException("Cannot support SQL for `schema.table`");
         }
+        String tableName = SQLUtil.getExactlyValue(literals);
+        Optional<String> alias = aliasClauseParser.parse();
+        sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
+        sqlStatement.getTables().add(new Table(tableName, alias));
         if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
-        sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
-        sqlStatement.getTables().add(table);
     }
     
     /**
