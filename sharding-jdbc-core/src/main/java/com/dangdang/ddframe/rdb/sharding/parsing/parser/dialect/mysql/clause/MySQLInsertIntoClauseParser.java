@@ -4,16 +4,16 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.IntoClauseParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.InsertIntoClauseParser;
 
 /**
- * MySQL的INTO从句解析器.
+ * MySQL的INSERT INTO从句解析器.
  *
  * @author zhangliang
  */
-public final class MySQLIntoClauseParser extends IntoClauseParser {
+public final class MySQLInsertIntoClauseParser extends InsertIntoClauseParser {
     
-    public MySQLIntoClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public MySQLInsertIntoClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(lexerEngine, new MySQLTableClauseParser(shardingRule, lexerEngine));
     }
     

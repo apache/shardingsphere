@@ -9,12 +9,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert.InsertSta
 import lombok.RequiredArgsConstructor;
 
 /**
- * INTO从句解析器.
+ * INSERT INTO从句解析器.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public class IntoClauseParser implements SQLClauseParser {
+public class InsertIntoClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     

@@ -12,6 +12,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.AbstractInsertCla
 public final class PostgreSQLInsertClauseParserFacade extends AbstractInsertClauseParserFacade {
     
     public PostgreSQLInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new PostgreSQLIntoClauseParser(shardingRule, lexerEngine));
+        super(new PostgreSQLInsertIntoClauseParser(shardingRule, lexerEngine));
     }
 }

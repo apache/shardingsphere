@@ -12,5 +12,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public abstract class AbstractInsertClauseParserFacade {
     
-    private final IntoClauseParser intoClauseParser;
+    private final InsertIntoClauseParser insertIntoClauseParser;
 }

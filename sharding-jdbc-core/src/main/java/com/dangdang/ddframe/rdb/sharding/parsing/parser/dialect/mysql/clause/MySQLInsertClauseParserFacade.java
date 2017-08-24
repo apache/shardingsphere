@@ -12,6 +12,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.AbstractInsertCla
 public final class MySQLInsertClauseParserFacade extends AbstractInsertClauseParserFacade {
     
     public MySQLInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new MySQLIntoClauseParser(shardingRule, lexerEngine));
+        super(new MySQLInsertIntoClauseParser(shardingRule, lexerEngine));
     }
 }

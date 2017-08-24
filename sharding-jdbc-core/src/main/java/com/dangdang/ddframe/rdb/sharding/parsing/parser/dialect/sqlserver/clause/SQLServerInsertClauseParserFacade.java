@@ -12,6 +12,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.AbstractInsertCla
 public final class SQLServerInsertClauseParserFacade extends AbstractInsertClauseParserFacade {
     
     public SQLServerInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new SQLServerIntoClauseParser(shardingRule, lexerEngine));
+        super(new SQLServerInsertIntoClauseParser(shardingRule, lexerEngine));
     }
 }

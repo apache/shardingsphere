@@ -12,6 +12,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.AbstractInsertCla
 public final class OracleInsertClauseParserFacade extends AbstractInsertClauseParserFacade {
     
     public OracleInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new OracleIntoClauseParser(shardingRule, lexerEngine));
+        super(new OracleInsertIntoClauseParser(shardingRule, lexerEngine));
     }
 }
