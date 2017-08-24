@@ -19,21 +19,20 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.AbstractInsertClauseParserFacade;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.ExpressionClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.ExpressionClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.DMLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
@@ -62,9 +61,9 @@ public abstract class AbstractInsertParser implements SQLParser {
     @Getter(AccessLevel.PROTECTED)
     private final LexerEngine lexerEngine;
     
-    private final ExpressionClauseParser expressionClauseParser;
+    private final AbstractInsertClauseParserFacade insertClauseParserFacade;
     
-    private final TableClauseParser tableClauseParser;
+    private final ExpressionClauseParser expressionClauseParser;
     
     private int columnsListLastPosition;
     
@@ -74,18 +73,18 @@ public abstract class AbstractInsertParser implements SQLParser {
     
     private int generateKeyColumnIndex = -1;
     
-    public AbstractInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public AbstractInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final AbstractInsertClauseParserFacade insertClauseParserFacade) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
+        this.insertClauseParserFacade = insertClauseParserFacade;
         expressionClauseParser = new ExpressionClauseParser(lexerEngine);
-        tableClauseParser = new TableClauseParser(shardingRule, lexerEngine);
     }
     
     @Override
     public final DMLStatement parse() {
         lexerEngine.nextToken();
         InsertStatement result = new InsertStatement();
-        parseInto(result);
+        insertClauseParserFacade.getIntoClauseParser().parse(result);
         parseColumns(result);
         if (lexerEngine.equalAny(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot INSERT SELECT");
@@ -104,33 +103,6 @@ public abstract class AbstractInsertParser implements SQLParser {
         }
         appendGenerateKey(result);
         return result;
-    }
-    
-    private void parseInto(final InsertStatement insertStatement) {
-        if (lexerEngine.equalAny(getUnsupportedKeywordsBeforeInto())) {
-            throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
-        }
-        lexerEngine.skipUntil(DefaultKeyword.INTO);
-        lexerEngine.nextToken();
-        tableClauseParser.parseSingleTable(insertStatement);
-        skipBetweenTableAndValues(insertStatement);
-    }
-    
-    protected Keyword[] getUnsupportedKeywordsBeforeInto() {
-        return new Keyword[0];
-    }
-    
-    private void skipBetweenTableAndValues(final InsertStatement insertStatement) {
-        while (lexerEngine.skipIfEqual(getSkippedKeywordsBetweenTableAndValues())) {
-            lexerEngine.nextToken();
-            if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
-                lexerEngine.skipParentheses(insertStatement);
-            }
-        }
-    }
-    
-    protected Keyword[] getSkippedKeywordsBetweenTableAndValues() {
-        return new Keyword[0];
     }
     
     private void parseColumns(final InsertStatement insertStatement) {

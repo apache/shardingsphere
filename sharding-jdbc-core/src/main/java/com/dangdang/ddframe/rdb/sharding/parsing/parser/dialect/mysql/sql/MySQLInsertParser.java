@@ -18,15 +18,16 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLInsertClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIgnoreExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
@@ -44,7 +45,7 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 public final class MySQLInsertParser extends AbstractInsertParser {
     
     public MySQLInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine);
+        super(shardingRule, lexerEngine, new MySQLInsertClauseParserFacade(shardingRule, lexerEngine));
     }
     
     @Override
@@ -79,11 +80,6 @@ public final class MySQLInsertParser extends AbstractInsertParser {
                 getLexerEngine().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }
         } while (getLexerEngine().skipIfEqual(Symbol.COMMA));
-    }
-    
-    @Override
-    protected Keyword[] getSkippedKeywordsBetweenTableAndValues() {
-        return new Keyword[] {MySQLKeyword.PARTITION};
     }
     
     @Override
