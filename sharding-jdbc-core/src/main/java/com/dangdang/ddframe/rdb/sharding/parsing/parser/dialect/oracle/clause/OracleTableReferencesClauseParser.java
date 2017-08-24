@@ -6,7 +6,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyw
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferencesClauseParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 
 /**
  * Oracle 表从句解析器.
@@ -20,52 +21,45 @@ public final class OracleTableReferencesClauseParser extends TableReferencesClau
     }
     
     @Override
-    public void parseTableFactor(final SelectStatement selectStatement) {
+    protected void parseTableSource(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
         if (getLexerEngine().skipIfEqual(OracleKeyword.ONLY)) {
             getLexerEngine().skipIfEqual(Symbol.LEFT_PAREN);
-            parseTableFactorInternal(selectStatement);
+            parseQueryTableExpression(sqlStatement, isSingleTableOnly);
             getLexerEngine().skipIfEqual(Symbol.RIGHT_PAREN);
-            skipFlashbackQueryClause();
+            parseFlashbackQueryClause();
         } else {
-            parseTableFactorInternal(selectStatement);
-            skipPivotClause(selectStatement);
-            skipFlashbackQueryClause();
+            parseQueryTableExpression(sqlStatement, isSingleTableOnly);
+            parsePivotClause(sqlStatement);
+            parseFlashbackQueryClause();
         }
     }
     
-    @Override
-    protected void afterParseTableFactor(final SelectStatement selectStatement) {
-        parseSample(selectStatement);
-        skipPartition(selectStatement);
+    private void parseQueryTableExpression(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
+        parseTableFactor(sqlStatement, isSingleTableOnly);
+        parseDbLink();
+        parsePartitionExtensionClause();
+        parseSampleClause();
     }
     
-    private void parseSample(final SelectStatement selectStatement) {
-        if (!getLexerEngine().skipIfEqual(OracleKeyword.SAMPLE)) {
-            return;
-        }
-        getLexerEngine().skipIfEqual(OracleKeyword.BLOCK);
-        getLexerEngine().skipParentheses(selectStatement);
-        if (getLexerEngine().skipIfEqual(OracleKeyword.SEED)) {
-            getLexerEngine().skipParentheses(selectStatement);
+    private void parseDbLink() {
+        if (getLexerEngine().equalAny(Symbol.AT)) {
+            throw new SQLParsingUnsupportedException(getLexerEngine().getCurrentToken().getType());
         }
     }
     
-    private void skipPartition(final SelectStatement selectStatement) {
-        skipPartition(selectStatement, OracleKeyword.PARTITION);
-        skipPartition(selectStatement, OracleKeyword.SUBPARTITION);
-    }
-    
-    private void skipPartition(final SelectStatement selectStatement, final OracleKeyword keyword) {
-        if (!getLexerEngine().skipIfEqual(keyword)) {
-            return;
-        }
-        getLexerEngine().skipParentheses(selectStatement);
-        if (getLexerEngine().skipIfEqual(DefaultKeyword.FOR)) {
-            getLexerEngine().skipParentheses(selectStatement);
+    private void parsePartitionExtensionClause() {
+        if (getLexerEngine().equalAny(OracleKeyword.PARTITION, OracleKeyword.SUBPARTITION)) {
+            throw new SQLParsingUnsupportedException(getLexerEngine().getCurrentToken().getType());
         }
     }
     
-    private void skipFlashbackQueryClause() {
+    private void parseSampleClause() {
+        if (getLexerEngine().equalAny(OracleKeyword.SAMPLE)) {
+            throw new SQLParsingUnsupportedException(getLexerEngine().getCurrentToken().getType());
+        }
+    }
+    
+    private void parseFlashbackQueryClause() {
         if (isFlashbackQueryClauseForVersions() || isFlashbackQueryClauseForAs()) {
             throw new UnsupportedOperationException("Cannot support Flashback Query");
         }
@@ -80,17 +74,17 @@ public final class OracleTableReferencesClauseParser extends TableReferencesClau
                 && (getLexerEngine().skipIfEqual(OracleKeyword.SCN) || getLexerEngine().skipIfEqual(OracleKeyword.TIMESTAMP));
     }
     
-    private void skipPivotClause(final SelectStatement selectStatement) {
+    private void parsePivotClause(final SQLStatement sqlStatement) {
         if (getLexerEngine().skipIfEqual(OracleKeyword.PIVOT)) {
             getLexerEngine().skipIfEqual(OracleKeyword.XML);
-            getLexerEngine().skipParentheses(selectStatement);
+            getLexerEngine().skipParentheses(sqlStatement);
         } else if (getLexerEngine().skipIfEqual(OracleKeyword.UNPIVOT)) {
             if (getLexerEngine().skipIfEqual(OracleKeyword.INCLUDE)) {
                 getLexerEngine().accept(OracleKeyword.NULLS);
             } else if (getLexerEngine().skipIfEqual(OracleKeyword.EXCLUDE)) {
                 getLexerEngine().accept(OracleKeyword.NULLS);
             }
-            getLexerEngine().skipParentheses(selectStatement);
+            getLexerEngine().skipParentheses(sqlStatement);
         }
     }
 }

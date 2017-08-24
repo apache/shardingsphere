@@ -60,7 +60,7 @@ public abstract class AbstractSelectParser implements SQLParser {
     
     private final LexerEngine lexerEngine;
     
-    private final AbstractSelectClauseParserFacade abstractSelectClauseParserFacade;
+    private final AbstractSelectClauseParserFacade selectClauseParserFacade;
     
     private final List<SelectItem> items = new LinkedList<>();
     
@@ -86,11 +86,11 @@ public abstract class AbstractSelectParser implements SQLParser {
     protected abstract void parseInternal(final SelectStatement selectStatement);
     
     protected final void parseDistinct() {
-        abstractSelectClauseParserFacade.getDistinctClauseParser().parse();
+        selectClauseParserFacade.getDistinctClauseParser().parse();
     }
     
     protected final void parseSelectList(final SelectStatement selectStatement, final List<SelectItem> items) {
-        abstractSelectClauseParserFacade.getSelectListClauseParser().parse(selectStatement, items);
+        selectClauseParserFacade.getSelectListClauseParser().parse(selectStatement, items);
     }
     
     protected final void parseFrom(final SelectStatement selectStatement) {
@@ -109,27 +109,27 @@ public abstract class AbstractSelectParser implements SQLParser {
                 return;
             }
         }
-        abstractSelectClauseParserFacade.getTableReferencesClauseParser().parseTableFactor(selectStatement);
+        selectClauseParserFacade.getTableReferencesClauseParser().parse(selectStatement, false);
     }
     
     protected final void parseWhere(final ShardingRule shardingRule, final SelectStatement selectStatement, final List<SelectItem> items) {
-        abstractSelectClauseParserFacade.getWhereClauseParser().parse(shardingRule, selectStatement, items);
+        selectClauseParserFacade.getWhereClauseParser().parse(shardingRule, selectStatement, items);
     }
     
     protected final void parseGroupBy(final SelectStatement selectStatement) {
-        abstractSelectClauseParserFacade.getGroupByClauseParser().parse(selectStatement);
+        selectClauseParserFacade.getGroupByClauseParser().parse(selectStatement);
     }
     
     protected final void parseHaving() {
-        abstractSelectClauseParserFacade.getHavingClauseParser().parse();
+        selectClauseParserFacade.getHavingClauseParser().parse();
     }
     
     protected final void parseOrderBy(final SelectStatement selectStatement) {
-        abstractSelectClauseParserFacade.getOrderByClauseParser().parse(selectStatement);
+        selectClauseParserFacade.getOrderByClauseParser().parse(selectStatement);
     }
     
     protected final void parseSelectRest() {
-        abstractSelectClauseParserFacade.getSelectRestClauseParser().parse();
+        selectClauseParserFacade.getSelectRestClauseParser().parse();
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {

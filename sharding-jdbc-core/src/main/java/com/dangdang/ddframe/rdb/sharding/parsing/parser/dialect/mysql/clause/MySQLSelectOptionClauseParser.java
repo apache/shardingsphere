@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +36,7 @@ public final class MySQLSelectOptionClauseParser implements SQLClauseParser {
      * 解析Option.
      */
     public void parse() {
-        lexerEngine.skipAll(MySQLKeyword.HIGH_PRIORITY, DefaultKeyword.STRAIGHT_JOIN, 
+        lexerEngine.skipAll(MySQLKeyword.HIGH_PRIORITY, MySQLKeyword.STRAIGHT_JOIN, 
                 MySQLKeyword.SQL_SMALL_RESULT, MySQLKeyword.SQL_BIG_RESULT, MySQLKeyword.SQL_BUFFER_RESULT, MySQLKeyword.SQL_CACHE, MySQLKeyword.SQL_NO_CACHE, MySQLKeyword.SQL_CALC_FOUND_ROWS);
     }
 }

@@ -3,14 +3,18 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.clause;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 表从句解析器.
@@ -36,12 +40,22 @@ public class TableReferencesClauseParser implements SQLClauseParser {
     }
     
     /**
-     * 解析单表.
+     * 解析表.
      *
      * @param sqlStatement SQL语句对象
+     * @param isSingleTableOnly 是否仅解析单表
      */
-    public void parseSingleTable(final SQLStatement sqlStatement) {
-        lexerEngine.skipAll(DefaultKeyword.AS);
+    public final void parse(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
+        do {
+            parseTableSource(sqlStatement, isSingleTableOnly);
+        } while (lexerEngine.skipIfEqual(Symbol.COMMA));
+    }
+    
+    protected void parseTableSource(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
+        parseTableFactor(sqlStatement, isSingleTableOnly);
+    }
+    
+    protected final void parseTableFactor(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
         final int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         String literals = lexerEngine.getCurrentToken().getLiterals();
         lexerEngine.nextToken();
@@ -50,86 +64,52 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         }
         String tableName = SQLUtil.getExactlyValue(literals);
         Optional<String> alias = aliasClauseParser.parse();
-        sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
-        sqlStatement.getTables().add(new Table(tableName, alias));
-        if (skipJoin()) {
+        if (isSingleTableOnly || shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {
+            sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
+            sqlStatement.getTables().add(new Table(tableName, alias));
+        }
+        parseJoinTable(sqlStatement);
+        if (isSingleTableOnly && !sqlStatement.getTables().isSingleTable()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
     }
     
-    /**
-     * 解析表.
-     * 
-     * @param selectStatement Select SQL语句对象
-     */
-    public void parseTableFactor(final SelectStatement selectStatement) {
-        parseTableFactorInternal(selectStatement);
-    }
-    
-    protected final void parseTableFactorInternal(final SelectStatement selectStatement) {
-        lexerEngine.skipAll(DefaultKeyword.AS);
-        final int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-        String literals = lexerEngine.getCurrentToken().getLiterals();
-        lexerEngine.nextToken();
-        if (lexerEngine.equalAny(Symbol.DOT)) {
-            throw new UnsupportedOperationException("Cannot support SQL for `schema.table`");
-        }
-        String tableName = SQLUtil.getExactlyValue(literals);
-        Optional<String> alias = aliasClauseParser.parse();
-        if (shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {
-            selectStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
-            selectStatement.getTables().add(new Table(tableName, alias));
-        }
-        parseJoinTable(selectStatement);
-        afterParseTableFactor(selectStatement);
-    }
-    
-    private void parseJoinTable(final SelectStatement selectStatement) {
-        beforeParseJoinTable(selectStatement);
-        if (skipJoin()) {
+    private void parseJoinTable(final SQLStatement sqlStatement) {
+        while (parseJoinType()) {
             if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
                 throw new UnsupportedOperationException("Cannot support sub query for join table.");
             }
-            parseTableFactor(selectStatement);
-            parseJoinTable(selectStatement);
-            if (lexerEngine.skipIfEqual(DefaultKeyword.ON)) {
-                do {
-                    expressionClauseParser.parse(selectStatement);
-                    lexerEngine.accept(Symbol.EQ);
-                    expressionClauseParser.parse(selectStatement);
-                } while (lexerEngine.skipIfEqual(DefaultKeyword.AND));
-            } else if (lexerEngine.skipIfEqual(DefaultKeyword.USING)) {
-                lexerEngine.skipParentheses(selectStatement);
-            }
-            parseJoinTable(selectStatement);
+            parseTableFactor(sqlStatement, false);
+            parseJoinCondition(sqlStatement);
         }
     }
     
-    protected void beforeParseJoinTable(final SelectStatement selectStatement) {
-    }
-    
-    private boolean skipJoin() {
-        if (lexerEngine.skipIfEqual(DefaultKeyword.LEFT, DefaultKeyword.RIGHT, DefaultKeyword.FULL)) {
-            lexerEngine.skipIfEqual(DefaultKeyword.OUTER);
-            lexerEngine.accept(DefaultKeyword.JOIN);
-            return true;
-        } else if (lexerEngine.skipIfEqual(DefaultKeyword.INNER)) {
-            lexerEngine.accept(DefaultKeyword.JOIN);
-            return true;
-        } else if (lexerEngine.skipIfEqual(DefaultKeyword.JOIN, Symbol.COMMA, DefaultKeyword.STRAIGHT_JOIN)) {
-            return true;
-        } else if (lexerEngine.skipIfEqual(DefaultKeyword.CROSS)) {
-            if (lexerEngine.skipIfEqual(DefaultKeyword.JOIN, DefaultKeyword.APPLY)) {
-                return true;
-            }
-        } else if (lexerEngine.skipIfEqual(DefaultKeyword.OUTER)) {
-            if (lexerEngine.skipIfEqual(DefaultKeyword.APPLY)) {
-                return true;
-            }
+    private boolean parseJoinType() {
+        List<Keyword> joinTypeKeywords = new LinkedList<>();
+        joinTypeKeywords.addAll(Arrays.asList(
+                DefaultKeyword.INNER, DefaultKeyword.OUTER, DefaultKeyword.LEFT, DefaultKeyword.RIGHT, DefaultKeyword.FULL, DefaultKeyword.CROSS, DefaultKeyword.NATURAL, DefaultKeyword.JOIN));
+        joinTypeKeywords.addAll(Arrays.asList(getKeywordsForJoinType()));
+        Keyword[] joinTypeKeywordArrays = joinTypeKeywords.toArray(new Keyword[joinTypeKeywords.size()]);
+        if (!lexerEngine.equalAny(joinTypeKeywordArrays)) {
+            return false;
         }
-        return false;
+        lexerEngine.skipAll(joinTypeKeywordArrays);
+        return true;
     }
     
-    protected void afterParseTableFactor(final SelectStatement selectStatement) {
+    protected Keyword[] getKeywordsForJoinType() {
+        return new Keyword[0];
+    }
+    
+    private void parseJoinCondition(final SQLStatement sqlStatement) {
+        if (lexerEngine.skipIfEqual(DefaultKeyword.ON)) {
+            do {
+                expressionClauseParser.parse(sqlStatement);
+                lexerEngine.accept(Symbol.EQ);
+                expressionClauseParser.parse(sqlStatement);
+            } while (lexerEngine.skipIfEqual(DefaultKeyword.AND));
+        } else if (lexerEngine.skipIfEqual(DefaultKeyword.USING)) {
+            lexerEngine.skipParentheses(sqlStatement);
+        }
     }
 }

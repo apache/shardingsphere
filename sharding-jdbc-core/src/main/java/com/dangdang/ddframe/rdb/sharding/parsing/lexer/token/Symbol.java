@@ -70,7 +70,7 @@ public enum Symbol implements TokenType {
     DOUBLE_BAR("||"),
     DOUBLE_LT("<<"),
     DOUBLE_GT(">>"),
-    MONKEYS_AT("@"),
+    AT("@"),
     POUND("#");
     
     private static Map<String, Symbol> symbols = new HashMap<>(128);

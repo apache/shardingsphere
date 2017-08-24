@@ -136,8 +136,6 @@ public enum DefaultKeyword implements Keyword {
     JOIN,
     USE,
     USING,
-    STRAIGHT_JOIN,
-    APPLY,
     NATURAL,
     WHERE,
     ORDER,

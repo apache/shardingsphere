@@ -43,5 +43,10 @@ public enum SQLServerKeyword implements Keyword {
     XML, 
     XSINIL, 
     XMLSCHEMA, 
-    TYP
+    TYP,
+    TABLESAMPLE,
+    APPLY,
+    REDUCE,
+    REPLICATE,
+    REDISTRIBUTE
 }

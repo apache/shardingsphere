@@ -31,7 +31,7 @@ public class InsertIntoClauseParser implements SQLClauseParser {
         }
         lexerEngine.skipUntil(DefaultKeyword.INTO);
         lexerEngine.nextToken();
-        tableReferencesClauseParser.parseSingleTable(insertStatement);
+        tableReferencesClauseParser.parse(insertStatement, true);
         skipBetweenTableAndValues(insertStatement);
     }
     

@@ -57,7 +57,7 @@ public abstract class AbstractCreateParser implements SQLParser {
         }
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
         DDLStatement result = new DDLStatement();
-        tableReferencesClauseParser.parseSingleTable(result);
+        tableReferencesClauseParser.parse(result, true);
         return result;
     }
     
