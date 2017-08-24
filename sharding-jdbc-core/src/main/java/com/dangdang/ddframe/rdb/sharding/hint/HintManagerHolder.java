@@ -25,7 +25,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * 线索分片管理器的本地线程持有者.
+ * Hint manager holder.
+ * 
+ * <p>Use thread-local to manage hint.</p>
  *
  * @author zhangliang
  */
@@ -39,9 +41,9 @@ public final class HintManagerHolder {
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     /**
-     * 设置线索分片管理器.
+     * Set hint manager.
      *
-     * @param hintManager 线索分片管理器
+     * @param hintManager hint manager instance
      */
     public static void setHintManager(final HintManager hintManager) {
         Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "HintManagerHolder has previous value, please clear first.");
@@ -49,53 +51,53 @@ public final class HintManagerHolder {
     }
     
     /**
-     * 判断当前线程是否使用线索分片.
-     * @return 当前线程是否使用线索分片
+     * Adjust use sharding hint in current thread.
+     * @return use sharding hint in current thread or not
      */
     public static boolean isUseShardingHint() {
         return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isShardingHint();
     }
     
     /**
-     * 获取分库分片键值.
+     * Get database sharding value.
      * 
-     * @param shardingKey 分片键
-     * @return 分库分片键值
+     * @param shardingKey sharding key
+     * @return database sharding value
      */
     public static Optional<ShardingValue<?>> getDatabaseShardingValue(final ShardingKey shardingKey) {
         return isUseShardingHint() ? Optional.<ShardingValue<?>>fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(shardingKey)) : Optional.<ShardingValue<?>>absent();
     }
     
     /**
-     * 获取分表分片键值.
+     * Get table sharding value.
      *
-     * @param shardingKey 分片键
-     * @return 分表分片键值
+     * @param shardingKey sharding key
+     * @return table sharding value
      */
     public static Optional<ShardingValue<?>> getTableShardingValue(final ShardingKey shardingKey) {
         return isUseShardingHint() ? Optional.<ShardingValue<?>>fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(shardingKey)) : Optional.<ShardingValue<?>>absent();
     }
     
     /**
-     * 判断是否数据库操作只路由至主库.
+     * Adjust is force route to master database only or not.
      * 
-     * @return 是否数据库操作只路由至主库
+     * @return is force route to master database only or not
      */
     public static boolean isMasterRouteOnly() {
         return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isMasterRouteOnly();
     }
     
     /**
-     * 判断是否当前只分库.
+     * Adjust database sharding only.
      * 
-     * @return 是否当前只分库.
+     * @return database sharding only or not
      */
     public static boolean isDatabaseShardingOnly() {
         return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isDatabaseShardingOnly();
     }
     
     /**
-     * 清理线索分片管理器的本地线程持有者.
+     * Clear hint manager for current thread-local.
      */
     public static void clear() {
         HINT_MANAGER_HOLDER.remove();

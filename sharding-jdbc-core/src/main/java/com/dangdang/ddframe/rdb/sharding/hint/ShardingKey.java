@@ -22,17 +22,23 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 分片键.
+ * Sharding key.
  *
  * @author zhangliang
  */
-// TODO 重构到合适的包
+// TODO move to a suitable package
 @RequiredArgsConstructor
 @EqualsAndHashCode
 public final class ShardingKey {
     
+    /**
+     * Logic table name.
+     */
     private final String logicTable;
     
+    /**
+     * Sharding column name.
+     */
     @Getter
     private final String shardingColumn;
 }
