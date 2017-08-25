@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 /**
- * 比较聚合单元.
+ * Comparable aggregation unit.
  * 
  * @author gaohongtao
  */

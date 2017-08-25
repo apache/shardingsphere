@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * 内存分组归并结果集接口.
+ * Memory merger for group by.
  *
  * @author zhangliang
  */

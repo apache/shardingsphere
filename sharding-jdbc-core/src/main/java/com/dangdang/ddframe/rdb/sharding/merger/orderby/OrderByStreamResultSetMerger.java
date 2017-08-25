@@ -29,7 +29,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
- * 排序归并结果集接口.
+ * Stream merger for order by.
  *
  * @author zhangliang
  */

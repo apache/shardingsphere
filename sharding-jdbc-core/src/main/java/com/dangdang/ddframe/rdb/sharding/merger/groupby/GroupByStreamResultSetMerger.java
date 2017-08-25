@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * 流式分组归并结果集接口.
+ * Stream merger for group by.
  *
  * @author zhangliang
  */

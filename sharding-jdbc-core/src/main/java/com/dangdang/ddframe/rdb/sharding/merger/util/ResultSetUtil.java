@@ -28,7 +28,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 /**
- * 结果集工具类.
+ * ResultSet utility class.
  * 
  * @author gaohongtao
  */
@@ -36,11 +36,11 @@ import java.util.Date;
 public final class ResultSetUtil {
     
     /**
-     * 根据返回值类型返回特定类型的结果.
+     * Convert value via expected class type.
      * 
-     * @param value 原始结果
-     * @param convertType 返回值类型
-     * @return 特定类型的返回结果
+     * @param value original value
+     * @param convertType expected class type
+     * @return converted value
      */
     public static Object convertValue(final Object value, final Class<?> convertType) {
         if (null == value) {
@@ -124,12 +124,12 @@ public final class ResultSetUtil {
     }
     
     /**
-     * 比较大小.
+     * Compare two object with order type.
      * 
-     * @param thisValue 当前值
-     * @param otherValue 待比较的值
-     * @param orderType 排序类型
-     * @param nullOrderType 空值排序类型
+     * @param thisValue this value
+     * @param otherValue other value
+     * @param orderType order type
+     * @param nullOrderType null value order type
      * @return 比较结果
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })

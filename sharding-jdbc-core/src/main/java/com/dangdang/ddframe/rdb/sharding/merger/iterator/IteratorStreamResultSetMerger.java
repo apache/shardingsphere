@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * 迭代归并结果集接口.
+ * Stream merger for iterator.
  *
  * @author zhangliang
  */

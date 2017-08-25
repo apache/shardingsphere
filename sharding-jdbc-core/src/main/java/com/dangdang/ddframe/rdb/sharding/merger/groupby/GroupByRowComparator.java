@@ -28,7 +28,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * 内存分组内存数据行比较器.
+ * Group by row comparator.
  *
  * @author zhangliang
  */

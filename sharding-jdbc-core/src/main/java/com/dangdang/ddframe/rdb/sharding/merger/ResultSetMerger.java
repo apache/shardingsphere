@@ -22,79 +22,79 @@ import java.sql.SQLException;
 import java.util.Calendar;
 
 /**
- * 归并结果集接口.
+ * ResultSet merger interface.
  *
  * @author zhangliang
  */
 public interface ResultSetMerger {
     
     /**
-     * 遍历下一个结果数据.
+     * iterate next data.
      * 
-     * @return 是否有下一个结果数据
-     * @throws SQLException SQL异常
+     * @return has next data
+     * @throws SQLException SQL Exception
      */
     boolean next()throws SQLException;
     
     /**
-     * 获取值.
+     * Get data value.
      *
-     * @param columnIndex 列索引
-     * @param type 值类型
-     * @return 值
-     * @throws SQLException SQL异常
+     * @param columnIndex column index
+     * @param type class type of data value
+     * @return data value
+     * @throws SQLException SQL Exception
      */
     Object getValue(final int columnIndex, final Class<?> type) throws SQLException;
     
     /**
-     * 获取值.
+     * Get data value.
      *
-     * @param columnLabel 列标签
-     * @param type 值类型
-     * @return 值
-     * @throws SQLException SQL异常
+     * @param columnLabel column label
+     * @param type class type of data value
+     * @return data value
+     * @throws SQLException SQL Exception
      */
     Object getValue(final String columnLabel, final Class<?> type) throws SQLException;
     
     /**
-     * 获取值.
+     * Get calendar value.
      *
-     * @param columnIndex 列索引
-     * @param type 值类型
-     * @param calendar 日期
-     * @return 值
-     * @throws SQLException SQL异常
+     * @param columnIndex column index
+     * @param type class type of data value
+     * @param calendar calendar
+     * @return calendar value
+     * @throws SQLException SQL Exception
      */
     Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException;
     
     /**
-     * 获取值.
+     * Get calendar value.
      *
-     * @param columnLabel 列标签
-     * @param type 值类型
-     * @param calendar 日期
-     * @return 值
-     * @throws SQLException SQL异常
+     * @param columnLabel column label
+     * @param type class type of data value
+     * @param calendar calendar
+     * @return calendar value
+     * @throws SQLException SQL Exception
      */
     Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException;
     
     /**
-     * 获取值.
+     * Get InputStream.
      *
-     * @param columnIndex 列索引
-     * @param type 类型
-     * @return 值
-     * @throws SQLException SQL异常
+     * @param columnIndex column index
+     * @param type class type of data value
+     * @return InputStream
+     * @throws SQLException SQL Exception
      */
     InputStream getInputStream(final int columnIndex, final String type) throws SQLException;
     
     /**
-     * 获取值.
+     * Get InputStream.
      *
-     * @param columnLabel 列标签
-     * @param type 类型
-     * @return 值
-     * @throws SQLException SQL异常
+     * @param columnLabel column label
+     * @param type class type of data value
+     * @return InputStream
+     * @throws SQLException SQL Exception
      */
     InputStream getInputStream(final String columnLabel, final String type) throws SQLException;
 }

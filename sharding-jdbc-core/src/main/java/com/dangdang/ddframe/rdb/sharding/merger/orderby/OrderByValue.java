@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 排序值对象.
+ * Order by value.
  * 
  * @author zhangliang
  */
@@ -45,10 +45,10 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     private List<Comparable<?>> orderValues;
     
     /**
-     * 遍历下一个结果集游标.
-     * 
-     * @return 是否有下一个结果集
-     * @throws SQLException SQL异常
+     * iterate next data.
+     *
+     * @return has next data
+     * @throws SQLException SQL Exception
      */
     public boolean next() throws SQLException {
         boolean result = resultSet.next();

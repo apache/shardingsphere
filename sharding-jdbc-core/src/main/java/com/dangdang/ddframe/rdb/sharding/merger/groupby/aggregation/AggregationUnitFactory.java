@@ -22,13 +22,19 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 聚合函数结果集归并单元工厂.
+ * Aggregation unit factory.
  * 
  * @author gaohongtao
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AggregationUnitFactory {
     
+    /**
+     * Create aggregation unit instance.
+     * 
+     * @param type aggregation function type
+     * @return aggregation unit instance
+     */
     public static AggregationUnit create(final AggregationType type) {
         switch (type) {
             case MAX:

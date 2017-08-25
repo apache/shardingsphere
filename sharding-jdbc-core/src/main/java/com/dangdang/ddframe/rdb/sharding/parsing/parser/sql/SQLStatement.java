@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import java.util.List;
 
 /**
- * SQL语句对象.
+ * SQL statement.
  *
  * @author zhangliang
  */

@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * 分片结果集归并引擎.
+ * ResultSet merge engine.
  *
  * @author zhangliang
  */
@@ -61,10 +61,10 @@ public final class MergeEngine {
     }
     
     /**
-     * 合并结果集.
+     * Merge result sets.
      *
-     * @return 归并完毕后的结果集
-     * @throws SQLException SQL异常
+     * @return merged result set.
+     * @throws SQLException SQL exception
      */
     public ResultSetMerger merge() throws SQLException {
         selectStatement.setIndexForItems(columnLabelIndexMap);

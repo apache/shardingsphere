@@ -20,23 +20,23 @@ package com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation;
 import java.util.List;
 
 /**
- * 归并计算单元接口.
+ * Aggregation unit interface.
  * 
  * @author gaohongtao
  */
 public interface AggregationUnit {
     
     /**
-     * 归并聚合值.
+     * merge aggregation values.
      * 
-     * @param values 聚合数值
+     * @param values aggregation values
      */
     void merge(List<Comparable<?>> values);
     
     /**
-     * 获取计算结果.
+     * Get aggregation result.
      * 
-     * @return 计算结果
+     * @return aggregation result
      */
     Comparable<?> getResult();
 }

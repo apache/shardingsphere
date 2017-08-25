@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 分组值对象.
+ * Group by value.
  * 
  * @author zhangliang
  */

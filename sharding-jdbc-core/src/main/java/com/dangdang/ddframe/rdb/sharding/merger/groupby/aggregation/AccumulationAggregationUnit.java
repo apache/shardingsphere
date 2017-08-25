@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 累加聚合单元.
+ * Accumulation aggregation unit.
  * 
  * @author zhangliang
  */
