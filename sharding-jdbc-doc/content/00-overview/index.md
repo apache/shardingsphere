@@ -81,8 +81,6 @@ Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功�
 
 ## [佰昌科技](http://www.sdbaichang.com/)
 
-## [堡直播](http://www.qbaolive.com/)
-
 ## [当当](http://www.dangdang.com/)
 
 ## [东方车联](http://www.dongfang789.com/)
