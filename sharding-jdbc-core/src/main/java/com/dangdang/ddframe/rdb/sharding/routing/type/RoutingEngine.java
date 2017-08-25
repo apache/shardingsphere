@@ -1,16 +1,16 @@
 package com.dangdang.ddframe.rdb.sharding.routing.type;
 
 /**
- * 路由引擎接口.
+ * Routing engine interface.
  *
  * @author zhangliang
  */
 public interface RoutingEngine {
     
     /**
-     * 路由.
+     * Route.
      *
-     * @return 路由结果
+     * @return routing result
      */
     RoutingResult route();
 }

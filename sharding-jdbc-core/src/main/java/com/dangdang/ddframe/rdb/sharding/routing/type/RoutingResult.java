@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.routing.type;
 import lombok.Getter;
 
 /**
- *  路由结果.
+ *  Routing result.
  * 
  * @author zhangliang
  */
@@ -30,9 +30,9 @@ public class RoutingResult {
     private final TableUnits tableUnits = new TableUnits();
     
     /**
-     * 判断是否为单库表路由.
+     * Adjust is route for single database and table only or not.
      *
-     * @return 是否为单库表路由
+     * @return is route for single database and table only or not
      */
     public boolean isSingleRouting() {
         return 1 == tableUnits.getTableUnits().size();

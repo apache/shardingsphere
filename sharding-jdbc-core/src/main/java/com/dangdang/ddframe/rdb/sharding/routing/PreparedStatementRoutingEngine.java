@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.routing.router.SQLRouterFactory;
 import java.util.List;
 
 /**
- * 预解析的SQL路由器.
+ * PreparedStatement routing engine.
  * 
  * @author zhangliang
  */
@@ -43,11 +43,12 @@ public final class PreparedStatementRoutingEngine {
     }
     
     /**
-     * SQL路由.
-     * 当第一次路由时进行SQL解析,之后的路由复用第一次的解析结果.
+     * SQL route.
      * 
-     * @param parameters SQL中的参数
-     * @return 路由结果
+     * <p>First routing time will parse SQL, after second time will reuse first parsed result.</p>
+     * 
+     * @param parameters parameters of SQL placeholder
+     * @return route result
      */
     public SQLRouteResult route(final List<Object> parameters) {
         if (null == sqlStatement) {

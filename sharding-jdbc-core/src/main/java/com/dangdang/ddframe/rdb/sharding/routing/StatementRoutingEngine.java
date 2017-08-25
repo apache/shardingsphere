@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.routing.router.SQLRouterFactory;
 import java.util.Collections;
 
 /**
- * SQL路由器.
+ * Statement routing engine.
  * 
  * @author zhangiang
  */
@@ -38,10 +38,10 @@ public final class StatementRoutingEngine {
     }
     
     /**
-     * SQL路由.
+     * SQL route.
      *
-     * @param logicSQL 逻辑SQL
-     * @return 路由结果
+     * @param logicSQL logic SQL
+     * @return route result
      */
     public SQLRouteResult route(final String logicSQL) {
         SQLStatement sqlStatement = sqlRouter.parse(logicSQL, 0);

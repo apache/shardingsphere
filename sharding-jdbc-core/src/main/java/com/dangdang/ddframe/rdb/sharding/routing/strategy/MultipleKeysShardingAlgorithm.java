@@ -22,18 +22,18 @@ import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import java.util.Collection;
 
 /**
- * 多片键分片法接口.
+ * Multiple keys sharding algorithm.
  * 
  * @author zhangliang
  */
 public interface MultipleKeysShardingAlgorithm extends ShardingAlgorithm {
     
     /**
-     * 根据分片值计算分片结果名称集合.
+     * Calculate and do sharding.
      * 
-     * @param availableTargetNames 所有的可用目标名称集合, 一般是数据源或表名称
-     * @param shardingValues 分片值集合
-     * @return 分片后指向的目标名称集合, 一般是数据源或表名称
+     * @param availableTargetNames available data sources or tables's names
+     * @param shardingValues sharding values
+     * @return sharding results for data sources or tables's names
      */
     Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue<?>> shardingValues);
 }

@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * 基于数据库提示的路由引擎.
+ * Database hint only routing engine.
  * 
  * @author gaohongtao
  * @author zhangliang

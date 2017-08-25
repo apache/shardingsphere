@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.TreeSet;
 
 /**
- * 分片策略.
+ * Sharding strategy.
  * 
  * @author zhangliang
  */
@@ -48,11 +48,11 @@ public class ShardingStrategy {
     }
     
     /**
-     * 计算静态分片.
+     * Calculate static sharding info.
      *
-     * @param availableTargetNames 所有的可用分片资源集合
-     * @param shardingValues 分片值集合
-     * @return 分库后指向的数据源名称集合
+     * @param availableTargetNames available data sources or tables's names
+     * @param shardingValues sharding values
+     * @return sharding results for data sources or tables's names
      */
     public Collection<String> doStaticSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
@@ -65,10 +65,10 @@ public class ShardingStrategy {
     }
     
     /**
-     * 计算动态分片.
+     * Calculate dynamic sharding info.
      *
-     * @param shardingValues 分片值集合
-     * @return 分库后指向的分片资源集合
+     * @param shardingValues sharding values
+     * @return sharding results for data sources or tables's names
      */
     public Collection<String> doDynamicSharding(final Collection<ShardingValue<?>> shardingValues) {
         Preconditions.checkState(!shardingValues.isEmpty(), "Dynamic table should contain sharding value.");

@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * SQL最小执行单元.
+ * SQL execution unit.
  * 
  * @author gaohongtao
  */

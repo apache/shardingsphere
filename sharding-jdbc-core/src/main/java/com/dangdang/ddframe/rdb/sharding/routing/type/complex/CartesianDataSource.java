@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 笛卡尔积路由数据源.
+ * Cartesian data source.
  * 
  * @author zhangliang
  */

@@ -25,7 +25,7 @@ import lombok.ToString;
 import java.util.List;
 
 /**
- * 笛卡尔积表路由组.
+ * Cartesian table reference.
  * 
  * @author zhangliang
  */

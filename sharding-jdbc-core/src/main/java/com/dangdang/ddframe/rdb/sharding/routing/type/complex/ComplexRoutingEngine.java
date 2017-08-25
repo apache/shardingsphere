@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 /**
- * 混合多库表路由引擎.
+ * Complex routing engine.
  * 
  * @author gaohongtao
  * @author zhangliang

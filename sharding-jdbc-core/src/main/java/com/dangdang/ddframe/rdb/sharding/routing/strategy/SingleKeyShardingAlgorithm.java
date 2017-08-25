@@ -17,43 +17,43 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.strategy;
 
-import java.util.Collection;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 
+import java.util.Collection;
+
 /**
- * 单片键分片法接口.
+ * Single key sharding algorithm.
  * 
  * @author zhangliang
  * 
- * @param <T> 片键类型
+ * @param <T> class type of sharding value
  */
 public interface SingleKeyShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
     
     /**
-     * 根据分片值和SQL的=运算符计算分片结果名称集合.
+     * Sharding with equal operator.
      * 
-     * @param availableTargetNames 所有的可用目标名称集合, 一般是数据源或表名称
-     * @param shardingValue 分片值
-     * @return 分片后指向的目标名称, 一般是数据源或表名称
+     * @param availableTargetNames available data sources or tables's names
+     * @param shardingValue sharding value
+     * @return sharding results for data sources or tables's names
      */
     String doEqualSharding(Collection<String> availableTargetNames, ShardingValue<T> shardingValue);
     
     /**
-     * 根据分片值和SQL的IN运算符计算分片结果名称集合.
+     * Sharding with in operator.
      * 
-     * @param availableTargetNames 所有的可用目标名称集合, 一般是数据源或表名称
-     * @param shardingValue 分片值
-     * @return 分片后指向的目标名称集合, 一般是数据源或表名称
+     * @param availableTargetNames available data sources or tables's names
+     * @param shardingValue sharding value
+     * @return sharding results for data sources or tables's names
      */
     Collection<String> doInSharding(Collection<String> availableTargetNames, ShardingValue<T> shardingValue);
     
     /**
-     * 根据分片值和SQL的BETWEEN运算符计算分片结果名称集合.
+     * Sharding with between operator.
      * 
-     * @param availableTargetNames 所有的可用目标名称集合, 一般是数据源或表名称
-     * @param shardingValue 分片值
-     * @return 分片后指向的目标名称集合, 一般是数据源或表名称
+     * @param availableTargetNames available data sources or tables's names
+     * @param shardingValue sharding value
+     * @return sharding results for data sources or tables's names
      */
     Collection<String> doBetweenSharding(Collection<String> availableTargetNames, ShardingValue<T> shardingValue);
 }

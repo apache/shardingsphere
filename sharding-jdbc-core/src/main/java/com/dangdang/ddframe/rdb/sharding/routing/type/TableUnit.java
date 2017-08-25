@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * 路由表单元.
+ * Route table unit.
  * 
  * @author zhangliang
  */

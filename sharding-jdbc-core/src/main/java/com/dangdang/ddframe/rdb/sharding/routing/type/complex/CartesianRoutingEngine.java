@@ -37,7 +37,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * 笛卡尔积的库表路由.
+ * cartesian routing engine.
  * 
  * @author zhangliang
  */

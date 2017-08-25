@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 笛卡尔积路由结果.
+ * Cartesian routing result.
  * 
  * @author gaohongtao
  * @author zhangliang

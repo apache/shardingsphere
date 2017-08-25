@@ -22,21 +22,21 @@ import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import java.util.Collection;
 
 /**
- * 无分片键算法接口.
+ * None key sharding algorithm.
  * 
- * @param <T> 无分片键传入的数值类型
+ * @param <T> class type for sharding value 
  * @author gaohongtao
  */
 public interface NoneKeyShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
     
     /**
-     * 没有分片键的情况下,调用该方法.
+     * Calculate and do sharding.
      * 
-     * <p>shardingValue来源于非SQL形式的传入</p>
+     * <p>sharding value injected by hint, not in SQL.</p>
      *
-     * @param availableTargetNames 所有的可用目标名称集合, 一般是数据源或表名称
-     * @param shardingValue 分片值
-     * @return 分片后指向的目标名称, 一般是数据源或表名称
+     * @param availableTargetNames available data sources or tables's names
+     * @param shardingValue sharding values
+     * @return sharding results for data sources or tables's names
      */
     String doSharding(Collection<String> availableTargetNames, ShardingValue<T> shardingValue);
 }

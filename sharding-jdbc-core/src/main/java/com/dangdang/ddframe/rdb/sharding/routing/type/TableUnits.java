@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * 路由表单元集合.
+ * Route table unit collection.
  * 
  * @author zhangliang
  */
@@ -45,9 +45,9 @@ public final class TableUnits {
     private final List<TableUnit> tableUnits = new LinkedList<>();
     
     /**
-     * 获取全部数据源名称.
+     * Get all data source names.
      *
-     * @return 数据源名称集合
+     * @return all data source names
      */
     public Collection<String> getDataSourceNames() {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
@@ -58,11 +58,11 @@ public final class TableUnits {
     }
     
     /**
-     * 根据数据源和真实表名称查找路由表单元.
+     * Find table unit via data source name and actual table name.
      *
-     * @param dataSourceName 数据源名称
-     * @param actualTableName 真实表名称
-     * @return 查找结果
+     * @param dataSourceName data source name
+     * @param actualTableName actual table name
+     * @return table unit
      */
     public Optional<TableUnit> findTableUnit(final String dataSourceName, final String actualTableName) {
         for (TableUnit each : tableUnits) {
@@ -74,14 +74,14 @@ public final class TableUnits {
     }
     
     /**
-     * 根据数据源和逻辑表名称获取真实表集合组.
+     * Get actual tables group via data source name and logic tables' names.
      * <p>
-     * 每一组的真实表集合都属于同一逻辑表.
+     * Actual tables in same group are belong one logic name. 
      * </p>
      *
-     * @param dataSourceName 数据源名称
-     * @param logicTableNames 逻辑表名称集合
-     * @return 真实表集合组
+     * @param dataSourceName data source name
+     * @param logicTableNames logic tables' names
+     * @return actual tables group
      */
     public List<Set<String>> getActualTableNameGroups(final String dataSourceName, final Set<String> logicTableNames) {
         List<Set<String>> result = new ArrayList<>();
@@ -105,10 +105,10 @@ public final class TableUnits {
     }
     
     /**
-     * 根据数据源名称获取数据源和逻辑表名称集合的映射关系.
+     * Get map relationship between data source and logic tables via data sources' names.
      *
-     * @param dataSourceNames 待获取的数据源名称集合
-     * @return 数据源和逻辑表名称集合的映射关系
+     * @param dataSourceNames data sources' names
+     * @return  map relationship between data source and logic tables
      */
     public Map<String, Set<String>> getDataSourceLogicTablesMap(final Collection<String> dataSourceNames) {
         Map<String, Set<String>> result = new HashMap<>();

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * SQL路由结果.
+ * SQL route result.
  * 
  * @author gaohongtao
  * @author zhangliang

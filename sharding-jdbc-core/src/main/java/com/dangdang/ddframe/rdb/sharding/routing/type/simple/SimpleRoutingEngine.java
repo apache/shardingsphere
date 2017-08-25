@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * 简单路由引擎.
+ * Simple routing engine.
  * 
  * @author zhangliang
  */
