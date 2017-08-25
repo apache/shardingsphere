@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * 事件总线.
+ * Event bus for singleton instance.
  * 
  * @author zhangliang
  */
@@ -32,9 +32,9 @@ public final class EventBusInstance {
     private static final EventBus INSTANCE = new EventBus();
     
     /**
-     * 获取事件总线实例.
+     * Get event bus instance.
      * 
-     * @return 事件总线实例
+     * @return event bus instance
      */
     public static EventBus getInstance() {
         return INSTANCE;

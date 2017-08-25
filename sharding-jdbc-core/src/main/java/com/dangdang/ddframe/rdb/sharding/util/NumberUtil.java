@@ -25,7 +25,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * 数字工具类.
+ * Number utility class.
  *
  * @author caohao
  * @author zhangliang
@@ -34,10 +34,10 @@ import java.math.BigInteger;
 public final class NumberUtil {
     
     /**
-     * 将数字类型对象四舍五入并转换为整形.
+     * Round half up.
      *
-     * @param obj 待转换的对象
-     * @return 四舍五入后的整形值
+     * @param obj object to be converted
+     * @return rounded half up number
      */
     public static int roundHalfUp(final Object obj) {
         if (obj instanceof Short) {
@@ -62,11 +62,11 @@ public final class NumberUtil {
     }
     
     /**
-     * 获取准确的数字以及类型.
+     * Get exactly number value and type.
      * 
-     * @param value 数字字符串
-     * @param radix 进制
-     * @return 准确的数字以及类型
+     * @param value string to be converted
+     * @param radix radix
+     * @return exactly number value and type
      */
     public static Number getExactlyNumber(final String value, final int radix) {
         BigInteger result = new BigInteger(value, radix);

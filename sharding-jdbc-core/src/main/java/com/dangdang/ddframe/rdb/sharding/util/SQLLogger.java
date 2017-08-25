@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * SQL日志对象.
+ * SQL logger.
  * 
  * @author zhangliang 
  */
@@ -36,12 +36,12 @@ import java.util.List;
 public final class SQLLogger {
     
     /**
-     * 打印SQL日志.
+     * Print SQL log.
      * 
-     * @param logicSQL 逻辑SQL
-     * @param sqlStatement SQL语句解析对象
-     * @param sqlExecutionUnits SQL最小执行单元集合
-     * @param parameters SQL参数集合
+     * @param logicSQL logic SQL
+     * @param sqlStatement SQL statement
+     * @param sqlExecutionUnits SQL execution units
+     * @param parameters parameters for SQL placeholder
      */
     public static void logSQL(final String logicSQL, final SQLStatement sqlStatement, final Collection<SQLExecutionUnit> sqlExecutionUnits, final List<Object> parameters) {
         log("Logic SQL: {}", logicSQL);

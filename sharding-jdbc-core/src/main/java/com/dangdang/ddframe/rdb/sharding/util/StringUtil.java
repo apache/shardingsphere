@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 /**
- * 字符串工具类.
+ * String utility class.
  *
  * @author zhangliang
  */
@@ -29,24 +29,24 @@ import lombok.AllArgsConstructor;
 public final class StringUtil {
     
     /**
-     * 判断是否为boolean值.
+     * Adjust is boolean value or not.
      * 
-     * @param str 待判断的字符串
-     * @return 是否为boolean值
+     * @param value to be adjusted string value
+     * @return is boolean value or not
      */
-    public static boolean isBooleanValue(final String str) {
-        return Boolean.TRUE.toString().equalsIgnoreCase(str) || Boolean.FALSE.toString().equalsIgnoreCase(str);
+    public static boolean isBooleanValue(final String value) {
+        return Boolean.TRUE.toString().equalsIgnoreCase(value) || Boolean.FALSE.toString().equalsIgnoreCase(value);
     }
     
     /**
-     * 判断是否为int值.
+     * Adjust is int value or not.
      * 
-     * @param str 待判断的字符串
-     * @return 是否为int值
+     * @param value to be adjusted string value
+     * @return is int value or not
      */
-    public static boolean isIntValue(final String str) {
+    public static boolean isIntValue(final String value) {
         try {
-            Integer.parseInt(str);
+            Integer.parseInt(value);
             return true;
         } catch (final NumberFormatException ex) {
             return false;
@@ -54,14 +54,14 @@ public final class StringUtil {
     }
     
     /**
-     * 判断是否为long值.
+     * Adjust is long value or not.
      *
-     * @param str 待判断的字符串
-     * @return 是否为long值
+     * @param value to be adjusted string value
+     * @return is long value or not
      */
-    public static boolean isLongValue(final String str) {
+    public static boolean isLongValue(final String value) {
         try {
-            Long.parseLong(str);
+            Long.parseLong(value);
             return true;
         } catch (final NumberFormatException ex) {
             return false;

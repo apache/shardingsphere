@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 /**
- * SQL工具类.
+ * SQL utility class.
  * 
  * @author gaohongtao
  */
@@ -30,10 +30,12 @@ import lombok.AllArgsConstructor;
 public class SQLUtil {
     
     /**
-     * 去掉SQL表达式的特殊字符.
+     * Get exactly value for SQL expression.
      * 
-     * @param value SQL表达式
-     * @return 去掉SQL特殊字符的表达式
+     * <p>remove special char for SQL expression</p>
+     * 
+     * @param value SQL expression
+     * @return exactly SQL expression
      */
     public static String getExactlyValue(final String value) {
         return null == value ? null : CharMatcher.anyOf("[]`'\"").removeFrom(value);
