@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 多线程执行批量预编译语句对象请求的执行器.
+ * PreparedStatement Executor for  multiple threads to process add batch.
  * 
  * @author zhangliang
  */
@@ -49,9 +49,9 @@ public final class BatchPreparedStatementExecutor {
     private final List<List<Object>> parameterSets;
     
     /**
-     * 执行批量SQL.
+     * Execute batch.
      * 
-     * @return 执行结果
+     * @return execute results
      */
     public int[] executeBatch() {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeBatch");

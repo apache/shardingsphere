@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 多线程执行预编译语句对象请求的执行器.
+ * PreparedStatement Executor for multiple threads.
  * 
  * @author zhangliang
  * @author caohao
@@ -48,9 +48,9 @@ public final class PreparedStatementExecutor {
     private final List<Object> parameters;
     
     /**
-     * 执行SQL查询.
+     * Execute query.
      * 
-     * @return 结果集列表
+     * @return result set list
      */
     public List<ResultSet> executeQuery() {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeQuery");
@@ -70,9 +70,9 @@ public final class PreparedStatementExecutor {
     }
     
     /**
-     * 执行SQL更新.
+     * Execute update.
      * 
-     * @return 更新数量
+     * @return effected records count
      */
     public int executeUpdate() {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
@@ -99,9 +99,9 @@ public final class PreparedStatementExecutor {
     }
     
     /**
-     * 执行SQL请求.
-     * 
-     * @return true表示执行DQL, false表示执行的DML
+     * Execute SQL.
+     *
+     * @return return true if is DQL, false if is DML
      */
     public boolean execute() {
         Context context = MetricsContext.start("ShardingPreparedStatement-execute");

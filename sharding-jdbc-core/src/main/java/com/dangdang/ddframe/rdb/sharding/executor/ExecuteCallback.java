@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.executor;
 
 /**
- * 执行回调函数.
+ * Statement execute callback interface.
  * 
- * @param <T> 返回值类型
+ * @param <T> class type of return value
  * 
  * @author gaohongtao
  * @author zhangliang
@@ -28,11 +28,11 @@ package com.dangdang.ddframe.rdb.sharding.executor;
 public interface ExecuteCallback<T> {
     
     /**
-     * 执行任务.
+     * Execute task.
      * 
-     * @param baseStatementUnit 语句对象执行单元
-     * @return 处理结果
-     * @throws Exception 执行期异常
+     * @param baseStatementUnit statement execute unit
+     * @return execute result
+     * @throws Exception execute exception
      */
     T execute(BaseStatementUnit baseStatementUnit) throws Exception;
 }

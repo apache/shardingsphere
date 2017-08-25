@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import java.sql.Statement;
 
 /**
- * 静态语句对象执行单元.
+ * Statement execute unit.
  *
  * @author zhangliang
  */

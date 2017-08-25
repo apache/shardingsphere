@@ -52,7 +52,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * SQL执行引擎.
+ * SQL execute engine.
  * 
  * @author gaohongtao
  * @author zhangliang
@@ -69,27 +69,27 @@ public final class ExecutorEngine implements AutoCloseable {
     }
     
     /**
-     * 执行Statement.
+     * Execute statement.
      *
-     * @param sqlType SQL类型
-     * @param statementUnits 语句对象执行单元集合
-     * @param executeCallback 执行回调函数
-     * @param <T> 返回值类型
-     * @return 执行结果
+     * @param sqlType SQL type
+     * @param statementUnits statement execute unit
+     * @param executeCallback statement execute callback
+     * @param <T> class type of return value
+     * @return execute result
      */
     public <T> List<T> executeStatement(final SQLType sqlType, final Collection<StatementUnit> statementUnits, final ExecuteCallback<T> executeCallback) {
         return execute(sqlType, statementUnits, Collections.<List<Object>>emptyList(), executeCallback);
     }
     
     /**
-     * 执行PreparedStatement.
+     * Execute prepared statement.
      *
-     * @param sqlType SQL类型
-     * @param preparedStatementUnits 语句对象执行单元集合
-     * @param parameters 参数列表
-     * @param executeCallback 执行回调函数
-     * @param <T> 返回值类型
-     * @return 执行结果
+     * @param sqlType SQL type
+     * @param preparedStatementUnits prepared statement execute unit
+     * @param parameters parameters for SQL placeholder
+     * @param executeCallback prepared statement execute callback
+     * @param <T> class type of return value
+     * @return execute result
      */
     public <T> List<T> executePreparedStatement(
             final SQLType sqlType, final Collection<PreparedStatementUnit> preparedStatementUnits, final List<Object> parameters, final ExecuteCallback<T> executeCallback) {
@@ -97,13 +97,13 @@ public final class ExecutorEngine implements AutoCloseable {
     }
     
     /**
-     * 执行Batch.
+     * Execute add batch.
      *
-     * @param sqlType SQL类型
-     * @param batchPreparedStatementUnits 语句对象执行单元集合
-     * @param parameterSets 参数列表集
-     * @param executeCallback 执行回调函数
-     * @return 执行结果
+     * @param sqlType SQL type
+     * @param batchPreparedStatementUnits prepared statement execute unit for batch
+     * @param parameterSets parameters for SQL placeholder
+     * @param executeCallback prepared statement execute callback
+     * @return execute result
      */
     public List<int[]> executeBatch(
             final SQLType sqlType, final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits, final List<List<Object>> parameterSets, final ExecuteCallback<int[]> executeCallback) {

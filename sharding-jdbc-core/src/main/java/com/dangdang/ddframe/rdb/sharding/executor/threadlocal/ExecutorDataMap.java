@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 执行器执行时数据处理类.
+ * Executor runtime data map.
  *
  * @author caohao
  */
@@ -40,18 +40,18 @@ public final class ExecutorDataMap {
     };
     
     /**
-     * 设置数据Map.
+     * Set data map.
      *
-     * @param dataMap 数据Map
+     * @param dataMap data map
      */
     public static void setDataMap(final Map<String, Object> dataMap) {
         ExecutorDataMap.dataMap.set(dataMap);
     }
     
     /**
-     * 获取数据Map.
+     * Get data map.
      *
-     * @return 数据Map
+     * @return data map
      */
     public static Map<String, Object> getDataMap() {
         return dataMap.get();

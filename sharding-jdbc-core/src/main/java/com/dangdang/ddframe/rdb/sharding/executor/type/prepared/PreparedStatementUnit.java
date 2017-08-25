@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import java.sql.PreparedStatement;
 
 /**
- * 预编译语句对象执行单元.
+ * PreparedStatement execute unit.
  *
  * @author zhangliang
  */

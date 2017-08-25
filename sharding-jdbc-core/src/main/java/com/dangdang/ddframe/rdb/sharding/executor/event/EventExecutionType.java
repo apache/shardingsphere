@@ -18,24 +18,24 @@
 package com.dangdang.ddframe.rdb.sharding.executor.event;
 
 /**
- * 事件触发类型.
+ * Event execution type.
  * 
  * @author zhangliang
  */
 public enum EventExecutionType {
     
     /**
-     * 执行前.
+     * Before SQL execute.
      */
     BEFORE_EXECUTE, 
     
     /**
-     * 执行成功.
+     * SQL execute success.
      */
     EXECUTE_SUCCESS, 
     
     /**
-     * 执行失败.
+     * SQL execute failure.
      */
     EXECUTE_FAILURE
 }

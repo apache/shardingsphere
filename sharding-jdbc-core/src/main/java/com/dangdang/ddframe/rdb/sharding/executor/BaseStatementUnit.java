@@ -22,13 +22,23 @@ import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import java.sql.Statement;
 
 /**
- * 语句对象执行单元接口.
+ * Statement execute unit interface.
  *
  * @author zhangliang
  */
 public interface BaseStatementUnit {
     
+    /**
+     * Get SQL execute unit.
+     * 
+     * @return SQL execute unit
+     */
     SQLExecutionUnit getSqlExecutionUnit();
     
+    /**
+     * Get statement.
+     * 
+     * @return statement
+     */
     Statement getStatement();
 }

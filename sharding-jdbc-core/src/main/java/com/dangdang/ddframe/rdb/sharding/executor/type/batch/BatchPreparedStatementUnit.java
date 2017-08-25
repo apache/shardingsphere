@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 预编译语句对象的执行上下文.
+ * PreparedStatement add batch execute unit.
  * 
  * @author zhangliang
  */
@@ -46,9 +46,9 @@ public final class BatchPreparedStatementUnit implements BaseStatementUnit {
     private int actualCallAddBatchTimes;
     
     /**
-     * 映射通过JDBC API调用addBatch与路由之后的每个PreparedStatement内部真实调用addBatch的次数.
+     * Map times of use JDBC API call addBatch and times of actual call addBatch after route.
      * 
-     * @param jdbcAddBatchTimes 通过JDBC API调用addBatch的次数
+     * @param jdbcAddBatchTimes times of use JDBC API call addBatch
      */
     public void mapAddBatchCount(final int jdbcAddBatchTimes) {
         jdbcAndActualAddBatchCallTimesMap.put(jdbcAddBatchTimes, actualCallAddBatchTimes++);

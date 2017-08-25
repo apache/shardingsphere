@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * SQL执行时事件.
+ * SQL execution event.
  *
  * @author zhangliang
  */
@@ -47,7 +47,6 @@ public abstract class AbstractExecutionEvent {
     private Optional<SQLException> exception;
     
     public AbstractExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
-        // TODO 替换UUID为更有效率的id生成器
         id = UUID.randomUUID().toString();
         this.dataSource = dataSource;
         this.sql = sql;
