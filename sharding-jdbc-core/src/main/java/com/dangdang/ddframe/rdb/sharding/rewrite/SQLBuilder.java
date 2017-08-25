@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * SQL构建器.
+ * SQL builder.
  * 
  * @author gaohongtao
  * @author zhangliang
@@ -37,6 +37,9 @@ public final class SQLBuilder {
     
     private StringBuilder currentSegment;
     
+    /**
+     * Constructs a empty SQL builder.
+     */
     public SQLBuilder() {
         segments = new LinkedList<>();
         currentSegment = new StringBuilder();
@@ -44,18 +47,18 @@ public final class SQLBuilder {
     }
     
     /**
-     * 追加字面量.
+     * Append literals.
      *
-     * @param literals 字面量
+     * @param literals literals for SQL
      */
     public void appendLiterals(final String literals) {
         currentSegment.append(literals);
     }
     
     /**
-     * 追加表占位符.
+     * Append table token.
      *
-     * @param tableName 表名称
+     * @param tableName table name
      */
     public void appendTable(final String tableName) {
         segments.add(new TableToken(tableName));
@@ -64,10 +67,10 @@ public final class SQLBuilder {
     }
     
     /**
-     * 生成SQL语句.
+     * Convert to SQL string.
      *
-     * @param tableTokens 占位符集合
-     * @return SQL语句
+     * @param tableTokens table tokens
+     * @return SQL string
      */
     public String toSQL(final Map<String, String> tableTokens) {
         StringBuilder result = new StringBuilder();

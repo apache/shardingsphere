@@ -43,7 +43,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * SQL重写引擎.
+ * SQL rewrite engine.
+ * 
+ * <p>Rewrite logic SQL to actual SQL, should rewrite table name and optimize something.</p>
  *
  * @author zhangliang
  */
@@ -57,6 +59,13 @@ public final class SQLRewriteEngine {
     
     private final SQLStatement sqlStatement;
     
+    /**
+     * Constructs SQL rewrite engine.
+     * 
+     * @param shardingRule Databases and tables sharding rule
+     * @param originalSQL original SQL
+     * @param sqlStatement SQL statement
+     */
     public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final SQLStatement sqlStatement) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
@@ -65,10 +74,10 @@ public final class SQLRewriteEngine {
     }
     
     /**
-     * SQL改写.
+     * rewrite SQL.
      *
-     * @param isRewriteLimit 是否重写Limit
-     * @return SQL构建器
+     * @param isRewriteLimit is rewrite limit
+     * @return SQL builder
      */
     public SQLBuilder rewrite(final boolean isRewriteLimit) {
         SQLBuilder result = new SQLBuilder();
@@ -169,22 +178,22 @@ public final class SQLRewriteEngine {
     }
     
     /**
-     * 生成SQL语句.
+     * Generate SQL string.
      * 
-     * @param tableUnit 路由表单元
-     * @param sqlBuilder SQL构建器
-     * @return SQL语句
+     * @param tableUnit route table unit
+     * @param sqlBuilder SQL builder
+     * @return SQL string
      */
     public String generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder) {
         return sqlBuilder.toSQL(getTableTokens(tableUnit));
     }
     
     /**
-     * 生成SQL语句.
+     * Generate SQL string.
      *
-     * @param cartesianTableReference 笛卡尔积路由表单元
-     * @param sqlBuilder SQL构建器
-     * @return SQL语句
+     * @param cartesianTableReference cartesian table reference
+     * @param sqlBuilder SQL builder
+     * @return SQL string
      */
     public String generateSQL(final CartesianTableReference cartesianTableReference, final SQLBuilder sqlBuilder) {
         return sqlBuilder.toSQL(getTableTokens(cartesianTableReference));
