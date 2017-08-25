@@ -18,16 +18,16 @@
 package com.dangdang.ddframe.rdb.sharding.keygen;
 
 /**
- * 主键生成器.
+ * Key generator interface.
  *
  * @author zhangliang
  */
 public interface KeyGenerator {
     
     /**
-     * 生成主键.
+     * Generate key.
      * 
-     * @return 自动生成的主键
+     * @return generated key
      */
     Number generateKey();
 }

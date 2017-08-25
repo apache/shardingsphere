@@ -18,16 +18,16 @@
 package com.dangdang.ddframe.rdb.sharding.keygen;
 
 /**
- * 时间服务.
+ * Time service.
  * 
  * @author zhangliang
  */
 public class TimeService {
     
     /**
-     * 获取当前时间的毫秒数.
+     * Get current millis.
      * 
-     * @return 当前时间的毫秒数
+     * @return current millis
      */
     public long getCurrentMillis() {
         return System.currentTimeMillis();

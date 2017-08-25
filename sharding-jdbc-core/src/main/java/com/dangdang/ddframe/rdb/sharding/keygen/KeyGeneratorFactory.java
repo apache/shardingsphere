@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * 主键生成器工厂.
+ * Key generator factory.
  * 
  * @author zhangliang
  */
@@ -29,10 +29,10 @@ import lombok.NoArgsConstructor;
 public final class KeyGeneratorFactory {
     
     /**
-     * 创建主键生成器.
+     * Create key generator.
      * 
-     * @param keyGeneratorClass 主键生成器类
-     * @return 主键生成器实例
+     * @param keyGeneratorClass key generator class
+     * @return key generator instance
      */
     public static KeyGenerator createKeyGenerator(final Class<? extends KeyGenerator> keyGeneratorClass) {
         try {
