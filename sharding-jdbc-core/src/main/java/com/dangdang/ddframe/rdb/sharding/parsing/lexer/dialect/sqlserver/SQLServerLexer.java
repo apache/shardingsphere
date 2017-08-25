@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer.Dictionary;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
 
 /**
- * SQLServer词法解析器.
+ * SQLServer Lexical analysis.
  *
  * @author zhangliang
  */

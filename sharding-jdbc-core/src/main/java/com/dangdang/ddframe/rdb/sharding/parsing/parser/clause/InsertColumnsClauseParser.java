@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * INSERT COLUMNS从句解析器.
+ * Insert columns clause parser.
  *
  * @author zhangliang
  */
@@ -26,9 +26,9 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析INSERT COLUMNS.
+     * Parse insert columns.
      *
-     * @param insertStatement INSERT语句对象
+     * @param insertStatement insert statement
      */
     public void parse(final InsertStatement insertStatement) {
         Collection<Column> result = new LinkedList<>();

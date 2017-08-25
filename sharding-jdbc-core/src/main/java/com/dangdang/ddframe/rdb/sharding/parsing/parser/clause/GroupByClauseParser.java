@@ -14,7 +14,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectSta
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 
 /**
- * 分组从句解析器.
+ * Group by clause parser.
  *
  * @author zhangliang
  */
@@ -30,9 +30,9 @@ public class GroupByClauseParser implements SQLClauseParser {
     }
     
     /**
-     * 解析分组.
+     * Parse group by.
      *
-     * @param selectStatement Select语句对象
+     * @param selectStatement select statement
      */
     public final void parse(final SelectStatement selectStatement) {
         if (!lexerEngine.skipIfEqual(DefaultKeyword.GROUP)) {

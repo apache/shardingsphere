@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 聚合选择项.
+ * Aggregation select item.
  *
  * @author zhangliang
  */
@@ -57,9 +57,9 @@ public final class AggregationSelectItem implements SelectItem {
     }
     
     /**
-     * 获取列标签.
-     * 
-     * @return 列标签
+     * Get column label.
+     *
+     * @return column label
      */
     public String getColumnLabel() {
         return alias.isPresent() ? alias.get() : getExpression();

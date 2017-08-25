@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectRestClauseParser;
 
 /**
- * SQLServer的SELECT剩余语句解析器.
+ * Select rest clause parser for SQLServer.
  *
  * @author zhangliang
  */

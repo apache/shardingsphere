@@ -7,7 +7,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerWhereClauseParser;
 
 /**
- * SQLServer的DELETE从句解析器门面类.
+ * Delete clause parser facade for SQLServer.
  *
  * @author zhangliang
  */

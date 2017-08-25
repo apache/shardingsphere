@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * UPDATE从句解析器门面类.
+ * Update clause parser facade.
  *
  * @author zhangliang
  */

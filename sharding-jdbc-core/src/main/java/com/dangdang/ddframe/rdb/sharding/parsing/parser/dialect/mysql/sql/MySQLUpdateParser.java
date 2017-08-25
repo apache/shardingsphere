@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.fac
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.update.AbstractUpdateParser;
 
 /**
- * MySQL Update语句解析器.
+ * Update parser for MySQL.
  *
  * @author zhangliang
  */

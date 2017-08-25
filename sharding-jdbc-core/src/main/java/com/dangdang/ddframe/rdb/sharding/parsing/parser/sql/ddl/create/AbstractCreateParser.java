@@ -28,7 +28,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Create语句解析器.
+ * Create parser.
  *
  * @author zhangliang
  */

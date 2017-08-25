@@ -5,7 +5,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.OrderByClauseParser;
 
 /**
- * SQLServer排序从句解析器.
+ * Order by clause parser for SQLServer.
  *
  * @author zhangliang
  */

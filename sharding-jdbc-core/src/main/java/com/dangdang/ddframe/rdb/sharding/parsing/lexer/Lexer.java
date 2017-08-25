@@ -26,7 +26,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 词法解析器.
+ * Lexical analysis.
  * 
  * @author zhangliang 
  */
@@ -44,7 +44,7 @@ public class Lexer {
     private Token currentToken;
     
     /**
-     * 分析下一个词法标记.
+     * Analyse next token.
      */
     public final void nextToken() {
         skipIgnoredToken();

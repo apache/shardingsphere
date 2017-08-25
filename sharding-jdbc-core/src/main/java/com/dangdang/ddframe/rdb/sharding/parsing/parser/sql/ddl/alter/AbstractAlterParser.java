@@ -28,7 +28,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Alter语句解析器.
+ * Alter parser.
  *
  * @author zhangliang
  */

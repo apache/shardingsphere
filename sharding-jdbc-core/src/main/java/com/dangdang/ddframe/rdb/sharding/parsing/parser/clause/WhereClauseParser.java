@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * WHERE从句解析器.
+ * Where clause parser.
  *
  * @author zhangliang
  */
@@ -47,11 +47,11 @@ public class WhereClauseParser implements SQLClauseParser {
     }
     
     /**
-     * 解析WHERE.
+     * Parse where.
      *
-     * @param shardingRule 分片规则
-     * @param sqlStatement SQL语句对象
-     * @param items 选择项集合
+     * @param shardingRule databases and tables sharding rule
+     * @param sqlStatement SQL statement
+     * @param items select items
      */
     public void parse(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         aliasClauseParser.parse();
@@ -67,7 +67,6 @@ public class WhereClauseParser implements SQLClauseParser {
         lexerEngine.unsupportedIfEqual(DefaultKeyword.OR);
     }
     
-    // TODO 解析组合expr
     private void parseComparisonCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         lexerEngine.skipIfEqual(Symbol.LEFT_PAREN);
         SQLExpression left = expressionClauseParser.parse(sqlStatement);
@@ -105,7 +104,7 @@ public class WhereClauseParser implements SQLClauseParser {
     private void parseEqualCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
         lexerEngine.nextToken();
         SQLExpression right = expressionClauseParser.parse(sqlStatement);
-        // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
+        // TODO if have more tables, and cannot find column belong to, should not add to condition, should parse binding table rule.
         if ((sqlStatement.getTables().isSingleTable() || left instanceof SQLPropertyExpression)
                 && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
             Optional<Column> column = find(sqlStatement.getTables(), left);

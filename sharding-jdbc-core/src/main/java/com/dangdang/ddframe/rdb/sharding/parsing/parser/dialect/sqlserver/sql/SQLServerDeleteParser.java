@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.delete.AbstractDeleteParser;
 
 /**
- * SQLServer Delete语句解析器.
+ * Delete parser for SQLServer.
  *
  * @author zhangliang
  */

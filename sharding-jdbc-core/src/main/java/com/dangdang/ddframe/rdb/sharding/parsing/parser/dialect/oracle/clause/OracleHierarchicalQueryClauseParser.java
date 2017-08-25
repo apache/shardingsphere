@@ -6,7 +6,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Oracle HierarchicalQuery解析器.
+ * Hierarchical query clause parser for Oracle.
  *
  * @author zhangliang
  */
@@ -16,7 +16,7 @@ public final class OracleHierarchicalQueryClauseParser implements SQLClauseParse
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析HierarchicalQuery语句.
+     * Parse hierarchical query.
      */
     public void parse() {
         lexerEngine.unsupportedIfEqual(OracleKeyword.CONNECT, OracleKeyword.START);

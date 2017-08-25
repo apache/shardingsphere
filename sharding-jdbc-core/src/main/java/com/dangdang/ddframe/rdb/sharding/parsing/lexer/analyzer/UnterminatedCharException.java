@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 
 /**
- * 符号未正确结束的异常.
+ * Unterminated char exception.
  *
  * @author zhangliang
  */

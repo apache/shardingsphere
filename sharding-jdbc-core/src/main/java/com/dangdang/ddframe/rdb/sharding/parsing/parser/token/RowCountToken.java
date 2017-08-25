@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 分页长度标记对象.
+ * Row count token for limit.
  *
  * @author zhangliang
  */

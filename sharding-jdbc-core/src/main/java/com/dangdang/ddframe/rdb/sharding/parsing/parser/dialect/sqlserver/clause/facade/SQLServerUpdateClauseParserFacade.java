@@ -8,7 +8,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerWhereClauseParser;
 
 /**
- * SQLServer的UPDATE从句解析器门面类.
+ * Update clause parser facade for SQLServer.
  *
  * @author zhangliang
  */

@@ -30,7 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQL语句对象抽象类.
+ * SQL statement abstract class.
  *
  * @author zhangliang
  */

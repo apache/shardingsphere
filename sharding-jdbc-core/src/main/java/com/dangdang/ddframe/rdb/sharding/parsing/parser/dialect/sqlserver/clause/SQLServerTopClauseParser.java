@@ -33,7 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectSta
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 
 /**
- * SQLServer Top解析器.
+ * Top clause parser for SQLServer.
  *
  * @author zhangliang
  */
@@ -49,9 +49,9 @@ public final class SQLServerTopClauseParser implements SQLClauseParser {
     }
     
     /**
-     * 解析TOP.
+     * Parse top.
      * 
-     * @param selectStatement Select SQL语句对象
+     * @param selectStatement select statement
      */
     public void parse(final SelectStatement selectStatement) {
         if (!lexerEngine.skipIfEqual(SQLServerKeyword.TOP)) {

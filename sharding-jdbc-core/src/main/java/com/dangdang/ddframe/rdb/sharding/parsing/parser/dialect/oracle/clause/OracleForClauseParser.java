@@ -9,7 +9,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 
 /**
- * Oracle For解析器.
+ * Select for clause parser for Oracle.
  *
  * @author zhangliang
  */
@@ -25,9 +25,9 @@ public final class OracleForClauseParser implements SQLClauseParser {
     }
     
     /**
-     * 解析For语句.
+     * Parse for.
      * 
-     * @param selectStatement Select SQL语句对象
+     * @param selectStatement select statement
      */
     public void parse(final SelectStatement selectStatement) {
         if (!lexerEngine.skipIfEqual(DefaultKeyword.FOR)) {

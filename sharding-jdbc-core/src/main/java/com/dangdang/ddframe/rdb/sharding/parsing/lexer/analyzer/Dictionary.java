@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 词法标记字典.
+ * Token dictionary.
  *
  * @author zhangliang
  */

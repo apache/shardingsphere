@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * 选择项.
+ * Common select item.
  *
  * @author zhangliang
  */

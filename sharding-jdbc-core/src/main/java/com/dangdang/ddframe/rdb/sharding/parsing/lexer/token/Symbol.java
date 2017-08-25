@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 词法符号标记.
+ * Symbol token.
  *
  * @author zhangliang
  */

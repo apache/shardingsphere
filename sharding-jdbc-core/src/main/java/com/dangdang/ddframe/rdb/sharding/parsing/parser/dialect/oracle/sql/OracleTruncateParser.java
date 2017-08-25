@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ddl.truncate.AbstractTruncateParser;
 
 /**
- * Oracle Truncate语句解析器.
+ * Truncate parser for Oracle.
  *
  * @author zhangliang
  */

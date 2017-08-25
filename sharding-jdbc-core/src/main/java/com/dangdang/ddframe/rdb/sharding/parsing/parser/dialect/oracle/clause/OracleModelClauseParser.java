@@ -6,7 +6,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Oracle Model解析器.
+ * Model clause parser for Oracle.
  *
  * @author zhangliang
  */
@@ -16,7 +16,7 @@ public final class OracleModelClauseParser implements SQLClauseParser {
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析Model语句.
+     * Parse model.
      */
     public void parse() {
         lexerEngine.unsupportedIfEqual(OracleKeyword.MODEL);

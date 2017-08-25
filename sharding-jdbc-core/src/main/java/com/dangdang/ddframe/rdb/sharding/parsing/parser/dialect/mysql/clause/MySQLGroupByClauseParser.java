@@ -7,7 +7,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.GroupByClauseParser;
 
 /**
- * MySQL分组从句解析器.
+ * Group by clause parser for MySQL.
  *
  * @author zhangliang
  */

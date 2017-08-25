@@ -7,7 +7,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.InsertValuesClauseParser;
 
 /**
- * MySQL INSERT VALUES从句解析器.
+ * Insert values clause parser for MySQL.
  *
  * @author zhangliang
  */

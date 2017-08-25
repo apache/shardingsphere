@@ -31,7 +31,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Insert语句解析器.
+ * Insert parser.
  *
  * @author zhangliang
  */

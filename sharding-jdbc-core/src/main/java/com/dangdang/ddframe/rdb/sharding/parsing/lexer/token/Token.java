@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 词法标记.
+ * Token.
  *
  * @author zhangliang
  */

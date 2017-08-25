@@ -9,7 +9,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferencesCl
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 
 /**
- * Oracle 表从句解析器.
+ * Table references clause parser for Oracle.
  *
  * @author zhangliang
  */

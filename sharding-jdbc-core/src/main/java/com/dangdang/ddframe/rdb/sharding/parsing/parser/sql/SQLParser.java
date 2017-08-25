@@ -18,16 +18,16 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
 
 /**
- * SQL语句解析器.
+ * SQL parser.
  *
  * @author zhangliang
  */
 public interface SQLParser {
     
     /**
-     * 解析SQL语句.
+     * Parse SQL.
      *
-     * @return 解析结果
+     * @return SQL statement
      */
     SQLStatement parse();
 }

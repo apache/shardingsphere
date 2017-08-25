@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.lexer.token;
 
 /**
- * 词法标记类型.
+ * Token type.
  *
  * @author zhangliang
  */

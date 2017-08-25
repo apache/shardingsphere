@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert.AbstractInsertParser;
 
 /**
- * SQLServer Insert语句解析器.
+ * Insert parser for SQLServer.
  *
  * @author zhangliang
  */

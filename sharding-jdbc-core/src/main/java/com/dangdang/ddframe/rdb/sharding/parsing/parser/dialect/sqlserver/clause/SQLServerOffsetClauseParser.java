@@ -30,7 +30,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectSta
 import lombok.RequiredArgsConstructor;
 
 /**
- * SQLServer Top解析器.
+ * Offset clause parser for SQLServer.
  *
  * @author zhangliang
  */
@@ -40,9 +40,9 @@ public final class SQLServerOffsetClauseParser implements SQLClauseParser {
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析Offset.
+     * Parse offset.
      * 
-     * @param selectStatement Select SQL语句对象
+     * @param selectStatement select statement
      */
     public void parse(final SelectStatement selectStatement) {
         if (!lexerEngine.skipIfEqual(SQLServerKeyword.OFFSET)) {

@@ -40,7 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Insert SQL语句对象.
+ * Insert statement.
  *
  * @author zhangliang
  */
@@ -64,10 +64,10 @@ public final class InsertStatement extends DMLStatement {
     private GeneratedKey generatedKey;
     
     /**
-     * 追加自增主键标记对象.
+     * Append generate key token.
      *
-     * @param shardingRule 分片规则
-     * @param parametersSize 参数个数
+     * @param shardingRule databases and tables sharding rule
+     * @param parametersSize parameters size
      */
     public void appendGenerateKeyToken(final ShardingRule shardingRule, final int parametersSize) {
         if (null != generatedKey) {

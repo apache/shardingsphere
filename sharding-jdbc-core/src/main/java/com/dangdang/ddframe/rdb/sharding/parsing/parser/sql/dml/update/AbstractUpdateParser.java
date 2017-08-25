@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collections;
 
 /**
- * Update语句解析器.
+ * Update parser.
  *
  * @author zhangliang
  */

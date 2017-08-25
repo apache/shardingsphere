@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.update.AbstractUpdateParser;
 
 /**
- * SQLServer Update语句解析器.
+ * Update parser for SQLServer.
  *
  * @author zhangliang
  */

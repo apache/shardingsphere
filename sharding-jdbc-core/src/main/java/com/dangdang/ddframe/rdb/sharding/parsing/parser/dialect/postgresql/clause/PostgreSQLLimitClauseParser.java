@@ -34,7 +34,7 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
 /**
- * PostgreSQL Limit语句解析器.
+ * Limit clause parser for PostgreSQL.
  *
  * @author zhangliang
  */
@@ -44,8 +44,9 @@ public final class PostgreSQLLimitClauseParser implements SQLClauseParser {
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析Limit.
-     * @param selectStatement Select SQL语句对象
+     * Parse limit.
+     * 
+     * @param selectStatement select statement
      */
     public void parse(final SelectStatement selectStatement) {
         Optional<LimitValue> offset = Optional.absent();

@@ -13,7 +13,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.claus
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clause.PostgreSQLTableReferencesClauseParser;
 
 /**
- * PostgreSQL的SELECT从句解析器门面类.
+ * Select clause parser facade for PostgreSQL.
  *
  * @author zhangliang
  */

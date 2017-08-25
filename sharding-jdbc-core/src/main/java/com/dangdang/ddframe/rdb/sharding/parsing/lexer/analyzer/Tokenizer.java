@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 词法标记器.
+ * Tokenizer.
  *
  * @author zhangliang
  */
@@ -49,9 +49,9 @@ public final class Tokenizer {
     private final int offset;
     
     /**
-     * 跳过空格.
+     * skip whitespace.
      * 
-     * @return 跳过空格后的偏移量
+     * @return offset after whitespace skipped 
      */
     public int skipWhitespace() {
         int length = 0;
@@ -62,9 +62,9 @@ public final class Tokenizer {
     }
     
     /**
-     * 跳过注释.
+     * skip comment.
      * 
-     * @return 跳过注释后的偏移量
+     * @return offset after comment skipped
      */
     public int skipComment() {
         char current = charAt(offset);
@@ -100,9 +100,9 @@ public final class Tokenizer {
     }
     
     /**
-     * 跳过查询提示.
+     * skip hint.
      *
-     * @return 跳过查询提示后的偏移量
+     * @return offset after hint skipped
      */
     public int skipHint() {
         return untilCommentAndHintTerminateSign(HINT_BEGIN_SYMBOL_LENGTH);
@@ -124,9 +124,9 @@ public final class Tokenizer {
     }
     
     /**
-     * 扫描变量.
+     * scan variable.
      *
-     * @return 变量标记
+     * @return variable token
      */
     public Token scanVariable() {
         int length = 1;
@@ -144,9 +144,9 @@ public final class Tokenizer {
     }
     
     /**
-     * 扫描标识符.
+     * scan identifier.
      *
-     * @return 标识符标记
+     * @return identifier token
      */
     public Token scanIdentifier() {
         if ('`' == charAt(offset)) {
@@ -202,9 +202,9 @@ public final class Tokenizer {
     }
     
     /**
-     * 扫描十六进制数.
+     * scan hex decimal.
      *
-     * @return 十六进制数标记
+     * @return hex decimal token
      */
     public Token scanHexDecimal() {
         int length = HEX_BEGIN_SYMBOL_LENGTH;
@@ -222,9 +222,9 @@ public final class Tokenizer {
     }
     
     /**
-     * 扫描数字.
+     * scan number.
      *
-     * @return 数字标记
+     * @return number token
      */
     public Token scanNumber() {
         int length = 0;
@@ -272,9 +272,9 @@ public final class Tokenizer {
     }
     
     /**
-     * 扫描字符串.
+     * scan chars.
      *
-     * @return 字符串标记
+     * @return chars token
      */
     public Token scanChars() {
         return scanChars(charAt(offset));
@@ -286,9 +286,9 @@ public final class Tokenizer {
     }
     
     /**
-     * 扫描符号.
+     * scan symbol.
      *
-     * @return 符号标记
+     * @return symbol token
      */
     public Token scanSymbol() {
         int length = 0;

@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 选择项标记对象.
+ * Select items token.
  *
  * @author zhangliang
  */

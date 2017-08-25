@@ -13,7 +13,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.Or
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleWhereClauseParser;
 
 /**
- * Oracle的SELECT从句解析器门面类.
+ * Select clause parser facade for Oracle.
  *
  * @author zhangliang
  */

@@ -13,7 +13,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.clause.SQLServerWhereClauseParser;
 
 /**
- * SQLServer的SELECT从句解析器门面类.
+ * Select clause parser facade for SQLServer.
  *
  * @author zhangliang
  */

@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer.Dictionary;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
 
 /**
- * MySQL词法解析器.
+ * MySQL Lexical analysis.
  *
  * @author zhangliang
  */

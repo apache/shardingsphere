@@ -8,7 +8,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert.InsertSta
 import lombok.RequiredArgsConstructor;
 
 /**
- * INSERT INTO从句解析器.
+ * Insert into clause parser.
  *
  * @author zhangliang
  */
@@ -20,9 +20,9 @@ public class InsertIntoClauseParser implements SQLClauseParser {
     private final TableReferencesClauseParser tableReferencesClauseParser;
     
     /**
-     * 解析INSERT INTO.
+     * Parse insert into.
      *
-     * @param insertStatement DML语句对象
+     * @param insertStatement insert statement
      */
     public void parse(final InsertStatement insertStatement) {
         lexerEngine.unsupportedIfEqual(getUnsupportedKeywordsBeforeInto());

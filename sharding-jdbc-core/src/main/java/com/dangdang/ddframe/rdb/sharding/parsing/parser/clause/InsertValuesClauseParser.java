@@ -22,7 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * INSERT VALUES从句解析器.
+ * Insert values clause parser.
  *
  * @author zhangliang
  */
@@ -41,9 +41,9 @@ public class InsertValuesClauseParser implements SQLClauseParser {
     }
     
     /**
-     * 解析INSERT VALUES.
+     * Parse insert values.
      *
-     * @param insertStatement INSERT语句对象
+     * @param insertStatement insert statement
      */
     public void parse(final InsertStatement insertStatement) {
         Collection<Keyword> valueKeywords = new LinkedList<>();

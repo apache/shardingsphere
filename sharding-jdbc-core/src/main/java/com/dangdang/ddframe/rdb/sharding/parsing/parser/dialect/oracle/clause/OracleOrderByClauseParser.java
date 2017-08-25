@@ -7,7 +7,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingExce
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.OrderByClauseParser;
 
 /**
- * Oracle排序从句解析器.
+ * Order by clause parser for Oracle.
  *
  * @author zhangliang
  */

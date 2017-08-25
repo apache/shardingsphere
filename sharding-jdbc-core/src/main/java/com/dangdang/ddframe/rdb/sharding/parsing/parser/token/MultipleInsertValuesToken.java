@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 批量插入标记对象.
+ * Multiple insert values token.
  *
  * @author zhangliang
  */

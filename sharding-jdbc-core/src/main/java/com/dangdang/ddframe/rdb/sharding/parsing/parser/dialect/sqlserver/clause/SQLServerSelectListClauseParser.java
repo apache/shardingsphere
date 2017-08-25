@@ -12,7 +12,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.Selec
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 
 /**
- * SQLServer 选择项从句解析器.
+ * Select list clause parser for SQLServer.
  *
  * @author zhangliang
  */

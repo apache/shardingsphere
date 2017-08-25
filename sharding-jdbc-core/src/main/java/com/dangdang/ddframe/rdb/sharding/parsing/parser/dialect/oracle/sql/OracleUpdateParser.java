@@ -22,6 +22,11 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.facade.OracleUpdateClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.update.AbstractUpdateParser;
 
+/**
+ * Update parser for Oracle.
+ * 
+ * @author zhangliang 
+ */
 public class OracleUpdateParser extends AbstractUpdateParser {
     
     public OracleUpdateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {

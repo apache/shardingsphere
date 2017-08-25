@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ddl.drop.AbstractDropParser;
 
 /**
- * SQLServer Drop语句解析器.
+ * Drop parser for SQLServer.
  *
  * @author zhangliang
  */

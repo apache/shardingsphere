@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.claus
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.delete.AbstractDeleteParser;
 
 /**
- * PostgreSQL Delete语句解析器.
+ * Delete parser for PostgreSQL.
  *
  * @author zhangliang
  */

@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 数字表达式.
+ * Number expression.
  *
  * @author zhangliang
  */

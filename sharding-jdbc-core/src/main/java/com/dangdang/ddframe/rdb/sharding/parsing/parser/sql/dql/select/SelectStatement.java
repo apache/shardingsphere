@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Select SQL语句对象.
+ * Select statement.
  *
  * @author zhangliang
  */
@@ -68,10 +68,10 @@ public final class SelectStatement extends DQLStatement {
     private SelectStatement subQueryStatement;
     
     /**
-     * 获取别名.
+     * Get alias.
      * 
-     * @param name 名称
-     * @return 别名
+     * @param name name or alias
+     * @return alias
      */
     public Optional<String> getAlias(final String name) {
         if (containStar) {
@@ -90,9 +90,9 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * 获取聚合选择项集合.
+     * Get aggregation select items.
      *
-     * @return 聚合选择项
+     * @return aggregation select items
      */
     public List<AggregationSelectItem> getAggregationSelectItems() {
         List<AggregationSelectItem> result = new LinkedList<>();
@@ -109,18 +109,18 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * 判断是否分组和排序项一致.
+     * Adjust group by and order by sequence is same or not.
      *
-     * @return 是否分组和排序项一致
+     * @return group by and order by sequence is same or not
      */
     public boolean isSameGroupByAndOrderByItems() {
         return !getGroupByItems().isEmpty() && getGroupByItems().equals(getOrderByItems());
     }
     
     /**
-     * 为选择项设置索引.
+     * Set index for select items.
      * 
-     * @param columnLabelIndexMap 列标签索引字典
+     * @param columnLabelIndexMap map for column label and index
      */
     public void setIndexForItems(final Map<String, Integer> columnLabelIndexMap) {
         setIndexForAggregationItem(columnLabelIndexMap);
@@ -152,9 +152,9 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * 设置子查询的Select SQL语句对象.
+     * Set sub query statement.
      * 
-     * @param subQueryStatement 子查询的Select SQL语句对象
+     * @param subQueryStatement sub query statement
      */
     public void setSubQueryStatement(final SelectStatement subQueryStatement) {
         this.subQueryStatement = subQueryStatement;
@@ -162,18 +162,18 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * 判断是否包含子查询.
+     * Adjust contains sub query statement or not.
      * 
-     * @return 是否包含子查询
+     * @return contains sub query statement or not
      */
     public boolean containsSubQuery() {
         return null != subQueryStatement;
     }
     
     /**
-     * 合并包含子查询的Select SQL语句对象.
+     * Merge sub query statement if contains.
      * 
-     * @return Select SQL语句对象
+     * @return Select select statement
      */
     public SelectStatement mergeSubQueryStatement() {
         SelectStatement result = processLimitForSubQuery();

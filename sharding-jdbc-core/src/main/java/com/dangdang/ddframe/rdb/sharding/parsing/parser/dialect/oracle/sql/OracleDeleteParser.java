@@ -24,6 +24,11 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.facade.OracleDeleteClauseParserFacade;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.delete.AbstractDeleteParser;
 
+/**
+ * Delete parser for Oracle.
+ * 
+ * @author zhangliang 
+ */
 public class OracleDeleteParser extends AbstractDeleteParser {
     
     public OracleDeleteParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {

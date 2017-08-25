@@ -62,7 +62,7 @@ public final class SQLRewriteEngine {
     /**
      * Constructs SQL rewrite engine.
      * 
-     * @param shardingRule Databases and tables sharding rule
+     * @param shardingRule databases and tables sharding rule
      * @param originalSQL original SQL
      * @param sqlStatement SQL statement
      */

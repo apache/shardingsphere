@@ -9,7 +9,7 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 别名从句解析器.
+ * Alias clause parser.
  *
  * @author zhangliang
  */
@@ -19,9 +19,9 @@ public final class AliasClauseParser implements SQLClauseParser {
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析别名.
+     * Parse alias.
      *
-     * @return 别名
+     * @return alias
      */
     public Optional<String> parse() {
         if (lexerEngine.skipIfEqual(DefaultKeyword.AS)) {
@@ -32,7 +32,6 @@ public final class AliasClauseParser implements SQLClauseParser {
             lexerEngine.nextToken();
             return Optional.of(result);
         }
-        // TODO 增加哪些数据库识别哪些关键字作为别名的配置
         if (lexerEngine.equalAny(
                 Literals.IDENTIFIER, Literals.CHARS, DefaultKeyword.USER, DefaultKeyword.END, DefaultKeyword.CASE, DefaultKeyword.KEY, DefaultKeyword.INTERVAL, DefaultKeyword.CONSTRAINT)) {
             String result = SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals());

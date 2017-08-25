@@ -35,7 +35,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * SQL语句解析器工厂.
+ * SQL parser factory.
  *
  * @author zhangliang
  */
@@ -43,13 +43,13 @@ import lombok.NoArgsConstructor;
 public final class SQLParserFactory {
     
     /**
-     * 创建SQL语句解析器.
+     * Create SQL parser.
      *
-     * @param dbType 数据库类型
-     * @param tokenType 词法标记类型
-     * @param shardingRule 分库分表规则配置
-     * @param lexerEngine 词法解析器引擎
-     * @return SQL语句解析器
+     * @param dbType database type
+     * @param tokenType token type
+     * @param shardingRule databases and tables sharding rule
+     * @param lexerEngine lexical analysis engine
+     * @return SQL parser
      */
     public static SQLParser newInstance(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         if (!(tokenType instanceof DefaultKeyword)) {

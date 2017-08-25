@@ -8,7 +8,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractUp
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clause.PostgreSQLTableReferencesClauseParser;
 
 /**
- * PostgreSQL的UPDATE从句解析器门面类.
+ * Update clause parser facade for PostgreSQL.
  *
  * @author zhangliang
  */

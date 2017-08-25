@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.lexer.token;
 
 /**
- * 词法辅助标记.
+ * Assist token.
  *
  * @author zhangliang
  */

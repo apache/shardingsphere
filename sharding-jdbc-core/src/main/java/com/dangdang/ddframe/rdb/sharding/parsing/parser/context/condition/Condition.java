@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * 条件对象.
+ * Condition.
  *
  * @author zhangliang
  */
@@ -72,10 +72,10 @@ public final class Condition {
     }
     
     /**
-     * 将条件对象转换为分片值.
+     * Get sharding value via condition.
      *
-     * @param parameters 参数列表
-     * @return 分片值
+     * @param parameters parameters
+     * @return sharding value
      */
     public ShardingValue<?> getShardingValue(final List<Object> parameters) {
         List<Comparable<?>> conditionValues = getValues(parameters);

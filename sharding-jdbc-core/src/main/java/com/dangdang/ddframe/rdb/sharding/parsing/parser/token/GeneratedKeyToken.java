@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 自增主键标记对象.
+ * Generated key token.
  *
  * @author zhangliang
  */

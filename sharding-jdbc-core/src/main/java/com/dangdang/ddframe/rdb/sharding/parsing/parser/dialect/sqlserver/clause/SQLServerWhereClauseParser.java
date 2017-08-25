@@ -8,7 +8,7 @@ import com.google.common.base.Optional;
 import java.util.List;
 
 /**
- * SQLServer WHERE从句解析对象.
+ * Where clause parser for SQLServer.
  *
  * @author zhangliang
  */

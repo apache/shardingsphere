@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.fac
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.delete.AbstractDeleteParser;
 
 /**
- * MySQL Delete语句解析器.
+ * Delete parser for MySQL.
  *
  * @author zhangliang
  */

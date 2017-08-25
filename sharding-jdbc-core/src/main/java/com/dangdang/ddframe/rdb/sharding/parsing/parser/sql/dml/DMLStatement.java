@@ -24,7 +24,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * DML语句对象.
+ * DML statement.
  *
  * @author zhangliang
  */

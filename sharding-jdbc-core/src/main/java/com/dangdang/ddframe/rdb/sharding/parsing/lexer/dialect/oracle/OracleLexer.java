@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer.Dictionary;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
 
 /**
- * Oracle词法解析器.
+ * Oracle Lexical analysis.
  *
  * @author zhangliang
  */

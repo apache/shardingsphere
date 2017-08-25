@@ -28,7 +28,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Insert语句解析器工厂.
+ * Insert parser factory.
  *
  * @author zhangliang
  */
@@ -36,12 +36,12 @@ import lombok.NoArgsConstructor;
 public final class InsertParserFactory {
     
     /**
-     * 创建Insert语句解析器.
+     * Create insert parser instance.
      *
-     * @param dbType 数据库类型
-     * @param shardingRule 分库分表规则配置
-     * @param lexerEngine 解析器
-     * @return Insert语句解析器
+     * @param dbType database type
+     * @param shardingRule databases and tables sharding rule
+     * @param lexerEngine lexical analysis engine.
+     * @return insert parser instance
      */
     public static AbstractInsertParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         switch (dbType) {

@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * 全选选择项.
+ * Select all item.
  *
  * @author zhangliang
  */

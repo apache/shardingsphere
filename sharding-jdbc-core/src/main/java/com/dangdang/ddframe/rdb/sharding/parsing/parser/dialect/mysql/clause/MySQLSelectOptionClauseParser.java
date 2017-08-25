@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
 import lombok.RequiredArgsConstructor;
 
 /**
- * MySQL Select选项语句解析器.
+ * Select option clause parser for MySQL.
  *
  * @author zhangliang
  */

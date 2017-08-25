@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * 列对象.
+ * Column.
  *
  * @author zhangliang
  * @author caohao

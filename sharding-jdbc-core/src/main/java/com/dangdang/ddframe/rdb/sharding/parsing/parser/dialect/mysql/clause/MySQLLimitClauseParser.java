@@ -31,7 +31,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import lombok.RequiredArgsConstructor;
 
 /**
- * MySQL Limit语句解析器.
+ * Limit clause parser for MySQL.
  *
  * @author zhangliang
  */
@@ -41,8 +41,9 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析Limit.
-     * @param selectStatement Select SQL语句对象
+     * Parse limit.
+     * 
+     * @param selectStatement select statement
      */
     public void parse(final SelectStatement selectStatement) {
         if (!lexerEngine.skipIfEqual(MySQLKeyword.LIMIT)) {

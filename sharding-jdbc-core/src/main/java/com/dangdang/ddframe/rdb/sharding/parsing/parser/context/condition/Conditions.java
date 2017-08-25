@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * 条件对象集合.
+ * Conditions collection.
  *
  * @author zhangliang
  */
@@ -29,38 +29,39 @@ public final class Conditions {
     }
     
     /**
-     * 添加条件对象.
+     * Add condition.
      *
-     * @param condition 条件对象
-     * @param shardingRule 分库分表规则配置对象
+     * @param condition condition
+     * @param shardingRule databases and tables sharding rule
      */
-    // TODO 添加condition时进行判断, 比如:如果以存在 等于操作 的condition, 而已存在包含 =符号 的相同column的condition, 则不添加现有的condition, 而且删除原有condition
+    // TODO adjust before add condition, eg: if condition exist = operator and include same column, should remove condition (tow equal condition should found nothing)
     public void add(final Condition condition, final ShardingRule shardingRule) {
-        // TODO 自关联有问题，表名可考虑使用别名对应
+        // TODO self-join has problem, table name maybe use alias
         if (shardingRule.isShardingColumn(condition.getColumn())) {
             conditions.put(condition.getColumn(), condition);
         }
     }
     
-    // TODO 引入mockito时去掉该方法
+    // TODO should remove, use mockito to replace this method
+    @Deprecated
     public void add(final Condition condition) {
         conditions.put(condition.getColumn(), condition);
     }
     
     /**
-     * 判断条件对象是否为空.
+     * Adjust condition is empty or not.
      * 
-     * @return 条件对象是否为空
+     * @return condition is empty or not
      */
     public boolean isEmpty() {
         return conditions.isEmpty();
     }
     
     /**
-     * 查找条件对象.
+     * Find condition via column.
      *
-     * @param column 列对象
-     * @return 条件对象
+     * @param column column
+     * @return found condition
      */
     public Optional<Condition> find(final Column column) {
         return Optional.fromNullable(conditions.get(column));

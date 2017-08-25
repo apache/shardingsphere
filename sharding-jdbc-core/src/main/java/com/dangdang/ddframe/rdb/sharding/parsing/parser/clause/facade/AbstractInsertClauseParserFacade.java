@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * INSERT从句解析器门面类.
+ * Insert clause parser facade.
  *
  * @author zhangliang
  */

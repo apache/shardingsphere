@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * SELECT剩余语句解析器.
+ * Select rest clause parser.
  *
  * @author zhangliang
  */
@@ -20,7 +20,7 @@ public class SelectRestClauseParser implements SQLClauseParser {
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析剩余语句.
+     * Parse select rest.
      */
     public final void parse() {
         Collection<Keyword> unsupportedRestKeywords = new LinkedList<>();

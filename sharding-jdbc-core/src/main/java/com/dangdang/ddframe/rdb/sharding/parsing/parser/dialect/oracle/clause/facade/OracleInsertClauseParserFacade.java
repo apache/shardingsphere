@@ -9,7 +9,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractIn
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleInsertIntoClauseParser;
 
 /**
- * Oracle的INSERT从句解析器门面类.
+ * Insert clause parser facade for Oracle.
  *
  * @author zhangliang
  */

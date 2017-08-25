@@ -7,7 +7,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.Or
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.OracleWhereClauseParser;
 
 /**
- * Oracle的DELETE从句解析器门面类.
+ * Delete clause parser facade for Oracle.
  *
  * @author zhangliang
  */

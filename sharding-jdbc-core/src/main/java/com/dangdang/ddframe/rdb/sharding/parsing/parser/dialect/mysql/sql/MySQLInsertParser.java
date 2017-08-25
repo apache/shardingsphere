@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.fac
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert.AbstractInsertParser;
 
 /**
- * MySQL Insert语句解析器.
+ * Insert parser for MySQL.
  *
  * @author zhangliang
  */

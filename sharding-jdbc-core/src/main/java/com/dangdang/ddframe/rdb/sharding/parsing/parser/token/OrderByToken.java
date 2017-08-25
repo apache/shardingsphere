@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 排序标记对象.
+ * Order by token.
  *
  * @author zhangliang
  */

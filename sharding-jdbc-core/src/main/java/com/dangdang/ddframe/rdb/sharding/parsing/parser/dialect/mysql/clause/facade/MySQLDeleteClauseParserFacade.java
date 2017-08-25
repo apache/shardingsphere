@@ -7,7 +7,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLTableReferencesClauseParser;
 
 /**
- * MySQL的DELETE从句解析器门面类.
+ * Delete clause parser facade for MySQL.
  *
  * @author zhangliang
  */

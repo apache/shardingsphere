@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.claus
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.update.AbstractUpdateParser;
 
 /**
- * PostgreSQL Update语句解析器.
+ * Update parser for PostgreSQL.
  *
  * @author zhangliang
  */

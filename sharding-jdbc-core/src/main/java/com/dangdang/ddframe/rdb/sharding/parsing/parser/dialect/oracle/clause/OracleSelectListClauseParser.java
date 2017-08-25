@@ -7,7 +7,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SelectListClauseParser;
 
 /**
- * Oracle 选择项从句解析器.
+ * Select list clause parser for Oracle.
  *
  * @author zhangliang
  */

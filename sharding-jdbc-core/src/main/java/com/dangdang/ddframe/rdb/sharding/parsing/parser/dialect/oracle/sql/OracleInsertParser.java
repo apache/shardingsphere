@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.clause.fa
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert.AbstractInsertParser;
 
 /**
- * Oracle Insert语句解析器.
+ * Insert parser for Oracle.
  *
  * @author zhangliang
  */

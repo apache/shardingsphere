@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * 自动生成键.
+ * Generated key.
  * 
  * @author zhangliang
  */

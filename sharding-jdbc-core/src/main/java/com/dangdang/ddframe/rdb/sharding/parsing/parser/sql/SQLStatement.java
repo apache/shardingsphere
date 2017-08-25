@@ -32,44 +32,44 @@ import java.util.List;
 public interface SQLStatement {
     
     /**
-     * 获取SQL语句类型.
+     * Get SQL type.
      *
-     * @return SQL语句类型
+     * @return SQL type
      */
     SQLType getType();
     
     /**
-     * 获取表解析对象集合.
+     * Get tables.
      * 
-     * @return 表解析对象集合
+     * @return tables
      */
     Tables getTables();
     
     /**
-     * 获取条件对象集合.
+     * Get conditions.
      *
-     * @return 条件对象集合
+     * @return conditions
      */
     Conditions getConditions();
     
     /**
-     * 获取SQL标记集合.
+     * Get SQL Tokens.
      * 
-     * @return SQL标记集合
+     * @return SQL Tokens
      */
     List<SQLToken> getSqlTokens();
     
     /**
-     * 获取索引偏移量.
+     * Get index of parameters.
      *
-     * @return 索引偏移量
+     * @return index of parameters
      */
     int getParametersIndex();
     
     /**
-     * 设置索引偏移量.
+     * Set index of parameters.
      *
-     * @param parametersIndex 索引偏移量
+     * @param parametersIndex index of parameters
      */
     void setParametersIndex(int parametersIndex);
     

@@ -13,7 +13,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MyS
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLTableReferencesClauseParser;
 
 /**
- * MySQL的SELECT从句解析器门面类.
+ * Select clause parser facade for MySQL.
  *
  * @author zhangliang
  */

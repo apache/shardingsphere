@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ddl.alter.AbstractAlterParser;
 
 /**
- * PostgreSQL Alter语句解析器.
+ * Alter parser for PostgreSQL.
  *
  * @author zhangliang
  */

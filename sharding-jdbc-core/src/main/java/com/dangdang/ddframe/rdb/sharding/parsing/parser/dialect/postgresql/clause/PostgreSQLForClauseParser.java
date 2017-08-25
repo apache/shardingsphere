@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.SQLClauseParser;
 import lombok.RequiredArgsConstructor;
 
 /**
- * PostgreSQL For语句解析器.
+ * Select for clause parser for PostgreSQL.
  *
  * @author zhangliang
  */
@@ -34,7 +34,7 @@ public final class PostgreSQLForClauseParser implements SQLClauseParser {
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析For.
+     * Parse for.
      */
     public void parse() {
         if (!lexerEngine.skipIfEqual(DefaultKeyword.FOR)) {

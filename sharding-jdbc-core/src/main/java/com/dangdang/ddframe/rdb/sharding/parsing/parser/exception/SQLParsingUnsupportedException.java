@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 
 /**
- * 不支持的SQL抛出的异常.
+ * Throw exception when SQL not supported.
  * 
  * @author zhangliang 
  */

@@ -17,7 +17,7 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 表达式从句解析器.
+ * Expression clause parser.
  *
  * @author zhangliang
  */
@@ -27,9 +27,9 @@ public final class ExpressionClauseParser implements SQLClauseParser {
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析表达式.
+     * Parse expression.
      *
-     * @param sqlStatement SQL语句对象
+     * @param sqlStatement SQL statement
      * @return 表达式
      */
     public SQLExpression parse(final SQLStatement sqlStatement) {
@@ -41,7 +41,7 @@ public final class ExpressionClauseParser implements SQLClauseParser {
         return result;
     }
     
-    // TODO 完善Expression解析的各种场景
+    // TODO complete more expression parse
     private SQLExpression parseExpression(final SQLStatement sqlStatement) {
         String literals = lexerEngine.getCurrentToken().getLiterals();
         final int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - literals.length();

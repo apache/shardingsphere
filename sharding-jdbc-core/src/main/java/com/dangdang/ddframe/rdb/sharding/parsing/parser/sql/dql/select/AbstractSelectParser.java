@@ -39,7 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Select语句解析器.
+ * Select parser.
  * 
  * @author zhangliang 
  */
@@ -152,7 +152,7 @@ public abstract class AbstractSelectParser implements SQLParser {
             AggregationSelectItem sumItem = new AggregationSelectItem(AggregationType.SUM, avgItem.getInnerExpression(), Optional.of(sumAlias));
             avgItem.getDerivedAggregationSelectItems().add(countItem);
             avgItem.getDerivedAggregationSelectItems().add(sumItem);
-            // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
+            // TODO replace avg to constant, avoid calculate useless avg
             itemsToken.getItems().add(countItem.getExpression() + " AS " + countAlias + " ");
             itemsToken.getItems().add(sumItem.getExpression() + " AS " + sumAlias + " ");
             derivedColumnOffset++;

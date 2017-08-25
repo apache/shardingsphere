@@ -18,16 +18,16 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.token;
 
 /**
- * SQL标记对象.
+ * SQL Token.
  *
  * @author zhangliang
  */
 public interface SQLToken {
     
     /**
-     * 获取开始位置.
+     * Get begin position.
      * 
-     * @return 开始位置
+     * @return begin position
      */
     int getBeginPosition();
 }

@@ -5,7 +5,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Having从句解析器.
+ * Having clause parser.
  *
  * @author zhangliang
  */
@@ -15,7 +15,7 @@ public final class HavingClauseParser implements SQLClauseParser {
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析Having.
+     * Parse having.
      */
     public void parse() {
         lexerEngine.unsupportedIfEqual(DefaultKeyword.HAVING);

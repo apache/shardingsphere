@@ -27,7 +27,7 @@ import lombok.ToString;
 import java.util.List;
 
 /**
- * 分页对象.
+ * Limit object.
  *
  * @author zhangliang
  * @author caohao
@@ -45,29 +45,29 @@ public final class Limit {
     private LimitValue rowCount;
     
     /**
-     * 获取分页偏移量.
+     * Get offset value.
      * 
-     * @return 分页偏移量
+     * @return offset value
      */
     public int getOffsetValue() {
         return null != offset ? offset.getValue() : 0;
     }
     
     /**
-     * 获取分页行数.
+     * Get row count value.
      *
-     * @return 分页行数
+     * @return row count value
      */
     public int getRowCountValue() {
         return null != rowCount ? rowCount.getValue() : -1;
     }
     
     /**
-     * 填充改写分页参数.
+     * Fill parameters for rewrite limit.
      *
-     * @param parameters 参数
-     * @param isRewrite 是否重写参数
-     * @param isFetchAll 是否获取所有数据
+     * @param parameters parameters
+     * @param isRewrite is rewrite or not
+     * @param isFetchAll is fetch all data or not
      */
     public void processParameters(final List<Object> parameters, final boolean isRewrite, final boolean isFetchAll) {
         fill(parameters);

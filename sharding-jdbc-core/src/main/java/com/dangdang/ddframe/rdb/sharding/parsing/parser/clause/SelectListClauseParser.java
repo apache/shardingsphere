@@ -19,7 +19,7 @@ import lombok.Getter;
 import java.util.List;
 
 /**
- * 选择项从句解析器.
+ * Select list clause parser.
  *
  * @author zhangliang
  */
@@ -39,10 +39,10 @@ public class SelectListClauseParser implements SQLClauseParser {
     }
     
     /**
-     * 解析选择项.
+     * Parse select list.
      * 
-     * @param selectStatement Select SQL语句对象
-     * @param items 已有的选择项集合
+     * @param selectStatement select statement
+     * @param items select items
      */
     public void parse(final SelectStatement selectStatement, final List<SelectItem> items) {
         do {

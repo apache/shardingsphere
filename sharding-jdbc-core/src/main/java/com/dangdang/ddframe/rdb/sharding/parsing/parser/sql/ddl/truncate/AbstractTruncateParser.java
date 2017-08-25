@@ -28,7 +28,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Truncate语句解析器.
+ * Truncate parser.
  *
  * @author zhangliang
  */

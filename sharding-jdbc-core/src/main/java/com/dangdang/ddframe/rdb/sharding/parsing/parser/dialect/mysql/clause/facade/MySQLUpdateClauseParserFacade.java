@@ -8,7 +8,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.WhereClauseParser
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.clause.MySQLTableReferencesClauseParser;
 
 /**
- * MySQL的UPDATE从句解析器门面类.
+ * Update clause parser facade for MySQL.
  *
  * @author zhangliang
  */

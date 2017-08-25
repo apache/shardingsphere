@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Set;
 
 /**
- * 词法解析器引擎.
+ * Lexical analysis engine.
  *
  * @author zhangliang
  */
@@ -40,35 +40,35 @@ public final class LexerEngine {
     private final Lexer lexer;
     
     /**
-     * 获取输入的字符串.
+     * Get input string.
      * 
-     * @return 输入的字符串
+     * @return inputted string
      */
     public String getInput() {
         return lexer.getInput();
     }
     
     /**
-     * 分析下一个词法标记.
+     * Analyse next token.
      */
     public void nextToken() {
         lexer.nextToken();
     }
     
     /**
-     * 获取当前词法标记.
+     * Get current token.
      * 
-     * @return 词法标记
+     * @return current token
      */
     public Token getCurrentToken() {
         return lexer.getCurrentToken();
     }
     
     /**
-     * 跳过小括号内所有的词法标记.
+     * skip all tokens that inside parentheses.
      *
-     * @param sqlStatement SQL语句对象
-     * @return 小括号内所有的词法标记
+     * @param sqlStatement SQL statement
+     * @return skipped string
      */
     public String skipParentheses(final SQLStatement sqlStatement) {
         StringBuilder result = new StringBuilder("");
@@ -98,9 +98,9 @@ public final class LexerEngine {
     }
     
     /**
-     * 断言当前词法标记类型与传入值相等并跳过.
+     * Assert current token type should equals input token and go to next token type.
      *
-     * @param tokenType 待判断的词法标记类型
+     * @param tokenType token type
      */
     public void accept(final TokenType tokenType) {
         if (lexer.getCurrentToken().getType() != tokenType) {
@@ -110,10 +110,10 @@ public final class LexerEngine {
     }
     
     /**
-     * 判断当前词法标记类型是否与其中一个传入值相等.
+     * Adjust current token equals one of input tokens or not.
      *
-     * @param tokenTypes 待判断的词法标记类型
-     * @return 是否有相等的词法标记类型
+     * @param tokenTypes to be adjusted token types
+     * @return current token equals one of input tokens or not
      */
     public boolean equalAny(final TokenType... tokenTypes) {
         for (TokenType each : tokenTypes) {
@@ -125,10 +125,10 @@ public final class LexerEngine {
     }
     
     /**
-     * 如果当前词法标记类型等于传入值, 则跳过.
+     * Skip current token if equals one of input tokens.
      *
-     * @param tokenTypes 待跳过的词法标记类型
-     * @return 是否跳过(或可理解为是否相等)
+     * @param tokenTypes to be adjusted token types
+     * @return skipped current token or not
      */
     public boolean skipIfEqual(final TokenType... tokenTypes) {
         if (equalAny(tokenTypes)) {
@@ -139,9 +139,9 @@ public final class LexerEngine {
     }
     
     /**
-     * 跳过所有传入的词法标记类型.
+     * Skip all input tokens.
      *
-     * @param tokenTypes 待跳过的词法标记类型
+     * @param tokenTypes to be skipped token types
      */
     public void skipAll(final TokenType... tokenTypes) {
         Set<TokenType> tokenTypeSet = Sets.newHashSet(tokenTypes);
@@ -151,9 +151,9 @@ public final class LexerEngine {
     }
     
     /**
-     * 直接跳转至传入的词法标记类型.
+     * Skip until one of input tokens.
      *
-     * @param tokenTypes 跳转至的词法标记类型
+     * @param tokenTypes to be skipped untiled token types
      */
     public void skipUntil(final TokenType... tokenTypes) {
         Set<TokenType> tokenTypeSet = Sets.newHashSet(tokenTypes);
@@ -164,9 +164,9 @@ public final class LexerEngine {
     }
     
     /**
-     * 如果当前词法标记类型等于传入值, 则抛出不支持异常.
+     * Throw unsupported exception if current token equals one of input tokens.
      * 
-     * @param tokenTypes 待判断的词法标记类型
+     * @param tokenTypes to be adjusted token types
      */
     public void unsupportedIfEqual(final TokenType... tokenTypes) {
         if (equalAny(tokenTypes)) {
@@ -175,9 +175,9 @@ public final class LexerEngine {
     }
     
     /**
-     * 如果当前词法标记类型不等于传入值, 则抛出不支持异常, 否则跳过当前词法标记.
+     * Throw unsupported exception if current token not equals one of input tokens.
      *
-     * @param tokenTypes 待判断的词法标记类型
+     * @param tokenTypes to be adjusted token types
      */
     public void unsupportedIfNotSkip(final TokenType... tokenTypes) {
         if (!skipIfEqual(tokenTypes)) {

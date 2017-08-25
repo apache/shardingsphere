@@ -28,7 +28,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Select语句解析器工厂.
+ * Select parser factory.
  *
  * @author zhangliang
  */
@@ -36,12 +36,12 @@ import lombok.NoArgsConstructor;
 public final class SelectParserFactory {
     
     /**
-     * 创建Select语句解析器.
+     * Create select parser instance.
      *
-     * @param dbType 数据库类型
-     * @param shardingRule 分库分表规则配置
-     * @param lexerEngine 解析器
-     * @return Select语句解析器
+     * @param dbType database type
+     * @param shardingRule databases and tables sharding rule
+     * @param lexerEngine lexical analysis engine.
+     * @return select parser instance
      */
     public static AbstractSelectParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         switch (dbType) {

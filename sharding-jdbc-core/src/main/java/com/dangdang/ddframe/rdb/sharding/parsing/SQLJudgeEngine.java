@@ -30,7 +30,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectSta
 import lombok.RequiredArgsConstructor;
 
 /**
- * SQL判断引擎.
+ * SQL judge engine.
  *
  * @author zhangliang
  */
@@ -40,9 +40,9 @@ public final class SQLJudgeEngine {
     private final String sql;
     
     /**
-     * 判断并获取SQL类型.
+     * judge SQL Type only.
      *
-     * @return SQL语句对象
+     * @return SQL statement
      */
     public SQLStatement judge() {
         Lexer lexer = new Lexer(sql, new Dictionary());

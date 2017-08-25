@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Distinct从句解析器.
+ * Distinct clause parser.
  *
  * @author zhangliang
  */
@@ -20,7 +20,7 @@ public class DistinctClauseParser implements SQLClauseParser {
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析Distinct.
+     * Parse distinct.
      */
     public final void parse() {
         lexerEngine.skipAll(DefaultKeyword.ALL);

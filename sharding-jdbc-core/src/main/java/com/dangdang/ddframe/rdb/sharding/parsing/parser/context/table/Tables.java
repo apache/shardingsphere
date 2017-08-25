@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 /**
- * 表集合对象.
+ * Tables collection.
  * 
  * @author zhangliang
  */

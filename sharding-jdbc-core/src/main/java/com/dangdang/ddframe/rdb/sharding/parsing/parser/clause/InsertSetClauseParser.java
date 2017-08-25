@@ -19,7 +19,7 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
- * INSERT VALUES从句解析器.
+ * Insert set clause parser.
  *
  * @author zhangliang
  */
@@ -31,9 +31,9 @@ public class InsertSetClauseParser implements SQLClauseParser {
     private final LexerEngine lexerEngine;
     
     /**
-     * 解析INSERT SET.
+     * Parse insert set.
      *
-     * @param insertStatement INSERT语句对象
+     * @param insertStatement insert statement
      */
     public void parse(final InsertStatement insertStatement) {
         if (!lexerEngine.skipIfEqual(getCustomizedInsertKeywords())) {

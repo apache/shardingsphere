@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ddl.truncate.AbstractTruncateParser;
 
 /**
- * PostgreSQL Truncate语句解析器.
+ * Truncate parser for PostgreSQL.
  *
  * @author zhangliang
  */

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * DELETE从句解析器门面类.
+ * Delete clause parser facade.
  *
  * @author zhangliang
  */

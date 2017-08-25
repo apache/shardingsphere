@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * SELECT从句解析器门面类.
+ * Select clause parser facade.
  *
  * @author zhangliang
  */

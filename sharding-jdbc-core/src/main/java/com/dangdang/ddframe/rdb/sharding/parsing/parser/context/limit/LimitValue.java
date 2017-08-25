@@ -23,7 +23,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * 分页值对象.
+ * Limit value.
  *
  * @author zhangliang
  */

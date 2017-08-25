@@ -28,7 +28,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Drop语句解析器.
+ * Drop parser.
  *
  * @author zhangliang
  */

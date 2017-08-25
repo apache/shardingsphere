@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 
 /**
- * Oracle词法关键词.
+ * Oracle keyword.
  * 
  * @author zhangliang 
  */

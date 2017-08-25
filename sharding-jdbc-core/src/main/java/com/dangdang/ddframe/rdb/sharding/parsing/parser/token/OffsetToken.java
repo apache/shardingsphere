@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 分页偏移量标记对象.
+ * Offset token for limit.
  *
  * @author zhangliang
  */

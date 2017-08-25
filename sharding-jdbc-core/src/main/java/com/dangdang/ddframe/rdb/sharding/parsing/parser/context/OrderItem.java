@@ -25,7 +25,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * 排序项.
+ * Order item.
  *
  * @author zhangliang
  */
@@ -73,18 +73,18 @@ public final class OrderItem {
     }
     
     /**
-     * 获取列标签.
+     * Get column label.
      *
-     * @return 列标签
+     * @return column label
      */
     public String getColumnLabel() {
         return alias.isPresent() ? alias.get() : name.orNull();
     }
     
     /**
-     * 获取列全名.
+     * Get qualified name.
      *
-     * @return 列全名
+     * @return qualified name
      */
     public Optional<String> getQualifiedName() {
         if (!name.isPresent()) {

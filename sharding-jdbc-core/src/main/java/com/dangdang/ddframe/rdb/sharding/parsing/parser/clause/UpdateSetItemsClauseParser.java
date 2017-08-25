@@ -8,7 +8,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 
 /**
- * UPDATE SET从句解析器.
+ * Update set items clause parser.
  *
  * @author zhangliang
  */
@@ -24,9 +24,9 @@ public final class UpdateSetItemsClauseParser implements SQLClauseParser {
     }
     
     /**
-     * 解析SET.
+     * Parse set items.
      *
-     * @param updateStatement DML语句对象
+     * @param updateStatement DML statement
      */
     public void parse(final DMLStatement updateStatement) {
         lexerEngine.accept(DefaultKeyword.SET);

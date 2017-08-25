@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 表从句解析器.
+ * Table references clause parser.
  *
  * @author zhangliang
  */
@@ -40,10 +40,10 @@ public class TableReferencesClauseParser implements SQLClauseParser {
     }
     
     /**
-     * 解析表.
+     * Parse table references.
      *
-     * @param sqlStatement SQL语句对象
-     * @param isSingleTableOnly 是否仅解析单表
+     * @param sqlStatement SQL statement
+     * @param isSingleTableOnly is parse single table only
      */
     public final void parse(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
         do {

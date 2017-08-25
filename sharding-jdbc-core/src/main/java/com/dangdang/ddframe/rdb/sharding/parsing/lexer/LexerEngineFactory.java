@@ -26,7 +26,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * 词法解析器引擎工厂.
+ * Lexical analysis factory.
  *
  * @author zhangliang
  */
@@ -34,11 +34,11 @@ import lombok.NoArgsConstructor;
 public final class LexerEngineFactory {
     
     /**
-     * 创建词法解析器引擎.
+     * Create lexical analysis engine instance.
      * 
-     * @param dbType 数据库类型
-     * @param sql SQL语句
-     * @return 词法解析器引擎
+     * @param dbType database type
+     * @param sql SQL
+     * @return lexical analysis engine instance
      */
     public static LexerEngine newInstance(final DatabaseType dbType, final String sql) {
         switch (dbType) {

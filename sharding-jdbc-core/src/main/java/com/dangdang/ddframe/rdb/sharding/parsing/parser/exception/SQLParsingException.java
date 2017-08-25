@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 
 /**
- * SQL解析异常.
+ * Throw exception when SQL parsing error.
  * 
  * @author zhangliang 
  */

@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ddl.create.AbstractCreateParser;
 
 /**
- * Oracle Create语句解析器.
+ * Create parser for Oracle.
  *
  * @author zhangliang
  */

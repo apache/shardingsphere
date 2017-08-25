@@ -7,7 +7,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.facade.AbstractDe
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.clause.PostgreSQLTableReferencesClauseParser;
 
 /**
- * PostgreSQL的DELETE从句解析器门面类.
+ * Delete clause parser facade for PostgreSQL.
  *
  * @author zhangliang
  */

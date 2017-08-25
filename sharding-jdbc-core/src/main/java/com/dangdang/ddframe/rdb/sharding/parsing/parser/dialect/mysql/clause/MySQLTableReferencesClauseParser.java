@@ -9,7 +9,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.clause.TableReferencesCl
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 
 /**
- * MySQL 表从句解析器.
+ * Select table references clause parser for MySQL.
  *
  * @author zhangliang
  */

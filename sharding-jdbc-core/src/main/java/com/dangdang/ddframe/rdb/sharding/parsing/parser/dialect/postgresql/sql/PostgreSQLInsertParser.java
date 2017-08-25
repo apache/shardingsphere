@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.claus
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert.AbstractInsertParser;
 
 /**
- * PostgreSQL Insert语句解析器.
+ * Insert parser for PostgreSQL.
  *
  * @author zhangliang
  */

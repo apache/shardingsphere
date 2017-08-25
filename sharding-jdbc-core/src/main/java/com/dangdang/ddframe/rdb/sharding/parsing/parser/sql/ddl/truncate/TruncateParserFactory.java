@@ -28,7 +28,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Truncate语句解析器工厂.
+ * Truncate parser factory.
  *
  * @author zhangliang
  */
@@ -36,12 +36,12 @@ import lombok.NoArgsConstructor;
 public final class TruncateParserFactory {
     
     /**
-     * 创建Truncate语句解析器.
-     * 
-     * @param dbType 数据库类型
-     * @param shardingRule 分库分表规则配置
-     * @param lexerEngine 解析器
-     * @return Truncate语句解析器
+     * Create truncate parser instance.
+     *
+     * @param dbType database type
+     * @param shardingRule databases and tables sharding rule
+     * @param lexerEngine lexical analysis engine.
+     * @return truncate parser instance
      */
     public static AbstractTruncateParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         switch (dbType) {

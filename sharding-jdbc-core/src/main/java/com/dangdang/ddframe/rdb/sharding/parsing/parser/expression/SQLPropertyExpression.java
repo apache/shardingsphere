@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 属性表达式.
+ * Property expression.
  *
  * @author zhangliang
  */

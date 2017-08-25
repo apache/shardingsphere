@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collections;
 
 /**
- * Delete语句解析器.
+ * Delete parser.
  *
  * @author zhangliang
  */

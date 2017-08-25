@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.ddl.create.AbstractCreateParser;
 
 /**
- * PostgreSQL Create语句解析器.
+ * Create parser for PostgreSQL.
  *
  * @author zhangliang
  */

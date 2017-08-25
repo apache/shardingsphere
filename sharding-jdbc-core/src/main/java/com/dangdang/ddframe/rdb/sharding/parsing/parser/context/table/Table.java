@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * 表解析对象.
+ * Table.
  * 
  * @author zhangliang
  */

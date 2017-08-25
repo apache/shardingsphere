@@ -27,7 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.AbstractS
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dql.select.SelectStatement;
 
 /**
- * Oracle Select语句解析器.
+ * Select parser for Oracle.
  *
  * @author zhangliang
  */

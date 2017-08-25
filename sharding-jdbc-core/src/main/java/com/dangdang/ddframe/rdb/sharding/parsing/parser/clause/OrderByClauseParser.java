@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 排序从句解析器.
+ * Order by clause parser.
  *
  * @author zhangliang
  */
@@ -36,9 +36,9 @@ public class OrderByClauseParser implements SQLClauseParser {
     }
     
     /**
-     * 解析排序.
+     * Parse order by.
      *
-     * @param selectStatement Select语句对象
+     * @param selectStatement select statement
      */
     public final void parse(final SelectStatement selectStatement) {
         if (!lexerEngine.skipIfEqual(DefaultKeyword.ORDER)) {
