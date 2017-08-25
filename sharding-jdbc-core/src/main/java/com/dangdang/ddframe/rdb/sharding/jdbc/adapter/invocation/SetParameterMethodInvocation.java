@@ -22,7 +22,7 @@ import lombok.Getter;
 import java.lang.reflect.Method;
 
 /**
- * 反射调用参数设置方法的工具类.
+ * Invocation that reflected call for {@code PreparedStatement.setParameter} method.
  * 
  * @author zhangliang
  */
@@ -41,9 +41,9 @@ public final class SetParameterMethodInvocation extends JdbcMethodInvocation {
     }
     
     /**
-     * 设置参数值.
+     * Set argument.
      * 
-     * @param value 参数值
+     * @param value argument value
      */
     public void changeValueArgument(final Object value) {
         getArguments()[1] = value;

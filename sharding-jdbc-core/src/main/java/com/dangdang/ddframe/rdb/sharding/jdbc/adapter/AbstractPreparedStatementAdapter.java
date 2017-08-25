@@ -42,12 +42,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 预编译语句对象的适配类.
- * 
- * <p>
- * 封装与分片核心逻辑不相关的方法.
- * </p>
- * 
+ * Adapter for {@code PreparedStatement}.
+ *
  * @author zhangliang
  */
 public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {

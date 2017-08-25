@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * 数据库连接适配类.
+ * Adapter for {@code Connection}.
  * 
  * @author zhangliang
  */

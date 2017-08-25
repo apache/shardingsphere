@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * 静态语句对象适配类.
+ * Adapter for {@code Statement}.
  * 
  * @author gaohongtao
  */

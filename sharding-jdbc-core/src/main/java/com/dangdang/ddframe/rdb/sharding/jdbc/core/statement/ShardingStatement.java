@@ -47,7 +47,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 支持分片的静态语句对象.
+ * Statement that support sharding.
  * 
  * @author gaohongtao
  * @author caohao

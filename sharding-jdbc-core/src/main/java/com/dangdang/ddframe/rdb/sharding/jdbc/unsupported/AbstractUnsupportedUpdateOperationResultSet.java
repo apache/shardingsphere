@@ -37,7 +37,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 /**
- * 声明不支持更新操作的数据结果集对象.
+ * Unsupported {@code ResultSet} methods.
  * 
  * @author zhangliang
  */

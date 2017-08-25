@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 代理结果集适配器.
+ * Adapter for {@code ResultSet}.
  * 
  * @author zhangliang
  */

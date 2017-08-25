@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 支持分片的预编译语句对象.
+ * PreparedStatement that support sharding.
  * 
  * @author zhangliang
  * @author caohao

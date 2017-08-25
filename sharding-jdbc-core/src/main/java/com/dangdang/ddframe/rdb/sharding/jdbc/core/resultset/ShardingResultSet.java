@@ -37,7 +37,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * 支持分片的结果集.
+ * Result that support sharding.
  *
  * @author zhangliang
  */
@@ -58,7 +58,6 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     }
     
     @Override
-    // TODO
     public boolean wasNull() throws SQLException {
         return wasNull;
     }

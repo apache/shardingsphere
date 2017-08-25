@@ -24,7 +24,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 
 /**
- * 声明不支持操作的静态语句对象.
+ * Unsupported {@code Statement} methods.
  * 
  * @author gaohongtao
  */

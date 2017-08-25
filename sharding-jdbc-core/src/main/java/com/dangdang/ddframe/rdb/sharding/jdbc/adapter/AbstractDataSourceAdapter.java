@@ -27,7 +27,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 /**
- * 数据源适配类.
+ * Adapter for {@code Datasource}.
  * 
  * @author zhangliang
  */

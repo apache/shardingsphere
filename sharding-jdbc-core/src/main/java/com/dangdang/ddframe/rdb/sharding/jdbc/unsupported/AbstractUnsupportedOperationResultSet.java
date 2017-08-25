@@ -27,7 +27,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Map;
 
 /**
- * 声明不支持操作的数据结果集对象.
+ * Unsupported {@code ResultSet} methods.
  * 
  * @author zhangliang
  */

@@ -35,7 +35,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * 支持分片的数据源.
+ * Database that support sharding.
  * 
  * @author zhangliang
  */

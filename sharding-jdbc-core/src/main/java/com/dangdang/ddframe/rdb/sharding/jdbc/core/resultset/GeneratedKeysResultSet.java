@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 /**
- * 生成键结果集.
+ * ResultSet for generated keys.
  * 
  * @author gaohongtao
  */

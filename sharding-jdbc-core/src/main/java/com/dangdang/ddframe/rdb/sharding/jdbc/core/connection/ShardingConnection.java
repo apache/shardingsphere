@@ -44,7 +44,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * 支持分片的数据库连接.
+ * Connection that support sharding.
  * 
  * @author zhangliang
  * @author gaohongtao
@@ -58,11 +58,11 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     private final Map<String, Connection> connectionMap = new HashMap<>();
     
     /**
-     * 根据数据源名称获取全部数据库连接.
+     * Get all database connections via data source name for DDL. 
      *
-     * @param dataSourceName 数据源名称
-     * @return 数据库连接集合
-     * @throws SQLException SQL异常
+     * @param dataSourceName data source name
+     * @return all database connections via data source name for DDL
+     * @throws SQLException SQL exception
      */
     public Collection<Connection> getConnectionForDDL(final String dataSourceName) throws SQLException {
         final Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnectionForDDL", dataSourceName));
@@ -86,12 +86,12 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     /**
-     * 根据数据源名称获取相应的数据库连接.
+     * Get all database connections via data source name.
      * 
-     * @param dataSourceName 数据源名称
-     * @param sqlType SQL语句类型
-     * @return 数据库连接
-     * @throws SQLException SQL异常
+     * @param dataSourceName data source name
+     * @param sqlType SQL type
+     * @return all database connections via data source name
+     * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName, final SQLType sqlType) throws SQLException {
         Optional<Connection> connection = getCachedConnection(dataSourceName, sqlType);
@@ -121,9 +121,9 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     /**
-     * 释放数据库连接.
+     * Release connection.
      *
-     * @param connection 待释放的数据库连接
+     * @param connection to be released connection
      */
     public void release(final Connection connection) {
         connectionMap.values().remove(connection);

@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 /**
- * 生成键结果集元数据.
+ * ResultSet metadata for generated keys.
  * 
  * @author gaohongtao
  */

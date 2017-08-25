@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * 支持读写分离的数据源.
+ * Database that support master-slave.
  *
  * @author zhangliang
  */
@@ -59,11 +59,11 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     private final SlaveLoadBalanceStrategy slaveLoadBalanceStrategy = new RoundRobinSlaveLoadBalanceStrategy();
     
     /**
-     * 获取主或从节点的数据源名称.
+     * Get data source name from master-slave data source.
      *
-     * @param dataSourceName 数据源名称
-     * @param sqlType SQL类型
-     * @return 主或从节点的数据源名称
+     * @param dataSourceName data source name
+     * @param sqlType SQL type
+     * @return data source name from master-slave data source
      */
     public static String getDataSourceName(final String dataSourceName, final SQLType sqlType) {
         return isMasterRoute(sqlType) ? getMasterDataSourceName(dataSourceName) : getSlaveDataSourceName(dataSourceName);
@@ -82,10 +82,10 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     /**
-     * 获取主或从节点的数据源.
+     * Get data source from master-slave data source.
      *
-     * @param sqlType SQL类型
-     * @return 主或从节点的数据源
+     * @param sqlType SQL type
+     * @return data source from master-slave data source
      */
     public DataSource getDataSource(final SQLType sqlType) {
         if (isMasterRoute(sqlType)) {
@@ -96,10 +96,10 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     /**
-     * 获取数据库名称.
+     * Get database product name.
      * 
-     * @return 数据库名称
-     * @throws SQLException SQL异常
+     * @return database product name
+     * @throws SQLException SQL exception
      */
     public String getDatabaseProductName() throws SQLException {
         String result;
@@ -122,7 +122,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     /**
-     * 重置更新标记.
+     * reset DML flag.
      */
     public static void resetDMLFlag() {
         DML_FLAG.remove();

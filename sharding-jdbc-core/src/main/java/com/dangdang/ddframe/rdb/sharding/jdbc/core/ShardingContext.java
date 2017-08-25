@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 数据源运行期上下文.
+ * Sharding runtime context.
  * 
  * @author gaohongtao
  */

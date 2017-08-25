@@ -33,7 +33,7 @@ import java.util.Calendar;
 import java.util.Map;
 
 /**
- * 生成键结果集不支持的方法.
+ * Unsupported {@code ResultSet} methods for generated keys.
  * 
  * @author gaohongtao
  */

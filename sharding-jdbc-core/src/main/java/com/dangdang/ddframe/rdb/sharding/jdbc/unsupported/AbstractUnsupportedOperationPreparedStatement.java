@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
 /**
- * 声明不支持操作的预编译语句对象.
+ * Unsupported {@code PreparedStatement} methods.
  * 
  * @author zhangliang
  */

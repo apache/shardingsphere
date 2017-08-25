@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
 /**
- * 声明不支持操作的数据源对象.
+ * Unsupported {@code Datasource} methods.
  * 
  * @author zhangliang
  */

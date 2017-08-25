@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * JDBC Wrapper适配类.
+ * Adapter for {@code Wrapper}.
  * 
  * @author zhangliang
  */
