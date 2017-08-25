@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The manager that use hint to inject sharding key directly through <code>ThreadLocal</code>.
+ * The manager that use hint to inject sharding key directly through {@code ThreadLocal}.
  *
  * @author gaohongtao
  * @author zhangliang
@@ -54,8 +54,8 @@ public final class HintManager implements AutoCloseable {
     private boolean databaseShardingOnly;
     
     /**
-     * Get a new instance for <code>HintManager</code>.
-     * 
+     * Get a new instance for {@code HintManager}.
+     *
      * @return  {@code HintManager} instance
      */
     public static HintManager getInstance() {
@@ -66,9 +66,9 @@ public final class HintManager implements AutoCloseable {
     
     /**
      * Set sharding value for database sharding only.
-     * 
+     *
      * <p>The sharding operator is {@code =}</p>
-     * 
+     *
      * @param value sharding value
      */
     public void setDatabaseShardingValue(final Comparable<?> value) {
@@ -78,8 +78,8 @@ public final class HintManager implements AutoCloseable {
     
     /**
      * Add sharding value for database.
-     * 
-     * <p>The sharding operator is {@code =}/p>
+     *
+     * <p>The sharding operator is {@code =}</p>
      *
      * @param logicTable logic table name
      * @param shardingColumn sharding column name
@@ -104,7 +104,7 @@ public final class HintManager implements AutoCloseable {
     
     /**
      * Add sharding value for table.
-     * 
+     *
      * <p>The sharding operator is {@code =}</p>
      *
      * @param logicTable logic table name
@@ -145,7 +145,7 @@ public final class HintManager implements AutoCloseable {
     
     /**
      * Get sharding value for database.
-     * 
+     *
      * @param shardingKey sharding key
      * @return sharding value for database
      */
