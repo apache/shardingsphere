@@ -58,14 +58,7 @@ Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功�
 * YAML
 * Inline表达式
 
-# 第三方文章
-* 2017-07 [InfoQ新闻：分布式数据库中间件Sharding-JDBC 1.5.0发布——自研SQL解析引擎+全数据库支持里程碑版本](http://www.infoq.com/cn/news/2017/08/Sharding-JDBC-150)
-* 2017-07 [芋艿V的博客：Sharding-JDBC 源码分析](http://www.yunai.me/categories/Sharding-JDBC/?sjdbc)
-* 2017-07 [DBAPlus分享：轻量级数据库中间件利器Sharding-JDBC深度解析](http://mp.weixin.qq.com/s/W-pBQInQKu99NLn2rHMI-Q)
-* 2017-03 [开源中国高手问答：高手问答第144期—轻量级数据库中间层 Sharding-JDBC 深度解析](https://www.oschina.net/question/2720166_2233456)
-* 2016-06 [InfoQ文章：Sharding-JDBC 1.3.0发布——支持读写分离](http://www.infoq.com/cn/news/2016/06/sharding-jdbc-130)
-* 2016-02 [CSDN文章：解读分库分表中间件Sharding-JDBC](http://geek.csdn.net/news/detail/55513)
-* 2016-01 [InfoQ新闻：当当开源sharding-jdbc，轻量级数据库分库分表中间件](http://www.infoq.com/cn/news/2016/01/sharding-jdbc-dangdang)
+# [第三方文章](/00-overview/news)
 
 # 交流与参与
 
@@ -75,52 +68,4 @@ Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功�
  
  **使用Sharding-JDBC的公司如果方便请留下公司+网址** https://github.com/dangdangdotcom/sharding-jdbc/issues/234
   
-# 采用公司（统计中）
-
-公司排名不分先后，按拼音顺序排名
-
-## [佰昌科技](http://www.sdbaichang.com/)
-
-## [当当](http://www.dangdang.com/)
-
-## [东方车联](http://www.dongfang789.com/)
-
-## [非凡之星](http://www.ffzxnet.com/)
-
-## [凤凰汽车](http://auto.ifeng.com/)
-
-## [欢聚时代YY](http://www.yy.com/)
-
-## [家视天下](http://www.hiveview.com/)
-
-## [男衣库](http://www.nanyiku.com/)
-
-## [权大师](http://www.quandashi.com/)
-
-## [视觉中国](https://500px.me/)
-
-## [食蚁兽](http://www.41soo.com/)
-
-## [搜好货](http://www.912688.com/)
-
-## [搜狐资讯] (http://ss.sohu.com/)
-
-## [TCL](http://www.tcl.com/)
-
-## [特微智能](http://www.trawe.cn/)
-
-## [唯品会](http://www.vip.com/)
-
-## [小牛在线](https://www.xiaoniu88.com/)
-
-## [义乌购] (http://www.yiwugou.com/)
-
-## [御馔企业](http://www.uzengroup.com/)
-
-## [中策车空间](http://www.zcckj.com/)
-
-## [转转公司](http://www.zhuanzhuan.com/)
-
-## [真信认知科技](http://www.zhenxinsafe.com/)
-
-## [足记](http://www.fotoplace.cc/)
+# [采用公司](/00-overview/company)

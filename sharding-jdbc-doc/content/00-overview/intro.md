@@ -4,7 +4,7 @@ date = "2016-12-06T22:38:50+08:00"
 title = "简介"
 weight = 1
 prev = "/00-overview"
-next = "/00-overview/contribution/"
+next = "/00-overview/news/"
 
 +++
 
