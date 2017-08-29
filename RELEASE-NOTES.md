@@ -1,3 +1,9 @@
+## 1.5.3
+
+### 缺陷修正
+
+1. [ISSUE #349](https://github.com/dangdangdotcom/sharding-jdbc/issues/349) ResultSet.wasNull功能不正确
+
 ## 1.5.2
 
 ### 里程碑

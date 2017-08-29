@@ -44,12 +44,16 @@ public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
     @Setter
     private MemoryResultSetRow currentResultSetRow;
     
+    private boolean wasNull;
+    
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
             throw new SQLFeatureNotSupportedException();
         }
-        return currentResultSetRow.getCell(columnIndex);
+        Object result = currentResultSetRow.getCell(columnIndex);
+        wasNull = null == result;
+        return result;
     }
     
     @Override
@@ -57,19 +61,25 @@ public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
         if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
             throw new SQLFeatureNotSupportedException();
         }
-        return currentResultSetRow.getCell(labelAndIndexMap.get(columnLabel));
+        Object result =  currentResultSetRow.getCell(labelAndIndexMap.get(columnLabel));
+        wasNull = null == result;
+        return result;
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
         // TODO 时间相关取值未实现calendar模式
-        return currentResultSetRow.getCell(columnIndex);
+        Object result = currentResultSetRow.getCell(columnIndex);
+        wasNull = null == result;
+        return result;
     }
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
         // TODO 时间相关取值未实现calendar模式
-        return currentResultSetRow.getCell(labelAndIndexMap.get(columnLabel));
+        Object result = currentResultSetRow.getCell(labelAndIndexMap.get(columnLabel));
+        wasNull = null == result;
+        return result;
     }
     
     @Override
@@ -80,5 +90,10 @@ public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
         throw new SQLFeatureNotSupportedException();
+    }
+    
+    @Override
+    public boolean wasNull() throws SQLException {
+        return wasNull;
     }
 }

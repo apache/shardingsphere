@@ -65,4 +65,9 @@ public abstract class AbstractDecoratorResultSetMerger implements ResultSetMerge
     public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
         return resultSetMerger.getInputStream(columnLabel, type);
     }
+    
+    @Override
+    public boolean wasNull() throws SQLException {
+        return resultSetMerger.wasNull();
+    }
 }

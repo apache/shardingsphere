@@ -44,6 +44,8 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
     
     private ResultSet currentResultSet;
     
+    private boolean wasNull;
+    
     protected ResultSet getCurrentResultSet() throws SQLException {
         if (null == currentResultSet) {
             throw new SQLException("Current ResultSet is null, ResultSet perhaps end of next.");
@@ -53,183 +55,232 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
+        Object result;
         if (Object.class == type) {
-            return getCurrentResultSet().getObject(columnIndex);
+            result = getCurrentResultSet().getObject(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (boolean.class == type) {
+            result = getCurrentResultSet().getBoolean(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (byte.class == type) {
+            result = getCurrentResultSet().getByte(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (short.class == type) {
+            result = getCurrentResultSet().getShort(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (int.class == type) {
+            result = getCurrentResultSet().getInt(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (long.class == type) {
+            result = getCurrentResultSet().getLong(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (float.class == type) {
+            result = getCurrentResultSet().getFloat(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (double.class == type) {
+            result = getCurrentResultSet().getDouble(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (String.class == type) {
+            result = getCurrentResultSet().getString(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (BigDecimal.class == type) {
+            result = getCurrentResultSet().getBigDecimal(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (byte[].class == type) {
+            result = getCurrentResultSet().getBytes(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (Date.class == type) {
+            result = getCurrentResultSet().getDate(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (Time.class == type) {
+            result = getCurrentResultSet().getTime(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (Timestamp.class == type) {
+            result = getCurrentResultSet().getTimestamp(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (URL.class == type) {
+            result = getCurrentResultSet().getURL(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (Blob.class == type) {
+            result = getCurrentResultSet().getBlob(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (Clob.class == type) {
+            result = getCurrentResultSet().getClob(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (SQLXML.class == type) {
+            result = getCurrentResultSet().getSQLXML(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else if (Reader.class == type) {
+            result = getCurrentResultSet().getCharacterStream(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+            return result;
+        } else {
+            result = getCurrentResultSet().getObject(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
         }
-        if (boolean.class == type) {
-            return getCurrentResultSet().getBoolean(columnIndex);
-        }
-        if (byte.class == type) {
-            return getCurrentResultSet().getByte(columnIndex);
-        }
-        if (short.class == type) {
-            return getCurrentResultSet().getShort(columnIndex);
-        }
-        if (int.class == type) {
-            return getCurrentResultSet().getInt(columnIndex);
-        }
-        if (long.class == type) {
-            return getCurrentResultSet().getLong(columnIndex);
-        }
-        if (float.class == type) {
-            return getCurrentResultSet().getFloat(columnIndex);
-        }
-        if (double.class == type) {
-            return getCurrentResultSet().getDouble(columnIndex);
-        }
-        if (String.class == type) {
-            return getCurrentResultSet().getString(columnIndex);
-        }
-        if (BigDecimal.class == type) {
-            return getCurrentResultSet().getBigDecimal(columnIndex);
-        }
-        if (byte[].class == type) {
-            return getCurrentResultSet().getBytes(columnIndex);
-        }
-        if (Date.class == type) {
-            return getCurrentResultSet().getDate(columnIndex);
-        }
-        if (Time.class == type) {
-            return getCurrentResultSet().getTime(columnIndex);
-        }
-        if (Timestamp.class == type) {
-            return getCurrentResultSet().getTimestamp(columnIndex);
-        }
-        if (URL.class == type) {
-            return getCurrentResultSet().getURL(columnIndex);
-        }
-        if (Blob.class == type) {
-            return getCurrentResultSet().getBlob(columnIndex);
-        }
-        if (Clob.class == type) {
-            return getCurrentResultSet().getClob(columnIndex);
-        }
-        if (SQLXML.class == type) {
-            return getCurrentResultSet().getSQLXML(columnIndex);
-        }
-        if (Reader.class == type) {
-            return getCurrentResultSet().getCharacterStream(columnIndex);
-        }
-        return getCurrentResultSet().getObject(columnIndex);
+        return result;
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
+        Object result;
         if (Object.class == type) {
-            return getCurrentResultSet().getObject(columnLabel);
+            result = getCurrentResultSet().getObject(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (boolean.class == type) {
+            result = getCurrentResultSet().getBoolean(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (byte.class == type) {
+            result = getCurrentResultSet().getByte(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (short.class == type) {
+            result = getCurrentResultSet().getShort(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (int.class == type) {
+            result = getCurrentResultSet().getInt(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (long.class == type) {
+            result = getCurrentResultSet().getLong(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (float.class == type) {
+            result = getCurrentResultSet().getFloat(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (double.class == type) {
+            result = getCurrentResultSet().getDouble(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (String.class == type) {
+            result = getCurrentResultSet().getString(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (BigDecimal.class == type) {
+            result = getCurrentResultSet().getBigDecimal(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (byte[].class == type) {
+            result = getCurrentResultSet().getBytes(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (Date.class == type) {
+            result = getCurrentResultSet().getDate(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (Time.class == type) {
+            result = getCurrentResultSet().getTime(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (Timestamp.class == type) {
+            result = getCurrentResultSet().getTimestamp(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (URL.class == type) {
+            result = getCurrentResultSet().getURL(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (Blob.class == type) {
+            result = getCurrentResultSet().getBlob(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (Clob.class == type) {
+            result = getCurrentResultSet().getClob(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (SQLXML.class == type) {
+            result = getCurrentResultSet().getSQLXML(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (Reader.class == type) {
+            result = getCurrentResultSet().getCharacterStream(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else {
+            result = getCurrentResultSet().getObject(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
         }
-        if (boolean.class == type) {
-            return getCurrentResultSet().getBoolean(columnLabel);
-        }
-        if (byte.class == type) {
-            return getCurrentResultSet().getByte(columnLabel);
-        }
-        if (short.class == type) {
-            return getCurrentResultSet().getShort(columnLabel);
-        }
-        if (int.class == type) {
-            return getCurrentResultSet().getInt(columnLabel);
-        }
-        if (long.class == type) {
-            return getCurrentResultSet().getLong(columnLabel);
-        }
-        if (float.class == type) {
-            return getCurrentResultSet().getFloat(columnLabel);
-        }
-        if (double.class == type) {
-            return getCurrentResultSet().getDouble(columnLabel);
-        }
-        if (String.class == type) {
-            return getCurrentResultSet().getString(columnLabel);
-        }
-        if (BigDecimal.class == type) {
-            return getCurrentResultSet().getBigDecimal(columnLabel);
-        }
-        if (byte[].class == type) {
-            return getCurrentResultSet().getBytes(columnLabel);
-        }
-        if (Date.class == type) {
-            return getCurrentResultSet().getDate(columnLabel);
-        }
-        if (Time.class == type) {
-            return getCurrentResultSet().getTime(columnLabel);
-        }
-        if (Timestamp.class == type) {
-            return getCurrentResultSet().getTimestamp(columnLabel);
-        }
-        if (URL.class == type) {
-            return getCurrentResultSet().getURL(columnLabel);
-        }
-        if (Blob.class == type) {
-            return getCurrentResultSet().getBlob(columnLabel);
-        }
-        if (Clob.class == type) {
-            return getCurrentResultSet().getClob(columnLabel);
-        }
-        if (SQLXML.class == type) {
-            return getCurrentResultSet().getSQLXML(columnLabel);
-        }
-        if (Reader.class == type) {
-            return getCurrentResultSet().getCharacterStream(columnLabel);
-        }
-        return getCurrentResultSet().getObject(columnLabel);
+        return result;
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
+        Object result;
         if (Date.class == type) {
-            return getCurrentResultSet().getDate(columnIndex, calendar);
+            result = getCurrentResultSet().getDate(columnIndex, calendar);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (Time.class == type) {
+            result = getCurrentResultSet().getTime(columnIndex, calendar);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (Timestamp.class == type) {
+            result = getCurrentResultSet().getTimestamp(columnIndex, calendar);
+            wasNull = getCurrentResultSet().wasNull();
+        } else {
+            throw new SQLException(String.format("Unsupported type: %s", type));
         }
-        if (Time.class == type) {
-            return getCurrentResultSet().getTime(columnIndex, calendar);
-        }
-        if (Timestamp.class == type) {
-            return getCurrentResultSet().getTimestamp(columnIndex, calendar);
-        }
-        throw new SQLException(String.format("Unsupported type: %s", type));
+        return result;
     }
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
+        Object result;
         if (Date.class == type) {
-            return getCurrentResultSet().getDate(columnLabel, calendar);
+            result = getCurrentResultSet().getDate(columnLabel, calendar);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (Time.class == type) {
+            result = getCurrentResultSet().getTime(columnLabel, calendar);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if (Timestamp.class == type) {
+            result = getCurrentResultSet().getTimestamp(columnLabel, calendar);
+            wasNull = getCurrentResultSet().wasNull();
+        } else {
+            throw new SQLException(String.format("Unsupported type: %s", type));
         }
-        if (Time.class == type) {
-            return getCurrentResultSet().getTime(columnLabel, calendar);
-        }
-        if (Timestamp.class == type) {
-            return getCurrentResultSet().getTimestamp(columnLabel, calendar);
-        }
-        throw new SQLException(String.format("Unsupported type: %s", type));
+        return result;
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
+        InputStream result;
         if ("Ascii".equals(type)) {
-            return getCurrentResultSet().getAsciiStream(columnIndex);
+            result = getCurrentResultSet().getAsciiStream(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if ("Unicode".equals(type)) {
+            result = getCurrentResultSet().getUnicodeStream(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if ("Binary".equals(type)) {
+            result = getCurrentResultSet().getBinaryStream(columnIndex);
+            wasNull = getCurrentResultSet().wasNull();
+        } else {
+            throw new SQLException(String.format("Unsupported type: %s", type));
         }
-        if ("Unicode".equals(type)) {
-            return getCurrentResultSet().getUnicodeStream(columnIndex);
-        }
-        if ("Binary".equals(type)) {
-            return getCurrentResultSet().getBinaryStream(columnIndex);
-        }
-        throw new SQLException(String.format("Unsupported type: %s", type));
+        return result;
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
+        InputStream result;
         if ("Ascii".equals(type)) {
-            return getCurrentResultSet().getAsciiStream(columnLabel);
+            result = getCurrentResultSet().getAsciiStream(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if ("Unicode".equals(type)) {
+            result = getCurrentResultSet().getUnicodeStream(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else if ("Binary".equals(type)) {
+            result = getCurrentResultSet().getBinaryStream(columnLabel);
+            wasNull = getCurrentResultSet().wasNull();
+        } else {
+            throw new SQLException(String.format("Unsupported type: %s", type));
         }
-        if ("Unicode".equals(type)) {
-            return getCurrentResultSet().getUnicodeStream(columnLabel);
-        }
-        if ("Binary".equals(type)) {
-            return getCurrentResultSet().getBinaryStream(columnLabel);
-        }
-        throw new SQLException(String.format("Unsupported type: %s", type));
+        return result;
+    }
+    
+    @Override
+    public boolean wasNull() throws SQLException {
+        return wasNull;
     }
 }
