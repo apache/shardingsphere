@@ -6,6 +6,9 @@
 [![GitHub release](https://img.shields.io/github/release/dangdangdotcom/sharding-jdbc.svg)](https://github.com/dangdangdotcom/sharding-jdbc/releases)
 [![Hex.pm](http://dangdangdotcom.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
+
+# [中文主页](http://shardingjdbc.io/index_zh.html)
+
 # 概述
 
 Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。
