@@ -3,12 +3,7 @@
     <div id="header">
       {{ partial "logo.html" . }}
     </div>
-    {{ if .Site.Params.search }}
-        {{ partial "search.html" . }}
-    {{ end }}
 </div>
-
-
   <div class="highlightable">
     <ul class="topics">
       {{ if $.Site.Params.menu }}

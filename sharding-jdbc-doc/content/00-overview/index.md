@@ -58,8 +58,6 @@ Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功�
 * YAML
 * Inline表达式
 
-# [新闻](/00-overview/news)
-
 # 交流与参与
 
  - **官方群：** 532576663（仅限于讨论与Sharding-JDBC相关的话题。我们希望您在入群前仔细阅读文档。并在入群后阅读公告以及修改群名片。谢谢合作。）
@@ -67,5 +65,3 @@ Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功�
  - 报告确定的bug，提交增强功能建议和提交补丁等，请阅读[如何进行贡献](/00-overview/contribution)。
  
  **使用Sharding-JDBC的公司如果方便请留下公司+网址** https://github.com/dangdangdotcom/sharding-jdbc/issues/234
-  
-# [采用公司](/00-overview/company)
