@@ -49,4 +49,4 @@ defaultTableStrategy:
   algorithmClassName: com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm
 
 props:
-  metrics.enable: false
+  sql.show: false

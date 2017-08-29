@@ -25,7 +25,6 @@ import com.dangdang.ddframe.rdb.sharding.hint.AllHintTests;
 import com.dangdang.ddframe.rdb.sharding.jdbc.AllJDBCTests;
 import com.dangdang.ddframe.rdb.sharding.keygen.AllKeygenTests;
 import com.dangdang.ddframe.rdb.sharding.merger.AllMergerTests;
-import com.dangdang.ddframe.rdb.sharding.metrics.AllMetricsTests;
 import com.dangdang.ddframe.rdb.sharding.parsing.AllParsingTests;
 import com.dangdang.ddframe.rdb.sharding.rewrite.AllRewriteTests;
 import com.dangdang.ddframe.rdb.sharding.routing.AllRoutingTests;
@@ -47,8 +46,7 @@ import org.junit.runners.Suite.SuiteClasses;
         AllJDBCTests.class, 
         AllHintTests.class, 
         AllKeygenTests.class, 
-        AllUtilTests.class, 
-        AllMetricsTests.class
+        AllUtilTests.class 
     })
 public class AllShardingTests {
 }

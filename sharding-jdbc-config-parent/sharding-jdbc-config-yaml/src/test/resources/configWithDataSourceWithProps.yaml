@@ -42,4 +42,4 @@ defaultTableStrategy:
   algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
   
 props:
-  metrics.enable: true
+  sql.show: true

@@ -17,11 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.router;
 
-import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
-import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
@@ -70,18 +68,15 @@ public final class ParsingSQLRouter implements SQLRouter {
     @Override
     public SQLStatement parse(final String logicSQL, final int parametersSize) {
         SQLParsingEngine parsingEngine = new SQLParsingEngine(databaseType, logicSQL, shardingRule);
-        Context context = MetricsContext.start("Parse SQL");
         SQLStatement result = parsingEngine.parse();
         if (result instanceof InsertStatement) {
             ((InsertStatement) result).appendGenerateKeyToken(shardingRule, parametersSize);
         }
-        MetricsContext.stop(context);
         return result;
     }
     
     @Override
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
-        final Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         if (sqlStatement instanceof InsertStatement && null != ((InsertStatement) sqlStatement).getGeneratedKey()) {
             processGeneratedKey(parameters, (InsertStatement) sqlStatement, result);
@@ -104,7 +99,6 @@ public final class ParsingSQLRouter implements SQLRouter {
                 result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder)));
             }
         }
-        MetricsContext.stop(context);
         if (showSQL) {
             SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits(), parameters);
         }

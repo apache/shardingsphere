@@ -37,13 +37,12 @@ next = "/01-start/limitations/"
     
     1.3. 多数据库支持(目前支持MySQL，Oracle，SQLServer和PostgreSQL)
 2. 配置多样性
-
+    
     2.1. Spring命名空间支持
     
     2.2. YAML命名空间支持
     
     2.3. 基于动态语言的分片策略配置
-3. Metrics统计监控
 
 ## 性能
 1. 半理解"理念的SQL解析引擎

@@ -17,16 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.connection;
 
-import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatement;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingStatement;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
-import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -65,7 +62,6 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @throws SQLException SQL exception
      */
     public Collection<Connection> getConnectionForDDL(final String dataSourceName) throws SQLException {
-        final Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnectionForDDL", dataSourceName));
         DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
         Collection<DataSource> dataSources = new LinkedList<>();
@@ -81,7 +77,6 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
             replayMethodsInvocation(connection);
             result.add(connection);
         }
-        MetricsContext.stop(metricsContext);
         return result;
     }
     
@@ -98,7 +93,6 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         if (connection.isPresent()) {
             return connection.get();
         }
-        Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", dataSourceName));
         DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
         String realDataSourceName;
@@ -109,7 +103,6 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
             realDataSourceName = dataSourceName;
         }
         Connection result = dataSource.getConnection();
-        MetricsContext.stop(metricsContext);
         connectionMap.put(realDataSourceName, result);
         replayMethodsInvocation(result);
         return result;

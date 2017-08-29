@@ -9,9 +9,6 @@
     <logger name="com.dangdang" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="com.dangdang.ddframe.rdb.sharding.metrics" level="info" additivity="false">
-        <appender-ref ref="console"/>
-    </logger>
     <logger name="org.dbunit" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>

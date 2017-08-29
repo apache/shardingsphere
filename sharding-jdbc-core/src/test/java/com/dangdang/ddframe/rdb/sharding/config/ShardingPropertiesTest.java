@@ -34,9 +34,7 @@ public final class ShardingPropertiesTest {
     
     @Before
     public void setUp() {
-        prop.put(ShardingPropertiesConstant.METRICS_ENABLE.getKey(), "true");
         prop.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), "true");
-        prop.put(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD.getKey(), "1000");
         prop.put(ShardingPropertiesConstant.EXECUTOR_SIZE.getKey(), "10");
         shardingProperties = new ShardingProperties(prop);
     }
@@ -44,18 +42,14 @@ public final class ShardingPropertiesTest {
     @Test
     public void assertGetValueForDefaultValue() {
         ShardingProperties shardingProperties = new ShardingProperties(new Properties());
-        boolean actualMetricsEnabled = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_ENABLE);
-        long actualMetricsMillisecondsPeriod = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD);
-        assertThat(actualMetricsEnabled, is(Boolean.valueOf(ShardingPropertiesConstant.METRICS_ENABLE.getDefaultValue())));
-        assertThat(actualMetricsMillisecondsPeriod, is(Long.valueOf(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD.getDefaultValue())));
+        boolean actualSQLShow = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        assertThat(actualSQLShow, is(Boolean.valueOf(ShardingPropertiesConstant.SQL_SHOW.getDefaultValue())));
         int executorMaxSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         assertThat(executorMaxSize, is(Integer.valueOf(ShardingPropertiesConstant.EXECUTOR_SIZE.getDefaultValue())));
     }
     
     @Test
     public void assertGetValueForBoolean() {
-        boolean actualMetricsEnabled = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_ENABLE);
-        assertTrue(actualMetricsEnabled);
         boolean showSql = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         assertTrue(showSql);
     }
@@ -66,17 +60,10 @@ public final class ShardingPropertiesTest {
         assertThat(actualExecutorMaxSize, is(10));
     }
     
-    @Test
-    public void assertGetValueForLong() {
-        long actualMetricsMillisecondsPeriod = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD);
-        assertThat(actualMetricsMillisecondsPeriod, is(1000L));
-    }
-    
     @Test(expected = IllegalArgumentException.class)
     public void assertValidateFailure() {
         Properties prop = new Properties();
-        prop.put(ShardingPropertiesConstant.METRICS_ENABLE.getKey(), "error");
-        prop.put(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD.getKey(), "error");
+        prop.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), "error");
         prop.put(ShardingPropertiesConstant.EXECUTOR_SIZE.getKey(), "error");
         prop.put("other", "other");
         new ShardingProperties(prop);

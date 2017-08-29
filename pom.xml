@@ -25,7 +25,6 @@
         <gson.version>2.6.1</gson.version>
         <logback.version>1.1.2</logback.version>
         <slf4j.version>1.7.7</slf4j.version>
-        <metrics.version>3.1.0</metrics.version>
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         <springframework.version>4.1.1.RELEASE</springframework.version>
@@ -81,11 +80,6 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.dropwizard.metrics</groupId>
-                <artifactId>metrics-core</artifactId>
-                <version>${metrics.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>

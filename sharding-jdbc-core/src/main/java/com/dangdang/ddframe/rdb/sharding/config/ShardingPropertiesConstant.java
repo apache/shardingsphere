@@ -43,26 +43,6 @@ public enum ShardingPropertiesConstant {
     SQL_SHOW("sql.show", Boolean.FALSE.toString(), boolean.class),
     
     /**
-     * Enable or Disable to show metrics info.
-     *
-     * <p>
-     * Print metrics info can help developers locate performance issue easier. 
-     * Default: false
-     * </p>
-     */
-    METRICS_ENABLE("metrics.enable", Boolean.FALSE.toString(), boolean.class),
-    
-    /**
-     * Metrics Period.
-     * 
-     * <p>
-     * Unit: Mills.
-     * Default: 30000 Mills.
-     * </p>
-     */
-    METRICS_MILLISECONDS_PERIOD("metrics.millisecond.period", "30000", long.class),
-    
-    /**
      * Worker thread max size.
      * 
      * <p>

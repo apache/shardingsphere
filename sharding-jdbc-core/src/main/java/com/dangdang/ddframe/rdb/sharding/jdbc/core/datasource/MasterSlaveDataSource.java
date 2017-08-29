@@ -109,7 +109,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         for (DataSource each : slaveDataSources) {
             String slaveDatabaseProductName;
             try (Connection slaveConnection = each.getConnection()) {
-                slaveDatabaseProductName = slaveConnection.getMetaData().getDatabaseProductName();    
+                slaveDatabaseProductName = slaveConnection.getMetaData().getDatabaseProductName();
             }
             Preconditions.checkState(result.equals(slaveDatabaseProductName), String.format("Database type inconsistent with '%s' and '%s'", result, slaveDatabaseProductName));
         }

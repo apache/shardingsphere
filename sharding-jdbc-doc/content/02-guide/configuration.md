@@ -67,7 +67,7 @@ defaultDatabaseStrategy:
   algorithmClassName: com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm
 
 props:
-  metrics.enable: false
+  sql.show: false
   
 ```
 
@@ -111,13 +111,8 @@ defaultTableStrategy: 默认数据表分片策略
   algorithmExpression: 分表算法表达式，与algorithmClassName出现一个即可
 
 props: 属性配置(可选)
-    metrics.enable: 是否开启度量采集，默认值: false
     sql.show: 是否开启SQL显示，默认值: false
-    metrics.millisecond.period: 度量输出周期，单位: 毫秒，默认值: 30000毫秒
-    
-    executor.min.idle.size: 最小空闲工作线程数量，默认值: 0
-    executor.max.size: 最大工作线程数量，默认值: CPU核数乘2
-    executor.max.idle.timeout.millisecond: 工作线程空闲时超时时间，单位: 毫秒，默认值: 60000毫秒
+    executor.size: 工作线程数量，默认值: CPU核数
 ```
 
 #### YAML格式特别说明
@@ -186,7 +181,7 @@ props: 属性配置(可选)
             <rdb:default-database-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm"/>
         </rdb:sharding-rule>
         <rdb:props>
-            <prop key="metrics.enable">true</prop>
+            <prop key="sql.show">true</prop>
         </rdb:props>
     </rdb:data-source>
 </beans>
@@ -274,12 +269,8 @@ props: 属性配置(可选)
 
 | *名称*                                | *类型*       | *数据类型*  | *必填* | *说明*                              |
 | ------------------------------------ | ------------ | ---------- | ----- | ----------------------------------- |
-| metrics.enable                       | 属性         |  boolean   |   否   | 是否开启度量采集，默认为false不开启     |
 | sql.show                             | 属性         |  boolean   |   是   | 是否开启SQL显示，默认为false不开启     |
-| metrics.millisecond.period           | 属性         |  String    |   否   | 度量输出周期，单位为毫秒               |
-| executor.min.idle.size               | 属性         |  int       |   否   | 最小空闲工作线程数量                  |
-| executor.max.size                    | 属性         |  int       |   否   | 最大工作线程数量                      |
-| executor.max.idle.timeout.millisecond| 属性         |  int       |   否   | 工作线程空闲时超时时间，默认以毫秒为单位 |
+| executor.size                        | 属性         |  int       |   否   | 最大工作线程数量                      |
 
 #### Spring格式特别说明
 如需使用inline表达式，需配置ignore-unresolvable为true，否则placeholder会把inline表达式当成属性key值导致出错. 

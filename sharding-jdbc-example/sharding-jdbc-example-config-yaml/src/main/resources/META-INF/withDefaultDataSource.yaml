@@ -33,4 +33,4 @@ defaultDatabaseStrategy:
   algorithmExpression: ds_${user_id.longValue() % 2}
 
 props:
-  metrics.enable: false
+  sql.show: false

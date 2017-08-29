@@ -26,7 +26,6 @@ import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.google.common.base.Preconditions;
 
 import javax.sql.DataSource;
@@ -84,7 +83,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     @Override
     public ShardingConnection getConnection() throws SQLException {
-        MetricsContext.init(shardingProperties);
         return new ShardingConnection(shardingContext);
     }
     

@@ -17,12 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.type.statement;
 
-import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.BaseStatementUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecuteCallback;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
-import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
@@ -53,20 +51,13 @@ public final class StatementExecutor {
      * @return result set list
      */
     public List<ResultSet> executeQuery() {
-        Context context = MetricsContext.start("ShardingStatement-executeQuery");
-        List<ResultSet> result;
-        try {
-            result = executorEngine.executeStatement(sqlType, statementUnits, new ExecuteCallback<ResultSet>() {
-                
-                @Override
-                public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    return baseStatementUnit.getStatement().executeQuery(baseStatementUnit.getSqlExecutionUnit().getSql());
-                }
-            });
-        } finally {
-            MetricsContext.stop(context);
-        }
-        return result;
+        return executorEngine.executeStatement(sqlType, statementUnits, new ExecuteCallback<ResultSet>() {
+            
+            @Override
+            public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+                return baseStatementUnit.getStatement().executeQuery(baseStatementUnit.getSqlExecutionUnit().getSql());
+            }
+        });
     }
     
     /**
@@ -133,19 +124,14 @@ public final class StatementExecutor {
     }
     
     private int executeUpdate(final Updater updater) {
-        Context context = MetricsContext.start("ShardingStatement-executeUpdate");
-        try {
-            List<Integer> results = executorEngine.executeStatement(sqlType, statementUnits, new ExecuteCallback<Integer>() {
-                
-                @Override
-                public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    return updater.executeUpdate(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSql());
-                }
-            });
-            return accumulate(results);
-        } finally {
-            MetricsContext.stop(context);
-        }
+        List<Integer> results = executorEngine.executeStatement(sqlType, statementUnits, new ExecuteCallback<Integer>() {
+            
+            @Override
+            public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+                return updater.executeUpdate(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSql());
+            }
+        });
+        return accumulate(results);
     }
     
     private int accumulate(final List<Integer> results) {
@@ -220,22 +206,17 @@ public final class StatementExecutor {
     }
     
     private boolean execute(final Executor executor) {
-        Context context = MetricsContext.start("ShardingStatement-execute");
-        try {
-            List<Boolean> result = executorEngine.executeStatement(sqlType, statementUnits, new ExecuteCallback<Boolean>() {
-                
-                @Override
-                public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    return executor.execute(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSql());
-                }
-            });
-            if (null == result || result.isEmpty() || null == result.get(0)) {
-                return false;
+        List<Boolean> result = executorEngine.executeStatement(sqlType, statementUnits, new ExecuteCallback<Boolean>() {
+            
+            @Override
+            public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+                return executor.execute(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSql());
             }
-            return result.get(0);
-        } finally {
-            MetricsContext.stop(context);
+        });
+        if (null == result || result.isEmpty() || null == result.get(0)) {
+            return false;
         }
+        return result.get(0);
     }
     
     private interface Updater {

@@ -17,13 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.type.batch;
 
-import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.BaseStatementUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecuteCallback;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
-import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
@@ -54,18 +52,13 @@ public final class BatchPreparedStatementExecutor {
      * @return execute results
      */
     public int[] executeBatch() {
-        Context context = MetricsContext.start("ShardingPreparedStatement-executeBatch");
-        try {
-            return accumulate(executorEngine.executeBatch(sqlType, batchPreparedStatementUnits, parameterSets, new ExecuteCallback<int[]>() {
-                
-                @Override
-                public int[] execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    return baseStatementUnit.getStatement().executeBatch();
-                }
-            }));
-        } finally {
-            MetricsContext.stop(context);
-        }
+        return accumulate(executorEngine.executeBatch(sqlType, batchPreparedStatementUnits, parameterSets, new ExecuteCallback<int[]>() {
+            
+            @Override
+            public int[] execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+                return baseStatementUnit.getStatement().executeBatch();
+            }
+        }));
     }
     
     private int[] accumulate(final List<int[]> results) {

@@ -27,7 +27,7 @@ public class ShardingPropertiesConstantTest {
     
     @Test
     public void testFindByKey() {
-        assertThat(ShardingPropertiesConstant.findByKey("metrics.enable"), is(ShardingPropertiesConstant.METRICS_ENABLE));
+        assertThat(ShardingPropertiesConstant.findByKey("sql.show"), is(ShardingPropertiesConstant.SQL_SHOW));
     }
     
     @Test
