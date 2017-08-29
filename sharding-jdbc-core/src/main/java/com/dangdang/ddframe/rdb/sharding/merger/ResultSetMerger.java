@@ -97,4 +97,12 @@ public interface ResultSetMerger {
      * @throws SQLException SQL Exception
      */
     InputStream getInputStream(final String columnLabel, final String type) throws SQLException;
+    
+    /**
+     * Adjust ResultSet is null or not.
+     * 
+     * @return ResultSet is null or not
+     * @throws SQLException SQL Exception
+     */
+    boolean wasNull() throws SQLException;
 }
