@@ -1,6 +1,8 @@
 # Sharding-JDBC - JDBC driver for shard databases and tables 
 
-# [中文主页](http://dangdangdotcom.github.io/sharding-jdbc)
+# [Homepage](http://shardingjdbc.io/)
+
+# [中文主页](http://shardingjdbc.io/index_zh.html)
 
 [![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
