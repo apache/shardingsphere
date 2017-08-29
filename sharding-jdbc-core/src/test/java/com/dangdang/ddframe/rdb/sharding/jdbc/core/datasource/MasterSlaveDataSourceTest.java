@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.MasterSlaveConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -141,9 +143,9 @@ public final class MasterSlaveDataSourceTest {
         return result;
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void assertGetConnection() throws SQLException {
-        masterSlaveDataSource.getConnection();
+        assertThat(masterSlaveDataSource.getConnection(), instanceOf(MasterSlaveConnection.class));
     }
     
     @Test

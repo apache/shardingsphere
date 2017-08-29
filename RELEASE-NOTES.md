@@ -1,3 +1,9 @@
+## 1.6.0
+
+### 功能提升
+
+1. [ISSUE #196](https://github.com/dangdangdotcom/sharding-jdbc/issues/196) 读写分离与分库分表配置独立
+
 ## 1.5.3
 
 ### 缺陷修正

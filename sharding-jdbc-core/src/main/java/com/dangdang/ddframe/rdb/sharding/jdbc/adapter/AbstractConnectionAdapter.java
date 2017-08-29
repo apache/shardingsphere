@@ -41,7 +41,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
-    protected abstract Collection<Connection> getConnections();
+    protected abstract Collection<Connection> getConnections() throws SQLException;
     
     @Override
     public final boolean getAutoCommit() throws SQLException {

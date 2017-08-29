@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.SlaveLoadBalanceStra
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.MasterSlaveConnection;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -118,7 +119,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public Connection getConnection() throws SQLException {
-        throw new UnsupportedOperationException("Master slave data source cannot support get connection directly.");
+        return new MasterSlaveConnection(this);
     }
     
     /**
