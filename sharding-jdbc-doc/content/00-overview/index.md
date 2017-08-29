@@ -58,7 +58,7 @@ Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功�
 * YAML
 * Inline表达式
 
-# [第三方文章](/00-overview/news)
+# [新闻](/00-overview/news)
 
 # 交流与参与
 
