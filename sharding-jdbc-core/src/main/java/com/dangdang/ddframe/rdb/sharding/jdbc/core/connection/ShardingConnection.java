@@ -55,13 +55,15 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     private final Map<String, Connection> connectionMap = new HashMap<>();
     
     /**
-     * Get all database connections via data source name for DDL. 
+     * Get all database connections via data source name. 
      *
+     * <p>Master-slave connection will return all actual connections</p>
+     * 
      * @param dataSourceName data source name
-     * @return all database connections via data source name for DDL
+     * @return all database connections via data source name
      * @throws SQLException SQL exception
      */
-    public Collection<Connection> getConnectionForDDL(final String dataSourceName) throws SQLException {
+    public Collection<Connection> getAllConnections(final String dataSourceName) throws SQLException {
         DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
         Collection<DataSource> dataSources = new LinkedList<>();
@@ -81,7 +83,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     /**
-     * Get all database connections via data source name.
+     * Get database connection via data source name.
      * 
      * @param dataSourceName data source name
      * @param sqlType SQL type

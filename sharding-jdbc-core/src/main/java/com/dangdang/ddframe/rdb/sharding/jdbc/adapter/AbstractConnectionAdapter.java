@@ -139,7 +139,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         }
     }
     
-    // -------以下代码与MySQL实现保持一致.-------
+    // ------- Consist with MySQL driver implementation -------
     
     @Override
     public SQLWarning getWarnings() throws SQLException {
