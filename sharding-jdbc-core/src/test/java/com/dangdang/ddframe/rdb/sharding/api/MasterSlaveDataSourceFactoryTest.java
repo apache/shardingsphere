@@ -21,18 +21,20 @@ import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import org.junit.Test;
 
+import java.sql.SQLException;
+
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public final class MasterSlaveDataSourceFactoryTest {
     
     @Test
-    public void assertCreateDataSourceForSingleSlave() {
+    public void assertCreateDataSourceForSingleSlave() throws SQLException {
         assertThat(MasterSlaveDataSourceFactory.createDataSource("logic_ds", new TestDataSource("master_ds"), new TestDataSource("slave_ds")), instanceOf(MasterSlaveDataSource.class));
     }
     
     @Test
-    public void assertCreateDataSourceForMultipleSlaves() {
+    public void assertCreateDataSourceForMultipleSlaves() throws SQLException {
         assertThat(MasterSlaveDataSourceFactory.createDataSource("logic_ds", new TestDataSource("master_ds"), new TestDataSource("slave_ds_0"), new TestDataSource("slave_ds_1")), 
                 instanceOf(MasterSlaveDataSource.class));
     }

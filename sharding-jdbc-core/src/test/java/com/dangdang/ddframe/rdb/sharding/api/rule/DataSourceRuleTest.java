@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public final class DataSourceRuleTest {
     private DataSourceRule dataSourceRule;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         dataSourceMap.put("ds0", new TestDataSource("ds0"));
         dataSourceMap.put("ds1", new TestDataSource("ds1"));
         dataSourceMap.put("ds2", new TestDataSource("ds2"));
@@ -52,13 +53,13 @@ public final class DataSourceRuleTest {
     }
     
     @Test
-    public void assertGetDataSource() {
+    public void assertGetDataSource() throws SQLException {
         assertDataSource("ds0");
         assertDataSource("ds1");
         assertDataSource("ds2");
     }
     
-    private void assertDataSource(final String dataSourceName) {
+    private void assertDataSource(final String dataSourceName) throws SQLException {
         assertThat(dataSourceRule.getDataSource(dataSourceName), is((DataSource) new TestDataSource(dataSourceName)));
     }
     
@@ -68,7 +69,7 @@ public final class DataSourceRuleTest {
     }
     
     @Test
-    public void assertGetDefaultDataSourceWithSingleDataSource() {
+    public void assertGetDefaultDataSourceWithSingleDataSource() throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds0", new TestDataSource("ds0"));
         dataSourceRule = new DataSourceRule(dataSourceMap);

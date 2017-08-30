@@ -39,23 +39,18 @@ public final class TestDataSource extends AbstractDataSourceAdapter {
     
     private boolean throwExceptionWhenClosing;
     
-    public TestDataSource(final String name) {
+    public TestDataSource(final String name) throws SQLException {
         super(Collections.singletonList(getDataSource()));
         this.name = name;
     }
     
-    private static DataSource getDataSource() {
+    private static DataSource getDataSource() throws SQLException {
         DataSource result = Mockito.mock(DataSource.class);
         Connection connection = Mockito.mock(Connection.class);
         DatabaseMetaData metaData = Mockito.mock(DatabaseMetaData.class);
-        try {
-            when(metaData.getDatabaseProductName()).thenReturn("H2");
-            when(connection.getMetaData()).thenReturn(metaData);
-            when(result.getConnection()).thenReturn(connection);
-            // TODO throw
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        when(metaData.getDatabaseProductName()).thenReturn("H2");
+        when(connection.getMetaData()).thenReturn(metaData);
+        when(result.getConnection()).thenReturn(connection);
         return result;
     }
     
@@ -63,13 +58,8 @@ public final class TestDataSource extends AbstractDataSourceAdapter {
     public Connection getConnection() throws SQLException {
         Connection result = Mockito.mock(Connection.class);
         DatabaseMetaData metaData = Mockito.mock(DatabaseMetaData.class);
-        try {
-            when(metaData.getDatabaseProductName()).thenReturn("H2");
-            when(result.getMetaData()).thenReturn(metaData);
-            // TODO throw
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        when(metaData.getDatabaseProductName()).thenReturn("H2");
+        when(result.getMetaData()).thenReturn(metaData);
         if (throwExceptionWhenClosing) {
             doThrow(SQLException.class).when(result).close();
         }

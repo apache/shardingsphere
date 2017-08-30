@@ -42,11 +42,17 @@ import static org.mockito.Mockito.when;
 
 public final class MasterSlaveDataSourceTest {
     
-    private final DataSource masterDataSource = new TestDataSource("test_ds_master");
+    private final DataSource masterDataSource;
     
-    private final DataSource slaveDataSource = new TestDataSource("test_ds_slave");
+    private final DataSource slaveDataSource;
     
-    private final MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource("test_ds", masterDataSource, Collections.singletonList(slaveDataSource));
+    private final MasterSlaveDataSource masterSlaveDataSource;
+    
+    public MasterSlaveDataSourceTest() throws SQLException {
+        masterDataSource = new TestDataSource("test_ds_master");
+        slaveDataSource = new TestDataSource("test_ds_slave");
+        masterSlaveDataSource = new MasterSlaveDataSource("test_ds", masterDataSource, Collections.singletonList(slaveDataSource));
+    }
     
     @Before
     @After

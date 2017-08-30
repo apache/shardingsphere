@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import static org.hamcrest.core.Is.is;
@@ -31,7 +32,7 @@ public final class RoundRobinSlaveLoadBalanceStrategyTest {
     private final RoundRobinSlaveLoadBalanceStrategy roundRobinSlaveLoadBalanceStrategy = new RoundRobinSlaveLoadBalanceStrategy();
     
     @Test
-    public void assertGetDataSource() {
+    public void assertGetDataSource() throws SQLException {
         DataSource slaveDataSource1 = new TestDataSource("test_ds_slave_1");
         DataSource slaveDataSource2 = new TestDataSource("test_ds_slave_2");
         assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", Arrays.asList(slaveDataSource1, slaveDataSource2)), is(slaveDataSource1));

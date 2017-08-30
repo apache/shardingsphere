@@ -41,25 +41,28 @@ import static org.junit.Assert.assertSame;
 
 public final class ShardingConnectionTest {
     
-    private static final DataSource MASTER_DATA_SOURCE = new TestDataSource("test_ds_master");
+    private static DataSource masterDataSource;
     
-    private static final DataSource SLAVE_DATA_SOURCE = new TestDataSource("test_ds_slave");
+    private static DataSource slaveDataSource;
     
-    private static final MasterSlaveDataSource MASTER_SLAVE_DATA_SOURCE = new MasterSlaveDataSource("test_ds", MASTER_DATA_SOURCE, Collections.singletonList(SLAVE_DATA_SOURCE));
+    private static MasterSlaveDataSource masterSlaveDataSource;
     
     private static final String DS_NAME = "default";
     
     private ShardingConnection connection;
     
     @BeforeClass
-    public static void init() {
-        ((TestDataSource) SLAVE_DATA_SOURCE).setThrowExceptionWhenClosing(true);
+    public static void init() throws SQLException {
+        masterDataSource = new TestDataSource("test_ds_master");
+        slaveDataSource = new TestDataSource("test_ds_slave");
+        masterSlaveDataSource = new MasterSlaveDataSource("test_ds", masterDataSource, Collections.singletonList(slaveDataSource));
+        ((TestDataSource) slaveDataSource).setThrowExceptionWhenClosing(true);
     }
     
     @Before
     public void setUp() {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
-        dataSourceMap.put(DS_NAME, MASTER_SLAVE_DATA_SOURCE);
+        dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         ShardingRule rule = new ShardingRule.ShardingRuleBuilder().dataSourceRule(dataSourceRule)
                 .tableRules(Collections.singleton(new  TableRule.TableRuleBuilder("test").dataSourceRule(dataSourceRule).build())).build();
