@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
+
 import java.io.Reader;
 import java.sql.Array;
 import java.sql.NClob;
@@ -34,7 +36,11 @@ import java.sql.SQLFeatureNotSupportedException;
  * 
  * @author zhangliang
  */
-public abstract class AbstractUnsupportedOperationPreparedStatement extends AbstractUnsupportedOperationStatement implements PreparedStatement {
+public abstract class AbstractUnsupportedOperationPreparedStatement extends AbstractStatementAdapter implements PreparedStatement {
+    
+    public AbstractUnsupportedOperationPreparedStatement() {
+        super(PreparedStatement.class);
+    }
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {

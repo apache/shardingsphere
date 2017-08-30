@@ -31,13 +31,11 @@ import java.sql.Clob;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -49,174 +47,10 @@ import java.util.Objects;
  */
 public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
     
-    private boolean closed;
-    
-    private boolean poolable;
-    
-    private int fetchSize;
-    
     private final List<SetParameterMethodInvocation> setParameterMethodInvocations = new LinkedList<>();
     
     @Getter
     private final List<Object> parameters = new ArrayList<>();
-    
-    @Override
-    public final void close() throws SQLException {
-        closed = true;
-        getRoutedPreparedStatements().clear();
-        Collection<SQLException> exceptions = new LinkedList<>();
-        for (PreparedStatement each : getRoutedPreparedStatements()) {
-            try {
-                each.close();
-            } catch (final SQLException ex) {
-                exceptions.add(ex);
-            }
-        }
-        throwSQLExceptionIfNecessary(exceptions);
-    }
-    
-    @Override
-    public final boolean isClosed() throws SQLException {
-        return closed;
-    }
-    
-    @Override
-    public final boolean isPoolable() throws SQLException {
-        return poolable;
-    }
-    
-    @Override
-    public final void setPoolable(final boolean poolable) throws SQLException {
-        this.poolable = poolable;
-        if (getRoutedPreparedStatements().isEmpty()) {
-            recordMethodInvocation(PreparedStatement.class, "setPoolable", new Class[] {boolean.class}, new Object[] {poolable});
-            return;
-        }
-        for (PreparedStatement each : getRoutedPreparedStatements()) {
-            each.setPoolable(poolable);
-        }
-    }
-    
-    @Override
-    public final int getFetchSize() throws SQLException {
-        return fetchSize;
-    }
-    
-    @Override
-    public final void setFetchSize(final int rows) throws SQLException {
-        this.fetchSize = rows;
-        if (getRoutedPreparedStatements().isEmpty()) {
-            recordMethodInvocation(PreparedStatement.class, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
-            return;
-        }
-        for (PreparedStatement each : getRoutedPreparedStatements()) {
-            each.setFetchSize(rows);
-        }
-    }
-    
-    @Override
-    public final void setEscapeProcessing(final boolean enable) throws SQLException {
-        if (getRoutedPreparedStatements().isEmpty()) {
-            recordMethodInvocation(PreparedStatement.class, "setEscapeProcessing", new Class[] {boolean.class}, new Object[] {enable});
-            return;
-        }
-        for (PreparedStatement each : getRoutedPreparedStatements()) {
-            each.setEscapeProcessing(enable);
-        }
-    }
-    
-    @Override
-    public final void cancel() throws SQLException {
-        for (PreparedStatement each : getRoutedPreparedStatements()) {
-            each.cancel();
-        }
-    }
-    
-    @Override
-    public final int getUpdateCount() throws SQLException {
-        long result = 0;
-        boolean hasResult = false;
-        for (PreparedStatement each : getRoutedPreparedStatements()) {
-            if (each.getUpdateCount() > -1) {
-                hasResult = true;
-            }
-            result += each.getUpdateCount();
-        }
-        if (result > Integer.MAX_VALUE) {
-            result = Integer.MAX_VALUE;
-        }
-        return hasResult ? Long.valueOf(result).intValue() : -1;
-    }
-    
-    @Override
-    public SQLWarning getWarnings() throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public void clearWarnings() throws SQLException {
-    }
-    
-    @Override
-    public final boolean getMoreResults() throws SQLException {
-        return false;
-    }
-    
-    @Override
-    public final boolean getMoreResults(final int current) throws SQLException {
-        return false;
-    }
-    
-    @Override
-    public final int getMaxFieldSize() throws SQLException {
-        return getRoutedPreparedStatements().isEmpty() ? 0 : getRoutedPreparedStatements().iterator().next().getMaxFieldSize();
-    }
-    
-    @Override
-    public final void setMaxFieldSize(final int max) throws SQLException {
-        if (getRoutedPreparedStatements().isEmpty()) {
-            recordMethodInvocation(PreparedStatement.class, "setMaxFieldSize", new Class[] {int.class}, new Object[] {max});
-            return;
-        }
-        for (PreparedStatement each : getRoutedPreparedStatements()) {
-            each.setMaxFieldSize(max);
-        }
-    }
-    
-    // TODO Confirm MaxRows for multiple databases is need special handle. eg: 10 statements maybe MaxRows / 10
-    @Override
-    public final int getMaxRows() throws SQLException {
-        return getRoutedPreparedStatements().isEmpty() ? -1 : getRoutedPreparedStatements().iterator().next().getMaxRows();
-    }
-    
-    @Override
-    public final void setMaxRows(final int max) throws SQLException {
-        if (getRoutedPreparedStatements().isEmpty()) {
-            recordMethodInvocation(PreparedStatement.class, "setMaxRows", new Class[] {int.class}, new Object[] {max});
-            return;
-        }
-        for (PreparedStatement each : getRoutedPreparedStatements()) {
-            each.setMaxRows(max);
-        }
-    }
-    
-    @Override
-    public final int getQueryTimeout() throws SQLException {
-        return getRoutedPreparedStatements().isEmpty() ? 0 : getRoutedPreparedStatements().iterator().next().getQueryTimeout();
-    }
-    
-    @Override
-    public final void setQueryTimeout(final int seconds) throws SQLException {
-        if (getRoutedPreparedStatements().isEmpty()) {
-            recordMethodInvocation(PreparedStatement.class, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});
-            return;
-        }
-        for (PreparedStatement each : getRoutedPreparedStatements()) {
-            each.setQueryTimeout(seconds);
-        }
-    }
-    
-    protected abstract Collection<PreparedStatement> getRoutedPreparedStatements();
     
     @Override
     public final void setNull(final int parameterIndex, final int sqlType) throws SQLException {

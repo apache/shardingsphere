@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationStatement;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -31,7 +32,10 @@ import java.util.LinkedList;
  * @author zhangliang
  * @author gaohongtao
  */
+@RequiredArgsConstructor
 public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperationStatement {
+    
+    private final Class<? extends Statement> targetClass;
     
     private boolean closed;
     
@@ -68,7 +72,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     public final void setPoolable(final boolean poolable) throws SQLException {
         this.poolable = poolable;
         if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(Statement.class, "setPoolable", new Class[] {boolean.class}, new Object[] {poolable});
+            recordMethodInvocation(targetClass, "setPoolable", new Class[] {boolean.class}, new Object[] {poolable});
             return;
         }
         for (Statement each : getRoutedStatements()) {
@@ -85,7 +89,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     public final void setFetchSize(final int rows) throws SQLException {
         this.fetchSize = rows;
         if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(Statement.class, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
+            recordMethodInvocation(targetClass, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
             return;
         }
         for (Statement each : getRoutedStatements()) {
@@ -96,7 +100,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setEscapeProcessing(final boolean enable) throws SQLException {
         if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(Statement.class, "setEscapeProcessing", new Class[] {boolean.class}, new Object[] {enable});
+            recordMethodInvocation(targetClass, "setEscapeProcessing", new Class[] {boolean.class}, new Object[] {enable});
             return;
         }
         for (Statement each : getRoutedStatements()) {
@@ -154,7 +158,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setMaxFieldSize(final int max) throws SQLException {
         if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(Statement.class, "setMaxFieldSize", new Class[] {int.class}, new Object[] {max});
+            recordMethodInvocation(targetClass, "setMaxFieldSize", new Class[] {int.class}, new Object[] {max});
             return;
         }
         for (Statement each : getRoutedStatements()) {
@@ -171,7 +175,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setMaxRows(final int max) throws SQLException {
         if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(Statement.class, "setMaxRows", new Class[] {int.class}, new Object[] {max});
+            recordMethodInvocation(targetClass, "setMaxRows", new Class[] {int.class}, new Object[] {max});
             return;
         }
         for (Statement each : getRoutedStatements()) {
@@ -187,7 +191,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setQueryTimeout(final int seconds) throws SQLException {
         if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(Statement.class, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});
+            recordMethodInvocation(targetClass, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});
             return;
         }
         for (Statement each : getRoutedStatements()) {
@@ -195,5 +199,5 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         }
     }
     
-    protected abstract Collection<Statement> getRoutedStatements();
+    protected abstract Collection<? extends Statement> getRoutedStatements();
 }

@@ -83,6 +83,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     }
     
     public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+        super(Statement.class);
         this.connection = connection;
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;

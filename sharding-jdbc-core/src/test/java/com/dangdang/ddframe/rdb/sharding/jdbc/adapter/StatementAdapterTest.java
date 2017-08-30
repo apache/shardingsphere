@@ -186,7 +186,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         when(statement1.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
         final Statement statement2 = Mockito.mock(Statement.class);
         when(statement2.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
-        AbstractStatementAdapter statement = new AbstractStatementAdapter() {
+        AbstractStatementAdapter statement = new AbstractStatementAdapter(Statement.class) {
             
             @Override
             protected Collection<Statement> getRoutedStatements() {

@@ -73,7 +73,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
-    private final Collection<PreparedStatement> routedPreparedStatements = new LinkedList<>();
+    private final Collection<PreparedStatement> routedStatements = new LinkedList<>();
     
     @Getter(AccessLevel.NONE)
     private boolean returnGeneratedKeys;
@@ -155,7 +155,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
             } else {
                 preparedStatements = Collections.singletonList(generatePreparedStatement(each));
             }
-            routedPreparedStatements.addAll(preparedStatements);
+            routedStatements.addAll(preparedStatements);
             for (PreparedStatement preparedStatement : preparedStatements) {
                 replaySetParameter(preparedStatement);
                 result.add(new PreparedStatementUnit(each, preparedStatement));
@@ -227,8 +227,8 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         if (returnGeneratedKeys && generatedKey.isPresent()) {
             return new GeneratedKeysResultSet(routeResult.getGeneratedKeys().iterator(), generatedKey.get().getColumn(), this);
         }
-        if (1 == routedPreparedStatements.size()) {
-            return routedPreparedStatements.iterator().next().getGeneratedKeys();
+        if (1 == routedStatements.size()) {
+            return routedStatements.iterator().next().getGeneratedKeys();
         }
         return new GeneratedKeysResultSet();
     }
@@ -265,20 +265,15 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == routedPreparedStatements.size()) {
-            currentResultSet = routedPreparedStatements.iterator().next().getResultSet();
+        if (1 == routedStatements.size()) {
+            currentResultSet = routedStatements.iterator().next().getResultSet();
             return currentResultSet;
         }
-        List<ResultSet> resultSets = new ArrayList<>(routedPreparedStatements.size());
-        for (PreparedStatement each : routedPreparedStatements) {
+        List<ResultSet> resultSets = new ArrayList<>(routedStatements.size());
+        for (PreparedStatement each : routedStatements) {
             resultSets.add(each.getResultSet());
         }
         currentResultSet = new ShardingResultSet(resultSets, new MergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement()).merge());
         return currentResultSet;
-    }
-    
-    @Override
-    protected Collection<PreparedStatement> getRoutedPreparedStatements() {
-        return routedPreparedStatements;
     }
 }
