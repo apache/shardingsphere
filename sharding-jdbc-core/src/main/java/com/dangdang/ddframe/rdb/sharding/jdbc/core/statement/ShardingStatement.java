@@ -53,52 +53,41 @@ import java.util.List;
  * @author caohao
  * @author zhangliang
  */
+@Getter
 public class ShardingStatement extends AbstractStatementAdapter {
     
-    @Getter(AccessLevel.PROTECTED)
-    private final ShardingConnection shardingConnection;
+    private final ShardingConnection connection;
     
-    @Getter(AccessLevel.PROTECTED)
-    private boolean returnGeneratedKeys;
-    
-    @Getter
     private final int resultSetType;
     
-    @Getter
     private final int resultSetConcurrency;
     
-    @Getter
     private final int resultSetHoldability;
     
-    @Getter
     private final Collection<Statement> routedStatements = new LinkedList<>();
     
-    @Getter(AccessLevel.PROTECTED)
+    private boolean returnGeneratedKeys;
+    
     @Setter(AccessLevel.PROTECTED)
     private SQLRouteResult routeResult;
     
     @Setter(AccessLevel.PROTECTED)
     private ResultSet currentResultSet;
     
-    public ShardingStatement(final ShardingConnection shardingConnection) {
-        this(shardingConnection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+    public ShardingStatement(final ShardingConnection connection) {
+        this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingStatement(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency) {
-        this(shardingConnection, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+    public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency) {
+        this(connection, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingStatement(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+    public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
-        this.shardingConnection = shardingConnection;
+        this.connection = connection;
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
-    }
-    
-    @Override
-    public Connection getConnection() throws SQLException {
-        return shardingConnection;
     }
     
     @Override
@@ -203,15 +192,15 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         clearPrevious();
-        routeResult = new StatementRoutingEngine(shardingConnection.getShardingContext()).route(sql);
+        routeResult = new StatementRoutingEngine(connection.getShardingContext()).route(sql);
         Collection<StatementUnit> statementUnits = new LinkedList<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             Collection<Connection> connections;
             SQLType sqlType = routeResult.getSqlStatement().getType();
             if (SQLType.DDL == sqlType) {
-                connections = shardingConnection.getAllConnections(each.getDataSource());
+                connections = connection.getAllConnections(each.getDataSource());
             } else {
-                connections = Collections.singletonList(shardingConnection.getConnection(each.getDataSource(), routeResult.getSqlStatement().getType()));
+                connections = Collections.singletonList(connection.getConnection(each.getDataSource(), routeResult.getSqlStatement().getType()));
             }
             for (Connection connection : connections) {
                 Statement statement = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
@@ -220,7 +209,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
                 routedStatements.add(statement);
             }
         }
-        return new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), statementUnits);
+        return new StatementExecutor(connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), statementUnits);
     }
     
     private void clearPrevious() throws SQLException {

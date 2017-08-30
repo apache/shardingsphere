@@ -85,7 +85,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         try {
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
             List<ResultSet> resultSets = new PreparedStatementExecutor(
-                    getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeQuery();
+                    getConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeQuery();
             result = new ShardingResultSet(resultSets, new MergeEngine(resultSets, (SelectStatement) getRouteResult().getSqlStatement()).merge());
         } finally {
             clearBatch();
@@ -99,7 +99,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         try {
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
             return new PreparedStatementExecutor(
-                    getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeUpdate();
+                    getConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeUpdate();
         } finally {
             clearBatch();
         }
@@ -110,7 +110,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         try {
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
             return new PreparedStatementExecutor(
-                    getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).execute();
+                    getConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).execute();
         } finally {
             clearBatch();
         }
@@ -138,7 +138,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     
     private Collection<PreparedStatement> generatePreparedStatementForDDL(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
         Collection<PreparedStatement> result = new LinkedList<>();
-        Collection<Connection> connections = getShardingConnection().getAllConnections(sqlExecutionUnit.getDataSource());
+        Collection<Connection> connections = getConnection().getAllConnections(sqlExecutionUnit.getDataSource());
         for (Connection each : connections) {
             result.add(each.prepareStatement(sqlExecutionUnit.getSql(), getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()));
         }
@@ -147,7 +147,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     
     private PreparedStatement generatePreparedStatement(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
-        Connection connection = getShardingConnection().getConnection(sqlExecutionUnit.getDataSource(), getRouteResult().getSqlStatement().getType());
+        Connection connection = getConnection().getConnection(sqlExecutionUnit.getDataSource(), getRouteResult().getSqlStatement().getType());
         if (isReturnGeneratedKeys() || isReturnGeneratedKeys() && generatedKey.isPresent()) {
             return connection.prepareStatement(sqlExecutionUnit.getSql(), RETURN_GENERATED_KEYS);
         }
@@ -179,8 +179,8 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     @Override
     public int[] executeBatch() throws SQLException {
         try {
-            return new BatchPreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
-                    getShardingConnection().getShardingContext().getDatabaseType(), getRouteResult().getSqlStatement().getType(), batchStatementUnits, parameterSets).executeBatch();
+            return new BatchPreparedStatementExecutor(getConnection().getShardingContext().getExecutorEngine(), 
+                    getConnection().getShardingContext().getDatabaseType(), getRouteResult().getSqlStatement().getType(), batchStatementUnits, parameterSets).executeBatch();
         } finally {
             clearBatch();
         }
