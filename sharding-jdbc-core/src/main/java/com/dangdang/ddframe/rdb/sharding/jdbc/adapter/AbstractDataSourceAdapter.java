@@ -17,13 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import lombok.RequiredArgsConstructor;
+import com.google.common.base.Preconditions;
+import lombok.Getter;
 
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 /**
@@ -31,10 +35,36 @@ import java.util.logging.Logger;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
     
+    @Getter
+    private final String databaseProductName;
+    
     private PrintWriter logWriter = new PrintWriter(System.out);
+    
+    public AbstractDataSourceAdapter(final Collection<DataSource> dataSources) {
+        databaseProductName = getDatabaseProductName(dataSources);
+    }
+    
+    private String getDatabaseProductName(final Collection<DataSource> dataSources) {
+        String result = null;
+        for (DataSource each : dataSources) {
+            String databaseProductName;
+            if (each instanceof AbstractDataSourceAdapter) {
+                databaseProductName = ((AbstractDataSourceAdapter) each).getDatabaseProductName();
+            } else {
+                try (Connection connection = each.getConnection()) {
+                    databaseProductName = connection.getMetaData().getDatabaseProductName();
+                    // TODO throw
+                } catch (final SQLException ex) {
+                    throw new ShardingJdbcException(ex);
+                }
+            }
+            Preconditions.checkState(null == result || result.equals(databaseProductName), String.format("Database type inconsistent with '%s' and '%s'", result, databaseProductName));
+            result = databaseProductName;
+        }
+        return result;
+    }
     
     @Override
     public final PrintWriter getLogWriter() throws SQLException {

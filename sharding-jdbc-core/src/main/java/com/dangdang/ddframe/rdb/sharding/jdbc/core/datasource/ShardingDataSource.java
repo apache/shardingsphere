@@ -21,15 +21,11 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
 import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
-import com.google.common.base.Preconditions;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -51,34 +47,12 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     }
     
     public ShardingDataSource(final ShardingRule shardingRule, final Properties props) {
-        Preconditions.checkNotNull(shardingRule);
-        Preconditions.checkNotNull(props);
-        shardingProperties = new ShardingProperties(props);
+        super(shardingRule.getDataSourceRule().getDataSources());
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executorEngine = new ExecutorEngine(executorSize);
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        try {
-            shardingContext = new ShardingContext(shardingRule, DatabaseType.valueFrom(getDatabaseProductName(shardingRule)), executorEngine, showSQL);
-        } catch (final SQLException ex) {
-            throw new ShardingJdbcException(ex);
-        }
-    }
-    
-    private String getDatabaseProductName(final ShardingRule shardingRule) throws SQLException {
-        String result = null;
-        for (DataSource each : shardingRule.getDataSourceRule().getDataSources()) {
-            String databaseProductName;
-            if (each instanceof MasterSlaveDataSource) {
-                databaseProductName = ((MasterSlaveDataSource) each).getDatabaseProductName();
-            } else {
-                try (Connection connection = each.getConnection()) {
-                    databaseProductName = connection.getMetaData().getDatabaseProductName();
-                }
-            }
-            Preconditions.checkState(null == result || result.equals(databaseProductName), String.format("Database type inconsistent with '%s' and '%s'", result, databaseProductName));
-            result = databaseProductName;
-        }
-        return result;
+        shardingContext = new ShardingContext(shardingRule, DatabaseType.valueFrom(getDatabaseProductName()), executorEngine, showSQL);
     }
     
     @Override

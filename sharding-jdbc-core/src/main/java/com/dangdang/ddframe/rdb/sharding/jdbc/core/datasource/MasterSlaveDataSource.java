@@ -24,13 +24,13 @@ import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.MasterSlaveConnection;
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -38,7 +38,6 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private static final ThreadLocal<Boolean> DML_FLAG = new ThreadLocal<Boolean>() {
@@ -58,6 +57,19 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     private final List<DataSource> slaveDataSources;
     
     private final SlaveLoadBalanceStrategy slaveLoadBalanceStrategy = new RoundRobinSlaveLoadBalanceStrategy();
+    
+    public MasterSlaveDataSource(final String name, final DataSource masterDataSource, final List<DataSource> slaveDataSources) {
+        super(getAllDataSources(masterDataSource, slaveDataSources));
+        this.name = name;
+        this.masterDataSource = masterDataSource;
+        this.slaveDataSources = slaveDataSources;
+    }
+    
+    private static Collection<DataSource> getAllDataSources(final DataSource masterDataSource, final List<DataSource> slaveDataSources) {
+        Collection<DataSource> result = new LinkedList<>(slaveDataSources);
+        result.add(masterDataSource);
+        return result;
+    }
     
     /**
      * Get data source name from master-slave data source.
@@ -94,27 +106,6 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
             return masterDataSource;
         }
         return slaveLoadBalanceStrategy.getDataSource(name, slaveDataSources);
-    }
-    
-    /**
-     * Get database product name.
-     * 
-     * @return database product name
-     * @throws SQLException SQL exception
-     */
-    public String getDatabaseProductName() throws SQLException {
-        String result;
-        try (Connection masterConnection = masterDataSource.getConnection()) {
-            result = masterConnection.getMetaData().getDatabaseProductName();
-        }
-        for (DataSource each : slaveDataSources) {
-            String slaveDatabaseProductName;
-            try (Connection slaveConnection = each.getConnection()) {
-                slaveDatabaseProductName = slaveConnection.getMetaData().getDatabaseProductName();
-            }
-            Preconditions.checkState(result.equals(slaveDatabaseProductName), String.format("Database type inconsistent with '%s' and '%s'", result, slaveDatabaseProductName));
-        }
-        return result;
     }
     
     @Override

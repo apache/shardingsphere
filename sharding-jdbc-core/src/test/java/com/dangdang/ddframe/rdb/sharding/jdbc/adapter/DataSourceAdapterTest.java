@@ -39,31 +39,31 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
-
+    
     public DataSourceAdapterTest(final DatabaseType databaseType) {
         super(databaseType);
     }
-
+    
     @Test
     public void assertUnwrapSuccess() throws SQLException {
         assertThat(getShardingDataSource().unwrap(Object.class), is((Object) getShardingDataSource()));
     }
-
+    
     @Test(expected = SQLException.class)
     public void assertUnwrapFailure() throws SQLException {
         getShardingDataSource().unwrap(String.class);
     }
-
+    
     @Test
     public void assertIsWrapperFor() throws SQLException {
         assertTrue(getShardingDataSource().isWrapperFor(Object.class));
     }
-
+    
     @Test
     public void assertIsNotWrapperFor() throws SQLException {
         assertFalse(getShardingDataSource().isWrapperFor(String.class));
     }
-
+    
     @Test
     public void assertRecordMethodInvocationSuccess() throws SQLException {
         List<?> list = mock(List.class);
@@ -72,24 +72,24 @@ public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAnd
         getShardingDataSource().replayMethodsInvocation(list);
         verify(list).isEmpty();
     }
-
+    
     @Test(expected = ShardingJdbcException.class)
     public void assertRecordMethodInvocationFailure() throws SQLException {
         getShardingDataSource().recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
     }
-
+    
     @Test
     public void assertSetLogWriter() throws SQLException {
         assertThat(getShardingDataSource().getLogWriter(), instanceOf(PrintWriter.class));
         getShardingDataSource().setLogWriter(null);
         assertNull(getShardingDataSource().getLogWriter());
     }
-
+    
     @Test
     public void assertGetParentLogger() throws SQLException {
         assertThat(getShardingDataSource().getParentLogger().getName(), is(Logger.GLOBAL_LOGGER_NAME));
     }
-
+    
     @Test
     public void assertGetConnectionWithUsername() throws SQLException {
         assertThat(getShardingDataSource().getConnection("username", "password"), instanceOf(ShardingConnection.class));

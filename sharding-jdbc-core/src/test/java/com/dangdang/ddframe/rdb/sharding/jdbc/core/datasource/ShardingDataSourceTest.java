@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
+import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
@@ -35,29 +36,89 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class ShardingDataSourceTest {
     
-    @Test
-    public void assertGetConnection() throws SQLException {
-        Connection connection = mockConnection();
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSource.getConnection()).thenReturn(connection);
-        assertThat(createShardingDataSource(dataSource).getConnection().getConnection("ds", SQLType.DQL), is(connection));
+    @Test(expected = IllegalStateException.class)
+    public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferent() throws SQLException {
+        DataSource dataSource1 = mockDataSource("MySQL");
+        DataSource dataSource2 = mockDataSource("H2");
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("ds1", dataSource1);
+        dataSourceMap.put("ds2", dataSource2);
+        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), dataSource2.getConnection());
     }
     
-    private Connection mockConnection() throws SQLException {
-        Connection result = mock(Connection.class);
+    @Test(expected = IllegalStateException.class)
+    public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferentForMasterSlave() throws SQLException {
+        DataSource dataSource1 = mockDataSource("MySQL");
+        DataSource masterDataSource = mockDataSource("H2");
+        DataSource slaveDataSource = mockDataSource("H2");
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", masterDataSource, slaveDataSource);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("ds1", dataSource1);
+        dataSourceMap.put("ds2", dataSource2);
+        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), dataSource2.getMasterDataSource().getConnection(), dataSource2.getSlaveDataSources().get(0).getConnection());
+    }
+    
+    @Test
+    public void assertGetDatabaseProductName() throws SQLException {
+        DataSource dataSource1 = mockDataSource("H2");
+        DataSource dataSource2 = mockDataSource("H2");
+        DataSource dataSource3 = mockDataSource("H2");
+        Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
+        dataSourceMap.put("ds1", dataSource1);
+        dataSourceMap.put("ds2", dataSource2);
+        dataSourceMap.put("ds3", dataSource3);
+        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), dataSource2.getConnection(), dataSource3.getConnection());
+    }
+    
+    @Test
+    public void assertGetDatabaseProductNameForMasterSlave() throws SQLException {
+        DataSource dataSource1 = mockDataSource("H2");
+        DataSource masterDataSource = mockDataSource("H2");
+        DataSource slaveDataSource = mockDataSource("H2");
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", masterDataSource, slaveDataSource);
+        DataSource dataSource3 = mockDataSource("H2");
+        Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
+        dataSourceMap.put("ds1", dataSource1);
+        dataSourceMap.put("ds2", dataSource2);
+        dataSourceMap.put("ds3", dataSource3);
+        assertDatabaseProductName(
+                dataSourceMap, dataSource1.getConnection(), dataSource2.getMasterDataSource().getConnection(), dataSource2.getSlaveDataSources().get(0).getConnection(), dataSource3.getConnection());
+    }
+    
+    private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
+        try {
+            createShardingDataSource(dataSourceMap).getDatabaseProductName();
+        } finally {
+            for (Connection each : connections) {
+                verify(each).close();
+            }
+        }
+    }
+    
+    private DataSource mockDataSource(final String dataBaseProductName) throws SQLException {
+        DataSource result = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(result.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(databaseMetaData.getDatabaseProductName()).thenReturn(dataBaseProductName);
+        when(result.getConnection()).thenReturn(connection);
         return result;
     }
     
-    private ShardingDataSource createShardingDataSource(final DataSource dataSource) {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1);
+    @Test
+    public void assertGetConnection() throws SQLException {
+        DataSource dataSource = mockDataSource("H2");
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
+        assertThat(createShardingDataSource(dataSourceMap).getConnection().getConnection("ds", SQLType.DQL), is(dataSource.getConnection()));
+    }
+    
+    private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) {
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         TableRule tableRule = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule).build();
         return new ShardingDataSource(ShardingRule.builder()
