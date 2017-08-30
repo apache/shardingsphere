@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
@@ -117,7 +118,7 @@ public final class MasterSlaveDataSourceTest {
         when(masterDataSource.getConnection()).thenReturn(masterConnection);
         when(slaveDataSource.getConnection()).thenReturn(slaveConnection);
         try {
-            ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", masterDataSource, slaveDataSource)).getDatabaseProductName();
+            ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", masterDataSource, slaveDataSource)).getDatabaseType();
         } finally {
             verify(masterConnection).close();
             verify(slaveConnection).close();
@@ -135,7 +136,7 @@ public final class MasterSlaveDataSourceTest {
         when(masterDataSource.getConnection()).thenReturn(masterConnection);
         when(slaveDataSource1.getConnection()).thenReturn(slaveConnection1);
         when(slaveDataSource2.getConnection()).thenReturn(slaveConnection2);
-        assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", masterDataSource, slaveDataSource1, slaveDataSource2)).getDatabaseProductName(), is("H2"));
+        assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", masterDataSource, slaveDataSource1, slaveDataSource2)).getDatabaseType(), is(DatabaseType.H2));
         verify(masterConnection).close();
         verify(slaveConnection1).close();
         verify(slaveConnection2).close();

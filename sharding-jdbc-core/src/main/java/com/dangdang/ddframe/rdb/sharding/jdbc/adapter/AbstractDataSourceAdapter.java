@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -37,29 +38,31 @@ import java.util.logging.Logger;
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
     
     @Getter
-    private final String databaseProductName;
+    private final DatabaseType databaseType;
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Collection<DataSource> dataSources) throws SQLException {
-        databaseProductName = getDatabaseProductName(dataSources);
+        databaseType = getDatabaseType(dataSources);
     }
     
-    private String getDatabaseProductName(final Collection<DataSource> dataSources) throws SQLException {
-        String result = null;
+    private DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
+        DatabaseType result = null;
         for (DataSource each : dataSources) {
-            String databaseProductName;
-            if (each instanceof AbstractDataSourceAdapter) {
-                databaseProductName = ((AbstractDataSourceAdapter) each).getDatabaseProductName();
-            } else {
-                try (Connection connection = each.getConnection()) {
-                    databaseProductName = connection.getMetaData().getDatabaseProductName();
-                }
-            }
-            Preconditions.checkState(null == result || result.equals(databaseProductName), String.format("Database type inconsistent with '%s' and '%s'", result, databaseProductName));
-            result = databaseProductName;
+            DatabaseType databaseType = getDatabaseType(each);
+            Preconditions.checkState(null == result || result.equals(databaseType), String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
+            result = databaseType;
         }
         return result;
+    }
+    
+    private DatabaseType getDatabaseType(final DataSource dataSource) throws SQLException {
+        if (dataSource instanceof AbstractDataSourceAdapter) {
+            return ((AbstractDataSourceAdapter) dataSource).databaseType;
+        }
+        try (Connection connection = dataSource.getConnection()) {
+            return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
+        }
     }
     
     @Override

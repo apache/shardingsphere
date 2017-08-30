@@ -95,6 +95,13 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     /**
+     * reset DML flag.
+     */
+    public static void resetDMLFlag() {
+        DML_FLAG.remove();
+    }
+    
+    /**
      * Get data source from master-slave data source.
      *
      * @param sqlType SQL type
@@ -111,12 +118,5 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     @Override
     public Connection getConnection() throws SQLException {
         return new MasterSlaveConnection(this);
-    }
-    
-    /**
-     * reset DML flag.
-     */
-    public static void resetDMLFlag() {
-        DML_FLAG.remove();
     }
 }

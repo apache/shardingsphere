@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
 import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
@@ -52,7 +51,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executorEngine = new ExecutorEngine(executorSize);
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        shardingContext = new ShardingContext(shardingRule, DatabaseType.valueFrom(getDatabaseProductName()), executorEngine, showSQL);
+        shardingContext = new ShardingContext(shardingRule, getDatabaseType(), executorEngine, showSQL);
     }
     
     @Override

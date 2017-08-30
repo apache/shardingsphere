@@ -92,7 +92,7 @@ public final class ShardingDataSourceTest {
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
         try {
-            createShardingDataSource(dataSourceMap).getDatabaseProductName();
+            createShardingDataSource(dataSourceMap).getDatabaseType();
         } finally {
             for (Connection each : connections) {
                 verify(each).close();
