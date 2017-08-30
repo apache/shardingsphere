@@ -64,4 +64,9 @@ public abstract class AbstractUnsupportedOperationStatement extends WrapperAdapt
     public final boolean isCloseOnCompletion() throws SQLException {
         throw new SQLFeatureNotSupportedException("isCloseOnCompletion");
     }
+    
+    @Override
+    public final void setCursorName(final String name) throws SQLException {
+        throw new SQLFeatureNotSupportedException("setCursorName");
+    }
 }

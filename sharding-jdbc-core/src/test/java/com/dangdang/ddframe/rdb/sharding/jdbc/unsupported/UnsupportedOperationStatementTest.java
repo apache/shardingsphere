@@ -106,4 +106,11 @@ public final class UnsupportedOperationStatementTest extends AbstractShardingJDB
             each.isCloseOnCompletion();
         }
     }
+    
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    public void assertSetCursorName() throws SQLException {
+        for (Statement each : statements) {
+            each.setCursorName("cursorName");
+        }
+    }
 }

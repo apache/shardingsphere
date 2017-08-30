@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationStatement;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -29,12 +28,10 @@ import java.util.LinkedList;
 /**
  * Adapter for {@code Statement}.
  * 
+ * @author zhangliang
  * @author gaohongtao
  */
-@RequiredArgsConstructor
 public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperationStatement {
-    
-    private final Class<? extends Statement> recordTargetClass;
     
     private boolean closed;
     
@@ -43,7 +40,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     private int fetchSize;
     
     @Override
-    @SuppressWarnings("unchecked")
     public final void close() throws SQLException {
         closed = true;
         getRoutedStatements().clear();
@@ -72,7 +68,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     public final void setPoolable(final boolean poolable) throws SQLException {
         this.poolable = poolable;
         if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(recordTargetClass, "setPoolable", new Class[] {boolean.class}, new Object[] {poolable});
+            recordMethodInvocation(Statement.class, "setPoolable", new Class[] {boolean.class}, new Object[] {poolable});
             return;
         }
         for (Statement each : getRoutedStatements()) {
@@ -89,7 +85,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     public final void setFetchSize(final int rows) throws SQLException {
         this.fetchSize = rows;
         if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(recordTargetClass, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
+            recordMethodInvocation(Statement.class, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
             return;
         }
         for (Statement each : getRoutedStatements()) {
@@ -100,7 +96,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setEscapeProcessing(final boolean enable) throws SQLException {
         if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(recordTargetClass, "setEscapeProcessing", new Class[] {boolean.class}, new Object[] {enable});
+            recordMethodInvocation(Statement.class, "setEscapeProcessing", new Class[] {boolean.class}, new Object[] {enable});
             return;
         }
         for (Statement each : getRoutedStatements()) {
@@ -112,17 +108,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     public final void cancel() throws SQLException {
         for (Statement each : getRoutedStatements()) {
             each.cancel();
-        }
-    }
-    
-    @Override
-    public final void setCursorName(final String name) throws SQLException {
-        if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(recordTargetClass, "setCursorName", new Class[] {String.class}, new Object[] {name});
-            return;
-        }
-        for (Statement each : getRoutedStatements()) {
-            each.setCursorName(name);
         }
     }
     
@@ -151,9 +136,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     public void clearWarnings() throws SQLException {
     }
     
-    /* 
-     * Only store procedures will support multiple ResetSets, so don't support here.
-     */
     @Override
     public final boolean getMoreResults() throws SQLException {
         return false;
@@ -172,7 +154,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setMaxFieldSize(final int max) throws SQLException {
         if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(recordTargetClass, "setMaxFieldSize", new Class[] {int.class}, new Object[] {max});
+            recordMethodInvocation(Statement.class, "setMaxFieldSize", new Class[] {int.class}, new Object[] {max});
             return;
         }
         for (Statement each : getRoutedStatements()) {
@@ -189,7 +171,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setMaxRows(final int max) throws SQLException {
         if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(recordTargetClass, "setMaxRows", new Class[] {int.class}, new Object[] {max});
+            recordMethodInvocation(Statement.class, "setMaxRows", new Class[] {int.class}, new Object[] {max});
             return;
         }
         for (Statement each : getRoutedStatements()) {
@@ -205,7 +187,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setQueryTimeout(final int seconds) throws SQLException {
         if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(recordTargetClass, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});
+            recordMethodInvocation(Statement.class, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});
             return;
         }
         for (Statement each : getRoutedStatements()) {
@@ -213,5 +195,5 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         }
     }
     
-    protected abstract Collection<? extends Statement> getRoutedStatements();
+    protected abstract Collection<Statement> getRoutedStatements();
 }

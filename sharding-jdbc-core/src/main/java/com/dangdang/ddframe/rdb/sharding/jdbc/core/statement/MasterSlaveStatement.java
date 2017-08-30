@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.MasterSlaveConnect
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,6 +36,7 @@ import java.util.Collections;
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 public final class MasterSlaveStatement extends AbstractStatementAdapter {
     
@@ -55,14 +57,6 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
     
     public MasterSlaveStatement(final MasterSlaveConnection connection, final int resultSetType, final int resultSetConcurrency) {
         this(connection, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-    }
-    
-    public MasterSlaveStatement(final MasterSlaveConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
-        super(Statement.class);
-        this.connection = connection;
-        this.resultSetType = resultSetType;
-        this.resultSetConcurrency = resultSetConcurrency;
-        this.resultSetHoldability = resultSetHoldability;
     }
     
     @Override
@@ -155,7 +149,8 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         return routedStatement.getResultSet();
     }
     
-    protected Collection<? extends Statement> getRoutedStatements() {
+    @Override
+    protected Collection<Statement> getRoutedStatements() {
         return Collections.singletonList(routedStatement);
     }
 }

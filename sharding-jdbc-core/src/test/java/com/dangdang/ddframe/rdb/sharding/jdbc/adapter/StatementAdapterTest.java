@@ -147,17 +147,6 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     }
     
     @Test
-    public void assertSetCursorName() throws SQLException {
-        for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
-            if (DatabaseType.Oracle != each.getKey()) {
-                each.getValue().setCursorName("cursorName");
-                each.getValue().executeQuery(sql);
-                each.getValue().setCursorName("cursorName");
-            }
-        }
-    }
-    
-    @Test
     public void assertGetUpdateCount() throws SQLException {
         String sql = "DELETE FROM t_order WHERE status = 'init'";
         for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
@@ -193,15 +182,15 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertOverMaxUpdateRow() throws SQLException {
-        final Statement st1 = Mockito.mock(Statement.class);
-        when(st1.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
-        final Statement st2 = Mockito.mock(Statement.class);
-        when(st2.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
-        AbstractStatementAdapter statement = new AbstractStatementAdapter(Statement.class) {
+        final Statement statement1 = Mockito.mock(Statement.class);
+        when(statement1.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
+        final Statement statement2 = Mockito.mock(Statement.class);
+        when(statement2.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
+        AbstractStatementAdapter statement = new AbstractStatementAdapter() {
             
             @Override
-            protected Collection<? extends Statement> getRoutedStatements() {
-                return Lists.newArrayList(st1, st2);
+            protected Collection<Statement> getRoutedStatements() {
+                return Lists.newArrayList(statement1, statement2);
             }
             
             @Override
