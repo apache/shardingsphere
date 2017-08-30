@@ -35,6 +35,7 @@ import org.junit.AfterClass;
 import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -78,7 +79,7 @@ public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
     }
     
     @Override
-    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
+    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException {
         if (!shardingDataSources.isEmpty() && !isShutdown) {
             return shardingDataSources;
         }

@@ -58,7 +58,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final SlaveLoadBalanceStrategy slaveLoadBalanceStrategy = new RoundRobinSlaveLoadBalanceStrategy();
     
-    public MasterSlaveDataSource(final String name, final DataSource masterDataSource, final List<DataSource> slaveDataSources) {
+    public MasterSlaveDataSource(final String name, final DataSource masterDataSource, final List<DataSource> slaveDataSources) throws SQLException {
         super(getAllDataSources(masterDataSource, slaveDataSources));
         this.name = name;
         this.masterDataSource = masterDataSource;

@@ -118,7 +118,7 @@ public final class ShardingDataSourceTest {
         assertThat(createShardingDataSource(dataSourceMap).getConnection().getConnection("ds", SQLType.DQL), is(dataSource.getConnection()));
     }
     
-    private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) {
+    private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         TableRule tableRule = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule).build();
         return new ShardingDataSource(ShardingRule.builder()

@@ -34,6 +34,7 @@ import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
 import org.junit.AfterClass;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -71,7 +72,7 @@ public class ShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
     }
     
     @Override
-    protected Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
+    protected Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException {
         if (!shardingDataSources.isEmpty() && !isShutdown) {
             return shardingDataSources;
         }

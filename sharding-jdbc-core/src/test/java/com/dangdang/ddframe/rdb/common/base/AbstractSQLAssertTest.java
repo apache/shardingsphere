@@ -85,19 +85,19 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     protected abstract ShardingTestStrategy getShardingStrategy();
     
-    protected abstract Map<DatabaseType, ShardingDataSource> getShardingDataSources();
+    protected abstract Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException;
     
     @Test
-    public void assertWithPreparedStatement() {
+    public void assertWithPreparedStatement() throws SQLException {
         execute(true);
     }
     
     @Test
-    public void assertWithStatement() {
+    public void assertWithStatement() throws SQLException {
         execute(false);
     }
     
-    private void execute(final boolean isPreparedStatement) {
+    private void execute(final boolean isPreparedStatement) throws SQLException {
         for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
             if (getCurrentDatabaseType() == each.getKey()) {
                 try {

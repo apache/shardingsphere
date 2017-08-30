@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.config.common.api.ShardingRuleBuilder;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -30,7 +31,7 @@ import java.util.Properties;
  */
 public class SpringShardingDataSource extends ShardingDataSource {
     
-    public SpringShardingDataSource(final ShardingRuleConfig shardingRuleConfig, final Properties props) {
+    public SpringShardingDataSource(final ShardingRuleConfig shardingRuleConfig, final Properties props) throws SQLException {
         super(new ShardingRuleBuilder(shardingRuleConfig).build(), props);
     }
 }

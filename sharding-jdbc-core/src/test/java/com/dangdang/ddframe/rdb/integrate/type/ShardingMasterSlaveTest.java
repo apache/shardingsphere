@@ -36,6 +36,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -83,7 +84,7 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
     }
     
     @Override
-    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
+    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException {
         if (!shardingDataSources.isEmpty() && !isShutdown) {
             return shardingDataSources;
         }

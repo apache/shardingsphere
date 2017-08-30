@@ -101,7 +101,7 @@ public final class Main {
         }
     }
     
-    private static ShardingDataSource getShardingDataSource() {
+    private static ShardingDataSource getShardingDataSource() throws SQLException {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
         TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList("t_order_0", "t_order_1")).dataSourceRule(dataSourceRule).build();
         TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList("t_order_item_0", "t_order_item_1")).dataSourceRule(dataSourceRule).build();
@@ -112,7 +112,7 @@ public final class Main {
         return new ShardingDataSource(shardingRule);
     }
     
-    private static Map<String, DataSource> createDataSourceMap() {
+    private static Map<String, DataSource> createDataSourceMap() throws SQLException {
         Map<String, DataSource> result = new HashMap<>(2);
         result.put("ds_0", MasterSlaveDataSourceFactory.createDataSource("ds_0", createDataSource("ds_0_master"), createDataSource("ds_0_slave_0"), createDataSource("ds_0_slave_1")));
         result.put("ds_1", MasterSlaveDataSourceFactory.createDataSource("ds_1", createDataSource("ds_1_master"), createDataSource("ds_1_slave_0"), createDataSource("ds_1_slave_1")));

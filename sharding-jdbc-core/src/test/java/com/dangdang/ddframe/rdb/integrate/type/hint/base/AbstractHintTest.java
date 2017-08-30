@@ -68,7 +68,7 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
                 "integrate/dataset/db/init/db_9.xml");
     }
     
-    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
+    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException {
         if (!shardingDataSources.isEmpty() && !isShutdown) {
             return shardingDataSources;
         }

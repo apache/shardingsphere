@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +48,7 @@ import static org.junit.Assert.fail;
 public class YamlShardingDataSourceTest {
     
     @Test
-    public void assertAll() throws IOException, NoSuchFieldException, IllegalAccessException, URISyntaxException {
+    public void assertAll() throws IOException, NoSuchFieldException, IllegalAccessException, URISyntaxException, SQLException {
         ShardingRule shardingRule = getShardingRule("/config/config-all.yaml");
         assertThat(shardingRule.getTableRules().size(), is(3));
         assertThat(shardingRule.getBindingTableRules().size(), is(1));
@@ -56,7 +57,7 @@ public class YamlShardingDataSourceTest {
     }
     
     @Test
-    public void assertMin() throws IOException, NoSuchFieldException, IllegalAccessException, URISyntaxException {
+    public void assertMin() throws IOException, ReflectiveOperationException, URISyntaxException, SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", createDataSource());
         ShardingRule shardingRule = getShardingRule(dataSourceMap, "/config/config-min.yaml");
@@ -64,7 +65,7 @@ public class YamlShardingDataSourceTest {
     }
     
     @Test
-    public void assertDynamic() throws IOException, NoSuchFieldException, IllegalAccessException, URISyntaxException {
+    public void assertDynamic() throws IOException, ReflectiveOperationException, URISyntaxException, SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", createDataSource());
         ShardingRule shardingRule = getShardingRule(dataSourceMap, "/config/config-dynamic.yaml");
@@ -91,12 +92,12 @@ public class YamlShardingDataSourceTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertClassNotFound() throws IOException, NoSuchFieldException, IllegalAccessException, URISyntaxException {
+    public void assertClassNotFound() throws IOException, NoSuchFieldException, IllegalAccessException, URISyntaxException, SQLException {
         getShardingRule("/config/config-classNotFound.yaml");
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertBindingError() throws IOException, NoSuchFieldException, IllegalAccessException, URISyntaxException {
+    public void assertBindingError() throws IOException, ReflectiveOperationException, URISyntaxException, SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", createDataSource());
         ShardingRule shardingRule = getShardingRule(dataSourceMap, "/config/config-bindingError.yaml");
@@ -105,11 +106,11 @@ public class YamlShardingDataSourceTest {
         }
     }
     
-    private ShardingRule getShardingRule(final String fileName) throws NoSuchFieldException, IllegalAccessException, URISyntaxException, IOException {
+    private ShardingRule getShardingRule(final String fileName) throws NoSuchFieldException, IllegalAccessException, URISyntaxException, IOException, SQLException {
         return getShardingRule(new YamlShardingDataSource(new File(getClass().getResource(fileName).toURI())));
     }
     
-    private ShardingRule getShardingRule(final Map<String, DataSource> dataSourceMap, final String fileName) throws NoSuchFieldException, IllegalAccessException, URISyntaxException, IOException {
+    private ShardingRule getShardingRule(final Map<String, DataSource> dataSourceMap, final String fileName) throws ReflectiveOperationException, URISyntaxException, IOException, SQLException {
         return getShardingRule(new YamlShardingDataSource(dataSourceMap, new File(getClass().getResource(fileName).toURI())));
     }
     

@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * Master-slave data source factory.
@@ -42,8 +43,9 @@ public final class MasterSlaveDataSourceFactory {
      * @param slaveDataSource data source for slave
      * @param otherSlaveDataSources other data sources for slave
      * @return master-slave data source
+     * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final String name, final DataSource masterDataSource, final DataSource slaveDataSource, final DataSource... otherSlaveDataSources) {
+    public static DataSource createDataSource(final String name, final DataSource masterDataSource, final DataSource slaveDataSource, final DataSource... otherSlaveDataSources) throws SQLException {
         return new MasterSlaveDataSource(name, masterDataSource, Lists.asList(slaveDataSource, otherSlaveDataSources));
     }
 }

@@ -42,11 +42,11 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     private final ShardingContext shardingContext;
     
-    public ShardingDataSource(final ShardingRule shardingRule) {
+    public ShardingDataSource(final ShardingRule shardingRule) throws SQLException {
         this(shardingRule, new Properties());
     }
     
-    public ShardingDataSource(final ShardingRule shardingRule, final Properties props) {
+    public ShardingDataSource(final ShardingRule shardingRule, final Properties props) throws SQLException {
         super(shardingRule.getDataSourceRule().getDataSources());
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);

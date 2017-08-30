@@ -36,6 +36,7 @@ import org.junit.Before;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,7 +63,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
     }
     
     @Override
-    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
+    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException {
         if (!shardingDataSources.isEmpty()) {
             return shardingDataSources;
         }
@@ -103,7 +104,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
     }
     
     @Before
-    public void initDdlTables() {
+    public void initDDLTables() throws SQLException {
         if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("DROP")) {
             if (getSql().contains("TEMP")) {
                 executeSql("CREATE TEMPORARY TABLE t_log(id int, status varchar(10))");
@@ -114,7 +115,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
     }
     
     @After
-    public void cleanupDdlTables() {
+    public void cleanupDdlTables() throws SQLException {
         if (getSql().contains("TEMP") && DatabaseType.Oracle != getCurrentDatabaseType()) {
             return;
         }
@@ -123,7 +124,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
         }
     }
     
-    private void executeSql(final String sql) {
+    private void executeSql(final String sql) throws SQLException {
         for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
             if (getCurrentDatabaseType() == each.getKey()) {
                 try (Connection conn = each.getValue().getConnection();

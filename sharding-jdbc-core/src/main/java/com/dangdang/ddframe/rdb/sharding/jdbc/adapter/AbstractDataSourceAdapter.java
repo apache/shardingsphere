@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -42,11 +41,11 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
-    public AbstractDataSourceAdapter(final Collection<DataSource> dataSources) {
+    public AbstractDataSourceAdapter(final Collection<DataSource> dataSources) throws SQLException {
         databaseProductName = getDatabaseProductName(dataSources);
     }
     
-    private String getDatabaseProductName(final Collection<DataSource> dataSources) {
+    private String getDatabaseProductName(final Collection<DataSource> dataSources) throws SQLException {
         String result = null;
         for (DataSource each : dataSources) {
             String databaseProductName;
@@ -55,9 +54,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
             } else {
                 try (Connection connection = each.getConnection()) {
                     databaseProductName = connection.getMetaData().getDatabaseProductName();
-                    // TODO throw
-                } catch (final SQLException ex) {
-                    throw new ShardingJdbcException(ex);
                 }
             }
             Preconditions.checkState(null == result || result.equals(databaseProductName), String.format("Database type inconsistent with '%s' and '%s'", result, databaseProductName));
