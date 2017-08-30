@@ -48,7 +48,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     /**
      * Get database connections via SQL.
      *
-     * <p>DDL, DQL and DML will return different database connections.</p>
+     * <p>DDL will return all connections; DQL will return slave connection; DML or updated before in same thread will return master connection.</p>
      * 
      * @param sql SQL
      * @return database connections via SQL
@@ -61,7 +61,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
             dataSources.add(masterSlaveDataSource.getMasterDataSource());
             dataSources.addAll(masterSlaveDataSource.getSlaveDataSources());
         } else {
-            dataSources.add(masterSlaveDataSource.getDataSource(sqlStatement.getType()));
+            dataSources.add(masterSlaveDataSource.getDataSource(sqlStatement.getType())); 
         }
         Collection<Connection> result = new LinkedList<>();
         for (DataSource each : dataSources) {

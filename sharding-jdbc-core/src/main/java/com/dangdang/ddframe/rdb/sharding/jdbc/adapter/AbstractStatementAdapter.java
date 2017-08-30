@@ -152,7 +152,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     /* 
-     * 只有存储过程会出现多结果集, 因此不支持.
+     * Only store procedures will support multiple ResetSets, so don't support here.
      */
     @Override
     public final boolean getMoreResults() throws SQLException {
@@ -180,7 +180,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         }
     }
     
-    // TODO 未来需要确认MaxRows是否在多数据库情况下需要特殊处理,以满足校验需要. 如: 10个statement可能需要将MaxRows / 10
+    // TODO Confirm MaxRows for multiple databases is need special handle. eg: 10 statements maybe MaxRows / 10
     @Override
     public final int getMaxRows() throws SQLException {
         return getRoutedStatements().isEmpty() ? -1 : getRoutedStatements().iterator().next().getMaxRows();
@@ -213,10 +213,5 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         }
     }
     
-    /**
-     * 获取路由的静态语句对象集合.
-     * 
-     * @return 路由的静态语句对象集合
-     */
     protected abstract Collection<? extends Statement> getRoutedStatements();
 }
