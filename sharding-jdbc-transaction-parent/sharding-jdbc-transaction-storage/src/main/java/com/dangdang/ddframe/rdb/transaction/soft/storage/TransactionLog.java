@@ -25,7 +25,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * 事务日志.
+ * Transaction log.
  * 
  * @author zhangliang
  */

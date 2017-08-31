@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 基于数据库的事务日志存储器接口.
+ * Transaction relationship database log storage.
  *
  * @author zhangliang
  */
@@ -89,7 +89,7 @@ public final class RdbTransactionLogStorage implements TransactionLogStorage {
                 try (ResultSet rs = preparedStatement.executeQuery()) {
                     while (rs.next()) {
                         Gson gson = new Gson();
-                        //TODO 对于批量执行的参数需要解析成两层列表
+                        // TODO for batch parameters should split 2-level records
                         List<Object> parameters = gson.fromJson(rs.getString(5), new TypeToken<List<Object>>() { }.getType());
                         result.add(new TransactionLog(rs.getString(1), "", SoftTransactionType.valueOf(rs.getString(2)), rs.getString(3), rs.getString(4), parameters, rs.getLong(6), rs.getInt(7)));
                     }

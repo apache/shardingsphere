@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.transaction.soft.exception;
 
 /**
- * 事务日志存储抛出的异常类.
+ * Transaction log storage exception.
  *
  * @author caohao
  */

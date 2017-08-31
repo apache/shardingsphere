@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import javax.sql.DataSource;
 
 /**
- * 关系型数据库事务数据源.
+ * Transaction log data source for relationship database.
  * 
  * @author caohao
  */

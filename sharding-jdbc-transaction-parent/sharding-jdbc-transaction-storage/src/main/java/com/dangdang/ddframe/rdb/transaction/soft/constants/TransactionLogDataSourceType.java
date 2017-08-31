@@ -18,19 +18,19 @@
 package com.dangdang.ddframe.rdb.transaction.soft.constants;
 
 /**
- * 事务日志存储类型.
+ * Transaction log data source type.
  * 
  * @author zhangliang
  */
 public enum TransactionLogDataSourceType {
     
     /**
-     *  内存存储.
+     * In memory.
      */
     MEMORY, 
     
     /**
-     * 数据库存储.
+     * Use relationship database.
      */
     RDB
 }

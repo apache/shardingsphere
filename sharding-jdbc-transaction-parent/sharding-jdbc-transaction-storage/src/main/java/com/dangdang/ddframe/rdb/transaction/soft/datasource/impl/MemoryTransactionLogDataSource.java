@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.transaction.soft.datasource.TransactionLogDataSo
 import javax.sql.DataSource;
 
 /**
- * 内存事务数据源.
+ * Transaction log data source in memory.
  * 
  * @author caohao
  */

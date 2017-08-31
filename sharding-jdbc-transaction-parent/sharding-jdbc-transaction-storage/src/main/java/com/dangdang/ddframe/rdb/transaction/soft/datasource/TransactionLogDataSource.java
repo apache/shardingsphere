@@ -21,23 +21,23 @@ import com.dangdang.ddframe.rdb.transaction.soft.constants.TransactionLogDataSou
 import javax.sql.DataSource;
 
 /**
- * 事务日志数据源.
+ * Transaction log data source.
  * 
  * @author caohao
  */
 public interface TransactionLogDataSource {
     
     /**
-     * 获取事务日志存储类型.
+     * Get transaction log data source type.
      * 
-     * @return 事务日志存储类型
+     * @return transaction log data source type
      */
     TransactionLogDataSourceType getType();
     
     /**
-     * 获取数据源.
+     * Get transaction log data source.
      *
-     * @return 数据源
+     * @return transaction log data source
      */
     DataSource getDataSource();
 }

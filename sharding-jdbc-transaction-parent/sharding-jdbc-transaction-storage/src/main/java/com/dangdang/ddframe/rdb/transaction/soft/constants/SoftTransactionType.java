@@ -18,30 +18,30 @@
 package com.dangdang.ddframe.rdb.transaction.soft.constants;
 
 /**
- * 柔性事务类型.
+ * Type of B.A.S.E transaction.
  * 
  * @author zhangliang
  */
 public enum SoftTransactionType {
     
     /**
-     * 最大努力送达型事务.
+     * Best efforts delivery.
      * 
      * <p>
-     * 使用要求: 
-     * INSERT语句要求必须包含主键(不能是自增主键).
-     * UPDATE语句要求幂等.
-     * DELETE语句无要求.
+     * Required:
+     * INSERT SQL should include primary key(auto-increment primary key in invalid).
+     * UPDATE SQL should idempotent.
+     * Every DELETE SQL are ok.
      * </p>
      */
     BestEffortsDelivery, 
     
     /**
-     * TCC型事务.
+     * Try confirm cancel.
      * 
      * <p>
-     * 使用要求: 
-     * 业务方提供cancel方法.
+     * Required: 
+     * Business app implements cancel method.
      * </p>
      */
     TryConfirmCancel

@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.transaction.soft.exception;
 
 /**
- * 事务补偿抛出的异常类.
+ * Transaction compensation exception.
  *
  * @author caohao
  */

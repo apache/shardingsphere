@@ -21,54 +21,54 @@ import java.sql.Connection;
 import java.util.List;
 
 /**
- * 事务日志存储器接口.
+ * Transaction log storage interface.
  * 
  * @author zhangliang
  */
 public interface TransactionLogStorage {
     
     /**
-     * 存储事务日志.
+     * Save transaction log.
      * 
-     * @param transactionLog 事务日志
+     * @param transactionLog transaction log
      */
     void add(TransactionLog transactionLog);
     
     /**
-     *  根据主键删除事务日志.
+     * Remove transaction log.
      * 
-     * @param id 事务日志主键
+     * @param id transaction log id
      */
     void remove(String id);
     
     /**
-     * 读取待处理的事务日志.
+     * Find eligible transaction logs.
      * 
-     * <p>待处理的事务日志为: </p>
-     * <p>1. 异步处理次数小于最大处理次数.</p>
-     * <p>2. 异步处理的事务日志早于异步处理的间隔时间.</p>
+     * <p>To be processed transaction logs: </p>
+     * <p>1. retry times less than max retry times.</p>
+     * <p>2. transaction log last retry timestamp interval early than last retry timestamp.</p>
      * 
-     * @param size 获取日志的数量
-     * @param maxDeliveryTryTimes 事务送达的最大尝试次数
-     * @param maxDeliveryTryDelayMillis 执行送达事务的延迟毫秒数.
-     * @return 待处理的事务日志集合
+     * @param size size of fetch transaction log
+     * @param maxDeliveryTryTimes max delivery try times
+     * @param maxDeliveryTryDelayMillis max delivery try delay millis
+     * @return eligible transaction logs
      */
     List<TransactionLog> findEligibleTransactionLogs(int size, int maxDeliveryTryTimes, long maxDeliveryTryDelayMillis);
     
     /**
-     * 增加事务日志异步重试次数.
+     * Increase asynchronized delivery try times.
      * 
-     * @param id 事务主键
+     * @param id transaction log id
      */
     void increaseAsyncDeliveryTryTimes(String id);
     
     /**
-     * 处理事务数据.
+     * Process transaction logs.
      *
-     * @param connection 业务数据库连接
-     * @param transactionLog 事务日志
-     * @param maxDeliveryTryTimes 事务送达的最大尝试次数
-     * @return 是否成功处理事务.
+     * @param connection connection for business app
+     * @param transactionLog transaction log
+     * @param maxDeliveryTryTimes max delivery try times
+     * @return process success or not
      */
     boolean processData(Connection connection, TransactionLog transactionLog, int maxDeliveryTryTimes);
 }

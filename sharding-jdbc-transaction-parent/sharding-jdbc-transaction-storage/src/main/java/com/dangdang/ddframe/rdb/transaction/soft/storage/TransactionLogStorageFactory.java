@@ -24,7 +24,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * 事务日志存储器工厂.
+ * Transaction log storage factory.
  * 
  * @author zhangliang
  */
@@ -32,10 +32,10 @@ import lombok.NoArgsConstructor;
 public final class TransactionLogStorageFactory {
     
     /**
-     * 创建事务日志存储器.
+     * Create transaction log storage.
      *
-     * @param transactionLogDataSource 事务数据源对象
-     * @return 事务日志存储器
+     * @param transactionLogDataSource transaction log data source
+     * @return transaction log storage object
      */
     public static TransactionLogStorage createTransactionLogStorage(final TransactionLogDataSource transactionLogDataSource) {
         switch (transactionLogDataSource.getType()) {
