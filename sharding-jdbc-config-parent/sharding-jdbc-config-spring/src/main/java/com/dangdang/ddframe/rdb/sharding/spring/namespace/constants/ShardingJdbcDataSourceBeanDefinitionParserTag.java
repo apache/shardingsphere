@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * 数据源解析标签.
+ * Sharding data source parser tag constants.
  * 
  * @author caohao
  */

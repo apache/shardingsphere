@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * 分库分表策略解析标签.
+ * Sharding strategy parser tag constants.
  * 
  * @author caohao
  */

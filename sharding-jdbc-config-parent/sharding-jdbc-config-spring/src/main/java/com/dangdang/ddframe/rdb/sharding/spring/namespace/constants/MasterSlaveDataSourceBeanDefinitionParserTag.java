@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * 读写分离解析标签.
+ * Master-slave data source parser tag constants.
  * 
  * @author zhangliang
  */

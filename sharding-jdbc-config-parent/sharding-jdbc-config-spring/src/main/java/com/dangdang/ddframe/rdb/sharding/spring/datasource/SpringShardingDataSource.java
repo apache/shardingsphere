@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * 基于Spring命名空间的分片数据源.
+ * Sharding datasource for spring namespace.
  *
  * @author caohao
  */

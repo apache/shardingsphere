@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.spring.namespace.parser.ShardingJdbcStr
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Spring命名空间处理器.
+ * Spring namespace handler for Sharding-JDBC.
  * 
  * @author caohao
  * @author zhangliang

@@ -23,7 +23,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 /**
- * 基于Spring命名空间的分库分表策略解析器.
+ * Sharding strategy bean parser for spring namespace.
  *®
  * @author caohao
  */

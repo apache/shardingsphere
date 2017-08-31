@@ -26,7 +26,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.w3c.dom.Element;
 
 /**
- * 基于Spring命名空间的ShardingJdbc的分库分表策略定义.
+ * Sharding strategy parser for spring namespace.
  * 
  * @author caohao
  */

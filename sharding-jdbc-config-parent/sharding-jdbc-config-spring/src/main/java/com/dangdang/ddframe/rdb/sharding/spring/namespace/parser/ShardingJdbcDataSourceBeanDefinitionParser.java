@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * 基于Spring命名空间的数据源解析器.
+ * Sharding data source parser for spring namespace.
  * 
  * @author caohao
  */

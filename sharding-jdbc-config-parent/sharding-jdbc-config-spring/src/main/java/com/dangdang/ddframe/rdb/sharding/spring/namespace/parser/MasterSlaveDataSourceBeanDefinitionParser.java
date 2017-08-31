@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 基于Spring命名空间的读写分离数据源解析器.
+ * Master-slave data source parser for spring namespace.
  * 
  * @author zhangliang
  */
