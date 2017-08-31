@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * 最大努力送达型异步作业配置对象.
+ * Best efforts delivery configuration.
  *
  * @author caohao
  */
@@ -35,22 +35,22 @@ import java.util.Map;
 public class BestEffortsDeliveryConfiguration {
     
     /**
-     * 事务管理器管理的数据源.
+     * Data source for transaction manager.
      */
     private Map<String, DataSource> targetDataSource;
     
     /**
-     * 存储事务日志的数据源.
+     * Transaction log data source.
      */
     private Map<String, DataSource> transactionLogDataSource;
     
     /**
-     * 注册中心配置对象.
+     * Zookeeper configuration for B.A.S.E transaction.
      */
     private AsyncSoftTransactionZookeeperConfiguration zkConfig;
     
     /**
-     * 作业配置对象.
+     * Asynchronized B.A.S.E transaction job configuration.
      */
     private AsyncSoftTransactionJobConfiguration jobConfig;
     

@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 异步柔性事务注册中心配置对象.
+ * Zookeeper configuration for B.A.S.E transaction.
  * 
  * @author caohao
  */
@@ -30,27 +30,27 @@ import lombok.Setter;
 public class AsyncSoftTransactionZookeeperConfiguration {
     
     /**
-     * 注册中心的连接地址.
+     * Connection string for zookeeper.
      */
     private String connectionString;
     
     /**
-     * 作业的命名空间.
+     * Job namespace.
      */
     private String namespace = "Best-Efforts-Delivery-Job";
     
     /**
-     * 注册中心的等待重试的间隔时间的初始值.
+     * Initial sleep milliseconds for zookeeper.
      */
     private int baseSleepTimeMilliseconds = 1000;
     
     /**
-     * 注册中心的等待重试的间隔时间的最大值.
+     * Max sleep milliseconds for zookeeper.
      */
     private int maxSleepTimeMilliseconds = 3000;
     
     /**
-     * 注册中心的最大重试次数.
+     * Max retry times for zookeeper.
      */
     private int maxRetries = 3;
 }

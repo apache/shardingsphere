@@ -23,7 +23,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import java.io.InputStreamReader;
 
 /**
- * 最大努力送达型异步作业启动入口.
+ * Best efforts delivery job main entrance.
  * 
  * @author zhangliang
  * @author caohao
@@ -31,10 +31,10 @@ import java.io.InputStreamReader;
 public final class BestEffortsDeliveryJobMain {
     
     /**
-     * 启动入口.
+     * Main entrance.
      * 
-     * @param args 启动参数
-     * @throws Exception 异常
+     * @param args arguments
+     * @throws Exception exception
      */
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {

@@ -28,7 +28,7 @@ import com.dangdang.ddframe.reg.zookeeper.ZookeeperRegistryCenter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 最大努力送达型异步作业工厂.
+ * Best efforts delivery job factory.
  *
  * @author zhangliang 
  * @author caohao
@@ -39,7 +39,7 @@ public final class BestEffortsDeliveryJobFactory {
     private final BestEffortsDeliveryConfiguration bedConfig;
     
     /**
-     * 初始化作业.
+     * Initialize best efforts delivery job.
      */
     public void init() {
         CoordinatorRegistryCenter regCenter = new ZookeeperRegistryCenter(createZookeeperConfiguration(bedConfig));

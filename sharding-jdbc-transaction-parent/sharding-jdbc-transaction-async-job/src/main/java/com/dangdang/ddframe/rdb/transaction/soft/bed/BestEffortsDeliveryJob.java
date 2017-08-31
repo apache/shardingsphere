@@ -30,7 +30,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * 最大努力送达型异步作业.
+ * Best efforts delivery job.
  * 
  * @author zhangliang
  * @author caohao

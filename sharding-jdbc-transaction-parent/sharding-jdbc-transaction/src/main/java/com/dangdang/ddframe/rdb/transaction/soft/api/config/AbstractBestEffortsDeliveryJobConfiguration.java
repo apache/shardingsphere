@@ -30,7 +30,7 @@ import lombok.Setter;
 public abstract class AbstractBestEffortsDeliveryJobConfiguration {
     
     /**
-     * job namespace.
+     * Job namespace.
      */
     private String jobNamespace = "Best-Efforts-Delivery-Job";
     
@@ -51,7 +51,6 @@ public abstract class AbstractBestEffortsDeliveryJobConfiguration {
     
     /**
      * Best efforts delivery job's name.
-     * 最大努力送达型异步作业名称.
      */
     private String jobName = "bestEffortsDeliveryJob";
     
