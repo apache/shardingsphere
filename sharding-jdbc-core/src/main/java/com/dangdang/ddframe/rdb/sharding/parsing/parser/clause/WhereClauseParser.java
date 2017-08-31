@@ -95,7 +95,7 @@ public class WhereClauseParser implements SQLClauseParser {
             } else {
                 parseOtherCondition(sqlStatement);
             }
-        } else if (lexerEngine.equalAny(Symbol.LT_GT, DefaultKeyword.LIKE)) {
+        } else if (lexerEngine.equalAny(Symbol.LT_GT, Symbol.BANG_EQ, Symbol.BANG_GT, Symbol.BANG_LT, DefaultKeyword.LIKE)) {
             parseOtherCondition(sqlStatement);
         }
         lexerEngine.skipIfEqual(Symbol.RIGHT_PAREN);

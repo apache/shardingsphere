@@ -24,6 +24,14 @@
             <order-by-column name="item_id" order-by-type="ASC" />
         </order-by-columns>
     </assert>
+    <assert id="assertSelectNotEqualsWithSingleTableForExclamationEqual" parameters="1">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <order-by-columns>
+            <order-by-column name="item_id" order-by-type="ASC" />
+        </order-by-columns>
+    </assert>
     <assert id="assertSelectEqualsWithSingleTable" parameters="1,1">
         <tables>
             <table name="t_order" />
