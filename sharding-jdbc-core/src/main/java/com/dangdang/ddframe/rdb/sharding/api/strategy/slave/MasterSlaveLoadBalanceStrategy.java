@@ -17,22 +17,22 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.slave;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 /**
- * Slave database load-balance strategy.
+ * Master-slave database load-balance strategy.
  *
  * @author zhangliang
  */
-public interface SlaveLoadBalanceStrategy {
+public interface MasterSlaveLoadBalanceStrategy {
     
     /**
      * Get data source.
      * 
      * @param name master-slave logic data source name
-     * @param slaveDataSources slave data sources's names
-     * @return selected slave data source
+     * @param masterDataSourceName name of master data sources
+     * @param slaveDataSourceNames names of slave data sources
+     * @return name of selected data source
      */
-    DataSource getDataSource(String name, List<DataSource> slaveDataSources);
+    String getDataSource(String name, String masterDataSourceName, List<String> slaveDataSourceNames);
 }

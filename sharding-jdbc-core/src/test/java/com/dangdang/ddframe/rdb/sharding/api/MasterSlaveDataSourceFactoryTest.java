@@ -21,7 +21,10 @@ import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -30,12 +33,16 @@ public final class MasterSlaveDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceForSingleSlave() throws SQLException {
-        assertThat(MasterSlaveDataSourceFactory.createDataSource("logic_ds", new TestDataSource("master_ds"), new TestDataSource("slave_ds")), instanceOf(MasterSlaveDataSource.class));
+        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
+        slaveDataSourceMap.put("slave_ds", new TestDataSource("slave_ds"));
+        assertThat(MasterSlaveDataSourceFactory.createDataSource("logic_ds", "master_ds", new TestDataSource("master_ds"), slaveDataSourceMap), instanceOf(MasterSlaveDataSource.class));
     }
     
     @Test
     public void assertCreateDataSourceForMultipleSlaves() throws SQLException {
-        assertThat(MasterSlaveDataSourceFactory.createDataSource("logic_ds", new TestDataSource("master_ds"), new TestDataSource("slave_ds_0"), new TestDataSource("slave_ds_1")), 
-                instanceOf(MasterSlaveDataSource.class));
+        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(2, 1);
+        slaveDataSourceMap.put("slave_ds_0", new TestDataSource("slave_ds_0"));
+        slaveDataSourceMap.put("slave_ds_1", new TestDataSource("slave_ds_1"));
+        assertThat(MasterSlaveDataSourceFactory.createDataSource("logic_ds", "master_ds", new TestDataSource("master_ds"), slaveDataSourceMap), instanceOf(MasterSlaveDataSource.class));
     }
 }

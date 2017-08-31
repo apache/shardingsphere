@@ -18,12 +18,13 @@
 package com.dangdang.ddframe.rdb.sharding.api;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Master-slave data source factory.
@@ -38,6 +39,7 @@ public final class MasterSlaveDataSourceFactory {
      * 
      * <p>One master data source can configure multiple slave data source.</p>
      * 
+     * @deprecated will remove at 1.6.0
      * @param name data source name
      * @param masterDataSource data source for master
      * @param slaveDataSource data source for slave
@@ -45,7 +47,30 @@ public final class MasterSlaveDataSourceFactory {
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
+    @Deprecated
     public static DataSource createDataSource(final String name, final DataSource masterDataSource, final DataSource slaveDataSource, final DataSource... otherSlaveDataSources) throws SQLException {
-        return new MasterSlaveDataSource(name, masterDataSource, Lists.asList(slaveDataSource, otherSlaveDataSources));
+        Map<String, DataSource> slaveDataSourceMap = new LinkedHashMap<>(otherSlaveDataSources.length + 1);
+        slaveDataSourceMap.put(slaveDataSource.toString(), slaveDataSource);
+        for (DataSource each : otherSlaveDataSources) {
+            slaveDataSourceMap.put(each.toString(), each);
+        }
+        return new MasterSlaveDataSource(name, masterDataSource.toString(), masterDataSource, slaveDataSourceMap);
+    }
+    
+    /**
+     * Create master-slave data source.
+     *
+     * <p>One master data source can configure multiple slave data source.</p>
+     *
+     * @param name data source name
+     * @param masterDataSourceName name of data source for master
+     * @param masterDataSource data source for master
+     * @param slaveDataSourceMap map of data source name and data source for slave
+     * @return master-slave data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final String name, 
+                                              final String masterDataSourceName, final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap) throws SQLException {
+        return new MasterSlaveDataSource(name, masterDataSourceName, masterDataSource, slaveDataSourceMap);
     }
 }

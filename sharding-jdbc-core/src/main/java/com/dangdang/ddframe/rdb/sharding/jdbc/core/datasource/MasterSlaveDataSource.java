@@ -17,21 +17,23 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinSlaveLoadBalanceStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.SlaveLoadBalanceStrategy;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinMasterSlaveLoadBalanceStrategy;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.MasterSlaveConnection;
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Database that support master-slave.
@@ -50,23 +52,37 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final String name;
     
+    private final String masterDataSourceName;
+    
     @Getter
     private final DataSource masterDataSource;
     
     @Getter
-    private final List<DataSource> slaveDataSources;
+    private final Map<String, DataSource> slaveDataSources;
     
-    private final SlaveLoadBalanceStrategy slaveLoadBalanceStrategy = new RoundRobinSlaveLoadBalanceStrategy();
+    private final MasterSlaveLoadBalanceStrategy masterSlaveLoadBalanceStrategy = new RoundRobinMasterSlaveLoadBalanceStrategy();
     
-    public MasterSlaveDataSource(final String name, final DataSource masterDataSource, final List<DataSource> slaveDataSources) throws SQLException {
-        super(getAllDataSources(masterDataSource, slaveDataSources));
+    public MasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource, final Map<String, DataSource> slaveDataSources) throws SQLException {
+        super(getAllDataSources(masterDataSource, slaveDataSources.values()));
         this.name = name;
+        this.masterDataSourceName = masterDataSourceName;
         this.masterDataSource = masterDataSource;
         this.slaveDataSources = slaveDataSources;
     }
     
-    private static Collection<DataSource> getAllDataSources(final DataSource masterDataSource, final List<DataSource> slaveDataSources) {
+    private static Collection<DataSource> getAllDataSources(final DataSource masterDataSource, final Collection<DataSource> slaveDataSources) {
         Collection<DataSource> result = new LinkedList<>(slaveDataSources);
+        result.add(masterDataSource);
+        return result;
+    }
+    
+    /**
+     * Get all actual data sources.
+     *
+     * @return all actual data sources
+     */
+    public Collection<DataSource> getAllDataSources() {
+        Collection<DataSource> result = new LinkedList<>(slaveDataSources.values());
         result.add(masterDataSource);
         return result;
     }
@@ -112,7 +128,10 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
             DML_FLAG.set(true);
             return masterDataSource;
         }
-        return slaveLoadBalanceStrategy.getDataSource(name, slaveDataSources);
+        String selectedSourceName = masterSlaveLoadBalanceStrategy.getDataSource(name, masterDataSourceName, new ArrayList<>(slaveDataSources.keySet()));
+        DataSource result = selectedSourceName.equals(masterDataSourceName) ? masterDataSource : slaveDataSources.get(selectedSourceName);
+        Preconditions.checkNotNull(result, "");
+        return result;
     }
     
     @Override

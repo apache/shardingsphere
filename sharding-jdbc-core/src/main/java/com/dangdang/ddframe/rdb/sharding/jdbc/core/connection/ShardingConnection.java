@@ -36,6 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -66,13 +67,8 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     public Collection<Connection> getAllConnections(final String dataSourceName) throws SQLException {
         DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
-        Collection<DataSource> dataSources = new LinkedList<>();
-        if (dataSource instanceof MasterSlaveDataSource) {
-            dataSources.add(((MasterSlaveDataSource) dataSource).getMasterDataSource());
-            dataSources.addAll(((MasterSlaveDataSource) dataSource).getSlaveDataSources());
-        } else {
-            dataSources.add(dataSource);
-        }
+        Collection<DataSource> dataSources = dataSource instanceof MasterSlaveDataSource
+                ? ((MasterSlaveDataSource) dataSource).getAllDataSources() : Collections.singletonList(dataSource);
         Collection<Connection> result = new LinkedList<>();
         for (DataSource each : dataSources) {
             Connection connection = each.getConnection();

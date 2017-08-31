@@ -41,10 +41,6 @@ import static org.junit.Assert.assertSame;
 
 public final class ShardingConnectionTest {
     
-    private static DataSource masterDataSource;
-    
-    private static DataSource slaveDataSource;
-    
     private static MasterSlaveDataSource masterSlaveDataSource;
     
     private static final String DS_NAME = "default";
@@ -53,9 +49,11 @@ public final class ShardingConnectionTest {
     
     @BeforeClass
     public static void init() throws SQLException {
-        masterDataSource = new TestDataSource("test_ds_master");
-        slaveDataSource = new TestDataSource("test_ds_slave");
-        masterSlaveDataSource = new MasterSlaveDataSource("test_ds", masterDataSource, Collections.singletonList(slaveDataSource));
+        DataSource masterDataSource = new TestDataSource("test_ds_master");
+        DataSource slaveDataSource = new TestDataSource("test_ds_slave");
+        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
+        slaveDataSourceMap.put("test_ds_slave", slaveDataSource);
+        masterSlaveDataSource = new MasterSlaveDataSource("test_ds", "test_ds_master", masterDataSource, slaveDataSourceMap);
         ((TestDataSource) slaveDataSource).setThrowExceptionWhenClosing(true);
     }
     

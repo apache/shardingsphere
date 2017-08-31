@@ -23,12 +23,13 @@ import com.google.common.base.Splitter;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 基于Spring命名空间的读写分离数据源解析器.
@@ -43,7 +44,9 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
     //CHECKSTYLE:ON
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveDataSource.class);
         factory.addConstructorArgValue(parseId(element));
-        factory.addConstructorArgReference(parseMasterDataSourceRef(element));
+        String masterDataSourceName = parseMasterDataSourceRef(element);
+        factory.addConstructorArgValue(masterDataSourceName);
+        factory.addConstructorArgReference(masterDataSourceName);
         factory.addConstructorArgValue(parseSlaveDataSources(element, parserContext));
         return factory.getBeanDefinition();
     }
@@ -56,11 +59,11 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
         return element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.MASTER_DATA_SOURCE_REF_ATTRIBUTE);
     }
     
-    private List<BeanDefinition> parseSlaveDataSources(final Element element, final ParserContext parserContext) {
+    private Map<String, BeanDefinition> parseSlaveDataSources(final Element element, final ParserContext parserContext) {
         List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.SLAVE_DATA_SOURCES_REF_ATTRIBUTE));
-        List<BeanDefinition> result = new ManagedList<>(slaveDataSources.size());
+        Map<String, BeanDefinition> result = new ManagedMap<>(slaveDataSources.size());
         for (String each : slaveDataSources) {
-            result.add(parserContext.getRegistry().getBeanDefinition(each));
+            result.put(each, parserContext.getRegistry().getBeanDefinition(each));
         }
         return result;
     }

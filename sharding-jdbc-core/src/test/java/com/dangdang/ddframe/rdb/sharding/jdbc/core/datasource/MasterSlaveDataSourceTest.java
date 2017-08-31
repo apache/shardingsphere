@@ -32,7 +32,8 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
@@ -52,7 +53,9 @@ public final class MasterSlaveDataSourceTest {
     public MasterSlaveDataSourceTest() throws SQLException {
         masterDataSource = new TestDataSource("test_ds_master");
         slaveDataSource = new TestDataSource("test_ds_slave");
-        masterSlaveDataSource = new MasterSlaveDataSource("test_ds", masterDataSource, Collections.singletonList(slaveDataSource));
+        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
+        slaveDataSourceMap.put("test_ds_slave", slaveDataSource);
+        masterSlaveDataSource = new MasterSlaveDataSource("test_ds", "test_ds_master", masterDataSource, slaveDataSourceMap);
     }
     
     @Before
@@ -115,10 +118,12 @@ public final class MasterSlaveDataSourceTest {
         DataSource slaveDataSource = mock(DataSource.class);
         Connection masterConnection = mockConnection("MySQL");
         Connection slaveConnection = mockConnection("H2");
+        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
+        slaveDataSourceMap.put("slaveDataSource", slaveDataSource);
         when(masterDataSource.getConnection()).thenReturn(masterConnection);
         when(slaveDataSource.getConnection()).thenReturn(slaveConnection);
         try {
-            ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", masterDataSource, slaveDataSource)).getDatabaseType();
+            ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", "masterDataSource", masterDataSource, slaveDataSourceMap)).getDatabaseType();
         } finally {
             verify(masterConnection).close();
             verify(slaveConnection).close();
@@ -136,7 +141,10 @@ public final class MasterSlaveDataSourceTest {
         when(masterDataSource.getConnection()).thenReturn(masterConnection);
         when(slaveDataSource1.getConnection()).thenReturn(slaveConnection1);
         when(slaveDataSource2.getConnection()).thenReturn(slaveConnection2);
-        assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", masterDataSource, slaveDataSource1, slaveDataSource2)).getDatabaseType(), is(DatabaseType.H2));
+        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(2, 1);
+        slaveDataSourceMap.put("slaveDataSource1", slaveDataSource1);
+        slaveDataSourceMap.put("slaveDataSource2", slaveDataSource2);
+        assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", "masterDataSource", masterDataSource, slaveDataSourceMap)).getDatabaseType(), is(DatabaseType.H2));
         verify(masterConnection).close();
         verify(slaveConnection1).close();
         verify(slaveConnection2).close();

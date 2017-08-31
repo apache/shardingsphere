@@ -34,6 +34,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -56,14 +57,9 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
      * @throws SQLException SQL exception
      */
     public Collection<Connection> getConnection(final String sql) throws SQLException {
-        Collection<DataSource> dataSources = new LinkedList<>();
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        if (SQLType.DDL == sqlStatement.getType()) {
-            dataSources.add(masterSlaveDataSource.getMasterDataSource());
-            dataSources.addAll(masterSlaveDataSource.getSlaveDataSources());
-        } else {
-            dataSources.add(masterSlaveDataSource.getDataSource(sqlStatement.getType())); 
-        }
+        Collection<DataSource> dataSources = SQLType.DDL == sqlStatement.getType()
+                ? masterSlaveDataSource.getAllDataSources() : Collections.singletonList(masterSlaveDataSource.getDataSource(sqlStatement.getType()));
         Collection<Connection> result = new LinkedList<>();
         for (DataSource each : dataSources) {
             result.add(each.getConnection());
@@ -124,11 +120,8 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     @Override
     public Collection<Connection> getConnections() throws SQLException {
-        Collection<DataSource> dataSources = new LinkedList<>();
-        dataSources.add(masterSlaveDataSource.getMasterDataSource());
-        dataSources.addAll(masterSlaveDataSource.getSlaveDataSources());
         Collection<Connection> result = new LinkedList<>();
-        for (DataSource each : dataSources) {
+        for (DataSource each : masterSlaveDataSource.getAllDataSources()) {
             Connection connection = each.getConnection();
             replayMethodsInvocation(connection);
             result.add(connection);

@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.common.ShardingStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithmTest;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinSlaveLoadBalanceStrategyTest;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinMasterSlaveLoadBalanceStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithmTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstantTest;
@@ -53,7 +53,7 @@ import org.junit.runners.Suite;
     NoneTableShardingAlgorithmTest.class, 
     HintManagerTest.class, 
     MasterSlaveDataSourceFactoryTest.class, 
-    RoundRobinSlaveLoadBalanceStrategyTest.class
+    RoundRobinMasterSlaveLoadBalanceStrategyTest.class
     })
 public class AllApiTests {
 }

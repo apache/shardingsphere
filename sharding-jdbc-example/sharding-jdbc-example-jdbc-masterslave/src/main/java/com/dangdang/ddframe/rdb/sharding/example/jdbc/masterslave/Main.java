@@ -113,9 +113,15 @@ public final class Main {
     }
     
     private static Map<String, DataSource> createDataSourceMap() throws SQLException {
-        Map<String, DataSource> result = new HashMap<>(2);
-        result.put("ds_0", MasterSlaveDataSourceFactory.createDataSource("ds_0", createDataSource("ds_0_master"), createDataSource("ds_0_slave_0"), createDataSource("ds_0_slave_1")));
-        result.put("ds_1", MasterSlaveDataSourceFactory.createDataSource("ds_1", createDataSource("ds_1_master"), createDataSource("ds_1_slave_0"), createDataSource("ds_1_slave_1")));
+        Map<String, DataSource> result = new HashMap<>(2, 1);
+        Map<String, DataSource> slaveDataSourceMap1 = new HashMap<>(2, 1);
+        slaveDataSourceMap1.put("ds_0_slave_0", createDataSource("ds_0_slave_0"));
+        slaveDataSourceMap1.put("ds_0_slave_1", createDataSource("ds_0_slave_1"));
+        result.put("ds_0", MasterSlaveDataSourceFactory.createDataSource("ds_0", "ds_0_master", createDataSource("ds_0_master"), slaveDataSourceMap1));
+        Map<String, DataSource> slaveDataSourceMap2 = new HashMap<>(2, 1);
+        slaveDataSourceMap2.put("ds_1_slave_0", createDataSource("ds_1_slave_0"));
+        slaveDataSourceMap2.put("ds_1_slave_1", createDataSource("ds_1_slave_1"));
+        result.put("ds_1", MasterSlaveDataSourceFactory.createDataSource("ds_1", "ds_1_master", createDataSource("ds_1_master"), slaveDataSourceMap2));
         return result;
     }
     

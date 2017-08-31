@@ -56,11 +56,14 @@ public final class ShardingDataSourceTest {
         DataSource dataSource1 = mockDataSource("MySQL");
         DataSource masterDataSource = mockDataSource("H2");
         DataSource slaveDataSource = mockDataSource("H2");
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", masterDataSource, slaveDataSource);
+        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
+        slaveDataSourceMap.put("slaveDataSource", slaveDataSource);
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", "masterDataSource", masterDataSource, slaveDataSourceMap);
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
-        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), dataSource2.getMasterDataSource().getConnection(), dataSource2.getSlaveDataSources().get(0).getConnection());
+        assertDatabaseProductName(
+                dataSourceMap, dataSource1.getConnection(), dataSource2.getMasterDataSource().getConnection(), dataSource2.getSlaveDataSources().get("slaveDataSource").getConnection());
     }
     
     @Test
@@ -80,14 +83,16 @@ public final class ShardingDataSourceTest {
         DataSource dataSource1 = mockDataSource("H2");
         DataSource masterDataSource = mockDataSource("H2");
         DataSource slaveDataSource = mockDataSource("H2");
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", masterDataSource, slaveDataSource);
+        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
+        slaveDataSourceMap.put("slaveDataSource", slaveDataSource);
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", "masterDataSource", masterDataSource, slaveDataSourceMap);
         DataSource dataSource3 = mockDataSource("H2");
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
         dataSourceMap.put("ds3", dataSource3);
-        assertDatabaseProductName(
-                dataSourceMap, dataSource1.getConnection(), dataSource2.getMasterDataSource().getConnection(), dataSource2.getSlaveDataSources().get(0).getConnection(), dataSource3.getConnection());
+        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), 
+                dataSource2.getMasterDataSource().getConnection(), dataSource2.getSlaveDataSources().get("slaveDataSource").getConnection(), dataSource3.getConnection());
     }
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
