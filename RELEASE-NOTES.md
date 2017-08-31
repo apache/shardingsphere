@@ -7,6 +7,7 @@
 ### 缺陷修正
 
 1. [ISSUE #349](https://github.com/dangdangdotcom/sharding-jdbc/issues/349) ResultSet.wasNull功能不正确
+1. [ISSUE #351](https://github.com/dangdangdotcom/sharding-jdbc/issues/351) 包含在默认数据源但不在TableRule配置的表无法正确执行
 
 ## 1.5.2
 
