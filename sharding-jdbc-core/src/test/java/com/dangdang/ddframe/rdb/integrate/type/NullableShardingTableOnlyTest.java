@@ -55,7 +55,7 @@ public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
     
     @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return SQLAssertJAXBHelper.getDataParameters("integrate/assert/select_in.xml");
+        return SQLAssertJAXBHelper.getDataParameters("integrate/assert/select_nullable.xml");
     }
     
     @Override
