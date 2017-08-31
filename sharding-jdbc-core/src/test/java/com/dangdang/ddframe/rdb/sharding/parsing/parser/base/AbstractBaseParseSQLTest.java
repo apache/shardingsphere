@@ -28,7 +28,7 @@ public abstract class AbstractBaseParseSQLTest extends AbstractBaseParseTest {
     private void assertSQLStatement(final SQLStatement actual, final boolean isPreparedStatement) {
         ParserAssertHelper.assertTables(expected.getTables(), actual.getTables());
         ParserAssertHelper.assertConditions(expected.getConditions(), actual.getConditions(), isPreparedStatement);
-        ParserAssertHelper.assertSqlTokens(expected.getTableTokens(), actual.getSqlTokens());
+        ParserAssertHelper.assertSqlTokens(expected.getSqlTokens(), actual.getSqlTokens(), isPreparedStatement);
         if (actual instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) actual;
             SelectStatement expectedSqlStatement = ParserJAXBHelper.getSelectStatement(expected); 

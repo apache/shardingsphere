@@ -13,9 +13,17 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.TableToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken.Support;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Value;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.MultipleInsertValuesToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
+
 import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 
 import java.util.ArrayList;
@@ -25,6 +33,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class ParserAssertHelper {
@@ -52,7 +61,7 @@ public class ParserAssertHelper {
                     if (valueWithType instanceof Number) {
                         sqlExpressions.add(new SQLNumberExpression((Number) valueWithType));
                     } else {
-                        sqlExpressions.add(new SQLTextExpression(valueWithType.toString()));
+                        sqlExpressions.add(new SQLTextExpression(valueWithType == null ? "" : valueWithType.toString()));
                     }
                 }
             }
@@ -75,25 +84,61 @@ public class ParserAssertHelper {
         return result;
     }
     
-    public static void assertSqlTokens(final List<TableToken> expected, final List<SQLToken> actual) {
-        // TODO add more sql tokens
-        if (null == expected) {
+    public static void assertSqlTokens(final List<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken> expected, final List<SQLToken> actual, final boolean isPreparedStatement) {
+        if (null == expected || expected.size() == 0) {
             return;
         }
-        Iterator<com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken> sqlTokenIterator = buildExpectedTableTokens(expected).iterator();
+        List<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken> filteredSqlTokens = filterSqlToken(expected, isPreparedStatement);
+        Iterator<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken> sqlTokenIterator = filteredSqlTokens.iterator();
         for (SQLToken each : actual) {
-            com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken tableToken = sqlTokenIterator.next();
-            assertTrue(new ReflectionEquals(tableToken).matches(each));
+            SQLToken sqlToken = buildExpectedSQLToken(sqlTokenIterator.next(), isPreparedStatement);
+            assertTrue(new ReflectionEquals(sqlToken).matches(each));
         }
         assertFalse(sqlTokenIterator.hasNext());
     }
     
-    private static List<com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken> buildExpectedTableTokens(final List<TableToken> tableTokens) {
-        List<com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken> result = new ArrayList<>();
-        for (TableToken each : tableTokens) {
-            result.add(new com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken(each.getBeginPosition(), each.getOriginalLiterals()));
+    private static List<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken> filterSqlToken(final List<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken> sqlTokens,
+            final boolean isPreparedStatement) {
+        List<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken> result = new ArrayList<>(sqlTokens.size());
+        for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken each : sqlTokens) {
+            if (isPreparedStatement && (Support.ALL.equals(each.getSupport()) || Support.PREPARED_STATEMENT.equals(each.getSupport()))) {
+                result.add(each);
+            } else if (!isPreparedStatement && (Support.ALL.equals(each.getSupport()) || Support.STATEMENT.equals(each.getSupport()))) {
+                result.add(each);
+            }
         }
         return result;
+    }
+    
+    private static SQLToken buildExpectedSQLToken(final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken sqlToken, final boolean isPreparedStatement) {
+        if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.TableToken) {
+            return new TableToken(sqlToken.getBeginPosition(), ((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.TableToken)sqlToken).getOriginalLiterals());
+        } else if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.ItemsToken) {
+            ItemsToken itemsToken = new ItemsToken(sqlToken.getBeginPosition());
+            itemsToken.getItems().addAll(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.ItemsToken)sqlToken).getItems());
+            return itemsToken;
+        } else if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GeneratedKeyToken) {
+            if (isPreparedStatement) {
+                return new GeneratedKeyToken(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GeneratedKeyToken)sqlToken).getBeginPositionOfPreparedStatement());
+            } else {
+                return new GeneratedKeyToken(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GeneratedKeyToken)sqlToken).getBeginPositionOfStatement());
+            }
+        } else if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.MultipleInsertValuesToken) {
+            MultipleInsertValuesToken multipleInsertValuesToken = new MultipleInsertValuesToken(sqlToken.getBeginPosition());
+            multipleInsertValuesToken.getValues().addAll(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.MultipleInsertValuesToken)sqlToken).getValues());
+            return multipleInsertValuesToken;
+        } else if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.RowCountToken) {
+            return new RowCountToken(sqlToken.getBeginPosition(), ((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.RowCountToken)sqlToken).getRowCount());
+        } else if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByToken) {
+            if (isPreparedStatement) {
+                return new OrderByToken(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByToken)sqlToken).getBeginPositionOfPreparedStatement());
+            } else {
+                return new OrderByToken(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByToken)sqlToken).getBeginPositionOfStatement());
+            }
+        } else if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OffsetToken) {
+            return new OffsetToken(sqlToken.getBeginPosition(), ((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OffsetToken)sqlToken).getOffset());
+        }
+        return null;
     }
     
     public static void assertLimit(final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Limit limit, final Limit actual, final boolean isPreparedStatement) {

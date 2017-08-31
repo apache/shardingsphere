@@ -36,6 +36,9 @@
         <tables>
             <table name="t_order_item" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+        </table-tokens>
         <conditions>
             <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
                 <value index="0" literal="10000" type="int" />
@@ -52,6 +55,15 @@
         <tables>
             <table name="t_order_item" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+        </table-tokens>
+        <items-token begin-position="50">
+            <items>
+                <item>item_id</item>
+            </items>
+        </items-token>
+        <generated-key-token begin-position-of-statement="77" begin-position-of-prepared-statement="73" />
         <conditions>
             <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
                 <value index="0" literal="1000" type="int" />

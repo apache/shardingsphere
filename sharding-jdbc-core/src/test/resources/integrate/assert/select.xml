@@ -109,7 +109,6 @@
     <sql id="assertSelectWithBindingTableAndConfigTable">
         <sharding-rule value="tbl">
             <data parameter="10,11,1009,1108,'init'" expected="select/SelectWithBindingTableAndConfigTable.xml" />
-            
         </sharding-rule>
         <sharding-rule value="masterslave">
             <data parameter="10,11,1009,1108,'init_slave'" expected="select/SelectWithBindingTableAndConfigTable.xml" />

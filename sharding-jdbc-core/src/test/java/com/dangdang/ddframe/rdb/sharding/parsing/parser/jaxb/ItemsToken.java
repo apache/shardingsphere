@@ -20,15 +20,20 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class TableToken extends SQLToken {
+public class ItemsToken extends SQLToken {
     
-    @XmlAttribute(name = "original-literals")
-    private String originalLiterals;
+    @XmlElementWrapper(name = "items")
+    @XmlElement(name = "item")
+    private List<String> items = new LinkedList<>();
 }

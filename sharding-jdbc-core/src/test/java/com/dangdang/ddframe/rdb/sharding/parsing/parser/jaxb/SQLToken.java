@@ -27,8 +27,15 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class TableToken extends SQLToken {
+public class SQLToken {
     
-    @XmlAttribute(name = "original-literals")
-    private String originalLiterals;
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
+    
+    @XmlAttribute(name = "support")
+    private Support support = Support.ALL;
+    
+    public enum Support {
+        ALL, PREPARED_STATEMENT, STATEMENT
+    }
 }
