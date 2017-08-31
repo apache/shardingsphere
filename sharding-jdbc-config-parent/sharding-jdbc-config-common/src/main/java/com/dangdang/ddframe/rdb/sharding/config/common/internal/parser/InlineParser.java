@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 行内配置解析器.
+ * Inline expression parser.
  * 
  * @author gaohongtao
  * @author zhangliang
@@ -45,18 +45,18 @@ public final class InlineParser {
     private final String inlineExpression;
     
     /**
-     * 分隔行内配置.
+     * Split inline expression.
      * 
-     * @return 分隔后的配置集合
+     * @return split inline expression segments
      */
     public List<String> split() {
         return Splitter.on(SPLITTER).trimResults().splitToList(inlineExpression);
     }
     
     /**
-     * 分隔并求inline表达式值.
+     * Split and evaluate inline expression.
      *
-     * @return 求值后的配置集合
+     * @return result list
      */
     public List<String> evaluate() {
         final GroovyShell shell = new GroovyShell();

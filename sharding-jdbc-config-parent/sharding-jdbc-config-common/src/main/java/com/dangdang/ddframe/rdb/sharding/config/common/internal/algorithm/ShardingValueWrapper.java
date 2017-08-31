@@ -26,7 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * 将进入闭包的值提供类型转换方法.
+ * Sharding value wrapper.
  * 
  * @author gaohongtao
  */
@@ -41,18 +41,18 @@ public class ShardingValueWrapper {
     }
     
     /**
-     * 获取long值.
+     * Get long value.
      * 
-     * @return long型返回值
+     * @return long value
      */
     public long longValue() {
         return numberValue().longValue();
     }
     
     /**
-     * 获取double值.
+     * Get double value.
      * 
-     * @return double型返回值
+     * @return double value
      */
     public double doubleValue() {
         return numberValue().doubleValue();
@@ -69,11 +69,11 @@ public class ShardingValueWrapper {
     }
     
     /**
-     * 将字符串转换为时间.
+     * Get date value.
      * 
-     * @param format 时间格式化格式
-     * @return 时间类型的值
-     * @throws ParseException 解析异常
+     * @param format date format
+     * @return date value
+     * @throws ParseException date format parse exception
      */
     public Date dateValue(final String format) throws ParseException {
         if (value instanceof Number) {
@@ -87,20 +87,20 @@ public class ShardingValueWrapper {
     }
     
     /**
-     * 将字符串转换为时间.
+     * Get date value.
      * 
-     * @return 时间类型的值
-     * @throws ParseException 解析异常
+     * @return date value
+     * @throws ParseException date format parse exception
      */
     public Date dateValue() throws ParseException {
         return dateValue(null);
     }
     
     /**
-     * 将时间类型的值转换为字符串.
+     * Convert date to string.
      * 
-     * @param format 时间格式化格式
-     * @return 代表时间的字符串
+     * @param format date format
+     * @return string value
      */
     public String toString(final String format) {
         if (value instanceof Date) {

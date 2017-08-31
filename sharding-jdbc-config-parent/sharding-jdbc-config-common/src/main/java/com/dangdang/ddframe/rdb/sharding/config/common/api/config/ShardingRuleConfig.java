@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 分片规则配置.
+ * Sharding rule configuration.
  * 
  * @author gaohongtao
  */

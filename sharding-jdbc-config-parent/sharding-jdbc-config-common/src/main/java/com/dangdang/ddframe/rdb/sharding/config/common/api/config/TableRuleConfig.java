@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 表规则配置.
+ * Table rule configuration.
  * 
  * @author gaohongtao
  */

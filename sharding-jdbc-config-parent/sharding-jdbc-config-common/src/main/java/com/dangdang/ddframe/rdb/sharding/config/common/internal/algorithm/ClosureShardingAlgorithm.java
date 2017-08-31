@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 基于闭包的数据源划分算法.
+ * Closure for sharding algorithm.
  * 
  * @author gaohongtao
  */

@@ -54,7 +54,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * 分片规则构建器.
+ * Sharding rule builder.
  * 
  * @author gaohongtao
  */
@@ -81,9 +81,9 @@ public final class ShardingRuleBuilder {
     }
     
     /**
-     * 构建分片规则.
+     * Build sharding rule.
      * 
-     * @return 分片规则对象
+     * @return databases and tables sharding rule
      */
     public ShardingRule build() {
         DataSourceRule dataSourceRule = buildDataSourceRule();

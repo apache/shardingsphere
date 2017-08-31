@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 绑定表配置.
+ * Binding table rule configuration.
  * 
  * @author gaohongtao
  */

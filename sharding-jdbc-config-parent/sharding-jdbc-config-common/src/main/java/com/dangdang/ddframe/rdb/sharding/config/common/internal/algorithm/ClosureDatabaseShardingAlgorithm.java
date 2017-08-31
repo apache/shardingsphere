@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.MultipleKeysDatabaseShardingAlgorithm;
 
 /**
- * 分库闭包算法.
+ * Closure for database sharding algorithm.
  * 
  * @author gaohongtao
  */

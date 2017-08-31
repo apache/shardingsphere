@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 自增列配置.
+ * Generate key column configuration.
  * 
  * @author zhangliang
  */

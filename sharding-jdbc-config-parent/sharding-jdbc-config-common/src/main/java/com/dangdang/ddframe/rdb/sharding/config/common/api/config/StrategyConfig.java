@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 策略配置.
+ * Strategy configuration.
  * 
  * @author gaohongtao
  */
