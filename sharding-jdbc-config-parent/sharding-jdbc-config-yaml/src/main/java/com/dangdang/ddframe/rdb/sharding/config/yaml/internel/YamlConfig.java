@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.internel;
 
-import java.util.Properties;
-
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Properties;
+
 /**
- * Yaml配置文件映射对象.
+ * Configuration for yaml.
  *
  * @author gaohongtao
  */

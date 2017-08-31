@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * 基于配置文件的分片规则.
+ * Sharding datasource for yaml.
  *
  * @author gaohongtao
  */
