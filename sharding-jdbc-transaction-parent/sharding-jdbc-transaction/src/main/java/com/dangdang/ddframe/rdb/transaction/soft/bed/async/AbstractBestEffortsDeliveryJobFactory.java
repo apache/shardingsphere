@@ -28,7 +28,7 @@ import com.dangdang.ddframe.reg.zookeeper.ZookeeperRegistryCenter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 最大努力送达型异步作业的抽象工厂.
+ * Best efforts delivery B.A.S.E transaction asynchronized job abstract factory.
  * 
  * @author zhangliang
  */
@@ -38,7 +38,7 @@ public abstract class AbstractBestEffortsDeliveryJobFactory<T extends AbstractBe
     private final SoftTransactionConfiguration transactionConfig;
     
     /**
-     * 初始化作业.
+     * initialize asynchronized job.
      */
     public final void init() {
         @SuppressWarnings("unchecked")

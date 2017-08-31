@@ -36,7 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * 柔性事务管理器.
+ * B.A.S.E transaction manager.
  * 
  * @author zhangliang
  * @author caohao
@@ -52,9 +52,9 @@ public final class SoftTransactionManager {
     private final SoftTransactionConfiguration transactionConfig;
     
     /**
-     * 初始化事务管理器.
+     * Initialize B.A.S.E transaction manager.
      * 
-     * @throws SQLException SQL异常
+     * @throws SQLException SQL exception
      */
     public void init() throws SQLException {
         EventBusInstance.getInstance().register(new BestEffortsDeliveryListener());
@@ -85,10 +85,10 @@ public final class SoftTransactionManager {
     }
     
     /**
-     * 获取柔性事务管理器.
+     * Get B.A.S.E transaction.
      * 
-     * @param type 柔性事务类型
-     * @return 柔性事务
+     * @param type transaction type
+     * @return B.A.S.E transaction
      */
     public AbstractSoftTransaction getTransaction(final SoftTransactionType type) {
         AbstractSoftTransaction result;
@@ -102,7 +102,7 @@ public final class SoftTransactionManager {
             default: 
                 throw new UnsupportedOperationException(type.toString());
         }
-        // TODO 目前使用不支持嵌套事务，以后这里需要可配置
+        // TODO don't support nested transaction, should configurable in future
         if (getCurrentTransaction().isPresent()) {
             throw new UnsupportedOperationException("Cannot support nested transaction.");
         }
@@ -112,9 +112,9 @@ public final class SoftTransactionManager {
     }
     
     /**
-     * 获取当前线程的柔性事务配置.
+     * Get transaction configuration from current thread.
      * 
-     * @return 当前线程的柔性事务配置
+     * @return transaction configuration from current thread
      */
     public static Optional<SoftTransactionConfiguration> getCurrentTransactionConfiguration() {
         Object transactionConfig = ExecutorDataMap.getDataMap().get(TRANSACTION_CONFIG);
@@ -124,9 +124,9 @@ public final class SoftTransactionManager {
     }
     
     /**
-     * 获取当前的柔性事务.
+     * Get current transaction.
      * 
-     * @return 当前的柔性事务
+     * @return current transaction
      */
     public static Optional<AbstractSoftTransaction> getCurrentTransaction() {
         Object transaction = ExecutorDataMap.getDataMap().get(TRANSACTION);
@@ -136,7 +136,7 @@ public final class SoftTransactionManager {
     }
     
     /**
-     * 关闭当前的柔性事务管理器.
+     * Close transaction manager from current thread.
      */
     static void closeCurrentTransactionManager() {
         ExecutorDataMap.getDataMap().put(TRANSACTION, null);

@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 /**
- * 柔性事务抽象类.
+ * B.A.S.E transaction abstract class.
  * 
  * @author zhangliang 
  */
@@ -46,21 +46,21 @@ public abstract class AbstractSoftTransaction {
     private String transactionId;
     
     protected final void beginInternal(final Connection conn, final SoftTransactionType type) throws SQLException {
-        // TODO 判断如果在传统事务中，则抛异常
+        // TODO if in traditional transaction, then throw exception
         Preconditions.checkArgument(conn instanceof ShardingConnection, "Only ShardingConnection can support eventual consistency transaction.");
         ExecutorExceptionHandler.setExceptionThrown(false);
         connection = (ShardingConnection) conn;
         transactionType = type;
         previousAutoCommit = connection.getAutoCommit();
         connection.setAutoCommit(true);
-        // TODO 替换UUID为更有效率的id生成器
+        // TODO replace to snowflake
         transactionId = UUID.randomUUID().toString();
     }
     
     /**
-     * 结束柔性事务.
+     * End transaction.
      * 
-     * @throws SQLException SQL异常
+     * @throws SQLException SQL exception
      */
     public final void end() throws SQLException {
         if (connection != null) {

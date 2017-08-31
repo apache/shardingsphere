@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfi
 import com.dangdang.ddframe.reg.zookeeper.ZookeeperConfiguration;
 
 /**
- * 内嵌的最大努力送达型异步作业工厂.
+ * Best efforts delivery B.A.S.E transaction asynchronized job factory.
  * 
  * @author zhangliang
  */

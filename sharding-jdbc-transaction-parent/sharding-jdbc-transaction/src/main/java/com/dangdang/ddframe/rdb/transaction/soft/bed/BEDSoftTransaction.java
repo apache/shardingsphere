@@ -24,17 +24,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * 最大努力送达型柔性事务.
+ * Best efforts delivery B.A.S.E transaction.
  * 
  * @author zhangliang
  */
 public class BEDSoftTransaction extends AbstractSoftTransaction {
     
     /**
-     * 开启柔性事务.
+     * Begin transaction.
      * 
-     * @param connection 数据库连接对象
-     * @throws SQLException SQL异常
+     * @param connection database connection
+     * @throws SQLException SQL exception
      */
     public void begin(final Connection connection) throws SQLException {
         beginInternal(connection, SoftTransactionType.BestEffortsDelivery);

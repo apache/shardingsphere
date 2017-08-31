@@ -36,7 +36,7 @@ import java.sql.SQLException;
 import static com.dangdang.ddframe.rdb.transaction.soft.constants.TransactionLogDataSourceType.RDB;
 
 /**
- * 柔性事务配置对象.
+ * B.A.S.E transaction configuration.
  * 
  * @author zhangliang
  */
@@ -46,37 +46,37 @@ import static com.dangdang.ddframe.rdb.transaction.soft.constants.TransactionLog
 public class SoftTransactionConfiguration {
     
     /**
-     * 事务管理器管理的数据源.
+     * Data source for transaction manager.
      */
     @Getter(AccessLevel.NONE)
     private final DataSource targetDataSource;
     
     /**
-     * 同步的事务送达的最大尝试次数.
+     * Max synchronized delivery try times.
      */
     private int syncMaxDeliveryTryTimes = 3;
     
     /**
-     * 事务日志存储类型.
+     * Transaction log storage type.
      */
     private TransactionLogDataSourceType storageType = RDB;
     
     /**
-     * 存储事务日志的数据源.
+     * Transaction log data source.
      */
     private DataSource transactionLogDataSource;
     
     /**
-     * 内嵌的最大努力送达型异步作业配置对象.
+     * Embed best efforts delivery B.A.S.E transaction asynchronized job configuration.
      */
     private Optional<NestedBestEffortsDeliveryJobConfiguration> bestEffortsDeliveryJobConfiguration = Optional.absent();
     
     /**
-     * 获取事务管理器管理的数据库连接.
+     * Get connection for transaction manager.
      * 
-     * @param dataSourceName 数据源名称
-     * @return 事务管理器管理的数据库连接
-     * @throws SQLException SQL异常
+     * @param dataSourceName data source name for transaction manager
+     * @return connection for transaction manager
+     * @throws SQLException SQL exception
      */
     public Connection getTargetConnection(final String dataSourceName) throws SQLException {
         if (!(targetDataSource instanceof ShardingDataSource)) {
@@ -86,9 +86,9 @@ public class SoftTransactionConfiguration {
     }
 
     /**
-     * 构建事务日志事务源.
+     * Build transaction log data source.
      *
-     * @return 存储事务日志的数据源
+     * @return transaction log data source
      */
     public TransactionLogDataSource buildTransactionLogDataSource() {
         TransactionLogDataSource result;

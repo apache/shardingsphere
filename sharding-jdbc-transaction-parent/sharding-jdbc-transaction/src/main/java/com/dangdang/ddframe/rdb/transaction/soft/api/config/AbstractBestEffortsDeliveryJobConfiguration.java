@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 最大努力送达型异步作业配置的抽象对象.
+ * Best efforts delivery job's configuration.
  * 
  * @author zhangliang
  */
@@ -30,37 +30,38 @@ import lombok.Setter;
 public abstract class AbstractBestEffortsDeliveryJobConfiguration {
     
     /**
-     * 作业的命名空间.
+     * job namespace.
      */
     private String jobNamespace = "Best-Efforts-Delivery-Job";
     
     /**
-     * 注册中心的等待重试的间隔时间的初始值.
+     * Initial sleep milliseconds for zookeeper.
      */
     private int zookeeperBaseSleepTimeMilliseconds = 1000;
     
     /**
-     * 注册中心的等待重试的间隔时间的最大值.
+     * Max sleep milliseconds for zookeeper.
      */
     private int zookeeperMaxSleepTimeMilliseconds = 3000;
     
     /**
-     * 注册中心的最大重试次数.
+     * Max retry times for zookeeper.
      */
     private int zookeeperMaxRetries = 3;
     
     /**
+     * Best efforts delivery job's name.
      * 最大努力送达型异步作业名称.
      */
     private String jobName = "bestEffortsDeliveryJob";
     
     /**
-     * 触发作业的cron表达式.
+     * Cron expression for trigger job.
      */
     private String cron = "0/5 * * * * ?";
     
     /**
-     * 每次作业获取的事务日志最大数量.
+     * Transaction logs fetch data count.
      */
     private int transactionLogFetchDataCount = 100;
 }

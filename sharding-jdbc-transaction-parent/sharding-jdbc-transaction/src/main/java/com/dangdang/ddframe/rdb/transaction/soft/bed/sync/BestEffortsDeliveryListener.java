@@ -37,7 +37,7 @@ import java.sql.SQLException;
 import static com.dangdang.ddframe.rdb.transaction.soft.constants.SoftTransactionType.BestEffortsDelivery;
 
 /**
- * 最大努力送达型事务监听器.
+ * Best efforts delivery B.A.S.E transaction listener.
  * 
  * @author zhangliang
  */
@@ -55,7 +55,7 @@ public final class BestEffortsDeliveryListener {
         BEDSoftTransaction bedSoftTransaction = (BEDSoftTransaction) SoftTransactionManager.getCurrentTransaction().get();
         switch (event.getEventExecutionType()) {
             case BEFORE_EXECUTE:
-                //TODO 对于批量执行的SQL需要解析成两层列表
+                //TODO for batch SQL need split to 2-level records
                 transactionLogStorage.add(new TransactionLog(event.getId(), bedSoftTransaction.getTransactionId(), bedSoftTransaction.getTransactionType(), 
                         event.getDataSource(), event.getSql(), event.getParameters(), System.currentTimeMillis(), 0));
                 return;
@@ -79,7 +79,7 @@ public final class BestEffortsDeliveryListener {
                             isNewConnection = true;
                         }
                         preparedStatement = conn.prepareStatement(event.getSql());
-                        //TODO 对于批量事件需要解析成两层列表
+                        //TODO for batch event need split to 2-level records
                         for (int parameterIndex = 0; parameterIndex < event.getParameters().size(); parameterIndex++) {
                             preparedStatement.setObject(parameterIndex + 1, event.getParameters().get(parameterIndex));
                         }

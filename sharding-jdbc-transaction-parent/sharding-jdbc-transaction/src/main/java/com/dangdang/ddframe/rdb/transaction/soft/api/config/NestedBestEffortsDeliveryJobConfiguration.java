@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 内嵌的最大努力送达型异步作业配置对象.
+ * Embed best efforts delivery B.A.S.E transaction asynchronized job configuration.
  * 
  * @author zhangliang
  */
@@ -30,24 +30,22 @@ import lombok.Setter;
 public final class NestedBestEffortsDeliveryJobConfiguration extends AbstractBestEffortsDeliveryJobConfiguration {
     
     /**
-     * 内嵌的注册中心端口号.
+     * Embed zookeeper's port.
      */
     private int zookeeperPort = 4181;
     
     /**
-     * 内嵌的注册中心的数据存放目录.
+     * Embed zookeeper's data directory.
      */
     private String zookeeperDataDir = String.format("target/test_zk_data/%s/", System.nanoTime());
     
     /**
-     * 异步的事务送达的最大尝试次数.
+     * Max asynchronized delivery try times.
      */
     private int asyncMaxDeliveryTryTimes = 3;
     
     /**
-     * 执行异步送达事务的延迟毫秒数.
-     *
-     * <p>早于此间隔时间的入库事务才会被异步作业执行.</p>
+     * Delay millis for asynchronized delivery.
      */
     private long asyncMaxDeliveryTryDelayMillis = 60  * 1000L;
     
