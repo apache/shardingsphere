@@ -25,6 +25,8 @@ next = "/01-start/stress-test"
 
 ### 不支持OR
 
+### 不支持CASE WHEN
+
 ## 支持的SQL
 
 ### DQL
@@ -57,6 +59,8 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 #### 示例
 
+### DQL
+
 | SQL                                                                                                     | 无条件支持 | 必要条件 |
 | ------------------------------------------------------------------------------------------------------- | --------- | ------- |
 | SELECT * FROM tbl_name                                                                                  | 是        |         |
@@ -68,8 +72,8 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 | SQL                                                           | 无条件支持 | 必要条件            |
 | ------------------------------------------------------------- | --------- | ------------------ |
-| INSERT INTO tbl_name (col1, col2,...) VALUES (val1, val2,....)| 否      | 插入列需要包含分片键  |
-| INSERT INTO tbl_name VALUES (val1, val2,....)                 | 否      | 通过Hint注入分片键 |
+| INSERT INTO tbl_name (col1, col2,...) VALUES (val1, val2,....)| 否        | 插入列需要包含分片键  |
+| INSERT INTO tbl_name VALUES (val1, val2,....)                 | 否        | 通过Hint注入分片键   |
 | UPDATE tbl_name SET col1 = val1 WHERE col2 = val2             | 是        |                    |
 | DELETE FROM tbl_name WHERE col1 = val1                        | 是        |                    |
 
@@ -84,8 +88,8 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 ## 不支持的SQL
 
-| SQL                                                                                             |
-| ----------------------------------------------------------------------------------------------- |
+| SQL                                                                                           |
+| --------------------------------------------------------------------------------------------- |
 | INSERT INTO tbl_name (col1, col2, ...) VALUES (val1, val2,....), (val3, val4,....)            |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = val3 |
 | INSERT INTO tbl_name SET col1 = val1                                                          |

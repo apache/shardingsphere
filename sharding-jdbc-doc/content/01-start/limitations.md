@@ -48,3 +48,4 @@ Sharding-JDBC暂时未支持不常用的JDBC方法。
 ###  不支持DISTINCT聚合
 ###  不支持dual虚拟表
 ###  不支持SELECT LAST_INSERT_ID()
+###  不支持CASE WHEN
