@@ -9,6 +9,7 @@
 1. [ISSUE #349](https://github.com/dangdangdotcom/sharding-jdbc/issues/349) ResultSet.wasNull功能不正确
 1. [ISSUE #351](https://github.com/dangdangdotcom/sharding-jdbc/issues/351) 包含在默认数据源但不在TableRule配置的表无法正确执行
 1. [ISSUE #353](https://github.com/dangdangdotcom/sharding-jdbc/issues/353) 在SQL的Where条件中兼容不是分片列的!=, !> 和 !< 操作符
+1. [ISSUE #354](https://github.com/dangdangdotcom/sharding-jdbc/issues/354) 在SQL的Where条件中兼容不是分片列的NOT操作符
 
 ## 1.5.2
 

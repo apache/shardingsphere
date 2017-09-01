@@ -15,6 +15,11 @@
             <data parameter="100000" expected="select/SelectNotEqualsWithSingleTable.xml" />
         </sharding-rule>
     </sql>
+    <sql id="assertSelectNotEqualsWithSingleTableForNotIn">
+        <sharding-rule value="tbl">
+            <data parameter="100000" expected="select/SelectNotEqualsWithSingleTable.xml" />
+        </sharding-rule>
+    </sql>
     <sql id="assertSelectEqualsWithSameShardingColumns">
         <sharding-rule value="tbl">
             <data parameter="1000,1001" />
