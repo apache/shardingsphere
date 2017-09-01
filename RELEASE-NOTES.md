@@ -2,11 +2,12 @@
 
 ### 功能提升
 
+1. [ISSUE #98](https://github.com/dangdangdotcom/sharding-jdbc/issues/98) 读写分离负载均衡策略支持配置
 1. [ISSUE #196](https://github.com/dangdangdotcom/sharding-jdbc/issues/196) 读写分离与分库分表配置独立
 
 ### 缺陷修正
 
-1. [ISSUE #349](https://github.com/dangdangdotcom/sharding-jdbc/issues/349) ResultSet.wasNull功能不正确
+1. [ISSUE #349](https://github.com/dangdangdotcom/sharding-jdbc/issues/349) ResultSet.wasNull功能不正确导致DB中的数字类型空值取出为零
 1. [ISSUE #351](https://github.com/dangdangdotcom/sharding-jdbc/issues/351) 包含在默认数据源但不在TableRule配置的表无法正确执行
 1. [ISSUE #353](https://github.com/dangdangdotcom/sharding-jdbc/issues/353) 在SQL的Where条件中兼容不是分片列的!=, !> 和 !< 操作符
 1. [ISSUE #354](https://github.com/dangdangdotcom/sharding-jdbc/issues/354) 在SQL的Where条件中兼容不是分片列的NOT操作符
