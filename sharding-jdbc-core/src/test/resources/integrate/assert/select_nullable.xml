@@ -2,7 +2,7 @@
 <sqls>
     <sql id="assertSelectInWithNullParameter">
         <sharding-rule value="nullable">
-            <data parameter="1,null" expected="select_in/SelectWithNullParameter.xml" />
+            <data parameter="1,null" expected="select_nullable/SelectWithNullParameter.xml" />
         </sharding-rule>
     </sql>
 </sqls>

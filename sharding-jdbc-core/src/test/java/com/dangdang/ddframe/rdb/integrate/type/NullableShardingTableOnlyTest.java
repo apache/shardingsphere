@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,10 @@ public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
     
     @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return SQLAssertJAXBHelper.getDataParameters("integrate/assert/select_nullable.xml");
+        List<Object[]> result = new LinkedList<>();
+        result.addAll(SQLAssertJAXBHelper.getDataParameters("integrate/assert/select_aggregate.xml"));
+        result.addAll(SQLAssertJAXBHelper.getDataParameters("integrate/assert/select_nullable.xml"));
+        return result;
     }
     
     @Override
