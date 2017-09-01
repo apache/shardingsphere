@@ -85,27 +85,17 @@ public class WhereClauseParser implements SQLClauseParser {
             lexerEngine.skipIfEqual(Symbol.RIGHT_PAREN);
             return;
         }
-        if (lexerEngine.skipIfEqual(Symbol.LT, Symbol.LT_EQ)) {
-            if (left instanceof SQLIdentifierExpression && sqlStatement instanceof SelectStatement
-                    && isRowNumberCondition(items, ((SQLIdentifierExpression) left).getName())) {
+        if (sqlStatement instanceof SelectStatement && isRowNumberCondition(items, left)) {
+            if (lexerEngine.skipIfEqual(Symbol.LT, Symbol.LT_EQ)) {
                 parseRowCountCondition((SelectStatement) sqlStatement);
-            } else if (left instanceof SQLPropertyExpression && sqlStatement instanceof SelectStatement
-                    && isRowNumberCondition(items, ((SQLPropertyExpression) left).getName())) {
-                parseRowCountCondition((SelectStatement) sqlStatement);
-            } else {
-                parseOtherCondition(sqlStatement);
+                return;
             }
-        } else if (lexerEngine.skipIfEqual(Symbol.GT, Symbol.GT_EQ)) {
-            if (left instanceof SQLIdentifierExpression && sqlStatement instanceof SelectStatement
-                    && isRowNumberCondition(items, ((SQLIdentifierExpression) left).getName())) {
+            if (lexerEngine.skipIfEqual(Symbol.GT, Symbol.GT_EQ)) {
                 parseOffsetCondition((SelectStatement) sqlStatement);
-            } else if (left instanceof SQLPropertyExpression && sqlStatement instanceof SelectStatement
-                    && isRowNumberCondition(items, ((SQLPropertyExpression) left).getName())) {
-                parseOffsetCondition((SelectStatement) sqlStatement);
-            } else {
-                parseOtherCondition(sqlStatement);
+                return;
             }
-        } else if (lexerEngine.skipIfEqual(Symbol.LT_GT, Symbol.BANG_EQ, Symbol.BANG_GT, Symbol.BANG_LT, DefaultKeyword.LIKE)) {
+        }
+        if (lexerEngine.skipIfEqual(Symbol.LT, Symbol.LT_EQ, Symbol.GT, Symbol.GT_EQ, Symbol.LT_GT, Symbol.BANG_EQ, Symbol.BANG_GT, Symbol.BANG_LT, DefaultKeyword.LIKE)) {
             parseOtherCondition(sqlStatement);
         }
         lexerEngine.skipIfEqual(Symbol.RIGHT_PAREN);
@@ -146,6 +136,16 @@ public class WhereClauseParser implements SQLClauseParser {
         if (column.isPresent()) {
             sqlStatement.getConditions().add(new Condition(column.get(), rights.get(0), rights.get(1)), shardingRule);
         }
+    }
+    
+    private boolean isRowNumberCondition(final List<SelectItem> items, final SQLExpression sqlExpression) {
+        String columnLabel = null;
+        if (sqlExpression instanceof SQLIdentifierExpression) {
+            columnLabel = ((SQLIdentifierExpression) sqlExpression).getName();
+        } else if (sqlExpression instanceof SQLPropertyExpression) {
+            columnLabel = ((SQLPropertyExpression) sqlExpression).getName();
+        }
+        return null != columnLabel && isRowNumberCondition(items, columnLabel);
     }
     
     protected boolean isRowNumberCondition(final List<SelectItem> items, final String columnLabel) {
