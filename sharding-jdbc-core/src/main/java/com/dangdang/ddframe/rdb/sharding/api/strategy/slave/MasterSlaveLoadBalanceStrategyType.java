@@ -35,11 +35,11 @@ public enum MasterSlaveLoadBalanceStrategyType {
     private final MasterSlaveLoadBalanceStrategy strategy;
     
     /**
-     * Get default master-slave database load-balance strategy.
+     * Get default master-slave database load-balance strategy type.
      * 
-     * @return default master-slave database load-balance strategy
+     * @return default master-slave database load-balance strategy type
      */
-    public static MasterSlaveLoadBalanceStrategy getDefaultStrategy() {
-        return RoundRobin.strategy;
+    public static MasterSlaveLoadBalanceStrategyType getDefaultStrategyType() {
+        return RoundRobin;
     }
 }

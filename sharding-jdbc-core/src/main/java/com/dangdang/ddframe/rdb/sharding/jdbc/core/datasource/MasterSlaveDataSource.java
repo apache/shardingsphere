@@ -62,12 +62,6 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final MasterSlaveLoadBalanceStrategy masterSlaveLoadBalanceStrategy;
     
-    @Deprecated // TODO for spring namespace only
-    public MasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource,
-                                 final Map<String, DataSource> slaveDataSources) throws SQLException {
-        this(name, masterDataSourceName, masterDataSource, slaveDataSources, MasterSlaveLoadBalanceStrategyType.getDefaultStrategy());
-    }
-    
     public MasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource,
                                  final Map<String, DataSource> slaveDataSources, final MasterSlaveLoadBalanceStrategyType strategyType) throws SQLException {
         this(name, masterDataSourceName, masterDataSource, slaveDataSources, strategyType.getStrategy());

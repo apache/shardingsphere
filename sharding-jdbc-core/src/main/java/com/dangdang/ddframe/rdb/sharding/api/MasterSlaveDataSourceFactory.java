@@ -56,7 +56,7 @@ public final class MasterSlaveDataSourceFactory {
         for (DataSource each : otherSlaveDataSources) {
             slaveDataSourceMap.put(each.toString(), each);
         }
-        return new MasterSlaveDataSource(name, masterDataSource.toString(), masterDataSource, slaveDataSourceMap, MasterSlaveLoadBalanceStrategyType.getDefaultStrategy());
+        return new MasterSlaveDataSource(name, masterDataSource.toString(), masterDataSource, slaveDataSourceMap, MasterSlaveLoadBalanceStrategyType.getDefaultStrategyType());
     }
     
     /**
@@ -73,7 +73,7 @@ public final class MasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource, 
                                               final Map<String, DataSource> slaveDataSourceMap) throws SQLException {
-        return new MasterSlaveDataSource(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, MasterSlaveLoadBalanceStrategyType.getDefaultStrategy());
+        return new MasterSlaveDataSource(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, MasterSlaveLoadBalanceStrategyType.getDefaultStrategyType());
     }
     
     /**

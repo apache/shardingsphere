@@ -17,9 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.namespace.parser;
 
+import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategyType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -48,6 +50,12 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
         factory.addConstructorArgValue(masterDataSourceName);
         factory.addConstructorArgReference(masterDataSourceName);
         factory.addConstructorArgValue(parseSlaveDataSources(element, parserContext));
+        String strategyRef = parseStrategyRef(element);
+        if (!Strings.isNullOrEmpty(strategyRef)) {
+            factory.addConstructorArgReference(strategyRef);
+        } else {
+            factory.addConstructorArgValue(parseStrategyType(element));
+        }
         return factory.getBeanDefinition();
     }
     
@@ -66,5 +74,14 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
             result.put(each, parserContext.getRegistry().getBeanDefinition(each));
         }
         return result;
+    }
+    
+    private String parseStrategyRef(final Element element) {
+        return element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.STRATEGY_REF_ATTRIBUTE);
+    }
+    
+    private MasterSlaveLoadBalanceStrategyType parseStrategyType(final Element element) {
+        String result = element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.STRATEGY_TYPE_ATTRIBUTE);
+        return Strings.isNullOrEmpty(result) ? MasterSlaveLoadBalanceStrategyType.getDefaultStrategyType() : MasterSlaveLoadBalanceStrategyType.valueOf(result);
     }
 }
