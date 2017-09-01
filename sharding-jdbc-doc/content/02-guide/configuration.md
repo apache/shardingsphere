@@ -196,10 +196,10 @@ props: 属性配置(可选)
 | ----------------------------- | ------------ |  --------- | ------ | -------------- |
 | id                            | 属性         |  String     |   是   | Spring Bean ID |
 | sharding-rule                 | 标签         |   -         |   是   | 分片规则        |
-| binding-table-rules?        | 标签         |   -         |   是   | 绑定表规则       |
-| default-database-strategy?  | 标签         |   -         |   是   | 默认分库策略     |
-| default-table-strategy?     | 标签         |   -         |   是   | 默认分表策略     |
-| props?                      | 标签         |   -         |   是   | 相关属性配置     |
+| binding-table-rules?          | 标签         |   -         |   否   | 绑定表规则       |
+| default-database-strategy?    | 标签         |   -         |   否   | 默认分库策略     |
+| default-table-strategy?       | 标签         |   -         |   否   | 默认分表策略     |
+| props?                        | 标签         |   -         |   否   | 相关属性配置     |
 
 #### \<rdb:sharding-rule/>
 
@@ -213,7 +213,7 @@ props: 属性配置(可选)
 
 | *名称*                         | *类型*      | *数据类型*  |  *必填* | *说明*  |
 | ----------------------------- | ----------- | ---------- | ------ | ------- |
-| table-rule+                 | 标签         |   -         |   是  | 分片规则 |
+| table-rule+                   | 标签         |   -        |   是  | 分片规则 |
 
 #### \<rdb:table-rule/>
 
@@ -271,6 +271,18 @@ props: 属性配置(可选)
 | ------------------------------------ | ------------ | ---------- | ----- | ----------------------------------- |
 | sql.show                             | 属性         |  boolean   |   是   | 是否开启SQL显示，默认为false不开启     |
 | executor.size                        | 属性         |  int       |   否   | 最大工作线程数量                      |
+
+#### \<rdb:master-slave-data-source/\>
+
+定义sharding-jdbc读写分离的数据源
+
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                   |
+| ----------------------------- | ------------ |  --------- | ------ | ---------------------------------------- |
+| id                            | 属性         |  String     |   是   | Spring Bean ID                           |
+| master-data-source-ref        | 标签         |   -         |   是   | 主库数据源Bean ID                         |
+| slave-data-sources-ref        | 标签         |   -         |   是   | 从库数据源Bean列表，多个Bean以逗号分隔       |
+| strategy-ref?                 | 标签         |   -         |   否   | 主从库复杂策略Bean ID，可以使用自定义复杂策略 |
+| strategy-type?                | 标签         |  String     |   否   | 主从库复杂策略类型<br />可选值：ROUND_ROBIN, RANDOM<br />默认值：ROUND_ROBIN |
 
 #### Spring格式特别说明
 如需使用inline表达式，需配置ignore-unresolvable为true，否则placeholder会把inline表达式当成属性key值导致出错. 

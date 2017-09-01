@@ -12,7 +12,7 @@ next = "/02-guide/configuration/"
 为了缓解数据库压力，将写入和读取操作分离为不同数据源，写库称为主库，读库称为从库，一主库可配置多从库。
 
 ## 支持项
-1. 提供了一主多从的读写分离配置，可配合分库分表使用。
+1. 提供了一主多从的读写分离配置，可独立使用，也可配合分库分表使用。
 1. 同一线程且同一数据库连接内，如有写入操作，以后的读操作均从主库读取，用于保证数据一致性。
 1. Spring命名空间。
 1. 基于Hint的强制主库路由。
@@ -26,11 +26,19 @@ next = "/02-guide/configuration/"
 
 ```java
 // 构建读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理. masterDataSource0, slaveDataSource00, slaveDataSource01等为使用DBCP等连接池配置的真实数据源
-DataSource masterSlaveDs0 = MasterSlaveDataSourceFactory.createDataSource("ms_0", masterDataSource0, slaveDataSource00, slaveDataSource01);
-DataSource masterSlaveDs1 = MasterSlaveDataSourceFactory.createDataSource("ms_1", masterDataSource1, slaveDataSource11, slaveDataSource11);
+Map<String, DataSource> slaveDataSourceMap0 = new HashMap<>();
+slaveDataSourceMap0.put("slaveDataSource00", slaveDataSource00);
+slaveDataSourceMap0.put("slaveDataSource01", slaveDataSource01);
+// 可选择主从库负载均衡策略, 默认是ROUND_ROBIN, 还有RANDOM可以选择, 或者自定义负载策略
+DataSource masterSlaveDs0 = MasterSlaveDataSourceFactory.createDataSource("ms_0", "masterDataSource0", masterDataSource0, slaveDataSourceMap0, MasterSlaveLoadBalanceStrategyType.ROUND_ROBIN);
+
+Map<String, DataSource> slaveDataSourceMap1 = new HashMap<>();
+slaveDataSourceMap1.put("slaveDataSource10", slaveDataSource10);
+slaveDataSourceMap1.put("slaveDataSource11", slaveDataSource11);
+DataSource masterSlaveDs1 = MasterSlaveDataSourceFactory.createDataSource("ms_1", "masterDataSource1", masterDataSource1, slaveDataSourceMap1, MasterSlaveLoadBalanceStrategyType.ROUND_ROBIN);
 
 // 构建分库分表数据源
-Map<String, DataSource> dataSourceMap = new HashMap<>(2);
+Map<String, DataSource> dataSourceMap = new HashMap<>();
 dataSourceMap.put("ms_0", masterSlaveDs0);
 dataSourceMap.put("ms_1", masterSlaveDs1);
 
@@ -96,8 +104,8 @@ dataSourceMap.put("ms_1", masterSlaveDs1);
     </bean>
     
     <!-- 定义读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理 -->
-    <rdb:master-slave-data-source id="dbtbl_0" master-data-source-ref="dbtbl_0_master" slave-data-sources-ref="dbtbl_0_slave_0, dbtbl_0_slave_1" />
-    <rdb:master-slave-data-source id="dbtbl_1" master-data-source-ref="dbtbl_1_master" slave-data-sources-ref="dbtbl_1_slave_0, dbtbl_1_slave_1" />
+    <rdb:master-slave-data-source id="dbtbl_0" master-data-source-ref="dbtbl_0_master" slave-data-sources-ref="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-type="ROUND_ROBIN" />
+    <rdb:master-slave-data-source id="dbtbl_1" master-data-source-ref="dbtbl_1_master" slave-data-sources-ref="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-type="ROUND_ROBIN" />
     
     <!-- 通过rdb:strategy和rdb:data-source继续构建分片数据源 -->
     <rdb:strategy id="databaseStrategy" sharding-columns="user_id" algorithm-expression="dbtbl_${user_id.longValue() % 2}"/>
