@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.api.strategy.slave;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -33,8 +34,9 @@ public final class RoundRobinMasterSlaveLoadBalanceStrategyTest {
         String masterDataSourceName = "test_ds_master";
         String slaveDataSourceName1 = "test_ds_slave_1";
         String slaveDataSourceName2 = "test_ds_slave_2";
-        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", masterDataSourceName, Arrays.asList(slaveDataSourceName1, slaveDataSourceName2)), is(slaveDataSourceName1));
-        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", masterDataSourceName, Arrays.asList(slaveDataSourceName1, slaveDataSourceName2)), is(slaveDataSourceName2));
-        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", masterDataSourceName, Arrays.asList(slaveDataSourceName1, slaveDataSourceName2)), is(slaveDataSourceName1));
+        List<String> slaveDataSourceNames = Arrays.asList(slaveDataSourceName1, slaveDataSourceName2);
+        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName1));
+        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName2));
+        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName1));
     }
 }

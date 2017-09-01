@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinMasterSlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategy;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategyType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
@@ -60,14 +60,27 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     @Getter
     private final Map<String, DataSource> slaveDataSources;
     
-    private final MasterSlaveLoadBalanceStrategy masterSlaveLoadBalanceStrategy = new RoundRobinMasterSlaveLoadBalanceStrategy();
+    private final MasterSlaveLoadBalanceStrategy masterSlaveLoadBalanceStrategy;
     
-    public MasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource, final Map<String, DataSource> slaveDataSources) throws SQLException {
+    @Deprecated // TODO for spring namespace only
+    public MasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource,
+                                 final Map<String, DataSource> slaveDataSources) throws SQLException {
+        this(name, masterDataSourceName, masterDataSource, slaveDataSources, MasterSlaveLoadBalanceStrategyType.getDefaultStrategy());
+    }
+    
+    public MasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource,
+                                 final Map<String, DataSource> slaveDataSources, final MasterSlaveLoadBalanceStrategyType strategyType) throws SQLException {
+        this(name, masterDataSourceName, masterDataSource, slaveDataSources, strategyType.getStrategy());
+    }
+    
+    public MasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource, 
+                                 final Map<String, DataSource> slaveDataSources, final MasterSlaveLoadBalanceStrategy masterSlaveLoadBalanceStrategy) throws SQLException {
         super(getAllDataSources(masterDataSource, slaveDataSources.values()));
         this.name = name;
         this.masterDataSourceName = masterDataSourceName;
         this.masterDataSource = masterDataSource;
         this.slaveDataSources = slaveDataSources;
+        this.masterSlaveLoadBalanceStrategy = masterSlaveLoadBalanceStrategy;
     }
     
     private static Collection<DataSource> getAllDataSources(final DataSource masterDataSource, final Collection<DataSource> slaveDataSources) {

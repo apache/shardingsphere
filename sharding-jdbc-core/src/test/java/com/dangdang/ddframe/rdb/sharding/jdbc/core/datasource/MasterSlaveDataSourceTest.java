@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinMasterSlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
@@ -55,7 +56,7 @@ public final class MasterSlaveDataSourceTest {
         slaveDataSource = new TestDataSource("test_ds_slave");
         Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
         slaveDataSourceMap.put("test_ds_slave", slaveDataSource);
-        masterSlaveDataSource = new MasterSlaveDataSource("test_ds", "test_ds_master", masterDataSource, slaveDataSourceMap);
+        masterSlaveDataSource = new MasterSlaveDataSource("test_ds", "test_ds_master", masterDataSource, slaveDataSourceMap, new RoundRobinMasterSlaveLoadBalanceStrategy());
     }
     
     @Before

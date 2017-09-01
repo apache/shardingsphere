@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
+import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategy;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategyType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -54,7 +56,7 @@ public final class MasterSlaveDataSourceFactory {
         for (DataSource each : otherSlaveDataSources) {
             slaveDataSourceMap.put(each.toString(), each);
         }
-        return new MasterSlaveDataSource(name, masterDataSource.toString(), masterDataSource, slaveDataSourceMap);
+        return new MasterSlaveDataSource(name, masterDataSource.toString(), masterDataSource, slaveDataSourceMap, MasterSlaveLoadBalanceStrategyType.getDefaultStrategy());
     }
     
     /**
@@ -69,8 +71,45 @@ public final class MasterSlaveDataSourceFactory {
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final String name, 
-                                              final String masterDataSourceName, final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap) throws SQLException {
-        return new MasterSlaveDataSource(name, masterDataSourceName, masterDataSource, slaveDataSourceMap);
+    public static DataSource createDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource, 
+                                              final Map<String, DataSource> slaveDataSourceMap) throws SQLException {
+        return new MasterSlaveDataSource(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, MasterSlaveLoadBalanceStrategyType.getDefaultStrategy());
+    }
+    
+    /**
+     * Create master-slave data source.
+     *
+     * <p>One master data source can configure multiple slave data source.</p>
+     *
+     * @param name data source name
+     * @param masterDataSourceName name of data source for master
+     * @param masterDataSource data source for master
+     * @param slaveDataSourceMap map of data source name and data source for slave
+     * @param strategyType master-slave database load-balance strategy type
+     * @return master-slave data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource, 
+                                              final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceStrategyType strategyType) throws SQLException {
+        return new MasterSlaveDataSource(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategyType);
+    }
+    
+    
+    /**
+     * Create master-slave data source.
+     *
+     * <p>One master data source can configure multiple slave data source.</p>
+     *
+     * @param name data source name
+     * @param masterDataSourceName name of data source for master
+     * @param masterDataSource data source for master
+     * @param slaveDataSourceMap map of data source name and data source for slave
+     * @param strategy master-slave database load-balance strategy
+     * @return master-slave data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource, 
+                                              final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceStrategy strategy) throws SQLException {
+        return new MasterSlaveDataSource(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategy);
     }
 }
