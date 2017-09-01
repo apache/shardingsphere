@@ -27,7 +27,9 @@ import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceBin
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceDefaultStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceDifferentTablesTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForIndicatedDataSourceNamesTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForMasterSlaveTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForMasterSlaveWithDefaultStrategyTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForMasterSlaveWithStrategyRefTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForMasterSlaveWithStrategyTypeTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -44,7 +46,9 @@ import org.junit.runners.Suite.SuiteClasses;
         WithoutNamespaceDefaultStrategyTest.class, 
         WithNamespaceDifferentTablesTest.class,
         WithNamespaceForIndicatedDataSourceNamesTest.class,
-        WithNamespaceForMasterSlaveTest.class,
+        WithNamespaceForMasterSlaveWithDefaultStrategyTest.class,
+        WithNamespaceForMasterSlaveWithStrategyRefTest.class,
+        WithNamespaceForMasterSlaveWithStrategyTypeTest.class,
         GenerateKeyDBUnitTest.class
     })
 public class AllSpringTests {

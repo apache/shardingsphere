@@ -23,8 +23,8 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.Arrays;
 import java.util.List;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceForMasterSlave.xml")
-public final class WithNamespaceForMasterSlaveTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
+@ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceForMasterSlaveWithDefaultStrategy.xml")
+public final class WithNamespaceForMasterSlaveWithDefaultStrategyTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
     
     @Override
     protected List<String> getSchemaFiles() {

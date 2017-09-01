@@ -29,8 +29,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum MasterSlaveLoadBalanceStrategyType {
     
-    RoundRobin(new RoundRobinMasterSlaveLoadBalanceStrategy()),
-    Random(new RandomMasterSlaveLoadBalanceStrategy());
+    ROUND_ROBIN(new RoundRobinMasterSlaveLoadBalanceStrategy()),
+    RANDOM(new RandomMasterSlaveLoadBalanceStrategy());
     
     private final MasterSlaveLoadBalanceStrategy strategy;
     
@@ -40,6 +40,6 @@ public enum MasterSlaveLoadBalanceStrategyType {
      * @return default master-slave database load-balance strategy type
      */
     public static MasterSlaveLoadBalanceStrategyType getDefaultStrategyType() {
-        return RoundRobin;
+        return ROUND_ROBIN;
     }
 }
