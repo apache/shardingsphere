@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.MasterSlaveConnection;
-import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 
@@ -97,29 +96,6 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     /**
-     * Get data source name from master-slave data source.
-     *
-     * @param dataSourceName data source name
-     * @param sqlType SQL type
-     * @return data source name from master-slave data source
-     */
-    public static String getDataSourceName(final String dataSourceName, final SQLType sqlType) {
-        return isMasterRoute(sqlType) ? getMasterDataSourceName(dataSourceName) : getSlaveDataSourceName(dataSourceName);
-    }
-    
-    private static boolean isMasterRoute(final SQLType sqlType) {
-        return SQLType.DQL != sqlType || DML_FLAG.get() || HintManagerHolder.isMasterRouteOnly();
-    }
-    
-    private static String getMasterDataSourceName(final String dataSourceName) {
-        return Joiner.on("-").join(dataSourceName, "MASTER");
-    }
-    
-    private static String getSlaveDataSourceName(final String dataSourceName) {
-        return Joiner.on("-").join(dataSourceName, "SLAVE");
-    }
-    
-    /**
      * reset DML flag.
      */
     public static void resetDMLFlag() {
@@ -141,6 +117,10 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         DataSource result = selectedSourceName.equals(masterDataSourceName) ? masterDataSource : slaveDataSources.get(selectedSourceName);
         Preconditions.checkNotNull(result, "");
         return new NamedDataSource(selectedSourceName, result);
+    }
+    
+    private boolean isMasterRoute(final SQLType sqlType) {
+        return SQLType.DQL != sqlType || DML_FLAG.get() || HintManagerHolder.isMasterRouteOnly();
     }
     
     @Override
