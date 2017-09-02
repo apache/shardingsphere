@@ -37,9 +37,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Connection that support sharding.
@@ -52,8 +50,6 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Getter
     private final ShardingContext shardingContext;
-    
-    private final Map<String, Connection> cachedConnections = new HashMap<>();
     
     /**
      * Get all database connections via data source name. 
@@ -87,8 +83,8 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName, final SQLType sqlType) throws SQLException {
-        if (cachedConnections.containsKey(dataSourceName)) {
-            return cachedConnections.get(dataSourceName);
+        if (getCachedConnections().containsKey(dataSourceName)) {
+            return getCachedConnections().get(dataSourceName);
         }
         DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
@@ -96,15 +92,15 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         if (dataSource instanceof MasterSlaveDataSource) {
             NamedDataSource namedDataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlType);
             realDataSourceName = namedDataSource.getName();
-            if (cachedConnections.containsKey(realDataSourceName)) {
-                return cachedConnections.get(realDataSourceName);
+            if (getCachedConnections().containsKey(realDataSourceName)) {
+                return getCachedConnections().get(realDataSourceName);
             }
             dataSource = namedDataSource.getDataSource();
         } else {
             realDataSourceName = dataSourceName;
         }
         Connection result = dataSource.getConnection();
-        cachedConnections.put(realDataSourceName, result);
+        getCachedConnections().put(realDataSourceName, result);
         replayMethodsInvocation(result);
         return result;
     }
@@ -115,7 +111,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @param connection to be released connection
      */
     public void release(final Connection connection) {
-        cachedConnections.values().remove(connection);
+        getCachedConnections().values().remove(connection);
         try {
             connection.close();
         } catch (final SQLException ignored) {
@@ -170,11 +166,6 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Override
     public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
         return new ShardingStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
-    }
-    
-    @Override
-    public Collection<Connection> getCachedConnections() throws SQLException {
-        return cachedConnections.values();
     }
     
     @Override

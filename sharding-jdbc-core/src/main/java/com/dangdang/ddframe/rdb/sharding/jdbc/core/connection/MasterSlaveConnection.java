@@ -32,7 +32,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -46,8 +45,6 @@ import java.util.Map.Entry;
 public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     private final MasterSlaveDataSource masterSlaveDataSource;
-    
-    private final Map<String, Connection> cachedConnections = new HashMap<>();
     
     /**
      * Get database connections via SQL.
@@ -63,12 +60,12 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
         Collection<Connection> result = new LinkedList<>();
         for (Entry<String, DataSource> each : dataSources.entrySet()) {
             String dataSourceName = each.getKey();
-            if (cachedConnections.containsKey(dataSourceName)) {
-                result.add(cachedConnections.get(dataSourceName));
+            if (getCachedConnections().containsKey(dataSourceName)) {
+                result.add(getCachedConnections().get(dataSourceName));
                 continue;
             }
             Connection connection = each.getValue().getConnection();
-            cachedConnections.put(dataSourceName, connection);
+            getCachedConnections().put(dataSourceName, connection);
             result.add(connection);
             replayMethodsInvocation(connection);
             
@@ -124,11 +121,6 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     @Override
     public PreparedStatement prepareStatement(final String sql, final String[] columnNames) throws SQLException {
         return new MasterSlavePreparedStatement(this, sql, columnNames);
-    }
-    
-    @Override
-    public Collection<Connection> getCachedConnections() throws SQLException {
-        return cachedConnections.values();
     }
     
     @Override

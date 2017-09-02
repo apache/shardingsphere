@@ -56,7 +56,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     private void assertAutoCommit(final ShardingConnection actual, final boolean autoCommit) throws SQLException {
         assertThat(actual.getAutoCommit(), is(autoCommit));
         assertThat(actual.getCachedConnections().size(), is(2));
-        for (Connection each : actual.getCachedConnections()) {
+        for (Connection each : actual.getCachedConnections().values()) {
             assertThat(each.getAutoCommit(), is(autoCommit));
         }
     }
@@ -94,7 +94,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     private void assertClose(final ShardingConnection actual, final boolean closed) throws SQLException {
         assertThat(actual.isClosed(), is(closed));
         assertThat(actual.getCachedConnections().size(), is(2));
-        for (Connection each : actual.getCachedConnections()) {
+        for (Connection each : actual.getCachedConnections().values()) {
             assertThat(each.isClosed(), is(closed));
         }
     }
@@ -116,7 +116,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     private void assertReadOnly(final ShardingConnection actual, final boolean readOnly, final DatabaseType type) throws SQLException {
         assertThat(actual.isReadOnly(), is(readOnly));
         assertThat(actual.getCachedConnections().size(), is(2));
-        for (Connection each : actual.getCachedConnections()) {
+        for (Connection each : actual.getCachedConnections().values()) {
             // H2数据库未实现setReadOnly方法
             if (DatabaseType.H2 == type) {
                 assertFalse(each.isReadOnly());
@@ -143,7 +143,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     private void assertTransactionIsolation(final ShardingConnection actual, final int transactionIsolation) throws SQLException {
         assertThat(actual.getTransactionIsolation(), is(transactionIsolation));
         assertThat(actual.getCachedConnections().size(), is(2));
-        for (Connection each : actual.getCachedConnections()) {
+        for (Connection each : actual.getCachedConnections().values()) {
             assertThat(each.getTransactionIsolation(), is(transactionIsolation));
         }
     }

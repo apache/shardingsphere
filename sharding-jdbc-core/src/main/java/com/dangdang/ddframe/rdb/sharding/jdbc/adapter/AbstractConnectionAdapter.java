@@ -18,13 +18,16 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationConnection;
+import lombok.Getter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Adapter for {@code Connection}.
@@ -32,6 +35,9 @@ import java.util.LinkedList;
  * @author zhangliang
  */
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
+    
+    @Getter
+    private final Map<String, Connection> cachedConnections = new HashMap<>();
     
     private boolean autoCommit = true;
     
@@ -41,8 +47,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
-    protected abstract Collection<Connection> getCachedConnections() throws SQLException;
-    
     @Override
     public final boolean getAutoCommit() throws SQLException {
         return autoCommit;
@@ -51,11 +55,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
-        if (getCachedConnections().isEmpty()) {
+        if (cachedConnections.isEmpty()) {
             recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
             return;
         }
-        for (Connection each : getCachedConnections()) {
+        for (Connection each : cachedConnections.values()) {
             each.setAutoCommit(autoCommit);
         }
     }
@@ -63,7 +67,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void commit() throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : getCachedConnections()) {
+        for (Connection each : cachedConnections.values()) {
             try {
                 each.commit();
             } catch (final SQLException ex) {
@@ -76,7 +80,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void rollback() throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : getCachedConnections()) {
+        for (Connection each : cachedConnections.values()) {
             try {
                 each.rollback();
             } catch (final SQLException ex) {
@@ -90,7 +94,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public void close() throws SQLException {
         closed = true;
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : getCachedConnections()) {
+        for (Connection each : cachedConnections.values()) {
             try {
                 each.close();
             } catch (final SQLException ex) {
@@ -113,11 +117,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setReadOnly(final boolean readOnly) throws SQLException {
         this.readOnly = readOnly;
-        if (getCachedConnections().isEmpty()) {
+        if (cachedConnections.isEmpty()) {
             recordMethodInvocation(Connection.class, "setReadOnly", new Class[] {boolean.class}, new Object[] {readOnly});
             return;
         }
-        for (Connection each : getCachedConnections()) {
+        for (Connection each : cachedConnections.values()) {
             each.setReadOnly(readOnly);
         }
     }
@@ -130,11 +134,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setTransactionIsolation(final int level) throws SQLException {
         transactionIsolation = level;
-        if (getCachedConnections().isEmpty()) {
+        if (cachedConnections.isEmpty()) {
             recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[] {int.class}, new Object[] {level});
             return;
         }
-        for (Connection each : getCachedConnections()) {
+        for (Connection each : cachedConnections.values()) {
             each.setTransactionIsolation(level);
         }
     }
