@@ -175,7 +175,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     @Override
-    public Collection<Connection> getConnections() throws SQLException {
+    public Collection<Connection> getCachedConnections() throws SQLException {
         return connectionMap.values();
     }
     
