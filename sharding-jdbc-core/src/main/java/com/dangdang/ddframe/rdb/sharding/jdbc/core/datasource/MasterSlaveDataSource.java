@@ -114,9 +114,9 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
             return new NamedDataSource(masterDataSourceName, masterDataSource);
         }
         String selectedSourceName = masterSlaveLoadBalanceStrategy.getDataSource(name, masterDataSourceName, new ArrayList<>(slaveDataSources.keySet()));
-        DataSource result = selectedSourceName.equals(masterDataSourceName) ? masterDataSource : slaveDataSources.get(selectedSourceName);
-        Preconditions.checkNotNull(result, "");
-        return new NamedDataSource(selectedSourceName, result);
+        DataSource selectedSource = selectedSourceName.equals(masterDataSourceName) ? masterDataSource : slaveDataSources.get(selectedSourceName);
+        Preconditions.checkNotNull(selectedSource, "");
+        return new NamedDataSource(selectedSourceName, selectedSource);
     }
     
     private boolean isMasterRoute(final SQLType sqlType) {
