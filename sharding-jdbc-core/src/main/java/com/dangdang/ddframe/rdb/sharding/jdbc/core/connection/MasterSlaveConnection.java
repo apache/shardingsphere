@@ -25,6 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.MasterSlavePrepared
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.MasterSlaveStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLJudgeEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
@@ -34,8 +35,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Connection that support master-slave.
@@ -46,6 +49,8 @@ import java.util.LinkedList;
 public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     private final MasterSlaveDataSource masterSlaveDataSource;
+    
+    private final Map<String, Connection> connectionMap = new HashMap<>();
     
     /**
      * Get database connections via SQL.
@@ -58,19 +63,30 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
      */
     public Collection<Connection> getConnection(final String sql) throws SQLException {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        Collection<DataSource> dataSources = SQLType.DDL == sqlStatement.getType()
-                ? masterSlaveDataSource.getAllDataSources() : Collections.singletonList(masterSlaveDataSource.getDataSource(sqlStatement.getType()));
+        Map<String, DataSource> dataSources = SQLType.DDL == sqlStatement.getType() ? masterSlaveDataSource.getAllDataSources() : masterSlaveDataSource.getDataSource(sqlStatement.getType()).toMap();
         Collection<Connection> result = new LinkedList<>();
-        for (DataSource each : dataSources) {
-            result.add(each.getConnection());
-            replayMethodsInvocation(result);
+        for (Entry<String, DataSource> each : dataSources.entrySet()) {
+            Optional<Connection> cachedConnection = getCachedConnection(each.getKey());
+            if (cachedConnection.isPresent()) {
+                result.add(cachedConnection.get());
+                continue;
+            }
+            Connection connection = each.getValue().getConnection();
+            connectionMap.put(each.getKey(), connection);
+            result.add(connection);
+            replayMethodsInvocation(connection);
+            
         }
         return result;
     }
     
+    private Optional<Connection> getCachedConnection(final String dataSourceName) {
+        return Optional.fromNullable(connectionMap.get(dataSourceName));
+    }
+    
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return masterSlaveDataSource.getDataSource(SQLType.DML).getConnection().getMetaData();
+        return masterSlaveDataSource.getDataSource(SQLType.DML).getDataSource().getConnection().getMetaData();
     }
     
     @Override
@@ -120,13 +136,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     @Override
     public Collection<Connection> getConnections() throws SQLException {
-        Collection<Connection> result = new LinkedList<>();
-        for (DataSource each : masterSlaveDataSource.getAllDataSources()) {
-            Connection connection = each.getConnection();
-            replayMethodsInvocation(connection);
-            result.add(connection);
-        }
-        return result;
+        return connectionMap.values();
     }
     
     @Override

@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -84,13 +85,14 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     /**
-     * Get all actual data sources.
+     * Get map of all actual data source name and all actual data sources.
      *
-     * @return all actual data sources
+     * @return map of all actual data source name and all actual data sources
      */
-    public Collection<DataSource> getAllDataSources() {
-        Collection<DataSource> result = new LinkedList<>(slaveDataSources.values());
-        result.add(masterDataSource);
+    public Map<String, DataSource> getAllDataSources() {
+        Map<String, DataSource> result = new HashMap<>(slaveDataSources.size() + 1, 1);
+        result.put(masterDataSourceName, masterDataSource);
+        result.putAll(slaveDataSources);
         return result;
     }
     
@@ -130,15 +132,15 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
      * @param sqlType SQL type
      * @return data source from master-slave data source
      */
-    public DataSource getDataSource(final SQLType sqlType) {
+    public NamedDataSource getDataSource(final SQLType sqlType) {
         if (isMasterRoute(sqlType)) {
             DML_FLAG.set(true);
-            return masterDataSource;
+            return new NamedDataSource(masterDataSourceName, masterDataSource);
         }
         String selectedSourceName = masterSlaveLoadBalanceStrategy.getDataSource(name, masterDataSourceName, new ArrayList<>(slaveDataSources.keySet()));
         DataSource result = selectedSourceName.equals(masterDataSourceName) ? masterDataSource : slaveDataSources.get(selectedSourceName);
         Preconditions.checkNotNull(result, "");
-        return result;
+        return new NamedDataSource(selectedSourceName, result);
     }
     
     @Override

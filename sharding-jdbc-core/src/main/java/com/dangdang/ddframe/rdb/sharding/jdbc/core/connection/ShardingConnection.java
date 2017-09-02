@@ -68,7 +68,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
         Collection<DataSource> dataSources = dataSource instanceof MasterSlaveDataSource
-                ? ((MasterSlaveDataSource) dataSource).getAllDataSources() : Collections.singletonList(dataSource);
+                ? ((MasterSlaveDataSource) dataSource).getAllDataSources().values() : Collections.singletonList(dataSource);
         Collection<Connection> result = new LinkedList<>();
         for (DataSource each : dataSources) {
             Connection connection = each.getConnection();
@@ -95,7 +95,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
         String realDataSourceName;
         if (dataSource instanceof MasterSlaveDataSource) {
-            dataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlType);
+            dataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlType).getDataSource();
             realDataSourceName = MasterSlaveDataSource.getDataSourceName(dataSourceName, sqlType);
         } else {
             realDataSourceName = dataSourceName;

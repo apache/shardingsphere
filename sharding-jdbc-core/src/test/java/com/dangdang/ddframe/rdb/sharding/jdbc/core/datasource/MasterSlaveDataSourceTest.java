@@ -91,25 +91,25 @@ public final class MasterSlaveDataSourceTest {
     
     @Test
     public void assertGetDataSourceForDML() {
-        assertThat(masterSlaveDataSource.getDataSource(SQLType.DML), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.DML).getDataSource(), is(masterDataSource));
     }
     
     @Test
     public void assertGetDataSourceForDQL() {
-        assertThat(masterSlaveDataSource.getDataSource(SQLType.DQL), is(slaveDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.DQL).getDataSource(), is(slaveDataSource));
     }
     
     @Test
     public void assertGetDataSourceForDMLAndDQL() {
-        assertThat(masterSlaveDataSource.getDataSource(SQLType.DML), is(masterDataSource));
-        assertThat(masterSlaveDataSource.getDataSource(SQLType.DQL), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.DML).getDataSource(), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.DQL).getDataSource(), is(masterDataSource));
     }
     
     @Test
     public void assertGetDataSourceForHintToMasterOnly() {
         HintManager hintManager = HintManager.getInstance();
         hintManager.setMasterRouteOnly();
-        assertThat(masterSlaveDataSource.getDataSource(SQLType.DQL), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.DQL).getDataSource(), is(masterDataSource));
         hintManager.close();
     }
     
@@ -166,9 +166,9 @@ public final class MasterSlaveDataSourceTest {
     
     @Test
     public void assertResetDMLFlag() {
-        assertThat(masterSlaveDataSource.getDataSource(SQLType.DML), is(masterDataSource));
-        assertThat(masterSlaveDataSource.getDataSource(SQLType.DQL), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.DML).getDataSource(), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.DQL).getDataSource(), is(masterDataSource));
         MasterSlaveDataSource.resetDMLFlag();
-        assertThat(masterSlaveDataSource.getDataSource(SQLType.DQL), is(slaveDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.DQL).getDataSource(), is(slaveDataSource));
     }
 }
