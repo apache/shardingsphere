@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.junit.Test;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
@@ -148,7 +149,7 @@ public class UnsupportedGeneratedKeysResultSetTest {
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void setFetchDirection() throws SQLException {
-        new GeneratedKeysResultSet().setFetchDirection(1);
+        new GeneratedKeysResultSet().setFetchDirection(ResultSet.FETCH_FORWARD);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)

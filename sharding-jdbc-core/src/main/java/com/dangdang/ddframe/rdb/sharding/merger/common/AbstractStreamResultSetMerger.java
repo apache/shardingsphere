@@ -58,83 +58,46 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
         Object result;
         if (Object.class == type) {
             result = getCurrentResultSet().getObject(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (boolean.class == type) {
             result = getCurrentResultSet().getBoolean(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (byte.class == type) {
             result = getCurrentResultSet().getByte(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (short.class == type) {
             result = getCurrentResultSet().getShort(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (int.class == type) {
             result = getCurrentResultSet().getInt(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (long.class == type) {
             result = getCurrentResultSet().getLong(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (float.class == type) {
             result = getCurrentResultSet().getFloat(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (double.class == type) {
             result = getCurrentResultSet().getDouble(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (String.class == type) {
             result = getCurrentResultSet().getString(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (BigDecimal.class == type) {
             result = getCurrentResultSet().getBigDecimal(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (byte[].class == type) {
             result = getCurrentResultSet().getBytes(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (Date.class == type) {
             result = getCurrentResultSet().getDate(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (Time.class == type) {
             result = getCurrentResultSet().getTime(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (Timestamp.class == type) {
             result = getCurrentResultSet().getTimestamp(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (URL.class == type) {
             result = getCurrentResultSet().getURL(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (Blob.class == type) {
             result = getCurrentResultSet().getBlob(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (Clob.class == type) {
             result = getCurrentResultSet().getClob(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (SQLXML.class == type) {
             result = getCurrentResultSet().getSQLXML(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else if (Reader.class == type) {
             result = getCurrentResultSet().getCharacterStream(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
-            return result;
         } else {
             result = getCurrentResultSet().getObject(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
         }
+        wasNull = getCurrentResultSet().wasNull();
         return result;
     }
     
@@ -143,65 +106,46 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
         Object result;
         if (Object.class == type) {
             result = getCurrentResultSet().getObject(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (boolean.class == type) {
             result = getCurrentResultSet().getBoolean(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (byte.class == type) {
             result = getCurrentResultSet().getByte(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (short.class == type) {
             result = getCurrentResultSet().getShort(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (int.class == type) {
             result = getCurrentResultSet().getInt(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (long.class == type) {
             result = getCurrentResultSet().getLong(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (float.class == type) {
             result = getCurrentResultSet().getFloat(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (double.class == type) {
             result = getCurrentResultSet().getDouble(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (String.class == type) {
             result = getCurrentResultSet().getString(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (BigDecimal.class == type) {
             result = getCurrentResultSet().getBigDecimal(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (byte[].class == type) {
             result = getCurrentResultSet().getBytes(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (Date.class == type) {
             result = getCurrentResultSet().getDate(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (Time.class == type) {
             result = getCurrentResultSet().getTime(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (Timestamp.class == type) {
             result = getCurrentResultSet().getTimestamp(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (URL.class == type) {
             result = getCurrentResultSet().getURL(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (Blob.class == type) {
             result = getCurrentResultSet().getBlob(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (Clob.class == type) {
             result = getCurrentResultSet().getClob(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (SQLXML.class == type) {
             result = getCurrentResultSet().getSQLXML(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (Reader.class == type) {
             result = getCurrentResultSet().getCharacterStream(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else {
             result = getCurrentResultSet().getObject(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         }
+        wasNull = getCurrentResultSet().wasNull();
         return result;
     }
     
@@ -210,16 +154,14 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
         Object result;
         if (Date.class == type) {
             result = getCurrentResultSet().getDate(columnIndex, calendar);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (Time.class == type) {
             result = getCurrentResultSet().getTime(columnIndex, calendar);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (Timestamp.class == type) {
             result = getCurrentResultSet().getTimestamp(columnIndex, calendar);
-            wasNull = getCurrentResultSet().wasNull();
         } else {
             throw new SQLException(String.format("Unsupported type: %s", type));
         }
+        wasNull = getCurrentResultSet().wasNull();
         return result;
     }
     
@@ -228,16 +170,14 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
         Object result;
         if (Date.class == type) {
             result = getCurrentResultSet().getDate(columnLabel, calendar);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (Time.class == type) {
             result = getCurrentResultSet().getTime(columnLabel, calendar);
-            wasNull = getCurrentResultSet().wasNull();
         } else if (Timestamp.class == type) {
             result = getCurrentResultSet().getTimestamp(columnLabel, calendar);
-            wasNull = getCurrentResultSet().wasNull();
         } else {
             throw new SQLException(String.format("Unsupported type: %s", type));
         }
+        wasNull = getCurrentResultSet().wasNull();
         return result;
     }
     
@@ -247,16 +187,14 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
         InputStream result;
         if ("Ascii".equals(type)) {
             result = getCurrentResultSet().getAsciiStream(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
         } else if ("Unicode".equals(type)) {
             result = getCurrentResultSet().getUnicodeStream(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
         } else if ("Binary".equals(type)) {
             result = getCurrentResultSet().getBinaryStream(columnIndex);
-            wasNull = getCurrentResultSet().wasNull();
         } else {
             throw new SQLException(String.format("Unsupported type: %s", type));
         }
+        wasNull = getCurrentResultSet().wasNull();
         return result;
     }
     
@@ -266,16 +204,14 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
         InputStream result;
         if ("Ascii".equals(type)) {
             result = getCurrentResultSet().getAsciiStream(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if ("Unicode".equals(type)) {
             result = getCurrentResultSet().getUnicodeStream(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else if ("Binary".equals(type)) {
             result = getCurrentResultSet().getBinaryStream(columnLabel);
-            wasNull = getCurrentResultSet().wasNull();
         } else {
             throw new SQLException(String.format("Unsupported type: %s", type));
         }
+        wasNull = getCurrentResultSet().wasNull();
         return result;
     }
     
