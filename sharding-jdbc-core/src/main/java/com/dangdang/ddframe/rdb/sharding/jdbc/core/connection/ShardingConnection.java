@@ -53,7 +53,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Getter
     private final ShardingContext shardingContext;
     
-    private final Map<String, Connection> connectionMap = new HashMap<>();
+    private final Map<String, Connection> cachedConnections = new HashMap<>();
     
     /**
      * Get all database connections via data source name. 
@@ -101,14 +101,14 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
             realDataSourceName = dataSourceName;
         }
         Connection result = dataSource.getConnection();
-        connectionMap.put(realDataSourceName, result);
+        cachedConnections.put(realDataSourceName, result);
         replayMethodsInvocation(result);
         return result;
     }
     
     private Optional<Connection> getCachedConnection(final String dataSourceName, final SQLType sqlType) {
-        String key = connectionMap.containsKey(dataSourceName) ? dataSourceName : MasterSlaveDataSource.getDataSourceName(dataSourceName, sqlType);
-        return Optional.fromNullable(connectionMap.get(key));
+        String key = cachedConnections.containsKey(dataSourceName) ? dataSourceName : MasterSlaveDataSource.getDataSourceName(dataSourceName, sqlType);
+        return Optional.fromNullable(cachedConnections.get(key));
     }
     
     /**
@@ -117,7 +117,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @param connection to be released connection
      */
     public void release(final Connection connection) {
-        connectionMap.values().remove(connection);
+        cachedConnections.values().remove(connection);
         try {
             connection.close();
         } catch (final SQLException ignored) {
@@ -176,7 +176,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Override
     public Collection<Connection> getCachedConnections() throws SQLException {
-        return connectionMap.values();
+        return cachedConnections.values();
     }
     
     @Override

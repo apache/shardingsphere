@@ -25,7 +25,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.MasterSlavePrepared
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.MasterSlaveStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLJudgeEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
@@ -50,7 +49,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     private final MasterSlaveDataSource masterSlaveDataSource;
     
-    private final Map<String, Connection> connectionMap = new HashMap<>();
+    private final Map<String, Connection> cachedConnections = new HashMap<>();
     
     /**
      * Get database connections via SQL.
@@ -67,22 +66,17 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
         Collection<Connection> result = new LinkedList<>();
         for (Entry<String, DataSource> each : dataSources.entrySet()) {
             String dataSourceName = each.getKey();
-            Optional<Connection> cachedConnection = getCachedConnection(dataSourceName);
-            if (cachedConnection.isPresent()) {
-                result.add(cachedConnection.get());
+            if (cachedConnections.containsKey(dataSourceName)) {
+                result.add(cachedConnections.get(dataSourceName));
                 continue;
             }
             Connection connection = each.getValue().getConnection();
-            connectionMap.put(dataSourceName, connection);
+            cachedConnections.put(dataSourceName, connection);
             result.add(connection);
             replayMethodsInvocation(connection);
             
         }
         return result;
-    }
-    
-    private Optional<Connection> getCachedConnection(final String dataSourceName) {
-        return Optional.fromNullable(connectionMap.get(dataSourceName));
     }
     
     @Override
@@ -137,7 +131,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     @Override
     public Collection<Connection> getCachedConnections() throws SQLException {
-        return connectionMap.values();
+        return cachedConnections.values();
     }
     
     @Override
