@@ -66,13 +66,14 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
         Map<String, DataSource> dataSources = SQLType.DDL == sqlStatement.getType() ? masterSlaveDataSource.getAllDataSources() : masterSlaveDataSource.getDataSource(sqlStatement.getType()).toMap();
         Collection<Connection> result = new LinkedList<>();
         for (Entry<String, DataSource> each : dataSources.entrySet()) {
-            Optional<Connection> cachedConnection = getCachedConnection(each.getKey());
+            String dataSourceName = each.getKey();
+            Optional<Connection> cachedConnection = getCachedConnection(dataSourceName);
             if (cachedConnection.isPresent()) {
                 result.add(cachedConnection.get());
                 continue;
             }
             Connection connection = each.getValue().getConnection();
-            connectionMap.put(each.getKey(), connection);
+            connectionMap.put(dataSourceName, connection);
             result.add(connection);
             replayMethodsInvocation(connection);
             
