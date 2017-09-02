@@ -23,8 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.MasterSlavePreparedStatement;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.MasterSlaveStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.SQLJudgeEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
@@ -56,13 +54,12 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
      *
      * <p>DDL will return all connections; DQL will return slave connection; DML or updated before in same thread will return master connection.</p>
      * 
-     * @param sql SQL
+     * @param sqlType SQL type
      * @return database connections via SQL
      * @throws SQLException SQL exception
      */
-    public Collection<Connection> getConnection(final String sql) throws SQLException {
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        Map<String, DataSource> dataSources = SQLType.DDL == sqlStatement.getType() ? masterSlaveDataSource.getAllDataSources() : masterSlaveDataSource.getDataSource(sqlStatement.getType()).toMap();
+    public Collection<Connection> getConnection(final SQLType sqlType) throws SQLException {
+        Map<String, DataSource> dataSources = SQLType.DDL == sqlType ? masterSlaveDataSource.getAllDataSources() : masterSlaveDataSource.getDataSource(sqlType).toMap();
         Collection<Connection> result = new LinkedList<>();
         for (Entry<String, DataSource> each : dataSources.entrySet()) {
             String dataSourceName = each.getKey();
