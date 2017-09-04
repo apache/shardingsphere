@@ -99,14 +99,11 @@ public class ParserAssertHelper {
             final boolean isPreparedStatement) {
         List<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken> result = new ArrayList<>(sqlTokens.size());
         for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken each : sqlTokens) {
-            if (isPreparedStatement) {
-                if (!(each instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OffsetToken 
+            if (isPreparedStatement && (each instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OffsetToken 
                     || each instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.RowCountToken)) {
-                    result.add(each);
-                }
-            } else {
-                result.add(each);
+                continue;
             }
+            result.add(each);
         }
         return result;
     }
