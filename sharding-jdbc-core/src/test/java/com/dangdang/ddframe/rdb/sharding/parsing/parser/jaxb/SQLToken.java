@@ -31,11 +31,4 @@ public class SQLToken {
     
     @XmlAttribute(name = "begin-position")
     private int beginPosition;
-    
-    @XmlAttribute(name = "support")
-    private Support support = Support.ALL;
-    
-    public enum Support {
-        ALL, PREPARED_STATEMENT, STATEMENT
-    }
 }

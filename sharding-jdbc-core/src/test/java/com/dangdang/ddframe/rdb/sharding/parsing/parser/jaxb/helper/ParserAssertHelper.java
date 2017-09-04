@@ -13,7 +13,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken.Support;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Value;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
@@ -33,7 +32,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class ParserAssertHelper {
@@ -101,9 +99,12 @@ public class ParserAssertHelper {
             final boolean isPreparedStatement) {
         List<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken> result = new ArrayList<>(sqlTokens.size());
         for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken each : sqlTokens) {
-            if (isPreparedStatement && (Support.ALL.equals(each.getSupport()) || Support.PREPARED_STATEMENT.equals(each.getSupport()))) {
-                result.add(each);
-            } else if (!isPreparedStatement && (Support.ALL.equals(each.getSupport()) || Support.STATEMENT.equals(each.getSupport()))) {
+            if (isPreparedStatement) {
+                if (!(each instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OffsetToken 
+                    || each instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.RowCountToken)) {
+                    result.add(each);
+                }
+            } else {
                 result.add(each);
             }
         }
@@ -112,31 +113,31 @@ public class ParserAssertHelper {
     
     private static SQLToken buildExpectedSQLToken(final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.SQLToken sqlToken, final boolean isPreparedStatement) {
         if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.TableToken) {
-            return new TableToken(sqlToken.getBeginPosition(), ((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.TableToken)sqlToken).getOriginalLiterals());
+            return new TableToken(sqlToken.getBeginPosition(), ((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.TableToken) sqlToken).getOriginalLiterals());
         } else if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.ItemsToken) {
             ItemsToken itemsToken = new ItemsToken(sqlToken.getBeginPosition());
-            itemsToken.getItems().addAll(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.ItemsToken)sqlToken).getItems());
+            itemsToken.getItems().addAll(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.ItemsToken) sqlToken).getItems());
             return itemsToken;
         } else if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GeneratedKeyToken) {
             if (isPreparedStatement) {
-                return new GeneratedKeyToken(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GeneratedKeyToken)sqlToken).getBeginPositionOfPreparedStatement());
+                return new GeneratedKeyToken(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GeneratedKeyToken) sqlToken).getBeginPositionOfPreparedStatement());
             } else {
-                return new GeneratedKeyToken(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GeneratedKeyToken)sqlToken).getBeginPositionOfStatement());
+                return new GeneratedKeyToken(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GeneratedKeyToken) sqlToken).getBeginPositionOfStatement());
             }
         } else if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.MultipleInsertValuesToken) {
             MultipleInsertValuesToken multipleInsertValuesToken = new MultipleInsertValuesToken(sqlToken.getBeginPosition());
-            multipleInsertValuesToken.getValues().addAll(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.MultipleInsertValuesToken)sqlToken).getValues());
+            multipleInsertValuesToken.getValues().addAll(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.MultipleInsertValuesToken) sqlToken).getValues());
             return multipleInsertValuesToken;
         } else if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.RowCountToken) {
-            return new RowCountToken(sqlToken.getBeginPosition(), ((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.RowCountToken)sqlToken).getRowCount());
+            return new RowCountToken(sqlToken.getBeginPosition(), ((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.RowCountToken) sqlToken).getRowCount());
         } else if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByToken) {
             if (isPreparedStatement) {
-                return new OrderByToken(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByToken)sqlToken).getBeginPositionOfPreparedStatement());
+                return new OrderByToken(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByToken) sqlToken).getBeginPositionOfPreparedStatement());
             } else {
-                return new OrderByToken(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByToken)sqlToken).getBeginPositionOfStatement());
+                return new OrderByToken(((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByToken) sqlToken).getBeginPositionOfStatement());
             }
         } else if (sqlToken instanceof com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OffsetToken) {
-            return new OffsetToken(sqlToken.getBeginPosition(), ((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OffsetToken)sqlToken).getOffset());
+            return new OffsetToken(sqlToken.getBeginPosition(), ((com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OffsetToken) sqlToken).getOffset());
         }
         return null;
     }

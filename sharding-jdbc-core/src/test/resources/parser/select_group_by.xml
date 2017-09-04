@@ -212,7 +212,7 @@
         <table-tokens>
             <table-token begin-position="20" original-literals="t_order" />
         </table-tokens>
-        <row-count-token row-count="5" begin-position="51" support="STATEMENT" />
+        <row-count-token row-count="5" begin-position="51" />
         <order-by-token begin-position-of-statement="45" begin-position-of-prepared-statement="45" />
         <group-by-columns>
             <group-by-column name="user_id" order-by-type="ASC" />
@@ -229,7 +229,7 @@
         <table-tokens>
             <table-token begin-position="35" original-literals="t_order" />
         </table-tokens>
-        <row-count-token row-count="5" begin-position="89" support="STATEMENT" />
+        <row-count-token row-count="5" begin-position="89" />
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM"/>
         </aggregation-select-items>

@@ -14,7 +14,7 @@
                 <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
             </items>
         </items-token>
-        <offset-token begin-position="188" offset="5" support="STATEMENT" />
+        <offset-token begin-position="188" offset="5" />
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -44,7 +44,7 @@
                 <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
             </items>
         </items-token>
-        <row-count-token begin-position="187" row-count="5" support="STATEMENT" />
+        <row-count-token begin-position="187" row-count="5" />
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -69,7 +69,7 @@
             <table-token begin-position="167" original-literals="t_order" />
             <table-token begin-position="182" original-literals="t_order_item" />
         </table-tokens>
-        <row-count-token begin-position="27" row-count="3" support="STATEMENT" />
+        <row-count-token begin-position="27" row-count="3" />
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="1" literal="1" type="int" />
@@ -99,7 +99,7 @@
                 <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
             </items>
         </items-token>
-        <row-count-token begin-position="363" row-count="3" support="STATEMENT" />
+        <row-count-token begin-position="363" row-count="3" />
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -129,8 +129,8 @@
                 <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
             </items>
         </items-token>
-        <offset-token begin-position="195" offset="5" support="STATEMENT" />
-        <row-count-token begin-position="198" row-count="3" support="STATEMENT" />
+        <offset-token begin-position="195" offset="5" />
+        <row-count-token begin-position="198" row-count="3" />
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -160,8 +160,8 @@
                 <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
             </items>
         </items-token>
-        <offset-token begin-position="188" offset="5" support="STATEMENT" />
-        <row-count-token begin-position="196" row-count="3" support="STATEMENT" />
+        <offset-token begin-position="188" offset="5" />
+        <row-count-token begin-position="196" row-count="3" />
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -186,8 +186,8 @@
             <table-token begin-position="167" original-literals="t_order" />
             <table-token begin-position="182" original-literals="t_order_item" />
         </table-tokens>
-        <offset-token begin-position="338" offset="6" support="STATEMENT" />
-        <row-count-token begin-position="27" row-count="3" support="STATEMENT" />
+        <offset-token begin-position="338" offset="6" />
+        <row-count-token begin-position="27" row-count="3" />
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="1" literal="1" type="int" />
@@ -217,8 +217,8 @@
                 <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
             </items>
         </items-token>
-        <offset-token begin-position="386" offset="3" support="STATEMENT" />
-        <row-count-token begin-position="363" row-count="5" support="STATEMENT" />
+        <offset-token begin-position="386" offset="3" />
+        <row-count-token begin-position="363" row-count="5" />
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
