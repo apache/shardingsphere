@@ -72,7 +72,7 @@ public class ShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
     }
     
     @Override
-    protected Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException {
+    protected Map<DatabaseType, ShardingDataSource> getDataSources() throws SQLException {
         if (!shardingDataSources.isEmpty() && !isShutdown) {
             return shardingDataSources;
         }

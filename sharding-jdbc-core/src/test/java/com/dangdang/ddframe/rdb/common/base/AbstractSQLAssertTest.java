@@ -25,6 +25,8 @@ import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.integrate.jaxb.helper.SQLAssertJAXBHelper;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -85,7 +87,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     protected abstract ShardingTestStrategy getShardingStrategy();
     
-    protected abstract Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException;
+    protected abstract Map<DatabaseType, ? extends AbstractDataSourceAdapter> getDataSources() throws SQLException;
     
     @Test
     public void assertWithPreparedStatement() throws SQLException {
@@ -98,7 +100,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     }
     
     private void execute(final boolean isPreparedStatement) throws SQLException {
-        for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
+        for (Map.Entry<DatabaseType, ? extends AbstractDataSourceAdapter> each : getDataSources().entrySet()) {
             if (getCurrentDatabaseType() == each.getKey()) {
                 try {
                     executeAndAssertSQL(isPreparedStatement, each.getValue());
@@ -115,7 +117,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
     }
     
-    private void executeAndAssertSQL(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource) throws MalformedURLException, SQLException, DatabaseUnitException {
+    private void executeAndAssertSQL(final boolean isPreparedStatement, final AbstractDataSourceAdapter shardingDataSource) throws MalformedURLException, SQLException, DatabaseUnitException {
         for (SQLShardingRule sqlShardingRule : shardingRules) {
             if (!needAssert(sqlShardingRule)) {
                 continue;
@@ -156,7 +158,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return false;
     }
     
-    private void assertDqlSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SQLAssertData data, final File expectedDataSetFile)
+    private void assertDqlSql(final boolean isPreparedStatement, final AbstractDataSourceAdapter shardingDataSource, final SQLAssertData data, final File expectedDataSetFile)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
             executeQueryWithPreparedStatement(shardingDataSource, getParameters(data), expectedDataSetFile);
@@ -165,14 +167,15 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
     }
     
-    private void assertDmlAndDdlSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SQLAssertData data, final File expectedDataSetFile)
+    private void assertDmlAndDdlSql(final boolean isPreparedStatement, final AbstractDataSourceAdapter shardingDataSource, final SQLAssertData data, final File expectedDataSetFile)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
             executeWithPreparedStatement(shardingDataSource, getParameters(data));
         } else {
             executeWithStatement(shardingDataSource, getParameters(data));
         }
-        try (Connection conn = shardingDataSource.getConnection().getConnection(getDataSourceName(data.getExpected()), getSqlType())) {
+        try (Connection conn = shardingDataSource instanceof MasterSlaveDataSource ? shardingDataSource.getConnection() 
+                : ((ShardingDataSource) shardingDataSource).getConnection().getConnection(getDataSourceName(data.getExpected()), getSqlType())) {
             assertResult(conn, expectedDataSetFile);
         }
     }
@@ -204,7 +207,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return Strings.isNullOrEmpty(data.getParameter()) ? Collections.<String>emptyList() : Lists.newArrayList(data.getParameter().split(","));
     }
     
-    private void executeWithPreparedStatement(final ShardingDataSource dataSource, final List<String> parameters) throws SQLException {
+    private void executeWithPreparedStatement(final AbstractDataSourceAdapter dataSource, final List<String> parameters) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql))) {
             setParameters(preparedStatement, parameters);
@@ -212,14 +215,14 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
     }
     
-    private void executeWithStatement(final ShardingDataSource dataSource, final List<String> parameters) throws SQLException {
+    private void executeWithStatement(final AbstractDataSourceAdapter dataSource, final List<String> parameters) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute(replaceStatement(sql, parameters.toArray()));
         }
     }
     
-    private void executeQueryWithPreparedStatement(final ShardingDataSource dataSource, final List<String> parameters, final File file)
+    private void executeQueryWithPreparedStatement(final AbstractDataSourceAdapter dataSource, final List<String> parameters, final File file)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(replacePreparedStatement(sql))) {
@@ -246,7 +249,8 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
     }
     
-    private void executeQueryWithStatement(final ShardingDataSource dataSource, final List<String> parameters, final File file) throws MalformedURLException, SQLException, DatabaseUnitException {
+    private void executeQueryWithStatement(final AbstractDataSourceAdapter dataSource, final List<String> parameters, final File file) 
+            throws MalformedURLException, SQLException, DatabaseUnitException {
         try (Connection conn = dataSource.getConnection()) {
             String querySql = replaceStatement(sql, parameters.toArray());
             ReplacementDataSet expectedDataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(file));

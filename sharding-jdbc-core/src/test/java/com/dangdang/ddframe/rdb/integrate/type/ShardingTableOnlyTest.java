@@ -63,7 +63,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
     }
     
     @Override
-    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException {
+    protected final Map<DatabaseType, ShardingDataSource> getDataSources() throws SQLException {
         if (!shardingDataSources.isEmpty()) {
             return shardingDataSources;
         }
@@ -125,7 +125,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
     }
     
     private void executeSql(final String sql) throws SQLException {
-        for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
+        for (Map.Entry<DatabaseType, ShardingDataSource> each : getDataSources().entrySet()) {
             if (getCurrentDatabaseType() == each.getKey()) {
                 try (Connection conn = each.getValue().getConnection();
                      Statement statement = conn.createStatement()) {
