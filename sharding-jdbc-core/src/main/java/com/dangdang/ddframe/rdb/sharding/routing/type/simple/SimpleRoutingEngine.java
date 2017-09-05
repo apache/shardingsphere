@@ -77,7 +77,15 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     }
     
     private boolean isAccurateSharding(final List<ShardingValue<?>> shardingValues) {
-        return 1 == shardingValues.size() && (ShardingValue.ShardingValueType.SINGLE == shardingValues.get(0).getType() || ShardingValue.ShardingValueType.LIST == shardingValues.get(0).getType());
+        if (shardingValues.isEmpty()) {
+            return false;
+        }
+        for (ShardingValue<?> each : shardingValues) {
+            if (ShardingValue.ShardingValueType.RANGE == each.getType()) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private RoutingResult routeAccurate(final TableRule tableRule, final ShardingValue<?> databaseShardingValue, final ShardingValue<?> tableShardingValue) {
