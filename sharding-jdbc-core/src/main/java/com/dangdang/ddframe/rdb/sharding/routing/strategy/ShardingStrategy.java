@@ -60,8 +60,6 @@ public class ShardingStrategy {
     public String doStaticAccurateSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
         if (shardingAlgorithm instanceof SingleKeyShardingAlgorithm) {
             return ((SingleKeyShardingAlgorithm<?>) shardingAlgorithm).doEqualSharding(availableTargetNames, shardingValue);
-        } else if (shardingAlgorithm instanceof MultipleKeysShardingAlgorithm) {
-            return ((MultipleKeysShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, Collections.singletonList(shardingValue)).iterator().next();
         }
         throw new UnsupportedOperationException(shardingAlgorithm.getClass().getName());
     }

@@ -28,6 +28,8 @@ import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
@@ -65,7 +67,8 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         List<ShardingValue> databaseShardingValues = getDatabaseShardingValues(tableRule);
         List<ShardingValue> tableShardingValues = getTableShardingValues(tableRule);
-        if (isAccurateSharding(databaseShardingValues) && isAccurateSharding(tableShardingValues)) {
+        if (isAccurateSharding(databaseShardingValues, shardingRule.getDatabaseShardingStrategy(tableRule)) 
+                && isAccurateSharding(tableShardingValues, shardingRule.getTableShardingStrategy(tableRule))) {
             return routeAccurate(tableRule, databaseShardingValues.get(0), tableShardingValues.get(0));
         }
         Collection<String> routedDataSources = routeDataSources(tableRule, databaseShardingValues);
@@ -76,24 +79,16 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         return generateRoutingResult(tableRule, routedMap);
     }
     
-    private boolean isAccurateSharding(final List<ShardingValue> shardingValues) {
-        if (shardingValues.isEmpty()) {
-            return false;
-        }
-        for (ShardingValue<?> each : shardingValues) {
-            if (ShardingValue.ShardingValueType.RANGE == each.getType()) {
-                return false;
-            }
-        }
-        return true;
+    private boolean isAccurateSharding(final List<ShardingValue> shardingValues, final ShardingStrategy shardingStrategy) {
+        return 1 == shardingValues.size() && shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && ShardingValue.ShardingValueType.RANGE != shardingValues.get(0).getType();
     }
     
     private RoutingResult routeAccurate(final TableRule tableRule, final ShardingValue<?> databaseShardingValue, final ShardingValue<?> tableShardingValue) {
-        Collection<ShardingValue<?>> databaseShardingValues = transferToShardingValues(databaseShardingValue);
+        Collection<ShardingValue> databaseShardingValues = transferToShardingValues(databaseShardingValue);
         Map<String, Collection<String>> routedMap = new LinkedHashMap<>(databaseShardingValues.size());
         for (ShardingValue<?> eachDatabaseShardingValue : databaseShardingValues) {
             String actualDataSourceName = shardingRule.getDatabaseShardingStrategy(tableRule).doStaticAccurateSharding(tableRule.getActualDatasourceNames(), eachDatabaseShardingValue);
-            Collection<ShardingValue<?>> tableShardingValues = transferToShardingValues(tableShardingValue);
+            Collection<ShardingValue> tableShardingValues = transferToShardingValues(tableShardingValue);
             Collection<String> routeTables = new HashSet<>();
             for (ShardingValue<?> eachTableShardingValue : tableShardingValues) {
                 routeTables.add(shardingRule.getTableShardingStrategy(tableRule).doStaticAccurateSharding(tableRule.getActualTableNames(actualDataSourceName), eachTableShardingValue));
@@ -104,11 +99,11 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     }
     
     @SuppressWarnings("unchecked")
-    private List<ShardingValue<?>> transferToShardingValues(final ShardingValue<?> shardingValue) {
+    private List<ShardingValue> transferToShardingValues(final ShardingValue<?> shardingValue) {
         if (ShardingValue.ShardingValueType.SINGLE == shardingValue.getType()) {
-            return Collections.<ShardingValue<?>>singletonList(shardingValue);
+            return Collections.<ShardingValue>singletonList(shardingValue);
         }
-        List<ShardingValue<?>> result = new ArrayList<>(shardingValue.getValues().size());
+        List<ShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
         for (Comparable<?> each : shardingValue.getValues()) {
             result.add(new ShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), each));
         }
