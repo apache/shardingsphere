@@ -104,10 +104,6 @@ public class ShardingStrategy {
             SingleKeyShardingAlgorithm<?> singleKeyShardingAlgorithm = (SingleKeyShardingAlgorithm<?>) shardingAlgorithm;
             ShardingValue shardingValue = shardingValues.iterator().next();
             switch (shardingValue.getType()) {
-                case SINGLE:
-                    return Collections.singletonList(singleKeyShardingAlgorithm.doEqualSharding(availableTargetNames, shardingValue));
-                case LIST:
-                    return singleKeyShardingAlgorithm.doInSharding(availableTargetNames, shardingValue);
                 case RANGE:
                     return singleKeyShardingAlgorithm.doBetweenSharding(availableTargetNames, shardingValue);
                 default:

@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
 import com.google.common.collect.Range;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 public final class ModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm<Integer> {
     
@@ -34,19 +34,6 @@ public final class ModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseS
             }
         }
         throw new IllegalArgumentException();
-    }
-    
-    @Override
-    public Collection<String> doInSharding(final Collection<String> dataSourceNames, final ShardingValue<Integer> shardingValue) {
-        Collection<String> result = new LinkedHashSet<>(dataSourceNames.size());
-        for (Integer value : shardingValue.getValues()) {
-            for (String dataSourceName : dataSourceNames) {
-                if (dataSourceName.endsWith(value % 2 + "")) {
-                    result.add(dataSourceName);
-                }
-            }
-        }
-        return result;
     }
     
     @Override

@@ -48,11 +48,6 @@ public final class NoneDatabaseShardingAlgorithmTest {
     }
     
     @Test
-    public void assertDoInSharding() {
-        assertThat(noneDatabaseShardingAlgorithm.doInSharding(targets, null), is(targets));
-    }
-    
-    @Test
     public void assertDoBetweenSharding() {
         assertThat(noneDatabaseShardingAlgorithm.doBetweenSharding(targets, null), is(targets));
     }

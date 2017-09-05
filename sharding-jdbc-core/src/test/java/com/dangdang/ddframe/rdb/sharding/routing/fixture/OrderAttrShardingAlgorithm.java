@@ -17,11 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.fixture;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
+
+import java.util.Collection;
 
 public final class OrderAttrShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Integer> {
     
@@ -34,20 +33,6 @@ public final class OrderAttrShardingAlgorithm implements SingleKeyTableShardingA
             }
         }
         return null;
-    }
-    
-    @Override
-    public Collection<String> doInSharding(final Collection<String> tables, final ShardingValue<Integer> shardingValue) {
-        Collection<String> result = new HashSet<>(tables.size());
-        for (int value : shardingValue.getValues()) {
-            String suffix = value % 2 == 0 ? "_a" : "_b";
-            for (String table : tables) {
-                if (table.endsWith(suffix)) {
-                    result.add(table);
-                }
-            }
-        }
-        return result;
     }
     
     @Override

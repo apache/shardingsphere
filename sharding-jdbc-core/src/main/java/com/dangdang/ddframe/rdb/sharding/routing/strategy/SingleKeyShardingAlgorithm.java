@@ -40,15 +40,6 @@ public interface SingleKeyShardingAlgorithm<T extends Comparable<?>> extends Sha
     String doEqualSharding(Collection<String> availableTargetNames, ShardingValue<T> shardingValue);
     
     /**
-     * Sharding with in operator.
-     * 
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValue sharding value
-     * @return sharding results for data sources or tables's names
-     */
-    Collection<String> doInSharding(Collection<String> availableTargetNames, ShardingValue<T> shardingValue);
-    
-    /**
      * Sharding with between operator.
      * 
      * @param availableTargetNames available data sources or tables's names

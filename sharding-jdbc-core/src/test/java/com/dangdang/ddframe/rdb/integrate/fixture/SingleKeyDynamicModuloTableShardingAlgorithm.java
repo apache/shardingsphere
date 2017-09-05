@@ -36,15 +36,6 @@ public final class SingleKeyDynamicModuloTableShardingAlgorithm implements Singl
     }
     
     @Override
-    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
-        Collection<String> result = new LinkedHashSet<>(shardingValue.getValues().size());
-        for (Integer value : shardingValue.getValues()) {
-            result.add(tablePrefix + value % 10);
-        }
-        return result;
-    }
-    
-    @Override
     public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Range<Integer> range = shardingValue.getValueRange();

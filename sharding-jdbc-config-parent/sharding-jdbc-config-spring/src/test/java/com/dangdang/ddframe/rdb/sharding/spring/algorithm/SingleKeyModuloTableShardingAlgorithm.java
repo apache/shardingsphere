@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.algorithm;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
 import com.google.common.collect.Range;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Integer> {
     
@@ -34,20 +34,6 @@ public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShar
             }
         }
         throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
-        Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        Collection<Integer> values = shardingValue.getValues();
-        for (Integer value : values) {
-            for (String tableNames : availableTargetNames) {
-                if (tableNames.endsWith(value % 4 + "")) {
-                    result.add(tableNames);
-                }
-            }
-        }
-        return result;
     }
     
     @Override

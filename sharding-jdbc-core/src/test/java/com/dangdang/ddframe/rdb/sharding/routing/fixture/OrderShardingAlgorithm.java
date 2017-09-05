@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.fixture;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public final class OrderShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm<Integer>, SingleKeyTableShardingAlgorithm<Integer> {
     
@@ -34,19 +34,6 @@ public final class OrderShardingAlgorithm implements SingleKeyDatabaseShardingAl
             }
         }
         return null;
-    }
-    
-    @Override
-    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
-        Collection<String> result = new HashSet<>(2);
-        for (String each : availableTargetNames) {
-            for (int value : shardingValue.getValues()) {
-                if (each.endsWith(String.valueOf(value % 2))) {
-                    result.add(each);
-                }
-            }
-        }
-        return result;
     }
     
     @Override

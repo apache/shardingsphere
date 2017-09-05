@@ -43,20 +43,6 @@ public final class ShardingStrategyTest {
     }
     
     @Test
-    public void assertDoStaticShardingForEqualSingleKey() {
-        ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doStaticSharding(targets, createShardingValues(new ShardingValue<>("logicTable", "column", "1"))), 
-                is((Collection<String>) Sets.newHashSet("1")));
-    }
-    
-    @Test
-    public void assertDoStaticShardingForInSingleKey() {
-        ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doStaticSharding(targets, createShardingValues(new ShardingValue<>("logicTable", "column", Sets.newHashSet("1", "3")))), 
-                is((Collection<String>) Sets.newHashSet("1", "3")));
-    }
-    
-    @Test
     public void assertDoStaticShardingForBetweenSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
         assertThat(strategy.doStaticSharding(targets, createShardingValues(new ShardingValue<>("logicTable", "column", Range.open("1", "3")))), 
@@ -74,18 +60,6 @@ public final class ShardingStrategyTest {
     public void assertDoDynamicShardingWithoutShardingColumns() {
         ShardingStrategy strategy = new ShardingStrategy(Sets.newHashSet("column"), null);
         strategy.doDynamicSharding(Collections.<ShardingValue>emptySet());
-    }
-    
-    @Test
-    public void assertDoDynamicShardingForEqualSingleKey() {
-        ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("logicTable", "column", "1"))), is((Collection<String>) Sets.newHashSet("1")));
-    }
-    
-    @Test
-    public void assertDoDynamicShardingForInSingleKey() {
-        ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("logicTable", "column", Sets.newHashSet("1", "3")))), is((Collection<String>) Sets.newHashSet("1", "3")));
     }
     
     @Test

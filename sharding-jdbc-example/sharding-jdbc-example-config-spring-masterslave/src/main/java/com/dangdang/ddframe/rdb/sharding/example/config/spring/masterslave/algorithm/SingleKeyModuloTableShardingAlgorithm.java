@@ -38,20 +38,6 @@ public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShar
     }
     
     @Override
-    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
-        Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        Collection<Integer> values = shardingValue.getValues();
-        for (Integer value : values) {
-            for (String each : availableTargetNames) {
-                if (each.endsWith(value % 4 + "")) {
-                    result.add(each);
-                }
-            }
-        }
-        return result;
-    }
-    
-    @Override
     public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Range<Integer> range = shardingValue.getValueRange();

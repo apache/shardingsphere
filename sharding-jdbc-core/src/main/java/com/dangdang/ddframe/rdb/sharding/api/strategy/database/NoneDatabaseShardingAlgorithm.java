@@ -39,11 +39,6 @@ public final class NoneDatabaseShardingAlgorithm implements SingleKeyDatabaseSha
     }
     
     @Override
-    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
-        return availableTargetNames;
-    }
-    
-    @Override
     public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
         return availableTargetNames;
     }

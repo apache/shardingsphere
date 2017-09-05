@@ -17,24 +17,19 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.fixture;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public final class TestSingleKeyShardingAlgorithm implements SingleKeyShardingAlgorithm<String>, DatabaseShardingAlgorithm, TableShardingAlgorithm {
     
     @Override
     public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
         return shardingValue.getValue();
-    }
-    
-    @Override
-    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
-        return shardingValue.getValues();
     }
     
     @Override

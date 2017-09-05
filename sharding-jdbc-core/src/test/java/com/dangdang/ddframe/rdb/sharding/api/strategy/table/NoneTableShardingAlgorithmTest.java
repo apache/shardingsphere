@@ -48,11 +48,6 @@ public final class NoneTableShardingAlgorithmTest {
     }
     
     @Test
-    public void assertDoInSharding() {
-        assertThat(noneTableShardingAlgorithm.doInSharding(targets, null), is(targets));
-    }
-    
-    @Test
     public void assertDoBetweenSharding() {
         assertThat(noneTableShardingAlgorithm.doBetweenSharding(targets, null), is(targets));
     }
