@@ -125,7 +125,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
             Collection<String> result = new LinkedList<>();
             Collection<ShardingValue> accurateDatabaseShardingValues = transferToShardingValues(databaseShardingValues.get(0));
             for (ShardingValue<?> eachDatabaseShardingValue : accurateDatabaseShardingValues) {
-                result.add(strategy.doStaticAccurateSharding(tableRule.getActualDatasourceNames(), eachDatabaseShardingValue));
+                result.add(strategy.doAccurateSharding(tableRule.getActualDatasourceNames(), eachDatabaseShardingValue));
             }
             return result;
         }
@@ -140,7 +140,8 @@ public final class SimpleRoutingEngine implements RoutingEngine {
             Collection<String> result = new HashSet<>();
             Collection<ShardingValue> accurateTableShardingValues = transferToShardingValues(tableShardingValues.get(0));
             for (ShardingValue<?> eachTableShardingValue : accurateTableShardingValues) {
-                result.add(shardingRule.getTableShardingStrategy(tableRule).doStaticAccurateSharding(tableRule.getActualTableNames(routedDataSource), eachTableShardingValue));
+                result.add(shardingRule.getTableShardingStrategy(tableRule).doAccurateSharding(
+                        tableRule.isDynamic() ? Collections.<String>emptyList() : tableRule.getActualTableNames(routedDataSource), eachTableShardingValue));
             }
             return result;
         }

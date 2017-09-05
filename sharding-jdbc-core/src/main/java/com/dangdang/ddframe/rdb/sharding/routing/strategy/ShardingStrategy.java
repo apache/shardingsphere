@@ -48,7 +48,7 @@ public class ShardingStrategy {
     }
     
     /**
-     * Calculate accurate static sharding info.
+     * Calculate accurate sharding info.
      *
      * <p>Accurate means {@code =}.</p>
      * 
@@ -57,7 +57,7 @@ public class ShardingStrategy {
      * @return sharding results for data sources or tables's names
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public String doStaticAccurateSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
+    public String doAccurateSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
         if (shardingAlgorithm instanceof SingleKeyShardingAlgorithm) {
             return ((SingleKeyShardingAlgorithm<?>) shardingAlgorithm).doEqualSharding(availableTargetNames, shardingValue);
         }
