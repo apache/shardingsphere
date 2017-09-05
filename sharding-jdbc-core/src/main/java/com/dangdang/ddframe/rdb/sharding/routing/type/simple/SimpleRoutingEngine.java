@@ -28,8 +28,6 @@ import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
@@ -67,8 +65,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         List<ShardingValue<?>> databaseShardingValues = getDatabaseShardingValues(tableRule);
         List<ShardingValue<?>> tableShardingValues = getTableShardingValues(tableRule);
-        if (isAccurateSharding(databaseShardingValues, shardingRule.getDatabaseShardingStrategy(tableRule))
-                && isAccurateSharding(tableShardingValues, shardingRule.getTableShardingStrategy(tableRule))) {
+        if (isAccurateSharding(databaseShardingValues) && isAccurateSharding(tableShardingValues)) {
             return routeAccurate(tableRule, databaseShardingValues.get(0), tableShardingValues.get(0));
         }
         Collection<String> routedDataSources = routeDataSources(tableRule, databaseShardingValues);
@@ -79,9 +76,8 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         return generateRoutingResult(tableRule, routedMap);
     }
     
-    private boolean isAccurateSharding(final List<ShardingValue<?>> shardingValues, final ShardingStrategy shardingStrategy) {
-        return 1 == shardingValues.size() && (ShardingValue.ShardingValueType.SINGLE == shardingValues.get(0).getType() || ShardingValue.ShardingValueType.LIST == shardingValues.get(0).getType()) 
-                && shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm;
+    private boolean isAccurateSharding(final List<ShardingValue<?>> shardingValues) {
+        return 1 == shardingValues.size() && (ShardingValue.ShardingValueType.SINGLE == shardingValues.get(0).getType() || ShardingValue.ShardingValueType.LIST == shardingValues.get(0).getType());
     }
     
     private RoutingResult routeAccurate(final TableRule tableRule, final ShardingValue<?> databaseShardingValue, final ShardingValue<?> tableShardingValue) {
