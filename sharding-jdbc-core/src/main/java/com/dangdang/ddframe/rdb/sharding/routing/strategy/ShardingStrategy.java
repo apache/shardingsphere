@@ -30,9 +30,9 @@ import java.util.TreeSet;
  * 
  * @author zhangliang
  */
+@Getter
 public class ShardingStrategy {
     
-    @Getter
     private final Collection<String> shardingColumns;
     
     private final ShardingAlgorithm shardingAlgorithm;
@@ -45,6 +45,21 @@ public class ShardingStrategy {
         this.shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.shardingColumns.addAll(shardingColumns);
         this.shardingAlgorithm = shardingAlgorithm;
+    }
+    
+    /**
+     * Calculate accurate static sharding info.
+     *
+     * <p>Accurate means {@code =}.</p>
+     * 
+     * @param availableTargetNames available data sources or tables's names
+     * @param shardingValue sharding value
+     * @return sharding results for data sources or tables's names
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public String doStaticAccurateSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
+        SingleKeyShardingAlgorithm<?> singleKeyShardingAlgorithm = (SingleKeyShardingAlgorithm<?>) shardingAlgorithm;
+        return singleKeyShardingAlgorithm.doEqualSharding(availableTargetNames, shardingValue);
     }
     
     /**
