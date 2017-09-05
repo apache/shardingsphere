@@ -46,7 +46,7 @@ public abstract class AbstractClosureShardingAlgorithmTest {
     @Test
     public void assertEqual() {
         Collection<String> result = createClosureShardingAlgorithm().doSharding(
-                Collections.singletonList("target_1"), Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("target", "id", 1L)));
+                Collections.singletonList("target_1"), Collections.<ShardingValue>singletonList(new ShardingValue<>("target", "id", 1L)));
         assertThat(result.size(), is(1));
         assertThat(result, hasItem("target_1"));
     }
@@ -54,7 +54,7 @@ public abstract class AbstractClosureShardingAlgorithmTest {
     @Test
     public void assertIn() {
         Collection<String> result = createClosureShardingAlgorithm().doSharding(Arrays.asList("target_0", "target_1"), 
-                Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("target", "id", Arrays.asList(1, 2))));
+                Collections.<ShardingValue>singletonList(new ShardingValue<>("target", "id", Arrays.asList(1, 2))));
         assertThat(result.size(), is(2));
         assertThat(result, hasItem("target_0"));
         assertThat(result, hasItem("target_1"));
@@ -63,11 +63,11 @@ public abstract class AbstractClosureShardingAlgorithmTest {
     @Test(expected = UnsupportedOperationException.class)
     public void assertBetween() {
         createClosureShardingAlgorithm().doSharding(Arrays.asList("target_0", "target_1"), 
-                Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("target", "id", Range.range(1, BoundType.CLOSED, 2, BoundType.OPEN))));
+                Collections.<ShardingValue>singletonList(new ShardingValue<>("target", "id", Range.range(1, BoundType.CLOSED, 2, BoundType.OPEN))));
     }
     
     @Test(expected = MissingMethodException.class)
     public void assertEvaluateInlineExpressionFailure() {
-        createErrorClosureShardingAlgorithm().doSharding(Collections.singletonList("target_1"), Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("target", "id", 1L)));
+        createErrorClosureShardingAlgorithm().doSharding(Collections.singletonList("target_1"), Collections.<ShardingValue>singletonList(new ShardingValue<>("target", "id", 1L)));
     }
 }

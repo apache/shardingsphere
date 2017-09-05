@@ -29,7 +29,7 @@ import java.util.Collection;
 public final class NoneTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<String>, MultipleKeysTableShardingAlgorithm {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTableNames, final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doSharding(final Collection<String> availableTableNames, final Collection<ShardingValue> shardingValues) {
         return availableTableNames;
     }
     

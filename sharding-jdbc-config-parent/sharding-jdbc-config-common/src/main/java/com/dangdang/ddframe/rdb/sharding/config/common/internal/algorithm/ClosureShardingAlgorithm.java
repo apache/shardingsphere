@@ -52,7 +52,7 @@ public class ClosureShardingAlgorithm implements MultipleKeysShardingAlgorithm {
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         List<Set<Comparable>> valuesDim = new ArrayList<>();
         List<String> columnNames = new ArrayList<>(shardingValues.size());
         for (ShardingValue<?> each : shardingValues) {

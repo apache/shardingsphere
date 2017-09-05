@@ -35,5 +35,5 @@ public interface MultipleKeysShardingAlgorithm extends ShardingAlgorithm {
      * @param shardingValues sharding values
      * @return sharding results for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue<?>> shardingValues);
+    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
 }

@@ -39,7 +39,7 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoStaticShardingWithoutShardingColumns() {
         ShardingStrategy strategy = new ShardingStrategy(Sets.newHashSet("column"), null);
-        assertThat(strategy.doStaticSharding(targets, Collections.<ShardingValue<?>>emptySet()), is(targets));
+        assertThat(strategy.doStaticSharding(targets, Collections.<ShardingValue>emptySet()), is(targets));
     }
     
     @Test
@@ -73,7 +73,7 @@ public final class ShardingStrategyTest {
     @Test(expected = IllegalStateException.class)
     public void assertDoDynamicShardingWithoutShardingColumns() {
         ShardingStrategy strategy = new ShardingStrategy(Sets.newHashSet("column"), null);
-        strategy.doDynamicSharding(Collections.<ShardingValue<?>>emptySet());
+        strategy.doDynamicSharding(Collections.<ShardingValue>emptySet());
     }
     
     @Test
@@ -100,8 +100,8 @@ public final class ShardingStrategyTest {
         assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("logicTable", "column", "1"))), is((Collection<String>) Collections.<String>emptySet()));
     }
     
-    private Collection<ShardingValue<?>> createShardingValues(final ShardingValue<String> shardingValue) {
-        Collection<ShardingValue<?>> result = new ArrayList<>(1);
+    private Collection<ShardingValue> createShardingValues(final ShardingValue<String> shardingValue) {
+        Collection<ShardingValue> result = new ArrayList<>(1);
         result.add(shardingValue);
         return result;
     }

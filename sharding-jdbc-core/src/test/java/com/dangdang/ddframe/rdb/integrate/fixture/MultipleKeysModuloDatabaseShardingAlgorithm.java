@@ -29,7 +29,7 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         ShardingValue<?> shardingValue = shardingValues.iterator().next();
         switch (shardingValue.getType()) {
             case SINGLE: 

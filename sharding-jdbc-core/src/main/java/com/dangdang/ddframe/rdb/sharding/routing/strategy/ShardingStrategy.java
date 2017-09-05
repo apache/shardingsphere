@@ -61,7 +61,7 @@ public class ShardingStrategy {
         if (shardingAlgorithm instanceof SingleKeyShardingAlgorithm) {
             return ((SingleKeyShardingAlgorithm<?>) shardingAlgorithm).doEqualSharding(availableTargetNames, shardingValue);
         } else if (shardingAlgorithm instanceof MultipleKeysShardingAlgorithm) {
-            return ((MultipleKeysShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, Collections.<ShardingValue<?>>singletonList(shardingValue)).iterator().next();
+            return ((MultipleKeysShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, Collections.singletonList(shardingValue)).iterator().next();
         }
         throw new UnsupportedOperationException(shardingAlgorithm.getClass().getName());
     }
@@ -73,7 +73,7 @@ public class ShardingStrategy {
      * @param shardingValues sharding values
      * @return sharding results for data sources or tables's names
      */
-    public Collection<String> doStaticSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doStaticSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         if (shardingValues.isEmpty()) {
             result.addAll(availableTargetNames);
@@ -89,7 +89,7 @@ public class ShardingStrategy {
      * @param shardingValues sharding values
      * @return sharding results for data sources or tables's names
      */
-    public Collection<String> doDynamicSharding(final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doDynamicSharding(final Collection<ShardingValue> shardingValues) {
         Preconditions.checkState(!shardingValues.isEmpty(), "Dynamic table should contain sharding value.");
         Collection<String> availableTargetNames = Collections.emptyList();
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
@@ -98,7 +98,7 @@ public class ShardingStrategy {
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private Collection<String> doSharding(final Collection<ShardingValue<?>> shardingValues, final Collection<String> availableTargetNames) {
+    private Collection<String> doSharding(final Collection<ShardingValue> shardingValues, final Collection<String> availableTargetNames) {
         if (shardingAlgorithm instanceof NoneKeyShardingAlgorithm) {
             return Collections.singletonList(((NoneKeyShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, shardingValues.iterator().next()));
         }

@@ -17,17 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.fixture;
 
-import java.util.Collection;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
+
+import java.util.Collection;
 
 public final class TestMultipleKeysShardingAlgorithm implements MultipleKeysShardingAlgorithm, DatabaseShardingAlgorithm, TableShardingAlgorithm {
 
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         return availableTargetNames;
     }
 }
