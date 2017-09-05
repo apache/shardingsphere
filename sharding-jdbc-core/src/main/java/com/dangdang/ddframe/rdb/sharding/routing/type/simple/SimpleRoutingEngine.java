@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -67,10 +68,6 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         List<ShardingValue> databaseShardingValues = getDatabaseShardingValues(tableRule);
         List<ShardingValue> tableShardingValues = getTableShardingValues(tableRule);
-        if (isAccurateSharding(databaseShardingValues, shardingRule.getDatabaseShardingStrategy(tableRule)) 
-                && isAccurateSharding(tableShardingValues, shardingRule.getTableShardingStrategy(tableRule))) {
-            return routeAccurate(tableRule, databaseShardingValues.get(0), tableShardingValues.get(0));
-        }
         Collection<String> routedDataSources = routeDataSources(tableRule, databaseShardingValues);
         Map<String, Collection<String>> routedMap = new LinkedHashMap<>(routedDataSources.size());
         for (String each : routedDataSources) {
@@ -81,21 +78,6 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     
     private boolean isAccurateSharding(final List<ShardingValue> shardingValues, final ShardingStrategy shardingStrategy) {
         return 1 == shardingValues.size() && shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && ShardingValue.ShardingValueType.RANGE != shardingValues.get(0).getType();
-    }
-    
-    private RoutingResult routeAccurate(final TableRule tableRule, final ShardingValue<?> databaseShardingValue, final ShardingValue<?> tableShardingValue) {
-        Collection<ShardingValue> databaseShardingValues = transferToShardingValues(databaseShardingValue);
-        Map<String, Collection<String>> routedMap = new LinkedHashMap<>(databaseShardingValues.size());
-        for (ShardingValue<?> eachDatabaseShardingValue : databaseShardingValues) {
-            String actualDataSourceName = shardingRule.getDatabaseShardingStrategy(tableRule).doStaticAccurateSharding(tableRule.getActualDatasourceNames(), eachDatabaseShardingValue);
-            Collection<ShardingValue> tableShardingValues = transferToShardingValues(tableShardingValue);
-            Collection<String> routeTables = new HashSet<>();
-            for (ShardingValue<?> eachTableShardingValue : tableShardingValues) {
-                routeTables.add(shardingRule.getTableShardingStrategy(tableRule).doStaticAccurateSharding(tableRule.getActualTableNames(actualDataSourceName), eachTableShardingValue));
-            }
-            routedMap.put(actualDataSourceName, routeTables);
-        }
-        return generateRoutingResult(tableRule, routedMap);
     }
     
     @SuppressWarnings("unchecked")
@@ -111,6 +93,15 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> routeDataSources(final TableRule tableRule, final List<ShardingValue> databaseShardingValues) {
+        DatabaseShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
+        if (isAccurateSharding(databaseShardingValues, strategy)) {
+            Collection<String> result = new LinkedList<>();
+            Collection<ShardingValue> accurateDatabaseShardingValues = transferToShardingValues(databaseShardingValues.get(0));
+            for (ShardingValue<?> eachDatabaseShardingValue : accurateDatabaseShardingValues) {
+                result.add(strategy.doStaticAccurateSharding(tableRule.getActualDatasourceNames(), eachDatabaseShardingValue));
+            }
+            return result;
+        }
         Collection<String> result = shardingRule.getDatabaseShardingStrategy(tableRule).doStaticSharding(tableRule.getActualDatasourceNames(), databaseShardingValues);
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         return result;
@@ -123,6 +114,14 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     
     private Collection<String> routeTables(final TableRule tableRule, final String routedDataSource, final List<ShardingValue> tableShardingValues) {
         TableShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
+        if (isAccurateSharding(tableShardingValues, strategy)) {
+            Collection<String> result = new HashSet<>();
+            Collection<ShardingValue> accurateTableShardingValues = transferToShardingValues(tableShardingValues.get(0));
+            for (ShardingValue<?> eachTableShardingValue : accurateTableShardingValues) {
+                result.add(shardingRule.getTableShardingStrategy(tableRule).doStaticAccurateSharding(tableRule.getActualTableNames(routedDataSource), eachTableShardingValue));
+            }
+            return result;
+        }
         Collection<String> result = 
                 tableRule.isDynamic() ? strategy.doDynamicSharding(tableShardingValues) : strategy.doStaticSharding(tableRule.getActualTableNames(routedDataSource), tableShardingValues);
         Preconditions.checkState(!result.isEmpty(), "no table route info");
