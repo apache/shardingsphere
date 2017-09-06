@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.type;
+package com.dangdang.ddframe.rdb.integrate.type.sharding;
 
 import com.dangdang.ddframe.rdb.common.base.AbstractSQLAssertTest;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.type.hint.base;
+package com.dangdang.ddframe.rdb.integrate.type.sharding.hint.base;
 
 import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;

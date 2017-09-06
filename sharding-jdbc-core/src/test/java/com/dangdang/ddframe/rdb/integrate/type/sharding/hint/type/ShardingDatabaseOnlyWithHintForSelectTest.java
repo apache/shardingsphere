@@ -15,11 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.type.hint.type;
+package com.dangdang.ddframe.rdb.integrate.type.sharding.hint.type;
 
 import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
-import com.dangdang.ddframe.rdb.integrate.type.hint.base.AbstractShardingDatabaseOnlyWithHintTest;
-import com.dangdang.ddframe.rdb.integrate.type.hint.helper.DynamicShardingValueHelper;
+import com.dangdang.ddframe.rdb.integrate.type.sharding.hint.base.AbstractShardingDatabaseOnlyWithHintTest;
+import com.dangdang.ddframe.rdb.integrate.type.sharding.hint.helper.DynamicShardingValueHelper;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;

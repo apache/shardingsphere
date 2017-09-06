@@ -15,21 +15,22 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.type;
+package com.dangdang.ddframe.rdb.integrate.type.sharding;
 
 import com.dangdang.ddframe.rdb.common.base.AbstractSQLAssertTest;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
-import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyDynamicModuloTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
 import org.junit.AfterClass;
 
 import javax.sql.DataSource;
@@ -40,38 +41,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
+public class ShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
     
     private static boolean isShutdown;
     
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
-    public ShardingDatabaseAndTableDynamicTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+    public ShardingDatabaseOnlyTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, type, sqlShardingRules);
     }
     
     @Override
     protected ShardingTestStrategy getShardingStrategy() {
-        return ShardingTestStrategy.dbtbl;
+        return ShardingTestStrategy.db;
     }
     
     @Override
     protected List<String> getInitDataSetFiles() {
         return Arrays.asList(
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_0.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_1.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_2.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_3.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_4.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_5.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_6.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_7.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_8.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_9.xml");
+                "integrate/dataset/sharding/db/init/db_0.xml",
+                "integrate/dataset/sharding/db/init/db_1.xml",
+                "integrate/dataset/sharding/db/init/db_2.xml",
+                "integrate/dataset/sharding/db/init/db_3.xml",
+                "integrate/dataset/sharding/db/init/db_4.xml",
+                "integrate/dataset/sharding/db/init/db_5.xml",
+                "integrate/dataset/sharding/db/init/db_6.xml",
+                "integrate/dataset/sharding/db/init/db_7.xml",
+                "integrate/dataset/sharding/db/init/db_8.xml",
+                "integrate/dataset/sharding/db/init/db_9.xml");
     }
     
     @Override
-    protected final Map<DatabaseType, ShardingDataSource> getDataSources() throws SQLException {
+    protected Map<DatabaseType, ShardingDataSource> getDataSources() throws SQLException {
         if (!shardingDataSources.isEmpty() && !isShutdown) {
             return shardingDataSources;
         }
@@ -79,12 +80,12 @@ public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
-            TableRule orderTableRule = TableRule.builder("t_order").dynamic(true).dataSourceRule(dataSourceRule).build();
-            TableRule orderItemTableRule = TableRule.builder("t_order_item").dynamic(true).dataSourceRule(dataSourceRule).build();
+            TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).generateKeyColumn("order_id", IncrementKeyGenerator.class).build();
+            TableRule orderItemTableRule = TableRule.builder("t_order_item").dataSourceRule(dataSourceRule).build();
             ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
                     .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
-                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new SingleKeyModuloDatabaseShardingAlgorithm()))
-                    .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyDynamicModuloTableShardingAlgorithm("t_order_"))).build();
+                    .databaseShardingStrategy(new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()))
+                    .tableShardingStrategy(new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;
