@@ -2,7 +2,7 @@
 
 ### 缺陷修正
 
-1. [ISSUE #362](https://github.com/dangdangdotcom/sharding-jdbc/issues/362) mybatis使用sjdbc做读写分离时报错（仅仅做读写分离，不做分片）
+1. [ISSUE #362](https://github.com/dangdangdotcom/sharding-jdbc/issues/362) 读写分离使用PreparedStatement并未调用setParameter方法导致出错
 
 ## 1.5.3
 
