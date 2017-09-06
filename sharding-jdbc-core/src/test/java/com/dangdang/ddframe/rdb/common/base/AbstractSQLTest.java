@@ -87,27 +87,39 @@ public abstract class AbstractSQLTest {
         throw new RuntimeException("Can't find database type of:" + databaseType);
     }
     
-    
     private static void createSchema(final DatabaseType dbType) {
+        createJdbcSchema(dbType);
+        createShardingSchema(dbType);
+    }
+    
+    private static void createShardingSchema(final DatabaseType dbType) {
         try {
             Connection conn;
             for (int i = 0; i < 10; i++) {
-                for (String database : Arrays.asList("tbl", "db", "dbtbl", "nullable", "master", "slave", "jdbc")) {
-                    if ("tbl".equals(database)) {
-                        if (i == 0) {
-                            conn = initialConnection(database, dbType);
-                            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
-                            conn.close();
-                        }
+                for (String database : Arrays.asList("tbl", "db", "dbtbl", "nullable", "master", "slave")) {
+                    if ("tbl".equals(database) && i == 0) {
+                        conn = initialConnection(database, dbType);
+                        RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+                        conn.close();
                     } else {
-                        if ("jdbc".equals(database) && i >= 2) {
-                            continue;
-                        }
                         conn = initialConnection(database + "_" + i, dbType);
                         RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
                         conn.close();
                     }
                 }
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    private static void createJdbcSchema(final DatabaseType dbType) {
+        try {
+            Connection conn;
+            for (int i = 0; i < 2; i++) {
+                conn = initialConnection("jdbc_" + i, dbType);
+                RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/jdbc.sql")));
+                conn.close();
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
