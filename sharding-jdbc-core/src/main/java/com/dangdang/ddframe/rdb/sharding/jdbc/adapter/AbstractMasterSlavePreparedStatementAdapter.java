@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
+import com.google.common.base.Preconditions;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -42,204 +43,207 @@ public abstract class AbstractMasterSlavePreparedStatementAdapter extends Abstra
     
     @Override
     public final void setNull(final int parameterIndex, final int sqlType) throws SQLException {
-        getTargetStatement().setNull(parameterIndex, sqlType);
+        getTargetPreparedStatement().setNull(parameterIndex, sqlType);
     }
     
     @Override
     public final void setNull(final int parameterIndex, final int sqlType, final String typeName) throws SQLException {
-        getTargetStatement().setNull(parameterIndex, sqlType, typeName);
+        getTargetPreparedStatement().setNull(parameterIndex, sqlType, typeName);
     }
     
     @Override
     public final void setBoolean(final int parameterIndex, final boolean x) throws SQLException {
-        getTargetStatement().setBoolean(parameterIndex, x);
+        getTargetPreparedStatement().setBoolean(parameterIndex, x);
     }
     
     @Override
     public final void setByte(final int parameterIndex, final byte x) throws SQLException {
-        getTargetStatement().setByte(parameterIndex, x);
+        getTargetPreparedStatement().setByte(parameterIndex, x);
     }
     
     @Override
     public final void setShort(final int parameterIndex, final short x) throws SQLException {
-        getTargetStatement().setShort(parameterIndex, x);
+        getTargetPreparedStatement().setShort(parameterIndex, x);
     }
     
     @Override
     public final void setInt(final int parameterIndex, final int x) throws SQLException {
-        getTargetStatement().setInt(parameterIndex, x);
+        getTargetPreparedStatement().setInt(parameterIndex, x);
     }
     
     @Override
     public final void setLong(final int parameterIndex, final long x) throws SQLException {
-        getTargetStatement().setLong(parameterIndex, x);
+        getTargetPreparedStatement().setLong(parameterIndex, x);
     }
     
     @Override
     public final void setFloat(final int parameterIndex, final float x) throws SQLException {
-        getTargetStatement().setFloat(parameterIndex, x);
+        getTargetPreparedStatement().setFloat(parameterIndex, x);
     }
     
     @Override
     public final void setDouble(final int parameterIndex, final double x) throws SQLException {
-        getTargetStatement().setDouble(parameterIndex, x);
+        getTargetPreparedStatement().setDouble(parameterIndex, x);
     }
     
     @Override
     public final void setString(final int parameterIndex, final String x) throws SQLException {
-        getTargetStatement().setString(parameterIndex, x);
+        getTargetPreparedStatement().setString(parameterIndex, x);
     }
     
     @Override
     public final void setBigDecimal(final int parameterIndex, final BigDecimal x) throws SQLException {
-        getTargetStatement().setBigDecimal(parameterIndex, x);
+        getTargetPreparedStatement().setBigDecimal(parameterIndex, x);
     }
     
     @Override
     public final void setDate(final int parameterIndex, final Date x) throws SQLException {
-        getTargetStatement().setDate(parameterIndex, x);
+        getTargetPreparedStatement().setDate(parameterIndex, x);
     }
     
     @Override
     public final void setDate(final int parameterIndex, final Date x, final Calendar cal) throws SQLException {
-        getTargetStatement().setDate(parameterIndex, x, cal);
+        getTargetPreparedStatement().setDate(parameterIndex, x, cal);
     }
     
     @Override
     public final void setTime(final int parameterIndex, final Time x) throws SQLException {
-        getTargetStatement().setTime(parameterIndex, x);
+        getTargetPreparedStatement().setTime(parameterIndex, x);
     }
     
     @Override
     public final void setTime(final int parameterIndex, final Time x, final Calendar cal) throws SQLException {
-        getTargetStatement().setTime(parameterIndex, x, cal);
+        getTargetPreparedStatement().setTime(parameterIndex, x, cal);
     }
     
     @Override
     public final void setTimestamp(final int parameterIndex, final Timestamp x) throws SQLException {
-        getTargetStatement().setTimestamp(parameterIndex, x);
+        getTargetPreparedStatement().setTimestamp(parameterIndex, x);
     }
     
     @Override
     public final void setTimestamp(final int parameterIndex, final Timestamp x, final Calendar cal) throws SQLException {
-        getTargetStatement().setTimestamp(parameterIndex, x, cal);
+        getTargetPreparedStatement().setTimestamp(parameterIndex, x, cal);
     }
     
     @Override
     public final void setBytes(final int parameterIndex, final byte[] x) throws SQLException {
-        getTargetStatement().setBytes(parameterIndex, x);
+        getTargetPreparedStatement().setBytes(parameterIndex, x);
     }
     
     @Override
     public final void setBlob(final int parameterIndex, final Blob x) throws SQLException {
-        getTargetStatement().setBlob(parameterIndex, x);
+        getTargetPreparedStatement().setBlob(parameterIndex, x);
     }
     
     @Override
     public final void setBlob(final int parameterIndex, final InputStream x) throws SQLException {
-        getTargetStatement().setBlob(parameterIndex, x);
+        getTargetPreparedStatement().setBlob(parameterIndex, x);
     }
     
     @Override
     public final void setBlob(final int parameterIndex, final InputStream x, final long length) throws SQLException {
-        getTargetStatement().setBlob(parameterIndex, x, length);
+        getTargetPreparedStatement().setBlob(parameterIndex, x, length);
     }
     
     @Override
     public final void setClob(final int parameterIndex, final Clob x) throws SQLException {
-        getTargetStatement().setClob(parameterIndex, x);
+        getTargetPreparedStatement().setClob(parameterIndex, x);
     }
     
     @Override
     public final void setClob(final int parameterIndex, final Reader x) throws SQLException {
-        getTargetStatement().setClob(parameterIndex, x);
+        getTargetPreparedStatement().setClob(parameterIndex, x);
     }
     
     @Override
     public final void setClob(final int parameterIndex, final Reader x, final long length) throws SQLException {
-        getTargetStatement().setClob(parameterIndex, x, length);
+        getTargetPreparedStatement().setClob(parameterIndex, x, length);
     }
     
     @Override
     public final void setAsciiStream(final int parameterIndex, final InputStream x) throws SQLException {
-        getTargetStatement().setAsciiStream(parameterIndex, x);
+        getTargetPreparedStatement().setAsciiStream(parameterIndex, x);
     }
     
     @Override
     public final void setAsciiStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
-        getTargetStatement().setAsciiStream(parameterIndex, x, length);
+        getTargetPreparedStatement().setAsciiStream(parameterIndex, x, length);
     }
     
     @Override
     public final void setAsciiStream(final int parameterIndex, final InputStream x, final long length) throws SQLException {
-        getTargetStatement().setAsciiStream(parameterIndex, x, length);
+        getTargetPreparedStatement().setAsciiStream(parameterIndex, x, length);
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public final void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
-        getTargetStatement().setUnicodeStream(parameterIndex, x, length);
+        getTargetPreparedStatement().setUnicodeStream(parameterIndex, x, length);
     }
     
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x) throws SQLException {
-        getTargetStatement().setBinaryStream(parameterIndex, x);
+        getTargetPreparedStatement().setBinaryStream(parameterIndex, x);
     }
     
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
-        getTargetStatement().setBinaryStream(parameterIndex, x, length);
+        getTargetPreparedStatement().setBinaryStream(parameterIndex, x, length);
     }
     
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x, final long length) throws SQLException {
-        getTargetStatement().setBinaryStream(parameterIndex, x, length);
+        getTargetPreparedStatement().setBinaryStream(parameterIndex, x, length);
     }
     
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x) throws SQLException {
-        getTargetStatement().setCharacterStream(parameterIndex, x);
+        getTargetPreparedStatement().setCharacterStream(parameterIndex, x);
     }
     
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x, final int length) throws SQLException {
-        getTargetStatement().setCharacterStream(parameterIndex, x, length);
+        getTargetPreparedStatement().setCharacterStream(parameterIndex, x, length);
     }
     
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x, final long length) throws SQLException {
-        getTargetStatement().setCharacterStream(parameterIndex, x, length);
+        getTargetPreparedStatement().setCharacterStream(parameterIndex, x, length);
     }
     
     @Override
     public void setSQLXML(final int parameterIndex, final SQLXML x) throws SQLException {
-        getTargetStatement().setSQLXML(parameterIndex, x);
+        getTargetPreparedStatement().setSQLXML(parameterIndex, x);
     }
     
     @Override
     public void setURL(final int parameterIndex, final URL x) throws SQLException {
-        getTargetStatement().setURL(parameterIndex, x);
+        getTargetPreparedStatement().setURL(parameterIndex, x);
     }
     
     @Override
     public void setObject(final int parameterIndex, final Object x) throws SQLException {
-        getTargetStatement().setObject(parameterIndex, x);
+        getTargetPreparedStatement().setObject(parameterIndex, x);
     }
     
     @Override
     public void setObject(final int parameterIndex, final Object x, final int targetSqlType) throws SQLException {
-        getTargetStatement().setObject(parameterIndex, x, targetSqlType);
+        getTargetPreparedStatement().setObject(parameterIndex, x, targetSqlType);
     }
     
     @Override
     public void setObject(final int parameterIndex, final Object x, final int targetSqlType, final int scaleOrLength) throws SQLException {
-        getTargetStatement().setObject(parameterIndex, x, targetSqlType, scaleOrLength);
+        getTargetPreparedStatement().setObject(parameterIndex, x, targetSqlType, scaleOrLength);
     }
     
     @Override
     public final void clearParameters() throws SQLException {
-        getTargetStatement().clearParameters();
+        getTargetPreparedStatement().clearParameters();
     }
     
-    protected abstract PreparedStatement getTargetStatement();
+    private PreparedStatement getTargetPreparedStatement() {
+        Preconditions.checkArgument(1 == getRoutedStatements().size(), "Cannot support setParameter for DDL");
+        return (PreparedStatement) getRoutedStatements().iterator().next();
+    }
 }
