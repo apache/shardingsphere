@@ -20,7 +20,7 @@
         </order-by-columns>
         <limit offset="5" offset-index="4" />
     </assert>
-    <assert id="assertSelectPaginationWithLimitOnly" parameters="1,2,9,10,5">
+    <assert id="assertSelectPaginationWithRowCount" parameters="1,2,9,10,5">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
