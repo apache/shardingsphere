@@ -63,26 +63,26 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
     @Override
     protected List<String> getInitDataSetFiles() {
         return Arrays.asList(
-                "integrate/dataset/masterslave/init/master_0.xml",
-                "integrate/dataset/masterslave/init/master_1.xml",
-                "integrate/dataset/masterslave/init/master_2.xml",
-                "integrate/dataset/masterslave/init/master_3.xml",
-                "integrate/dataset/masterslave/init/master_4.xml",
-                "integrate/dataset/masterslave/init/master_5.xml",
-                "integrate/dataset/masterslave/init/master_6.xml",
-                "integrate/dataset/masterslave/init/master_7.xml",
-                "integrate/dataset/masterslave/init/master_8.xml",
-                "integrate/dataset/masterslave/init/master_9.xml",
-                "integrate/dataset/masterslave/init/slave_0.xml",
-                "integrate/dataset/masterslave/init/slave_1.xml",
-                "integrate/dataset/masterslave/init/slave_2.xml",
-                "integrate/dataset/masterslave/init/slave_3.xml",
-                "integrate/dataset/masterslave/init/slave_4.xml",
-                "integrate/dataset/masterslave/init/slave_5.xml",
-                "integrate/dataset/masterslave/init/slave_6.xml",
-                "integrate/dataset/masterslave/init/slave_7.xml",
-                "integrate/dataset/masterslave/init/slave_8.xml",
-                "integrate/dataset/masterslave/init/slave_9.xml");
+                "integrate/dataset/sharding/masterslave/init/master_0.xml",
+                "integrate/dataset/sharding/masterslave/init/master_1.xml",
+                "integrate/dataset/sharding/masterslave/init/master_2.xml",
+                "integrate/dataset/sharding/masterslave/init/master_3.xml",
+                "integrate/dataset/sharding/masterslave/init/master_4.xml",
+                "integrate/dataset/sharding/masterslave/init/master_5.xml",
+                "integrate/dataset/sharding/masterslave/init/master_6.xml",
+                "integrate/dataset/sharding/masterslave/init/master_7.xml",
+                "integrate/dataset/sharding/masterslave/init/master_8.xml",
+                "integrate/dataset/sharding/masterslave/init/master_9.xml",
+                "integrate/dataset/sharding/masterslave/init/slave_0.xml",
+                "integrate/dataset/sharding/masterslave/init/slave_1.xml",
+                "integrate/dataset/sharding/masterslave/init/slave_2.xml",
+                "integrate/dataset/sharding/masterslave/init/slave_3.xml",
+                "integrate/dataset/sharding/masterslave/init/slave_4.xml",
+                "integrate/dataset/sharding/masterslave/init/slave_5.xml",
+                "integrate/dataset/sharding/masterslave/init/slave_6.xml",
+                "integrate/dataset/sharding/masterslave/init/slave_7.xml",
+                "integrate/dataset/sharding/masterslave/init/slave_8.xml",
+                "integrate/dataset/sharding/masterslave/init/slave_9.xml");
     }
     
     @Override

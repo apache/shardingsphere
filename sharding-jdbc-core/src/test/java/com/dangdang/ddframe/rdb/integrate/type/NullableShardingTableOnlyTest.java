@@ -66,16 +66,16 @@ public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
     @Override
     protected List<String> getInitDataSetFiles() {
         return Arrays.asList(
-                "integrate/dataset/nullable/init/nullable_0.xml",
-                "integrate/dataset/nullable/init/nullable_1.xml",
-                "integrate/dataset/nullable/init/nullable_2.xml",
-                "integrate/dataset/nullable/init/nullable_3.xml",
-                "integrate/dataset/nullable/init/nullable_4.xml",
-                "integrate/dataset/nullable/init/nullable_5.xml",
-                "integrate/dataset/nullable/init/nullable_6.xml",
-                "integrate/dataset/nullable/init/nullable_7.xml",
-                "integrate/dataset/nullable/init/nullable_8.xml",
-                "integrate/dataset/nullable/init/nullable_9.xml");
+                "integrate/dataset/sharding/nullable/init/nullable_0.xml",
+                "integrate/dataset/sharding/nullable/init/nullable_1.xml",
+                "integrate/dataset/sharding/nullable/init/nullable_2.xml",
+                "integrate/dataset/sharding/nullable/init/nullable_3.xml",
+                "integrate/dataset/sharding/nullable/init/nullable_4.xml",
+                "integrate/dataset/sharding/nullable/init/nullable_5.xml",
+                "integrate/dataset/sharding/nullable/init/nullable_6.xml",
+                "integrate/dataset/sharding/nullable/init/nullable_7.xml",
+                "integrate/dataset/sharding/nullable/init/nullable_8.xml",
+                "integrate/dataset/sharding/nullable/init/nullable_9.xml");
     }
     
     @Override

@@ -58,16 +58,16 @@ public class ShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
     @Override
     protected List<String> getInitDataSetFiles() {
         return Arrays.asList(
-                "integrate/dataset/dbtbl/init/dbtbl_0.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_1.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_2.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_3.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_4.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_5.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_6.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_7.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_8.xml",
-                "integrate/dataset/dbtbl/init/dbtbl_9.xml");
+                "integrate/dataset/sharding/dbtbl/init/dbtbl_0.xml",
+                "integrate/dataset/sharding/dbtbl/init/dbtbl_1.xml",
+                "integrate/dataset/sharding/dbtbl/init/dbtbl_2.xml",
+                "integrate/dataset/sharding/dbtbl/init/dbtbl_3.xml",
+                "integrate/dataset/sharding/dbtbl/init/dbtbl_4.xml",
+                "integrate/dataset/sharding/dbtbl/init/dbtbl_5.xml",
+                "integrate/dataset/sharding/dbtbl/init/dbtbl_6.xml",
+                "integrate/dataset/sharding/dbtbl/init/dbtbl_7.xml",
+                "integrate/dataset/sharding/dbtbl/init/dbtbl_8.xml",
+                "integrate/dataset/sharding/dbtbl/init/dbtbl_9.xml");
     }
     
     @Override

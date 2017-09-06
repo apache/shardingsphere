@@ -56,16 +56,16 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
     @Override
     protected List<String> getInitDataSetFiles() {
         return Arrays.asList(
-                "integrate/dataset/db/init/db_0.xml",
-                "integrate/dataset/db/init/db_1.xml",
-                "integrate/dataset/db/init/db_2.xml",
-                "integrate/dataset/db/init/db_3.xml",
-                "integrate/dataset/db/init/db_4.xml",
-                "integrate/dataset/db/init/db_5.xml",
-                "integrate/dataset/db/init/db_6.xml",
-                "integrate/dataset/db/init/db_7.xml",
-                "integrate/dataset/db/init/db_8.xml",
-                "integrate/dataset/db/init/db_9.xml");
+                "integrate/dataset/sharding/db/init/db_0.xml",
+                "integrate/dataset/sharding/db/init/db_1.xml",
+                "integrate/dataset/sharding/db/init/db_2.xml",
+                "integrate/dataset/sharding/db/init/db_3.xml",
+                "integrate/dataset/sharding/db/init/db_4.xml",
+                "integrate/dataset/sharding/db/init/db_5.xml",
+                "integrate/dataset/sharding/db/init/db_6.xml",
+                "integrate/dataset/sharding/db/init/db_7.xml",
+                "integrate/dataset/sharding/db/init/db_8.xml",
+                "integrate/dataset/sharding/db/init/db_9.xml");
     }
     
     protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException {

@@ -80,14 +80,25 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return SQLAssertJAXBHelper.getDataParameters("integrate/assert");
     }
     
+    protected abstract ShardingTestStrategy getShardingStrategy();
+    
+    protected abstract Map<DatabaseType, ? extends AbstractDataSourceAdapter> getDataSources() throws SQLException;
+    
+    protected File getExpectedFile(final String expected) {
+        String strategyName = getShardingStrategy().name();
+        String expectedFile = null == expected ? "integrate/dataset/EmptyTable.xml"
+                : String.format("integrate/dataset/sharding/%s/expect/" + expected, strategyName, strategyName);
+        URL url = AbstractSQLAssertTest.class.getClassLoader().getResource(expectedFile);
+        if (null == url) {
+            throw new RuntimeException("Wrong expected file:" + expectedFile);
+        }
+        return new File(url.getPath());
+    }
+    
     @Override
     public DatabaseType getCurrentDatabaseType() {
         return type;
     }
-    
-    protected abstract ShardingTestStrategy getShardingStrategy();
-    
-    protected abstract Map<DatabaseType, ? extends AbstractDataSourceAdapter> getDataSources() throws SQLException;
     
     @Test
     public void assertWithPreparedStatement() throws SQLException {
@@ -131,18 +142,6 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
                 }
             }
         }
-    }
-    
-    private File getExpectedFile(final String expected) {
-        String strategyName = getShardingStrategy().name();
-        // TODO DML和DQL保持一直，去掉DML中XML名称里面的placeholder
-        String expectedFile = null == expected ? "integrate/dataset/EmptyTable.xml"
-                : String.format("integrate/dataset/%s/expect/" + expected, strategyName, strategyName);
-        URL url = AbstractSQLAssertTest.class.getClassLoader().getResource(expectedFile);
-        if (null == url) {
-            throw new RuntimeException("Wrong expected file:" + expectedFile);
-        }
-        return new File(url.getPath());
     }
     
     private boolean needAssert(final SQLShardingRule sqlShardingRule) {
