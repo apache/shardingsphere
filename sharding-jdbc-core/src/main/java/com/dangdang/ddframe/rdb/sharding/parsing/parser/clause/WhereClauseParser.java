@@ -3,6 +3,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.clause;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
@@ -24,6 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -95,7 +97,9 @@ public class WhereClauseParser implements SQLClauseParser {
                 return;
             }
         }
-        if (lexerEngine.skipIfEqual(Symbol.LT, Symbol.LT_EQ, Symbol.GT, Symbol.GT_EQ, Symbol.LT_GT, Symbol.BANG_EQ, Symbol.BANG_GT, Symbol.BANG_LT, DefaultKeyword.LIKE)) {
+        List<Keyword> otherConditionOperators = new LinkedList<>(Arrays.asList(getCustomizedOtherConditionOperators()));
+        otherConditionOperators.addAll(Arrays.asList(Symbol.LT, Symbol.LT_EQ, Symbol.GT, Symbol.GT_EQ, Symbol.LT_GT, Symbol.BANG_EQ, Symbol.BANG_GT, Symbol.BANG_LT, DefaultKeyword.LIKE));
+        if (lexerEngine.skipIfEqual(otherConditionOperators.toArray(new Keyword[otherConditionOperators.size()]))) {
             parseOtherCondition(sqlStatement);
         }
         if (lexerEngine.skipIfEqual(DefaultKeyword.NOT)) {
@@ -186,6 +190,10 @@ public class WhereClauseParser implements SQLClauseParser {
         } else if (sqlExpression instanceof SQLPlaceholderExpression) {
             selectStatement.getLimit().setOffset(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
         }
+    }
+    
+    protected Keyword[] getCustomizedOtherConditionOperators() {
+        return new Keyword[0];
     }
     
     private void parseOtherCondition(final SQLStatement sqlStatement) {
