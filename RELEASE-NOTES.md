@@ -1,3 +1,9 @@
+## 1.5.4
+
+### 缺陷修正
+
+1. [ISSUE #362](https://github.com/dangdangdotcom/sharding-jdbc/issues/362) mybatis使用sjdbc做读写分离时报错（仅仅做读写分离，不做分片）
+
 ## 1.5.3
 
 ### 功能提升

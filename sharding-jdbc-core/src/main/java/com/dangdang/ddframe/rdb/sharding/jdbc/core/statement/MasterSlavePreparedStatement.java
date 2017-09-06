@@ -91,19 +91,28 @@ public final class MasterSlavePreparedStatement extends AbstractPreparedStatemen
     @Override
     public ResultSet executeQuery() throws SQLException {
         Preconditions.checkState(1 == routedStatements.size());
+        replaySetParameter();
         return routedStatements.iterator().next().executeQuery();
     }
     
     @Override
     public int executeUpdate() throws SQLException {
         Preconditions.checkState(1 == routedStatements.size());
+        replaySetParameter();
         return routedStatements.iterator().next().executeUpdate();
+    }
+    
+    private void replaySetParameter() {
+        for (PreparedStatement preparedStatement : routedStatements) {
+            replaySetParameter(preparedStatement);
+        }
     }
     
     @Override
     public boolean execute() throws SQLException {
         boolean result = false;
         for (PreparedStatement each : routedStatements) {
+            replaySetParameter(each);
             result = each.execute();
         }
         return result;
