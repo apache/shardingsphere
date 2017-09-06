@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractMasterSlavePreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.MasterSlaveConnection;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLJudgeEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
@@ -37,7 +37,7 @@ import java.util.LinkedList;
  * @author zhangliang
  */
 @Getter
-public final class MasterSlavePreparedStatement extends AbstractPreparedStatementAdapter {
+public final class MasterSlavePreparedStatement extends AbstractMasterSlavePreparedStatementAdapter {
     
     private final MasterSlaveConnection connection;
     
@@ -91,28 +91,19 @@ public final class MasterSlavePreparedStatement extends AbstractPreparedStatemen
     @Override
     public ResultSet executeQuery() throws SQLException {
         Preconditions.checkState(1 == routedStatements.size());
-        replaySetParameter();
-        return routedStatements.iterator().next().executeQuery();
+        return getTargetStatement().executeQuery();
     }
     
     @Override
     public int executeUpdate() throws SQLException {
         Preconditions.checkState(1 == routedStatements.size());
-        replaySetParameter();
-        return routedStatements.iterator().next().executeUpdate();
-    }
-    
-    private void replaySetParameter() {
-        for (PreparedStatement preparedStatement : routedStatements) {
-            replaySetParameter(preparedStatement);
-        }
+        return getTargetStatement().executeUpdate();
     }
     
     @Override
     public boolean execute() throws SQLException {
         boolean result = false;
         for (PreparedStatement each : routedStatements) {
-            replaySetParameter(each);
             result = each.execute();
         }
         return result;
@@ -135,33 +126,38 @@ public final class MasterSlavePreparedStatement extends AbstractPreparedStatemen
     @Override
     public int[] executeBatch() throws SQLException {
         Preconditions.checkState(1 == routedStatements.size());
-        return routedStatements.iterator().next().executeBatch();
+        return getTargetStatement().executeBatch();
     }
     
     @Override
     public ResultSet getResultSet() throws SQLException {
         Preconditions.checkState(1 == routedStatements.size());
-        return routedStatements.iterator().next().getResultSet();
+        return getTargetStatement().getResultSet();
     }
     
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Preconditions.checkState(1 == routedStatements.size());
-        return routedStatements.iterator().next().getGeneratedKeys();
+        return getTargetStatement().getGeneratedKeys();
     }
     
     @Override
     public int getResultSetHoldability() throws SQLException {
-        return routedStatements.iterator().next().getResultSetHoldability();
+        return getTargetStatement().getResultSetHoldability();
     }
     
     @Override
     public int getResultSetConcurrency() throws SQLException {
-        return routedStatements.iterator().next().getResultSetConcurrency();
+        return getTargetStatement().getResultSetConcurrency();
     }
     
     @Override
     public int getResultSetType() throws SQLException {
-        return routedStatements.iterator().next().getResultSetType();
+        return getTargetStatement().getResultSetType();
+    }
+    
+    @Override
+    protected PreparedStatement getTargetStatement() {
+        return routedStatements.iterator().next();
     }
 }

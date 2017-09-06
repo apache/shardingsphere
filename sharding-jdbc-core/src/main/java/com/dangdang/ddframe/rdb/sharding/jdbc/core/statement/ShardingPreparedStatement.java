@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.type.batch.BatchPreparedStatem
 import com.dangdang.ddframe.rdb.sharding.executor.type.batch.BatchPreparedStatementUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.type.prepared.PreparedStatementExecutor;
 import com.dangdang.ddframe.rdb.sharding.executor.type.prepared.PreparedStatementUnit;
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSet;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.ShardingResultSet;
@@ -57,7 +57,7 @@ import java.util.Objects;
  * @author caohao
  */
 @Getter
-public final class ShardingPreparedStatement extends AbstractPreparedStatementAdapter {
+public final class ShardingPreparedStatement extends AbstractShardingPreparedStatementAdapter {
     
     private final ShardingConnection connection;
     

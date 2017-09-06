@@ -41,11 +41,11 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Adapter for {@code PreparedStatement}.
+ * Sharding adapter for {@code PreparedStatement}.
  *
  * @author zhangliang
  */
-public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
+public abstract class AbstractShardingPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
     
     private final List<SetParameterMethodInvocation> setParameterMethodInvocations = new LinkedList<>();
     
