@@ -58,7 +58,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
     }
     
     @Override
-    protected List<String> getDataSetFiles() {
+    protected List<String> getInitDataSetFiles() {
         return Collections.singletonList("integrate/dataset/tbl/init/tbl.xml");
     }
     

@@ -61,7 +61,7 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
     }
     
     @Override
-    protected List<String> getDataSetFiles() {
+    protected List<String> getInitDataSetFiles() {
         return Arrays.asList(
                 "integrate/dataset/masterslave/init/master_0.xml",
                 "integrate/dataset/masterslave/init/master_1.xml",

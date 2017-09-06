@@ -56,7 +56,7 @@ public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
     }
     
     @Override
-    protected List<String> getDataSetFiles() {
+    protected List<String> getInitDataSetFiles() {
         return Arrays.asList(
                 "integrate/dataset/dbtbl/init/dbtbl_0.xml",
                 "integrate/dataset/dbtbl/init/dbtbl_1.xml",

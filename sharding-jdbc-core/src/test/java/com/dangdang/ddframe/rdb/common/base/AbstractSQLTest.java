@@ -123,7 +123,7 @@ public abstract class AbstractSQLTest {
         for (DatabaseType databaseType : getDatabaseTypes()) {
             if (databaseType == getCurrentDatabaseType() || null == getCurrentDatabaseType()) {
                 DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType);
-                for (String each : getDataSetFiles()) {
+                for (String each : getInitDataSetFiles()) {
                     InputStream is = AbstractSQLTest.class.getClassLoader().getResourceAsStream(each);
                     IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
                     IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getDatabaseName(each)),
@@ -136,12 +136,12 @@ public abstract class AbstractSQLTest {
         }
     }
     
-    protected abstract List<String> getDataSetFiles();
+    protected abstract List<String> getInitDataSetFiles();
     
     protected abstract DatabaseType getCurrentDatabaseType();
     
     protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap() {
-        for (String each : getDataSetFiles()) {
+        for (String each : getInitDataSetFiles()) {
             String dbName = getDatabaseName(each);
             for (DatabaseType type : getDatabaseTypes()) {
                 createDataSources(dbName, type);

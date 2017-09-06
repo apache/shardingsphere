@@ -54,7 +54,7 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
     }
     
     @Override
-    protected List<String> getDataSetFiles() {
+    protected List<String> getInitDataSetFiles() {
         return Arrays.asList(
                 "integrate/dataset/db/init/db_0.xml",
                 "integrate/dataset/db/init/db_1.xml",

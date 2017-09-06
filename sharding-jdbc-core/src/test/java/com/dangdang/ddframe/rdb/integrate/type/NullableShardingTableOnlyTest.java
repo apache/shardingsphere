@@ -64,7 +64,7 @@ public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
     }
     
     @Override
-    protected List<String> getDataSetFiles() {
+    protected List<String> getInitDataSetFiles() {
         return Arrays.asList(
                 "integrate/dataset/nullable/init/nullable_0.xml",
                 "integrate/dataset/nullable/init/nullable_1.xml",
