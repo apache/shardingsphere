@@ -18,5 +18,5 @@
     <sql id="assertSelectCountWithExpression" value="SELECT COUNT(o.order_id) + 1^2 FROM t_order o" />
     <sql id="assertSelectCountWithBindingTable" value="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s" />
     <sql id="assertSelectCountWithBindingTableWithJoin" value="SELECT COUNT(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s" />
-    <sql id="assertSelectRegexpWithSingleTable" value="SELECT * FROM t_order_item WHERE status REGEXP %s ORDER BY item_id" type="MySQL" />
+    <sql id="assertSelectRegexpWithSingleTable" value="SELECT * FROM t_order_item t WHERE t.status REGEXP %s AND t.item_id IN (%s, %s)" type="MySQL" />
 </sqls>
