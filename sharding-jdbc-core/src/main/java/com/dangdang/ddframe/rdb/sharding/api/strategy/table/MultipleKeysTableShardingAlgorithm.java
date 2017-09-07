@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.MultipleKeysShardingAlgorithm;
 
 /**
  * Table sharding algorithm for multiple sharding keys interface.

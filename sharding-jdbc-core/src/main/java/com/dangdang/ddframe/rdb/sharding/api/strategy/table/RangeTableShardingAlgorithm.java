@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.RangeShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 
 /**
  * Range table sharding algorithm for single sharding key interface.

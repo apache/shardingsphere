@@ -15,27 +15,29 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.strategy;
+package com.dangdang.ddframe.rdb.sharding.routing.strategy.simple;
 
-import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Range sharding algorithm.
+ * None key sharding algorithm.
  * 
- * @author zhangliang
- * 
- * @param <T> class type of sharding value
+ * @author gaohongtao
  */
-public interface RangeShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
+// TODO need refactor NoneKeyShardingAlgorithm
+public interface NoneKeyShardingAlgorithm extends ShardingAlgorithm {
     
     /**
-     * Sharding.
+     * Calculate and do sharding.
      * 
+     * <p>sharding value injected by hint, not in SQL.</p>
+     *
      * @param availableTargetNames available data sources or tables's names
-     * @param shardingValue sharding value
+     * @param shardingValue sharding values
      * @return sharding results for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<T> shardingValue);
+    String doSharding(Collection<String> availableTargetNames, ShardingValue shardingValue);
 }

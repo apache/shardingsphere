@@ -15,9 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.strategy;
+package com.dangdang.ddframe.rdb.sharding.routing.strategy.standard;
 
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
 
 import java.util.Collection;
 

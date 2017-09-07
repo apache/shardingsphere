@@ -20,6 +20,10 @@ package com.dangdang.ddframe.rdb.sharding.routing.strategy;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.MultipleKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.simple.NoneKeyShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 

@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
 
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.NoneKeyShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.simple.NoneKeyShardingAlgorithm;
 
 /**
  * Database sharding algorithm for none sharding keys interface.
  * 
  * @author gaohongtao
  */
-public interface NoneKeyDatabaseShardingAlgorithm<T extends Comparable<?>> extends NoneKeyShardingAlgorithm<T>, DatabaseShardingAlgorithm {
+public interface NoneKeyDatabaseShardingAlgorithm<T extends Comparable<?>> extends NoneKeyShardingAlgorithm, DatabaseShardingAlgorithm {
 }

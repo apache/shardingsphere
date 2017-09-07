@@ -15,29 +15,26 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.strategy;
+package com.dangdang.ddframe.rdb.sharding.routing.strategy.complex;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
 
 import java.util.Collection;
 
 /**
- * None key sharding algorithm.
+ * Multiple keys sharding algorithm.
  * 
- * @param <T> class type for sharding value 
- * @author gaohongtao
+ * @author zhangliang
  */
-// TODO need refactor NoneKeyShardingAlgorithm
-public interface NoneKeyShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
+public interface MultipleKeysShardingAlgorithm extends ShardingAlgorithm {
     
     /**
      * Calculate and do sharding.
      * 
-     * <p>sharding value injected by hint, not in SQL.</p>
-     *
      * @param availableTargetNames available data sources or tables's names
-     * @param shardingValue sharding values
+     * @param shardingValues sharding values
      * @return sharding results for data sources or tables's names
      */
-    String doSharding(Collection<String> availableTargetNames, ShardingValue shardingValue);
+    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
 }

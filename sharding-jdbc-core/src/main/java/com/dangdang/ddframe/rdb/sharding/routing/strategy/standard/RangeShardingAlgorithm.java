@@ -15,25 +15,28 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.strategy;
+package com.dangdang.ddframe.rdb.sharding.routing.strategy.standard;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Multiple keys sharding algorithm.
+ * Range sharding algorithm.
  * 
  * @author zhangliang
+ * 
+ * @param <T> class type of sharding value
  */
-public interface MultipleKeysShardingAlgorithm extends ShardingAlgorithm {
+public interface RangeShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
     
     /**
-     * Calculate and do sharding.
+     * Sharding.
      * 
      * @param availableTargetNames available data sources or tables's names
-     * @param shardingValues sharding values
+     * @param shardingValue sharding value
      * @return sharding results for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
+    Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<T> shardingValue);
 }

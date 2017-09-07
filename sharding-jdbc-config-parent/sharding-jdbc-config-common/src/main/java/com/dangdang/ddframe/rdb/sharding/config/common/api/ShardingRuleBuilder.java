@@ -36,9 +36,9 @@ import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.Closur
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.PreciseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.RangeShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.MultipleKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.google.common.base.Function;
@@ -194,7 +194,7 @@ public final class ShardingRuleBuilder {
                     : (T) new TableShardingStrategy(shardingColumns.get(0), (PreciseTableShardingAlgorithm<?>) shardingAlgorithm);
         }
         if (shardingAlgorithm instanceof RangeShardingAlgorithm) {
-            // TODO
+            // TODO for RangeShardingAlgorithm
             throw new UnsupportedOperationException("");
         }
         return returnClass.isAssignableFrom(DatabaseShardingStrategy.class) ? (T) new DatabaseShardingStrategy(shardingColumns, (MultipleKeysDatabaseShardingAlgorithm) shardingAlgorithm) 
