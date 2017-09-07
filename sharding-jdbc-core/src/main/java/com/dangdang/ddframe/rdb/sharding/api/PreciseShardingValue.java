@@ -22,14 +22,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Sharding value for single value.
+ * Sharding value for precise value.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class SingleShardingValue<T extends Comparable<?>> implements ShardingValue {
+public final class PreciseShardingValue<T extends Comparable<?>> implements ShardingValue {
     
     private final String logicTableName;
     

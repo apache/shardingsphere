@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 
 import java.util.Collection;
 
@@ -36,7 +36,7 @@ public final class NoneTableShardingAlgorithm implements SingleKeyTableShardingA
     }
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final SingleShardingValue<String> shardingValue) {
+    public String doEqualSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<String> shardingValue) {
         return availableTargetNames.isEmpty() ? null : availableTargetNames.iterator().next();
     }
     

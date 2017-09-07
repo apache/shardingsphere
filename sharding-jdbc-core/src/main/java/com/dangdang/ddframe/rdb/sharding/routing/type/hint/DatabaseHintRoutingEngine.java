@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.routing.type.hint;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
@@ -61,11 +61,11 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
         Preconditions.checkState(shardingValue.isPresent());
         log.debug("Before database sharding only db:{} sharding values: {}", dataSourceRule.getDataSourceNames(), shardingValue.get());
         Collection<String> routingDataSources;
-        if (isAccurateSharding(shardingValue.get(), databaseShardingStrategy)) {
+        if (isPreciseSharding(shardingValue.get(), databaseShardingStrategy)) {
             routingDataSources = new HashSet<>();
-            List<SingleShardingValue> singleShardingValues = transferToShardingValues((ListShardingValue<?>) shardingValue.get());
-            for (SingleShardingValue each : singleShardingValues) {
-                routingDataSources.add(databaseShardingStrategy.doAccurateSharding(dataSourceRule.getDataSourceNames(), each));
+            List<PreciseShardingValue> preciseShardingValues = transferToShardingValues((ListShardingValue<?>) shardingValue.get());
+            for (PreciseShardingValue each : preciseShardingValues) {
+                routingDataSources.add(databaseShardingStrategy.doPreciseSharding(dataSourceRule.getDataSourceNames(), each));
             }
         } else {
             routingDataSources = databaseShardingStrategy.doStaticSharding(dataSourceRule.getDataSourceNames(), Collections.singleton(shardingValue.get()));
@@ -79,15 +79,15 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private boolean isAccurateSharding(final ShardingValue shardingValue, final ShardingStrategy shardingStrategy) {
+    private boolean isPreciseSharding(final ShardingValue shardingValue, final ShardingStrategy shardingStrategy) {
         return shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && !(shardingValue instanceof RangeShardingValue);
     }
     
     @SuppressWarnings("unchecked")
-    private List<SingleShardingValue> transferToShardingValues(final ListShardingValue<?> shardingValue) {
-        List<SingleShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
+    private List<PreciseShardingValue> transferToShardingValues(final ListShardingValue<?> shardingValue) {
+        List<PreciseShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
         for (Comparable<?> each : shardingValue.getValues()) {
-            result.add(new SingleShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), each));
+            result.add(new PreciseShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), each));
         }
         return result;
     }

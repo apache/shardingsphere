@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm;
 
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
 import com.google.common.collect.Range;
 
@@ -28,7 +28,7 @@ import java.util.LinkedHashSet;
 public final class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Long> {
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final SingleShardingValue<Long> shardingValue) {
+    public String doEqualSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
         for (String each : availableTargetNames) {
             if (each.endsWith(shardingValue.getValue() % 2 + "")) {
                 return each;

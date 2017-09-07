@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.integrate.fixture;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.MultipleKeysDatabaseShardingAlgorithm;
 import com.google.common.collect.Range;
 
@@ -34,8 +34,8 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         ShardingValue shardingValue = shardingValues.iterator().next();
-        if (shardingValue instanceof SingleShardingValue) {
-            return doEqualSharding(availableTargetNames, (SingleShardingValue<Integer>) shardingValue);
+        if (shardingValue instanceof PreciseShardingValue) {
+            return doEqualSharding(availableTargetNames, (PreciseShardingValue<Integer>) shardingValue);
         }
         if (shardingValue instanceof ListShardingValue) {
             return doInSharding(availableTargetNames, (ListShardingValue<Integer>) shardingValue);
@@ -46,7 +46,7 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
         throw new UnsupportedOperationException();
     }
     
-    private Collection<String> doEqualSharding(final Collection<String> availableTargetNames, final SingleShardingValue<Integer> shardingValue) {
+    private Collection<String> doEqualSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         Integer modulo = Integer.parseInt(shardingValue.getValue().toString()) % 10;
         for (String each : availableTargetNames) {
             if (each.endsWith(modulo.toString())) {
