@@ -93,20 +93,30 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     }
     
     @Test
-    public void assertWithPreparedStatement() throws SQLException {
-        execute(true);
+    public void assertExecuteWithPreparedStatement() throws SQLException {
+        execute(true, false);
     }
     
     @Test
-    public void assertWithStatement() throws SQLException {
-        execute(false);
+    public void assertExecuteWithStatement() throws SQLException {
+        execute(false, false);
     }
     
-    private void execute(final boolean isPreparedStatement) throws SQLException {
+    @Test
+    public void assertExecuteQueryWithPreparedStatement() throws SQLException {
+        execute(true, true);
+    }
+    
+    @Test
+    public void assertExecuteQueryWithStatement() throws SQLException {
+        execute(false, true);
+    }
+    
+    private void execute(final boolean isPreparedStatement, final boolean isExecute) throws SQLException {
         for (Map.Entry<DatabaseType, ? extends AbstractDataSourceAdapter> each : getDataSources().entrySet()) {
             if (getCurrentDatabaseType() == each.getKey()) {
                 try {
-                    executeAndAssertSQL(isPreparedStatement, each.getValue());
+                    executeAndAssertSQL(isPreparedStatement, isExecute, each.getValue());
                     //CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     //CHECKSTYLE:ON
@@ -120,7 +130,8 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
     }
     
-    private void executeAndAssertSQL(final boolean isPreparedStatement, final AbstractDataSourceAdapter abstractDataSourceAdapter) throws MalformedURLException, SQLException, DatabaseUnitException {
+    private void executeAndAssertSQL(final boolean isPreparedStatement, final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter) 
+            throws MalformedURLException, SQLException, DatabaseUnitException {
         for (SQLShardingRule sqlShardingRule : shardingRules) {
             if (!needAssert(sqlShardingRule)) {
                 continue;
@@ -128,9 +139,9 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
             for (SQLAssertData each : sqlShardingRule.getData()) {
                 File expectedDataSetFile = getExpectedFile(each.getExpected());
                 if (sql.toUpperCase().startsWith("SELECT")) {
-                    assertDqlSql(isPreparedStatement, abstractDataSourceAdapter, each, expectedDataSetFile);
+                    assertDqlSql(isPreparedStatement, isExecute, abstractDataSourceAdapter, each, expectedDataSetFile);
                 } else  {
-                    assertDmlAndDdlSql(isPreparedStatement, abstractDataSourceAdapter, each, expectedDataSetFile);
+                    assertDmlAndDdlSql(isPreparedStatement, isExecute, abstractDataSourceAdapter, each, expectedDataSetFile);
                 }
             }
         }
@@ -149,21 +160,23 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return false;
     }
     
-    private void assertDqlSql(final boolean isPreparedStatement, final AbstractDataSourceAdapter abstractDataSourceAdapter, final SQLAssertData data, final File expectedDataSetFile)
+    private void assertDqlSql(final boolean isPreparedStatement, final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, 
+                              final SQLAssertData data, final File expectedDataSetFile)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
-            sqlAssertHelper.executeQueryWithPreparedStatement(abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
+            sqlAssertHelper.executeQueryWithPreparedStatement(isExecute, abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
         } else {
-            sqlAssertHelper.executeQueryWithStatement(abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
+            sqlAssertHelper.executeQueryWithStatement(isExecute, abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
         }
     }
     
-    private void assertDmlAndDdlSql(final boolean isPreparedStatement, final AbstractDataSourceAdapter abstractDataSourceAdapter, final SQLAssertData data, final File expectedDataSetFile)
+    private void assertDmlAndDdlSql(final boolean isPreparedStatement, final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, 
+                                    final SQLAssertData data, final File expectedDataSetFile)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
-            sqlAssertHelper.executeWithPreparedStatement(abstractDataSourceAdapter, getParameters(data));
+            sqlAssertHelper.executeWithPreparedStatement(isExecute, abstractDataSourceAdapter, getParameters(data));
         } else {
-            sqlAssertHelper.executeWithStatement(abstractDataSourceAdapter, getParameters(data));
+            sqlAssertHelper.executeWithStatement(isExecute, abstractDataSourceAdapter, getParameters(data));
         }
         try (Connection conn = abstractDataSourceAdapter instanceof MasterSlaveDataSource ? abstractDataSourceAdapter.getConnection() 
                 : ((ShardingDataSource) abstractDataSourceAdapter).getConnection().getConnection(getDataSourceName(data.getExpected()), getSqlType())) {

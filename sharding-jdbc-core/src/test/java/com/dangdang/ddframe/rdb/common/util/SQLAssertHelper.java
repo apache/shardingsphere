@@ -34,22 +34,30 @@ public class SQLAssertHelper {
     
     private final String sql;
     
-    public void executeWithPreparedStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters) throws SQLException {
+    public void executeWithPreparedStatement(final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters) throws SQLException {
         try (Connection connection = abstractDataSourceAdapter.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql))) {
             setParameters(preparedStatement, parameters);
-            preparedStatement.execute();
+            if (isExecute) {
+                preparedStatement.execute();
+            } else {
+                preparedStatement.executeUpdate();
+            }
         }
     }
     
-    public void executeWithStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters) throws SQLException {
+    public void executeWithStatement(final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters) throws SQLException {
         try (Connection connection = abstractDataSourceAdapter.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.execute(replaceStatement(sql, parameters.toArray()));
+            if (isExecute) {
+                statement.execute(replaceStatement(sql, parameters.toArray()));
+            } else {
+                statement.executeUpdate(replaceStatement(sql, parameters.toArray()));
+            }
         }
     }
     
-    public void executeQueryWithPreparedStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
+    public void executeQueryWithPreparedStatement(final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         try (Connection conn = abstractDataSourceAdapter.getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(replacePreparedStatement(sql))) {
@@ -59,14 +67,18 @@ public class SQLAssertHelper {
             for (ITable each : expectedDataSet.getTables()) {
                 String tableName = each.getTableMetaData().getTableName();
                 IDatabaseConnection connection = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn);
-                ITable actualTable = connection.createTable(tableName, preparedStatement);
-//                ITable actualTable = createTable(tableName, preparedStatement, connection);
+                ITable actualTable;
+                if (isExecute) {
+                    actualTable = createTable(tableName, preparedStatement, connection);
+                } else {
+                    actualTable = connection.createTable(tableName, preparedStatement);
+                }
                 assertEquals(expectedDataSet.getTable(tableName), actualTable);
             }
         }
     }
     
-    public void executeQueryWithStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
+    public void executeQueryWithStatement(final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         try (Connection conn = abstractDataSourceAdapter.getConnection()) {
             String querySql = replaceStatement(sql, parameters.toArray());
@@ -74,8 +86,9 @@ public class SQLAssertHelper {
             expectedDataSet.addReplacementObject("[null]", null);
             for (ITable each : expectedDataSet.getTables()) {
                 String tableName = each.getTableMetaData().getTableName();
-                ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
-                        .createQueryTable(tableName, querySql);
+                IDatabaseConnection connection = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn);
+                ITable actualTable = connection.createQueryTable(tableName, querySql);
+                // TODO customized CachedResultSetTable with statement 
                 assertEquals(expectedDataSet.getTable(tableName), actualTable);
             }
         }
