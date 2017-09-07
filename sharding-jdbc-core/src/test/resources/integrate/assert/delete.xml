@@ -25,7 +25,7 @@
             <data parameter="1800,18,'init'" expected="delete/%s_8.xml" />
             <data parameter="1900,19,'init'" expected="delete/%s_9.xml" />
         </sharding-rule>
-        <sharding-rule value="dbtbl">
+        <sharding-rule value="dbtbl,masterslave">
             <data parameter="1000,10,'init'" expected="delete/%s_0.xml" />
             <data parameter="1101,11,'init'" expected="delete/%s_1.xml" />
             <data parameter="1202,12,'init'" expected="delete/%s_2.xml" />
@@ -37,24 +37,9 @@
             <data parameter="1808,18,'init'" expected="delete/%s_8.xml" />
             <data parameter="1909,19,'init'" expected="delete/%s_9.xml" />
         </sharding-rule>
-        <sharding-rule value="masterslave">
-            <data parameter="1000,10,'init_master'" expected="delete/%s_0.xml" />
-            <data parameter="1101,11,'init_master'" expected="delete/%s_1.xml" />
-            <data parameter="1202,12,'init_master'" expected="delete/%s_2.xml" />
-            <data parameter="1303,13,'init_master'" expected="delete/%s_3.xml" />
-            <data parameter="1404,14,'init_master'" expected="delete/%s_4.xml" />
-            <data parameter="1505,15,'init_master'" expected="delete/%s_5.xml" />
-            <data parameter="1606,16,'init_master'" expected="delete/%s_6.xml" />
-            <data parameter="1707,17,'init_master'" expected="delete/%s_7.xml" />
-            <data parameter="1808,18,'init_master'" expected="delete/%s_8.xml" />
-            <data parameter="1909,19,'init_master'" expected="delete/%s_9.xml" />
-        </sharding-rule>
     </sql>
     <sql id="assertDeleteWithoutShardingValue">
-        <sharding-rule value="masterslave">
-            <data parameter="'init_master'" expected="delete/%s.xml" />
-        </sharding-rule>
-        <sharding-rule value="tbl,db,dbtbl,hint">
+        <sharding-rule>
             <data parameter="'init'" expected="delete/%s.xml" />
         </sharding-rule>
     </sql>
