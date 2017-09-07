@@ -22,9 +22,9 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.MultipleKeysDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.ComplexKeysDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.PreciseDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.ComplexKeysTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.PreciseTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
@@ -36,7 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.Closur
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.MultipleKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
@@ -187,7 +187,7 @@ public final class ShardingRuleBuilder {
             throw new IllegalArgumentException(ex);
         }
         Preconditions.checkState(shardingAlgorithm instanceof PreciseShardingAlgorithm
-                || shardingAlgorithm instanceof RangeShardingAlgorithm || shardingAlgorithm instanceof MultipleKeysShardingAlgorithm, "Sharding-JDBC: algorithmClassName is illegal");
+                || shardingAlgorithm instanceof RangeShardingAlgorithm || shardingAlgorithm instanceof ComplexKeysShardingAlgorithm, "Sharding-JDBC: algorithmClassName is illegal");
         if (shardingAlgorithm instanceof PreciseShardingAlgorithm) {
             Preconditions.checkArgument(1 == shardingColumns.size(), "Sharding-JDBC: SingleKeyShardingAlgorithm must have only ONE sharding column");
             return returnClass.isAssignableFrom(DatabaseShardingStrategy.class) ? (T) new DatabaseShardingStrategy(shardingColumns.get(0), (PreciseDatabaseShardingAlgorithm<?>) shardingAlgorithm)
@@ -197,8 +197,8 @@ public final class ShardingRuleBuilder {
             // TODO for RangeShardingAlgorithm
             throw new UnsupportedOperationException("");
         }
-        return returnClass.isAssignableFrom(DatabaseShardingStrategy.class) ? (T) new DatabaseShardingStrategy(shardingColumns, (MultipleKeysDatabaseShardingAlgorithm) shardingAlgorithm) 
-                : (T) new TableShardingStrategy(shardingColumns, (MultipleKeysTableShardingAlgorithm) shardingAlgorithm);
+        return returnClass.isAssignableFrom(DatabaseShardingStrategy.class) ? (T) new DatabaseShardingStrategy(shardingColumns, (ComplexKeysDatabaseShardingAlgorithm) shardingAlgorithm) 
+                : (T) new TableShardingStrategy(shardingColumns, (ComplexKeysTableShardingAlgorithm) shardingAlgorithm);
     }
     
     @SuppressWarnings("unchecked")

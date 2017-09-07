@@ -43,7 +43,7 @@ public final class TableShardingStrategy extends ShardingStrategy {
         super(shardingColumn, preciseShardingAlgorithm, rangeShardingAlgorithm);
     }
     
-    public TableShardingStrategy(final Collection<String> shardingColumns, final MultipleKeysTableShardingAlgorithm tableShardingAlgorithm) {
+    public TableShardingStrategy(final Collection<String> shardingColumns, final ComplexKeysTableShardingAlgorithm tableShardingAlgorithm) {
         super(shardingColumns, tableShardingAlgorithm);
     }
 }

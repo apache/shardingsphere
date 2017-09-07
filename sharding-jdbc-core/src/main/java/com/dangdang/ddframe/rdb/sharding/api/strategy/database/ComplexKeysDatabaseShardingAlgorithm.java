@@ -15,14 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
+package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
 
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.MultipleKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
 
 /**
- * Table sharding algorithm for multiple sharding keys interface.
+ * Database sharding algorithm for multiple sharding keys interface.
  * 
  * @author zhangliang
  */
-public interface MultipleKeysTableShardingAlgorithm extends MultipleKeysShardingAlgorithm, TableShardingAlgorithm {
+public interface ComplexKeysDatabaseShardingAlgorithm extends ComplexKeysShardingAlgorithm, DatabaseShardingAlgorithm {
 }

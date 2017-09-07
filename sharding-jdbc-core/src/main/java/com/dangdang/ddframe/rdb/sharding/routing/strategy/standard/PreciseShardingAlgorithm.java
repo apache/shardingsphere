@@ -36,7 +36,7 @@ public interface PreciseShardingAlgorithm<T extends Comparable<?>> extends Shard
      * 
      * @param availableTargetNames available data sources or tables's names
      * @param shardingValue sharding value
-     * @return sharding results for data sources or tables's names
+     * @return sharding result for data source or table's name
      */
     String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<T> shardingValue);
 }

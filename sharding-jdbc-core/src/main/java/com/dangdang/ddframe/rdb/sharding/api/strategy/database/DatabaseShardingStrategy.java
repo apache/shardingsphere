@@ -47,7 +47,7 @@ public final class DatabaseShardingStrategy extends ShardingStrategy {
         super(shardingColumn, preciseShardingAlgorithm, rangeShardingAlgorithm);
     }
     
-    public DatabaseShardingStrategy(final Collection<String> shardingColumns, final MultipleKeysDatabaseShardingAlgorithm databaseShardingAlgorithm) {
+    public DatabaseShardingStrategy(final Collection<String> shardingColumns, final ComplexKeysDatabaseShardingAlgorithm databaseShardingAlgorithm) {
         super(shardingColumns, databaseShardingAlgorithm);
     }
 }

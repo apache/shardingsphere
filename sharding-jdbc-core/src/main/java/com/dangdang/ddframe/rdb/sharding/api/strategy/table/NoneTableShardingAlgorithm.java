@@ -28,7 +28,7 @@ import java.util.Collection;
  * 
  * @author zhangliang
  */
-public final class NoneTableShardingAlgorithm implements PreciseTableShardingAlgorithm<String>, RangeTableShardingAlgorithm<String>, MultipleKeysTableShardingAlgorithm {
+public final class NoneTableShardingAlgorithm implements PreciseTableShardingAlgorithm<String>, RangeTableShardingAlgorithm<String>, ComplexKeysTableShardingAlgorithm {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTableNames, final Collection<ShardingValue> shardingValues) {

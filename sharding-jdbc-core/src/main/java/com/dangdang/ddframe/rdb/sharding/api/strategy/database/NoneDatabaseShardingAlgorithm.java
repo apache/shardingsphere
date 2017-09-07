@@ -28,7 +28,7 @@ import java.util.Collection;
  * 
  * @author zhangliang
  */
-public final class NoneDatabaseShardingAlgorithm implements PreciseDatabaseShardingAlgorithm<String>, RangeDatabaseShardingAlgorithm<String>, MultipleKeysDatabaseShardingAlgorithm {
+public final class NoneDatabaseShardingAlgorithm implements PreciseDatabaseShardingAlgorithm<String>, RangeDatabaseShardingAlgorithm<String>, ComplexKeysDatabaseShardingAlgorithm {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {

@@ -15,26 +15,19 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.strategy.complex;
+package com.dangdang.ddframe.rdb.sharding.api.strategy.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
 
 import java.util.Collection;
 
-/**
- * Multiple keys sharding algorithm.
- * 
- * @author zhangliang
- */
-public interface MultipleKeysShardingAlgorithm extends ShardingAlgorithm {
-    
-    /**
-     * Calculate and do sharding.
-     * 
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValues sharding values
-     * @return sharding results for data sources or tables's names
-     */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
+public final class TestComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm, DatabaseShardingAlgorithm, TableShardingAlgorithm {
+
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+        return availableTargetNames;
+    }
 }

@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.MultipleKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -41,7 +41,7 @@ import java.util.Set;
  * 
  * @author gaohongtao
  */
-public class ClosureShardingAlgorithm implements MultipleKeysShardingAlgorithm {
+public class ClosureShardingAlgorithm implements ComplexKeysShardingAlgorithm {
     
     private final Closure<?> closureTemplate;
     

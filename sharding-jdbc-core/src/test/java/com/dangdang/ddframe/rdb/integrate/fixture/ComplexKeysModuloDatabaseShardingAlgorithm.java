@@ -21,14 +21,14 @@ import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.MultipleKeysDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.ComplexKeysDatabaseShardingAlgorithm;
 import com.google.common.collect.Range;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
-public final class MultipleKeysModuloDatabaseShardingAlgorithm implements MultipleKeysDatabaseShardingAlgorithm {
+public final class ComplexKeysModuloDatabaseShardingAlgorithm implements ComplexKeysDatabaseShardingAlgorithm {
     
     @SuppressWarnings("unchecked")
     @Override

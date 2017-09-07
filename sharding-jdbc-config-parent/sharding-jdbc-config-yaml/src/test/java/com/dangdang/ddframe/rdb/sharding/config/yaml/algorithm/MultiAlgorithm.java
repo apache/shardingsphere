@@ -18,11 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.ComplexKeysTableShardingAlgorithm;
 
 import java.util.Collection;
 
-public class MultiAlgorithm implements MultipleKeysTableShardingAlgorithm {
+public class MultiAlgorithm implements ComplexKeysTableShardingAlgorithm {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
