@@ -23,6 +23,8 @@ chapter = true
 
 ## [凤凰汽车](http://auto.ifeng.com/)
 
+## [广西壮族自治区国土资源信息中心](http://z.gxdlr.gov.cn/)
+
 ## [欢聚时代YY](http://www.yy.com/)
 
 ## [家视天下](http://www.hiveview.com/)
