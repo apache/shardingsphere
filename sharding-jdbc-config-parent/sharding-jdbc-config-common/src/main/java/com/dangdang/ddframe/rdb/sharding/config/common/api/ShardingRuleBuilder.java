@@ -34,6 +34,7 @@ import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -181,7 +182,7 @@ public final class ShardingRuleBuilder {
                 || shardingAlgorithm instanceof RangeShardingAlgorithm || shardingAlgorithm instanceof ComplexKeysShardingAlgorithm, "Sharding-JDBC: algorithmClassName is illegal");
         if (shardingAlgorithm instanceof PreciseShardingAlgorithm) {
             Preconditions.checkArgument(1 == shardingColumns.size(), "Sharding-JDBC: SingleKeyShardingAlgorithm must have only ONE sharding column");
-            return (T) new ShardingStrategy(shardingColumns.get(0), (PreciseShardingAlgorithm<?>) shardingAlgorithm);
+            return (T) new StandardShardingStrategy(shardingColumns.get(0), (PreciseShardingAlgorithm<?>) shardingAlgorithm);
         }
         if (shardingAlgorithm instanceof RangeShardingAlgorithm) {
             // TODO for RangeShardingAlgorithm

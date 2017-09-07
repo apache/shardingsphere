@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import com.google.common.collect.Sets;
 import org.junit.Test;
 
@@ -31,6 +31,6 @@ public final class TableShardingStrategyTest {
     
     @Test
     public void assertTableShardingStrategyWithSingleShardingColumn() {
-        assertThat(new ShardingStrategy("shardingColumn", null).getShardingColumns(), is((Collection<String>) Sets.newTreeSet(Collections.singleton("shardingColumn"))));
+        assertThat(new StandardShardingStrategy("shardingColumn", null).getShardingColumns(), is((Collection<String>) Sets.newTreeSet(Collections.singleton("shardingColumn"))));
     }
 }

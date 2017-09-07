@@ -18,14 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.routing.strategy;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,47 +33,18 @@ import java.util.TreeSet;
  * 
  * @author zhangliang
  */
-@Getter
+@NoArgsConstructor
 public class ShardingStrategy {
     
-    private final Collection<String> shardingColumns;
+    @Getter
+    private Collection<String> shardingColumns;
     
-    private final ShardingAlgorithm shardingAlgorithm;
-    
-    private final PreciseShardingAlgorithm preciseShardingAlgorithm;
-    
-    private final RangeShardingAlgorithm rangeShardingAlgorithm;
-    
-    public ShardingStrategy(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm) {
-        this(shardingColumn, preciseShardingAlgorithm, null);
-    }
-    
-    public ShardingStrategy(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm, final RangeShardingAlgorithm rangeShardingAlgorithm) {
-        this.shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        this.shardingColumns.add(shardingColumn);
-        this.shardingAlgorithm = null;
-        this.preciseShardingAlgorithm = preciseShardingAlgorithm;
-        this.rangeShardingAlgorithm = rangeShardingAlgorithm;
-    }
+    private ShardingAlgorithm shardingAlgorithm;
     
     public ShardingStrategy(final Collection<String> shardingColumns, final ShardingAlgorithm shardingAlgorithm) {
         this.shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.shardingColumns.addAll(shardingColumns);
         this.shardingAlgorithm = shardingAlgorithm;
-        this.preciseShardingAlgorithm = null;
-        this.rangeShardingAlgorithm = null;
-    }
-    
-    /**
-     * Calculate precise sharding info.
-     *
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValue sharding value
-     * @return sharding results for data sources or tables's names
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public String doPreciseSharding(final Collection<String> availableTargetNames, final PreciseShardingValue shardingValue) {
-        return preciseShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
     }
     
     /**
@@ -113,14 +81,7 @@ public class ShardingStrategy {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private Collection<String> doSharding(final Collection<ShardingValue> shardingValues, final Collection<String> availableTargetNames) {
         if (shardingAlgorithm instanceof HintShardingAlgorithm) {
-            return Collections.singletonList(((HintShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, shardingValues.iterator().next()));
-        }
-        if (null != rangeShardingAlgorithm) {
-            ShardingValue shardingValue = shardingValues.iterator().next();
-            if (shardingValue instanceof RangeShardingValue) {
-                return rangeShardingAlgorithm.doSharding(availableTargetNames, (RangeShardingValue) shardingValue);
-            }
-            throw new UnsupportedOperationException("Cannot support shardingValue:" + shardingValue);
+            return ((HintShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, shardingValues.iterator().next());
         }
         if (shardingAlgorithm instanceof ComplexKeysShardingAlgorithm) {
             return ((ComplexKeysShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, shardingValues);

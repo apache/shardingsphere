@@ -17,9 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.hint;
 
-import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
@@ -33,11 +30,8 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 
 /**
  * Database hint only routing engine.
@@ -59,33 +53,12 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
         Preconditions.checkState(shardingValue.isPresent());
         log.debug("Before database sharding only db:{} sharding values: {}", dataSourceRule.getDataSourceNames(), shardingValue.get());
         Collection<String> routingDataSources;
-        if (isPreciseSharding(shardingValue.get(), databaseShardingStrategy)) {
-            routingDataSources = new HashSet<>();
-            List<PreciseShardingValue> preciseShardingValues = transferToShardingValues((ListShardingValue<?>) shardingValue.get());
-            for (PreciseShardingValue each : preciseShardingValues) {
-                routingDataSources.add(databaseShardingStrategy.doPreciseSharding(dataSourceRule.getDataSourceNames(), each));
-            }
-        } else {
-            routingDataSources = databaseShardingStrategy.doStaticSharding(dataSourceRule.getDataSourceNames(), Collections.singleton(shardingValue.get()));
-        }
+        routingDataSources = databaseShardingStrategy.doStaticSharding(dataSourceRule.getDataSourceNames(), Collections.singleton(shardingValue.get()));
         Preconditions.checkState(!routingDataSources.isEmpty(), "no database route info");
         log.debug("After database sharding only result: {}", routingDataSources);
         RoutingResult result = new RoutingResult();
         for (String each : routingDataSources) {
             result.getTableUnits().getTableUnits().add(new TableUnit(each, "", ""));
-        }
-        return result;
-    }
-    
-    private boolean isPreciseSharding(final ShardingValue shardingValue, final ShardingStrategy shardingStrategy) {
-        return null != shardingStrategy.getPreciseShardingAlgorithm() && !(shardingValue instanceof RangeShardingValue);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private List<PreciseShardingValue> transferToShardingValues(final ListShardingValue<?> shardingValue) {
-        List<PreciseShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
-        for (Comparable<?> each : shardingValue.getValues()) {
-            result.add(new PreciseShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), each));
         }
         return result;
     }

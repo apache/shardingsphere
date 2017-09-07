@@ -36,7 +36,7 @@ public interface HintShardingAlgorithm extends ShardingAlgorithm {
      *
      * @param availableTargetNames available data sources or tables's names
      * @param shardingValue sharding value
-     * @return sharding result for data source or table's name
+     * @return sharding result for data sources or tables's names
      */
-    String doSharding(Collection<String> availableTargetNames, ShardingValue shardingValue);
+    Collection<String> doSharding(Collection<String> availableTargetNames, ShardingValue shardingValue);
 }

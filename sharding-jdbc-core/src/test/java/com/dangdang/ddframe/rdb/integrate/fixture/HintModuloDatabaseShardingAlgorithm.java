@@ -22,14 +22,15 @@ import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingAlgorithm;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class HintModuloDatabaseShardingAlgorithm implements HintShardingAlgorithm {
     
     @Override
-    public String doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
         for (String each : availableTargetNames) {
             if (each.endsWith((int) ((ListShardingValue) shardingValue).getValues().iterator().next() % 10 + "")) {
-                return each;
+                return Collections.singletonList(each);
             }
         }
         throw new UnsupportedOperationException();
