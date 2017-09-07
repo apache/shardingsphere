@@ -21,26 +21,19 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.ComplexKeysDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.PreciseDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.ComplexKeysTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.PreciseTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.GenerateKeyColumnConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.StrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -94,8 +87,8 @@ public final class ShardingRuleBuilder {
             shardingRuleBuilder.keyGenerator(loadClass(shardingRuleConfig.getKeyGeneratorClass(), KeyGenerator.class));
         }
         return shardingRuleBuilder.tableRules(tableRules).bindingTableRules(buildBindingTableRules(tableRules))
-                .databaseShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy(), DatabaseShardingStrategy.class))
-                .tableShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultTableStrategy(), TableShardingStrategy.class)).build();
+                .databaseShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy()))
+                .tableShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultTableStrategy())).build();
     }
     
     private DataSourceRule buildDataSourceRule() {
@@ -111,8 +104,8 @@ public final class ShardingRuleBuilder {
             TableRuleConfig tableRuleConfig = each.getValue();
             TableRule.TableRuleBuilder tableRuleBuilder = TableRule.builder(logicTable).dataSourceRule(dataSourceRule)
                     .dynamic(tableRuleConfig.isDynamic())
-                    .databaseShardingStrategy(buildShardingStrategy(tableRuleConfig.getDatabaseStrategy(), DatabaseShardingStrategy.class))
-                    .tableShardingStrategy(buildShardingStrategy(tableRuleConfig.getTableStrategy(), TableShardingStrategy.class));
+                    .databaseShardingStrategy(buildShardingStrategy(tableRuleConfig.getDatabaseStrategy()))
+                    .tableShardingStrategy(buildShardingStrategy(tableRuleConfig.getTableStrategy()));
             if (null != tableRuleConfig.getActualTables()) {
                 tableRuleBuilder.actualTables(new InlineParser(tableRuleConfig.getActualTables()).evaluate());
             }
@@ -158,28 +151,26 @@ public final class ShardingRuleBuilder {
         throw new IllegalArgumentException(String.format("Sharding JDBC: Binding table `%s` is not an available Table rule", logicTableName));
     }
     
-    private <T extends ShardingStrategy> T buildShardingStrategy(final StrategyConfig config, final Class<T> returnClass) {
+    private <T extends ShardingStrategy> T buildShardingStrategy(final StrategyConfig config) {
         if (null == config) {
             return null;
         }
         Preconditions.checkArgument(Strings.isNullOrEmpty(config.getAlgorithmExpression()) && !Strings.isNullOrEmpty(config.getAlgorithmClassName())
                 || !Strings.isNullOrEmpty(config.getAlgorithmExpression()) && Strings.isNullOrEmpty(config.getAlgorithmClassName()));
-        Preconditions.checkState(returnClass.isAssignableFrom(DatabaseShardingStrategy.class) || returnClass.isAssignableFrom(TableShardingStrategy.class), "Sharding-JDBC: returnClass is illegal");
         List<String> shardingColumns = new InlineParser(config.getShardingColumns()).split();
         if (Strings.isNullOrEmpty(config.getAlgorithmClassName())) {
-            return buildShardingAlgorithmExpression(shardingColumns, config.getAlgorithmExpression(), returnClass);
+            return buildShardingAlgorithmExpression(shardingColumns, config.getAlgorithmExpression());
         }
-        return buildShardingAlgorithmClassName(shardingColumns, config.getAlgorithmClassName(), returnClass);
+        return buildShardingAlgorithmClassName(shardingColumns, config.getAlgorithmClassName());
     }
     
     @SuppressWarnings("unchecked")
-    private <T extends ShardingStrategy> T buildShardingAlgorithmExpression(final List<String> shardingColumns, final String algorithmExpression, final Class<T> returnClass) {
-        return returnClass.isAssignableFrom(DatabaseShardingStrategy.class) ? (T) new DatabaseShardingStrategy(shardingColumns, new ClosureDatabaseShardingAlgorithm(algorithmExpression, logRoot))
-                : (T) new TableShardingStrategy(shardingColumns, new ClosureTableShardingAlgorithm(algorithmExpression, logRoot));
+    private <T extends ShardingStrategy> T buildShardingAlgorithmExpression(final List<String> shardingColumns, final String algorithmExpression) {
+        return (T) new ShardingStrategy(shardingColumns, new ClosureDatabaseShardingAlgorithm(algorithmExpression, logRoot));
     }
     
     @SuppressWarnings("unchecked")
-    private <T extends ShardingStrategy> T buildShardingAlgorithmClassName(final List<String> shardingColumns, final String algorithmClassName, final Class<T> returnClass) {
+    private <T extends ShardingStrategy> T buildShardingAlgorithmClassName(final List<String> shardingColumns, final String algorithmClassName) {
         ShardingAlgorithm shardingAlgorithm;
         try {
             shardingAlgorithm = (ShardingAlgorithm) Class.forName(algorithmClassName).newInstance();
@@ -190,15 +181,13 @@ public final class ShardingRuleBuilder {
                 || shardingAlgorithm instanceof RangeShardingAlgorithm || shardingAlgorithm instanceof ComplexKeysShardingAlgorithm, "Sharding-JDBC: algorithmClassName is illegal");
         if (shardingAlgorithm instanceof PreciseShardingAlgorithm) {
             Preconditions.checkArgument(1 == shardingColumns.size(), "Sharding-JDBC: SingleKeyShardingAlgorithm must have only ONE sharding column");
-            return returnClass.isAssignableFrom(DatabaseShardingStrategy.class) ? (T) new DatabaseShardingStrategy(shardingColumns.get(0), (PreciseDatabaseShardingAlgorithm<?>) shardingAlgorithm)
-                    : (T) new TableShardingStrategy(shardingColumns.get(0), (PreciseTableShardingAlgorithm<?>) shardingAlgorithm);
+            return (T) new ShardingStrategy(shardingColumns.get(0), (PreciseShardingAlgorithm<?>) shardingAlgorithm);
         }
         if (shardingAlgorithm instanceof RangeShardingAlgorithm) {
             // TODO for RangeShardingAlgorithm
             throw new UnsupportedOperationException("");
         }
-        return returnClass.isAssignableFrom(DatabaseShardingStrategy.class) ? (T) new DatabaseShardingStrategy(shardingColumns, (ComplexKeysDatabaseShardingAlgorithm) shardingAlgorithm) 
-                : (T) new TableShardingStrategy(shardingColumns, (ComplexKeysTableShardingAlgorithm) shardingAlgorithm);
+        return (T) new ShardingStrategy(shardingColumns, shardingAlgorithm);
     }
     
     @SuppressWarnings("unchecked")

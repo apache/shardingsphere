@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.integrate.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.HintDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingAlgorithm;
 
 import java.util.Collection;
 
-public class HintModuloDatabaseShardingAlgorithm implements HintDatabaseShardingAlgorithm {
+public class HintModuloDatabaseShardingAlgorithm implements HintShardingAlgorithm {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {

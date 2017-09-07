@@ -18,14 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.api.strategy.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public final class TestRangeShardingAlgorithm implements RangeShardingAlgorithm<String>, DatabaseShardingAlgorithm, TableShardingAlgorithm {
+public final class TestRangeShardingAlgorithm implements RangeShardingAlgorithm<String> {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<String> shardingValue) {

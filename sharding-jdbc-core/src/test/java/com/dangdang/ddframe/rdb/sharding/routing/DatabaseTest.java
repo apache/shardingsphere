@@ -20,10 +20,10 @@ package com.dangdang.ddframe.rdb.sharding.routing;
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.routing.fixture.OrderDatabaseHintShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.junit.Before;
@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class DatabaseTest {
         dataSourceMap.put("ds_1", null);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule)
-                .databaseShardingStrategy(new DatabaseShardingStrategy(new OrderDatabaseHintShardingAlgorithm())).build();
+                .databaseShardingStrategy(new ShardingStrategy(Collections.singleton(""), new OrderDatabaseHintShardingAlgorithm())).build();
     }
     
     @Test

@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
@@ -52,7 +51,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
     
     private final DataSourceRule dataSourceRule;
     
-    private final DatabaseShardingStrategy databaseShardingStrategy;
+    private final ShardingStrategy databaseShardingStrategy;
     
     @Override
     public RoutingResult route() {

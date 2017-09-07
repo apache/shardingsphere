@@ -24,8 +24,6 @@ import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
@@ -79,12 +77,12 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     }
     
     private List<ShardingValue> getDatabaseShardingValues(final TableRule tableRule) {
-        DatabaseShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
+        ShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
         return HintManagerHolder.isUseShardingHint() ? getDatabaseShardingValuesFromHint(strategy.getShardingColumns()) : getShardingValues(strategy.getShardingColumns());
     }
     
     private List<ShardingValue> getTableShardingValues(final TableRule tableRule) {
-        TableShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
+        ShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
         return HintManagerHolder.isUseShardingHint() ? getTableShardingValuesFromHint(strategy.getShardingColumns()) : getShardingValues(strategy.getShardingColumns());
     }
     
@@ -122,7 +120,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> routeDataSources(final TableRule tableRule, final List<ShardingValue> databaseShardingValues) {
-        DatabaseShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
+        ShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
         if (isPreciseSharding(databaseShardingValues, strategy)) {
             Collection<String> result = new LinkedList<>();
             Collection<PreciseShardingValue> preciseDatabaseShardingValues = transferToShardingValues((ListShardingValue<?>) databaseShardingValues.get(0));
@@ -137,13 +135,13 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> routeTables(final TableRule tableRule, final String routedDataSource, final List<ShardingValue> tableShardingValues) {
-        TableShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
+        ShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
+        Collection<String> availableTargetTables = tableRule.isDynamic() ? Collections.<String>emptyList() : tableRule.getActualTableNames(routedDataSource);
         if (isPreciseSharding(tableShardingValues, strategy)) {
             Collection<String> result = new HashSet<>();
             Collection<PreciseShardingValue> preciseTableShardingValues = transferToShardingValues((ListShardingValue<?>) tableShardingValues.get(0));
             for (PreciseShardingValue<?> eachTableShardingValue : preciseTableShardingValues) {
-                result.add(shardingRule.getTableShardingStrategy(tableRule).doPreciseSharding(
-                        tableRule.isDynamic() ? Collections.<String>emptyList() : tableRule.getActualTableNames(routedDataSource), eachTableShardingValue));
+                result.add(shardingRule.getTableShardingStrategy(tableRule).doPreciseSharding(availableTargetTables, eachTableShardingValue));
             }
             return result;
         }

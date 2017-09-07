@@ -17,11 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.google.common.collect.Sets;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -52,7 +50,7 @@ public final class TableRuleTest {
     @Test
     public void assertTableRuleForDynamicWithDatabaseStrategy() {
         TableRule actual = TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule())
-                .databaseShardingStrategy(new DatabaseShardingStrategy("", new NoneDatabaseShardingAlgorithm())).build();
+                .databaseShardingStrategy(new ShardingStrategy("", new NoneShardingAlgorithm())).build();
         assertDynamicTable(actual);
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNull(actual.getTableShardingStrategy());
@@ -61,7 +59,7 @@ public final class TableRuleTest {
     @Test
     public void assertTableRuleForDynamicWithTableStrategy() {
         TableRule actual = TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule())
-                .tableShardingStrategy(new TableShardingStrategy("", new NoneTableShardingAlgorithm())).build();
+                .tableShardingStrategy(new ShardingStrategy("", new NoneShardingAlgorithm())).build();
         assertDynamicTable(actual);
         assertNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());
@@ -70,8 +68,8 @@ public final class TableRuleTest {
     @Test
     public void assertTableRuleForDynamicWithAllStrategies() {
         TableRule actual = TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule())
-                .databaseShardingStrategy(new DatabaseShardingStrategy("", new NoneDatabaseShardingAlgorithm()))
-                .tableShardingStrategy(new TableShardingStrategy("", new NoneTableShardingAlgorithm())).build();
+                .databaseShardingStrategy(new ShardingStrategy("", new NoneShardingAlgorithm()))
+                .tableShardingStrategy(new ShardingStrategy("", new NoneShardingAlgorithm())).build();
         assertDynamicTable(actual);
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());
@@ -94,7 +92,7 @@ public final class TableRuleTest {
     @Test
     public void assertTableRuleWithDatabaseShardingStrategyWithoutDataNode() {
         TableRule actual = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(createDataSourceRule())
-                .databaseShardingStrategy(new DatabaseShardingStrategy("", new NoneDatabaseShardingAlgorithm())).build();
+                .databaseShardingStrategy(new ShardingStrategy("", new NoneShardingAlgorithm())).build();
         assertActualTable(actual);
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNull(actual.getTableShardingStrategy());
@@ -103,7 +101,7 @@ public final class TableRuleTest {
     @Test
     public void assertTableRuleWithTableShardingStrategyWithoutDataNode() {
         TableRule actual = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(createDataSourceRule())
-                .tableShardingStrategy(new TableShardingStrategy("", new NoneTableShardingAlgorithm())).build();
+                .tableShardingStrategy(new ShardingStrategy("", new NoneShardingAlgorithm())).build();
         assertActualTable(actual);
         assertNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());

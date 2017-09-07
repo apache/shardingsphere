@@ -18,11 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.spring.algorithm;
 
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.PreciseTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 
-public class PreciseModuloTableShardingAlgorithm implements PreciseTableShardingAlgorithm<Integer> {
+public class PreciseModuloTableShardingAlgorithm implements PreciseShardingAlgorithm<Integer> {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {

@@ -18,13 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.routing.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.RangeDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.RangeTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-public final class RangeOrderShardingAlgorithm implements RangeDatabaseShardingAlgorithm<Integer>, RangeTableShardingAlgorithm<Integer> {
+public final class RangeOrderShardingAlgorithm implements RangeShardingAlgorithm<Integer> {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {

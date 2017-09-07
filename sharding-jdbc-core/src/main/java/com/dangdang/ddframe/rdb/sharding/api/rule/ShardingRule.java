@@ -17,15 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
@@ -53,9 +51,9 @@ public final class ShardingRule {
     
     private final Collection<BindingTableRule> bindingTableRules;
     
-    private final DatabaseShardingStrategy databaseShardingStrategy;
+    private final ShardingStrategy databaseShardingStrategy;
     
-    private final TableShardingStrategy tableShardingStrategy;
+    private final ShardingStrategy tableShardingStrategy;
     
     @Getter(AccessLevel.NONE)
     private final KeyGenerator keyGenerator;
@@ -79,15 +77,15 @@ public final class ShardingRule {
     @Deprecated
     public ShardingRule(
             final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules, 
-            final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy, final KeyGenerator keyGenerator) {
+            final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy, final KeyGenerator keyGenerator) {
         Preconditions.checkNotNull(dataSourceRule);
         this.dataSourceRule = dataSourceRule;
         this.tableRules = null == tableRules ? Collections.<TableRule>emptyList() : tableRules;
         this.bindingTableRules = null == bindingTableRules ? Collections.<BindingTableRule>emptyList() : bindingTableRules;
-        this.databaseShardingStrategy = null == databaseShardingStrategy ? new DatabaseShardingStrategy(
-                Collections.<String>emptyList(), new NoneDatabaseShardingAlgorithm()) : databaseShardingStrategy;
-        this.tableShardingStrategy = null == tableShardingStrategy ? new TableShardingStrategy(
-                Collections.<String>emptyList(), new NoneTableShardingAlgorithm()) : tableShardingStrategy;
+        this.databaseShardingStrategy = null == databaseShardingStrategy ? new ShardingStrategy(
+                Collections.<String>emptyList(), new NoneShardingAlgorithm()) : databaseShardingStrategy;
+        this.tableShardingStrategy = null == tableShardingStrategy ? new ShardingStrategy(
+                Collections.<String>emptyList(), new NoneShardingAlgorithm()) : tableShardingStrategy;
         this.keyGenerator = keyGenerator;
         defaultGenerator = KeyGeneratorFactory.createKeyGenerator(DefaultKeyGenerator.class);
     }
@@ -137,7 +135,8 @@ public final class ShardingRule {
         Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1);
         defaultDataSourceMap.put(defaultDataSourceRule.getDefaultDataSourceName(), defaultDataSourceRule.getDefaultDataSource().get());
         return TableRule.builder(logicTableName).dataSourceRule(new DataSourceRule(defaultDataSourceMap))
-                .databaseShardingStrategy(new DatabaseShardingStrategy()).tableShardingStrategy(new TableShardingStrategy()).build();
+                .databaseShardingStrategy(new ShardingStrategy(Collections.singleton(""), new NoneShardingAlgorithm()))
+                .tableShardingStrategy(new ShardingStrategy(Collections.singleton(""), new NoneShardingAlgorithm())).build();
     }
     
     /**
@@ -150,7 +149,7 @@ public final class ShardingRule {
      * @param tableRule table rule
      * @return database sharding strategy
      */
-    public DatabaseShardingStrategy getDatabaseShardingStrategy(final TableRule tableRule) {
+    public ShardingStrategy getDatabaseShardingStrategy(final TableRule tableRule) {
         return null == tableRule.getDatabaseShardingStrategy() ? databaseShardingStrategy : tableRule.getDatabaseShardingStrategy();
     }
     
@@ -164,7 +163,7 @@ public final class ShardingRule {
      * @param tableRule table rule
      * @return table sharding strategy
      */
-    public TableShardingStrategy getTableShardingStrategy(final TableRule tableRule) {
+    public ShardingStrategy getTableShardingStrategy(final TableRule tableRule) {
         return null == tableRule.getTableShardingStrategy() ? tableShardingStrategy : tableRule.getTableShardingStrategy();
     }
     
@@ -294,9 +293,9 @@ public final class ShardingRule {
         
         private Collection<BindingTableRule> bindingTableRules;
         
-        private DatabaseShardingStrategy databaseShardingStrategy;
+        private ShardingStrategy databaseShardingStrategy;
         
-        private TableShardingStrategy tableShardingStrategy;
+        private ShardingStrategy tableShardingStrategy;
         
         private Class<? extends KeyGenerator> keyGeneratorClass;
         
@@ -339,7 +338,7 @@ public final class ShardingRule {
          * @param databaseShardingStrategy default database strategy
          * @return this builder
          */
-        public ShardingRuleBuilder databaseShardingStrategy(final DatabaseShardingStrategy databaseShardingStrategy) {
+        public ShardingRuleBuilder databaseShardingStrategy(final ShardingStrategy databaseShardingStrategy) {
             this.databaseShardingStrategy = databaseShardingStrategy;
             return this;
         }
@@ -350,7 +349,7 @@ public final class ShardingRule {
          * @param tableShardingStrategy default table strategy
          * @return this builder
          */
-        public ShardingRuleBuilder tableShardingStrategy(final TableShardingStrategy tableShardingStrategy) {
+        public ShardingRuleBuilder tableShardingStrategy(final ShardingStrategy tableShardingStrategy) {
             this.tableShardingStrategy = tableShardingStrategy;
             return this;
         }

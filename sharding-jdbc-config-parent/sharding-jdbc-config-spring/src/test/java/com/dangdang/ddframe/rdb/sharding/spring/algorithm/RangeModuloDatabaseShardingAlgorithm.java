@@ -18,13 +18,13 @@
 package com.dangdang.ddframe.rdb.sharding.spring.algorithm;
 
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.RangeDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 import com.google.common.collect.Range;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-public class RangeModuloDatabaseShardingAlgorithm implements RangeDatabaseShardingAlgorithm<Integer> {
+public class RangeModuloDatabaseShardingAlgorithm implements RangeShardingAlgorithm<Integer> {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {

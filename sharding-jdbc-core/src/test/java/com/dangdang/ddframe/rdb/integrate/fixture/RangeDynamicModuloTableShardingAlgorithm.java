@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.integrate.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.RangeTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 @RequiredArgsConstructor
-public final class RangeDynamicModuloTableShardingAlgorithm implements RangeTableShardingAlgorithm<Integer> {
+public final class RangeDynamicModuloTableShardingAlgorithm implements RangeShardingAlgorithm<Integer> {
     
     private final String tablePrefix;
     

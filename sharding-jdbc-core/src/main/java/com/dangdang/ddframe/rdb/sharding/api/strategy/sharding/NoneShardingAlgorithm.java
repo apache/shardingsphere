@@ -15,20 +15,23 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
+package com.dangdang.ddframe.rdb.sharding.api.strategy.sharding;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Database sharding algorithm for none sharding interface.
+ * Sharding algorithm for none sharding interface.
  * 
  * @author zhangliang
  */
-public final class NoneDatabaseShardingAlgorithm implements PreciseDatabaseShardingAlgorithm<String>, RangeDatabaseShardingAlgorithm<String>, ComplexKeysDatabaseShardingAlgorithm {
+public final class NoneShardingAlgorithm implements PreciseShardingAlgorithm<String>, RangeShardingAlgorithm<String>, ComplexKeysShardingAlgorithm {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {

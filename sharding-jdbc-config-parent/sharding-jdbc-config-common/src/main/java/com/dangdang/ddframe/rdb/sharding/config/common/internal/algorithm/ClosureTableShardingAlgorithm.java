@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.ComplexKeysTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
 
 /**
  * Closure for table sharding algorithm.
  * 
  * @author gaohongtao
  */
-public class ClosureTableShardingAlgorithm extends ClosureShardingAlgorithm implements ComplexKeysTableShardingAlgorithm {
+public class ClosureTableShardingAlgorithm extends ClosureShardingAlgorithm implements ComplexKeysShardingAlgorithm {
     
     public ClosureTableShardingAlgorithm(final String expression, final String logRoot) {
         super(expression, logRoot);

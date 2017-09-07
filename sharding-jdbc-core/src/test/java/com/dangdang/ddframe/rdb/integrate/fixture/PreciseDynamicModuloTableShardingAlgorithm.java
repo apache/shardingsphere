@@ -18,13 +18,13 @@
 package com.dangdang.ddframe.rdb.integrate.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.PreciseTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 @RequiredArgsConstructor
-public final class PreciseDynamicModuloTableShardingAlgorithm implements PreciseTableShardingAlgorithm<Integer> {
+public final class PreciseDynamicModuloTableShardingAlgorithm implements PreciseShardingAlgorithm<Integer> {
     
     private final String tablePrefix;
     

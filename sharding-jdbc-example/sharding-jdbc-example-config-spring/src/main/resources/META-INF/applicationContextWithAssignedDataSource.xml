@@ -43,7 +43,7 @@
                 <rdb:table-rule logic-table="t_order" actual-tables="dbtbl_${0..1}.t_order_${0..3}" database-strategy="databaseStrategy" table-strategy="orderTableStrategy"/>
                 <rdb:table-rule logic-table="t_order_item" actual-tables="dbtbl_${0..1}.t_order_item_0,dbtbl_${0..1}.t_order_item_1,dbtbl_${0..1}.t_order_item_2,dbtbl_${0..1}.t_order_item_3" database-strategy="databaseStrategy" table-strategy="orderItemTableStrategy"/>
             </rdb:table-rules>
-            <rdb:default-database-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm"/>
+            <rdb:default-database-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm"/>
             <rdb:default-table-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm"/>
         </rdb:sharding-rule>
     </rdb:data-source>

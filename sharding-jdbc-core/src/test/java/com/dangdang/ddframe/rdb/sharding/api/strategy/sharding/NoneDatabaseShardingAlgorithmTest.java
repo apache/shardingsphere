@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
+package com.dangdang.ddframe.rdb.sharding.api.strategy.sharding;
 
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 
 public final class NoneDatabaseShardingAlgorithmTest {
     
-    private final NoneDatabaseShardingAlgorithm noneDatabaseShardingAlgorithm = new NoneDatabaseShardingAlgorithm();
+    private final NoneShardingAlgorithm noneDatabaseShardingAlgorithm = new NoneShardingAlgorithm();
     
     private final Collection<String> targets = Collections.singletonList("ds");
     

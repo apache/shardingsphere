@@ -18,11 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.PreciseDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 
-public class SingleAlgorithm implements PreciseDatabaseShardingAlgorithm {
+public class SingleAlgorithm implements PreciseShardingAlgorithm {
     
     @Override
     public String doSharding(final Collection availableTargetNames, final PreciseShardingValue shardingValue) {

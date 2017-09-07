@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import org.junit.Test;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertThat;
 
 public final class NoneTableShardingAlgorithmTest {
     
-    private final NoneTableShardingAlgorithm noneTableShardingAlgorithm = new NoneTableShardingAlgorithm();
+    private final NoneShardingAlgorithm noneTableShardingAlgorithm = new NoneShardingAlgorithm();
     
     private final Collection<String> targets = Collections.singletonList("tbl");
     

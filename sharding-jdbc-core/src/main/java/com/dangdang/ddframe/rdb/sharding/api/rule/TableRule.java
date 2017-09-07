@@ -17,10 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -47,9 +46,9 @@ public final class TableRule {
     
     private final List<DataNode> actualTables;
     
-    private final DatabaseShardingStrategy databaseShardingStrategy;
+    private final ShardingStrategy databaseShardingStrategy;
     
-    private final TableShardingStrategy tableShardingStrategy;
+    private final ShardingStrategy tableShardingStrategy;
     
     private final String generateKeyColumn;
     
@@ -73,7 +72,7 @@ public final class TableRule {
      */
     @Deprecated
     public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames,
-                     final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy,
+                     final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy,
                      final String generateKeyColumn, final KeyGenerator keyGenerator) {
         Preconditions.checkNotNull(logicTable);
         this.logicTable = logicTable;
@@ -222,9 +221,9 @@ public final class TableRule {
         
         private Collection<String> dataSourceNames;
         
-        private DatabaseShardingStrategy databaseShardingStrategy;
+        private ShardingStrategy databaseShardingStrategy;
         
-        private TableShardingStrategy tableShardingStrategy;
+        private ShardingStrategy tableShardingStrategy;
         
         private String generateKeyColumn;
         
@@ -280,7 +279,7 @@ public final class TableRule {
          * @param databaseShardingStrategy database sharding strategy
          * @return this builder
          */
-        public TableRuleBuilder databaseShardingStrategy(final DatabaseShardingStrategy databaseShardingStrategy) {
+        public TableRuleBuilder databaseShardingStrategy(final ShardingStrategy databaseShardingStrategy) {
             this.databaseShardingStrategy = databaseShardingStrategy;
             return this;
         }
@@ -291,7 +290,7 @@ public final class TableRule {
          * @param tableShardingStrategy table sharding strategy
          * @return this builder
          */
-        public TableRuleBuilder tableShardingStrategy(final TableShardingStrategy tableShardingStrategy) {
+        public TableRuleBuilder tableShardingStrategy(final ShardingStrategy tableShardingStrategy) {
             this.tableShardingStrategy = tableShardingStrategy;
             return this;
         }

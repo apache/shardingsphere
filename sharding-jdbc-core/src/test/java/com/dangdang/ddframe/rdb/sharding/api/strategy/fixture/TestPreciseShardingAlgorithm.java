@@ -18,13 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.api.strategy.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 
-public final class TestPreciseShardingAlgorithm implements PreciseShardingAlgorithm<String>, DatabaseShardingAlgorithm, TableShardingAlgorithm {
+public final class TestPreciseShardingAlgorithm implements PreciseShardingAlgorithm<String> {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<String> shardingValue) {
