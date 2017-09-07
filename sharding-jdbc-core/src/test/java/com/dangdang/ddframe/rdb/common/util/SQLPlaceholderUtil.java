@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SqlPlaceholderUtil {
+public final class SQLPlaceholderUtil {
     
     public static String replaceStatement(final String str, final Object[] args) {
         if (args.length == 0) {

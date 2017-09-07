@@ -32,8 +32,14 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.dbunit.DatabaseUnitException;
+import org.dbunit.database.CachedResultSetTable;
+import org.dbunit.database.ForwardOnlyResultSetTable;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.database.ResultSetTableMetaData;
+import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.ITableIterator;
+import org.dbunit.dataset.ITableMetaData;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Test;
@@ -45,6 +51,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -52,8 +59,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil.replacePreparedStatement;
-import static com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil.replaceStatement;
+import static com.dangdang.ddframe.rdb.common.util.SQLPlaceholderUtil.replacePreparedStatement;
+import static com.dangdang.ddframe.rdb.common.util.SQLPlaceholderUtil.replaceStatement;
 import static org.dbunit.Assertion.assertEquals;
 
 @RunWith(Parameterized.class)
@@ -230,11 +237,20 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
             expectedDataSet.addReplacementObject("[null]", null);
             for (ITable each : expectedDataSet.getTables()) {
                 String tableName = each.getTableMetaData().getTableName();
-                ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
-                        .createTable(tableName, preparedStatement);
+                IDatabaseConnection connection = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn);
+//                ITable actualTable = connection.createTable(tableName, preparedStatement);
+                ITable actualTable = createTable(tableName, preparedStatement, connection);
                 assertEquals(expectedDataSet.getTable(tableName), actualTable);
             }
         }
+    }
+    
+    private CachedResultSetTable createTable(final String tableName, final PreparedStatement preparedStatement, final IDatabaseConnection connection) throws SQLException, DataSetException {
+        preparedStatement.execute();
+        ResultSet rs = preparedStatement.getResultSet();
+        ITableMetaData metaData = new ResultSetTableMetaData(tableName, rs, connection, false);
+        ForwardOnlyResultSetTable table = new ForwardOnlyResultSetTable(metaData, rs);
+        return new CachedResultSetTable(table);
     }
     
     private void setParameters(final PreparedStatement preparedStatement, final List<String> parameters) throws SQLException {
