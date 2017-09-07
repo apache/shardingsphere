@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.type.sharding.hint.base;
 
-import com.dangdang.ddframe.rdb.integrate.fixture.NoneKeyModuloDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.fixture.HintModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
@@ -32,7 +32,7 @@ public abstract class AbstractRoutingDatabaseOnlyWithHintTest extends AbstractHi
     protected ShardingRule getShardingRule(final Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) {
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceEntry.getValue());
         return ShardingRule.builder().dataSourceRule(dataSourceRule)
-                .databaseShardingStrategy(new DatabaseShardingStrategy(new NoneKeyModuloDatabaseShardingAlgorithm()))
+                .databaseShardingStrategy(new DatabaseShardingStrategy(new HintModuloDatabaseShardingAlgorithm()))
                 .build();
     }
 }

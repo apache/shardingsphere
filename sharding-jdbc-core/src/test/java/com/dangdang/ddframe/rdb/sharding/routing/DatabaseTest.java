@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
-import com.dangdang.ddframe.rdb.sharding.routing.fixture.OrderDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.fixture.OrderDatabaseHintShardingAlgorithm;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.junit.Before;
@@ -51,7 +51,7 @@ public class DatabaseTest {
         dataSourceMap.put("ds_1", null);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule)
-                .databaseShardingStrategy(new DatabaseShardingStrategy(new OrderDatabaseShardingAlgorithm())).build();
+                .databaseShardingStrategy(new DatabaseShardingStrategy(new OrderDatabaseHintShardingAlgorithm())).build();
     }
     
     @Test

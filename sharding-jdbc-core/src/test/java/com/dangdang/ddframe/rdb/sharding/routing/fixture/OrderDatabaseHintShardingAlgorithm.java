@@ -15,23 +15,23 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.fixture;
+package com.dangdang.ddframe.rdb.sharding.routing.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneKeyDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.HintDatabaseShardingAlgorithm;
 
 import java.util.Collection;
 
-public class NoneKeyModuloDatabaseShardingAlgorithm implements NoneKeyDatabaseShardingAlgorithm<Integer> {
+public class OrderDatabaseHintShardingAlgorithm implements HintDatabaseShardingAlgorithm {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith((int) ((ListShardingValue) shardingValue).getValues().iterator().next() % 10 + "")) {
+            if (each.endsWith(String.valueOf((int) ((ListShardingValue) shardingValue).getValues().iterator().next() % 2))) {
                 return each;
             }
         }
-        throw new UnsupportedOperationException();
+        return null;
     }
 }

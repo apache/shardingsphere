@@ -35,7 +35,7 @@ public final class DatabaseShardingStrategy extends ShardingStrategy {
         super(Collections.singleton(""), new NoneDatabaseShardingAlgorithm());
     }
     
-    public DatabaseShardingStrategy(final NoneKeyDatabaseShardingAlgorithm<?> databaseShardingAlgorithm) {
+    public DatabaseShardingStrategy(final HintDatabaseShardingAlgorithm databaseShardingAlgorithm) {
         super(Collections.singleton(""), databaseShardingAlgorithm);
     }
     

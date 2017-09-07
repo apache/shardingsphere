@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.MultipleKeysShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.simple.NoneKeyShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 import com.google.common.base.Preconditions;
@@ -112,8 +112,8 @@ public class ShardingStrategy {
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private Collection<String> doSharding(final Collection<ShardingValue> shardingValues, final Collection<String> availableTargetNames) {
-        if (shardingAlgorithm instanceof NoneKeyShardingAlgorithm) {
-            return Collections.singletonList(((NoneKeyShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, shardingValues.iterator().next()));
+        if (shardingAlgorithm instanceof HintShardingAlgorithm) {
+            return Collections.singletonList(((HintShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, shardingValues.iterator().next()));
         }
         if (null != rangeShardingAlgorithm) {
             ShardingValue shardingValue = shardingValues.iterator().next();
