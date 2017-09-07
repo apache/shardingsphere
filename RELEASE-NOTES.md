@@ -1,3 +1,10 @@
+## 1.5.4
+
+### 缺陷修正
+
+1. [ISSUE #356](https://github.com/dangdangdotcom/sharding-jdbc/issues/356) 在SQL的Where条件中兼容不是分片列的REGEXP操作符
+1. [ISSUE #362](https://github.com/dangdangdotcom/sharding-jdbc/issues/362) 读写分离使用PreparedStatement并未调用setParameter方法导致出错
+
 ## 1.5.3
 
 ### 功能提升

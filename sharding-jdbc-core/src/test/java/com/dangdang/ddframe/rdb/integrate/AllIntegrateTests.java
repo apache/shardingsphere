@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.integrate;
 
-import com.dangdang.ddframe.rdb.integrate.type.NullableShardingTableOnlyTest;
-import com.dangdang.ddframe.rdb.integrate.type.ShardingDatabaseAndTableDynamicTest;
-import com.dangdang.ddframe.rdb.integrate.type.ShardingDatabaseAndTableTest;
-import com.dangdang.ddframe.rdb.integrate.type.ShardingDatabaseOnlyTest;
-import com.dangdang.ddframe.rdb.integrate.type.ShardingMasterSlaveTest;
-import com.dangdang.ddframe.rdb.integrate.type.ShardingTableOnlyTest;
-import com.dangdang.ddframe.rdb.integrate.type.hint.AllHintDatabaseOnlyTests;
+import com.dangdang.ddframe.rdb.integrate.type.sharding.NullableShardingTableOnlyTest;
+import com.dangdang.ddframe.rdb.integrate.type.sharding.ShardingDatabaseAndTableDynamicTest;
+import com.dangdang.ddframe.rdb.integrate.type.sharding.ShardingDatabaseAndTableTest;
+import com.dangdang.ddframe.rdb.integrate.type.sharding.ShardingDatabaseOnlyTest;
+import com.dangdang.ddframe.rdb.integrate.type.sharding.ShardingMasterSlaveTest;
+import com.dangdang.ddframe.rdb.integrate.type.sharding.ShardingTableOnlyTest;
+import com.dangdang.ddframe.rdb.integrate.type.sharding.hint.AllHintDatabaseOnlyTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

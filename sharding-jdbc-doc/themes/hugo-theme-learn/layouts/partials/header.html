@@ -8,15 +8,11 @@
     {{ partial "favicon.html" . }}
     {{ .Scratch.Add "title" "" }}{{ if eq .Site.Data.titles .Title }}{{ .Scratch.Set "title" (index .Site.Data.titles .Title).title }}{{ else }}{{ .Scratch.Set "title" .Title}}{{end}}
     <title>{{ .Scratch.Get "title" }}</title>
-    <link href="{{ .Site.BaseURL }}/css/nucleus.css" rel="stylesheet">
-    <link href="{{ .Site.BaseURL }}/css/font-awesome.min.css" rel="stylesheet">
-    <link href="{{ .Site.BaseURL }}/css/hybrid.css" rel="stylesheet">
-    <link href="{{ .Site.BaseURL }}/css/featherlight.min.css" rel="stylesheet">
-    <link href="{{ .Site.BaseURL }}/css/perfect-scrollbar.min.css" rel="stylesheet">
-    <link href="{{ .Site.BaseURL }}/css/horsey.css" rel="stylesheet">
-    <link href="{{ .Site.BaseURL }}/css/theme.css" rel="stylesheet">
-    <link href="{{ .Site.BaseURL }}/css/hugo-theme.css" rel="stylesheet">
-    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link href="http://ovfotjrsi.bkt.clouddn.com/docs/css/nucleus.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://ovfotjrsi.bkt.clouddn.com/docs/css/theme.css" rel="stylesheet">
+    <link href="http://ovfotjrsi.bkt.clouddn.com/docs/css/hugo-theme.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
     <style type="text/css">:root #header + #content > #left > #rlblock_left
     {display:none !important;}</style>
     {{ partial "style.html" . }}

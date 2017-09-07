@@ -25,6 +25,8 @@ import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.integrate.jaxb.helper.SQLAssertJAXBHelper;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -78,14 +80,25 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return SQLAssertJAXBHelper.getDataParameters("integrate/assert");
     }
     
+    protected abstract ShardingTestStrategy getShardingStrategy();
+    
+    protected abstract Map<DatabaseType, ? extends AbstractDataSourceAdapter> getDataSources() throws SQLException;
+    
+    protected File getExpectedFile(final String expected) {
+        String strategyName = getShardingStrategy().name();
+        String expectedFile = null == expected ? "integrate/dataset/EmptyTable.xml"
+                : String.format("integrate/dataset/sharding/%s/expect/" + expected, strategyName, strategyName);
+        URL url = AbstractSQLAssertTest.class.getClassLoader().getResource(expectedFile);
+        if (null == url) {
+            throw new RuntimeException("Wrong expected file:" + expectedFile);
+        }
+        return new File(url.getPath());
+    }
+    
     @Override
     public DatabaseType getCurrentDatabaseType() {
         return type;
     }
-    
-    protected abstract ShardingTestStrategy getShardingStrategy();
-    
-    protected abstract Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException;
     
     @Test
     public void assertWithPreparedStatement() throws SQLException {
@@ -98,7 +111,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     }
     
     private void execute(final boolean isPreparedStatement) throws SQLException {
-        for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
+        for (Map.Entry<DatabaseType, ? extends AbstractDataSourceAdapter> each : getDataSources().entrySet()) {
             if (getCurrentDatabaseType() == each.getKey()) {
                 try {
                     executeAndAssertSQL(isPreparedStatement, each.getValue());
@@ -115,7 +128,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
     }
     
-    private void executeAndAssertSQL(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource) throws MalformedURLException, SQLException, DatabaseUnitException {
+    private void executeAndAssertSQL(final boolean isPreparedStatement, final AbstractDataSourceAdapter abstractDataSourceAdapter) throws MalformedURLException, SQLException, DatabaseUnitException {
         for (SQLShardingRule sqlShardingRule : shardingRules) {
             if (!needAssert(sqlShardingRule)) {
                 continue;
@@ -123,24 +136,12 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
             for (SQLAssertData each : sqlShardingRule.getData()) {
                 File expectedDataSetFile = getExpectedFile(each.getExpected());
                 if (sql.toUpperCase().startsWith("SELECT")) {
-                    assertDqlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
+                    assertDqlSql(isPreparedStatement, abstractDataSourceAdapter, each, expectedDataSetFile);
                 } else  {
-                    assertDmlAndDdlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
+                    assertDmlAndDdlSql(isPreparedStatement, abstractDataSourceAdapter, each, expectedDataSetFile);
                 }
             }
         }
-    }
-    
-    private File getExpectedFile(final String expected) {
-        String strategyName = getShardingStrategy().name();
-        // TODO DML和DQL保持一直，去掉DML中XML名称里面的placeholder
-        String expectedFile = null == expected ? "integrate/dataset/EmptyTable.xml"
-                : String.format("integrate/dataset/%s/expect/" + expected, strategyName, strategyName);
-        URL url = AbstractSQLAssertTest.class.getClassLoader().getResource(expectedFile);
-        if (null == url) {
-            throw new RuntimeException("Wrong expected file:" + expectedFile);
-        }
-        return new File(url.getPath());
     }
     
     private boolean needAssert(final SQLShardingRule sqlShardingRule) {
@@ -156,23 +157,24 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return false;
     }
     
-    private void assertDqlSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SQLAssertData data, final File expectedDataSetFile)
+    private void assertDqlSql(final boolean isPreparedStatement, final AbstractDataSourceAdapter abstractDataSourceAdapter, final SQLAssertData data, final File expectedDataSetFile)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
-            executeQueryWithPreparedStatement(shardingDataSource, getParameters(data), expectedDataSetFile);
+            executeQueryWithPreparedStatement(abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
         } else {
-            executeQueryWithStatement(shardingDataSource, getParameters(data), expectedDataSetFile);
+            executeQueryWithStatement(abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
         }
     }
     
-    private void assertDmlAndDdlSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SQLAssertData data, final File expectedDataSetFile)
+    private void assertDmlAndDdlSql(final boolean isPreparedStatement, final AbstractDataSourceAdapter abstractDataSourceAdapter, final SQLAssertData data, final File expectedDataSetFile)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
-            executeWithPreparedStatement(shardingDataSource, getParameters(data));
+            executeWithPreparedStatement(abstractDataSourceAdapter, getParameters(data));
         } else {
-            executeWithStatement(shardingDataSource, getParameters(data));
+            executeWithStatement(abstractDataSourceAdapter, getParameters(data));
         }
-        try (Connection conn = shardingDataSource.getConnection().getConnection(getDataSourceName(data.getExpected()), getSqlType())) {
+        try (Connection conn = abstractDataSourceAdapter instanceof MasterSlaveDataSource ? abstractDataSourceAdapter.getConnection() 
+                : ((ShardingDataSource) abstractDataSourceAdapter).getConnection().getConnection(getDataSourceName(data.getExpected()), getSqlType())) {
             assertResult(conn, expectedDataSetFile);
         }
     }
@@ -204,24 +206,24 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return Strings.isNullOrEmpty(data.getParameter()) ? Collections.<String>emptyList() : Lists.newArrayList(data.getParameter().split(","));
     }
     
-    private void executeWithPreparedStatement(final ShardingDataSource dataSource, final List<String> parameters) throws SQLException {
-        try (Connection connection = dataSource.getConnection();
+    private void executeWithPreparedStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters) throws SQLException {
+        try (Connection connection = abstractDataSourceAdapter.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql))) {
             setParameters(preparedStatement, parameters);
             preparedStatement.execute();
         }
     }
     
-    private void executeWithStatement(final ShardingDataSource dataSource, final List<String> parameters) throws SQLException {
-        try (Connection connection = dataSource.getConnection();
+    private void executeWithStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters) throws SQLException {
+        try (Connection connection = abstractDataSourceAdapter.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute(replaceStatement(sql, parameters.toArray()));
         }
     }
     
-    private void executeQueryWithPreparedStatement(final ShardingDataSource dataSource, final List<String> parameters, final File file)
+    private void executeQueryWithPreparedStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
             throws MalformedURLException, SQLException, DatabaseUnitException {
-        try (Connection conn = dataSource.getConnection();
+        try (Connection conn = abstractDataSourceAdapter.getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(replacePreparedStatement(sql))) {
             setParameters(preparedStatement, parameters);
             ReplacementDataSet expectedDataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(file));
@@ -246,8 +248,9 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
     }
     
-    private void executeQueryWithStatement(final ShardingDataSource dataSource, final List<String> parameters, final File file) throws MalformedURLException, SQLException, DatabaseUnitException {
-        try (Connection conn = dataSource.getConnection()) {
+    private void executeQueryWithStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file) 
+            throws MalformedURLException, SQLException, DatabaseUnitException {
+        try (Connection conn = abstractDataSourceAdapter.getConnection()) {
             String querySql = replaceStatement(sql, parameters.toArray());
             ReplacementDataSet expectedDataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(file));
             expectedDataSet.addReplacementObject("[null]", null);

@@ -93,5 +93,6 @@ public enum MySQLKeyword implements Keyword {
     MEMORY,
     ROLLUP,
     RESTRICT,
-    STRAIGHT_JOIN
+    STRAIGHT_JOIN, 
+    REGEXP
 }

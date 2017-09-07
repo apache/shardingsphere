@@ -41,7 +41,6 @@ public class SQLAssertJAXBHelper {
         } else {
             result.addAll(dataParameters(assertFilePath));
         }
-        
         return result;
     }
     
