@@ -58,7 +58,7 @@ public class ClosureShardingAlgorithm implements MultipleKeysShardingAlgorithm {
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         List<Set<Comparable>> valuesDim = new ArrayList<>();
         List<String> columnNames = new ArrayList<>(shardingValues.size());
-        for (ShardingValue<?> each : shardingValues) {
+        for (ShardingValue each : shardingValues) {
             columnNames.add(each.getColumnName());
             if (each instanceof RangeShardingValue) {
                 throw new UnsupportedOperationException("Inline expression does not support BETWEEN, please use Java API Config");

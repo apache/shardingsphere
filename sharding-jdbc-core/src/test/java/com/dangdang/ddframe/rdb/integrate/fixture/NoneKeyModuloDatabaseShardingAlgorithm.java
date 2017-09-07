@@ -26,7 +26,7 @@ import java.util.Collection;
 public class NoneKeyModuloDatabaseShardingAlgorithm implements NoneKeyDatabaseShardingAlgorithm<Integer> {
     
     @Override
-    public String doSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public String doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
         for (String each : availableTargetNames) {
             if (each.endsWith((int) ((ListShardingValue) shardingValue).getValues().iterator().next() % 10 + "")) {
                 return each;

@@ -39,5 +39,5 @@ public interface NoneKeyShardingAlgorithm<T extends Comparable<?>> extends Shard
      * @param shardingValue sharding values
      * @return sharding results for data sources or tables's names
      */
-    String doSharding(Collection<String> availableTargetNames, ShardingValue<T> shardingValue);
+    String doSharding(Collection<String> availableTargetNames, ShardingValue shardingValue);
 }

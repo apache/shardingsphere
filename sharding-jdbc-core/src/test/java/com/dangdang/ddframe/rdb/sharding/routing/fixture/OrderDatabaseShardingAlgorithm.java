@@ -27,7 +27,7 @@ public class OrderDatabaseShardingAlgorithm implements NoneKeyDatabaseShardingAl
     
     // TODO need refactor NoneKeyShardingAlgorithm
     @Override
-    public String doSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public String doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
         for (String each : availableTargetNames) {
             if (each.endsWith(String.valueOf((int) ((ListShardingValue) shardingValue).getValues().iterator().next() % 2))) {
                 return each;
