@@ -17,31 +17,30 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+
+import java.util.Collection;
+
 /**
- * Sharding value interface.
+ * Sharding value for list values.
  * 
  * @author zhangliang
  */
-public interface BaseShardingValue<T extends Comparable<?>> {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class ListShardingValue<T extends Comparable<?>> implements BaseShardingValue {
     
-    /**
-     * Get logic table name.
-     *
-     * @return logic table name
-     */
-    String getLogicTableName();
+    private final String logicTableName;
     
-    /**
-     * Get column name.
-     *
-     * @return column name
-     */
-    String getColumnName();
+    private final String columnName;
     
-    /**
-     * Get sharding value type.
-     * 
-     * @return sharding value type
-     */
-    ShardingValueType getType();
+    private final Collection<T> values;
+    
+    @Override
+    public ShardingValueType getType() {
+        return ShardingValueType.LIST;
+    }
 }

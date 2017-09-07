@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
@@ -74,11 +74,12 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertInsertStatementWithoutParameter(insertStatement);
     }
     
+    @SuppressWarnings("unchecked")
     private void assertInsertStatementWithoutParameter(final InsertStatement insertStatement) {
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(((ShardingValue) condition.getShardingValue(Collections.emptyList())).getValue(), is((Comparable) 10));
+        assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.emptyList())).getValues().iterator().next(), is((Comparable) 10));
     }
     
     @Test
@@ -93,7 +94,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(((ShardingValue) condition.getShardingValue(Collections.<Object>singletonList(0))).getValue(), is((Comparable) 0));
+        assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.<Object>singletonList(0))).getValues().iterator().next(), is((Comparable) 0));
     }
     
     private ShardingRule createShardingRuleWithGenerateKeyColumns() {
@@ -125,6 +126,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT /*+ index(field1) */ INTO TABLE_XXX (`field1`) VALUES (1) RETURNING field1*2 LOG ERRORS INTO TABLE_LOG");
     }
     
+    @SuppressWarnings("unchecked")
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
         ShardingRule shardingRule = createShardingRule();
         InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule).parse();
@@ -132,7 +134,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertFalse(insertStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(((ShardingValue) condition.getShardingValue(Collections.emptyList())).getValue(), is((Comparable) 1));
+        assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.emptyList())).getValues().iterator().next(), is((Comparable) 1));
     }
     
     @Test

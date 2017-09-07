@@ -133,9 +133,8 @@ public final class HintManager implements AutoCloseable {
         Preconditions.checkArgument(null != values && values.length > 0);
         switch (operator) {
             case EQUAL:
-                return new ShardingValue<Comparable<?>>(logicTable, shardingColumn, values[0]);
             case IN:
-                return new ShardingValue(logicTable, shardingColumn, Arrays.asList(values));
+                return new ListShardingValue(logicTable, shardingColumn, Arrays.asList(values));
             case BETWEEN:
                 return new RangeShardingValue(logicTable, shardingColumn, Range.range(values[0], BoundType.CLOSED, values[1], BoundType.CLOSED));
             default:

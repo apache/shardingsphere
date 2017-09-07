@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Sharding value for range.
+ * Sharding value for range values.
  * 
  * @author zhangliang
  */
@@ -39,7 +39,7 @@ public final class RangeShardingValue<T extends Comparable<?>> implements BaseSh
     private final Range<T> valueRange;
     
     @Override
-    public ShardingValue.ShardingValueType getType() {
-        return ShardingValue.ShardingValueType.RANGE;
+    public ShardingValueType getType() {
+        return ShardingValueType.RANGE;
     }
 }

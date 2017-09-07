@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.routing.strategy;
 
 import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 
@@ -59,7 +59,7 @@ public class ShardingStrategy {
      * @return sharding results for data sources or tables's names
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public String doAccurateSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
+    public String doAccurateSharding(final Collection<String> availableTargetNames, final SingleShardingValue shardingValue) {
         if (shardingAlgorithm instanceof SingleKeyShardingAlgorithm) {
             return ((SingleKeyShardingAlgorithm<?>) shardingAlgorithm).doEqualSharding(availableTargetNames, shardingValue);
         }

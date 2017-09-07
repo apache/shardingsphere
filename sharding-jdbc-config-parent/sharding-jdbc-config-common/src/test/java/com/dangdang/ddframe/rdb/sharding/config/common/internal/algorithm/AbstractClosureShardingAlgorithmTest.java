@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 
 import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import groovy.lang.MissingMethodException;
@@ -48,7 +48,7 @@ public abstract class AbstractClosureShardingAlgorithmTest {
     @Test
     public void assertEqual() {
         Collection<String> result = createClosureShardingAlgorithm().doSharding(
-                Collections.singletonList("target_1"), Collections.<BaseShardingValue>singletonList(new ShardingValue<>("target", "id", 1L)));
+                Collections.singletonList("target_1"), Collections.<BaseShardingValue>singletonList(new ListShardingValue<>("target", "id", Collections.singletonList(1L))));
         assertThat(result.size(), is(1));
         assertThat(result, hasItem("target_1"));
     }
@@ -56,7 +56,7 @@ public abstract class AbstractClosureShardingAlgorithmTest {
     @Test
     public void assertIn() {
         Collection<String> result = createClosureShardingAlgorithm().doSharding(Arrays.asList("target_0", "target_1"), 
-                Collections.<BaseShardingValue>singletonList(new ShardingValue<>("target", "id", Arrays.asList(1, 2))));
+                Collections.<BaseShardingValue>singletonList(new ListShardingValue<>("target", "id", Arrays.asList(1, 2))));
         assertThat(result.size(), is(2));
         assertThat(result, hasItem("target_0"));
         assertThat(result, hasItem("target_1"));
@@ -70,6 +70,7 @@ public abstract class AbstractClosureShardingAlgorithmTest {
     
     @Test(expected = MissingMethodException.class)
     public void assertEvaluateInlineExpressionFailure() {
-        createErrorClosureShardingAlgorithm().doSharding(Collections.singletonList("target_1"), Collections.<BaseShardingValue>singletonList(new ShardingValue<>("target", "id", 1L)));
+        createErrorClosureShardingAlgorithm().doSharding(
+                Collections.singletonList("target_1"), Collections.<BaseShardingValue>singletonList(new ListShardingValue<>("target", "id", Collections.singletonList(1L))));
     }
 }

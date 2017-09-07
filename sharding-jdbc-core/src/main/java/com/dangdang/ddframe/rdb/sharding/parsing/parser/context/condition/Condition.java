@@ -2,7 +2,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition;
 
 import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
@@ -83,9 +83,8 @@ public final class Condition {
         List<Comparable<?>> conditionValues = getValues(parameters);
         switch (operator) {
             case EQUAL:
-                return new ShardingValue<Comparable<?>>(column.getTableName(), column.getName(), conditionValues.get(0));
             case IN:
-                return new ShardingValue<>(column.getTableName(), column.getName(), conditionValues);
+                return new ListShardingValue<>(column.getTableName(), column.getName(), conditionValues);
             case BETWEEN:
                 return new RangeShardingValue<>(column.getTableName(), column.getName(), Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED));
             default:

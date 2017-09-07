@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
 
 import java.util.Collection;
@@ -26,7 +26,7 @@ import java.util.Collection;
 public class SingleAlgorithm implements SingleKeyDatabaseShardingAlgorithm {
     
     @Override
-    public String doEqualSharding(final Collection availableTargetNames, final ShardingValue shardingValue) {
+    public String doEqualSharding(final Collection availableTargetNames, final SingleShardingValue shardingValue) {
         return null;
     }
     

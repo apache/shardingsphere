@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 
 import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
@@ -61,10 +61,8 @@ public class ClosureShardingAlgorithm implements MultipleKeysShardingAlgorithm {
             columnNames.add(each.getColumnName());
             switch (each.getType()) {
                 case SINGLE:
-                    valuesDim.add(Sets.newHashSet((Comparable) ((ShardingValue) each).getValue()));
-                    break;
                 case LIST:
-                    valuesDim.add(Sets.<Comparable>newHashSet(((ShardingValue) each).getValues()));
+                    valuesDim.add(Sets.<Comparable>newHashSet(((ListShardingValue) each).getValues()));
                     break;
                 case RANGE:
                     throw new UnsupportedOperationException("Inline expression does not support BETWEEN, please use Java API Config");

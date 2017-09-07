@@ -18,7 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.routing.type.simple;
 
 import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValueType;
+import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
@@ -124,8 +126,8 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         DatabaseShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
         if (isAccurateSharding(databaseShardingValues, strategy)) {
             Collection<String> result = new LinkedList<>();
-            Collection<ShardingValue> accurateDatabaseShardingValues = transferToShardingValues((ShardingValue<?>) databaseShardingValues.get(0));
-            for (ShardingValue<?> eachDatabaseShardingValue : accurateDatabaseShardingValues) {
+            Collection<SingleShardingValue> accurateDatabaseShardingValues = transferToShardingValues((ListShardingValue<?>) databaseShardingValues.get(0));
+            for (SingleShardingValue<?> eachDatabaseShardingValue : accurateDatabaseShardingValues) {
                 result.add(strategy.doAccurateSharding(tableRule.getActualDatasourceNames(), eachDatabaseShardingValue));
             }
             return result;
@@ -139,8 +141,8 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         TableShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
         if (isAccurateSharding(tableShardingValues, strategy)) {
             Collection<String> result = new HashSet<>();
-            Collection<ShardingValue> accurateTableShardingValues = transferToShardingValues((ShardingValue<?>) tableShardingValues.get(0));
-            for (ShardingValue<?> eachTableShardingValue : accurateTableShardingValues) {
+            Collection<SingleShardingValue> accurateTableShardingValues = transferToShardingValues((ListShardingValue<?>) tableShardingValues.get(0));
+            for (SingleShardingValue<?> eachTableShardingValue : accurateTableShardingValues) {
                 result.add(shardingRule.getTableShardingStrategy(tableRule).doAccurateSharding(
                         tableRule.isDynamic() ? Collections.<String>emptyList() : tableRule.getActualTableNames(routedDataSource), eachTableShardingValue));
             }
@@ -153,17 +155,14 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     }
     
     private boolean isAccurateSharding(final List<BaseShardingValue> shardingValues, final ShardingStrategy shardingStrategy) {
-        return 1 == shardingValues.size() && shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && ShardingValue.ShardingValueType.RANGE != shardingValues.get(0).getType();
+        return 1 == shardingValues.size() && shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && ShardingValueType.RANGE != shardingValues.get(0).getType();
     }
     
     @SuppressWarnings("unchecked")
-    private List<ShardingValue> transferToShardingValues(final ShardingValue<?> shardingValue) {
-        if (ShardingValue.ShardingValueType.SINGLE == shardingValue.getType()) {
-            return Collections.<ShardingValue>singletonList(shardingValue);
-        }
-        List<ShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
+    private List<SingleShardingValue> transferToShardingValues(final ListShardingValue<?> shardingValue) {
+        List<SingleShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
         for (Comparable<?> each : shardingValue.getValues()) {
-            result.add(new ShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), each));
+            result.add(new SingleShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), each));
         }
         return result;
     }

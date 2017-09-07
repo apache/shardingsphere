@@ -27,6 +27,7 @@ import java.util.Collection;
  * @param <T> class type for sharding value 
  * @author gaohongtao
  */
+// TODO need refactor NoneKeyShardingAlgorithm
 public interface NoneKeyShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
     
     /**

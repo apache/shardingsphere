@@ -40,7 +40,6 @@ import org.junit.runners.Suite;
         ShardingDataSourceFactoryTest.class, 
         ShardingPropertiesTest.class, 
         ShardingPropertiesConstantTest.class, 
-        ShardingValueTest.class, 
         DataSourceRuleTest.class, 
         ShardingRuleTest.class, 
         TableRuleTest.class, 

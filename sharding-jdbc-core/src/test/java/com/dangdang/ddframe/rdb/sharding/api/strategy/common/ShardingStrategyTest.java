@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
 
 import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestMultipleKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestSingleKeyShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
@@ -54,7 +54,7 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoStaticShardingForMultipleKeys() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestMultipleKeysShardingAlgorithm());
-        assertThat(strategy.doStaticSharding(targets, createShardingValues(new ShardingValue<>("logicTable", "column", "1"))), 
+        assertThat(strategy.doStaticSharding(targets, createShardingValues(new SingleShardingValue<>("logicTable", "column", "1"))), 
                 is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }
     
@@ -73,7 +73,7 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoDynamicShardingForMultipleKeys() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestMultipleKeysShardingAlgorithm());
-        assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("logicTable", "column", "1"))), is((Collection<String>) Collections.<String>emptySet()));
+        assertThat(strategy.doDynamicSharding(createShardingValues(new SingleShardingValue<>("logicTable", "column", "1"))), is((Collection<String>) Collections.<String>emptySet()));
     }
     
     private Collection<BaseShardingValue> createShardingValues(final BaseShardingValue shardingValue) {

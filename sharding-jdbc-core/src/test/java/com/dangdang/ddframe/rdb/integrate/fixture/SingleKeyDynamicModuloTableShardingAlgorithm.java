@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.integrate.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public final class SingleKeyDynamicModuloTableShardingAlgorithm implements Singl
     private final String tablePrefix;
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public String doEqualSharding(final Collection<String> availableTargetNames, final SingleShardingValue<Integer> shardingValue) {
         return tablePrefix + shardingValue.getValue() % 10;
     }
     

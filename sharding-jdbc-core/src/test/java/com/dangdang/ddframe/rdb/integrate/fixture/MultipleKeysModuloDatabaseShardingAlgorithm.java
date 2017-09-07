@@ -18,8 +18,9 @@
 package com.dangdang.ddframe.rdb.integrate.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.MultipleKeysDatabaseShardingAlgorithm;
 import com.google.common.collect.Range;
 
@@ -35,9 +36,9 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
         BaseShardingValue shardingValue = shardingValues.iterator().next();
         switch (shardingValue.getType()) {
             case SINGLE: 
-                return doEqualSharding(availableTargetNames, (ShardingValue<Integer>) shardingValue);
+                return doEqualSharding(availableTargetNames, (SingleShardingValue<Integer>) shardingValue);
             case LIST: 
-                return doInSharding(availableTargetNames, (ShardingValue<Integer>) shardingValue);
+                return doInSharding(availableTargetNames, (ListShardingValue<Integer>) shardingValue);
             case RANGE: 
                 return doBetweenSharding(availableTargetNames, (RangeShardingValue<Integer>) shardingValue);
             default: 
@@ -45,7 +46,7 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
         }
     }
     
-    private Collection<String> doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    private Collection<String> doEqualSharding(final Collection<String> availableTargetNames, final SingleShardingValue<Integer> shardingValue) {
         Integer modulo = Integer.parseInt(shardingValue.getValue().toString()) % 10;
         for (String each : availableTargetNames) {
             if (each.endsWith(modulo.toString())) {
@@ -55,7 +56,7 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
         throw new UnsupportedOperationException();
     }
     
-    private Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    private Collection<String> doInSharding(final Collection<String> availableTargetNames, final ListShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Collection<Integer> values = shardingValue.getValues();
         for (Integer value : values) {
