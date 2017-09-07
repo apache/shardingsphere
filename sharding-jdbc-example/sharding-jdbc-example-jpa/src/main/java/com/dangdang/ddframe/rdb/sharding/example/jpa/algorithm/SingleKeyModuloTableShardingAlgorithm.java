@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jpa.algorithm;
 
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
 import com.google.common.collect.Range;
@@ -37,7 +38,7 @@ public final class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTab
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Long> shardingValue) {
+    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Range<Long> range = shardingValue.getValueRange();
         for (Long value = range.lowerEndpoint(); value <= range.upperEndpoint(); value++) {

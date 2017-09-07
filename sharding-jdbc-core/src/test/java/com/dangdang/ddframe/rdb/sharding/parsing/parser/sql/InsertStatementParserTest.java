@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
 
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
@@ -77,7 +78,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition.getShardingValue(Collections.emptyList()).getValue(), is((Comparable) 10));
+        assertThat(((ShardingValue) condition.getShardingValue(Collections.emptyList())).getValue(), is((Comparable) 10));
     }
     
     @Test
@@ -92,7 +93,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition.getShardingValue(Collections.<Object>singletonList(0)).getValue(), is((Comparable) 0));
+        assertThat(((ShardingValue) condition.getShardingValue(Collections.<Object>singletonList(0))).getValue(), is((Comparable) 0));
     }
     
     private ShardingRule createShardingRuleWithGenerateKeyColumns() {
@@ -131,7 +132,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertFalse(insertStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition.getShardingValue(Collections.emptyList()).getValue(), is((Comparable) 1));
+        assertThat(((ShardingValue) condition.getShardingValue(Collections.emptyList())).getValue(), is((Comparable) 1));
     }
     
     @Test

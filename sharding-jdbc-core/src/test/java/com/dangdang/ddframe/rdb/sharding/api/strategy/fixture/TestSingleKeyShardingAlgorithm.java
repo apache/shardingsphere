@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.fixture;
 
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingAlgorithm;
@@ -33,7 +34,7 @@ public final class TestSingleKeyShardingAlgorithm implements SingleKeyShardingAl
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
+    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final RangeShardingValue<String> shardingValue) {
         Collection<String> result = new ArrayList<>();
         for (Integer i = Integer.parseInt(shardingValue.getValueRange().lowerEndpoint()); i <= Integer.parseInt(shardingValue.getValueRange().upperEndpoint()); i++) {
             result.add(i.toString());

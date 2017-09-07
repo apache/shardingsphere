@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,7 +38,7 @@ import java.util.Collections;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
-public final class ShardingValue<T extends Comparable<?>> {
+public final class ShardingValue<T extends Comparable<?>> implements BaseShardingValue {
     
     private final String logicTableName;
     
@@ -49,25 +48,15 @@ public final class ShardingValue<T extends Comparable<?>> {
     
     private final Collection<T> values;
     
-    private final Range<T> valueRange;
-    
     public ShardingValue(final String logicTableName, final String columnName, final T value) {
-        this(logicTableName, columnName, value, Collections.<T>emptyList(), null);
+        this(logicTableName, columnName, value, Collections.<T>emptyList());
     }
     
     public ShardingValue(final String logicTableName, final String columnName, final Collection<T> values) {
-        this(logicTableName, columnName, null, values, null);
+        this(logicTableName, columnName, null, values);
     }
     
-    public ShardingValue(final String logicTableName, final String columnName, final Range<T> valueRange) {
-        this(logicTableName, columnName, null, Collections.<T>emptyList(), valueRange);
-    }
-    
-    /**
-     * Get sharding value type.
-     * 
-     * @return sharding value type
-     */
+    @Override
     public ShardingValueType getType() {
         if (null != value) {
             return ShardingValueType.SINGLE;

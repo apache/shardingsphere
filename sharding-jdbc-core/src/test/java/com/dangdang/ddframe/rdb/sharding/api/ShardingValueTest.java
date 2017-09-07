@@ -40,24 +40,24 @@ public final class ShardingValueTest {
     
     @Test
     public void assertGetTypeWithRangeValue() {
-        assertThat(new ShardingValue<>("logicTableName", "columnName", Range.closed(10, 20)).getType(), is(ShardingValueType.RANGE));
+        assertThat(new RangeShardingValue<>("logicTableName", "columnName", Range.closed(10, 20)).getType(), is(ShardingValueType.RANGE));
     }
     
     @Test
     public void assertToStringWithSingleValue() {
         assertThat(new ShardingValue<>("logicTableName", "columnName", "value").toString(), is(
-                "ShardingValue(logicTableName=logicTableName, columnName=columnName, value=value, values=[], valueRange=null)"));
+                "ShardingValue(logicTableName=logicTableName, columnName=columnName, value=value, values=[])"));
     }
     
     @Test
     public void assertToStringWithMultipleValue() {
         assertThat(new ShardingValue<>("logicTableName", "columnName", Collections.singletonList("value")).toString(), is(
-                "ShardingValue(logicTableName=logicTableName, columnName=columnName, value=null, values=[value], valueRange=null)"));
+                "ShardingValue(logicTableName=logicTableName, columnName=columnName, value=null, values=[value])"));
     }
     
     @Test
     public void assertToStringWithRangeValue() {
-        assertThat(new ShardingValue<>("logicTableName", "columnName", Range.closed(10, 20)).toString(), is(
-                "ShardingValue(logicTableName=logicTableName, columnName=columnName, value=null, values=[], valueRange=[10‥20])"));
+        assertThat(new RangeShardingValue<>("logicTableName", "columnName", Range.closed(10, 20)).toString(), is(
+                "RangeShardingValue(logicTableName=logicTableName, columnName=columnName, valueRange=[10‥20])"));
     }
 }

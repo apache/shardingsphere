@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
 
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
@@ -61,16 +63,16 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         assertThat(deleteStatement.getTables().find("xxx").get().getAlias().get(), is("xxx"));
         Condition condition1 = deleteStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition1.getShardingValue(Collections.emptyList()).getValue(), is((Object) 1));
+        assertThat(((ShardingValue) condition1.getShardingValue(Collections.emptyList())).getValue(), is((Object) 1));
         Condition condition2 = deleteStatement.getConditions().find(new Column("field2", "TABLE_XXX")).get();
         assertThat(condition2.getOperator(), is(ShardingOperator.IN));
-        Iterator<?> shardingValues2 = condition2.getShardingValue(Collections.emptyList()).getValues().iterator();
+        Iterator<?> shardingValues2 = ((ShardingValue) condition2.getShardingValue(Collections.emptyList())).getValues().iterator();
         assertThat(shardingValues2.next(), is((Object) 1));
         assertThat(shardingValues2.next(), is((Object) 3));
         assertFalse(shardingValues2.hasNext());
         Condition condition3 = deleteStatement.getConditions().find(new Column("field3", "TABLE_XXX")).get();
         assertThat(condition3.getOperator(), is(ShardingOperator.BETWEEN));
-        Range shardingValues3 = condition3.getShardingValue(Collections.emptyList()).getValueRange();
+        Range shardingValues3 = ((RangeShardingValue) condition3.getShardingValue(Collections.emptyList())).getValueRange();
         assertThat(shardingValues3.lowerEndpoint(), is((Comparable) 5));
         assertThat(shardingValues3.upperEndpoint(), is((Comparable) 20));
     }
@@ -90,15 +92,15 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         List<Object> actualParameters = Arrays.<Object>asList(0, 10, 20, 30, 40, 50, 60, 70, 80);
         Condition condition1 = deleteStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition1.getShardingValue(actualParameters).getValue(), is((Object) 10));
+        assertThat(((ShardingValue) condition1.getShardingValue(actualParameters)).getValue(), is((Object) 10));
         Condition condition2 = deleteStatement.getConditions().find(new Column("field2", "TABLE_XXX")).get();
         assertThat(condition2.getOperator(), is(ShardingOperator.IN));
-        Iterator<?> shardingValues2 = condition2.getShardingValue(actualParameters).getValues().iterator();
+        Iterator<?> shardingValues2 = ((ShardingValue) condition2.getShardingValue(actualParameters)).getValues().iterator();
         assertThat(shardingValues2.next(), is((Object) 30));
         assertThat(shardingValues2.next(), is((Object) 40));
         Condition condition3 = deleteStatement.getConditions().find(new Column("field3", "TABLE_XXX")).get();
         assertThat(condition3.getOperator(), is(ShardingOperator.BETWEEN));
-        Range shardingValues3 = condition3.getShardingValue(actualParameters).getValueRange();
+        Range shardingValues3 = ((RangeShardingValue) condition3.getShardingValue(actualParameters)).getValueRange();
         assertThat(shardingValues3.lowerEndpoint(), is((Comparable) 60));
         assertThat(shardingValues3.upperEndpoint(), is((Comparable) 70));
     }
@@ -129,6 +131,6 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         assertFalse(deleteStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = deleteStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition.getShardingValue(Collections.emptyList()).getValue(), is((Comparable) 1));
+        assertThat(((ShardingValue) condition.getShardingValue(Collections.emptyList())).getValue(), is((Comparable) 1));
     }
 }

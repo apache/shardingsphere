@@ -36,7 +36,7 @@ public final class HintManagerTest {
             assertTrue(HintManagerHolder.getDatabaseShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getDatabaseShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
             assertThat(hintManager.getDatabaseShardingValue(shardingKey).getType(), is(ShardingValue.ShardingValueType.SINGLE));
-            assertThat(hintManager.getDatabaseShardingValue(shardingKey).getValue(), is((Comparable) 1));
+            assertThat(((ShardingValue) hintManager.getDatabaseShardingValue(shardingKey)).getValue(), is((Comparable) 1));
         }
     }
     
@@ -48,7 +48,7 @@ public final class HintManagerTest {
             assertTrue(HintManagerHolder.getDatabaseShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getDatabaseShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
             assertThat(hintManager.getDatabaseShardingValue(shardingKey).getType(), is(ShardingValue.ShardingValueType.LIST));
-            assertThat(hintManager.getDatabaseShardingValue(shardingKey).getValues().size(), is(3));
+            assertThat(((ShardingValue) hintManager.getDatabaseShardingValue(shardingKey)).getValues().size(), is(3));
         }
     }
     
@@ -60,8 +60,8 @@ public final class HintManagerTest {
             assertTrue(HintManagerHolder.getDatabaseShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getDatabaseShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
             assertThat(hintManager.getDatabaseShardingValue(shardingKey).getType(), is(ShardingValue.ShardingValueType.RANGE));
-            assertThat(hintManager.getDatabaseShardingValue(shardingKey).getValueRange().lowerEndpoint(), is((Comparable) 1));
-            assertThat(hintManager.getDatabaseShardingValue(shardingKey).getValueRange().upperEndpoint(), is((Comparable) 10));
+            assertThat(((RangeShardingValue) hintManager.getDatabaseShardingValue(shardingKey)).getValueRange().lowerEndpoint(), is((Comparable) 1));
+            assertThat(((RangeShardingValue) hintManager.getDatabaseShardingValue(shardingKey)).getValueRange().upperEndpoint(), is((Comparable) 10));
         }
     }
     
@@ -73,7 +73,7 @@ public final class HintManagerTest {
             assertTrue(HintManagerHolder.getTableShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getTableShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
             assertThat(hintManager.getTableShardingValue(shardingKey).getType(), is(ShardingValue.ShardingValueType.SINGLE));
-            assertThat(hintManager.getTableShardingValue(shardingKey).getValue(), is((Comparable) 1));
+            assertThat(((ShardingValue) hintManager.getTableShardingValue(shardingKey)).getValue(), is((Comparable) 1));
         }
     }
     
@@ -85,7 +85,7 @@ public final class HintManagerTest {
             assertTrue(HintManagerHolder.getTableShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getTableShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
             assertThat(hintManager.getTableShardingValue(shardingKey).getType(), is(ShardingValue.ShardingValueType.LIST));
-            assertThat(hintManager.getTableShardingValue(shardingKey).getValues().size(), is(3));
+            assertThat(((ShardingValue) hintManager.getTableShardingValue(shardingKey)).getValues().size(), is(3));
         }
     }
     
@@ -97,8 +97,8 @@ public final class HintManagerTest {
             assertTrue(HintManagerHolder.getTableShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getTableShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
             assertThat(hintManager.getTableShardingValue(shardingKey).getType(), is(ShardingValue.ShardingValueType.RANGE));
-            assertThat(hintManager.getTableShardingValue(shardingKey).getValueRange().lowerEndpoint(), is((Comparable) 1));
-            assertThat(hintManager.getTableShardingValue(shardingKey).getValueRange().upperEndpoint(), is((Comparable) 10));
+            assertThat(((RangeShardingValue) hintManager.getTableShardingValue(shardingKey)).getValueRange().lowerEndpoint(), is((Comparable) 1));
+            assertThat(((RangeShardingValue) hintManager.getTableShardingValue(shardingKey)).getValueRange().upperEndpoint(), is((Comparable) 10));
         }
     }
     
@@ -108,7 +108,7 @@ public final class HintManagerTest {
             hintManager.setDatabaseShardingValue("1");
             assertTrue(hintManager.isDatabaseShardingOnly());
             assertTrue(hintManager.isShardingHint());
-            assertThat((String) hintManager.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME)).getValue(), is("1"));
+            assertThat((String) ((ShardingValue) hintManager.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME))).getValue(), is("1"));
         }
     }
 }

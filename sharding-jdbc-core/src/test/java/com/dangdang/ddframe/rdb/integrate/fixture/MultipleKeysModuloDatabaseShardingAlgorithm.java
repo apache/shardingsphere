@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.integrate.fixture;
 
+import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.MultipleKeysDatabaseShardingAlgorithm;
 import com.google.common.collect.Range;
@@ -29,15 +31,15 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
-        ShardingValue<?> shardingValue = shardingValues.iterator().next();
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<BaseShardingValue> shardingValues) {
+        BaseShardingValue shardingValue = shardingValues.iterator().next();
         switch (shardingValue.getType()) {
             case SINGLE: 
                 return doEqualSharding(availableTargetNames, (ShardingValue<Integer>) shardingValue);
             case LIST: 
                 return doInSharding(availableTargetNames, (ShardingValue<Integer>) shardingValue);
             case RANGE: 
-                return doBetweenSharding(availableTargetNames, (ShardingValue<Integer>) shardingValue);
+                return doBetweenSharding(availableTargetNames, (RangeShardingValue<Integer>) shardingValue);
             default: 
                 throw new UnsupportedOperationException();
         }
@@ -66,7 +68,7 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
         return result;
     }
     
-    private Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    private Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Range<Integer> range = shardingValue.getValueRange();
         for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {

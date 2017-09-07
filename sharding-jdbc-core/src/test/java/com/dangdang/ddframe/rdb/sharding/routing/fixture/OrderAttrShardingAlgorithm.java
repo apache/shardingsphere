@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.fixture;
 
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
 
@@ -36,7 +37,7 @@ public final class OrderAttrShardingAlgorithm implements SingleKeyTableShardingA
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         throw new UnsupportedOperationException();
     }
 }

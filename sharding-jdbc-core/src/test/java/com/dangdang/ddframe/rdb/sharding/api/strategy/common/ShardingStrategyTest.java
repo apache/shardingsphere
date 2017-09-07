@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
 
+import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestMultipleKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestSingleKeyShardingAlgorithm;
@@ -39,13 +41,13 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoStaticShardingWithoutShardingColumns() {
         ShardingStrategy strategy = new ShardingStrategy(Sets.newHashSet("column"), null);
-        assertThat(strategy.doStaticSharding(targets, Collections.<ShardingValue>emptySet()), is(targets));
+        assertThat(strategy.doStaticSharding(targets, Collections.<BaseShardingValue>emptySet()), is(targets));
     }
     
     @Test
     public void assertDoStaticShardingForBetweenSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doStaticSharding(targets, createShardingValues(new ShardingValue<>("logicTable", "column", Range.open("1", "3")))), 
+        assertThat(strategy.doStaticSharding(targets, createShardingValues(new RangeShardingValue<>("logicTable", "column", Range.open("1", "3")))), 
                 is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }
     
@@ -59,13 +61,13 @@ public final class ShardingStrategyTest {
     @Test(expected = IllegalStateException.class)
     public void assertDoDynamicShardingWithoutShardingColumns() {
         ShardingStrategy strategy = new ShardingStrategy(Sets.newHashSet("column"), null);
-        strategy.doDynamicSharding(Collections.<ShardingValue>emptySet());
+        strategy.doDynamicSharding(Collections.<BaseShardingValue>emptySet());
     }
     
     @Test
     public void assertDoDynamicShardingForBetweenSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("logicTable", "column", Range.open("1", "3")))), is((Collection<String>) Sets.newHashSet("1", "2", "3")));
+        assertThat(strategy.doDynamicSharding(createShardingValues(new RangeShardingValue<>("logicTable", "column", Range.open("1", "3")))), is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }
     
     @Test
@@ -74,8 +76,8 @@ public final class ShardingStrategyTest {
         assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("logicTable", "column", "1"))), is((Collection<String>) Collections.<String>emptySet()));
     }
     
-    private Collection<ShardingValue> createShardingValues(final ShardingValue<String> shardingValue) {
-        Collection<ShardingValue> result = new ArrayList<>(1);
+    private Collection<BaseShardingValue> createShardingValues(final BaseShardingValue shardingValue) {
+        Collection<BaseShardingValue> result = new ArrayList<>(1);
         result.add(shardingValue);
         return result;
     }

@@ -15,17 +15,31 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture;
+package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
+import com.google.common.collect.Range;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-import java.util.Collection;
-
-public class MultiAlgorithm implements MultipleKeysTableShardingAlgorithm {
+/**
+ * Sharding value for range.
+ * 
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class RangeShardingValue<T extends Comparable<?>> implements BaseShardingValue {
+    
+    private final String logicTableName;
+    
+    private final String columnName;
+    
+    private final Range<T> valueRange;
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<BaseShardingValue> shardingValues) {
-        return null;
+    public ShardingValue.ShardingValueType getType() {
+        return ShardingValue.ShardingValueType.RANGE;
     }
 }

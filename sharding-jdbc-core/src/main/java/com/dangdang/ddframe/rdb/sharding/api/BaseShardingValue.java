@@ -15,17 +15,33 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture;
+package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
-
-import java.util.Collection;
-
-public class MultiAlgorithm implements MultipleKeysTableShardingAlgorithm {
+/**
+ * Sharding value interface.
+ * 
+ * @author zhangliang
+ */
+public interface BaseShardingValue<T extends Comparable<?>> {
     
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<BaseShardingValue> shardingValues) {
-        return null;
-    }
+    /**
+     * Get logic table name.
+     *
+     * @return logic table name
+     */
+    String getLogicTableName();
+    
+    /**
+     * Get column name.
+     *
+     * @return column name
+     */
+    String getColumnName();
+    
+    /**
+     * Get sharding value type.
+     * 
+     * @return sharding value type
+     */
+    ShardingValue.ShardingValueType getType();
 }

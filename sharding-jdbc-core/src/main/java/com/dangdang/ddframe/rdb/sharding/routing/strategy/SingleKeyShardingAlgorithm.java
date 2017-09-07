@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.strategy;
 
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 
 import java.util.Collection;
@@ -46,5 +47,5 @@ public interface SingleKeyShardingAlgorithm<T extends Comparable<?>> extends Sha
      * @param shardingValue sharding value
      * @return sharding results for data sources or tables's names
      */
-    Collection<String> doBetweenSharding(Collection<String> availableTargetNames, ShardingValue<T> shardingValue);
+    Collection<String> doBetweenSharding(Collection<String> availableTargetNames, RangeShardingValue<T> shardingValue);
 }

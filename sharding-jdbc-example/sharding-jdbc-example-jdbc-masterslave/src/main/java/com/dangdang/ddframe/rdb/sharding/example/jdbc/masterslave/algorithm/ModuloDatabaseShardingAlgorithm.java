@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc.masterslave.algorithm;
 
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
 import com.google.common.collect.Range;
@@ -37,7 +38,7 @@ public final class ModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseS
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection<String> dataSourceNames, final ShardingValue<Integer> shardingValue) {
+    public Collection<String> doBetweenSharding(final Collection<String> dataSourceNames, final RangeShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(dataSourceNames.size());
         Range<Integer> range = shardingValue.getValueRange();
         for (Integer value = range.lowerEndpoint(); value <= range.upperEndpoint(); value++) {

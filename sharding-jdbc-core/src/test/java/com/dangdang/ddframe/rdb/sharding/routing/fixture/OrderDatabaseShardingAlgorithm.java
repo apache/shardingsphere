@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.fixture;
 
+import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneKeyDatabaseShardingAlgorithm;
 
@@ -25,9 +26,9 @@ import java.util.Collection;
 public class OrderDatabaseShardingAlgorithm implements NoneKeyDatabaseShardingAlgorithm<Integer> {
     
     @Override
-    public String doSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public String doSharding(final Collection<String> availableTargetNames, final BaseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
+            if (each.endsWith(String.valueOf((int) ((ShardingValue) shardingValue).getValue() % 2))) {
                 return each;
             }
         }

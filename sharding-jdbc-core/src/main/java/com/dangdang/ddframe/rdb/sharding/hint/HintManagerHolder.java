@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.hint;
 
+import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
@@ -64,8 +64,8 @@ public final class HintManagerHolder {
      * @param shardingKey sharding key
      * @return database sharding value
      */
-    public static Optional<ShardingValue<?>> getDatabaseShardingValue(final ShardingKey shardingKey) {
-        return isUseShardingHint() ? Optional.<ShardingValue<?>>fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(shardingKey)) : Optional.<ShardingValue<?>>absent();
+    public static Optional<BaseShardingValue> getDatabaseShardingValue(final ShardingKey shardingKey) {
+        return isUseShardingHint() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(shardingKey)) : Optional.<BaseShardingValue>absent();
     }
     
     /**
@@ -74,8 +74,8 @@ public final class HintManagerHolder {
      * @param shardingKey sharding key
      * @return table sharding value
      */
-    public static Optional<ShardingValue<?>> getTableShardingValue(final ShardingKey shardingKey) {
-        return isUseShardingHint() ? Optional.<ShardingValue<?>>fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(shardingKey)) : Optional.<ShardingValue<?>>absent();
+    public static Optional<BaseShardingValue> getTableShardingValue(final ShardingKey shardingKey) {
+        return isUseShardingHint() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(shardingKey)) : Optional.<BaseShardingValue>absent();
     }
     
     /**

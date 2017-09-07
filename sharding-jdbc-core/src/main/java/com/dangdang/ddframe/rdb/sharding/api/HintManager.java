@@ -40,9 +40,9 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {
     
-    private final Map<ShardingKey, ShardingValue<?>> databaseShardingValues = new HashMap<>();
+    private final Map<ShardingKey, BaseShardingValue> databaseShardingValues = new HashMap<>();
     
-    private final Map<ShardingKey, ShardingValue<?>> tableShardingValues = new HashMap<>();
+    private final Map<ShardingKey, BaseShardingValue> tableShardingValues = new HashMap<>();
     
     @Getter
     private boolean shardingHint;
@@ -129,7 +129,7 @@ public final class HintManager implements AutoCloseable {
     }
     
     @SuppressWarnings("unchecked")
-    private ShardingValue getShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>[] values) {
+    private BaseShardingValue getShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>[] values) {
         Preconditions.checkArgument(null != values && values.length > 0);
         switch (operator) {
             case EQUAL:
@@ -137,7 +137,7 @@ public final class HintManager implements AutoCloseable {
             case IN:
                 return new ShardingValue(logicTable, shardingColumn, Arrays.asList(values));
             case BETWEEN:
-                return new ShardingValue(logicTable, shardingColumn, Range.range(values[0], BoundType.CLOSED, values[1], BoundType.CLOSED));
+                return new RangeShardingValue(logicTable, shardingColumn, Range.range(values[0], BoundType.CLOSED, values[1], BoundType.CLOSED));
             default:
                 throw new UnsupportedOperationException(operator.getExpression());
         }
@@ -149,7 +149,7 @@ public final class HintManager implements AutoCloseable {
      * @param shardingKey sharding key
      * @return sharding value for database
      */
-    public ShardingValue<?> getDatabaseShardingValue(final ShardingKey shardingKey) {
+    public BaseShardingValue getDatabaseShardingValue(final ShardingKey shardingKey) {
         return databaseShardingValues.get(shardingKey);
     }
     
@@ -159,7 +159,7 @@ public final class HintManager implements AutoCloseable {
      * @param shardingKey sharding key
      * @return sharding value for table
      */
-    public ShardingValue<?> getTableShardingValue(final ShardingKey shardingKey) {
+    public BaseShardingValue getTableShardingValue(final ShardingKey shardingKey) {
         return tableShardingValues.get(shardingKey);
     }
     

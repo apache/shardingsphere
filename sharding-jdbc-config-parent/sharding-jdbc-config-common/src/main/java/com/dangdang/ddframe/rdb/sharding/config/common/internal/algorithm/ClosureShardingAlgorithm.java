@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 
+import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
 import com.google.common.base.Joiner;
@@ -51,18 +52,19 @@ public class ClosureShardingAlgorithm implements MultipleKeysShardingAlgorithm {
         closureTemplate = (Closure) new GroovyShell(binding).evaluate(Joiner.on("").join("{it -> \"", expression.trim(), "\"}"));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<BaseShardingValue> shardingValues) {
         List<Set<Comparable>> valuesDim = new ArrayList<>();
         List<String> columnNames = new ArrayList<>(shardingValues.size());
-        for (ShardingValue<?> each : shardingValues) {
+        for (BaseShardingValue<?> each : shardingValues) {
             columnNames.add(each.getColumnName());
             switch (each.getType()) {
                 case SINGLE:
-                    valuesDim.add(Sets.newHashSet((Comparable) each.getValue()));
+                    valuesDim.add(Sets.newHashSet((Comparable) ((ShardingValue) each).getValue()));
                     break;
                 case LIST:
-                    valuesDim.add(Sets.<Comparable>newHashSet(each.getValues()));
+                    valuesDim.add(Sets.<Comparable>newHashSet(((ShardingValue) each).getValues()));
                     break;
                 case RANGE:
                     throw new UnsupportedOperationException("Inline expression does not support BETWEEN, please use Java API Config");

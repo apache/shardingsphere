@@ -17,12 +17,13 @@
 
 package com.dangdang.ddframe.rdb.integrate.fixture;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
 import com.google.common.collect.Range;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm<Integer> {
     
@@ -37,7 +38,7 @@ public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKey
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Range<Integer> range = shardingValue.getValueRange();
         for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {

@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.hint;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
@@ -49,10 +49,10 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
     
     @Override
     public RoutingResult route() {
-        Optional<ShardingValue<?>> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME));
+        Optional<BaseShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME));
         Preconditions.checkState(shardingValue.isPresent());
         log.debug("Before database sharding only db:{} sharding values: {}", dataSourceRule.getDataSourceNames(), shardingValue.get());
-        Collection<String> routingDataSources = databaseShardingStrategy.doStaticSharding(dataSourceRule.getDataSourceNames(), Collections.<ShardingValue>singleton(shardingValue.get()));
+        Collection<String> routingDataSources = databaseShardingStrategy.doStaticSharding(dataSourceRule.getDataSourceNames(), Collections.singleton(shardingValue.get()));
         Preconditions.checkState(!routingDataSources.isEmpty(), "no database route info");
         log.debug("After database sharding only result: {}", routingDataSources);
         RoutingResult result = new RoutingResult();

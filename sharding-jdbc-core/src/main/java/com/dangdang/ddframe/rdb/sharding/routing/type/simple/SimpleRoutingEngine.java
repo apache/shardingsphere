@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.simple;
 
+import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -66,8 +67,8 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     @Override
     public RoutingResult route() {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
-        List<ShardingValue> databaseShardingValues = getDatabaseShardingValues(tableRule);
-        List<ShardingValue> tableShardingValues = getTableShardingValues(tableRule);
+        List<BaseShardingValue> databaseShardingValues = getDatabaseShardingValues(tableRule);
+        List<BaseShardingValue> tableShardingValues = getTableShardingValues(tableRule);
         Collection<String> routedDataSources = routeDataSources(tableRule, databaseShardingValues);
         Map<String, Collection<String>> routedMap = new LinkedHashMap<>(routedDataSources.size());
         for (String each : routedDataSources) {
@@ -76,20 +77,20 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         return generateRoutingResult(tableRule, routedMap);
     }
     
-    private List<ShardingValue> getDatabaseShardingValues(final TableRule tableRule) {
+    private List<BaseShardingValue> getDatabaseShardingValues(final TableRule tableRule) {
         DatabaseShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
         return HintManagerHolder.isUseShardingHint() ? getDatabaseShardingValuesFromHint(strategy.getShardingColumns()) : getShardingValues(strategy.getShardingColumns());
     }
     
-    private List<ShardingValue> getTableShardingValues(final TableRule tableRule) {
+    private List<BaseShardingValue> getTableShardingValues(final TableRule tableRule) {
         TableShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
         return HintManagerHolder.isUseShardingHint() ? getTableShardingValuesFromHint(strategy.getShardingColumns()) : getShardingValues(strategy.getShardingColumns());
     }
     
-    private List<ShardingValue> getDatabaseShardingValuesFromHint(final Collection<String> shardingColumns) {
-        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
+    private List<BaseShardingValue> getDatabaseShardingValuesFromHint(final Collection<String> shardingColumns) {
+        List<BaseShardingValue> result = new ArrayList<>(shardingColumns.size());
         for (String each : shardingColumns) {
-            Optional<ShardingValue<?>> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(logicTableName, each));
+            Optional<BaseShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(logicTableName, each));
             if (shardingValue.isPresent()) {
                 result.add(shardingValue.get());
             }
@@ -97,10 +98,10 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private List<ShardingValue> getTableShardingValuesFromHint(final Collection<String> shardingColumns) {
-        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
+    private List<BaseShardingValue> getTableShardingValuesFromHint(final Collection<String> shardingColumns) {
+        List<BaseShardingValue> result = new ArrayList<>(shardingColumns.size());
         for (String each : shardingColumns) {
-            Optional<ShardingValue<?>> shardingValue = HintManagerHolder.getTableShardingValue(new ShardingKey(logicTableName, each));
+            Optional<BaseShardingValue> shardingValue = HintManagerHolder.getTableShardingValue(new ShardingKey(logicTableName, each));
             if (shardingValue.isPresent()) {
                 result.add(shardingValue.get());
             }
@@ -108,8 +109,8 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private List<ShardingValue> getShardingValues(final Collection<String> shardingColumns) {
-        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
+    private List<BaseShardingValue> getShardingValues(final Collection<String> shardingColumns) {
+        List<BaseShardingValue> result = new ArrayList<>(shardingColumns.size());
         for (String each : shardingColumns) {
             Optional<Condition> condition = sqlStatement.getConditions().find(new Column(each, logicTableName));
             if (condition.isPresent()) {
@@ -119,11 +120,11 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private Collection<String> routeDataSources(final TableRule tableRule, final List<ShardingValue> databaseShardingValues) {
+    private Collection<String> routeDataSources(final TableRule tableRule, final List<BaseShardingValue> databaseShardingValues) {
         DatabaseShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
         if (isAccurateSharding(databaseShardingValues, strategy)) {
             Collection<String> result = new LinkedList<>();
-            Collection<ShardingValue> accurateDatabaseShardingValues = transferToShardingValues(databaseShardingValues.get(0));
+            Collection<ShardingValue> accurateDatabaseShardingValues = transferToShardingValues((ShardingValue<?>) databaseShardingValues.get(0));
             for (ShardingValue<?> eachDatabaseShardingValue : accurateDatabaseShardingValues) {
                 result.add(strategy.doAccurateSharding(tableRule.getActualDatasourceNames(), eachDatabaseShardingValue));
             }
@@ -134,11 +135,11 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private Collection<String> routeTables(final TableRule tableRule, final String routedDataSource, final List<ShardingValue> tableShardingValues) {
+    private Collection<String> routeTables(final TableRule tableRule, final String routedDataSource, final List<BaseShardingValue> tableShardingValues) {
         TableShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
         if (isAccurateSharding(tableShardingValues, strategy)) {
             Collection<String> result = new HashSet<>();
-            Collection<ShardingValue> accurateTableShardingValues = transferToShardingValues(tableShardingValues.get(0));
+            Collection<ShardingValue> accurateTableShardingValues = transferToShardingValues((ShardingValue<?>) tableShardingValues.get(0));
             for (ShardingValue<?> eachTableShardingValue : accurateTableShardingValues) {
                 result.add(shardingRule.getTableShardingStrategy(tableRule).doAccurateSharding(
                         tableRule.isDynamic() ? Collections.<String>emptyList() : tableRule.getActualTableNames(routedDataSource), eachTableShardingValue));
@@ -151,7 +152,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private boolean isAccurateSharding(final List<ShardingValue> shardingValues, final ShardingStrategy shardingStrategy) {
+    private boolean isAccurateSharding(final List<BaseShardingValue> shardingValues, final ShardingStrategy shardingStrategy) {
         return 1 == shardingValues.size() && shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && ShardingValue.ShardingValueType.RANGE != shardingValues.get(0).getType();
     }
     

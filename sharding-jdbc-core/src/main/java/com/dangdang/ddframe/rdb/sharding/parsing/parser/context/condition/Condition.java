@@ -1,5 +1,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition;
 
+import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
@@ -11,9 +13,9 @@ import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import lombok.Getter;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -77,7 +79,7 @@ public final class Condition {
      * @param parameters parameters
      * @return sharding value
      */
-    public ShardingValue<?> getShardingValue(final List<Object> parameters) {
+    public BaseShardingValue getShardingValue(final List<Object> parameters) {
         List<Comparable<?>> conditionValues = getValues(parameters);
         switch (operator) {
             case EQUAL:
@@ -85,7 +87,7 @@ public final class Condition {
             case IN:
                 return new ShardingValue<>(column.getTableName(), column.getName(), conditionValues);
             case BETWEEN:
-                return new ShardingValue<>(column.getTableName(), column.getName(), Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED));
+                return new RangeShardingValue<>(column.getTableName(), column.getName(), Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED));
             default:
                 throw new UnsupportedOperationException(operator.getExpression());
         }
