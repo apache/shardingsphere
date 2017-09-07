@@ -17,13 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.strategy.standard;
 
+import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.google.common.base.Optional;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -50,31 +55,38 @@ public final class StandardShardingStrategy extends ShardingStrategy {
         this.rangeShardingAlgorithm = Optional.fromNullable(rangeShardingAlgorithm);
     }
     
-    /**
-     * Calculate precise sharding info.
-     *
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValue sharding value
-     * @return sharding results for data sources or tables's names
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public String doPreciseSharding(final Collection<String> availableTargetNames, final PreciseShardingValue shardingValue) {
-        return preciseShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
+        Collection<String> shardingResult = shardingValue instanceof ListShardingValue
+                ? doSharding(availableTargetNames, (ListShardingValue) shardingValue) : doSharding(availableTargetNames, (RangeShardingValue) shardingValue);
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.addAll(shardingResult);
+        return result;
     }
     
-    /**
-     * Calculate range sharding info.
-     *
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValue sharding value
-     * @return sharding results for data sources or tables's names
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Collection<String> doRangeSharding(final Collection<String> availableTargetNames, final RangeShardingValue shardingValue) {
+    @SuppressWarnings("unchecked")
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue shardingValue) {
         if (!rangeShardingAlgorithm.isPresent()) {
             throw new UnsupportedOperationException("Cannot find range sharding strategy in sharding rule.");
         }
         return rangeShardingAlgorithm.get().doSharding(availableTargetNames, shardingValue);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingValue shardingValue) {
+        Collection<String> result = new LinkedList<>();
+        for (PreciseShardingValue<?> eachTableShardingValue : transferToPreciseShardingValues(shardingValue)) {
+            result.add(preciseShardingAlgorithm.doSharding(availableTargetNames, eachTableShardingValue));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private List<PreciseShardingValue> transferToPreciseShardingValues(final ListShardingValue<?> shardingValue) {
+        List<PreciseShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
+        for (Comparable<?> each : shardingValue.getValues()) {
+            result.add(new PreciseShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), each));
+        }
+        return result;
     }
     
     @Override

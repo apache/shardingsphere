@@ -17,9 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.simple;
 
-import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -42,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -120,53 +116,33 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> routeDataSources(final TableRule tableRule, final List<ShardingValue> databaseShardingValues) {
-        ShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
-        if (strategy instanceof StandardShardingStrategy && !databaseShardingValues.isEmpty()) {
-            if (isPreciseSharding(databaseShardingValues)) {
-                Collection<String> result = new LinkedList<>();
-                Collection<PreciseShardingValue> preciseDatabaseShardingValues = transferToShardingValues((ListShardingValue<?>) databaseShardingValues.get(0));
-                for (PreciseShardingValue<?> eachDatabaseShardingValue : preciseDatabaseShardingValues) {
-                    result.add(((StandardShardingStrategy) strategy).doPreciseSharding(tableRule.getActualDatasourceNames(), eachDatabaseShardingValue));
-                }
-                return result;
-            }
-            return ((StandardShardingStrategy) strategy).doRangeSharding(tableRule.getActualDatasourceNames(), (RangeShardingValue) databaseShardingValues.get(0));
+        Collection<String> availableTargetDatabases = tableRule.getActualDatasourceNames();
+        if (databaseShardingValues.isEmpty()) {
+            return availableTargetDatabases;
         }
-        Collection<String> result = shardingRule.getDatabaseShardingStrategy(tableRule).doStaticSharding(tableRule.getActualDatasourceNames(), databaseShardingValues);
+        ShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
+        if (strategy instanceof StandardShardingStrategy) {
+            return ((StandardShardingStrategy) strategy).doSharding(availableTargetDatabases, databaseShardingValues.get(0));
+        }
+        Collection<String> result = strategy.doSharding(tableRule.getActualDatasourceNames(), databaseShardingValues);
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         return result;
     }
     
     private Collection<String> routeTables(final TableRule tableRule, final String routedDataSource, final List<ShardingValue> tableShardingValues) {
-        ShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
+        if (tableShardingValues.isEmpty() && tableRule.isDynamic()) {
+            throw new UnsupportedOperationException("Dynamic table should contain sharding value.");
+        }
         Collection<String> availableTargetTables = tableRule.isDynamic() ? Collections.<String>emptyList() : tableRule.getActualTableNames(routedDataSource);
-        if (strategy instanceof StandardShardingStrategy && !tableShardingValues.isEmpty()) {
-            if (isPreciseSharding(tableShardingValues)) {
-                Collection<String> result = new LinkedList<>();
-                Collection<PreciseShardingValue> preciseTableShardingValues = transferToShardingValues((ListShardingValue<?>) tableShardingValues.get(0));
-                for (PreciseShardingValue<?> eachTableShardingValue : preciseTableShardingValues) {
-                    result.add(((StandardShardingStrategy) strategy).doPreciseSharding(availableTargetTables, eachTableShardingValue));
-                }
-                return result;
-            }
-            return ((StandardShardingStrategy) strategy).doRangeSharding(availableTargetTables, (RangeShardingValue) tableShardingValues.get(0));
+        if (tableShardingValues.isEmpty()) {
+            return availableTargetTables;
         }
-        Collection<String> result = 
-                tableRule.isDynamic() ? strategy.doDynamicSharding(tableShardingValues) : strategy.doStaticSharding(tableRule.getActualTableNames(routedDataSource), tableShardingValues);
+        ShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
+        if (strategy instanceof StandardShardingStrategy) {
+            return ((StandardShardingStrategy) strategy).doSharding(availableTargetTables, tableShardingValues.get(0));
+        }
+        Collection<String> result = strategy.doSharding(availableTargetTables, tableShardingValues);
         Preconditions.checkState(!result.isEmpty(), "no table route info");
-        return result;
-    }
-    
-    private boolean isPreciseSharding(final List<ShardingValue> shardingValues) {
-        return 1 == shardingValues.size() && !(shardingValues.get(0) instanceof RangeShardingValue);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private List<PreciseShardingValue> transferToShardingValues(final ListShardingValue<?> shardingValue) {
-        List<PreciseShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
-        for (Comparable<?> each : shardingValue.getValues()) {
-            result.add(new PreciseShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), each));
-        }
         return result;
     }
     
