@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 
-import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
 import com.google.common.base.Joiner;
@@ -54,10 +54,10 @@ public class ClosureShardingAlgorithm implements MultipleKeysShardingAlgorithm {
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<BaseShardingValue> shardingValues) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         List<Set<Comparable>> valuesDim = new ArrayList<>();
         List<String> columnNames = new ArrayList<>(shardingValues.size());
-        for (BaseShardingValue<?> each : shardingValues) {
+        for (ShardingValue<?> each : shardingValues) {
             columnNames.add(each.getColumnName());
             switch (each.getType()) {
                 case SINGLE:

@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.hint;
 
-import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValueType;
 import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
@@ -57,7 +57,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
     
     @Override
     public RoutingResult route() {
-        Optional<BaseShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME));
+        Optional<ShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME));
         Preconditions.checkState(shardingValue.isPresent());
         log.debug("Before database sharding only db:{} sharding values: {}", dataSourceRule.getDataSourceNames(), shardingValue.get());
         Collection<String> routingDataSources;
@@ -79,7 +79,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private boolean isAccurateSharding(final BaseShardingValue shardingValue, final ShardingStrategy shardingStrategy) {
+    private boolean isAccurateSharding(final ShardingValue shardingValue, final ShardingStrategy shardingStrategy) {
         return shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && ShardingValueType.RANGE != shardingValue.getType();
     }
     

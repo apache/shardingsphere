@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
@@ -32,8 +32,8 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<BaseShardingValue> shardingValues) {
-        BaseShardingValue shardingValue = shardingValues.iterator().next();
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+        ShardingValue shardingValue = shardingValues.iterator().next();
         switch (shardingValue.getType()) {
             case SINGLE: 
                 return doEqualSharding(availableTargetNames, (SingleShardingValue<Integer>) shardingValue);

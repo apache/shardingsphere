@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
 
-import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestMultipleKeysShardingAlgorithm;
@@ -41,7 +41,7 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoStaticShardingWithoutShardingColumns() {
         ShardingStrategy strategy = new ShardingStrategy(Sets.newHashSet("column"), null);
-        assertThat(strategy.doStaticSharding(targets, Collections.<BaseShardingValue>emptySet()), is(targets));
+        assertThat(strategy.doStaticSharding(targets, Collections.<ShardingValue>emptySet()), is(targets));
     }
     
     @Test
@@ -61,7 +61,7 @@ public final class ShardingStrategyTest {
     @Test(expected = IllegalStateException.class)
     public void assertDoDynamicShardingWithoutShardingColumns() {
         ShardingStrategy strategy = new ShardingStrategy(Sets.newHashSet("column"), null);
-        strategy.doDynamicSharding(Collections.<BaseShardingValue>emptySet());
+        strategy.doDynamicSharding(Collections.<ShardingValue>emptySet());
     }
     
     @Test
@@ -76,8 +76,8 @@ public final class ShardingStrategyTest {
         assertThat(strategy.doDynamicSharding(createShardingValues(new SingleShardingValue<>("logicTable", "column", "1"))), is((Collection<String>) Collections.<String>emptySet()));
     }
     
-    private Collection<BaseShardingValue> createShardingValues(final BaseShardingValue shardingValue) {
-        Collection<BaseShardingValue> result = new ArrayList<>(1);
+    private Collection<ShardingValue> createShardingValues(final ShardingValue shardingValue) {
+        Collection<ShardingValue> result = new ArrayList<>(1);
         result.add(shardingValue);
         return result;
     }

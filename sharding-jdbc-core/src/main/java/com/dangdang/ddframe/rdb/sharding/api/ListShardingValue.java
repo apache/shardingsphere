@@ -31,7 +31,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class ListShardingValue<T extends Comparable<?>> implements BaseShardingValue {
+public final class ListShardingValue<T extends Comparable<?>> implements ShardingValue {
     
     private final String logicTableName;
     

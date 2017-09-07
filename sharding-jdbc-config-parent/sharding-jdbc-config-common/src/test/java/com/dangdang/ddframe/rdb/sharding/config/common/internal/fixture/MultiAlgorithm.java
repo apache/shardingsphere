@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
 
 import java.util.Collection;
@@ -25,7 +25,7 @@ import java.util.Collection;
 public class MultiAlgorithm implements MultipleKeysTableShardingAlgorithm {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<BaseShardingValue> shardingValues) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         return null;
     }
 }

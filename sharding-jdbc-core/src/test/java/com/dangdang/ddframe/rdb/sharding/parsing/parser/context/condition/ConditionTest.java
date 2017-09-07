@@ -1,6 +1,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition;
 
-import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
@@ -19,7 +19,7 @@ public final class ConditionTest {
     @Test
     public void assertGetShardingValue() {
         Condition condition = new Condition(new Column("test", "test"), new SQLNumberExpression(1));
-        BaseShardingValue shardingValue = condition.getShardingValue(Collections.emptyList());
+        ShardingValue shardingValue = condition.getShardingValue(Collections.emptyList());
         assertThat((Integer) ((ListShardingValue) shardingValue).getValues().iterator().next(), is(1));
         condition = new Condition(new Column("test", "test"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
         shardingValue = condition.getShardingValue(Collections.emptyList());

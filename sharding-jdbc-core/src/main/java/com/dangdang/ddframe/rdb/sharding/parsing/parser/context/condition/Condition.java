@@ -1,6 +1,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition;
 
-import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
@@ -79,7 +79,7 @@ public final class Condition {
      * @param parameters parameters
      * @return sharding value
      */
-    public BaseShardingValue getShardingValue(final List<Object> parameters) {
+    public ShardingValue getShardingValue(final List<Object> parameters) {
         List<Comparable<?>> conditionValues = getValues(parameters);
         switch (operator) {
             case EQUAL:

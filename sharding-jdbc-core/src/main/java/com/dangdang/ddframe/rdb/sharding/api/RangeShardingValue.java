@@ -30,7 +30,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class RangeShardingValue<T extends Comparable<?>> implements BaseShardingValue {
+public final class RangeShardingValue<T extends Comparable<?>> implements ShardingValue {
     
     private final String logicTableName;
     

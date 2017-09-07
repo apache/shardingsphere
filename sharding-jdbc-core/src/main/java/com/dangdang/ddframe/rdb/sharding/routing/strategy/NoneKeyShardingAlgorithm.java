@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.strategy;
 
-import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 
 import java.util.Collection;
 
@@ -39,5 +39,5 @@ public interface NoneKeyShardingAlgorithm<T extends Comparable<?>> extends Shard
      * @param shardingValue sharding values
      * @return sharding results for data sources or tables's names
      */
-    String doSharding(Collection<String> availableTargetNames, BaseShardingValue<T> shardingValue);
+    String doSharding(Collection<String> availableTargetNames, ShardingValue<T> shardingValue);
 }

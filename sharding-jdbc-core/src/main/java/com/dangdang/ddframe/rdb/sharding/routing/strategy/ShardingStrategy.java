@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.strategy;
 
-import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
 import com.google.common.base.Preconditions;
@@ -73,7 +73,7 @@ public class ShardingStrategy {
      * @param shardingValues sharding values
      * @return sharding results for data sources or tables's names
      */
-    public Collection<String> doStaticSharding(final Collection<String> availableTargetNames, final Collection<BaseShardingValue> shardingValues) {
+    public Collection<String> doStaticSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         if (shardingValues.isEmpty()) {
             result.addAll(availableTargetNames);
@@ -89,7 +89,7 @@ public class ShardingStrategy {
      * @param shardingValues sharding values
      * @return sharding results for data sources or tables's names
      */
-    public Collection<String> doDynamicSharding(final Collection<BaseShardingValue> shardingValues) {
+    public Collection<String> doDynamicSharding(final Collection<ShardingValue> shardingValues) {
         Preconditions.checkState(!shardingValues.isEmpty(), "Dynamic table should contain sharding value.");
         Collection<String> availableTargetNames = Collections.emptyList();
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
@@ -98,13 +98,13 @@ public class ShardingStrategy {
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private Collection<String> doSharding(final Collection<BaseShardingValue> shardingValues, final Collection<String> availableTargetNames) {
+    private Collection<String> doSharding(final Collection<ShardingValue> shardingValues, final Collection<String> availableTargetNames) {
         if (shardingAlgorithm instanceof NoneKeyShardingAlgorithm) {
             return Collections.singletonList(((NoneKeyShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, shardingValues.iterator().next()));
         }
         if (shardingAlgorithm instanceof SingleKeyShardingAlgorithm) {
             SingleKeyShardingAlgorithm<?> singleKeyShardingAlgorithm = (SingleKeyShardingAlgorithm<?>) shardingAlgorithm;
-            BaseShardingValue shardingValue = shardingValues.iterator().next();
+            ShardingValue shardingValue = shardingValues.iterator().next();
             switch (shardingValue.getType()) {
                 case RANGE:
                     return singleKeyShardingAlgorithm.doBetweenSharding(availableTargetNames, (RangeShardingValue) shardingValue);

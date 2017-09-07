@@ -22,7 +22,7 @@ package com.dangdang.ddframe.rdb.sharding.api;
  * 
  * @author zhangliang
  */
-public interface BaseShardingValue<T extends Comparable<?>> {
+public interface ShardingValue<T extends Comparable<?>> {
     
     /**
      * Get logic table name.

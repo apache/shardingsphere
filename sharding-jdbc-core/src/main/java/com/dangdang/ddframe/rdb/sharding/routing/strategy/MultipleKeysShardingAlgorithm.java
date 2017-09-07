@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.strategy;
 
-import com.dangdang.ddframe.rdb.sharding.api.BaseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 
 import java.util.Collection;
 
@@ -35,5 +35,5 @@ public interface MultipleKeysShardingAlgorithm extends ShardingAlgorithm {
      * @param shardingValues sharding values
      * @return sharding results for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<BaseShardingValue> shardingValues);
+    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
 }
