@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.simple;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValueType;
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -155,7 +155,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     }
     
     private boolean isAccurateSharding(final List<ShardingValue> shardingValues, final ShardingStrategy shardingStrategy) {
-        return 1 == shardingValues.size() && shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && ShardingValueType.RANGE != shardingValues.get(0).getType();
+        return 1 == shardingValues.size() && shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && !(shardingValues.get(0) instanceof RangeShardingValue);
     }
     
     @SuppressWarnings("unchecked")

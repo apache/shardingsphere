@@ -37,9 +37,4 @@ public final class RangeShardingValue<T extends Comparable<?>> implements Shardi
     private final String columnName;
     
     private final Range<T> valueRange;
-    
-    @Override
-    public ShardingValueType getType() {
-        return ShardingValueType.RANGE;
-    }
 }

@@ -46,7 +46,6 @@ public final class HintManagerTest {
             ShardingKey shardingKey = new ShardingKey("logicTable", "shardingColumn");
             assertTrue(HintManagerHolder.getDatabaseShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getDatabaseShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
-            assertThat(hintManager.getDatabaseShardingValue(shardingKey).getType(), is(ShardingValueType.LIST));
             assertThat(((ListShardingValue) hintManager.getDatabaseShardingValue(shardingKey)).getValues().size(), is(3));
         }
     }
@@ -58,7 +57,6 @@ public final class HintManagerTest {
             ShardingKey shardingKey = new ShardingKey("logicTable", "shardingColumn");
             assertTrue(HintManagerHolder.getDatabaseShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getDatabaseShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
-            assertThat(hintManager.getDatabaseShardingValue(shardingKey).getType(), is(ShardingValueType.RANGE));
             assertThat(((RangeShardingValue) hintManager.getDatabaseShardingValue(shardingKey)).getValueRange().lowerEndpoint(), is((Comparable) 1));
             assertThat(((RangeShardingValue) hintManager.getDatabaseShardingValue(shardingKey)).getValueRange().upperEndpoint(), is((Comparable) 10));
         }
@@ -83,7 +81,6 @@ public final class HintManagerTest {
             ShardingKey shardingKey = new ShardingKey("logicTable", "shardingColumn");
             assertTrue(HintManagerHolder.getTableShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getTableShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
-            assertThat(hintManager.getTableShardingValue(shardingKey).getType(), is(ShardingValueType.LIST));
             assertThat(((ListShardingValue) hintManager.getTableShardingValue(shardingKey)).getValues().size(), is(3));
         }
     }
@@ -95,7 +92,6 @@ public final class HintManagerTest {
             ShardingKey shardingKey = new ShardingKey("logicTable", "shardingColumn");
             assertTrue(HintManagerHolder.getTableShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getTableShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
-            assertThat(hintManager.getTableShardingValue(shardingKey).getType(), is(ShardingValueType.RANGE));
             assertThat(((RangeShardingValue) hintManager.getTableShardingValue(shardingKey)).getValueRange().lowerEndpoint(), is((Comparable) 1));
             assertThat(((RangeShardingValue) hintManager.getTableShardingValue(shardingKey)).getValueRange().upperEndpoint(), is((Comparable) 10));
         }

@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.hint;
 
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValueType;
 import com.dangdang.ddframe.rdb.sharding.api.SingleShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
@@ -80,7 +80,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
     }
     
     private boolean isAccurateSharding(final ShardingValue shardingValue, final ShardingStrategy shardingStrategy) {
-        return shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && ShardingValueType.RANGE != shardingValue.getType();
+        return shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && !(shardingValue instanceof RangeShardingValue);
     }
     
     @SuppressWarnings("unchecked")

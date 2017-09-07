@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
@@ -59,16 +60,10 @@ public class ClosureShardingAlgorithm implements MultipleKeysShardingAlgorithm {
         List<String> columnNames = new ArrayList<>(shardingValues.size());
         for (ShardingValue<?> each : shardingValues) {
             columnNames.add(each.getColumnName());
-            switch (each.getType()) {
-                case SINGLE:
-                case LIST:
-                    valuesDim.add(Sets.<Comparable>newHashSet(((ListShardingValue) each).getValues()));
-                    break;
-                case RANGE:
-                    throw new UnsupportedOperationException("Inline expression does not support BETWEEN, please use Java API Config");
-                default:
-                    throw new UnsupportedOperationException(each.getType().name());
+            if (each instanceof RangeShardingValue) {
+                throw new UnsupportedOperationException("Inline expression does not support BETWEEN, please use Java API Config");
             }
+            valuesDim.add(Sets.<Comparable>newHashSet(((ListShardingValue) each).getValues()));
         }
         Set<List<Comparable>> cartesianValues = Sets.cartesianProduct(valuesDim);
         List<String> result = new ArrayList<>(cartesianValues.size());

@@ -37,11 +37,4 @@ public interface ShardingValue<T extends Comparable<?>> {
      * @return column name
      */
     String getColumnName();
-    
-    /**
-     * Get sharding value type.
-     * 
-     * @return sharding value type
-     */
-    ShardingValueType getType();
 }

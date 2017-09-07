@@ -36,9 +36,4 @@ public final class SingleShardingValue<T extends Comparable<?>> implements Shard
     private final String columnName;
     
     private final T value;
-    
-    @Override
-    public ShardingValueType getType() {
-        return ShardingValueType.SINGLE;
-    }
 }

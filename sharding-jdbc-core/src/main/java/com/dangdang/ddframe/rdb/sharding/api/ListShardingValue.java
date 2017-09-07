@@ -38,9 +38,4 @@ public final class ListShardingValue<T extends Comparable<?>> implements Shardin
     private final String columnName;
     
     private final Collection<T> values;
-    
-    @Override
-    public ShardingValueType getType() {
-        return ShardingValueType.LIST;
-    }
 }

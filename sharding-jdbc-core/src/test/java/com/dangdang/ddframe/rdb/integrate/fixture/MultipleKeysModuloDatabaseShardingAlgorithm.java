@@ -34,16 +34,16 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         ShardingValue shardingValue = shardingValues.iterator().next();
-        switch (shardingValue.getType()) {
-            case SINGLE: 
-                return doEqualSharding(availableTargetNames, (SingleShardingValue<Integer>) shardingValue);
-            case LIST: 
-                return doInSharding(availableTargetNames, (ListShardingValue<Integer>) shardingValue);
-            case RANGE: 
-                return doBetweenSharding(availableTargetNames, (RangeShardingValue<Integer>) shardingValue);
-            default: 
-                throw new UnsupportedOperationException();
+        if (shardingValue instanceof SingleShardingValue) {
+            return doEqualSharding(availableTargetNames, (SingleShardingValue<Integer>) shardingValue);
         }
+        if (shardingValue instanceof ListShardingValue) {
+            return doInSharding(availableTargetNames, (ListShardingValue<Integer>) shardingValue);
+        }
+        if (shardingValue instanceof RangeShardingValue) {
+            return doBetweenSharding(availableTargetNames, (RangeShardingValue<Integer>) shardingValue);
+        }
+        throw new UnsupportedOperationException();
     }
     
     private Collection<String> doEqualSharding(final Collection<String> availableTargetNames, final SingleShardingValue<Integer> shardingValue) {

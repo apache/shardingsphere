@@ -105,12 +105,10 @@ public class ShardingStrategy {
         if (shardingAlgorithm instanceof SingleKeyShardingAlgorithm) {
             SingleKeyShardingAlgorithm<?> singleKeyShardingAlgorithm = (SingleKeyShardingAlgorithm<?>) shardingAlgorithm;
             ShardingValue shardingValue = shardingValues.iterator().next();
-            switch (shardingValue.getType()) {
-                case RANGE:
-                    return singleKeyShardingAlgorithm.doBetweenSharding(availableTargetNames, (RangeShardingValue) shardingValue);
-                default:
-                    throw new UnsupportedOperationException(shardingValue.getType().getClass().getName());
+            if (shardingValue instanceof RangeShardingValue) {
+                return singleKeyShardingAlgorithm.doBetweenSharding(availableTargetNames, (RangeShardingValue) shardingValue);
             }
+            throw new UnsupportedOperationException("Cannot support shardingValue:" + shardingValue);
         }
         if (shardingAlgorithm instanceof MultipleKeysShardingAlgorithm) {
             return ((MultipleKeysShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, shardingValues);
