@@ -13,7 +13,7 @@
             <data parameter="1108,11,'init'" expected="delete/%s_8.xml" />
             <data parameter="1109,11,'init'" expected="delete/%s_9.xml" />
         </sharding-rule>
-        <sharding-rule value="db,hint">
+        <sharding-rule value="db,hint,masterslaveonly">
             <data parameter="1000,10,'init'" expected="delete/%s_0.xml" />
             <data parameter="1100,11,'init'" expected="delete/%s_1.xml" />
             <data parameter="1200,12,'init'" expected="delete/%s_2.xml" />
