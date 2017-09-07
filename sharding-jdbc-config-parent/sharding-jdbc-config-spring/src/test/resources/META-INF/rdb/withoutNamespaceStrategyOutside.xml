@@ -77,14 +77,20 @@
     <bean id="databaseShardingStrategy" class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy">
         <constructor-arg index="0" value="user_id"/>
         <constructor-arg index="1">
-            <bean class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloDatabaseShardingAlgorithm" />
+            <bean class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+        </constructor-arg>
+        <constructor-arg index="2">
+            <bean class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.RangeModuloDatabaseShardingAlgorithm" />
         </constructor-arg>
     </bean>
     
     <bean id="tableShardingStrategy" class="com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy">
         <constructor-arg index="0" value="order_id"/>
         <constructor-arg index="1">
-            <bean class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloTableShardingAlgorithm" />
+            <bean class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+        </constructor-arg>
+        <constructor-arg index="2">
+            <bean class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.RangeModuloTableShardingAlgorithm" />
         </constructor-arg>
     </bean>
     

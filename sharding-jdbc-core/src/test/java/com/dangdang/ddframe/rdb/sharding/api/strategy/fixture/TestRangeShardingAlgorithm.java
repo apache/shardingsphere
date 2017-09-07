@@ -18,23 +18,17 @@
 package com.dangdang.ddframe.rdb.sharding.api.strategy.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.RangeShardingAlgorithm;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public final class TestSingleKeyShardingAlgorithm implements SingleKeyShardingAlgorithm<String>, DatabaseShardingAlgorithm, TableShardingAlgorithm {
+public final class TestRangeShardingAlgorithm implements RangeShardingAlgorithm<String>, DatabaseShardingAlgorithm, TableShardingAlgorithm {
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<String> shardingValue) {
-        return shardingValue.getValue();
-    }
-    
-    @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final RangeShardingValue<String> shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<String> shardingValue) {
         Collection<String> result = new ArrayList<>();
         for (Integer i = Integer.parseInt(shardingValue.getValueRange().lowerEndpoint()); i <= Integer.parseInt(shardingValue.getValueRange().upperEndpoint()); i++) {
             result.add(i.toString());

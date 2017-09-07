@@ -26,7 +26,8 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrateg
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.routing.fixture.OrderShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.fixture.PreciseOrderShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.fixture.RangeOrderShardingAlgorithm;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -66,8 +67,8 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             TableRule configRule = TableRule.builder("t_config").dataSourceRule(dataSourceRule).build();
             ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule, configRule))
                     .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
-                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new OrderShardingAlgorithm()))
-                    .tableShardingStrategy(new TableShardingStrategy("order_id", new OrderShardingAlgorithm())).build();
+                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()))
+                    .tableShardingStrategy(new TableShardingStrategy("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
     }

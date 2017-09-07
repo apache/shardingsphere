@@ -19,8 +19,10 @@ package com.dangdang.ddframe.rdb.integrate.type.sharding;
 
 import com.dangdang.ddframe.rdb.common.base.AbstractSQLAssertTest;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
-import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyDynamicModuloTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.fixture.PreciseDynamicModuloTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.fixture.PreciseModuloDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.fixture.RangeDynamicModuloTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.fixture.RangeModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
@@ -83,8 +85,9 @@ public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
             TableRule orderItemTableRule = TableRule.builder("t_order_item").dynamic(true).dataSourceRule(dataSourceRule).build();
             ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
                     .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
-                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new SingleKeyModuloDatabaseShardingAlgorithm()))
-                    .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyDynamicModuloTableShardingAlgorithm("t_order_"))).build();
+                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new PreciseModuloDatabaseShardingAlgorithm(), new RangeModuloDatabaseShardingAlgorithm()))
+                    .tableShardingStrategy(
+                            new TableShardingStrategy("order_id", new PreciseDynamicModuloTableShardingAlgorithm("t_order_"), new RangeDynamicModuloTableShardingAlgorithm("t_order_"))).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;

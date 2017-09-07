@@ -1,3 +1,4 @@
+
 /*
  * Copyright 1999-2015 dangdang.com.
  * <p>
@@ -15,22 +16,22 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm;
+package com.dangdang.ddframe.rdb.sharding.example.config.spring.masterslave.algorithm;
 
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.PreciseDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.PreciseTableShardingAlgorithm;
 
 import java.util.Collection;
 
-public final class ModuloDatabaseShardingAlgorithm implements PreciseDatabaseShardingAlgorithm<Integer> {
+public class PreciseModuloTableShardingAlgorithm implements PreciseTableShardingAlgorithm<Integer> {
     
     @Override
-    public String doSharding(final Collection<String> dataSourceNames, final PreciseShardingValue<Integer> shardingValue) {
-        for (String each : dataSourceNames) {
-            if (each.endsWith(shardingValue.getValue() % 2 + "")) {
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(shardingValue.getValue() % 4 + "")) {
                 return each;
             }
         }
-        throw new IllegalArgumentException();
+        throw new UnsupportedOperationException();
     }
 }

@@ -15,17 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm;
+package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 
-import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.PreciseDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.RangeShardingAlgorithm;
 
-import java.util.Collection;
-
-public class SingleAlgorithm implements PreciseDatabaseShardingAlgorithm {
-    
-    @Override
-    public String doSharding(final Collection availableTargetNames, final PreciseShardingValue shardingValue) {
-        return null;
-    }
+/**
+ * Range table sharding algorithm for single sharding key interface.
+ * 
+ * @author zhangliang
+ */
+public interface RangeTableShardingAlgorithm<T extends Comparable<?>> extends RangeShardingAlgorithm<T>, TableShardingAlgorithm {
 }

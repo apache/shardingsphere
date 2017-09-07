@@ -18,34 +18,24 @@
 package com.dangdang.ddframe.rdb.sharding.routing.strategy;
 
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 
 import java.util.Collection;
 
 /**
- * Single key sharding algorithm.
+ * Range sharding algorithm.
  * 
  * @author zhangliang
  * 
  * @param <T> class type of sharding value
  */
-public interface SingleKeyShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
+public interface RangeShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
     
     /**
-     * Sharding with equal operator.
+     * Sharding.
      * 
      * @param availableTargetNames available data sources or tables's names
      * @param shardingValue sharding value
      * @return sharding results for data sources or tables's names
      */
-    String doEqualSharding(Collection<String> availableTargetNames, PreciseShardingValue<T> shardingValue);
-    
-    /**
-     * Sharding with between operator.
-     * 
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValue sharding value
-     * @return sharding results for data sources or tables's names
-     */
-    Collection<String> doBetweenSharding(Collection<String> availableTargetNames, RangeShardingValue<T> shardingValue);
+    Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<T> shardingValue);
 }

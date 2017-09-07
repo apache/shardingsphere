@@ -23,9 +23,9 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.MultipleKeysDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.PreciseDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.PreciseTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.GenerateKeyColumnConfig;
@@ -37,9 +37,10 @@ import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.Closur
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.PreciseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.RangeShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -185,11 +186,16 @@ public final class ShardingRuleBuilder {
         } catch (final InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
             throw new IllegalArgumentException(ex);
         }
-        Preconditions.checkState(shardingAlgorithm instanceof SingleKeyShardingAlgorithm || shardingAlgorithm instanceof MultipleKeysShardingAlgorithm, "Sharding-JDBC: algorithmClassName is illegal");
-        if (shardingAlgorithm instanceof SingleKeyShardingAlgorithm) {
+        Preconditions.checkState(shardingAlgorithm instanceof PreciseShardingAlgorithm
+                || shardingAlgorithm instanceof RangeShardingAlgorithm || shardingAlgorithm instanceof MultipleKeysShardingAlgorithm, "Sharding-JDBC: algorithmClassName is illegal");
+        if (shardingAlgorithm instanceof PreciseShardingAlgorithm) {
             Preconditions.checkArgument(1 == shardingColumns.size(), "Sharding-JDBC: SingleKeyShardingAlgorithm must have only ONE sharding column");
-            return returnClass.isAssignableFrom(DatabaseShardingStrategy.class) ? (T) new DatabaseShardingStrategy(shardingColumns.get(0), (SingleKeyDatabaseShardingAlgorithm<?>) shardingAlgorithm)
-                    : (T) new TableShardingStrategy(shardingColumns.get(0), (SingleKeyTableShardingAlgorithm<?>) shardingAlgorithm);
+            return returnClass.isAssignableFrom(DatabaseShardingStrategy.class) ? (T) new DatabaseShardingStrategy(shardingColumns.get(0), (PreciseDatabaseShardingAlgorithm<?>) shardingAlgorithm)
+                    : (T) new TableShardingStrategy(shardingColumns.get(0), (PreciseTableShardingAlgorithm<?>) shardingAlgorithm);
+        }
+        if (shardingAlgorithm instanceof RangeShardingAlgorithm) {
+            // TODO
+            throw new UnsupportedOperationException("");
         }
         return returnClass.isAssignableFrom(DatabaseShardingStrategy.class) ? (T) new DatabaseShardingStrategy(shardingColumns, (MultipleKeysDatabaseShardingAlgorithm) shardingAlgorithm) 
                 : (T) new TableShardingStrategy(shardingColumns, (MultipleKeysTableShardingAlgorithm) shardingAlgorithm);

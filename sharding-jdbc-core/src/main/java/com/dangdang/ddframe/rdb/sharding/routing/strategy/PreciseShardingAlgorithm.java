@@ -15,22 +15,27 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm;
+package com.dangdang.ddframe.rdb.sharding.routing.strategy;
 
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.PreciseDatabaseShardingAlgorithm;
 
 import java.util.Collection;
 
-public final class ModuloDatabaseShardingAlgorithm implements PreciseDatabaseShardingAlgorithm<Integer> {
+/**
+ * Precise sharding algorithm.
+ * 
+ * @author zhangliang
+ * 
+ * @param <T> class type of sharding value
+ */
+public interface PreciseShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
     
-    @Override
-    public String doSharding(final Collection<String> dataSourceNames, final PreciseShardingValue<Integer> shardingValue) {
-        for (String each : dataSourceNames) {
-            if (each.endsWith(shardingValue.getValue() % 2 + "")) {
-                return each;
-            }
-        }
-        throw new IllegalArgumentException();
-    }
+    /**
+     * Sharding.
+     * 
+     * @param availableTargetNames available data sources or tables's names
+     * @param shardingValue sharding value
+     * @return sharding results for data sources or tables's names
+     */
+    String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<T> shardingValue);
 }

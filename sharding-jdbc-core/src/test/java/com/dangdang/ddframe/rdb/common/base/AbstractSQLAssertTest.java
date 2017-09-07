@@ -118,7 +118,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
                     //CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     //CHECKSTYLE:ON
-                    if (ex.getMessage().startsWith("Dynamic table")) {
+                    if (null != ex.getMessage() && ex.getMessage().startsWith("Dynamic table")) {
                         continue;
                     }
                     ex.printStackTrace();

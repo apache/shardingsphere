@@ -17,37 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc.masterslave.algorithm;
 
-import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
-import com.google.common.collect.Range;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.PreciseTableShardingAlgorithm;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 
-public final class ModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Integer> {
+public final class ModuloTableShardingAlgorithm implements PreciseTableShardingAlgorithm<Integer> {
     
     @Override
-    public String doEqualSharding(final Collection<String> tableNames, final PreciseShardingValue<Integer> shardingValue) {
+    public String doSharding(final Collection<String> tableNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : tableNames) {
             if (each.endsWith(shardingValue.getValue() % 2 + "")) {
                 return each;
             }
         }
         throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public Collection<String> doBetweenSharding(final Collection<String> tableNames, final RangeShardingValue<Integer> shardingValue) {
-        Collection<String> result = new LinkedHashSet<>(tableNames.size());
-        Range<Integer> range = shardingValue.getValueRange();
-        for (Integer value = range.lowerEndpoint(); value <= range.upperEndpoint(); value++) {
-            for (String each : tableNames) {
-                if (each.endsWith(value % 2 + "")) {
-                    result.add(each);
-                }
-            }
-        }
-        return result;
     }
 }

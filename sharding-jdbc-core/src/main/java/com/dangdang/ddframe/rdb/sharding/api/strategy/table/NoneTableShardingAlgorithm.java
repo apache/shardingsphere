@@ -28,7 +28,7 @@ import java.util.Collection;
  * 
  * @author zhangliang
  */
-public final class NoneTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<String>, MultipleKeysTableShardingAlgorithm {
+public final class NoneTableShardingAlgorithm implements PreciseTableShardingAlgorithm<String>, RangeTableShardingAlgorithm<String>, MultipleKeysTableShardingAlgorithm {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTableNames, final Collection<ShardingValue> shardingValues) {
@@ -36,12 +36,12 @@ public final class NoneTableShardingAlgorithm implements SingleKeyTableShardingA
     }
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<String> shardingValue) {
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<String> shardingValue) {
         return availableTargetNames.isEmpty() ? null : availableTargetNames.iterator().next();
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final RangeShardingValue<String> shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<String> shardingValue) {
         return availableTargetNames;
     }
 }

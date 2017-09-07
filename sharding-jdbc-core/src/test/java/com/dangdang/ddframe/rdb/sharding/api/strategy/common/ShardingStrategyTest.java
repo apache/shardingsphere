@@ -17,11 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestMultipleKeysShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestSingleKeyShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestPreciseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestRangeShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
@@ -46,14 +47,14 @@ public final class ShardingStrategyTest {
     
     @Test
     public void assertDoStaticShardingForBetweenSingleKey() {
-        ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
+        ShardingStrategy strategy = new ShardingStrategy("column", new TestPreciseShardingAlgorithm(), new TestRangeShardingAlgorithm());
         assertThat(strategy.doStaticSharding(targets, createShardingValues(new RangeShardingValue<>("logicTable", "column", Range.open("1", "3")))), 
                 is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }
     
     @Test
     public void assertDoStaticShardingForMultipleKeys() {
-        ShardingStrategy strategy = new ShardingStrategy("column", new TestMultipleKeysShardingAlgorithm());
+        ShardingStrategy strategy = new ShardingStrategy(Collections.singletonList("column"), new TestMultipleKeysShardingAlgorithm());
         assertThat(strategy.doStaticSharding(targets, createShardingValues(new PreciseShardingValue<>("logicTable", "column", "1"))), 
                 is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }
@@ -66,13 +67,13 @@ public final class ShardingStrategyTest {
     
     @Test
     public void assertDoDynamicShardingForBetweenSingleKey() {
-        ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
+        ShardingStrategy strategy = new ShardingStrategy("column", new TestPreciseShardingAlgorithm(), new TestRangeShardingAlgorithm());
         assertThat(strategy.doDynamicSharding(createShardingValues(new RangeShardingValue<>("logicTable", "column", Range.open("1", "3")))), is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }
     
     @Test
     public void assertDoDynamicShardingForMultipleKeys() {
-        ShardingStrategy strategy = new ShardingStrategy("column", new TestMultipleKeysShardingAlgorithm());
+        ShardingStrategy strategy = new ShardingStrategy(Collections.singletonList("column"), new TestMultipleKeysShardingAlgorithm());
         assertThat(strategy.doDynamicSharding(createShardingValues(new PreciseShardingValue<>("logicTable", "column", "1"))), is((Collection<String>) Collections.<String>emptySet()));
     }
     

@@ -17,9 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
 
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.PreciseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.RangeShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Database sharding strategy.
@@ -28,12 +31,20 @@ import java.util.Collection;
  */
 public final class DatabaseShardingStrategy extends ShardingStrategy {
     
-    public DatabaseShardingStrategy(final NoneKeyDatabaseShardingAlgorithm<?> databaseShardingAlgorithm) {
-        super("", databaseShardingAlgorithm);
+    public DatabaseShardingStrategy() {
+        super(Collections.singleton(""), new NoneDatabaseShardingAlgorithm());
     }
     
-    public DatabaseShardingStrategy(final String shardingColumn, final SingleKeyDatabaseShardingAlgorithm<?> databaseShardingAlgorithm) {
-        super(shardingColumn, databaseShardingAlgorithm);
+    public DatabaseShardingStrategy(final NoneKeyDatabaseShardingAlgorithm<?> databaseShardingAlgorithm) {
+        super(Collections.singleton(""), databaseShardingAlgorithm);
+    }
+    
+    public DatabaseShardingStrategy(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm) {
+        super(shardingColumn, preciseShardingAlgorithm);
+    }
+    
+    public DatabaseShardingStrategy(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm, final RangeShardingAlgorithm rangeShardingAlgorithm) {
+        super(shardingColumn, preciseShardingAlgorithm, rangeShardingAlgorithm);
     }
     
     public DatabaseShardingStrategy(final Collection<String> shardingColumns, final MultipleKeysDatabaseShardingAlgorithm databaseShardingAlgorithm) {

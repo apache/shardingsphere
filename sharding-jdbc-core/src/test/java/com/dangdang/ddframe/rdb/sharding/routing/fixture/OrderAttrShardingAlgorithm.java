@@ -17,16 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.PreciseTableShardingAlgorithm;
 
 import java.util.Collection;
 
-public final class OrderAttrShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Integer> {
+public final class OrderAttrShardingAlgorithm implements PreciseTableShardingAlgorithm<Integer> {
     
     @Override
-    public String doEqualSharding(final Collection<String> tables, final PreciseShardingValue<Integer> shardingValue) {
+    public String doSharding(final Collection<String> tables, final PreciseShardingValue<Integer> shardingValue) {
         String suffix = shardingValue.getValue() % 2 == 0 ? "_a" : "_b";
         for (String each : tables) {
             if (each.endsWith(suffix)) {
@@ -34,10 +33,5 @@ public final class OrderAttrShardingAlgorithm implements SingleKeyTableShardingA
             }
         }
         return null;
-    }
-    
-    @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
-        throw new UnsupportedOperationException();
     }
 }

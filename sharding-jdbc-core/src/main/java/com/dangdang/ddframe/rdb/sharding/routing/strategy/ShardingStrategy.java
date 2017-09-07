@@ -39,14 +39,28 @@ public class ShardingStrategy {
     
     private final ShardingAlgorithm shardingAlgorithm;
     
-    public ShardingStrategy(final String shardingColumn, final ShardingAlgorithm shardingAlgorithm) {
-        this(Collections.singletonList(shardingColumn), shardingAlgorithm);
+    private final PreciseShardingAlgorithm preciseShardingAlgorithm;
+    
+    private final RangeShardingAlgorithm rangeShardingAlgorithm;
+    
+    public ShardingStrategy(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm) {
+        this(shardingColumn, preciseShardingAlgorithm, null);
+    }
+    
+    public ShardingStrategy(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm, final RangeShardingAlgorithm rangeShardingAlgorithm) {
+        this.shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        this.shardingColumns.add(shardingColumn);
+        this.shardingAlgorithm = null;
+        this.preciseShardingAlgorithm = preciseShardingAlgorithm;
+        this.rangeShardingAlgorithm = rangeShardingAlgorithm;
     }
     
     public ShardingStrategy(final Collection<String> shardingColumns, final ShardingAlgorithm shardingAlgorithm) {
         this.shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.shardingColumns.addAll(shardingColumns);
         this.shardingAlgorithm = shardingAlgorithm;
+        this.preciseShardingAlgorithm = null;
+        this.rangeShardingAlgorithm = null;
     }
     
     /**
@@ -58,10 +72,7 @@ public class ShardingStrategy {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public String doPreciseSharding(final Collection<String> availableTargetNames, final PreciseShardingValue shardingValue) {
-        if (shardingAlgorithm instanceof SingleKeyShardingAlgorithm) {
-            return ((SingleKeyShardingAlgorithm<?>) shardingAlgorithm).doEqualSharding(availableTargetNames, shardingValue);
-        }
-        throw new UnsupportedOperationException(shardingAlgorithm.getClass().getName());
+        return preciseShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
     }
     
     /**
@@ -100,11 +111,10 @@ public class ShardingStrategy {
         if (shardingAlgorithm instanceof NoneKeyShardingAlgorithm) {
             return Collections.singletonList(((NoneKeyShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, shardingValues.iterator().next()));
         }
-        if (shardingAlgorithm instanceof SingleKeyShardingAlgorithm) {
-            SingleKeyShardingAlgorithm<?> singleKeyShardingAlgorithm = (SingleKeyShardingAlgorithm<?>) shardingAlgorithm;
+        if (null != rangeShardingAlgorithm) {
             ShardingValue shardingValue = shardingValues.iterator().next();
             if (shardingValue instanceof RangeShardingValue) {
-                return singleKeyShardingAlgorithm.doBetweenSharding(availableTargetNames, (RangeShardingValue) shardingValue);
+                return rangeShardingAlgorithm.doSharding(availableTargetNames, (RangeShardingValue) shardingValue);
             }
             throw new UnsupportedOperationException("Cannot support shardingValue:" + shardingValue);
         }

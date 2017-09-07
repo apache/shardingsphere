@@ -1,4 +1,3 @@
-
 /*
  * Copyright 1999-2015 dangdang.com.
  * <p>
@@ -16,35 +15,24 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.config.spring.masterslave.algorithm;
+package com.dangdang.ddframe.rdb.integrate.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.RangeTableShardingAlgorithm;
 import com.google.common.collect.Range;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Integer> {
+public final class RangeModuloTableShardingAlgorithm implements RangeTableShardingAlgorithm<Integer> {
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
-        for (String each : availableTargetNames) {
-            if (each.endsWith(shardingValue.getValue() % 4 + "")) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Range<Integer> range = shardingValue.getValueRange();
-        for (Integer value = range.lowerEndpoint(); value <= range.upperEndpoint(); value++) {
+        for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(value % 4 + "")) {
+                if (each.endsWith(i % 10 + "")) {
                     result.add(each);
                 }
             }

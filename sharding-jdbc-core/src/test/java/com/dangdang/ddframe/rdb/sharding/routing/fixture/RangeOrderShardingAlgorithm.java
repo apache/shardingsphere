@@ -18,27 +18,16 @@
 package com.dangdang.ddframe.rdb.sharding.routing.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.RangeDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.RangeTableShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-public final class OrderShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm<Integer>, SingleKeyTableShardingAlgorithm<Integer> {
+public final class RangeOrderShardingAlgorithm implements RangeDatabaseShardingAlgorithm<Integer>, RangeTableShardingAlgorithm<Integer> {
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
-        for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
-                return each;
-            }
-        }
-        return null;
-    }
-    
-    @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         Collection<String> result = new HashSet<>(2);
         for (int i = shardingValue.getValueRange().lowerEndpoint(); i <= shardingValue.getValueRange().upperEndpoint(); i++) {
             for (String each : availableTargetNames) {

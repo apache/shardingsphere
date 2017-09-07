@@ -15,14 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
+package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
 
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.RangeShardingAlgorithm;
 
 /**
- * Table sharding algorithm for single sharding key interface.
+ * Range database sharding algorithm for single sharding key interface.
  * 
  * @author zhangliang
  */
-public interface SingleKeyTableShardingAlgorithm<T extends Comparable<?>> extends SingleKeyShardingAlgorithm<T>, TableShardingAlgorithm {
+public interface RangeDatabaseShardingAlgorithm<T extends Comparable<?>> extends RangeShardingAlgorithm<T>, DatabaseShardingAlgorithm {
 }

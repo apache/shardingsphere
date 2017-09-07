@@ -17,16 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.hint;
 
-import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
@@ -80,7 +79,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
     }
     
     private boolean isPreciseSharding(final ShardingValue shardingValue, final ShardingStrategy shardingStrategy) {
-        return shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && !(shardingValue instanceof RangeShardingValue);
+        return null != shardingStrategy.getPreciseShardingAlgorithm() && !(shardingValue instanceof RangeShardingValue);
     }
     
     @SuppressWarnings("unchecked")

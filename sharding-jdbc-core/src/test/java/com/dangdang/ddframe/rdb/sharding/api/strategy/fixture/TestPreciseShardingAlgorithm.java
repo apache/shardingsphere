@@ -15,22 +15,19 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm;
+package com.dangdang.ddframe.rdb.sharding.api.strategy.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.PreciseDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 
-public final class ModuloDatabaseShardingAlgorithm implements PreciseDatabaseShardingAlgorithm<Integer> {
+public final class TestPreciseShardingAlgorithm implements PreciseShardingAlgorithm<String>, DatabaseShardingAlgorithm, TableShardingAlgorithm {
     
     @Override
-    public String doSharding(final Collection<String> dataSourceNames, final PreciseShardingValue<Integer> shardingValue) {
-        for (String each : dataSourceNames) {
-            if (each.endsWith(shardingValue.getValue() % 2 + "")) {
-                return each;
-            }
-        }
-        throw new IllegalArgumentException();
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<String> shardingValue) {
+        return shardingValue.getValue();
     }
 }

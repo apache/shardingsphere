@@ -17,9 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.PreciseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.RangeShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Table sharding strategy.
@@ -28,8 +31,16 @@ import java.util.Collection;
  */
 public final class TableShardingStrategy extends ShardingStrategy {
     
-    public TableShardingStrategy(final String shardingColumn, final SingleKeyTableShardingAlgorithm<?> tableShardingAlgorithm) {
-        super(shardingColumn, tableShardingAlgorithm);
+    public TableShardingStrategy() {
+        super(Collections.singleton(""), new NoneTableShardingAlgorithm());
+    }
+    
+    public TableShardingStrategy(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm) {
+        super(shardingColumn, preciseShardingAlgorithm);
+    }
+    
+    public TableShardingStrategy(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm, final RangeShardingAlgorithm rangeShardingAlgorithm) {
+        super(shardingColumn, preciseShardingAlgorithm, rangeShardingAlgorithm);
     }
     
     public TableShardingStrategy(final Collection<String> shardingColumns, final MultipleKeysTableShardingAlgorithm tableShardingAlgorithm) {

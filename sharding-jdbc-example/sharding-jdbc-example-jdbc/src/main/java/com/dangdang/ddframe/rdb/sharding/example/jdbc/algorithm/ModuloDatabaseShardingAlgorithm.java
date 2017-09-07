@@ -17,37 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm;
 
-import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
-import com.google.common.collect.Range;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.PreciseDatabaseShardingAlgorithm;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 
-public final class ModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm<Integer> {
+public final class ModuloDatabaseShardingAlgorithm implements PreciseDatabaseShardingAlgorithm<Integer> {
     
     @Override
-    public String doEqualSharding(final Collection<String> dataSourceNames, final PreciseShardingValue<Integer> shardingValue) {
+    public String doSharding(final Collection<String> dataSourceNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : dataSourceNames) {
             if (each.endsWith(shardingValue.getValue() % 2 + "")) {
                 return each;
             }
         }
         throw new IllegalArgumentException();
-    }
-    
-    @Override
-    public Collection<String> doBetweenSharding(final Collection<String> dataSourceNames, final RangeShardingValue<Integer> shardingValue) {
-        Collection<String> result = new LinkedHashSet<>(dataSourceNames.size());
-        Range<Integer> range = shardingValue.getValueRange();
-        for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {
-            for (String each : dataSourceNames) {
-                if (each.endsWith(i % 2 + "")) {
-                    result.add(each);
-                }
-            }
-        }
-        return result;
     }
 }

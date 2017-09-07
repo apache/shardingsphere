@@ -18,35 +18,24 @@
 package com.dangdang.ddframe.rdb.integrate.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.RangeTableShardingAlgorithm;
 import com.google.common.collect.Range;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm<Integer> {
+@RequiredArgsConstructor
+public final class RangeDynamicModuloTableShardingAlgorithm implements RangeTableShardingAlgorithm<Integer> {
+    
+    private final String tablePrefix;
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
-        for (String each : availableTargetNames) {
-            if (each.endsWith(shardingValue.getValue() % 10 + "")) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Range<Integer> range = shardingValue.getValueRange();
         for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {
-            for (String each : availableTargetNames) {
-                if (each.endsWith(i % 10 + "")) {
-                    result.add(each);
-                }
-            }
+            result.add(tablePrefix + i % 10);
         }
         return result;
     }

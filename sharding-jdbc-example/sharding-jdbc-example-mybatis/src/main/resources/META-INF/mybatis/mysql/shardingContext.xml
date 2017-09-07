@@ -28,8 +28,8 @@
         <property name="password" value=""/>
     </bean>
     
-    <rdb:strategy id="databaseShardingStrategy" sharding-columns="user_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.SingleKeyModuloDatabaseShardingAlgorithm"/>
-    <rdb:strategy id="tableShardingStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.SingleKeyModuloTableShardingAlgorithm"/>
+    <rdb:strategy id="databaseShardingStrategy" sharding-columns="user_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
+    <rdb:strategy id="tableShardingStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.PreciseModuloTableShardingAlgorithm"/>
     
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="ds_0, ds_1">

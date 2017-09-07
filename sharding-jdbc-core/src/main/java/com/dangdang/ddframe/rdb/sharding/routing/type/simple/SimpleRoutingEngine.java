@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.routing.type.simple;
 
 import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
@@ -32,7 +32,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
@@ -155,7 +154,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     }
     
     private boolean isPreciseSharding(final List<ShardingValue> shardingValues, final ShardingStrategy shardingStrategy) {
-        return 1 == shardingValues.size() && shardingStrategy.getShardingAlgorithm() instanceof SingleKeyShardingAlgorithm && !(shardingValues.get(0) instanceof RangeShardingValue);
+        return 1 == shardingValues.size() && null != shardingStrategy.getPreciseShardingAlgorithm() && !(shardingValues.get(0) instanceof RangeShardingValue);
     }
     
     @SuppressWarnings("unchecked")

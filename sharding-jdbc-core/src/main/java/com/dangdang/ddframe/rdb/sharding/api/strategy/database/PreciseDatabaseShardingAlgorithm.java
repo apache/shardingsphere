@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
 
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.PreciseShardingAlgorithm;
 
 /**
- * Database sharding algorithm for single sharding key interface.
+ * Precise database sharding algorithm for single sharding key interface.
  * 
  * @author zhangliang
  */
-public interface SingleKeyDatabaseShardingAlgorithm<T extends Comparable<?>> extends SingleKeyShardingAlgorithm<T>, DatabaseShardingAlgorithm {
+public interface PreciseDatabaseShardingAlgorithm<T extends Comparable<?>> extends PreciseShardingAlgorithm<T>, DatabaseShardingAlgorithm {
 }

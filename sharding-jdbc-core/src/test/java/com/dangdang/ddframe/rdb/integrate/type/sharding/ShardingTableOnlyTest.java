@@ -19,7 +19,8 @@ package com.dangdang.ddframe.rdb.integrate.type.sharding;
 
 import com.dangdang.ddframe.rdb.common.base.AbstractSQLAssertTest;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
-import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.fixture.PreciseModuloTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.fixture.RangeModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
@@ -96,8 +97,8 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
                     .dataSourceRule(dataSourceRule)
                     .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
                     .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
-                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new NoneDatabaseShardingAlgorithm()))
-                    .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm())).build();
+                    .databaseShardingStrategy(new DatabaseShardingStrategy(Collections.singletonList("user_id"), new NoneDatabaseShardingAlgorithm()))
+                    .tableShardingStrategy(new TableShardingStrategy("order_id", new PreciseModuloTableShardingAlgorithm(), new RangeModuloTableShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;

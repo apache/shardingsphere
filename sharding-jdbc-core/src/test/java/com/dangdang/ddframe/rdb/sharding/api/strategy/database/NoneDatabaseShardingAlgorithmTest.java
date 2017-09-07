@@ -17,6 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
 
+import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -34,21 +37,24 @@ public final class NoneDatabaseShardingAlgorithmTest {
     
     @Test
     public void assertDoSharding() {
-        assertThat(noneDatabaseShardingAlgorithm.doSharding(targets, null), is(targets));
+        assertThat(noneDatabaseShardingAlgorithm.doSharding(targets, Collections.<ShardingValue>emptyList()), is(targets));
     }
     
     @Test
     public void assertDoEqualShardingForTargetsEmpty() {
-        assertNull(noneDatabaseShardingAlgorithm.doEqualSharding(Collections.<String>emptyList(), null));
+        PreciseShardingValue<String> shardingValue = null;
+        assertNull(noneDatabaseShardingAlgorithm.doSharding(Collections.<String>emptyList(), shardingValue));
     }
     
     @Test
     public void assertDoEqualSharding() {
-        assertThat(noneDatabaseShardingAlgorithm.doEqualSharding(targets, null), is("ds"));
+        PreciseShardingValue<String> shardingValue = null;
+        assertThat(noneDatabaseShardingAlgorithm.doSharding(targets, shardingValue), is("ds"));
     }
     
     @Test
     public void assertDoBetweenSharding() {
-        assertThat(noneDatabaseShardingAlgorithm.doBetweenSharding(targets, null), is(targets));
+        RangeShardingValue<String> shardingValue = null;
+        assertThat(noneDatabaseShardingAlgorithm.doSharding(targets, shardingValue), is(targets));
     }
 }
