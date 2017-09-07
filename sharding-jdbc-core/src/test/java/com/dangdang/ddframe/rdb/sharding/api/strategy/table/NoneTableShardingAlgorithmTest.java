@@ -20,6 +20,8 @@ package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.google.common.collect.BoundType;
+import com.google.common.collect.Range;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -37,8 +39,7 @@ public final class NoneTableShardingAlgorithmTest {
     
     @Test
     public void assertDoEqualShardingForTargetsEmpty() {
-        PreciseShardingValue shardingValue = null;
-        assertNull(noneTableShardingAlgorithm.doSharding(Collections.<String>emptyList(), shardingValue));
+        assertNull(noneTableShardingAlgorithm.doSharding(Collections.<String>emptyList(), new PreciseShardingValue<>("tbl", "col", "1")));
     }
     
     @Test
@@ -48,13 +49,11 @@ public final class NoneTableShardingAlgorithmTest {
     
     @Test
     public void assertDoEqualSharding() {
-        PreciseShardingValue shardingValue = null;
-        assertThat(noneTableShardingAlgorithm.doSharding(targets, shardingValue), is("tbl"));
+        assertThat(noneTableShardingAlgorithm.doSharding(targets, new PreciseShardingValue<>("tbl", "col", "1")), is("tbl"));
     }
     
     @Test
     public void assertDoBetweenSharding() {
-        RangeShardingValue shardingValue = null;
-        assertThat(noneTableShardingAlgorithm.doSharding(targets, shardingValue), is(targets));
+        assertThat(noneTableShardingAlgorithm.doSharding(targets, new RangeShardingValue<>("tbl", "col", Range.range("1", BoundType.CLOSED, "2", BoundType.OPEN))), is(targets));
     }
 }
