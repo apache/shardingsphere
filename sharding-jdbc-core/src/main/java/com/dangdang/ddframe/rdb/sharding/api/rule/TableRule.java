@@ -54,24 +54,7 @@ public final class TableRule {
     
     private final KeyGenerator keyGenerator;
     
-    /**
-     * Constructs a full properties table rule.
-     *
-     * <p>Should not use for spring namespace.</p>
-     *
-     * @deprecated should be private
-     * @param logicTable logic table name
-     * @param dynamic is dynamic table
-     * @param actualTables names of actual tables
-     * @param dataSourceRule data source rule
-     * @param dataSourceNames names of data sources
-     * @param databaseShardingStrategy database sharding strategy
-     * @param tableShardingStrategy table sharding strategy
-     * @param generateKeyColumn generate key column name
-     * @param keyGenerator key generator
-     */
-    @Deprecated
-    public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames,
+    private TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames,
                      final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy,
                      final String generateKeyColumn, final KeyGenerator keyGenerator) {
         Preconditions.checkNotNull(logicTable);
