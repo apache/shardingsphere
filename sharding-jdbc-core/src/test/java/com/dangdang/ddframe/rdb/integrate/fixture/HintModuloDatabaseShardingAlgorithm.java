@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.integrate.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ListShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingAlgorithm;
 
 import java.util.Collection;

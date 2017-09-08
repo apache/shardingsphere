@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.hint;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

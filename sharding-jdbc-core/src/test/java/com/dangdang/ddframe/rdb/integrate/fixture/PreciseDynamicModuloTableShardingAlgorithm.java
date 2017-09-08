@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
 import lombok.RequiredArgsConstructor;
 

@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.algorithm;
 
-import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 import com.google.common.collect.Range;
 

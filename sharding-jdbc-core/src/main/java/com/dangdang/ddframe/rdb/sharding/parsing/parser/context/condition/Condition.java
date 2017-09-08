@@ -1,8 +1,8 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.ListShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;

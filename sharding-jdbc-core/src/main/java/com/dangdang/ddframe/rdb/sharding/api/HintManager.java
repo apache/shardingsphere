@@ -17,6 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ListShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;

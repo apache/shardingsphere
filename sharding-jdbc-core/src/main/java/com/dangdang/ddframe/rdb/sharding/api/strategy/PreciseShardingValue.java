@@ -15,26 +15,25 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api;
+package com.dangdang.ddframe.rdb.sharding.api.strategy;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Sharding value interface.
+ * Sharding value for precise value.
  * 
  * @author zhangliang
  */
-public interface ShardingValue {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class PreciseShardingValue<T extends Comparable<?>> implements ShardingValue {
     
-    /**
-     * Get logic table name.
-     *
-     * @return logic table name
-     */
-    String getLogicTableName();
+    private final String logicTableName;
     
-    /**
-     * Get column name.
-     *
-     * @return column name
-     */
-    String getColumnName();
+    private final String columnName;
+    
+    private final T value;
 }
