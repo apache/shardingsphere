@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing;
 
 import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
 import com.dangdang.ddframe.rdb.common.util.SQLPlaceholderUtil;
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
@@ -27,6 +28,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseSQ
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.helper.ParserJAXBHelper;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -65,8 +68,23 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     }
     
     private ShardingRule buildShardingRule() {
-        TableRule orderTableRule = TableRule.builder("t_order").actualTables(Collections.singletonList("t_order")).dataSourceNames(Arrays.asList("db0", "db1")).build();
-        return new ShardingRuleMockBuilder().addTableRules(orderTableRule).addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("item_id")
+        TableRule orderTableRule = TableRule.builder("t_order").actualTables(Collections.singletonList("t_order")).dataSourceNames(Arrays.asList("db0", "db1"))
+                .tableShardingStrategy(new ComplexShardingStrategy(Arrays.asList("user_id", "order_id"), new ComplexKeysShardingAlgorithm() {
+                    
+                    @Override
+                    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+                        return availableTargetNames;
+                    }
+                })).build();
+        TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Collections.singletonList("t_order_item")).dataSourceNames(Arrays.asList("db0", "db1"))
+                .tableShardingStrategy(new ComplexShardingStrategy(Arrays.asList("user_id", "order_id", "item_id"), new ComplexKeysShardingAlgorithm() {
+                
+                    @Override
+                    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+                        return availableTargetNames;
+                    }
+                })).build();
+        return new ShardingRuleMockBuilder().addTableRules(orderTableRule).addTableRules(orderItemTableRule).addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("item_id")
                 .addGenerateKeyColumn("t_order_item", "item_id").build();
     }
 }

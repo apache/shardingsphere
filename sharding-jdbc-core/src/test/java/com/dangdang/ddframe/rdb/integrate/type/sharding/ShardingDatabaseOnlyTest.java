@@ -25,11 +25,11 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import org.junit.AfterClass;
 
 import javax.sql.DataSource;
@@ -84,7 +84,7 @@ public class ShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
             ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
                     .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
                     .databaseShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("user_id"), new ComplexKeysModuloDatabaseShardingAlgorithm()))
-                    .tableShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("order_id"), new NoneShardingAlgorithm())).build();
+                    .tableShardingStrategy(new NoneShardingStrategy()).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;

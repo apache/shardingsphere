@@ -23,8 +23,8 @@ import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestComplexKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestPreciseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestRangeShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
@@ -42,7 +42,7 @@ public final class ShardingStrategyTest {
     
     @Test
     public void assertDoStaticShardingWithoutShardingColumns() {
-        ComplexShardingStrategy strategy = new ComplexShardingStrategy(Sets.newHashSet("column"), new NoneShardingAlgorithm());
+        NoneShardingStrategy strategy = new NoneShardingStrategy();
         assertThat(strategy.doSharding(targets, Collections.<ShardingValue>emptySet()), is(targets));
     }
     

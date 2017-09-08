@@ -17,14 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
@@ -83,8 +82,8 @@ public final class ShardingRule {
         this.dataSourceRule = dataSourceRule;
         this.tableRules = null == tableRules ? Collections.<TableRule>emptyList() : tableRules;
         this.bindingTableRules = null == bindingTableRules ? Collections.<BindingTableRule>emptyList() : bindingTableRules;
-        this.databaseShardingStrategy = null == databaseShardingStrategy ? new ComplexShardingStrategy(Collections.<String>emptyList(), new NoneShardingAlgorithm()) : databaseShardingStrategy;
-        this.tableShardingStrategy = null == tableShardingStrategy ? new ComplexShardingStrategy(Collections.<String>emptyList(), new NoneShardingAlgorithm()) : tableShardingStrategy;
+        this.databaseShardingStrategy = null == databaseShardingStrategy ? new NoneShardingStrategy() : databaseShardingStrategy;
+        this.tableShardingStrategy = null == tableShardingStrategy ? new NoneShardingStrategy() : tableShardingStrategy;
         this.keyGenerator = keyGenerator;
         defaultGenerator = KeyGeneratorFactory.createKeyGenerator(DefaultKeyGenerator.class);
     }
@@ -134,8 +133,7 @@ public final class ShardingRule {
         Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1);
         defaultDataSourceMap.put(defaultDataSourceRule.getDefaultDataSourceName(), defaultDataSourceRule.getDefaultDataSource().get());
         return TableRule.builder(logicTableName).dataSourceRule(new DataSourceRule(defaultDataSourceMap))
-                .databaseShardingStrategy(new ComplexShardingStrategy(Collections.singleton(""), new NoneShardingAlgorithm()))
-                .tableShardingStrategy(new ComplexShardingStrategy(Collections.singleton(""), new NoneShardingAlgorithm())).build();
+                .databaseShardingStrategy(new NoneShardingStrategy()).tableShardingStrategy(new NoneShardingStrategy()).build();
     }
     
     /**

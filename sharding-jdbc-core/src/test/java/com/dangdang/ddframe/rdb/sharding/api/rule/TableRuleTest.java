@@ -17,9 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import com.google.common.collect.Sets;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -27,7 +26,6 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +49,7 @@ public final class TableRuleTest {
     @Test
     public void assertTableRuleForDynamicWithDatabaseStrategy() {
         TableRule actual = TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule())
-                .databaseShardingStrategy(new ComplexShardingStrategy(Collections.singletonList(""), new NoneShardingAlgorithm())).build();
+                .databaseShardingStrategy(new NoneShardingStrategy()).build();
         assertDynamicTable(actual);
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNull(actual.getTableShardingStrategy());
@@ -60,7 +58,7 @@ public final class TableRuleTest {
     @Test
     public void assertTableRuleForDynamicWithTableStrategy() {
         TableRule actual = TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule())
-                .tableShardingStrategy(new ComplexShardingStrategy(Collections.singletonList(""), new NoneShardingAlgorithm())).build();
+                .tableShardingStrategy(new NoneShardingStrategy()).build();
         assertDynamicTable(actual);
         assertNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());
@@ -69,8 +67,8 @@ public final class TableRuleTest {
     @Test
     public void assertTableRuleForDynamicWithAllStrategies() {
         TableRule actual = TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule())
-                .databaseShardingStrategy(new ComplexShardingStrategy(Collections.singletonList(""), new NoneShardingAlgorithm()))
-                .tableShardingStrategy(new ComplexShardingStrategy(Collections.singletonList(""), new NoneShardingAlgorithm())).build();
+                .databaseShardingStrategy(new NoneShardingStrategy())
+                .tableShardingStrategy(new NoneShardingStrategy()).build();
         assertDynamicTable(actual);
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());
@@ -93,7 +91,7 @@ public final class TableRuleTest {
     @Test
     public void assertTableRuleWithDatabaseShardingStrategyWithoutDataNode() {
         TableRule actual = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(createDataSourceRule())
-                .databaseShardingStrategy(new ComplexShardingStrategy(Collections.singletonList(""), new NoneShardingAlgorithm())).build();
+                .databaseShardingStrategy(new NoneShardingStrategy()).build();
         assertActualTable(actual);
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNull(actual.getTableShardingStrategy());
@@ -102,7 +100,7 @@ public final class TableRuleTest {
     @Test
     public void assertTableRuleWithTableShardingStrategyWithoutDataNode() {
         TableRule actual = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(createDataSourceRule())
-                .tableShardingStrategy(new ComplexShardingStrategy(Collections.singletonList(""), new NoneShardingAlgorithm())).build();
+                .tableShardingStrategy(new NoneShardingStrategy()).build();
         assertActualTable(actual);
         assertNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());
