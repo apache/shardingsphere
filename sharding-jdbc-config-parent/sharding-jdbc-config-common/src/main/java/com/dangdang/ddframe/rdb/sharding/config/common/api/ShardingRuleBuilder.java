@@ -114,8 +114,8 @@ public final class ShardingRuleBuilder {
                 tableRuleBuilder.actualTables(actualTables.toArray(new String[actualTables.size()]));
             }
             if (!Strings.isNullOrEmpty(tableRuleConfig.getDataSourceNames())) {
-                List<String> actualDataSourceNems = new InlineParser(tableRuleConfig.getDataSourceNames()).evaluate();
-                tableRuleBuilder.dataSourceNames(actualDataSourceNems.toArray(new String[actualDataSourceNems.size()]));
+                List<String> actualDataSourceNames = new InlineParser(tableRuleConfig.getDataSourceNames()).evaluate();
+                tableRuleBuilder.dataSourceNames(actualDataSourceNames.toArray(new String[actualDataSourceNames.size()]));
             }
             buildGenerateKeyColumn(tableRuleBuilder, tableRuleConfig);
             result[count] = tableRuleBuilder.build();
