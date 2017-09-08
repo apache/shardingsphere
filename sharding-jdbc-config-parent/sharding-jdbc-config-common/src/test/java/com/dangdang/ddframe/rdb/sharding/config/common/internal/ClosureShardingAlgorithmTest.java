@@ -15,11 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
+package com.dangdang.ddframe.rdb.sharding.config.common.internal;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.ListShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.RangeShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import groovy.lang.MissingMethodException;

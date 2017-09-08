@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture;
+package com.dangdang.ddframe.rdb.sharding.config.common.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;

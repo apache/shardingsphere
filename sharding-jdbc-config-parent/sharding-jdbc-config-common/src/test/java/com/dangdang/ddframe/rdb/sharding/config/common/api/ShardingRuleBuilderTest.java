@@ -28,8 +28,8 @@ import com.dangdang.ddframe.rdb.sharding.config.common.api.config.StrategyConfig
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.fixture.DecrementKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.config.common.fixture.IncrementKeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture.MultiAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture.SingleAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.config.common.fixture.MultiAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.config.common.fixture.SingleAlgorithm;
 import com.google.common.base.Joiner;
 import org.junit.Test;
 

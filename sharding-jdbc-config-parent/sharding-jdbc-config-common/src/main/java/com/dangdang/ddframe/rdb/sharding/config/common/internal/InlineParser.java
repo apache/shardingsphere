@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.internal.parser;
+package com.dangdang.ddframe.rdb.sharding.config.common.internal;
 
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;

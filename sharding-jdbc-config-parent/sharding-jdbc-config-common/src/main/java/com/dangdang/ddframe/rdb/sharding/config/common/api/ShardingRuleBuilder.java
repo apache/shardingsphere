@@ -26,8 +26,8 @@ import com.dangdang.ddframe.rdb.sharding.config.common.api.config.GenerateKeyCol
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.StrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
+import com.dangdang.ddframe.rdb.sharding.config.common.internal.ClosureShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.config.common.internal.InlineParser;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.internal.parser;
+package com.dangdang.ddframe.rdb.sharding.config.common.internal;
 
 import org.junit.Test;
 
@@ -29,13 +29,13 @@ import static org.junit.Assert.assertThat;
 public final class InlineParserTest {
     
     @Test
-    public void testSplit() {
+    public void assertSplit() {
         assertThat(new InlineParser(" 1 ").split(), is(Collections.singletonList("1")));
         assertThat(new InlineParser(" 1 , 2 ").split(), is(Arrays.asList("1", "2")));
     }
     
     @Test
-    public void testEvaluate() {
+    public void assertEvaluate() {
         assertThat(new InlineParser(" 1 , 2 ").evaluate(), hasItems("1", "2"));
         assertThat(new InlineParser(" 1 , t_order_${1..2} ").evaluate(), hasItems("1", "t_order_1", "t_order_2"));
         assertThat(new InlineParser(" 1 , t_order_${null} ").evaluate(), hasItems("1", "t_order_"));
@@ -45,37 +45,37 @@ public final class InlineParserTest {
     }
     
     @Test
-    public void testSplitWithInlineExpressionForOneRegularValue() {
+    public void assertSplitWithInlineExpressionForOneRegularValue() {
         assertThat(new InlineParser("order").splitWithInlineExpression(), is(Collections.singletonList("order")));
     }
     
     @Test
-    public void testSplitWithInlineExpressionForOneInlineValue() {
+    public void assertSplitWithInlineExpressionForOneInlineValue() {
         assertThat(new InlineParser("order_${0..7}").splitWithInlineExpression(), is(Collections.singletonList("order_${0..7}")));
     }
     
     @Test
-    public void testSplitWithInlineExpressionForRegularValuesWithSpace() {
+    public void assertSplitWithInlineExpressionForRegularValuesWithSpace() {
         assertThat(new InlineParser(" order , order_item ").splitWithInlineExpression(), is(Arrays.asList("order", "order_item")));
     }
     
     @Test
-    public void testSplitWithInlineExpressionForMixedValuesWithSpace() {
+    public void assertSplitWithInlineExpressionForMixedValuesWithSpace() {
         assertThat(new InlineParser(" order , order_item_${0..7} ").splitWithInlineExpression(), is(Arrays.asList("order", "order_item_${0..7}")));
     }
     
     @Test
-    public void testSplitWithInlineExpressionForMixedValuesAndWithCommaAtInlineExpression() {
+    public void assertSplitWithInlineExpressionForMixedValuesAndWithCommaAtInlineExpression() {
         assertThat(new InlineParser(" order , order_item_${0, 2, 4} ").splitWithInlineExpression(), is(Arrays.asList("order", "order_item_${0, 2, 4}")));
     }
     
     @Test
-    public void testSplitWithInlineExpressionForMixedValuesAndNestedInlineExpression() {
+    public void assertSplitWithInlineExpressionForMixedValuesAndNestedInlineExpression() {
         assertThat(new InlineParser(" order , order_item_${0, ${1..7}} ").splitWithInlineExpression(), is(Arrays.asList("order", "order_item_${0, ${1..7}}")));
     }
     
     @Test
-    public void testSplitWithInlineExpressionForValuesNotInlineExpression() {
+    public void assertSplitWithInlineExpressionForValuesNotInlineExpression() {
         assertThat(new InlineParser(" order , order_item_$ {0, 1} ").splitWithInlineExpression(), is(Arrays.asList("order", "order_item_$ {0", "1}")));
     }
 }
