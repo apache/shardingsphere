@@ -25,7 +25,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import com.google.common.base.Optional;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -56,7 +55,6 @@ public final class ShardingRule {
     
     private final ShardingStrategy defaultTableShardingStrategy;
     
-    @Getter(AccessLevel.NONE)
     private final KeyGenerator defaultKeyGenerator;
     
     private ShardingRule(
@@ -270,11 +268,11 @@ public final class ShardingRule {
         
         private final Collection<BindingTableRule> bindingTableRules = new LinkedList<>();
         
-        private ShardingStrategy databaseShardingStrategy;
+        private ShardingStrategy defaultDatabaseShardingStrategy;
         
-        private ShardingStrategy tableShardingStrategy;
+        private ShardingStrategy defaultTableShardingStrategy;
         
-        private KeyGenerator keyGenerator;
+        private KeyGenerator defaultKeyGenerator;
     
         /**
          * Build table rules.
@@ -303,33 +301,33 @@ public final class ShardingRule {
         /**
          * Build default database strategy.
          *
-         * @param databaseShardingStrategy default database strategy
+         * @param defaultDatabaseShardingStrategy default database strategy
          * @return this builder
          */
-        public ShardingRuleBuilder databaseShardingStrategy(final ShardingStrategy databaseShardingStrategy) {
-            this.databaseShardingStrategy = databaseShardingStrategy;
+        public ShardingRuleBuilder defaultDatabaseShardingStrategy(final ShardingStrategy defaultDatabaseShardingStrategy) {
+            this.defaultDatabaseShardingStrategy = defaultDatabaseShardingStrategy;
             return this;
         }
         
         /**
          * Build default table strategy.
          *
-         * @param tableShardingStrategy default table strategy
+         * @param defaultTableShardingStrategy default table strategy
          * @return this builder
          */
-        public ShardingRuleBuilder tableShardingStrategy(final ShardingStrategy tableShardingStrategy) {
-            this.tableShardingStrategy = tableShardingStrategy;
+        public ShardingRuleBuilder defaultTableShardingStrategy(final ShardingStrategy defaultTableShardingStrategy) {
+            this.defaultTableShardingStrategy = defaultTableShardingStrategy;
             return this;
         }
     
         /**
          * Build default key generator.
          * 
-         * @param keyGenerator key generator
+         * @param defaultKeyGenerator default key generator
          * @return this builder
          */
-        public ShardingRuleBuilder keyGenerator(final KeyGenerator keyGenerator) {
-            this.keyGenerator = keyGenerator;
+        public ShardingRuleBuilder defaultKeyGenerator(final KeyGenerator defaultKeyGenerator) {
+            this.defaultKeyGenerator = defaultKeyGenerator;
             return this;
         }
         
@@ -339,7 +337,7 @@ public final class ShardingRule {
          * @return built sharding rule
          */
         public ShardingRule build() {
-            return new ShardingRule(dataSourceRule, tableRules, bindingTableRules, databaseShardingStrategy, tableShardingStrategy, keyGenerator);
+            return new ShardingRule(dataSourceRule, tableRules, bindingTableRules, defaultDatabaseShardingStrategy, defaultTableShardingStrategy, defaultKeyGenerator);
         }
     }
 }

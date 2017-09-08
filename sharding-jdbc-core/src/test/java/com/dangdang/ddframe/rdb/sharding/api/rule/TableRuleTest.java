@@ -186,7 +186,7 @@ public final class TableRuleTest {
                 + "DataNode(dataSourceName=ds1, tableName=table_0), "
                 + "DataNode(dataSourceName=ds1, tableName=table_1), "
                 + "DataNode(dataSourceName=ds1, tableName=table_2)], "
-                + "databaseShardingStrategy=null, tableShardingStrategy=null, "
+                + "defaultDatabaseShardingStrategy=null, defaultTableShardingStrategy=null, "
                 + "generateKeyColumnsMap={})"));
     }
     

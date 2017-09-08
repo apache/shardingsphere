@@ -105,8 +105,8 @@ public final class Main {
         TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables("t_order_item_0", "t_order_item_1").dataSourceRule(dataSourceRule).build();
         ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule)
                 .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
-                .databaseShardingStrategy(new StandardShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
-                .tableShardingStrategy(new StandardShardingStrategy("order_id", new ModuloTableShardingAlgorithm())).build();
+                .defaultDatabaseShardingStrategy(new StandardShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
+                .defaultTableShardingStrategy(new StandardShardingStrategy("order_id", new ModuloTableShardingAlgorithm())).build();
         return new ShardingDataSource(shardingRule);
     }
     

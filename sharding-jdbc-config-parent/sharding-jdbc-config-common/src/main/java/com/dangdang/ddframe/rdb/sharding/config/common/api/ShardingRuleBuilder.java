@@ -86,11 +86,11 @@ public final class ShardingRuleBuilder {
         TableRule[] tableRules = buildTableRules(dataSourceRule);
         ShardingRule.ShardingRuleBuilder shardingRuleBuilder = ShardingRule.builder(dataSourceRule);
         if (!Strings.isNullOrEmpty(shardingRuleConfig.getKeyGeneratorClass())) {
-            shardingRuleBuilder.keyGenerator(newInstance(shardingRuleConfig.getKeyGeneratorClass(), KeyGenerator.class));
+            shardingRuleBuilder.defaultKeyGenerator(newInstance(shardingRuleConfig.getKeyGeneratorClass(), KeyGenerator.class));
         }
         return shardingRuleBuilder.tableRules(tableRules).bindingTableRules(buildBindingTableRules(tableRules))
-                .databaseShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy()))
-                .tableShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultTableStrategy())).build();
+                .defaultDatabaseShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy()))
+                .defaultTableShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultTableStrategy())).build();
     }
     
     private DataSourceRule buildDataSourceRule() {

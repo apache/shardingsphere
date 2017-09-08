@@ -55,14 +55,14 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertShardingRuleWithDatabaseStrategy() {
-        ShardingRule actual = ShardingRule.builder(createDataSourceRule()).tableRules(createTableRule()).databaseShardingStrategy(new NoneShardingStrategy()).build();
+        ShardingRule actual = ShardingRule.builder(createDataSourceRule()).tableRules(createTableRule()).defaultDatabaseShardingStrategy(new NoneShardingStrategy()).build();
         assertTrue(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().isEmpty());
         assertTrue(actual.getDefaultTableShardingStrategy().getShardingColumns().isEmpty());
     }
     
     @Test
     public void assertShardingRuleWithTableStrategy() {
-        ShardingRule actual = ShardingRule.builder(createDataSourceRule()).tableRules(createTableRule()).tableShardingStrategy(new NoneShardingStrategy()).build();
+        ShardingRule actual = ShardingRule.builder(createDataSourceRule()).tableRules(createTableRule()).defaultTableShardingStrategy(new NoneShardingStrategy()).build();
         assertTrue(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().isEmpty());
         assertTrue(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().isEmpty());
     }
@@ -70,7 +70,7 @@ public final class ShardingRuleTest {
     @Test
     public void assertShardingRuleWithoutBindingTableRule() {
         ShardingRule actual = ShardingRule.builder(createDataSourceRule())
-                .tableRules(createTableRule()).databaseShardingStrategy(new NoneShardingStrategy()).tableShardingStrategy(new NoneShardingStrategy()).build();
+                .tableRules(createTableRule()).defaultDatabaseShardingStrategy(new NoneShardingStrategy()).defaultTableShardingStrategy(new NoneShardingStrategy()).build();
         assertTrue(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().isEmpty());
         assertTrue(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().isEmpty());
     }
@@ -78,7 +78,7 @@ public final class ShardingRuleTest {
     @Test
     public void assertFindTableRule() {
         ShardingRule actual = ShardingRule.builder(createDataSourceRule())
-                .tableRules(createTableRule()).databaseShardingStrategy(new NoneShardingStrategy()).tableShardingStrategy(new NoneShardingStrategy()).build();
+                .tableRules(createTableRule()).defaultDatabaseShardingStrategy(new NoneShardingStrategy()).defaultTableShardingStrategy(new NoneShardingStrategy()).build();
         assertTrue(actual.tryFindTableRule("logicTable").isPresent());
         assertFalse(actual.tryFindTableRule("null").isPresent());
     }
@@ -95,14 +95,14 @@ public final class ShardingRuleTest {
     public void assertGetDatabaseShardingStrategyFromDefault() {
         ShardingStrategy strategy = new NoneShardingStrategy();
         TableRule tableRule = createTableRule();
-        ShardingRule actual = ShardingRule.builder(createDataSourceRule()).tableRules(createTableRule()).databaseShardingStrategy(strategy).build();
+        ShardingRule actual = ShardingRule.builder(createDataSourceRule()).tableRules(createTableRule()).defaultDatabaseShardingStrategy(strategy).build();
         assertThat(actual.getDatabaseShardingStrategy(tableRule), is(strategy));
     }
     
     @Test
     public void assertGetDatabaseShardingStrategyForNullValue() {
         TableRule tableRule = createTableRule();
-        ShardingRule actual = ShardingRule.builder(createDataSourceRule()).tableRules(tableRule).databaseShardingStrategy(null).build();
+        ShardingRule actual = ShardingRule.builder(createDataSourceRule()).tableRules(tableRule).defaultDatabaseShardingStrategy(null).build();
         assertNotNull(actual.getDatabaseShardingStrategy(tableRule));
     }
     
@@ -118,14 +118,14 @@ public final class ShardingRuleTest {
     public void assertGetTableShardingStrategyFromDefault() {
         ShardingStrategy strategy = new NoneShardingStrategy();
         TableRule tableRule = createTableRule();
-        ShardingRule actual = ShardingRule.builder(createDataSourceRule()).tableRules(tableRule).tableShardingStrategy(strategy).build();
+        ShardingRule actual = ShardingRule.builder(createDataSourceRule()).tableRules(tableRule).defaultTableShardingStrategy(strategy).build();
         assertThat(actual.getTableShardingStrategy(tableRule), is(strategy));
     }
     
     @Test
     public void assertGetTableShardingStrategyForNullValue() {
         TableRule tableRule = createTableRule();
-        ShardingRule actual = ShardingRule.builder(createDataSourceRule()).tableRules(tableRule).tableShardingStrategy(null).build();
+        ShardingRule actual = ShardingRule.builder(createDataSourceRule()).tableRules(tableRule).defaultTableShardingStrategy(null).build();
         assertNotNull(actual.getTableShardingStrategy(tableRule));
     }
     
@@ -185,13 +185,13 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertIsShardingColumnForDefaultDatabaseShardingStrategy() {
-        assertTrue(ShardingRule.builder(createDataSourceRule()).databaseShardingStrategy(new StandardShardingStrategy("column", new TestPreciseShardingAlgorithm()))
+        assertTrue(ShardingRule.builder(createDataSourceRule()).defaultDatabaseShardingStrategy(new StandardShardingStrategy("column", new TestPreciseShardingAlgorithm()))
                 .tableRules(createTableRuleWithAllStrategies()).build().isShardingColumn(new Column("column", "")));
     }
     
     @Test
     public void assertIsShardingColumnForDefaultTableShardingStrategy() {
-        assertTrue(ShardingRule.builder(createDataSourceRule()).tableShardingStrategy(new StandardShardingStrategy("column", new TestPreciseShardingAlgorithm()))
+        assertTrue(ShardingRule.builder(createDataSourceRule()).defaultTableShardingStrategy(new StandardShardingStrategy("column", new TestPreciseShardingAlgorithm()))
                 .tableRules(createTableRuleWithAllStrategies()).build().isShardingColumn(new Column("column", "")));
     }
     

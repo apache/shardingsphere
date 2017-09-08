@@ -62,8 +62,8 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             TableRule configRule = TableRule.builder("t_config").dataSourceRule(dataSourceRule).build();
             ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule, configRule)
                     .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
-                    .databaseShardingStrategy(new StandardShardingStrategy("user_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()))
-                    .tableShardingStrategy(new StandardShardingStrategy("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm())).build();
+                    .defaultDatabaseShardingStrategy(new StandardShardingStrategy("user_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()))
+                    .defaultTableShardingStrategy(new StandardShardingStrategy("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
     }

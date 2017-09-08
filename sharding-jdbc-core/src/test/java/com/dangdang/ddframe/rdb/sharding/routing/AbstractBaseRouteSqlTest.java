@@ -63,8 +63,8 @@ public abstract class AbstractBaseRouteSqlTest {
                 .tableShardingStrategy(new StandardShardingStrategy("order_id", new OrderAttrShardingAlgorithm())).build();
         shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule, orderAttrTableRule)
                 .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
-                .databaseShardingStrategy(new StandardShardingStrategy("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()))
-                .tableShardingStrategy(new StandardShardingStrategy("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm())).build();
+                .defaultDatabaseShardingStrategy(new StandardShardingStrategy("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()))
+                .defaultTableShardingStrategy(new StandardShardingStrategy("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm())).build();
     }
     
     protected void assertSingleTargetWithoutParameter(final String originSql, final String targetDataSource, final String targetSQL) {
