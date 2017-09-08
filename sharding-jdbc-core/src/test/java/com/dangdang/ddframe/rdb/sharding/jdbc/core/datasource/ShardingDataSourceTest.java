@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
@@ -58,12 +59,12 @@ public final class ShardingDataSourceTest {
         DataSource slaveDataSource = mockDataSource("H2");
         Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
         slaveDataSourceMap.put("slaveDataSource", slaveDataSource);
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", "masterDataSource", masterDataSource, slaveDataSourceMap);
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(new MasterSlaveRule("ds", "masterDataSource", masterDataSource, slaveDataSourceMap));
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
-        assertDatabaseProductName(
-                dataSourceMap, dataSource1.getConnection(), dataSource2.getMasterDataSource().getConnection(), dataSource2.getSlaveDataSources().get("slaveDataSource").getConnection());
+        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), dataSource2.getMasterSlaveRule().getMasterDataSource().getConnection(), 
+                dataSource2.getMasterSlaveRule().getSlaveDataSourceMap().get("slaveDataSource").getConnection());
     }
     
     @Test
@@ -85,14 +86,14 @@ public final class ShardingDataSourceTest {
         DataSource slaveDataSource = mockDataSource("H2");
         Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
         slaveDataSourceMap.put("slaveDataSource", slaveDataSource);
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", "masterDataSource", masterDataSource, slaveDataSourceMap);
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(new MasterSlaveRule("ds", "masterDataSource", masterDataSource, slaveDataSourceMap));
         DataSource dataSource3 = mockDataSource("H2");
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
         dataSourceMap.put("ds3", dataSource3);
-        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), 
-                dataSource2.getMasterDataSource().getConnection(), dataSource2.getSlaveDataSources().get("slaveDataSource").getConnection(), dataSource3.getConnection());
+        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), dataSource2.getMasterSlaveRule().getMasterDataSource().getConnection(), 
+                dataSource2.getMasterSlaveRule().getSlaveDataSourceMap().get("slaveDataSource").getConnection(), dataSource3.getConnection());
     }
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {

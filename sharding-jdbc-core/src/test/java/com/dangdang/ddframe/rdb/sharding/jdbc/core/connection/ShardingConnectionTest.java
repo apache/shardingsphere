@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.connection;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinMasterSlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
@@ -54,7 +54,7 @@ public final class ShardingConnectionTest {
         DataSource slaveDataSource = new TestDataSource("test_ds_slave");
         Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
         slaveDataSourceMap.put("test_ds_slave", slaveDataSource);
-        masterSlaveDataSource = new MasterSlaveDataSource("test_ds", "test_ds_master", masterDataSource, slaveDataSourceMap, new RoundRobinMasterSlaveLoadBalanceStrategy());
+        masterSlaveDataSource = new MasterSlaveDataSource(new MasterSlaveRule("test_ds", "test_ds_master", masterDataSource, slaveDataSourceMap));
         ((TestDataSource) slaveDataSource).setThrowExceptionWhenClosing(true);
     }
     

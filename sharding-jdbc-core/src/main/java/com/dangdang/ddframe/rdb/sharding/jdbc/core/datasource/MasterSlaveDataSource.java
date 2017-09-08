@@ -17,8 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategyType;
+import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
@@ -40,6 +39,7 @@ import java.util.Map;
  *
  * @author zhangliang
  */
+@Getter
 public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private static final ThreadLocal<Boolean> DML_FLAG = new ThreadLocal<Boolean>() {
@@ -50,31 +50,11 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         }
     };
     
-    private final String name;
+    private final MasterSlaveRule masterSlaveRule;
     
-    private final String masterDataSourceName;
-    
-    @Getter
-    private final DataSource masterDataSource;
-    
-    @Getter
-    private final Map<String, DataSource> slaveDataSources;
-    
-    private final MasterSlaveLoadBalanceStrategy masterSlaveLoadBalanceStrategy;
-    
-    public MasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource,
-                                 final Map<String, DataSource> slaveDataSources, final MasterSlaveLoadBalanceStrategyType strategyType) throws SQLException {
-        this(name, masterDataSourceName, masterDataSource, slaveDataSources, strategyType.getStrategy());
-    }
-    
-    public MasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource, 
-                                 final Map<String, DataSource> slaveDataSources, final MasterSlaveLoadBalanceStrategy masterSlaveLoadBalanceStrategy) throws SQLException {
-        super(getAllDataSources(masterDataSource, slaveDataSources.values()));
-        this.name = name;
-        this.masterDataSourceName = masterDataSourceName;
-        this.masterDataSource = masterDataSource;
-        this.slaveDataSources = slaveDataSources;
-        this.masterSlaveLoadBalanceStrategy = masterSlaveLoadBalanceStrategy;
+    public MasterSlaveDataSource(final MasterSlaveRule masterSlaveRule) throws SQLException {
+        super(getAllDataSources(masterSlaveRule.getMasterDataSource(), masterSlaveRule.getSlaveDataSourceMap().values()));
+        this.masterSlaveRule = masterSlaveRule;
     }
     
     private static Collection<DataSource> getAllDataSources(final DataSource masterDataSource, final Collection<DataSource> slaveDataSources) {
@@ -89,9 +69,9 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
      * @return map of all actual data source name and all actual data sources
      */
     public Map<String, DataSource> getAllDataSources() {
-        Map<String, DataSource> result = new HashMap<>(slaveDataSources.size() + 1, 1);
-        result.put(masterDataSourceName, masterDataSource);
-        result.putAll(slaveDataSources);
+        Map<String, DataSource> result = new HashMap<>(masterSlaveRule.getSlaveDataSourceMap().size() + 1, 1);
+        result.put(masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getMasterDataSource());
+        result.putAll(masterSlaveRule.getSlaveDataSourceMap());
         return result;
     }
     
@@ -111,10 +91,12 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     public NamedDataSource getDataSource(final SQLType sqlType) {
         if (isMasterRoute(sqlType)) {
             DML_FLAG.set(true);
-            return new NamedDataSource(masterDataSourceName, masterDataSource);
+            return new NamedDataSource(masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getMasterDataSource());
         }
-        String selectedSourceName = masterSlaveLoadBalanceStrategy.getDataSource(name, masterDataSourceName, new ArrayList<>(slaveDataSources.keySet()));
-        DataSource selectedSource = selectedSourceName.equals(masterDataSourceName) ? masterDataSource : slaveDataSources.get(selectedSourceName);
+        String selectedSourceName = masterSlaveRule.getStrategy().getDataSource(masterSlaveRule.getName(), 
+                masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceMap().keySet()));
+        DataSource selectedSource = selectedSourceName.equals(masterSlaveRule.getMasterDataSourceName())
+                ? masterSlaveRule.getMasterDataSource() : masterSlaveRule.getSlaveDataSourceMap().get(selectedSourceName);
         Preconditions.checkNotNull(selectedSource, "");
         return new NamedDataSource(selectedSourceName, selectedSource);
     }
