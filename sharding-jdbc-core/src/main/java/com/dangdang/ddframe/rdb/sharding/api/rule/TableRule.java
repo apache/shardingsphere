@@ -26,9 +26,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -198,11 +200,11 @@ public final class TableRule {
         
         private boolean dynamic;
         
-        private List<String> actualTables;
+        private final List<String> actualTables = new ArrayList<>();
         
         private DataSourceRule dataSourceRule;
         
-        private Collection<String> dataSourceNames;
+        private final Collection<String> dataSourceNames = new LinkedList<>();
         
         private ShardingStrategy databaseShardingStrategy;
         
@@ -229,8 +231,9 @@ public final class TableRule {
          * @param actualTables actual tables
          * @return this builder
          */
-        public TableRuleBuilder actualTables(final List<String> actualTables) {
-            this.actualTables = actualTables;
+        public TableRuleBuilder actualTables(final String... actualTables) {
+            this.actualTables.clear();
+            this.actualTables.addAll(Arrays.asList(actualTables));
             return this;
         }
         
@@ -251,8 +254,9 @@ public final class TableRule {
          * @param dataSourceNames data sources's names
          * @return this builder
          */
-        public TableRuleBuilder dataSourceNames(final Collection<String> dataSourceNames) {
-            this.dataSourceNames = dataSourceNames;
+        public TableRuleBuilder dataSourceNames(final String... dataSourceNames) {
+            this.dataSourceNames.clear();
+            this.dataSourceNames.addAll(Arrays.asList(dataSourceNames));
             return this;
         }
         

@@ -52,7 +52,7 @@ public abstract class AbstractStatementParserTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", dataSource);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        TableRule tableRule = TableRule.builder("TABLE_XXX").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule)
+        TableRule tableRule = TableRule.builder("TABLE_XXX").actualTables("table_0", "table_1", "table_2").dataSourceRule(dataSourceRule)
                 .tableShardingStrategy(new ComplexShardingStrategy(Arrays.asList("field1", "field2", "field3", "field4", "field5", "field6", "field7"), new ComplexKeysShardingAlgorithm() {
                     
                     @Override

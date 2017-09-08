@@ -29,7 +29,6 @@ import com.dangdang.ddframe.rdb.sharding.routing.fixture.RangeOrderShardingAlgor
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.Before;
@@ -58,9 +57,9 @@ public abstract class AbstractBaseRouteSqlTest {
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        TableRule orderTableRule = TableRule.builder("order").actualTables(Lists.newArrayList("order_0", "order_1")).dataSourceRule(dataSourceRule).build();
-        TableRule orderItemTableRule = TableRule.builder("order_item").actualTables(Lists.newArrayList("order_item_0", "order_item_1")).dataSourceRule(dataSourceRule).build();
-        TableRule orderAttrTableRule = TableRule.builder("order_attr").actualTables(Lists.newArrayList("ds_0.order_attr_a", "ds_1.order_attr_b")).dataSourceRule(dataSourceRule)
+        TableRule orderTableRule = TableRule.builder("order").actualTables("order_0", "order_1").dataSourceRule(dataSourceRule).build();
+        TableRule orderItemTableRule = TableRule.builder("order_item").actualTables("order_item_0", "order_item_1").dataSourceRule(dataSourceRule).build();
+        TableRule orderAttrTableRule = TableRule.builder("order_attr").actualTables("ds_0.order_attr_a", "ds_1.order_attr_b").dataSourceRule(dataSourceRule)
                 .tableShardingStrategy(new StandardShardingStrategy("order_id", new OrderAttrShardingAlgorithm())).build();
         shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule, orderAttrTableRule)
                 .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))

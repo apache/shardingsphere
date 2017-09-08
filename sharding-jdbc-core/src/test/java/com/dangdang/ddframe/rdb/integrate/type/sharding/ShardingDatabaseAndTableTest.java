@@ -79,28 +79,11 @@ public class ShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             DataSourceRule dataSourceRule = new DataSourceRule(each.getValue(), "dataSource_dbtbl_0");
-            TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList(
-                    "t_order_0",
-                    "t_order_1",
-                    "t_order_2",
-                    "t_order_3",
-                    "t_order_4",
-                    "t_order_5",
-                    "t_order_6",
-                    "t_order_7",
-                    "t_order_8",
-                    "t_order_9")).dataSourceRule(dataSourceRule).build();
-            TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList(
-                    "t_order_item_0",
-                    "t_order_item_1",
-                    "t_order_item_2",
-                    "t_order_item_3",
-                    "t_order_item_4",
-                    "t_order_item_5",
-                    "t_order_item_6",
-                    "t_order_item_7",
-                    "t_order_item_8",
-                    "t_order_item_9")).dataSourceRule(dataSourceRule).build();
+            TableRule orderTableRule = TableRule.builder("t_order").actualTables(
+                    "t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6", "t_order_7", "t_order_8", "t_order_9").dataSourceRule(dataSourceRule).build();
+            TableRule orderItemTableRule = TableRule.builder("t_order_item")
+                    .actualTables("t_order_item_0", "t_order_item_1", "t_order_item_2", "t_order_item_3", "t_order_item_4", "t_order_item_5", "t_order_item_6", "t_order_item_7", 
+                            "t_order_item_8", "t_order_item_9").dataSourceRule(dataSourceRule).build();
             TableRule configRule = TableRule.builder("t_config").dataSourceRule(dataSourceRule).build();
             ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule, configRule)
                     .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))

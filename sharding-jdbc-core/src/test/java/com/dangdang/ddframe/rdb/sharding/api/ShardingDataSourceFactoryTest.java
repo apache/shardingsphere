@@ -28,7 +28,6 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -65,7 +64,7 @@ public final class ShardingDataSourceFactoryTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", dataSource);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        TableRule tableRule = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule).build();
+        TableRule tableRule = TableRule.builder("logicTable").actualTables("table_0", "table_1", "table_2").dataSourceRule(dataSourceRule).build();
         return ShardingRule.builder(dataSourceRule).tableRules(tableRule).build();
     }
     

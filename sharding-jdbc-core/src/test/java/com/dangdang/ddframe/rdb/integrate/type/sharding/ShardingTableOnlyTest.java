@@ -38,7 +38,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -70,28 +69,14 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
-            TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList(
-                    "t_order_0",
-                    "t_order_1",
-                    "t_order_2",
-                    "t_order_3",
-                    "t_order_4",
-                    "t_order_5",
-                    "t_order_6",
-                    "t_order_7",
-                    "t_order_8",
-                    "t_order_9")).dataSourceRule(dataSourceRule).build();
-            TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList(
-                    "t_order_item_0",
-                    "t_order_item_1",
-                    "t_order_item_2",
-                    "t_order_item_3",
-                    "t_order_item_4",
-                    "t_order_item_5",
-                    "t_order_item_6",
-                    "t_order_item_7",
-                    "t_order_item_8",
-                    "t_order_item_9")).dataSourceRule(dataSourceRule).generateKeyColumn("item_id").build();
+            TableRule orderTableRule = TableRule.builder("t_order")
+                    .actualTables("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6", "t_order_7", "t_order_8", "t_order_9")
+                    .dataSourceRule(dataSourceRule).build();
+            TableRule orderItemTableRule = TableRule.builder("t_order_item")
+                    .actualTables(
+                            "t_order_item_0", "t_order_item_1", "t_order_item_2", "t_order_item_3", "t_order_item_4", "t_order_item_5", "t_order_item_6", "t_order_item_7", 
+                            "t_order_item_8", "t_order_item_9")
+                    .dataSourceRule(dataSourceRule).generateKeyColumn("item_id").build();
             ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule)
                     .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
                     .databaseShardingStrategy(new NoneShardingStrategy())

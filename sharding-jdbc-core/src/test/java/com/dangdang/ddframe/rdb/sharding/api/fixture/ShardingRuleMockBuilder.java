@@ -34,7 +34,6 @@ import org.mockito.Mockito;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -74,7 +73,7 @@ public class ShardingRuleMockBuilder {
             
             @Override
             public TableRule apply(final String input) {
-                TableRule.TableRuleBuilder builder =  TableRule.builder(input).actualTables(Collections.singletonList(input)).dataSourceRule(dataSourceRule);
+                TableRule.TableRuleBuilder builder =  TableRule.builder(input).actualTables(input).dataSourceRule(dataSourceRule);
                 for (String each : generateKeyColumnsMap.get(input)) {
                     builder.generateKeyColumn(each);
                 }
@@ -83,11 +82,11 @@ public class ShardingRuleMockBuilder {
         }));
         tableRules.addAll(this.tableRules);
         if (tableRules.isEmpty()) {
-            tableRules.add(new TableRule.TableRuleBuilder("mock").actualTables(Collections.singletonList("mock")).dataSourceRule(dataSourceRule).build());
+            tableRules.add(new TableRule.TableRuleBuilder("mock").actualTables("mock").dataSourceRule(dataSourceRule).build());
         }
         List<TableRule> bindingTableRules = new ArrayList<>(bindTables.size());
         for (String each : bindTables) {
-            bindingTableRules.add(new TableRule.TableRuleBuilder(each).actualTables(Collections.singletonList(each)).dataSourceRule(dataSourceRule).build());
+            bindingTableRules.add(new TableRule.TableRuleBuilder(each).actualTables(each).dataSourceRule(dataSourceRule).build());
         }
         for (TableRule each : tableRules) {
             bindingTableRules.add(each);

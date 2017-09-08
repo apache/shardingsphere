@@ -225,15 +225,15 @@ public final class ShardingRuleTest {
     }
     
     private TableRule createTableRule() {
-        return TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(createDataSourceRule()).build();
+        return TableRule.builder("logicTable").actualTables("table_0", "table_1", "table_2").dataSourceRule(createDataSourceRule()).build();
     }
     
     private TableRule createTableRuleWithDatabaseShardingStrategy(final ShardingStrategy strategy) {
-        return TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(createDataSourceRule()).databaseShardingStrategy(strategy).build();
+        return TableRule.builder("logicTable").actualTables("table_0", "table_1", "table_2").dataSourceRule(createDataSourceRule()).databaseShardingStrategy(strategy).build();
     }
     
     private TableRule createTableRuleWithTableShardingStrategy(final ShardingStrategy strategy) {
-        return TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(createDataSourceRule()).tableShardingStrategy(strategy).build();
+        return TableRule.builder("logicTable").actualTables("table_0", "table_1", "table_2").dataSourceRule(createDataSourceRule()).tableShardingStrategy(strategy).build();
     }
     
     private BindingTableRule createBindingTableRule() {
@@ -241,16 +241,16 @@ public final class ShardingRuleTest {
     }
     
     private TableRule createSubTableRule() {
-        return TableRule.builder("subLogicTable").actualTables(Arrays.asList("sub_table_0", "sub_table_1", "sub_table_2")).dataSourceRule(createDataSourceRule()).build();
+        return TableRule.builder("subLogicTable").actualTables("sub_table_0", "sub_table_1", "sub_table_2").dataSourceRule(createDataSourceRule()).build();
     }
     
     private TableRule createTableRuleWithAllStrategies() {
-        return TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(createDataSourceRule())
+        return TableRule.builder("logicTable").actualTables("table_0", "table_1", "table_2").dataSourceRule(createDataSourceRule())
                 .databaseShardingStrategy(new StandardShardingStrategy("column", new TestPreciseShardingAlgorithm())).tableShardingStrategy(new NoneShardingStrategy()).build();
     }
     
     private TableRule createTableRuleWithTableStrategies() {
-        return TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2"))
+        return TableRule.builder("logicTable").actualTables("table_0", "table_1", "table_2")
                 .dataSourceRule(createDataSourceRule()).tableShardingStrategy(new StandardShardingStrategy("column", new TestPreciseShardingAlgorithm())).build();
     }
 }

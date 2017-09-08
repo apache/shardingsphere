@@ -110,10 +110,12 @@ public final class ShardingRuleBuilder {
                     .databaseShardingStrategy(buildShardingStrategy(tableRuleConfig.getDatabaseStrategy()))
                     .tableShardingStrategy(buildShardingStrategy(tableRuleConfig.getTableStrategy()));
             if (null != tableRuleConfig.getActualTables()) {
-                tableRuleBuilder.actualTables(new InlineParser(tableRuleConfig.getActualTables()).evaluate());
+                List<String> actualTables = new InlineParser(tableRuleConfig.getActualTables()).evaluate();
+                tableRuleBuilder.actualTables(actualTables.toArray(new String[actualTables.size()]));
             }
             if (!Strings.isNullOrEmpty(tableRuleConfig.getDataSourceNames())) {
-                tableRuleBuilder.dataSourceNames(new InlineParser(tableRuleConfig.getDataSourceNames()).evaluate());
+                List<String> actualDataSourceNems = new InlineParser(tableRuleConfig.getDataSourceNames()).evaluate();
+                tableRuleBuilder.dataSourceNames(actualDataSourceNems.toArray(new String[actualDataSourceNems.size()]));
             }
             buildGenerateKeyColumn(tableRuleBuilder, tableRuleConfig);
             result[count] = tableRuleBuilder.build();

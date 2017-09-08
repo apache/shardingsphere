@@ -19,10 +19,10 @@ package com.dangdang.ddframe.rdb.sharding.parsing;
 
 import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
 import com.dangdang.ddframe.rdb.common.util.SQLPlaceholderUtil;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseSQLTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseTest;
@@ -37,7 +37,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 @RunWith(Parameterized.class)
 public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
@@ -68,7 +67,7 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     }
     
     private ShardingRule buildShardingRule() {
-        TableRule orderTableRule = TableRule.builder("t_order").actualTables(Collections.singletonList("t_order")).dataSourceNames(Arrays.asList("db0", "db1"))
+        TableRule orderTableRule = TableRule.builder("t_order").actualTables("t_order").dataSourceNames("db0", "db1")
                 .tableShardingStrategy(new ComplexShardingStrategy(Arrays.asList("user_id", "order_id"), new ComplexKeysShardingAlgorithm() {
                     
                     @Override
@@ -76,7 +75,7 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
                         return availableTargetNames;
                     }
                 })).build();
-        TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Collections.singletonList("t_order_item")).dataSourceNames(Arrays.asList("db0", "db1"))
+        TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables("t_order_item").dataSourceNames("db0", "db1")
                 .tableShardingStrategy(new ComplexShardingStrategy(Arrays.asList("user_id", "order_id", "item_id"), new ComplexKeysShardingAlgorithm() {
                 
                     @Override

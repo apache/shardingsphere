@@ -37,7 +37,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,8 +79,8 @@ public final class Main {
     
     private static DataSource getShardingDataSource() throws SQLException {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
-        TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList("t_order_0", "t_order_1")).dataSourceRule(dataSourceRule).build();
-        TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList("t_order_item_0", "t_order_item_1")).dataSourceRule(dataSourceRule).build();
+        TableRule orderTableRule = TableRule.builder("t_order").actualTables("t_order_0", "t_order_1").dataSourceRule(dataSourceRule).build();
+        TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables("t_order_item_0", "t_order_item_1").dataSourceRule(dataSourceRule).build();
         ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule)
                 .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
                 .databaseShardingStrategy(new StandardShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))

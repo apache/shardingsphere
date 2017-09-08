@@ -76,12 +76,11 @@ public final class BindingTableRuleTest {
     }
     
     private TableRule createTableRule() {
-        return TableRule.builder("logicTable").actualTables(Arrays.asList("ds1.table_0", "ds1.table_1", "ds2.table_0", "ds2.table_1")).dataSourceRule(createDataSourceRule()).build();
+        return TableRule.builder("logicTable").actualTables("ds1.table_0", "ds1.table_1", "ds2.table_0", "ds2.table_1").dataSourceRule(createDataSourceRule()).build();
     }
     
     private TableRule createSubTableRule() {
-        return TableRule.builder("subLogicTable").actualTables(Arrays.asList("ds1.sub_table_0", "ds1.sub_table_1", "ds2.sub_table_0", "ds2.sub_table_1"))
-                .dataSourceRule(createDataSourceRule()).build();
+        return TableRule.builder("subLogicTable").actualTables("ds1.sub_table_0", "ds1.sub_table_1", "ds2.sub_table_0", "ds2.sub_table_1").dataSourceRule(createDataSourceRule()).build();
     }
     
     private DataSourceRule createDataSourceRule() {
