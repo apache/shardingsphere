@@ -57,21 +57,7 @@ public final class ShardingRule {
     @Getter(AccessLevel.NONE)
     private final KeyGenerator defaultKeyGenerator;
     
-    /**
-     * Constructs a full properties sharding rule.
-     * 
-     * <p>Should not use for spring namespace.</p>
-     * 
-     * @deprecated should be private
-     * @param dataSourceRule data source rule
-     * @param tableRules table rules
-     * @param bindingTableRules binding table rules
-     * @param defaultDatabaseShardingStrategy default database sharding strategy
-     * @param defaultTableShardingStrategy default table sharding strategy
-     * @param defaultKeyGenerator default primary key generator
-     */
-    @Deprecated
-    public ShardingRule(
+    private ShardingRule(
             final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules,
             final ShardingStrategy defaultDatabaseShardingStrategy, final ShardingStrategy defaultTableShardingStrategy, final KeyGenerator defaultKeyGenerator) {
         this.dataSourceRule = dataSourceRule;
