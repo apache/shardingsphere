@@ -273,7 +273,7 @@ public final class ShardingRule {
         private ShardingStrategy defaultTableShardingStrategy;
         
         private KeyGenerator defaultKeyGenerator;
-    
+        
         /**
          * Build table rules.
          *
@@ -319,7 +319,7 @@ public final class ShardingRule {
             this.defaultTableShardingStrategy = defaultTableShardingStrategy;
             return this;
         }
-    
+        
         /**
          * Build default key generator.
          * 

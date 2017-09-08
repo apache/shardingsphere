@@ -195,9 +195,9 @@ public final class TableRule {
     public static class TableRuleBuilder {
         
         private final String logicTable;
-    
+        
         private final List<String> actualTables = new ArrayList<>();
-    
+        
         private final Collection<String> dataSourceNames = new LinkedList<>();
         
         private boolean dynamic;
