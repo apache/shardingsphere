@@ -17,9 +17,8 @@
 
 package com.dangdang.ddframe.rdb.common.base;
 
-import com.dangdang.ddframe.rdb.common.env.DatabaseEnvironment;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
-import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
+import com.dangdang.ddframe.rdb.common.util.SQLAssertHelper;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLAssertData;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.integrate.jaxb.helper.SQLAssertJAXBHelper;
@@ -32,10 +31,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.dbunit.DatabaseUnitException;
-import org.dbunit.dataset.ITable;
-import org.dbunit.dataset.ITableIterator;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -44,17 +39,11 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import static com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil.replacePreparedStatement;
-import static com.dangdang.ddframe.rdb.common.util.SqlPlaceholderUtil.replaceStatement;
-import static org.dbunit.Assertion.assertEquals;
 
 @RunWith(Parameterized.class)
 public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
@@ -68,11 +57,14 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     private final List<SQLShardingRule> shardingRules;
     
+    private final SQLAssertHelper sqlAssertHelper;
+    
     protected AbstractSQLAssertTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> shardingRules) {
         this.testCaseName = testCaseName;
         this.sql = sql;
         this.type = type;
         this.shardingRules = shardingRules;
+        sqlAssertHelper = new SQLAssertHelper(sql);
     }
     
     @Parameterized.Parameters(name = "{0}In{2}")
@@ -101,20 +93,30 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     }
     
     @Test
-    public void assertWithPreparedStatement() throws SQLException {
-        execute(true);
+    public void assertExecuteWithPreparedStatement() throws SQLException {
+        execute(true, false);
     }
     
     @Test
-    public void assertWithStatement() throws SQLException {
-        execute(false);
+    public void assertExecuteWithStatement() throws SQLException {
+        execute(false, false);
     }
     
-    private void execute(final boolean isPreparedStatement) throws SQLException {
+    @Test
+    public void assertExecuteQueryWithPreparedStatement() throws SQLException {
+        execute(true, true);
+    }
+    
+    @Test
+    public void assertExecuteQueryWithStatement() throws SQLException {
+        execute(false, true);
+    }
+    
+    private void execute(final boolean isPreparedStatement, final boolean isExecute) throws SQLException {
         for (Map.Entry<DatabaseType, ? extends AbstractDataSourceAdapter> each : getDataSources().entrySet()) {
             if (getCurrentDatabaseType() == each.getKey()) {
                 try {
-                    executeAndAssertSQL(isPreparedStatement, each.getValue());
+                    executeAndAssertSQL(isPreparedStatement, isExecute, each.getValue());
                     //CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     //CHECKSTYLE:ON
@@ -128,7 +130,8 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
     }
     
-    private void executeAndAssertSQL(final boolean isPreparedStatement, final AbstractDataSourceAdapter abstractDataSourceAdapter) throws MalformedURLException, SQLException, DatabaseUnitException {
+    private void executeAndAssertSQL(final boolean isPreparedStatement, final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter) 
+            throws MalformedURLException, SQLException, DatabaseUnitException {
         for (SQLShardingRule sqlShardingRule : shardingRules) {
             if (!needAssert(sqlShardingRule)) {
                 continue;
@@ -136,9 +139,9 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
             for (SQLAssertData each : sqlShardingRule.getData()) {
                 File expectedDataSetFile = getExpectedFile(each.getExpected());
                 if (sql.toUpperCase().startsWith("SELECT")) {
-                    assertDqlSql(isPreparedStatement, abstractDataSourceAdapter, each, expectedDataSetFile);
+                    assertDqlSql(isPreparedStatement, isExecute, abstractDataSourceAdapter, each, expectedDataSetFile);
                 } else  {
-                    assertDmlAndDdlSql(isPreparedStatement, abstractDataSourceAdapter, each, expectedDataSetFile);
+                    assertDmlAndDdlSql(isPreparedStatement, isExecute, abstractDataSourceAdapter, each, expectedDataSetFile);
                 }
             }
         }
@@ -157,25 +160,27 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return false;
     }
     
-    private void assertDqlSql(final boolean isPreparedStatement, final AbstractDataSourceAdapter abstractDataSourceAdapter, final SQLAssertData data, final File expectedDataSetFile)
+    private void assertDqlSql(final boolean isPreparedStatement, final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, 
+                              final SQLAssertData data, final File expectedDataSetFile)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
-            executeQueryWithPreparedStatement(abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
+            sqlAssertHelper.executeQueryWithPreparedStatement(isExecute, abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
         } else {
-            executeQueryWithStatement(abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
+            sqlAssertHelper.executeQueryWithStatement(isExecute, abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
         }
     }
     
-    private void assertDmlAndDdlSql(final boolean isPreparedStatement, final AbstractDataSourceAdapter abstractDataSourceAdapter, final SQLAssertData data, final File expectedDataSetFile)
+    private void assertDmlAndDdlSql(final boolean isPreparedStatement, final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, 
+                                    final SQLAssertData data, final File expectedDataSetFile)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
-            executeWithPreparedStatement(abstractDataSourceAdapter, getParameters(data));
+            sqlAssertHelper.executeWithPreparedStatement(isExecute, abstractDataSourceAdapter, getParameters(data));
         } else {
-            executeWithStatement(abstractDataSourceAdapter, getParameters(data));
+            sqlAssertHelper.executeWithStatement(isExecute, abstractDataSourceAdapter, getParameters(data));
         }
         try (Connection conn = abstractDataSourceAdapter instanceof MasterSlaveDataSource ? abstractDataSourceAdapter.getConnection() 
                 : ((ShardingDataSource) abstractDataSourceAdapter).getConnection().getConnection(getDataSourceName(data.getExpected()), getSqlType())) {
-            assertResult(conn, expectedDataSetFile);
+            sqlAssertHelper.assertResult(conn, expectedDataSetFile);
         }
     }
     
@@ -206,84 +211,4 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return Strings.isNullOrEmpty(data.getParameter()) ? Collections.<String>emptyList() : Lists.newArrayList(data.getParameter().split(","));
     }
     
-    private void executeWithPreparedStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters) throws SQLException {
-        try (Connection connection = abstractDataSourceAdapter.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql))) {
-            setParameters(preparedStatement, parameters);
-            preparedStatement.execute();
-        }
-    }
-    
-    private void executeWithStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters) throws SQLException {
-        try (Connection connection = abstractDataSourceAdapter.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.execute(replaceStatement(sql, parameters.toArray()));
-        }
-    }
-    
-    private void executeQueryWithPreparedStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
-            throws MalformedURLException, SQLException, DatabaseUnitException {
-        try (Connection conn = abstractDataSourceAdapter.getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(replacePreparedStatement(sql))) {
-            setParameters(preparedStatement, parameters);
-            ReplacementDataSet expectedDataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(file));
-            expectedDataSet.addReplacementObject("[null]", null);
-            for (ITable each : expectedDataSet.getTables()) {
-                String tableName = each.getTableMetaData().getTableName();
-                ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
-                        .createTable(tableName, preparedStatement);
-                assertEquals(expectedDataSet.getTable(tableName), actualTable);
-            }
-        }
-    }
-    
-    private void setParameters(final PreparedStatement preparedStatement, final List<String> parameters) throws SQLException {
-        int index = 1;
-        for (String each : parameters) {
-            if (each.contains("'")) {
-                preparedStatement.setString(index++, each.replace("'", ""));
-            } else {
-                preparedStatement.setInt(index++, Integer.valueOf(each));
-            }
-        }
-    }
-    
-    private void executeQueryWithStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file) 
-            throws MalformedURLException, SQLException, DatabaseUnitException {
-        try (Connection conn = abstractDataSourceAdapter.getConnection()) {
-            String querySql = replaceStatement(sql, parameters.toArray());
-            ReplacementDataSet expectedDataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(file));
-            expectedDataSet.addReplacementObject("[null]", null);
-            for (ITable each : expectedDataSet.getTables()) {
-                String tableName = each.getTableMetaData().getTableName();
-                ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
-                        .createQueryTable(tableName, querySql);
-                assertEquals(expectedDataSet.getTable(tableName), actualTable);
-            }
-        }
-    }
-    
-    private void assertResult(final Connection connection, final File file) throws MalformedURLException, SQLException, DatabaseUnitException {
-        if (sql.contains("TEMP")) {
-            return;
-        }
-        ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
-        try (Connection conn = connection) {
-            while (expectedTableIterator.next()) {
-                ITable expectedTable = expectedTableIterator.getTable();
-                String actualTableName = expectedTable.getTableMetaData().getTableName();
-                String verifySql = "SELECT * FROM " + actualTableName + " WHERE status = '" + getStatus(file) + "'";
-                ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
-                        .createQueryTable(actualTableName, verifySql);
-                assertEquals(expectedTable, actualTable);
-            }
-        }
-    }
-    
-    private String getStatus(final File file) {
-        if (sql.toUpperCase().startsWith("DELETE")) {
-            return ShardingTestStrategy.masterslave == getShardingStrategy() ? "init_master" : "init";
-        }
-        return file.getParentFile().getName();
-    }
 }

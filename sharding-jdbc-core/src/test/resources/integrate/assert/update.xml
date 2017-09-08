@@ -13,7 +13,7 @@
             <data parameter="'update',1108,11" expected="update/%s_8.xml" />
             <data parameter="'update',1109,11" expected="update/%s_9.xml" />
         </sharding-rule>
-        <sharding-rule value="db,hint">
+        <sharding-rule value="db,hint,masterslaveonly">
             <data parameter="'update',1000,10" expected="update/%s_0.xml" />
             <data parameter="'update',1100,11" expected="update/%s_1.xml" />
             <data parameter="'update',1200,12" expected="update/%s_2.xml" />
@@ -51,7 +51,7 @@
             <data parameter="'update',1108,11" expected="update/%s_8.xml" />
             <data parameter="'update',1109,11" expected="update/%s_9.xml" />
         </sharding-rule>
-        <sharding-rule value="db,hint">
+        <sharding-rule value="db,hint,masterslaveonly">
             <data parameter="'update',1000,10" expected="update/%s_0.xml" />
             <data parameter="'update',1100,11" expected="update/%s_1.xml" />
             <data parameter="'update',1200,12" expected="update/%s_2.xml" />
