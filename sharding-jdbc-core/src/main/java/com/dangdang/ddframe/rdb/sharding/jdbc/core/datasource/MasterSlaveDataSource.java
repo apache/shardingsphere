@@ -40,7 +40,7 @@ import java.util.Map;
  * @author zhangliang
  */
 @Getter
-public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
+public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private static final ThreadLocal<Boolean> DML_FLAG = new ThreadLocal<Boolean>() {
         
