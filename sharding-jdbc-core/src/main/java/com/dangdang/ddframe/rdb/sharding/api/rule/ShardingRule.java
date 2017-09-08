@@ -120,16 +120,16 @@ public final class ShardingRule {
             return tableRule.get();
         }
         if (dataSourceRule.getDefaultDataSource().isPresent()) {
-            return createTableRuleWithDefaultDataSource(logicTableName, dataSourceRule);
+            return createTableRuleWithDefaultDataSource(logicTableName);
         }
         throw new ShardingJdbcException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
     }
     
-    private TableRule createTableRuleWithDefaultDataSource(final String logicTableName, final DataSourceRule defaultDataSourceRule) {
-        Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1);
-        defaultDataSourceMap.put(defaultDataSourceRule.getDefaultDataSourceName(), defaultDataSourceRule.getDefaultDataSource().get());
-        return TableRule.builder(logicTableName).dataSourceRule(new DataSourceRule(defaultDataSourceMap))
-                .databaseShardingStrategy(new NoneShardingStrategy()).tableShardingStrategy(new NoneShardingStrategy()).build();
+    private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
+        Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1, 1);
+        defaultDataSourceMap.put(dataSourceRule.getDefaultDataSourceName(), dataSourceRule.getDefaultDataSource().get());
+        return TableRule.builder(logicTableName)
+                .dataSourceRule(new DataSourceRule(defaultDataSourceMap)).databaseShardingStrategy(new NoneShardingStrategy()).tableShardingStrategy(new NoneShardingStrategy()).build();
     }
     
     /**
