@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public final class InlineParserTest {
+public final class InlineExpressionParserTest {
     
     @Test
     public void assertSplit() {
@@ -37,7 +37,8 @@ public final class InlineParserTest {
     @Test
     public void assertEvaluate() {
         assertThat(new InlineParser(" 1 , 2 ").evaluate(), hasItems("1", "2"));
-        assertThat(new InlineParser(" 1 , t_order_${1..2} ").evaluate(), hasItems("1", "t_order_1", "t_order_2"));
+        assertThat(new InlineParser(" 1 , t_order_${[0, 1, 2]} ").evaluate(), hasItems("1", "t_order_0", "t_order_1", "t_order_2"));
+        assertThat(new InlineParser(" 1 , t_order_${0..2} ").evaluate(), hasItems("1", "t_order_0", "t_order_1", "t_order_2"));
         assertThat(new InlineParser(" 1 , t_order_${null} ").evaluate(), hasItems("1", "t_order_"));
         assertThat(new InlineParser(" 1 , t_order_${'xx'} ").evaluate(), hasItems("1", "t_order_xx"));
         assertThat(new InlineParser(" t_${['new','old']}_order_${1..2} ").evaluate(), hasItems("t_new_order_1", "t_new_order_2", "t_old_order_1", "t_old_order_2"));

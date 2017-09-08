@@ -118,8 +118,8 @@ public final class Main {
     
     private static ShardingDataSource getShardingDataSource() throws SQLException {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
-        TableRule orderTableRule = TableRule.builder("t_order").actualTables("t_order_0", "t_order_1").dataSourceRule(dataSourceRule).build();
-        TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables("t_order_item_0", "t_order_item_1").dataSourceRule(dataSourceRule).build();
+        TableRule orderTableRule = TableRule.builder("t_order").actualTablesInlineExpression("t_order_${[0, 1]}").dataSourceRule(dataSourceRule).build();
+        TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTablesInlineExpression("t_order_item_${[0, 1]}").dataSourceRule(dataSourceRule).build();
         ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule)
                 .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
                 .defaultDatabaseShardingStrategy(new InlineShardingStrategy("user_id", "ds_jdbc_${user_id % 2}"))

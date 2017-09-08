@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.api.rule;
 
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.util.InlineExpressionParser;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -236,6 +237,18 @@ public final class TableRule {
         }
         
         /**
+         * Build actual tables.
+         *
+         * @param inlineExpression actual tables inline expression
+         * @return this builder
+         */
+        public TableRuleBuilder actualTablesInlineExpression(final String inlineExpression) {
+            this.actualTables.clear();
+            this.actualTables.addAll(new InlineExpressionParser(inlineExpression).evaluate());
+            return this;
+        }
+        
+        /**
          * Build data source rule.
          *
          * @param dataSourceRule data source rule
@@ -255,6 +268,18 @@ public final class TableRule {
         public TableRuleBuilder dataSourceNames(final String... dataSourceNames) {
             this.dataSourceNames.clear();
             this.dataSourceNames.addAll(Arrays.asList(dataSourceNames));
+            return this;
+        }
+        
+        /**
+         * Build data sources's names.
+         *
+         * @param inlineExpression data sources's names inline expression
+         * @return this builder
+         */
+        public TableRuleBuilder dataSourceNames(final String inlineExpression) {
+            this.dataSourceNames.clear();
+            this.dataSourceNames.addAll(new InlineExpressionParser(inlineExpression).evaluate());
             return this;
         }
         

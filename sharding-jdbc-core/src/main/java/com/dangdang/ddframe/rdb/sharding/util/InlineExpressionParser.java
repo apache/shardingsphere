@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.internal;
+package com.dangdang.ddframe.rdb.sharding.util;
 
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
@@ -38,7 +38,7 @@ import java.util.Set;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class InlineParser {
+public final class InlineExpressionParser {
     
     private static final char SPLITTER = ',';
     
