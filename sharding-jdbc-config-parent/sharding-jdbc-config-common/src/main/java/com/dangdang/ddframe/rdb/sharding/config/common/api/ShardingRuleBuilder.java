@@ -136,13 +136,14 @@ public final class ShardingRuleBuilder {
         BindingTableRule[] result = new BindingTableRule[shardingRuleConfig.getBindingTables().size()];
         int count = 0;
         for (BindingTableRuleConfig each : shardingRuleConfig.getBindingTables()) {
-            result[count] = new BindingTableRule(Lists.transform(new InlineParser(each.getTableNames()).split(), new Function<String, TableRule>() {
+            List<TableRule> tableRuleList = Lists.transform(new InlineParser(each.getTableNames()).split(), new Function<String, TableRule>() {
                 
                 @Override
                 public TableRule apply(final String input) {
                     return findTableRuleByLogicTableName(Arrays.asList(tableRules), input);
                 }
-            }));
+            });
+            result[count] = new BindingTableRule(tableRuleList.toArray(new TableRule[tableRuleList.size()]));
             count++;
         }
         return result;

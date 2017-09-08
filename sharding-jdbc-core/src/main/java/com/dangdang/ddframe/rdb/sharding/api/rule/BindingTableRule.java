@@ -21,9 +21,10 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -33,11 +34,14 @@ import java.util.List;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public final class BindingTableRule {
     
-    private final List<TableRule> tableRules;
+    private final List<TableRule> tableRules = new LinkedList<>();
+    
+    public BindingTableRule(final TableRule... tableRules) {
+        this.tableRules.addAll(Arrays.asList(tableRules));
+    }
     
     /**
      * Adjust contains this logic table in this rule.

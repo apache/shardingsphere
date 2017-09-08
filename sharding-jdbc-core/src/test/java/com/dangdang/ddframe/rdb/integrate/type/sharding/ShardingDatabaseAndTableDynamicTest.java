@@ -82,7 +82,7 @@ public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
             TableRule orderTableRule = TableRule.builder("t_order").dynamic(true).dataSourceRule(dataSourceRule).build();
             TableRule orderItemTableRule = TableRule.builder("t_order_item").dynamic(true).dataSourceRule(dataSourceRule).build();
             ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule)
-                    .bindingTableRules(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule)))
+                    .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
                     .databaseShardingStrategy(new StandardShardingStrategy("user_id", new PreciseModuloDatabaseShardingAlgorithm(), new RangeModuloDatabaseShardingAlgorithm()))
                     .tableShardingStrategy(
                             new StandardShardingStrategy("order_id", new PreciseDynamicModuloTableShardingAlgorithm("t_order_"), new RangeDynamicModuloTableShardingAlgorithm("t_order_"))).build();

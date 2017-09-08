@@ -35,7 +35,6 @@ import lombok.Getter;
 import org.junit.Before;
 
 import javax.sql.DataSource;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,7 +63,7 @@ public abstract class AbstractBaseRouteSqlTest {
         TableRule orderAttrTableRule = TableRule.builder("order_attr").actualTables(Lists.newArrayList("ds_0.order_attr_a", "ds_1.order_attr_b")).dataSourceRule(dataSourceRule)
                 .tableShardingStrategy(new StandardShardingStrategy("order_id", new OrderAttrShardingAlgorithm())).build();
         shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule, orderAttrTableRule)
-                .bindingTableRules(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule)))
+                .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
                 .databaseShardingStrategy(new StandardShardingStrategy("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()))
                 .tableShardingStrategy(new StandardShardingStrategy("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm())).build();
     }

@@ -88,7 +88,7 @@ public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
             DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
             TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).build();
             ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule)
-                    .bindingTableRules(new BindingTableRule(Collections.singletonList(orderTableRule)))
+                    .bindingTableRules(new BindingTableRule(orderTableRule))
                     .databaseShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("user_id"), new ComplexKeysModuloDatabaseShardingAlgorithm()))
                     .tableShardingStrategy(new NoneShardingStrategy()).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));

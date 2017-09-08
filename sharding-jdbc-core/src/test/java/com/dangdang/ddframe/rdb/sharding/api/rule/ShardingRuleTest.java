@@ -237,7 +237,7 @@ public final class ShardingRuleTest {
     }
     
     private BindingTableRule createBindingTableRule() {
-        return new BindingTableRule(Arrays.asList(createTableRule(), createSubTableRule()));
+        return new BindingTableRule(createTableRule(), createSubTableRule());
     }
     
     private TableRule createSubTableRule() {

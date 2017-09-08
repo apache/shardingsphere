@@ -72,7 +72,7 @@ public final class BindingTableRuleTest {
     }
     
     private BindingTableRule createBindingTableRule() {
-        return new BindingTableRule(Arrays.asList(createTableRule(), createSubTableRule()));
+        return new BindingTableRule(createTableRule(), createSubTableRule());
     }
     
     private TableRule createTableRule() {
@@ -92,7 +92,7 @@ public final class BindingTableRuleTest {
     }
     
     private BindingTableRule createDynamicBindingTableRule() {
-        return new BindingTableRule(Arrays.asList(createDynamicTableRule(), createDynamicSubTableRule()));
+        return new BindingTableRule(createDynamicTableRule(), createDynamicSubTableRule());
     }
     
     private TableRule createDynamicTableRule() {
