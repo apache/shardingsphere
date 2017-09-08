@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.util;
 
 import com.google.common.base.Function;
-import com.google.common.base.Splitter;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -45,22 +44,13 @@ public final class InlineExpressionParser {
     private final String inlineExpression;
     
     /**
-     * Split inline expression.
-     * 
-     * @return split inline expression segments
-     */
-    public List<String> split() {
-        return Splitter.on(SPLITTER).trimResults().splitToList(inlineExpression);
-    }
-    
-    /**
      * Split and evaluate inline expression.
      *
      * @return result list
      */
     public List<String> evaluate() {
         final GroovyShell shell = new GroovyShell();
-        return flattenSegments(Lists.transform(splitWithInlineExpression(), new Function<String, Object>() {
+        return flattenSegments(Lists.transform(split(), new Function<String, Object>() {
             
             @Override
             public Object apply(final String input) {
@@ -76,7 +66,7 @@ public final class InlineExpressionParser {
         }));
     }
     
-    List<String> splitWithInlineExpression() {
+    private List<String> split() {
         List<String> result = new ArrayList<>();
         StringBuilder segment = new StringBuilder();
         int bracketsDepth = 0;
