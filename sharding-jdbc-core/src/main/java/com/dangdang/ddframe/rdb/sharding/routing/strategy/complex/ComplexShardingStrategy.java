@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.strategy.complex;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import lombok.Getter;
 

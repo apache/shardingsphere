@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
 
 import java.util.Collection;

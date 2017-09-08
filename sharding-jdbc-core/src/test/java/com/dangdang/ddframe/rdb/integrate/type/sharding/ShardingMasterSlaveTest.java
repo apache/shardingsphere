@@ -26,9 +26,9 @@ import com.dangdang.ddframe.rdb.integrate.fixture.RangeModuloTableShardingAlgori
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinMasterSlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
@@ -153,7 +153,7 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
                                                            final String name, final String masterDataSourceName, final String slaveDataSourceName) throws SQLException {
         Map<String, DataSource> slaveDs0 = new HashMap<>(1, 1);
         slaveDs0.put(slaveDataSourceName, masterSlaveDataSourceMap.get(slaveDataSourceName));
-        return new MasterSlaveDataSource(name, masterDataSourceName, masterSlaveDataSourceMap.get(masterDataSourceName), slaveDs0, new RoundRobinMasterSlaveLoadBalanceStrategy());
+        return new MasterSlaveDataSource(new MasterSlaveRule(name, masterDataSourceName, masterSlaveDataSourceMap.get(masterDataSourceName), slaveDs0));
     }
     
     @After

@@ -18,7 +18,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.config.spring.masterslave.algorithm;
 
-import com.dangdang.ddframe.rdb.sharding.api.PreciseShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.PreciseShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;

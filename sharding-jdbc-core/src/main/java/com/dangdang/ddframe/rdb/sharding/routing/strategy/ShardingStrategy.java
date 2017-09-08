@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.strategy;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 
 import java.util.Collection;
 

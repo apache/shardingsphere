@@ -51,12 +51,12 @@ public final class ShardingRule {
     
     private final Collection<BindingTableRule> bindingTableRules;
     
-    private final ShardingStrategy databaseShardingStrategy;
+    private final ShardingStrategy defaultDatabaseShardingStrategy;
     
-    private final ShardingStrategy tableShardingStrategy;
+    private final ShardingStrategy defaultTableShardingStrategy;
     
     @Getter(AccessLevel.NONE)
-    private final KeyGenerator keyGenerator;
+    private final KeyGenerator defaultKeyGenerator;
     
     /**
      * Constructs a full properties sharding rule.
@@ -67,21 +67,21 @@ public final class ShardingRule {
      * @param dataSourceRule data source rule
      * @param tableRules table rules
      * @param bindingTableRules binding table rules
-     * @param databaseShardingStrategy default database sharding strategy
-     * @param tableShardingStrategy default table sharding strategy
-     * @param keyGenerator primary key generator
+     * @param defaultDatabaseShardingStrategy default database sharding strategy
+     * @param defaultTableShardingStrategy default table sharding strategy
+     * @param defaultKeyGenerator default primary key generator
      */
     @Deprecated
     public ShardingRule(
-            final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules, 
-            final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy, final KeyGenerator keyGenerator) {
+            final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules,
+            final ShardingStrategy defaultDatabaseShardingStrategy, final ShardingStrategy defaultTableShardingStrategy, final KeyGenerator defaultKeyGenerator) {
         Preconditions.checkNotNull(dataSourceRule);
         this.dataSourceRule = dataSourceRule;
         this.tableRules = null == tableRules ? Collections.<TableRule>emptyList() : tableRules;
         this.bindingTableRules = null == bindingTableRules ? Collections.<BindingTableRule>emptyList() : bindingTableRules;
-        this.databaseShardingStrategy = null == databaseShardingStrategy ? new NoneShardingStrategy() : databaseShardingStrategy;
-        this.tableShardingStrategy = null == tableShardingStrategy ? new NoneShardingStrategy() : tableShardingStrategy;
-        this.keyGenerator = null == keyGenerator ? KeyGeneratorFactory.createKeyGenerator(DefaultKeyGenerator.class) : keyGenerator;
+        this.defaultDatabaseShardingStrategy = null == defaultDatabaseShardingStrategy ? new NoneShardingStrategy() : defaultDatabaseShardingStrategy;
+        this.defaultTableShardingStrategy = null == defaultTableShardingStrategy ? new NoneShardingStrategy() : defaultTableShardingStrategy;
+        this.defaultKeyGenerator = null == defaultKeyGenerator ? KeyGeneratorFactory.createKeyGenerator(DefaultKeyGenerator.class) : defaultKeyGenerator;
     }
     
     /**
@@ -120,16 +120,16 @@ public final class ShardingRule {
             return tableRule.get();
         }
         if (dataSourceRule.getDefaultDataSource().isPresent()) {
-            return createTableRuleWithDefaultDataSource(logicTableName, dataSourceRule);
+            return createTableRuleWithDefaultDataSource(logicTableName);
         }
         throw new ShardingJdbcException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
     }
     
-    private TableRule createTableRuleWithDefaultDataSource(final String logicTableName, final DataSourceRule defaultDataSourceRule) {
-        Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1);
-        defaultDataSourceMap.put(defaultDataSourceRule.getDefaultDataSourceName(), defaultDataSourceRule.getDefaultDataSource().get());
-        return TableRule.builder(logicTableName).dataSourceRule(new DataSourceRule(defaultDataSourceMap))
-                .databaseShardingStrategy(new NoneShardingStrategy()).tableShardingStrategy(new NoneShardingStrategy()).build();
+    private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
+        Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1, 1);
+        defaultDataSourceMap.put(dataSourceRule.getDefaultDataSourceName(), dataSourceRule.getDefaultDataSource().get());
+        return TableRule.builder(logicTableName)
+                .dataSourceRule(new DataSourceRule(defaultDataSourceMap)).databaseShardingStrategy(new NoneShardingStrategy()).tableShardingStrategy(new NoneShardingStrategy()).build();
     }
     
     /**
@@ -143,7 +143,7 @@ public final class ShardingRule {
      * @return database sharding strategy
      */
     public ShardingStrategy getDatabaseShardingStrategy(final TableRule tableRule) {
-        return null == tableRule.getDatabaseShardingStrategy() ? databaseShardingStrategy : tableRule.getDatabaseShardingStrategy();
+        return null == tableRule.getDatabaseShardingStrategy() ? defaultDatabaseShardingStrategy : tableRule.getDatabaseShardingStrategy();
     }
     
     /**
@@ -157,7 +157,7 @@ public final class ShardingRule {
      * @return table sharding strategy
      */
     public ShardingStrategy getTableShardingStrategy(final TableRule tableRule) {
-        return null == tableRule.getTableShardingStrategy() ? tableShardingStrategy : tableRule.getTableShardingStrategy();
+        return null == tableRule.getTableShardingStrategy() ? defaultTableShardingStrategy : tableRule.getTableShardingStrategy();
     }
     
     /**
@@ -222,7 +222,7 @@ public final class ShardingRule {
      * @return is sharding column or not
      */
     public boolean isShardingColumn(final Column column) {
-        if (databaseShardingStrategy.getShardingColumns().contains(column.getName()) || tableShardingStrategy.getShardingColumns().contains(column.getName())) {
+        if (defaultDatabaseShardingStrategy.getShardingColumns().contains(column.getName()) || defaultTableShardingStrategy.getShardingColumns().contains(column.getName())) {
             return true;
         }
         for (TableRule each : tableRules) {
@@ -268,7 +268,7 @@ public final class ShardingRule {
         if (null != tableRule.get().getKeyGenerator()) {
             return tableRule.get().getKeyGenerator().generateKey();
         }
-        return keyGenerator.generateKey();
+        return defaultKeyGenerator.generateKey();
     }
     
     /**

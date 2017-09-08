@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinMasterSlaveLoadBalanceStrategy;
+import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
@@ -56,7 +56,7 @@ public final class MasterSlaveDataSourceTest {
         slaveDataSource = new TestDataSource("test_ds_slave");
         Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
         slaveDataSourceMap.put("test_ds_slave", slaveDataSource);
-        masterSlaveDataSource = new MasterSlaveDataSource("test_ds", "test_ds_master", masterDataSource, slaveDataSourceMap, new RoundRobinMasterSlaveLoadBalanceStrategy());
+        masterSlaveDataSource = new MasterSlaveDataSource(new MasterSlaveRule("test_ds", "test_ds_master", masterDataSource, slaveDataSourceMap));
     }
     
     @Before
@@ -101,7 +101,7 @@ public final class MasterSlaveDataSourceTest {
         when(masterDataSource.getConnection()).thenReturn(masterConnection);
         when(slaveDataSource.getConnection()).thenReturn(slaveConnection);
         try {
-            ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", "masterDataSource", masterDataSource, slaveDataSourceMap)).getDatabaseType();
+            ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(new MasterSlaveRule("ds", "masterDataSource", masterDataSource, slaveDataSourceMap))).getDatabaseType();
         } finally {
             verify(masterConnection).close();
             verify(slaveConnection).close();
@@ -122,7 +122,8 @@ public final class MasterSlaveDataSourceTest {
         Map<String, DataSource> slaveDataSourceMap = new HashMap<>(2, 1);
         slaveDataSourceMap.put("slaveDataSource1", slaveDataSource1);
         slaveDataSourceMap.put("slaveDataSource2", slaveDataSource2);
-        assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource("ds", "masterDataSource", masterDataSource, slaveDataSourceMap)).getDatabaseType(), is(DatabaseType.H2));
+        assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(
+                new MasterSlaveRule("ds", "masterDataSource", masterDataSource, slaveDataSourceMap))).getDatabaseType(), is(DatabaseType.H2));
         verify(masterConnection).close();
         verify(slaveConnection1).close();
         verify(slaveConnection2).close();

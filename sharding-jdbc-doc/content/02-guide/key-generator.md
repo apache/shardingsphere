@@ -36,7 +36,7 @@ TableRule.builder("t_order").generateKeyColumns("order_id");
 配置全局生成器(com.xx.xx.KeyGenerator):
 
 ```java
-ShardingRule.builder().keyGenerator(com.xx.xx.KeyGenerator.class);
+ShardingRule.builder().defaultKeyGenerator(com.xx.xx.KeyGenerator.class);
 
 ```
 

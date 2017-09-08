@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.spring.namespace.parser;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategyType;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
+import com.dangdang.ddframe.rdb.sharding.spring.datasource.SpringMasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -44,7 +44,7 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
     //CHECKSTYLE:OFF
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
     //CHECKSTYLE:ON
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveDataSource.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringMasterSlaveDataSource.class);
         factory.addConstructorArgValue(parseId(element));
         String masterDataSourceName = parseMasterDataSourceRef(element);
         factory.addConstructorArgValue(masterDataSourceName);
