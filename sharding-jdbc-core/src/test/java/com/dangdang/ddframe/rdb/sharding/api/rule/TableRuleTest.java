@@ -192,7 +192,7 @@ public final class TableRuleTest {
     
     @Test
     public void assertGenerateKeyColumn() {
-        TableRule actual = TableRule.builder("logicTable").dataSourceRule(createDataSourceRule()).generateKeyColumn("col_1", IncrementKeyGenerator.class).build();
+        TableRule actual = TableRule.builder("logicTable").dataSourceRule(createDataSourceRule()).generateKeyColumn("col_1", new IncrementKeyGenerator()).build();
         assertThat(actual.getGenerateKeyColumn(), is("col_1"));
         assertThat(actual.getKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
     }

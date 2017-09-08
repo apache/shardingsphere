@@ -86,7 +86,7 @@ public final class ShardingRuleBuilder {
         TableRule[] tableRules = buildTableRules(dataSourceRule);
         ShardingRule.ShardingRuleBuilder shardingRuleBuilder = ShardingRule.builder(dataSourceRule);
         if (!Strings.isNullOrEmpty(shardingRuleConfig.getKeyGeneratorClass())) {
-            shardingRuleBuilder.keyGenerator(loadClass(shardingRuleConfig.getKeyGeneratorClass(), KeyGenerator.class));
+            shardingRuleBuilder.keyGenerator(newInstance(shardingRuleConfig.getKeyGeneratorClass(), KeyGenerator.class));
         }
         return shardingRuleBuilder.tableRules(tableRules).bindingTableRules(buildBindingTableRules(tableRules))
                 .databaseShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy()))
@@ -129,7 +129,7 @@ public final class ShardingRuleBuilder {
             if (Strings.isNullOrEmpty(each.getColumnKeyGeneratorClass())) {
                 tableRuleBuilder.generateKeyColumn(each.getColumnName());
             } else {
-                tableRuleBuilder.generateKeyColumn(each.getColumnName(), loadClass(each.getColumnKeyGeneratorClass(), KeyGenerator.class));
+                tableRuleBuilder.generateKeyColumn(each.getColumnName(), newInstance(each.getColumnKeyGeneratorClass(), KeyGenerator.class));
             }
         }
     }
@@ -201,10 +201,10 @@ public final class ShardingRuleBuilder {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> Class<? extends T> loadClass(final String className, final Class<T> superClass) {
+    private <T> T newInstance(final String className, final Class<T> superClass) {
         try {
-            return (Class<? extends T>) superClass.getClassLoader().loadClass(className);
-        } catch (final ClassNotFoundException ex) {
+            return (T) superClass.getClassLoader().loadClass(className).newInstance();
+        } catch (final ReflectiveOperationException ex) {
             throw new IllegalArgumentException(ex);
         }
     }

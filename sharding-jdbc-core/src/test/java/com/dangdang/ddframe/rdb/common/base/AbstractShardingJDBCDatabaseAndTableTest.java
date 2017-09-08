@@ -58,7 +58,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
             TableRule orderTableRule = TableRule.builder("t_order").actualTables("t_order_0", "t_order_1").dataSourceRule(dataSourceRule).build();
             TableRule orderItemTableRule = TableRule.builder("t_order_item")
-                    .actualTables("t_order_item_0", "t_order_item_1").dataSourceRule(dataSourceRule).generateKeyColumn("item_id", IncrementKeyGenerator.class).build();
+                    .actualTables("t_order_item_0", "t_order_item_1").dataSourceRule(dataSourceRule).generateKeyColumn("item_id", new IncrementKeyGenerator()).build();
             TableRule configRule = TableRule.builder("t_config").dataSourceRule(dataSourceRule).build();
             ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule, configRule)
                     .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))

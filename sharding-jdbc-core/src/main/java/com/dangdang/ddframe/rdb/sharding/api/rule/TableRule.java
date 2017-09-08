@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -211,7 +210,7 @@ public final class TableRule {
         
         private String generateKeyColumn;
         
-        private Class<? extends KeyGenerator> keyGeneratorClass;
+        private KeyGenerator keyGenerator;
         
         /**
          * Build is dynamic table.
@@ -296,12 +295,12 @@ public final class TableRule {
          * Build generate key column.
          *
          * @param generateKeyColumn generate key column
-         * @param keyGeneratorClass key generator class
+         * @param keyGenerator key generator
          * @return this builder
          */
-        public TableRuleBuilder generateKeyColumn(final String generateKeyColumn, final Class<? extends KeyGenerator> keyGeneratorClass) {
+        public TableRuleBuilder generateKeyColumn(final String generateKeyColumn, final KeyGenerator keyGenerator) {
             this.generateKeyColumn = generateKeyColumn;
-            this.keyGeneratorClass = keyGeneratorClass;
+            this.keyGenerator = keyGenerator;
             return this;
         }
         
@@ -311,10 +310,6 @@ public final class TableRule {
          * @return built table rule
          */
         public TableRule build() {
-            KeyGenerator keyGenerator = null;
-            if (null != generateKeyColumn && null != keyGeneratorClass) {
-                keyGenerator = KeyGeneratorFactory.createKeyGenerator(keyGeneratorClass);
-            }
             return new TableRule(logicTable, dynamic, actualTables, dataSourceRule, dataSourceNames, databaseShardingStrategy, tableShardingStrategy, generateKeyColumn, keyGenerator);
         }
     }

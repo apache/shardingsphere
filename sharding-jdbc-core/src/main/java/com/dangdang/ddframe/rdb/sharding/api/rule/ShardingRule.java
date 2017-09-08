@@ -274,7 +274,7 @@ public final class ShardingRule {
         
         private ShardingStrategy tableShardingStrategy;
         
-        private Class<? extends KeyGenerator> keyGeneratorClass;
+        private KeyGenerator keyGenerator;
     
         /**
          * Build table rules.
@@ -323,13 +323,13 @@ public final class ShardingRule {
         }
     
         /**
-         * Build default key generator class.
+         * Build default key generator.
          * 
-         * @param keyGeneratorClass key generator class
+         * @param keyGenerator key generator
          * @return this builder
          */
-        public ShardingRuleBuilder keyGenerator(final Class<? extends KeyGenerator> keyGeneratorClass) {
-            this.keyGeneratorClass = keyGeneratorClass;
+        public ShardingRuleBuilder keyGenerator(final KeyGenerator keyGenerator) {
+            this.keyGenerator = keyGenerator;
             return this;
         }
         
@@ -339,10 +339,6 @@ public final class ShardingRule {
          * @return built sharding rule
          */
         public ShardingRule build() {
-            KeyGenerator keyGenerator = null;
-            if (null != keyGeneratorClass) {
-                keyGenerator = KeyGeneratorFactory.createKeyGenerator(keyGeneratorClass);
-            }
             return new ShardingRule(dataSourceRule, tableRules, bindingTableRules, databaseShardingStrategy, tableShardingStrategy, keyGenerator);
         }
     }
