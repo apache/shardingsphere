@@ -41,7 +41,7 @@ import java.util.Set;
  * 
  * @author gaohongtao
  */
-public class ClosureShardingAlgorithm implements ComplexKeysShardingAlgorithm {
+public final class ClosureShardingAlgorithm implements ComplexKeysShardingAlgorithm {
     
     private final Closure<?> closureTemplate;
     

@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.config.common.api.config.GenerateKeyCol
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.StrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
@@ -175,7 +175,7 @@ public final class ShardingRuleBuilder {
     
     @SuppressWarnings("unchecked")
     private <T extends ShardingStrategy> T buildShardingAlgorithmExpression(final List<String> shardingColumns, final String algorithmExpression) {
-        return (T) new ComplexShardingStrategy(shardingColumns, new ClosureDatabaseShardingAlgorithm(algorithmExpression, logRoot));
+        return (T) new ComplexShardingStrategy(shardingColumns, new ClosureShardingAlgorithm(algorithmExpression, logRoot));
     }
     
     @SuppressWarnings("unchecked")
