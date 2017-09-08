@@ -95,7 +95,7 @@ select:focus {
 .header a.navbar-brand .logo {
     background-color: #252525;
     margin-right: 75px;
-    background: url("http://ovfotjrsi.bkt.clouddn.com/images/logo.png") no-repeat center center;
+    background: url("http://ovfotjrsi.bkt.clouddn.com/images/logo.png") no-repeat left center;
     display: block;
     width: 147px;
     height: 27px;
@@ -113,6 +113,18 @@ select:focus {
 @media screen and (max-width: 992px) {
     .header ul.nav>li {
         margin: 0;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .header a.navbar-brand .logo {
+        margin-right: 0;
+    }
+}
+
+@media screen and (max-width: 260px) {
+    .header a.navbar-brand .logo {
+        width: 27px;
     }
 }
 
@@ -148,13 +160,18 @@ select:focus {
 /*banner*/
 
 .banner {
-    background: url("../images/big_bg.jpg") repeat top center;
+    background: url("http://ovfotjrsi.bkt.clouddn.com/images/big_bg.jpg") repeat top center;
     min-height: 705px;
 }
 
 .banner .produce {
     margin: 0 auto;
     padding-top: 110px;
+}
+
+.banner .produce .first>img {
+    width: 50%;
+    min-width: 280px;
 }
 
 .banner .produce .first,
