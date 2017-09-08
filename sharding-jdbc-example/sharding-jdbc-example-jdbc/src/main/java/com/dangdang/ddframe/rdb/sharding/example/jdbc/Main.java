@@ -22,9 +22,9 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.ModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.ModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.inline.InlineShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import org.apache.commons.dbcp.BasicDataSource;
 
@@ -122,7 +122,7 @@ public final class Main {
         TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables("t_order_item_0", "t_order_item_1").dataSourceRule(dataSourceRule).build();
         ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule)
                 .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
-                .defaultDatabaseShardingStrategy(new StandardShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
+                .defaultDatabaseShardingStrategy(new InlineShardingStrategy("user_id", "ds_jdbc_${user_id % 2}"))
                 .defaultTableShardingStrategy(new StandardShardingStrategy("order_id", new ModuloTableShardingAlgorithm())).build();
         return new ShardingDataSource(shardingRule);
     }

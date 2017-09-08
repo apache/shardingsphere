@@ -15,14 +15,20 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.strategy.standard;
+package com.dangdang.ddframe.rdb.sharding.routing.strategy.inline;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
-import com.google.common.base.Optional;
+import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
+import groovy.lang.Binding;
+import groovy.lang.Closure;
+import groovy.lang.GroovyShell;
+import groovy.util.Expando;
+import lombok.Getter;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,47 +41,37 @@ import java.util.TreeSet;
  * 
  * @author zhangliang
  */
-public final class StandardShardingStrategy implements ShardingStrategy {
+@Getter
+public final class InlineShardingStrategy implements ShardingStrategy {
     
     private final String shardingColumn;
     
-    private final PreciseShardingAlgorithm preciseShardingAlgorithm;
+    private final Closure<?> closureTemplate;
     
-    private final Optional<RangeShardingAlgorithm> rangeShardingAlgorithm;
+    // TODO should config from sharding prop
+    private final String logRoot = "logRoot";
     
-    public StandardShardingStrategy(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm) {
-        this(shardingColumn, preciseShardingAlgorithm, null);
-    }
-    
-    public StandardShardingStrategy(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm, final RangeShardingAlgorithm rangeShardingAlgorithm) {
+    public InlineShardingStrategy(final String shardingColumn, final String inlineExpression) {
         this.shardingColumn = shardingColumn;
-        this.preciseShardingAlgorithm = preciseShardingAlgorithm;
-        this.rangeShardingAlgorithm = Optional.fromNullable(rangeShardingAlgorithm);
+        Binding binding = new Binding();
+        binding.setVariable("log", LoggerFactory.getLogger(logRoot.trim()));
+        closureTemplate = (Closure) new GroovyShell(binding).evaluate(Joiner.on("").join("{it -> \"", inlineExpression.trim(), "\"}"));
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         ShardingValue shardingValue = shardingValues.iterator().next();
-        Collection<String> shardingResult = shardingValue instanceof ListShardingValue
-                ? doSharding(availableTargetNames, (ListShardingValue) shardingValue) : doSharding(availableTargetNames, (RangeShardingValue) shardingValue);
+        Preconditions.checkState(shardingValue instanceof ListShardingValue, "Inline strategy cannot support range sharding.");
+        Collection<String> shardingResult = doSharding((ListShardingValue) shardingValue);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;
     }
     
-    @SuppressWarnings("unchecked")
-    private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<?> shardingValue) {
-        if (!rangeShardingAlgorithm.isPresent()) {
-            throw new UnsupportedOperationException("Cannot find range sharding strategy in sharding rule.");
-        }
-        return rangeShardingAlgorithm.get().doSharding(availableTargetNames, shardingValue);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingValue<?> shardingValue) {
+    private Collection<String> doSharding(final ListShardingValue shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (PreciseShardingValue<?> eachTableShardingValue : transferToPreciseShardingValues(shardingValue)) {
-            result.add(preciseShardingAlgorithm.doSharding(availableTargetNames, eachTableShardingValue));
+            result.add(eval(eachTableShardingValue));
         }
         return result;
     }
@@ -87,6 +83,14 @@ public final class StandardShardingStrategy implements ShardingStrategy {
             result.add(new PreciseShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), each));
         }
         return result;
+    }
+    
+    private String eval(final PreciseShardingValue shardingValue) {
+        Closure<?> result = closureTemplate.rehydrate(new Expando(), null, null);
+        result.setResolveStrategy(Closure.DELEGATE_ONLY);
+        result.setProperty("log", closureTemplate.getProperty("log"));
+        result.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
+        return result.call().toString();
     }
     
     @Override

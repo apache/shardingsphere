@@ -30,6 +30,7 @@ public interface ShardingStrategy {
     
     /**
      * Get sharding columns.
+     * 
      * @return sharding columns
      */
     Collection<String> getShardingColumns();
