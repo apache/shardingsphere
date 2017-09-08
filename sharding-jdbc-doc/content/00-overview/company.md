@@ -51,6 +51,8 @@ chapter = true
 
 ## [唯品会](http://www.vip.com/)
 
+## [下厨房](http://www.xiachufang.com/)
+
 ## [小牛在线](https://www.xiaoniu88.com/)
 
 ## [义乌购] (http://www.yiwugou.com/)
