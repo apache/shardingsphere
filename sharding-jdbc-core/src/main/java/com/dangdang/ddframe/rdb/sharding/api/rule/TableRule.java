@@ -59,7 +59,6 @@ public final class TableRule {
     private TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames,
                      final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy,
                      final String generateKeyColumn, final KeyGenerator keyGenerator) {
-        Preconditions.checkNotNull(logicTable);
         this.logicTable = logicTable;
         this.dynamic = dynamic;
         this.databaseShardingStrategy = databaseShardingStrategy;
@@ -191,20 +190,20 @@ public final class TableRule {
     }
     
     /**
-     * Table rule builder..
+     * Table rule builder.
      */
     @RequiredArgsConstructor
     public static class TableRuleBuilder {
         
         private final String logicTable;
+    
+        private final List<String> actualTables = new ArrayList<>();
+    
+        private final Collection<String> dataSourceNames = new LinkedList<>();
         
         private boolean dynamic;
         
-        private final List<String> actualTables = new ArrayList<>();
-        
         private DataSourceRule dataSourceRule;
-        
-        private final Collection<String> dataSourceNames = new LinkedList<>();
         
         private ShardingStrategy databaseShardingStrategy;
         
