@@ -78,7 +78,7 @@ public final class ClosureShardingAlgorithm implements ComplexKeysShardingAlgori
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         result.setProperty("log", closureTemplate.getProperty("log"));
         for (int i = 0; i < values.size(); i++) {
-            result.setProperty(columnNames.get(i), new ShardingValueWrapper(values.get(i)));
+            result.setProperty(columnNames.get(i), values.get(i));
         }
         return result;
     }

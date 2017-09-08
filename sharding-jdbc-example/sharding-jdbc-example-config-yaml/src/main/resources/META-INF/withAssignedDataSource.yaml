@@ -27,14 +27,14 @@ tables:
       - columnName: order_id
     tableStrategy:
       shardingColumns: order_id
-      algorithmExpression: t_order_${order_id.longValue() % 2}
+      algorithmExpression: t_order_${order_id % 2}
         
   t_order_item:
     actualTables: ds_${0..1}.t_order_item_${0..1}
     #绑定表中其余的表的策略与第一张表的策略相同
     tableStrategy: 
       shardingColumns: order_id
-      algorithmExpression: t_order_item_${order_id.longValue() % 2}  
+      algorithmExpression: t_order_item_${order_id % 2}  
 
 bindingTables:
   - tableNames: t_order,t_order_item
@@ -42,7 +42,7 @@ bindingTables:
 #默认数据库分片策略
 defaultDatabaseStrategy:
   shardingColumns: user_id
-  algorithmExpression: ds_${user_id.longValue() % 2}
+  algorithmExpression: ds_${user_id % 2}
 
 defaultTableStrategy:
   shardingColumns: none

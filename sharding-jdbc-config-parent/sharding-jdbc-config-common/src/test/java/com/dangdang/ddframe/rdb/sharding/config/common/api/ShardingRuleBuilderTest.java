@@ -184,7 +184,7 @@ public final class ShardingRuleBuilderTest {
     private StrategyConfig getTableStrategyConfigForExpression() {
         StrategyConfig result = new StrategyConfig();
         result.setShardingColumns("oid");
-        result.setAlgorithmExpression("${oid.longValue() % 2}");
+        result.setAlgorithmExpression("${oid % 2}");
         return result;
     }
     

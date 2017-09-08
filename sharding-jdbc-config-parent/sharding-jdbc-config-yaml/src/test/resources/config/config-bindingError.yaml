@@ -6,7 +6,7 @@ tables:
       algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
     tableStrategy: &table001
       shardingColumns: id
-      algorithmExpression: t_order_${id.longValue() % 2}
+      algorithmExpression: t_order_${id % 2}
         
   t_order_item:
     actualTables: t_order_item_${0..1}

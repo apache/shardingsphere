@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.config.common;
 
 import com.dangdang.ddframe.rdb.sharding.config.common.api.ShardingRuleBuilderTest;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureShardingAlgorithmTest;
-import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ShardingValueWrapperTest;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParserTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -28,7 +27,6 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         ShardingRuleBuilderTest.class, 
         ClosureShardingAlgorithmTest.class, 
-        ShardingValueWrapperTest.class, 
         InlineParserTest.class
     })
 public class AllTests {

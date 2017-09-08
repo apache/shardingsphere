@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ClosureShardingAlgorithmTest {
     
-    private static final String EXPRESSION = "target_${log.info(id.toString()); id.longValue() % 2}";
+    private static final String EXPRESSION = "target_${log.info(id.toString()); id % 2}";
     
     private static final String WRONG_EXPRESSION = "target_${log.info(id.error());}";
     
