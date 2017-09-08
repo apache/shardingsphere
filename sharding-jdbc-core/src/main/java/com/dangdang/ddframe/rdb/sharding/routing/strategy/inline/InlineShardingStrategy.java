@@ -23,12 +23,9 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import groovy.lang.Binding;
 import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import groovy.util.Expando;
-import lombok.Getter;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,21 +38,15 @@ import java.util.TreeSet;
  * 
  * @author zhangliang
  */
-@Getter
 public final class InlineShardingStrategy implements ShardingStrategy {
     
     private final String shardingColumn;
     
-    private final Closure<?> closureTemplate;
-    
-    // TODO should config from sharding prop
-    private final String logRoot = "logRoot";
+    private final Closure<?> closure;
     
     public InlineShardingStrategy(final String shardingColumn, final String inlineExpression) {
         this.shardingColumn = shardingColumn;
-        Binding binding = new Binding();
-        binding.setVariable("log", LoggerFactory.getLogger(logRoot.trim()));
-        closureTemplate = (Closure) new GroovyShell(binding).evaluate(Joiner.on("").join("{it -> \"", inlineExpression.trim(), "\"}"));
+        closure = (Closure) new GroovyShell().evaluate(Joiner.on("").join("{it -> \"", inlineExpression.trim(), "\"}"));
     }
     
     @Override
@@ -71,7 +62,7 @@ public final class InlineShardingStrategy implements ShardingStrategy {
     private Collection<String> doSharding(final ListShardingValue shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (PreciseShardingValue<?> eachTableShardingValue : transferToPreciseShardingValues(shardingValue)) {
-            result.add(eval(eachTableShardingValue));
+            result.add(execute(eachTableShardingValue));
         }
         return result;
     }
@@ -85,10 +76,9 @@ public final class InlineShardingStrategy implements ShardingStrategy {
         return result;
     }
     
-    private String eval(final PreciseShardingValue shardingValue) {
-        Closure<?> result = closureTemplate.rehydrate(new Expando(), null, null);
+    private String execute(final PreciseShardingValue shardingValue) {
+        Closure<?> result = closure.rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
-        result.setProperty("log", closureTemplate.getProperty("log"));
         result.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
         return result.call().toString();
     }
