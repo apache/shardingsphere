@@ -42,7 +42,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -83,7 +83,7 @@ public final class ShardingRuleBuilder {
      */
     public ShardingRule build() {
         DataSourceRule dataSourceRule = buildDataSourceRule();
-        Collection<TableRule> tableRules = buildTableRules(dataSourceRule);
+        TableRule[] tableRules = buildTableRules(dataSourceRule);
         ShardingRule.ShardingRuleBuilder shardingRuleBuilder = ShardingRule.builder(dataSourceRule);
         if (!Strings.isNullOrEmpty(shardingRuleConfig.getKeyGeneratorClass())) {
             shardingRuleBuilder.keyGenerator(loadClass(shardingRuleConfig.getKeyGeneratorClass(), KeyGenerator.class));
@@ -99,8 +99,9 @@ public final class ShardingRuleBuilder {
                 : new DataSourceRule(shardingRuleConfig.getDataSource(), shardingRuleConfig.getDefaultDataSourceName());
     }
     
-    private Collection<TableRule> buildTableRules(final DataSourceRule dataSourceRule) {
-        Collection<TableRule> result = new ArrayList<>(shardingRuleConfig.getTables().size());
+    private TableRule[] buildTableRules(final DataSourceRule dataSourceRule) {
+        TableRule[] result = new TableRule[shardingRuleConfig.getTables().size()];
+        int count = 0;
         for (Entry<String, TableRuleConfig> each : shardingRuleConfig.getTables().entrySet()) {
             String logicTable = each.getKey();
             TableRuleConfig tableRuleConfig = each.getValue();
@@ -115,7 +116,8 @@ public final class ShardingRuleBuilder {
                 tableRuleBuilder.dataSourceNames(new InlineParser(tableRuleConfig.getDataSourceNames()).evaluate());
             }
             buildGenerateKeyColumn(tableRuleBuilder, tableRuleConfig);
-            result.add(tableRuleBuilder.build());
+            result[count] = tableRuleBuilder.build();
+            count++;
         }
         return result;
     }
@@ -130,16 +132,18 @@ public final class ShardingRuleBuilder {
         }
     }
     
-    private Collection<BindingTableRule> buildBindingTableRules(final Collection<TableRule> tableRules) {
-        Collection<BindingTableRule> result = new ArrayList<>(shardingRuleConfig.getBindingTables().size());
+    private BindingTableRule[] buildBindingTableRules(final TableRule[] tableRules) {
+        BindingTableRule[] result = new BindingTableRule[shardingRuleConfig.getBindingTables().size()];
+        int count = 0;
         for (BindingTableRuleConfig each : shardingRuleConfig.getBindingTables()) {
-            result.add(new BindingTableRule(Lists.transform(new InlineParser(each.getTableNames()).split(), new Function<String, TableRule>() {
+            result[count] = new BindingTableRule(Lists.transform(new InlineParser(each.getTableNames()).split(), new Function<String, TableRule>() {
                 
                 @Override
                 public TableRule apply(final String input) {
-                    return findTableRuleByLogicTableName(tableRules, input);
+                    return findTableRuleByLogicTableName(Arrays.asList(tableRules), input);
                 }
-            })));
+            }));
+            count++;
         }
         return result;
     }

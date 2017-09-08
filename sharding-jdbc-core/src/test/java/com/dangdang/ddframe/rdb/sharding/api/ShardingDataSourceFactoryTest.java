@@ -29,7 +29,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -67,7 +66,7 @@ public final class ShardingDataSourceFactoryTest {
         dataSourceMap.put("ds", dataSource);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         TableRule tableRule = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule).build();
-        return ShardingRule.builder(dataSourceRule).tableRules(Collections.singletonList(tableRule)).build();
+        return ShardingRule.builder(dataSourceRule).tableRules(tableRule).build();
     }
     
     private ShardingRule getShardingRule(final DataSource dataSource) throws NoSuchFieldException, IllegalAccessException {

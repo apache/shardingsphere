@@ -40,7 +40,6 @@ import org.junit.AfterClass;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,8 +139,8 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
                     "t_order_item_8",
                     "t_order_item_9")).dataSourceRule(dataSourceRule).build();
             TableRule configRule = TableRule.builder("t_config").dataSourceRule(dataSourceRule).build();
-            ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule, configRule))
-                    .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
+            ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule, configRule)
+                    .bindingTableRules(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule)))
                     .databaseShardingStrategy(new StandardShardingStrategy("user_id", new PreciseModuloDatabaseShardingAlgorithm(), new RangeModuloDatabaseShardingAlgorithm()))
                     .tableShardingStrategy(new StandardShardingStrategy("order_id", new PreciseModuloTableShardingAlgorithm(), new RangeModuloTableShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));

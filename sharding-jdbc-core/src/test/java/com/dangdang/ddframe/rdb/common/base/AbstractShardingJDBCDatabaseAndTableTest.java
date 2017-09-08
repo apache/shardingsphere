@@ -36,7 +36,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,8 +63,8 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
                     "t_order_item_0",
                     "t_order_item_1")).dataSourceRule(dataSourceRule).generateKeyColumn("item_id", IncrementKeyGenerator.class).build();
             TableRule configRule = TableRule.builder("t_config").dataSourceRule(dataSourceRule).build();
-            ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule, configRule))
-                    .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
+            ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule, configRule)
+                    .bindingTableRules(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule)))
                     .databaseShardingStrategy(new StandardShardingStrategy("user_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()))
                     .tableShardingStrategy(new StandardShardingStrategy("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));

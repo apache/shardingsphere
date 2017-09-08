@@ -30,7 +30,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,6 +126,6 @@ public final class ShardingDataSourceTest {
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         TableRule tableRule = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule).build();
-        return new ShardingDataSource(ShardingRule.builder(dataSourceRule).tableRules(Collections.singletonList(tableRule)).build());
+        return new ShardingDataSource(ShardingRule.builder(dataSourceRule).tableRules(tableRule).build());
     }
 }

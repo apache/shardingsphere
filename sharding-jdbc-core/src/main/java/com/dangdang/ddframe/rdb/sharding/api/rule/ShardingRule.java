@@ -31,9 +31,11 @@ import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -264,9 +266,9 @@ public final class ShardingRule {
         
         private final DataSourceRule dataSourceRule;
         
-        private Collection<TableRule> tableRules;
+        private final Collection<TableRule> tableRules = new LinkedList<>();
         
-        private Collection<BindingTableRule> bindingTableRules;
+        private final Collection<BindingTableRule> bindingTableRules = new LinkedList<>();
         
         private ShardingStrategy databaseShardingStrategy;
         
@@ -280,8 +282,9 @@ public final class ShardingRule {
          * @param tableRules table rules
          * @return this builder
          */
-        public ShardingRuleBuilder tableRules(final Collection<TableRule> tableRules) {
-            this.tableRules = tableRules;
+        public ShardingRuleBuilder tableRules(final TableRule... tableRules) {
+            this.tableRules.clear();
+            this.tableRules.addAll(Arrays.asList(tableRules));
             return this;
         }
         
@@ -291,8 +294,9 @@ public final class ShardingRule {
          * @param bindingTableRules binding table rules
          * @return this builder
          */
-        public ShardingRuleBuilder bindingTableRules(final Collection<BindingTableRule> bindingTableRules) {
-            this.bindingTableRules = bindingTableRules;
+        public ShardingRuleBuilder bindingTableRules(final BindingTableRule... bindingTableRules) {
+            this.bindingTableRules.clear();
+            this.bindingTableRules.addAll(Arrays.asList(bindingTableRules));
             return this;
         }
         

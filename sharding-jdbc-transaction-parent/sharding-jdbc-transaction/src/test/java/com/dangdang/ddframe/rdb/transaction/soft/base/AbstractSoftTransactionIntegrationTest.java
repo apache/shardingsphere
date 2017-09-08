@@ -17,12 +17,11 @@
 
 package com.dangdang.ddframe.rdb.transaction.soft.base;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.google.common.collect.Lists;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -50,7 +49,7 @@ public abstract class AbstractSoftTransactionIntegrationTest {
     private void prepareEnv() throws SQLException {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
         TableRule tableRule = TableRule.builder("transaction_test").dataSourceRule(dataSourceRule).build();
-        ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(Lists.newArrayList(tableRule)).build();
+        ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(tableRule).build();
         shardingDataSource = new ShardingDataSource(shardingRule);
         createTable(shardingDataSource);
         transactionDataSource = createTransactionLogDataSource();

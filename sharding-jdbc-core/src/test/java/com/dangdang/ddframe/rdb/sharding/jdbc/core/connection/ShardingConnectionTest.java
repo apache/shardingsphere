@@ -33,7 +33,6 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,8 +62,7 @@ public final class ShardingConnectionTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        ShardingRule rule = new ShardingRule.ShardingRuleBuilder(dataSourceRule)
-                .tableRules(Collections.singleton(new  TableRule.TableRuleBuilder("test").dataSourceRule(dataSourceRule).build())).build();
+        ShardingRule rule = new ShardingRule.ShardingRuleBuilder(dataSourceRule).tableRules(new TableRule.TableRuleBuilder("test").dataSourceRule(dataSourceRule).build()).build();
         ShardingContext shardingContext = new ShardingContext(rule, null, null, false);
         connection = new ShardingConnection(shardingContext);
     }

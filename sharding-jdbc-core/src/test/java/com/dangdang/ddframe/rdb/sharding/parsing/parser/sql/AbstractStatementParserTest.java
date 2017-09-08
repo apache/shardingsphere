@@ -17,10 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 
@@ -30,7 +30,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +60,6 @@ public abstract class AbstractStatementParserTest {
                         return availableTargetNames;
                     }
                 })).build();
-        return ShardingRule.builder(dataSourceRule).tableRules(Collections.singletonList(tableRule)).build();
+        return ShardingRule.builder(dataSourceRule).tableRules(tableRule).build();
     }
 }
