@@ -135,10 +135,10 @@ public final class ShardingRuleBuilderTest {
         assertTrue(bindingTableRule.hasLogicTable("t_order"));
         assertTrue(bindingTableRule.hasLogicTable("t_order_item"));
         assertFalse(bindingTableRule.hasLogicTable("t_log"));
-        assertThat(actual.getDatabaseShardingStrategy().getShardingColumns().size(), is(1));
-        assertThat(actual.getDatabaseShardingStrategy().getShardingColumns().iterator().next(), is("usr_id"));
-        assertThat(actual.getTableShardingStrategy().getShardingColumns().size(), is(1));
-        assertThat(actual.getTableShardingStrategy().getShardingColumns().iterator().next(), is("oid"));
+        assertThat(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().size(), is(1));
+        assertThat(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().iterator().next(), is("usr_id"));
+        assertThat(actual.getDefaultTableShardingStrategy().getShardingColumns().size(), is(1));
+        assertThat(actual.getDefaultTableShardingStrategy().getShardingColumns().iterator().next(), is("oid"));
     }
     
     private Map<String, DataSource> createDataSourceMap() {

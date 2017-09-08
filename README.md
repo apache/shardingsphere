@@ -74,8 +74,8 @@ Sharding-JDBC is a JDBC extension, provides distributed features such as shardin
 ShardingRule shardingRule = ShardingRule.builder()
         .dataSourceRule(dataSourceRule)
         .tableRules(tableRuleList)
-        .databaseShardingStrategy(new DatabaseShardingStrategy("sharding_column", new XXXShardingAlgorithm()))
-        .tableShardingStrategy(new TableShardingStrategy("sharding_column", new XXXShardingAlgorithm())))
+        .defaultDatabaseShardingStrategy(new StandardShardingStrategy("sharding_column", new XXXShardingAlgorithm()))
+        .defaultTableShardingStrategy(new StandardShardingStrategy("sharding_column", new XXXShardingAlgorithm())))
         .build();
 ```
 
