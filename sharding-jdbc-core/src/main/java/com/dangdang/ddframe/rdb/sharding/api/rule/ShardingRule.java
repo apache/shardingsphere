@@ -25,7 +25,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +74,6 @@ public final class ShardingRule {
     public ShardingRule(
             final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules,
             final ShardingStrategy defaultDatabaseShardingStrategy, final ShardingStrategy defaultTableShardingStrategy, final KeyGenerator defaultKeyGenerator) {
-        Preconditions.checkNotNull(dataSourceRule);
         this.dataSourceRule = dataSourceRule;
         this.tableRules = null == tableRules ? Collections.<TableRule>emptyList() : tableRules;
         this.bindingTableRules = null == bindingTableRules ? Collections.<BindingTableRule>emptyList() : bindingTableRules;
@@ -87,10 +85,11 @@ public final class ShardingRule {
     /**
      * Get sharding rule builder.
      *
+     * @param dataSourceRule data source rule
      * @return sharding rule builder
      */
-    public static ShardingRuleBuilder builder() {
-        return new ShardingRuleBuilder();
+    public static ShardingRuleBuilder builder(final DataSourceRule dataSourceRule) {
+        return new ShardingRuleBuilder(dataSourceRule);
     }
     
     /**
@@ -277,7 +276,7 @@ public final class ShardingRule {
     @RequiredArgsConstructor
     public static class ShardingRuleBuilder {
         
-        private DataSourceRule dataSourceRule;
+        private final DataSourceRule dataSourceRule;
         
         private Collection<TableRule> tableRules;
         
@@ -288,18 +287,7 @@ public final class ShardingRule {
         private ShardingStrategy tableShardingStrategy;
         
         private Class<? extends KeyGenerator> keyGeneratorClass;
-        
-        /**
-         * Build data source rule.
-         *
-         * @param dataSourceRule data source rule
-         * @return this builder
-         */
-        public ShardingRuleBuilder dataSourceRule(final DataSourceRule dataSourceRule) {
-            this.dataSourceRule = dataSourceRule;
-            return this;
-        }
-        
+    
         /**
          * Build table rules.
          *

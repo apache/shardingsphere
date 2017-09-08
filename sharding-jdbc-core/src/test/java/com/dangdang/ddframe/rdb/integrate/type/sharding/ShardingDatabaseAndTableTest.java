@@ -103,7 +103,7 @@ public class ShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
                     "t_order_item_8",
                     "t_order_item_9")).dataSourceRule(dataSourceRule).build();
             TableRule configRule = TableRule.builder("t_config").dataSourceRule(dataSourceRule).build();
-            ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule, configRule))
+            ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule, configRule))
                     .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
                     .databaseShardingStrategy(new StandardShardingStrategy("user_id", new PreciseModuloDatabaseShardingAlgorithm(), new RangeModuloDatabaseShardingAlgorithm()))
                     .tableShardingStrategy(new StandardShardingStrategy("order_id", new PreciseModuloTableShardingAlgorithm(), new RangeModuloTableShardingAlgorithm())).build();

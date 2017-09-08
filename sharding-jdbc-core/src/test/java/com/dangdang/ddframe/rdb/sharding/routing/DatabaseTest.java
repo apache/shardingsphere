@@ -50,7 +50,7 @@ public class DatabaseTest {
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).databaseShardingStrategy(new HintShardingStrategy(new OrderDatabaseHintShardingAlgorithm())).build();
+        shardingRule = ShardingRule.builder(dataSourceRule).databaseShardingStrategy(new HintShardingStrategy(new OrderDatabaseHintShardingAlgorithm())).build();
     }
     
     @Test

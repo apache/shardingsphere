@@ -127,7 +127,6 @@ public final class ShardingDataSourceTest {
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         TableRule tableRule = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule).build();
-        return new ShardingDataSource(ShardingRule.builder()
-                .dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(tableRule)).build());
+        return new ShardingDataSource(ShardingRule.builder(dataSourceRule).tableRules(Collections.singletonList(tableRule)).build());
     }
 }

@@ -81,7 +81,7 @@ public class ShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
             DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
             TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).generateKeyColumn("order_id", IncrementKeyGenerator.class).build();
             TableRule orderItemTableRule = TableRule.builder("t_order_item").dataSourceRule(dataSourceRule).build();
-            ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+            ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
                     .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
                     .databaseShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("user_id"), new ComplexKeysModuloDatabaseShardingAlgorithm()))
                     .tableShardingStrategy(new NoneShardingStrategy()).build();

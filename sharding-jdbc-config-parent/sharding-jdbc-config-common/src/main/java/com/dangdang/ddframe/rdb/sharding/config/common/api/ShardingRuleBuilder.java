@@ -84,7 +84,7 @@ public final class ShardingRuleBuilder {
     public ShardingRule build() {
         DataSourceRule dataSourceRule = buildDataSourceRule();
         Collection<TableRule> tableRules = buildTableRules(dataSourceRule);
-        com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule.ShardingRuleBuilder shardingRuleBuilder = ShardingRule.builder().dataSourceRule(dataSourceRule);
+        ShardingRule.ShardingRuleBuilder shardingRuleBuilder = ShardingRule.builder(dataSourceRule);
         if (!Strings.isNullOrEmpty(shardingRuleConfig.getKeyGeneratorClass())) {
             shardingRuleBuilder.keyGenerator(loadClass(shardingRuleConfig.getKeyGeneratorClass(), KeyGenerator.class));
         }

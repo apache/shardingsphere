@@ -121,7 +121,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
                         return availableTargetNames;
                     }
                 })).generateKeyColumn("field1").generateKeyColumn("field2").build();
-        return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(tableRule)).keyGenerator(IncrementKeyGenerator.class).build();
+        return ShardingRule.builder(dataSourceRule).tableRules(Collections.singletonList(tableRule)).keyGenerator(IncrementKeyGenerator.class).build();
     }
     
     @Test

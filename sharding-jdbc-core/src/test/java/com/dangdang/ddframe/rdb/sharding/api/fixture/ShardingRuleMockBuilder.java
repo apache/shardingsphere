@@ -92,7 +92,7 @@ public class ShardingRuleMockBuilder {
         for (TableRule each : tableRules) {
             bindingTableRules.add(each);
         }
-        return new ShardingRule.ShardingRuleBuilder().dataSourceRule(dataSourceRule).keyGenerator(IncrementKeyGenerator.class)
+        return new ShardingRule.ShardingRuleBuilder(dataSourceRule).keyGenerator(IncrementKeyGenerator.class)
                 .tableRules(tableRules).bindingTableRules(Collections.singletonList(new BindingTableRule(bindingTableRules)))
                 .databaseShardingStrategy(new NoneShardingStrategy()).build();
     }

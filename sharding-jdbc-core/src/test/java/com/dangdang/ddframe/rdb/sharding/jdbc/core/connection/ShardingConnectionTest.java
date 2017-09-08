@@ -63,7 +63,7 @@ public final class ShardingConnectionTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        ShardingRule rule = new ShardingRule.ShardingRuleBuilder().dataSourceRule(dataSourceRule)
+        ShardingRule rule = new ShardingRule.ShardingRuleBuilder(dataSourceRule)
                 .tableRules(Collections.singleton(new  TableRule.TableRuleBuilder("test").dataSourceRule(dataSourceRule).build())).build();
         ShardingContext shardingContext = new ShardingContext(rule, null, null, false);
         connection = new ShardingConnection(shardingContext);

@@ -122,7 +122,7 @@ public final class Main {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
         TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList("t_order_0", "t_order_1")).dataSourceRule(dataSourceRule).build();
         TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList("t_order_item_0", "t_order_item_1")).dataSourceRule(dataSourceRule).build();
-        ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+        ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
                 .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
                 .databaseShardingStrategy(new StandardShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
                 .tableShardingStrategy(new StandardShardingStrategy("order_id", new ModuloTableShardingAlgorithm())).build();

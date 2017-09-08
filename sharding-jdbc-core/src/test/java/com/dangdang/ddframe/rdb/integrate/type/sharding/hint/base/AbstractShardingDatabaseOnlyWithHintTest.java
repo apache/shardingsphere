@@ -39,7 +39,7 @@ public abstract class AbstractShardingDatabaseOnlyWithHintTest extends AbstractH
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceEntry.getValue());
         TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).build();
         TableRule orderItemTableRule = TableRule.builder("t_order_item").dataSourceRule(dataSourceRule).build();
-        return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Lists.newArrayList(orderTableRule, orderItemTableRule))
+        return ShardingRule.builder(dataSourceRule).tableRules(Lists.newArrayList(orderTableRule, orderItemTableRule))
                 .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
                 .databaseShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("user_id"), new ComplexKeysModuloDatabaseShardingAlgorithm()))
                 .tableShardingStrategy(new NoneShardingStrategy()).build();

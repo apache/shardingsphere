@@ -61,6 +61,6 @@ public abstract class AbstractStatementParserTest {
                         return availableTargetNames;
                     }
                 })).build();
-        return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(tableRule)).build();
+        return ShardingRule.builder(dataSourceRule).tableRules(Collections.singletonList(tableRule)).build();
     }
 }
