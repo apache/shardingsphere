@@ -167,7 +167,7 @@ select:focus {
 
 .banner .produce .second {
     font-size: 24px;
-    margin: 40px 0 40px 0;
+    margin: 40px 0;
     line-height: 40px;
 }
 
@@ -225,6 +225,15 @@ select:focus {
     min-height: 583px;
 }
 
+@media screen and (max-width: 480px) {
+    .mod-inner {
+        min-width: inherit;
+    }
+    .mod-wrap {
+        min-width: inherit;
+    }
+}
+
 .mod-wrap.bg-color-1 {
     background-color: #f2f2f5
 }
@@ -259,7 +268,7 @@ select:focus {
 }
 
 .mod-wrap .mod-content {
-    margin-top: 95px;
+    margin-top: 75px;
     text-align: center
 }
 
@@ -321,7 +330,6 @@ select:focus {
 }
 
 .mod-wrap-product-new .product-block {
-    min-width: 170px;
     background-color: #fff;
     border-top: 4px solid #d9d9d9;
     border-right: 1px solid #d9d9d9;
@@ -614,7 +622,7 @@ select:focus {
 /*交流与参与*/
 
 .communion {
-    padding: 40px 0 65px;
+    padding: 0 0 40px 0;
     background-color: #f2f2f5;
 }
 
@@ -642,6 +650,19 @@ select:focus {
     color: #252525;
     margin: 15px 0;
     letter-spacing: 6px;
+}
+
+@media screen and (max-width: 768px) {
+    .attend_communion ul li .qq {
+        letter-spacing: 3px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .attend_communion ul li .qq {
+        letter-spacing: inherit;
+        word-wrap: break-word;
+    }
 }
 
 .attend_communion ul li .qq_name {
