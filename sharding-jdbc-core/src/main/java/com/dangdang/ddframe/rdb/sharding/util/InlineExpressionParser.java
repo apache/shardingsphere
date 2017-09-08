@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.util;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import groovy.lang.GString;
 import groovy.lang.GroovyShell;
@@ -49,21 +48,23 @@ public final class InlineExpressionParser {
      * @return result list
      */
     public List<String> evaluate() {
-        final GroovyShell shell = new GroovyShell();
-        return flattenSegments(Lists.transform(split(), new Function<String, Object>() {
-            
-            @Override
-            public Object apply(final String input) {
-                StringBuilder expression = new StringBuilder(input);
-                if (!input.startsWith("\"")) {
-                    expression.insert(0, "\"");
-                }
-                if (!input.endsWith("\"")) {
-                    expression.append("\"");
-                }
-                return shell.evaluate(expression.toString());
+        return flatten(evaluate(split()));
+    }
+    
+    private List<Object> evaluate(final List<String> inlineExpressions) {
+        List<Object> result = new ArrayList<>(inlineExpressions.size());
+        GroovyShell shell = new GroovyShell();
+        for (String each : inlineExpressions) {
+            StringBuilder expression = new StringBuilder(each);
+            if (!each.startsWith("\"")) {
+                expression.insert(0, "\"");
             }
-        }));
+            if (!each.endsWith("\"")) {
+                expression.append("\"");
+            }
+            result.add(shell.evaluate(expression.toString()));
+        }
+        return result;
     }
     
     private List<String> split() {
@@ -104,7 +105,7 @@ public final class InlineExpressionParser {
         return result;
     }
     
-    private List<String> flattenSegments(final List<Object> segments) {
+    private List<String> flatten(final List<Object> segments) {
         List<String> result = new ArrayList<>();
         for (Object each : segments) {
             if (each instanceof GString) {
