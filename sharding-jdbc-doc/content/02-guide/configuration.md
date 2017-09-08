@@ -51,7 +51,7 @@ tables:
     actualTables: t_order_${0..1}
     tableStrategy: &table001
       shardingColumns: order_id
-      algorithmExpression: t_order_${order_id.longValue() % 2}
+      algorithmExpression: t_order_${order_id % 2}
   
   #绑定表中其余的表的策略与t_order的策略相同
   t_order_item:
@@ -305,25 +305,7 @@ dbtbl_${['online', 'offline']}_${1..3}
 表达式本质上是一段字符串，字符串中使用${}来嵌入groovy代码。
 
 ```groovy 
-data_source_${id.longValue() % 2 + 1}
+data_source_${id % 2 + 1}
 ```
 
-上面的表达式中data_source_是字符串前缀，id.longValue() % 2 + 1是groovy代码。
-
-### 分区键值获取
-groovy代码中可以使用分区键的名字直接获取表达式的值对象。
-
-该对象是com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ShardingValueWrapper类型的对象。
-
-该类中提供了一些方法，方便数据类型的转换。包装的原始类型一般为Number，java.util.Date，String 三种类型。使用类中的方法可以将这三种类型转换为需要的其他类型。
-
-方法列表如下：
-
-| *方法名*                  | *参数*         | *返回类型*      |
-| ------------------------ | -------------- | -------------- |
-| longValue()              |                | long           |
-| doubleValue()            |                | double         |
-| dateValue(String format) | 时间格式化表达式 | java.util.Date |
-| dateValue()              |                | java.util.Date |
-| toString(String format)  | 时间格式化表达式 | String         |
-| toString()               |                | String         |
+上面的表达式中data_source_是字符串前缀，id % 2 + 1是groovy代码。
