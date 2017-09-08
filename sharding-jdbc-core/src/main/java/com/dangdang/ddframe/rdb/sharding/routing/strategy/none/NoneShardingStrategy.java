@@ -30,9 +30,9 @@ import java.util.TreeSet;
  * 
  * @author zhangliang
  */
+@Getter
 public final class NoneShardingStrategy implements ShardingStrategy {
     
-    @Getter
     private final Collection<String> shardingColumns = Collections.emptyList();
     
     @Override

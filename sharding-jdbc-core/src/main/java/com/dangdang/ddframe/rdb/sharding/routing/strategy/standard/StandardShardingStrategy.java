@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.RangeShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.google.common.base.Optional;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +35,6 @@ import java.util.TreeSet;
  * 
  * @author zhangliang
  */
-@Getter
 public final class StandardShardingStrategy implements ShardingStrategy {
     
     private final String shardingColumn;
