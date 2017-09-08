@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 import com.google.common.collect.Lists;
 
 import javax.sql.DataSource;
@@ -41,7 +41,7 @@ public abstract class AbstractShardingDatabaseOnlyWithHintTest extends AbstractH
         TableRule orderItemTableRule = TableRule.builder("t_order_item").dataSourceRule(dataSourceRule).build();
         return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Lists.newArrayList(orderTableRule, orderItemTableRule))
                 .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
-                .databaseShardingStrategy(new ShardingStrategy(Collections.singletonList("user_id"), new ComplexKeysModuloDatabaseShardingAlgorithm()))
-                .tableShardingStrategy(new ShardingStrategy(Collections.singletonList("order_id"), new NoneShardingAlgorithm())).build();
+                .databaseShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("user_id"), new ComplexKeysModuloDatabaseShardingAlgorithm()))
+                .tableShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("order_id"), new NoneShardingAlgorithm())).build();
     }
 }

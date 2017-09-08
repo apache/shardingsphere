@@ -29,7 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 import org.junit.AfterClass;
 import org.junit.runners.Parameterized;
 
@@ -89,8 +89,8 @@ public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
             TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).build();
             ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(orderTableRule))
                     .bindingTableRules(Collections.singletonList(new BindingTableRule(Collections.singletonList(orderTableRule))))
-                    .databaseShardingStrategy(new ShardingStrategy(Collections.singletonList("user_id"), new ComplexKeysModuloDatabaseShardingAlgorithm()))
-                    .tableShardingStrategy(new ShardingStrategy(Collections.singletonList("order_id"), new NoneShardingAlgorithm())).build();
+                    .databaseShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("user_id"), new ComplexKeysModuloDatabaseShardingAlgorithm()))
+                    .tableShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("order_id"), new NoneShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;

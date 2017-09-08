@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
@@ -95,6 +95,6 @@ public class ShardingRuleMockBuilder {
         }
         return new ShardingRule.ShardingRuleBuilder().dataSourceRule(dataSourceRule).keyGenerator(IncrementKeyGenerator.class)
                 .tableRules(tableRules).bindingTableRules(Collections.singletonList(new BindingTableRule(bindingTableRules)))
-                .databaseShardingStrategy(new ShardingStrategy(shardingColumns, new NoneShardingAlgorithm())).build();
+                .databaseShardingStrategy(new ComplexShardingStrategy(shardingColumns, new NoneShardingAlgorithm())).build();
     }
 }

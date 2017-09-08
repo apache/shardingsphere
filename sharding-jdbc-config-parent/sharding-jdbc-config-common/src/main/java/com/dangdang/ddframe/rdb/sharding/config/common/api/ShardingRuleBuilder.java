@@ -32,6 +32,7 @@ import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
@@ -167,7 +168,7 @@ public final class ShardingRuleBuilder {
     
     @SuppressWarnings("unchecked")
     private <T extends ShardingStrategy> T buildShardingAlgorithmExpression(final List<String> shardingColumns, final String algorithmExpression) {
-        return (T) new ShardingStrategy(shardingColumns, new ClosureDatabaseShardingAlgorithm(algorithmExpression, logRoot));
+        return (T) new ComplexShardingStrategy(shardingColumns, new ClosureDatabaseShardingAlgorithm(algorithmExpression, logRoot));
     }
     
     @SuppressWarnings("unchecked")
@@ -188,7 +189,8 @@ public final class ShardingRuleBuilder {
             // TODO for RangeShardingAlgorithm
             throw new UnsupportedOperationException("");
         }
-        return (T) new ShardingStrategy(shardingColumns, shardingAlgorithm);
+        // TODO should not force cast here
+        return (T) new ComplexShardingStrategy(shardingColumns, (ComplexKeysShardingAlgorithm) shardingAlgorithm);
     }
     
     @SuppressWarnings("unchecked")

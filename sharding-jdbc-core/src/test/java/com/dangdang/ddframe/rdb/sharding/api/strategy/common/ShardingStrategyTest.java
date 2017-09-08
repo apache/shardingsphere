@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestComplexKeysSha
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestPreciseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestRangeShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
@@ -42,7 +42,7 @@ public final class ShardingStrategyTest {
     
     @Test
     public void assertDoStaticShardingWithoutShardingColumns() {
-        ShardingStrategy strategy = new ShardingStrategy(Sets.newHashSet("column"), new NoneShardingAlgorithm());
+        ComplexShardingStrategy strategy = new ComplexShardingStrategy(Sets.newHashSet("column"), new NoneShardingAlgorithm());
         assertThat(strategy.doSharding(targets, Collections.<ShardingValue>emptySet()), is(targets));
     }
     
@@ -55,7 +55,7 @@ public final class ShardingStrategyTest {
     
     @Test
     public void assertDoStaticShardingForMultipleKeys() {
-        ShardingStrategy strategy = new ShardingStrategy(Collections.singletonList("column"), new TestComplexKeysShardingAlgorithm());
+        ComplexShardingStrategy strategy = new ComplexShardingStrategy(Collections.singletonList("column"), new TestComplexKeysShardingAlgorithm());
         assertThat(strategy.doSharding(targets, Collections.<ShardingValue>singletonList(new PreciseShardingValue<>("logicTable", "column", "1"))), 
                 is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }

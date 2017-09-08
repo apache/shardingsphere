@@ -37,7 +37,7 @@ import java.util.TreeSet;
  * @author zhangliang
  */
 @Getter
-public final class StandardShardingStrategy extends ShardingStrategy {
+public final class StandardShardingStrategy implements ShardingStrategy {
     
     private final String shardingColumn;
     

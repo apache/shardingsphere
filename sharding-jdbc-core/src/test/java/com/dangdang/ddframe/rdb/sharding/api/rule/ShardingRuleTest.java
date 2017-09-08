@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.api.rule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -253,11 +254,11 @@ public final class ShardingRuleTest {
     }
     
     private ShardingStrategy createDatabaseShardingStrategy() {
-        return new ShardingStrategy(Collections.singletonList("column"), new NoneShardingAlgorithm());
+        return new ComplexShardingStrategy(Collections.singletonList("column"), new NoneShardingAlgorithm());
     }
     
     private ShardingStrategy createTableShardingStrategy() {
-        return new ShardingStrategy(Collections.singletonList("column"), new NoneShardingAlgorithm());
+        return new ComplexShardingStrategy(Collections.singletonList("column"), new NoneShardingAlgorithm());
     }
     
     private TableRule createTableRuleWithAllStrategies() {

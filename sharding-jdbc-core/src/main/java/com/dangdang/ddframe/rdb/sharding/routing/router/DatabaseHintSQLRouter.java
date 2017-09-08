@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.SQLJudgeEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.type.hint.DatabaseHintRoutingEngine;
@@ -55,7 +56,7 @@ public final class DatabaseHintSQLRouter implements SQLRouter {
     // TODO insert SQL need parse gen key
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        RoutingResult routingResult = new DatabaseHintRoutingEngine(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy()).route();
+        RoutingResult routingResult = new DatabaseHintRoutingEngine(shardingRule.getDataSourceRule(), (HintShardingStrategy) shardingRule.getDatabaseShardingStrategy()).route();
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
             result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), logicSQL));
         }

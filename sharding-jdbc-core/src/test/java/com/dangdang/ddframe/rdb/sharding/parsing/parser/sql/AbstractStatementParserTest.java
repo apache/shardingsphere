@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -52,7 +52,7 @@ public abstract class AbstractStatementParserTest {
         dataSourceMap.put("ds", dataSource);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         TableRule tableRule = TableRule.builder("TABLE_XXX").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule)
-                .tableShardingStrategy(new ShardingStrategy(Arrays.asList("field1", "field2", "field3", "field4", "field5", "field6", "field7"), new NoneShardingAlgorithm())).build();
+                .tableShardingStrategy(new ComplexShardingStrategy(Arrays.asList("field1", "field2", "field3", "field4", "field5", "field6", "field7"), new NoneShardingAlgorithm())).build();
         return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(tableRule)).build();
     }
 }

@@ -30,7 +30,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert.InsertStatement;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -112,7 +112,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         dataSourceMap.put("ds", dataSource);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         TableRule tableRule = TableRule.builder("TABLE_XXX").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule)
-                .tableShardingStrategy(new ShardingStrategy(Arrays.asList("field1", "field2", "field3", "field4", "field5", "field6", "field7"), new NoneShardingAlgorithm()))
+                .tableShardingStrategy(new ComplexShardingStrategy(Arrays.asList("field1", "field2", "field3", "field4", "field5", "field6", "field7"), new NoneShardingAlgorithm()))
                 .generateKeyColumn("field1").generateKeyColumn("field2").build();
         return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(tableRule)).keyGenerator(IncrementKeyGenerator.class).build();
     }

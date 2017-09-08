@@ -27,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
@@ -120,11 +121,13 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         if (databaseShardingValues.isEmpty()) {
             return availableTargetDatabases;
         }
+        Collection<String> result;
         ShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
         if (strategy instanceof StandardShardingStrategy) {
-            return ((StandardShardingStrategy) strategy).doSharding(availableTargetDatabases, databaseShardingValues.get(0));
+            result = ((StandardShardingStrategy) strategy).doSharding(availableTargetDatabases, databaseShardingValues.get(0));
+        } else {
+            result = ((ComplexShardingStrategy) strategy).doSharding(tableRule.getActualDatasourceNames(), databaseShardingValues);
         }
-        Collection<String> result = strategy.doSharding(tableRule.getActualDatasourceNames(), databaseShardingValues);
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         return result;
     }
@@ -137,11 +140,13 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         if (tableShardingValues.isEmpty()) {
             return availableTargetTables;
         }
+        Collection<String> result;
         ShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
         if (strategy instanceof StandardShardingStrategy) {
-            return ((StandardShardingStrategy) strategy).doSharding(availableTargetTables, tableShardingValues.get(0));
+            result = ((StandardShardingStrategy) strategy).doSharding(availableTargetTables, tableShardingValues.get(0));
+        } else {
+            result = ((ComplexShardingStrategy) strategy).doSharding(availableTargetTables, tableShardingValues);
         }
-        Collection<String> result = strategy.doSharding(availableTargetTables, tableShardingValues);
         Preconditions.checkState(!result.isEmpty(), "no table route info");
         return result;
     }

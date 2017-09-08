@@ -29,7 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.NoneShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -97,7 +97,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
                     .dataSourceRule(dataSourceRule)
                     .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
                     .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
-                    .databaseShardingStrategy(new ShardingStrategy(Collections.singletonList("user_id"), new NoneShardingAlgorithm()))
+                    .databaseShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("user_id"), new NoneShardingAlgorithm()))
                     .tableShardingStrategy(new StandardShardingStrategy("order_id", new PreciseModuloTableShardingAlgorithm(), new RangeModuloTableShardingAlgorithm())).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
