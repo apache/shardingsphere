@@ -58,9 +58,6 @@ public final class ShardingRule {
     @Getter(AccessLevel.NONE)
     private final KeyGenerator keyGenerator;
     
-    @Getter(AccessLevel.NONE)
-    private final KeyGenerator defaultGenerator;
-    
     /**
      * Constructs a full properties sharding rule.
      * 
@@ -72,7 +69,7 @@ public final class ShardingRule {
      * @param bindingTableRules binding table rules
      * @param databaseShardingStrategy default database sharding strategy
      * @param tableShardingStrategy default table sharding strategy
-     * @param keyGenerator default primary key generator
+     * @param keyGenerator primary key generator
      */
     @Deprecated
     public ShardingRule(
@@ -84,8 +81,7 @@ public final class ShardingRule {
         this.bindingTableRules = null == bindingTableRules ? Collections.<BindingTableRule>emptyList() : bindingTableRules;
         this.databaseShardingStrategy = null == databaseShardingStrategy ? new NoneShardingStrategy() : databaseShardingStrategy;
         this.tableShardingStrategy = null == tableShardingStrategy ? new NoneShardingStrategy() : tableShardingStrategy;
-        this.keyGenerator = keyGenerator;
-        defaultGenerator = KeyGeneratorFactory.createKeyGenerator(DefaultKeyGenerator.class);
+        this.keyGenerator = null == keyGenerator ? KeyGeneratorFactory.createKeyGenerator(DefaultKeyGenerator.class) : keyGenerator;
     }
     
     /**
@@ -272,10 +268,7 @@ public final class ShardingRule {
         if (null != tableRule.get().getKeyGenerator()) {
             return tableRule.get().getKeyGenerator().generateKey();
         }
-        if (null != keyGenerator) {
-            return keyGenerator.generateKey();
-        }
-        return defaultGenerator.generateKey();
+        return keyGenerator.generateKey();
     }
     
     /**
