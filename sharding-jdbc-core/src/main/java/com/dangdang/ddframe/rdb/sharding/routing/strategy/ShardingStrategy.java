@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.strategy;
 
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+
 import java.util.Collection;
 
 /**
@@ -31,4 +33,13 @@ public interface ShardingStrategy {
      * @return sharding columns
      */
     Collection<String> getShardingColumns();
+    
+    /**
+     * Sharding.
+     *
+     * @param availableTargetNames available data sources or tables's names
+     * @param shardingValues sharding values
+     * @return sharding results for data sources or tables's names
+     */
+    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
 }

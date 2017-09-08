@@ -42,13 +42,7 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
         this.shardingAlgorithm = shardingAlgorithm;
     }
     
-    /**
-     * Calculate static sharding info.
-     *
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValues sharding values
-     * @return sharding results for data sources or tables's names
-     */
+    @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, shardingValues);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);

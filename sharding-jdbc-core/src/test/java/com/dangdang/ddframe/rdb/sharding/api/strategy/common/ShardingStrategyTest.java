@@ -49,7 +49,7 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoStaticShardingForBetweenSingleKey() {
         StandardShardingStrategy strategy = new StandardShardingStrategy("column", new TestPreciseShardingAlgorithm(), new TestRangeShardingAlgorithm());
-        assertThat(strategy.doSharding(targets, new RangeShardingValue<>("logicTable", "column", Range.open("1", "3"))), 
+        assertThat(strategy.doSharding(targets, Collections.<ShardingValue>singletonList(new RangeShardingValue<>("logicTable", "column", Range.open("1", "3")))), 
                 is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }
     
@@ -63,7 +63,7 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoDynamicShardingForBetweenSingleKey() {
         StandardShardingStrategy strategy = new StandardShardingStrategy("column", new TestPreciseShardingAlgorithm(), new TestRangeShardingAlgorithm());
-        assertThat(strategy.doSharding(Collections.<String>emptyList(), new RangeShardingValue<>("logicTable", "column", Range.open("1", "3"))), 
+        assertThat(strategy.doSharding(Collections.<String>emptyList(), Collections.<ShardingValue>singletonList(new RangeShardingValue<>("logicTable", "column", Range.open("1", "3")))), 
                 is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }
 }

@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Database hint only routing engine.
@@ -52,7 +53,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
         Preconditions.checkState(shardingValue.isPresent());
         log.debug("Before database sharding only db:{} sharding values: {}", dataSourceRule.getDataSourceNames(), shardingValue.get());
         Collection<String> routingDataSources;
-        routingDataSources = databaseShardingStrategy.doSharding(dataSourceRule.getDataSourceNames(), shardingValue.get());
+        routingDataSources = databaseShardingStrategy.doSharding(dataSourceRule.getDataSourceNames(), Collections.singletonList(shardingValue.get()));
         Preconditions.checkState(!routingDataSources.isEmpty(), "no database route info");
         log.debug("After database sharding only result: {}", routingDataSources);
         RoutingResult result = new RoutingResult();

@@ -55,7 +55,9 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         this.rangeShardingAlgorithm = Optional.fromNullable(rangeShardingAlgorithm);
     }
     
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+        ShardingValue shardingValue = shardingValues.iterator().next();
         Collection<String> shardingResult = shardingValue instanceof ListShardingValue
                 ? doSharding(availableTargetNames, (ListShardingValue) shardingValue) : doSharding(availableTargetNames, (RangeShardingValue) shardingValue);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);

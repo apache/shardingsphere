@@ -41,15 +41,9 @@ public final class HintShardingStrategy implements ShardingStrategy {
         this.shardingAlgorithm = shardingAlgorithm;
     }
     
-    /**
-     * Calculate static sharding info.
-     *
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValue sharding value
-     * @return sharding results for data sources or tables's names
-     */
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
-        Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, shardingValue);
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+        Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, shardingValues.iterator().next());
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;
