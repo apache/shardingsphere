@@ -148,7 +148,7 @@ select:focus {
 /*banner*/
 
 .banner {
-    background: url("../images/big_bg.jpg") repeat top center;
+    background: url("http://ovfotjrsi.bkt.clouddn.com/images/big_bg.jpg") repeat top center;
     min-height: 705px;
 }
 
