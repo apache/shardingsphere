@@ -18,12 +18,13 @@
 package com.dangdang.ddframe.rdb.sharding.routing;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.routing.fixture.OrderDatabaseHintShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingStrategy;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.junit.Before;
@@ -49,8 +50,14 @@ public class DatabaseTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
-        DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        shardingRule = ShardingRule.builder(dataSourceRule).defaultDatabaseShardingStrategy(new HintShardingStrategy(new OrderDatabaseHintShardingAlgorithm())).build();
+        DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
+        dataSourceRuleConfig.setDataSources(dataSourceMap);
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
+        HintShardingStrategyConfig databaseShardingStrategyConfig = new HintShardingStrategyConfig();
+        databaseShardingStrategyConfig.setAlgorithmClassName(OrderDatabaseHintShardingAlgorithm.class.getName());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategy(databaseShardingStrategyConfig);
+        shardingRule = new ShardingRule(shardingRuleConfig);
     }
     
     @Test

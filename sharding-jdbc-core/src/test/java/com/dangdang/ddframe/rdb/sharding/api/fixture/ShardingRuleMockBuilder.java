@@ -17,38 +17,44 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.config.BindingTableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.GenerateKeyStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import org.mockito.Mockito;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+@Deprecated
+// TODO refactor
 public class ShardingRuleMockBuilder {
     
-    private final List<TableRule> tableRules = new LinkedList<>();
+    private final List<TableRuleConfig> tableRuleConfigs = new LinkedList<>();
     
     private final List<String> shardingColumns = new LinkedList<>();
     
-    private final Multimap<String, String> generateKeyColumnsMap = LinkedHashMultimap.create();
+    private final Map<String, String> generateKeyColumnsMap = new HashMap<>();
     
-    private final List<String> bindTables = new ArrayList<>();
+    private final Set<String> bindTables = new HashSet<>();
     
-    public ShardingRuleMockBuilder addTableRules(final TableRule tableRule) {
-        tableRules.add(tableRule);
+    public ShardingRuleMockBuilder addTableRuleConfig(final TableRuleConfig tableRuleConfig) {
+        tableRuleConfigs.add(tableRuleConfig);
         return this;
     }
     
@@ -68,31 +74,57 @@ public class ShardingRuleMockBuilder {
     }
     
     public ShardingRule build() {
-        final DataSourceRule dataSourceRule = new DataSourceRule(ImmutableMap.of("db0", Mockito.mock(DataSource.class), "db1", Mockito.mock(DataSource.class)));
-        Collection<TableRule> tableRules = Lists.newArrayList(Iterators.transform(generateKeyColumnsMap.keySet().iterator(), new Function<String, TableRule>() {
+        Collection<TableRuleConfig> tableRuleConfigs = Lists.newArrayList(Iterators.transform(generateKeyColumnsMap.keySet().iterator(), new Function<String, TableRuleConfig>() {
             
             @Override
-            public TableRule apply(final String input) {
-                TableRule.TableRuleBuilder builder =  TableRule.builder(input).actualTables(input).dataSourceRule(dataSourceRule);
-                for (String each : generateKeyColumnsMap.get(input)) {
-                    builder.generateKeyColumn(each);
-                }
-                return builder.build();
+            public TableRuleConfig apply(final String input) {
+                TableRuleConfig result = new TableRuleConfig();
+                result.setLogicTable(input);
+                result.setActualTables(input);
+                GenerateKeyStrategyConfig generateKeyStrategyConfig = new GenerateKeyStrategyConfig();
+                generateKeyStrategyConfig.setColumnName(generateKeyColumnsMap.get(input));
+                result.setGenerateKeyStrategy(generateKeyStrategyConfig);
+                return result;
             }
         }));
-        tableRules.addAll(this.tableRules);
-        if (tableRules.isEmpty()) {
-            tableRules.add(new TableRule.TableRuleBuilder("mock").actualTables("mock").dataSourceRule(dataSourceRule).build());
+        tableRuleConfigs.addAll(this.tableRuleConfigs);
+        if (tableRuleConfigs.isEmpty()) {
+            TableRuleConfig tableRuleConfig = new TableRuleConfig();
+            tableRuleConfig.setLogicTable("mock");
+            tableRuleConfig.setActualTables("mock");
+            tableRuleConfigs.add(tableRuleConfig);
         }
-        List<TableRule> bindingTableRules = new ArrayList<>(bindTables.size());
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
+        dataSourceRuleConfig.setDataSources(ImmutableMap.of("db0", Mockito.mock(DataSource.class), "db1", Mockito.mock(DataSource.class)));
+        shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
+        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(2, 1);
         for (String each : bindTables) {
-            bindingTableRules.add(new TableRule.TableRuleBuilder(each).actualTables(each).dataSourceRule(dataSourceRule).build());
+            if (existInTableRuleConfig(each)) {
+                continue;
+            }
+            TableRuleConfig tableRuleConfig = new TableRuleConfig();
+            tableRuleConfig.setLogicTable(each);
+            tableRuleConfigs.add(tableRuleConfig);
         }
-        for (TableRule each : tableRules) {
-            bindingTableRules.add(each);
+        for (TableRuleConfig each : tableRuleConfigs) {
+            tableRuleConfigMap.put(each.getLogicTable(), each);
+            bindTables.add(each.getLogicTable());
         }
-        return new ShardingRule.ShardingRuleBuilder(dataSourceRule).defaultKeyGenerator(new IncrementKeyGenerator())
-                .tableRules(tableRules.toArray(new TableRule[tableRules.size()])).bindingTableRules(new BindingTableRule(bindingTableRules.toArray(new TableRule[bindingTableRules.size()])))
-                .defaultDatabaseShardingStrategy(new NoneShardingStrategy()).build();
+        shardingRuleConfig.setTableRules(tableRuleConfigMap);
+        BindingTableRuleConfig bindingTableRuleConfig = new BindingTableRuleConfig();
+        bindingTableRuleConfig.setTableNames(Joiner.on(",").join(bindTables));
+        shardingRuleConfig.setBindingTableRules(Collections.singletonList(bindingTableRuleConfig));
+        shardingRuleConfig.setDefaultKeyGeneratorClass(IncrementKeyGenerator.class.getName());
+        return new ShardingRule(shardingRuleConfig);
+    }
+    
+    private boolean existInTableRuleConfig(final String logicTableName) {
+        for (TableRuleConfig tableRuleConfig : tableRuleConfigs) {
+            if (tableRuleConfig.getLogicTable().equals(logicTableName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

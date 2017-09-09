@@ -19,23 +19,21 @@ package com.dangdang.ddframe.rdb.sharding.parsing;
 
 import com.dangdang.ddframe.rdb.common.jaxb.helper.SQLStatementHelper;
 import com.dangdang.ddframe.rdb.common.util.SQLPlaceholderUtil;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestComplexKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseSQLTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.base.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.helper.ParserJAXBHelper;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
@@ -67,23 +65,23 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     }
     
     private ShardingRule buildShardingRule() {
-        TableRule orderTableRule = TableRule.builder("t_order").actualTables("t_order").dataSourceNames("db0", "db1")
-                .tableShardingStrategy(new ComplexShardingStrategy(Arrays.asList("user_id", "order_id"), new ComplexKeysShardingAlgorithm() {
-                    
-                    @Override
-                    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
-                        return availableTargetNames;
-                    }
-                })).build();
-        TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables("t_order_item").dataSourceNames("db0", "db1")
-                .tableShardingStrategy(new ComplexShardingStrategy(Arrays.asList("user_id", "order_id", "item_id"), new ComplexKeysShardingAlgorithm() {
-                
-                    @Override
-                    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
-                        return availableTargetNames;
-                    }
-                })).build();
-        return new ShardingRuleMockBuilder().addTableRules(orderTableRule).addTableRules(orderItemTableRule).addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("item_id")
-                .addGenerateKeyColumn("t_order_item", "item_id").build();
+        TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
+        orderTableRuleConfig.setLogicTable("t_order");
+        orderTableRuleConfig.setActualTables("t_order");
+        orderTableRuleConfig.setDataSourceNames("db0, db1");
+        ComplexShardingStrategyConfig orderShardingStrategyConfig = new ComplexShardingStrategyConfig();
+        orderShardingStrategyConfig.setShardingColumns("user_id, order_id");
+        orderShardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
+        orderTableRuleConfig.setTableShardingStrategy(orderShardingStrategyConfig);
+        TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
+        orderItemTableRuleConfig.setLogicTable("t_order_item");
+        orderItemTableRuleConfig.setActualTables("t_order_item");
+        orderItemTableRuleConfig.setDataSourceNames("db0, db1");
+        ComplexShardingStrategyConfig orderItemShardingStrategyConfig = new ComplexShardingStrategyConfig();
+        orderItemShardingStrategyConfig.setShardingColumns("user_id, order_id, item_id");
+        orderItemShardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
+        orderItemTableRuleConfig.setTableShardingStrategy(orderItemShardingStrategyConfig);
+        return new ShardingRuleMockBuilder().addTableRuleConfig(orderTableRuleConfig).addTableRuleConfig(orderItemTableRuleConfig)
+                .addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("item_id").addGenerateKeyColumn("t_order_item", "item_id").build();
     }
 }

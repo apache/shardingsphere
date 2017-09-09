@@ -17,11 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.config.GenerateKeyStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.ListShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestComplexKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
@@ -30,15 +32,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert.InsertStatement;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,16 +110,22 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         }
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", dataSource);
-        DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        TableRule tableRule = TableRule.builder("TABLE_XXX").actualTables("table_0", "table_1", "table_2").dataSourceRule(dataSourceRule)
-                .tableShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("field1"), new ComplexKeysShardingAlgorithm() {
-                    
-                    @Override
-                    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
-                        return availableTargetNames;
-                    }
-                })).generateKeyColumn("field1").generateKeyColumn("field2").build();
-        return ShardingRule.builder(dataSourceRule).tableRules(tableRule).defaultKeyGenerator(new IncrementKeyGenerator()).build();
+        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("TABLE_XXX");
+        tableRuleConfig.setActualTables("table_0, table_1, table_2");
+        ComplexShardingStrategyConfig shardingStrategyConfig = new ComplexShardingStrategyConfig();
+        shardingStrategyConfig.setShardingColumns("field1");
+        shardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
+        tableRuleConfig.setTableShardingStrategy(shardingStrategyConfig);
+        GenerateKeyStrategyConfig generateKeyStrategyConfig = new GenerateKeyStrategyConfig();
+        generateKeyStrategyConfig.setColumnName("field2");
+        tableRuleConfig.setGenerateKeyStrategy(generateKeyStrategyConfig);
+        tableRuleConfigMap.put("TABLE_XXX", tableRuleConfig);
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        shardingRuleConfig.setTableRules(tableRuleConfigMap);
+        shardingRuleConfig.setDefaultKeyGeneratorClass(IncrementKeyGenerator.class.getName());
+        return new ShardingRule(shardingRuleConfig);
     }
     
     @Test

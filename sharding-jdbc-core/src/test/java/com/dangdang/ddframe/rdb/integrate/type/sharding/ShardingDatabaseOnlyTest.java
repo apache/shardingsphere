@@ -21,15 +21,17 @@ import com.dangdang.ddframe.rdb.common.base.AbstractSQLAssertTest;
 import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.ComplexKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.config.BindingTableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.GenerateKeyStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import org.junit.AfterClass;
 
 import javax.sql.DataSource;
@@ -78,13 +80,31 @@ public class ShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
         isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
-            DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
-            TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).generateKeyColumn("order_id", new IncrementKeyGenerator()).build();
-            TableRule orderItemTableRule = TableRule.builder("t_order_item").dataSourceRule(dataSourceRule).build();
-            ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule)
-                    .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
-                    .defaultDatabaseShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("user_id"), new ComplexKeysModuloDatabaseShardingAlgorithm()))
-                    .defaultTableShardingStrategy(new NoneShardingStrategy()).build();
+            ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+            DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
+            dataSourceRuleConfig.setDataSources(each.getValue());
+            shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
+            Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(2, 1);
+            TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
+            orderTableRuleConfig.setLogicTable("t_order");
+            GenerateKeyStrategyConfig orderGenerateKeyStrategyConfig = new GenerateKeyStrategyConfig();
+            orderGenerateKeyStrategyConfig.setColumnName("order_id");
+            orderGenerateKeyStrategyConfig.setKeyGeneratorClass(IncrementKeyGenerator.class.getName());
+            orderTableRuleConfig.setGenerateKeyStrategy(orderGenerateKeyStrategyConfig);
+            tableRuleConfigMap.put("t_order", orderTableRuleConfig);
+            TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
+            orderItemTableRuleConfig.setLogicTable("t_order_item");
+            tableRuleConfigMap.put("t_order_item", orderItemTableRuleConfig);
+            shardingRuleConfig.setTableRules(tableRuleConfigMap);
+            BindingTableRuleConfig bindingTableRuleConfig = new BindingTableRuleConfig();
+            bindingTableRuleConfig.setTableNames("t_order, t_order_item");
+            shardingRuleConfig.setBindingTableRules(Collections.singletonList(bindingTableRuleConfig));
+            ComplexShardingStrategyConfig databaseShardingStrategyConfig = new ComplexShardingStrategyConfig();
+            databaseShardingStrategyConfig.setShardingColumns("user_id");
+            databaseShardingStrategyConfig.setAlgorithmClassName(ComplexKeysModuloDatabaseShardingAlgorithm.class.getName());
+            shardingRuleConfig.setDefaultDatabaseShardingStrategy(databaseShardingStrategyConfig);
+            shardingRuleConfig.setDefaultTableShardingStrategy(new NoneShardingStrategyConfig());
+            ShardingRule shardingRule = new ShardingRule(shardingRuleConfig);
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;

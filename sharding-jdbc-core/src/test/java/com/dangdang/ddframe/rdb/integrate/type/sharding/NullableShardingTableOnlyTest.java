@@ -22,14 +22,13 @@ import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.ComplexKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.integrate.jaxb.helper.SQLAssertJAXBHelper;
-import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import org.junit.AfterClass;
 import org.junit.runners.Parameterized;
 
@@ -37,7 +36,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,12 +83,20 @@ public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
         isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
-            DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
-            TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).build();
-            ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule)
-                    .bindingTableRules(new BindingTableRule(orderTableRule))
-                    .defaultDatabaseShardingStrategy(new ComplexShardingStrategy(Collections.singletonList("user_id"), new ComplexKeysModuloDatabaseShardingAlgorithm()))
-                    .defaultTableShardingStrategy(new NoneShardingStrategy()).build();
+            ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+            DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
+            dataSourceRuleConfig.setDataSources(each.getValue());
+            shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
+            Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
+            TableRuleConfig tableRuleConfig = new TableRuleConfig();
+            tableRuleConfig.setLogicTable("t_order");
+            tableRuleConfigMap.put("t_order", tableRuleConfig);
+            shardingRuleConfig.setTableRules(tableRuleConfigMap);
+            ComplexShardingStrategyConfig databaseShardingStrategyConfig = new ComplexShardingStrategyConfig();
+            databaseShardingStrategyConfig.setShardingColumns("user_id");
+            databaseShardingStrategyConfig.setAlgorithmClassName(ComplexKeysModuloDatabaseShardingAlgorithm.class.getName());
+            shardingRuleConfig.setDefaultDatabaseShardingStrategy(databaseShardingStrategyConfig);
+            ShardingRule shardingRule = new ShardingRule(shardingRuleConfig);
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;

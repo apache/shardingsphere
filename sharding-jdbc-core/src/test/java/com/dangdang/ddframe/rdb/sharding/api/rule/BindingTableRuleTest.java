@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -76,11 +77,17 @@ public final class BindingTableRuleTest {
     }
     
     private TableRule createTableRule() {
-        return TableRule.builder("logicTable").actualTables("ds1.table_0", "ds1.table_1", "ds2.table_0", "ds2.table_1").dataSourceRule(createDataSourceRule()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setActualTables("ds1.table_0, ds1.table_1, ds2.table_0, ds2.table_1");
+        return new TableRule(tableRuleConfig, createDataSourceRule());
     }
     
     private TableRule createSubTableRule() {
-        return TableRule.builder("subLogicTable").actualTables("ds1.sub_table_0", "ds1.sub_table_1", "ds2.sub_table_0", "ds2.sub_table_1").dataSourceRule(createDataSourceRule()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("subLogicTable");
+        tableRuleConfig.setActualTables("ds1.sub_table_0, ds1.sub_table_1, ds2.sub_table_0, ds2.sub_table_1");
+        return new TableRule(tableRuleConfig, createDataSourceRule());
     }
     
     private DataSourceRule createDataSourceRule() {
@@ -95,10 +102,16 @@ public final class BindingTableRuleTest {
     }
     
     private TableRule createDynamicTableRule() {
-        return TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setDynamic(true);
+        return new TableRule(tableRuleConfig, createDataSourceRule());
     }
     
     private TableRule createDynamicSubTableRule() {
-        return TableRule.builder("subLogicTable").dynamic(true).dataSourceRule(createDataSourceRule()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("subLogicTable");
+        tableRuleConfig.setDynamic(true);
+        return new TableRule(tableRuleConfig, createDataSourceRule());
     }
 }

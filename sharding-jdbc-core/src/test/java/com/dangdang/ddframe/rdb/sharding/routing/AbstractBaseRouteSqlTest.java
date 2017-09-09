@@ -17,16 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.config.BindingTableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.routing.fixture.OrderAttrShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.fixture.PreciseOrderShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.fixture.RangeOrderShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import lombok.AccessLevel;
@@ -56,15 +57,38 @@ public abstract class AbstractBaseRouteSqlTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
-        DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        TableRule orderTableRule = TableRule.builder("order").actualTables("order_0", "order_1").dataSourceRule(dataSourceRule).build();
-        TableRule orderItemTableRule = TableRule.builder("order_item").actualTables("order_item_0", "order_item_1").dataSourceRule(dataSourceRule).build();
-        TableRule orderAttrTableRule = TableRule.builder("order_attr").actualTables("ds_0.order_attr_a", "ds_1.order_attr_b").dataSourceRule(dataSourceRule)
-                .tableShardingStrategy(new StandardShardingStrategy("order_id", new OrderAttrShardingAlgorithm())).build();
-        shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule, orderAttrTableRule)
-                .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
-                .defaultDatabaseShardingStrategy(new StandardShardingStrategy("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()))
-                .defaultTableShardingStrategy(new StandardShardingStrategy("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm())).build();
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
+        dataSourceRuleConfig.setDataSources(dataSourceMap);
+        shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
+        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(3, 1);
+        TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
+        orderTableRuleConfig.setLogicTable("order");
+        orderTableRuleConfig.setActualTables("order_0, order_1");
+        tableRuleConfigMap.put("order", orderTableRuleConfig);
+        TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
+        orderItemTableRuleConfig.setLogicTable("order_item");
+        orderItemTableRuleConfig.setActualTables("order_item_0, order_item_1");
+        tableRuleConfigMap.put("order_item", orderItemTableRuleConfig);
+        TableRuleConfig orderAttrTableRuleConfig = new TableRuleConfig();
+        orderAttrTableRuleConfig.setLogicTable("order_attr");
+        orderAttrTableRuleConfig.setActualTables("ds_0.order_attr_a, ds_1.order_attr_b");
+        StandardShardingStrategyConfig orderShardingStrategyConfig = new StandardShardingStrategyConfig();
+        orderShardingStrategyConfig.setShardingColumn("order_id");
+        orderShardingStrategyConfig.setPreciseAlgorithmClassName(OrderAttrShardingAlgorithm.class.getName());
+        orderAttrTableRuleConfig.setTableShardingStrategy(orderShardingStrategyConfig);
+        tableRuleConfigMap.put("order_attr", orderAttrTableRuleConfig);
+        shardingRuleConfig.setTableRules(tableRuleConfigMap);
+        BindingTableRuleConfig bindingTableRuleConfig = new BindingTableRuleConfig();
+        bindingTableRuleConfig.setTableNames("order, order_item");
+        shardingRuleConfig.setBindingTableRules(Collections.singletonList(bindingTableRuleConfig));
+        StandardShardingStrategyConfig defaultShardingStrategyConfig = new StandardShardingStrategyConfig();
+        defaultShardingStrategyConfig.setShardingColumn("order_id");
+        defaultShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseOrderShardingAlgorithm.class.getName());
+        defaultShardingStrategyConfig.setRangeAlgorithmClassName(RangeOrderShardingAlgorithm.class.getName());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategy(defaultShardingStrategyConfig);
+        shardingRuleConfig.setDefaultTableShardingStrategy(defaultShardingStrategyConfig);
+        shardingRule = new ShardingRule(shardingRuleConfig);
     }
     
     protected void assertSingleTargetWithoutParameter(final String originSql, final String targetDataSource, final String targetSQL) {

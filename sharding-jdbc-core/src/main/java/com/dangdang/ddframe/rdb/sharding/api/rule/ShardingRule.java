@@ -17,25 +17,44 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
+import com.dangdang.ddframe.rdb.sharding.api.config.BindingTableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.inline.InlineShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Databases and tables sharding rule configuration.
@@ -47,9 +66,9 @@ public final class ShardingRule {
     
     private final DataSourceRule dataSourceRule;
     
-    private final Collection<TableRule> tableRules;
+    private final Collection<TableRule> tableRules = new LinkedList<>();
     
-    private final Collection<BindingTableRule> bindingTableRules;
+    private final Collection<BindingTableRule> bindingTableRules = new LinkedList<>();
     
     private final ShardingStrategy defaultDatabaseShardingStrategy;
     
@@ -57,25 +76,80 @@ public final class ShardingRule {
     
     private final KeyGenerator defaultKeyGenerator;
     
-    private ShardingRule(
-            final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules,
-            final ShardingStrategy defaultDatabaseShardingStrategy, final ShardingStrategy defaultTableShardingStrategy, final KeyGenerator defaultKeyGenerator) {
-        this.dataSourceRule = dataSourceRule;
-        this.tableRules = null == tableRules ? Collections.<TableRule>emptyList() : tableRules;
-        this.bindingTableRules = null == bindingTableRules ? Collections.<BindingTableRule>emptyList() : bindingTableRules;
-        this.defaultDatabaseShardingStrategy = null == defaultDatabaseShardingStrategy ? new NoneShardingStrategy() : defaultDatabaseShardingStrategy;
-        this.defaultTableShardingStrategy = null == defaultTableShardingStrategy ? new NoneShardingStrategy() : defaultTableShardingStrategy;
-        this.defaultKeyGenerator = null == defaultKeyGenerator ? KeyGeneratorFactory.createKeyGenerator(DefaultKeyGenerator.class) : defaultKeyGenerator;
+    
+    public ShardingRule(final ShardingRuleConfig config) {
+        // TODO should not be null, for parsing only
+        if (null == config.getDataSourceRule()) {
+            dataSourceRule = null;
+        } else {
+            dataSourceRule = new DataSourceRule(config.getDataSourceRule().getDataSources(), config.getDataSourceRule().getDefaultDataSourceName());
+        }
+        if (null != config.getTableRules()) {
+            for (Entry<String, TableRuleConfig> entry : config.getTableRules().entrySet()) {
+                tableRules.add(new TableRule(entry.getValue(), dataSourceRule));
+            }
+        }
+        if (null != config.getBindingTableRules()) {
+            for (BindingTableRuleConfig each : config.getBindingTableRules()) {
+                List<String> logicTableNames = split(each.getTableNames());
+                TableRule[] tableRulesForBinding = new TableRule[logicTableNames.size()];
+                int count = 0;
+                for (String logicTableNameForBinding : logicTableNames) {
+                    tableRulesForBinding[count] = getTableRule(logicTableNameForBinding);
+                    count++;
+                }
+                bindingTableRules.add(new BindingTableRule(tableRulesForBinding));
+            }
+        }
+        defaultDatabaseShardingStrategy = getShardingStrategy(config.getDefaultDatabaseShardingStrategy());
+        defaultTableShardingStrategy = getShardingStrategy(config.getDefaultTableShardingStrategy());
+        defaultKeyGenerator = null == config.getDefaultKeyGeneratorClass() ? KeyGeneratorFactory.createKeyGenerator(DefaultKeyGenerator.class) : newInstance(config.getDefaultKeyGeneratorClass(), KeyGenerator.class);
     }
     
-    /**
-     * Get sharding rule builder.
-     *
-     * @param dataSourceRule data source rule
-     * @return sharding rule builder
-     */
-    public static ShardingRuleBuilder builder(final DataSourceRule dataSourceRule) {
-        return new ShardingRuleBuilder(dataSourceRule);
+    private List<String> split(final String value) {
+        return Splitter.on(",").trimResults().splitToList(value);
+    }
+    
+    private ShardingStrategy getShardingStrategy(final ShardingStrategyConfig config) {
+        if (config instanceof StandardShardingStrategyConfig) {
+            StandardShardingStrategyConfig standardShardingStrategyConfig = (StandardShardingStrategyConfig) config;
+            Preconditions.checkNotNull(standardShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
+            Preconditions.checkNotNull(standardShardingStrategyConfig.getPreciseAlgorithmClassName(), "Precise sharding algorithm cannot be null.");
+            return new StandardShardingStrategy(standardShardingStrategyConfig.getShardingColumn(),
+                    newInstance(standardShardingStrategyConfig.getPreciseAlgorithmClassName(), PreciseShardingAlgorithm.class),
+                    newInstance(standardShardingStrategyConfig.getRangeAlgorithmClassName(), RangeShardingAlgorithm.class));
+        }
+        if (config instanceof ComplexShardingStrategyConfig) {
+            ComplexShardingStrategyConfig complexShardingStrategyConfig = (ComplexShardingStrategyConfig) config;
+            Preconditions.checkNotNull(complexShardingStrategyConfig.getShardingColumns(), "Sharding columns cannot be null.");
+            Preconditions.checkNotNull(complexShardingStrategyConfig.getAlgorithmClassName(), "Sharding algorithm cannot be null.");
+            return new ComplexShardingStrategy(split(complexShardingStrategyConfig.getShardingColumns()),
+                    newInstance(complexShardingStrategyConfig.getAlgorithmClassName(), ComplexKeysShardingAlgorithm.class));
+        }
+        if (config instanceof HintShardingStrategyConfig) {
+            HintShardingStrategyConfig hintShardingStrategyConfig = (HintShardingStrategyConfig) config;
+            Preconditions.checkNotNull(hintShardingStrategyConfig.getAlgorithmClassName(), "Sharding algorithm cannot be null.");
+            return new HintShardingStrategy(newInstance(hintShardingStrategyConfig.getAlgorithmClassName(), HintShardingAlgorithm.class));
+        }
+        if (config instanceof InlineShardingStrategyConfig) {
+            InlineShardingStrategyConfig inlineShardingStrategyConfig = (InlineShardingStrategyConfig) config;
+            Preconditions.checkNotNull(inlineShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
+            Preconditions.checkNotNull(inlineShardingStrategyConfig.getAlgorithmInlineExpression(), "Inline expression cannot be null.");
+            return new InlineShardingStrategy(inlineShardingStrategyConfig.getShardingColumn(), inlineShardingStrategyConfig.getAlgorithmInlineExpression());
+        }
+        return new NoneShardingStrategy();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T> T newInstance(final String className, final Class<T> classType) {
+        if (null == className) {
+            return null;
+        }
+        try {
+            return (T) classType.getClassLoader().loadClass(className).newInstance();
+        } catch (final ReflectiveOperationException ex) {
+            throw new ShardingJdbcException(ex);
+        }
     }
     
     /**
@@ -113,8 +187,11 @@ public final class ShardingRule {
     private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
         Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1, 1);
         defaultDataSourceMap.put(dataSourceRule.getDefaultDataSourceName(), dataSourceRule.getDefaultDataSource().get());
-        return TableRule.builder(logicTableName)
-                .dataSourceRule(new DataSourceRule(defaultDataSourceMap)).databaseShardingStrategy(new NoneShardingStrategy()).tableShardingStrategy(new NoneShardingStrategy()).build();
+        TableRuleConfig config = new TableRuleConfig();
+        config.setLogicTable(logicTableName);
+        config.setDatabaseShardingStrategy(new NoneShardingStrategyConfig());
+        config.setTableShardingStrategy(new NoneShardingStrategyConfig());
+        return new TableRule(config, new DataSourceRule(defaultDataSourceMap));
     }
     
     /**
@@ -254,90 +331,5 @@ public final class ShardingRule {
             return tableRule.get().getKeyGenerator().generateKey();
         }
         return defaultKeyGenerator.generateKey();
-    }
-    
-    /**
-     * Sharding rule builder.
-     */
-    @RequiredArgsConstructor
-    public static class ShardingRuleBuilder {
-        
-        private final DataSourceRule dataSourceRule;
-        
-        private final Collection<TableRule> tableRules = new LinkedList<>();
-        
-        private final Collection<BindingTableRule> bindingTableRules = new LinkedList<>();
-        
-        private ShardingStrategy defaultDatabaseShardingStrategy;
-        
-        private ShardingStrategy defaultTableShardingStrategy;
-        
-        private KeyGenerator defaultKeyGenerator;
-        
-        /**
-         * Build table rules.
-         *
-         * @param tableRules table rules
-         * @return this builder
-         */
-        public ShardingRuleBuilder tableRules(final TableRule... tableRules) {
-            this.tableRules.clear();
-            this.tableRules.addAll(Arrays.asList(tableRules));
-            return this;
-        }
-        
-        /**
-         * Build binding table rules.
-         *
-         * @param bindingTableRules binding table rules
-         * @return this builder
-         */
-        public ShardingRuleBuilder bindingTableRules(final BindingTableRule... bindingTableRules) {
-            this.bindingTableRules.clear();
-            this.bindingTableRules.addAll(Arrays.asList(bindingTableRules));
-            return this;
-        }
-        
-        /**
-         * Build default database strategy.
-         *
-         * @param defaultDatabaseShardingStrategy default database strategy
-         * @return this builder
-         */
-        public ShardingRuleBuilder defaultDatabaseShardingStrategy(final ShardingStrategy defaultDatabaseShardingStrategy) {
-            this.defaultDatabaseShardingStrategy = defaultDatabaseShardingStrategy;
-            return this;
-        }
-        
-        /**
-         * Build default table strategy.
-         *
-         * @param defaultTableShardingStrategy default table strategy
-         * @return this builder
-         */
-        public ShardingRuleBuilder defaultTableShardingStrategy(final ShardingStrategy defaultTableShardingStrategy) {
-            this.defaultTableShardingStrategy = defaultTableShardingStrategy;
-            return this;
-        }
-        
-        /**
-         * Build default key generator.
-         * 
-         * @param defaultKeyGenerator default key generator
-         * @return this builder
-         */
-        public ShardingRuleBuilder defaultKeyGenerator(final KeyGenerator defaultKeyGenerator) {
-            this.defaultKeyGenerator = defaultKeyGenerator;
-            return this;
-        }
-        
-        /**
-         * Build sharding rule.
-         *
-         * @return built sharding rule
-         */
-        public ShardingRule build() {
-            return new ShardingRule(dataSourceRule, tableRules, bindingTableRules, defaultDatabaseShardingStrategy, defaultTableShardingStrategy, defaultKeyGenerator);
-        }
     }
 }

@@ -18,14 +18,15 @@
 package com.dangdang.ddframe.rdb.sharding.example.jdbc;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.config.BindingTableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.ModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.inline.InlineShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -33,6 +34,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -117,13 +119,38 @@ public final class Main {
     }
     
     private static ShardingDataSource getShardingDataSource() throws SQLException {
-        DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
-        TableRule orderTableRule = TableRule.builder("t_order").actualTablesInlineExpression("t_order_${[0, 1]}").dataSourceRule(dataSourceRule).build();
-        TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTablesInlineExpression("t_order_item_${[0, 1]}").dataSourceRule(dataSourceRule).build();
-        ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule)
-                .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
-                .defaultDatabaseShardingStrategy(new InlineShardingStrategy("user_id", "ds_jdbc_${user_id % 2}"))
-                .defaultTableShardingStrategy(new StandardShardingStrategy("order_id", new ModuloTableShardingAlgorithm())).build();
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
+        dataSourceRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
+        
+        
+        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(2, 1);
+        TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
+        orderTableRuleConfig.setLogicTable("t_order");
+        orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
+        tableRuleConfigMap.put("t_order", orderTableRuleConfig);
+        TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
+        orderItemTableRuleConfig.setLogicTable("t_order_item");
+        orderItemTableRuleConfig.setActualTables("t_order_item_${[0, 1]}");
+        tableRuleConfigMap.put("t_order_item", orderItemTableRuleConfig);
+        shardingRuleConfig.setTableRules(tableRuleConfigMap);
+    
+        BindingTableRuleConfig bindingTableRuleConfig = new BindingTableRuleConfig();
+        bindingTableRuleConfig.setTableNames("t_order, t_order_item");
+        shardingRuleConfig.setBindingTableRules(Collections.singletonList(bindingTableRuleConfig));
+    
+        InlineShardingStrategyConfig databaseShardingStrategyConfig = new InlineShardingStrategyConfig();
+        databaseShardingStrategyConfig.setShardingColumn("user_id");
+        databaseShardingStrategyConfig.setAlgorithmInlineExpression("ds_jdbc_${user_id % 2}");
+        shardingRuleConfig.setDefaultDatabaseShardingStrategy(databaseShardingStrategyConfig);
+    
+        StandardShardingStrategyConfig tableShardingStrategyConfig = new StandardShardingStrategyConfig();
+        tableShardingStrategyConfig.setShardingColumn("order_id");
+        tableShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloTableShardingAlgorithm.class.getName());
+        shardingRuleConfig.setDefaultTableShardingStrategy(tableShardingStrategyConfig);
+        
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig);
         return new ShardingDataSource(shardingRule);
     }
     

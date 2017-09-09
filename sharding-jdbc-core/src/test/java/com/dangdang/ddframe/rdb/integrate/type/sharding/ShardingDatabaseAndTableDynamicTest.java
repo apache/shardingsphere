@@ -24,18 +24,20 @@ import com.dangdang.ddframe.rdb.integrate.fixture.PreciseModuloDatabaseShardingA
 import com.dangdang.ddframe.rdb.integrate.fixture.RangeDynamicModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.fixture.RangeModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.config.BindingTableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import org.junit.AfterClass;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,14 +80,35 @@ public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
         isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
-            DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
-            TableRule orderTableRule = TableRule.builder("t_order").dynamic(true).dataSourceRule(dataSourceRule).build();
-            TableRule orderItemTableRule = TableRule.builder("t_order_item").dynamic(true).dataSourceRule(dataSourceRule).build();
-            ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule)
-                    .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
-                    .defaultDatabaseShardingStrategy(new StandardShardingStrategy("user_id", new PreciseModuloDatabaseShardingAlgorithm(), new RangeModuloDatabaseShardingAlgorithm()))
-                    .defaultTableShardingStrategy(
-                            new StandardShardingStrategy("order_id", new PreciseDynamicModuloTableShardingAlgorithm("t_order_"), new RangeDynamicModuloTableShardingAlgorithm("t_order_"))).build();
+            
+            DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
+            dataSourceRuleConfig.setDataSources(each.getValue());
+            ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+            shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
+            TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
+            orderTableRuleConfig.setLogicTable("t_order");
+            orderTableRuleConfig.setDynamic(true);
+            TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
+            orderItemTableRuleConfig.setLogicTable("t_order_item");
+            orderItemTableRuleConfig.setDynamic(true);
+            Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(2, 1);
+            tableRuleConfigMap.put("t_order", orderTableRuleConfig);
+            tableRuleConfigMap.put("t_order_item", orderItemTableRuleConfig);
+            shardingRuleConfig.setTableRules(tableRuleConfigMap);
+            BindingTableRuleConfig bindingTableRuleConfig = new BindingTableRuleConfig();
+            bindingTableRuleConfig.setTableNames("t_order, t_order_item");
+            shardingRuleConfig.setBindingTableRules(Collections.singletonList(bindingTableRuleConfig));
+            StandardShardingStrategyConfig databaseShardingStrategyConfig = new StandardShardingStrategyConfig();
+            databaseShardingStrategyConfig.setShardingColumn("user_id");
+            databaseShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseModuloDatabaseShardingAlgorithm.class.getName());
+            databaseShardingStrategyConfig.setRangeAlgorithmClassName(RangeModuloDatabaseShardingAlgorithm.class.getName());
+            shardingRuleConfig.setDefaultDatabaseShardingStrategy(databaseShardingStrategyConfig);
+            StandardShardingStrategyConfig tableShardingStrategyConfig = new StandardShardingStrategyConfig();
+            tableShardingStrategyConfig.setShardingColumn("order_id");
+            tableShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseDynamicModuloTableShardingAlgorithm.class.getName());
+            tableShardingStrategyConfig.setRangeAlgorithmClassName(RangeDynamicModuloTableShardingAlgorithm.class.getName());
+            shardingRuleConfig.setDefaultTableShardingStrategy(tableShardingStrategyConfig);
+            ShardingRule shardingRule = new ShardingRule(shardingRuleConfig);
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;

@@ -17,10 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.connection;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
@@ -61,8 +62,16 @@ public final class ShardingConnectionTest {
     public void setUp() {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
-        DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        ShardingRule rule = new ShardingRule.ShardingRuleBuilder(dataSourceRule).tableRules(new TableRule.TableRuleBuilder("test").dataSourceRule(dataSourceRule).build()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("test");
+        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
+        tableRuleConfigMap.put("test", tableRuleConfig);
+        DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
+        dataSourceRuleConfig.setDataSources(dataSourceMap);
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
+        shardingRuleConfig.setTableRules(tableRuleConfigMap);
+        ShardingRule rule = new ShardingRule(shardingRuleConfig);
         ShardingContext shardingContext = new ShardingContext(rule, null, null, false);
         connection = new ShardingConnection(shardingContext);
     }

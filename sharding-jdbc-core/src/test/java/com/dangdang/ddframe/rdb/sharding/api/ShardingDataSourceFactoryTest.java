@@ -17,9 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
+import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import org.junit.Test;
 
@@ -63,9 +64,17 @@ public final class ShardingDataSourceFactoryTest {
         when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", dataSource);
-        DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        TableRule tableRule = TableRule.builder("logicTable").actualTables("table_0", "table_1", "table_2").dataSourceRule(dataSourceRule).build();
-        return ShardingRule.builder(dataSourceRule).tableRules(tableRule).build();
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
+        dataSourceRuleConfig.setDataSources(dataSourceMap);
+        shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
+        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setActualTables("table_0, table_1, table_2");
+        tableRuleConfigMap.put("logicTable", tableRuleConfig);
+        shardingRuleConfig.setTableRules(tableRuleConfigMap);
+        return new ShardingRule(shardingRuleConfig);
     }
     
     private ShardingRule getShardingRule(final DataSource dataSource) throws NoSuchFieldException, IllegalAccessException {

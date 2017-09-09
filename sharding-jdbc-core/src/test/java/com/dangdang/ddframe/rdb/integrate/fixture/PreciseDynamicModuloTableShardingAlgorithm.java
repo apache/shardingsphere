@@ -26,10 +26,8 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class PreciseDynamicModuloTableShardingAlgorithm implements PreciseShardingAlgorithm<Integer> {
     
-    private final String tablePrefix;
-    
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
-        return tablePrefix + shardingValue.getValue() % 10;
+        return "t_order_" + shardingValue.getValue() % 10;
     }
 }

@@ -17,20 +17,34 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.inline.InlineShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.util.InlineExpressionParser;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -56,13 +70,13 @@ public final class TableRule {
     
     private final KeyGenerator keyGenerator;
     
-    private TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames,
-                     final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy,
-                     final String generateKeyColumn, final KeyGenerator keyGenerator) {
-        this.logicTable = logicTable;
-        this.dynamic = dynamic;
-        this.databaseShardingStrategy = databaseShardingStrategy;
-        this.tableShardingStrategy = tableShardingStrategy;
+    public TableRule(final TableRuleConfig config, final DataSourceRule dataSourceRule) {
+        logicTable = config.getLogicTable();
+        dynamic = config.isDynamic();
+        List<String> dataSourceNames = new InlineExpressionParser(config.getDataSourceNames()).evaluate();
+        List<String> actualTables = new InlineExpressionParser(config.getActualTables()).evaluate();
+        databaseShardingStrategy = getShardingStrategy(config.getDatabaseShardingStrategy());
+        tableShardingStrategy = getShardingStrategy(config.getTableShardingStrategy());
         if (dynamic) {
             Preconditions.checkNotNull(dataSourceRule);
             this.actualTables = generateDataNodes(dataSourceRule);
@@ -72,18 +86,62 @@ public final class TableRule {
         } else {
             this.actualTables = generateDataNodes(actualTables, dataSourceRule, dataSourceNames);
         }
-        this.generateKeyColumn = generateKeyColumn;
-        this.keyGenerator = keyGenerator;
+        if (null == config.getGenerateKeyStrategy()) {
+            generateKeyColumn = null;
+            keyGenerator = null;
+        } else {
+            generateKeyColumn = config.getGenerateKeyStrategy().getColumnName();
+            keyGenerator = newInstance(config.getGenerateKeyStrategy().getKeyGeneratorClass(), KeyGenerator.class);
+        }
     }
     
-    /**
-     * Get table rule builder.
-     *
-     * @param logicTable logic table name
-     * @return table rule builder
-     */
-    public static TableRuleBuilder builder(final String logicTable) {
-        return new TableRuleBuilder(logicTable);
+    private ShardingStrategy getShardingStrategy(final ShardingStrategyConfig config) {
+        if (null == config) {
+            return null;
+        }
+        if (config instanceof StandardShardingStrategyConfig) {
+            StandardShardingStrategyConfig standardShardingStrategyConfig = (StandardShardingStrategyConfig) config;
+            Preconditions.checkNotNull(standardShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
+            Preconditions.checkNotNull(standardShardingStrategyConfig.getPreciseAlgorithmClassName(), "Precise sharding algorithm cannot be null.");
+            return new StandardShardingStrategy(standardShardingStrategyConfig.getShardingColumn(), 
+                    newInstance(standardShardingStrategyConfig.getPreciseAlgorithmClassName(), PreciseShardingAlgorithm.class), 
+                    newInstance(standardShardingStrategyConfig.getRangeAlgorithmClassName(), RangeShardingAlgorithm.class));
+        }
+        if (config instanceof ComplexShardingStrategyConfig) {
+            ComplexShardingStrategyConfig complexShardingStrategyConfig = (ComplexShardingStrategyConfig) config;
+            Preconditions.checkNotNull(complexShardingStrategyConfig.getShardingColumns(), "Sharding columns cannot be null.");
+            Preconditions.checkNotNull(complexShardingStrategyConfig.getAlgorithmClassName(), "Sharding algorithm cannot be null.");
+            return new ComplexShardingStrategy(split(complexShardingStrategyConfig.getShardingColumns()),
+                    newInstance(complexShardingStrategyConfig.getAlgorithmClassName(), ComplexKeysShardingAlgorithm.class));
+        }
+        if (config instanceof HintShardingStrategyConfig) {
+            HintShardingStrategyConfig hintShardingStrategyConfig = (HintShardingStrategyConfig) config;
+            Preconditions.checkNotNull(hintShardingStrategyConfig.getAlgorithmClassName(), "Sharding algorithm cannot be null.");
+            return new HintShardingStrategy(newInstance(hintShardingStrategyConfig.getAlgorithmClassName(), HintShardingAlgorithm.class));
+        }
+        if (config instanceof InlineShardingStrategyConfig) {
+            InlineShardingStrategyConfig inlineShardingStrategyConfig = (InlineShardingStrategyConfig) config;
+            Preconditions.checkNotNull(inlineShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
+            Preconditions.checkNotNull(inlineShardingStrategyConfig.getAlgorithmInlineExpression(), "Inline expression cannot be null.");
+            return new InlineShardingStrategy(inlineShardingStrategyConfig.getShardingColumn(), inlineShardingStrategyConfig.getAlgorithmInlineExpression());
+        }
+        return new NoneShardingStrategy();
+    }
+    
+    private List<String> split(final String value) {
+        return Splitter.on(",").trimResults().splitToList(value);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T> T newInstance(final String className, final Class<T> classType) {
+        if (null == className) {
+            return null;
+        }
+        try {
+            return (T) classType.getClassLoader().loadClass(className).newInstance();
+        } catch (final ReflectiveOperationException ex) {
+            throw new ShardingJdbcException(ex);
+        }
     }
     
     private List<DataNode> generateDataNodes(final DataSourceRule dataSourceRule) {
@@ -187,155 +245,5 @@ public final class TableRule {
             result++;
         }
         return -1;
-    }
-    
-    /**
-     * Table rule builder.
-     */
-    @RequiredArgsConstructor
-    public static class TableRuleBuilder {
-        
-        private final String logicTable;
-        
-        private final List<String> actualTables = new ArrayList<>();
-        
-        private final Collection<String> dataSourceNames = new LinkedList<>();
-        
-        private boolean dynamic;
-        
-        private DataSourceRule dataSourceRule;
-        
-        private ShardingStrategy databaseShardingStrategy;
-        
-        private ShardingStrategy tableShardingStrategy;
-        
-        private String generateKeyColumn;
-        
-        private KeyGenerator keyGenerator;
-        
-        /**
-         * Build is dynamic table.
-         *
-         * @param dynamic is dynamic table
-         * @return this builder
-         */
-        public TableRuleBuilder dynamic(final boolean dynamic) {
-            this.dynamic = dynamic;
-            return this;
-        }
-        
-        /**
-         * Build actual tables.
-         *
-         * @param actualTables actual tables
-         * @return this builder
-         */
-        public TableRuleBuilder actualTables(final String... actualTables) {
-            this.actualTables.clear();
-            this.actualTables.addAll(Arrays.asList(actualTables));
-            return this;
-        }
-        
-        /**
-         * Build actual tables.
-         *
-         * @param inlineExpression actual tables inline expression
-         * @return this builder
-         */
-        public TableRuleBuilder actualTablesInlineExpression(final String inlineExpression) {
-            this.actualTables.clear();
-            this.actualTables.addAll(new InlineExpressionParser(inlineExpression).evaluate());
-            return this;
-        }
-        
-        /**
-         * Build data source rule.
-         *
-         * @param dataSourceRule data source rule
-         * @return this builder
-         */
-        public TableRuleBuilder dataSourceRule(final DataSourceRule dataSourceRule) {
-            this.dataSourceRule = dataSourceRule;
-            return this;
-        }
-        
-        /**
-         * Build data sources's names.
-         *
-         * @param dataSourceNames data sources's names
-         * @return this builder
-         */
-        public TableRuleBuilder dataSourceNames(final String... dataSourceNames) {
-            this.dataSourceNames.clear();
-            this.dataSourceNames.addAll(Arrays.asList(dataSourceNames));
-            return this;
-        }
-        
-        /**
-         * Build data sources's names.
-         *
-         * @param inlineExpression data sources's names inline expression
-         * @return this builder
-         */
-        public TableRuleBuilder dataSourceNames(final String inlineExpression) {
-            this.dataSourceNames.clear();
-            this.dataSourceNames.addAll(new InlineExpressionParser(inlineExpression).evaluate());
-            return this;
-        }
-        
-        /**
-         * Build database sharding strategy.
-         *
-         * @param databaseShardingStrategy database sharding strategy
-         * @return this builder
-         */
-        public TableRuleBuilder databaseShardingStrategy(final ShardingStrategy databaseShardingStrategy) {
-            this.databaseShardingStrategy = databaseShardingStrategy;
-            return this;
-        }
-        
-        /**
-         * Build table sharding strategy.
-         *
-         * @param tableShardingStrategy table sharding strategy
-         * @return this builder
-         */
-        public TableRuleBuilder tableShardingStrategy(final ShardingStrategy tableShardingStrategy) {
-            this.tableShardingStrategy = tableShardingStrategy;
-            return this;
-        }
-        
-        /**
-         * Build generate key column.
-         * 
-         * @param generateKeyColumn generate key column
-         * @return this builder
-         */
-        public TableRuleBuilder generateKeyColumn(final String generateKeyColumn) {
-            this.generateKeyColumn = generateKeyColumn;
-            return this;
-        }
-        
-        /**
-         * Build generate key column.
-         *
-         * @param generateKeyColumn generate key column
-         * @param keyGenerator key generator
-         * @return this builder
-         */
-        public TableRuleBuilder generateKeyColumn(final String generateKeyColumn, final KeyGenerator keyGenerator) {
-            this.generateKeyColumn = generateKeyColumn;
-            this.keyGenerator = keyGenerator;
-            return this;
-        }
-        
-        /**
-         * Build table rule.
-         *
-         * @return built table rule
-         */
-        public TableRule build() {
-            return new TableRule(logicTable, dynamic, actualTables, dataSourceRule, dataSourceNames, databaseShardingStrategy, tableShardingStrategy, generateKeyColumn, keyGenerator);
-        }
     }
 }

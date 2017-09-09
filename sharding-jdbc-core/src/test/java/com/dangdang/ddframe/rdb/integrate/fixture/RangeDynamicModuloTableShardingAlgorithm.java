@@ -28,14 +28,12 @@ import java.util.LinkedHashSet;
 @RequiredArgsConstructor
 public final class RangeDynamicModuloTableShardingAlgorithm implements RangeShardingAlgorithm<Integer> {
     
-    private final String tablePrefix;
-    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Range<Integer> range = shardingValue.getValueRange();
         for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {
-            result.add(tablePrefix + i % 10);
+            result.add("t_order_" + i % 10);
         }
         return result;
     }

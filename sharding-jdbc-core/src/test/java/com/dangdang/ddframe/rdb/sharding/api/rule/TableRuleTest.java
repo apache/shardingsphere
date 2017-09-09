@@ -17,10 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
+import com.dangdang.ddframe.rdb.sharding.api.config.GenerateKeyStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import com.google.common.collect.Sets;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -40,7 +41,10 @@ public final class TableRuleTest {
     
     @Test
     public void assertTableRuleForDynamicWithoutAnyStrategies() {
-        TableRule actual = TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setDynamic(true);
+        TableRule actual = new TableRule(tableRuleConfig, createDataSourceRule());
         assertDynamicTable(actual);
         assertNull(actual.getDatabaseShardingStrategy());
         assertNull(actual.getTableShardingStrategy());
@@ -48,8 +52,11 @@ public final class TableRuleTest {
     
     @Test
     public void assertTableRuleForDynamicWithDatabaseStrategy() {
-        TableRule actual = TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule())
-                .databaseShardingStrategy(new NoneShardingStrategy()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setDynamic(true);
+        tableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfig());
+        TableRule actual = new TableRule(tableRuleConfig, createDataSourceRule());
         assertDynamicTable(actual);
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNull(actual.getTableShardingStrategy());
@@ -57,8 +64,11 @@ public final class TableRuleTest {
     
     @Test
     public void assertTableRuleForDynamicWithTableStrategy() {
-        TableRule actual = TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule())
-                .tableShardingStrategy(new NoneShardingStrategy()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setDynamic(true);
+        tableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfig());
+        TableRule actual = new TableRule(tableRuleConfig, createDataSourceRule());
         assertDynamicTable(actual);
         assertNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());
@@ -66,8 +76,12 @@ public final class TableRuleTest {
     
     @Test
     public void assertTableRuleForDynamicWithAllStrategies() {
-        TableRule actual = TableRule.builder("logicTable")
-                .dynamic(true).dataSourceRule(createDataSourceRule()).databaseShardingStrategy(new NoneShardingStrategy()).tableShardingStrategy(new NoneShardingStrategy()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setDynamic(true);
+        tableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfig());
+        tableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfig());
+        TableRule actual = new TableRule(tableRuleConfig, createDataSourceRule());
         assertDynamicTable(actual);
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());
@@ -81,7 +95,10 @@ public final class TableRuleTest {
     
     @Test
     public void assertTableRuleWithoutDataNode() {
-        TableRule actual = TableRule.builder("logicTable").actualTables("table_0", "table_1", "table_2").dataSourceRule(createDataSourceRule()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setActualTables("table_0, table_1, table_2");
+        TableRule actual = new TableRule(tableRuleConfig, createDataSourceRule());
         assertActualTable(actual);
         assertNull(actual.getDatabaseShardingStrategy());
         assertNull(actual.getTableShardingStrategy());
@@ -89,8 +106,11 @@ public final class TableRuleTest {
     
     @Test
     public void assertTableRuleWithDatabaseShardingStrategyWithoutDataNode() {
-        TableRule actual = TableRule.builder("logicTable")
-                .actualTables("table_0", "table_1", "table_2").dataSourceRule(createDataSourceRule()).databaseShardingStrategy(new NoneShardingStrategy()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setActualTables("table_0, table_1, table_2");
+        tableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfig());
+        TableRule actual = new TableRule(tableRuleConfig, createDataSourceRule());
         assertActualTable(actual);
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNull(actual.getTableShardingStrategy());
@@ -98,8 +118,11 @@ public final class TableRuleTest {
     
     @Test
     public void assertTableRuleWithTableShardingStrategyWithoutDataNode() {
-        TableRule actual = TableRule.builder("logicTable")
-                .actualTables("table_0", "table_1", "table_2").dataSourceRule(createDataSourceRule()).tableShardingStrategy(new NoneShardingStrategy()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setActualTables("table_0, table_1, table_2");
+        tableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfig());
+        TableRule actual = new TableRule(tableRuleConfig, createDataSourceRule());
         assertActualTable(actual);
         assertNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());
@@ -107,8 +130,10 @@ public final class TableRuleTest {
     
     @Test
     public void assertTableRuleWithDataNodeString() {
-        TableRule actual = TableRule.builder("logicTable")
-                .actualTables("ds0.table_0", "ds0.table_1", "ds0.table_2", "ds1.table_0", "ds1.table_1", "ds1.table_2").build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setActualTables("ds0.table_0, ds0.table_1, ds0.table_2, ds1.table_0, ds1.table_1, ds1.table_2");
+        TableRule actual = new TableRule(tableRuleConfig, null);
         assertActualTable(actual);
         assertNull(actual.getDatabaseShardingStrategy());
         assertNull(actual.getTableShardingStrategy());
@@ -116,7 +141,11 @@ public final class TableRuleTest {
     
     @Test
     public void assertTableRuleWithDataSourceNames() {
-        TableRule actual = TableRule.builder("logicTable").actualTables("table_0", "table_1", "table_2").dataSourceRule(createDataSourceRule()).dataSourceNames("ds0", "ds1").build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setActualTables("table_0, table_1, table_2");
+        tableRuleConfig.setDataSourceNames("ds0, ds1");
+        TableRule actual = new TableRule(tableRuleConfig, createDataSourceRule());
         assertActualTable(actual);
         assertNull(actual.getDatabaseShardingStrategy());
         assertNull(actual.getTableShardingStrategy());
@@ -132,67 +161,71 @@ public final class TableRuleTest {
         assertTrue(actual.getActualTables().contains(new DataNode("ds1", "table_2")));
     }
     
-    @Test(expected = NullPointerException.class)
-    public void assertTableRuleWithoutActualTablesAndDataSourceRule() {
-        TableRule.builder("logicTable").build();
-    }
-    
     @Test
     public void assertGetActualDataNodesForStatic() {
-        TableRule actual = TableRule.builder("logicTable").actualTables("ds0.table_0", "ds0.table_1", "ds0.table_2", "ds1.table_0", "ds1.table_1", "ds1.table_2").build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setActualTables("ds0.table_0, ds0.table_1, ds0.table_2, ds1.table_0, ds1.table_1, ds1.table_2");
+        TableRule actual = new TableRule(tableRuleConfig, createDataSourceRule());
         assertThat(actual.getActualDataNodes("ds1", Arrays.asList("table_0", "table_1")), is(
                 (Collection<DataNode>) Sets.newLinkedHashSet(Arrays.asList(new DataNode("ds1", "table_0"), new DataNode("ds1", "table_1")))));
     }
     
     @Test
     public void assertGetActualDataNodesForDynamic() {
-        TableRule actual = TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setDynamic(true);
+        TableRule actual = new TableRule(tableRuleConfig, createDataSourceRule());
         assertThat(actual.getActualDataNodes("ds1", Arrays.asList("table_0", "table_1")), is(
                 (Collection<DataNode>) Sets.newLinkedHashSet(Arrays.asList(new DataNode("ds1", "table_0"), new DataNode("ds1", "table_1")))));
     }
     
     @Test
     public void assertGetActualDatasourceNames() {
-        TableRule actual = TableRule.builder("logicTable").actualTables("ds0.table_0", "ds0.table_1", "ds0.table_2", "ds1.table_0", "ds1.table_1", "ds1.table_2").build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setActualTables("ds0.table_0, ds0.table_1, ds0.table_2, ds1.table_0, ds1.table_1, ds1.table_2");
+        TableRule actual = new TableRule(tableRuleConfig, null);
         assertThat(actual.getActualDatasourceNames(), is((Collection<String>) Sets.newLinkedHashSet(Arrays.asList("ds0", "ds1"))));
     }
     
     @Test
     public void assertGetActualTableNames() {
-        TableRule actual = TableRule.builder("logicTable").actualTables("ds0.table_0", "ds0.table_1", "ds0.table_2", "ds1.table_0", "ds1.table_1", "ds1.table_2").build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setActualTables("ds0.table_0, ds0.table_1, ds0.table_2, ds1.table_0, ds1.table_1, ds1.table_2");
+        TableRule actual = new TableRule(tableRuleConfig, null);
         assertThat(actual.getActualTableNames("ds1"), is((Collection<String>) Sets.newLinkedHashSet(Arrays.asList("table_0", "table_1", "table_2"))));
     }
     
     @Test
     public void assertFindActualTableIndex() {
-        TableRule actual = TableRule.builder("logicTable").actualTables("ds0.table_0", "ds0.table_1", "ds0.table_2", "ds1.table_0", "ds1.table_1", "ds1.table_2").build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setActualTables("ds0.table_0, ds0.table_1, ds0.table_2, ds1.table_0, ds1.table_1, ds1.table_2");
+        TableRule actual = new TableRule(tableRuleConfig, null);
         assertThat(actual.findActualTableIndex("ds1", "table_1"), is(4));
     }
     
     @Test
     public void assertFindActualTableIndexForNotFound() {
-        TableRule actual = TableRule.builder("logicTable").actualTables("ds0.table_0", "ds0.table_1", "ds0.table_2", "ds1.table_0", "ds1.table_1", "ds1.table_2").build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        tableRuleConfig.setActualTables("ds0.table_0, ds0.table_1, ds0.table_2, ds1.table_0, ds1.table_1, ds1.table_2");
+        TableRule actual = new TableRule(tableRuleConfig, null);
         assertThat(actual.findActualTableIndex("ds2", "table_2"), is(-1));
     }
     
     @Test
-    @Ignore
-    public void assertToString() {
-        TableRule actual = TableRule.builder("logicTable").actualTables("ds0.table_0", "ds0.table_1", "ds0.table_2", "ds1.table_0", "ds1.table_1", "ds1.table_2").build();
-        assertThat(actual.toString(), is("TableRule(logicTable=logicTable, dynamic=false, actualTables=["
-                + "DataNode(dataSourceName=ds0, tableName=table_0), "
-                + "DataNode(dataSourceName=ds0, tableName=table_1), "
-                + "DataNode(dataSourceName=ds0, tableName=table_2), "
-                + "DataNode(dataSourceName=ds1, tableName=table_0), "
-                + "DataNode(dataSourceName=ds1, tableName=table_1), "
-                + "DataNode(dataSourceName=ds1, tableName=table_2)], "
-                + "defaultDatabaseShardingStrategy=null, defaultTableShardingStrategy=null, "
-                + "generateKeyColumnsMap={})"));
-    }
-    
-    @Test
     public void assertGenerateKeyColumn() {
-        TableRule actual = TableRule.builder("logicTable").dataSourceRule(createDataSourceRule()).generateKeyColumn("col_1", new IncrementKeyGenerator()).build();
+        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        tableRuleConfig.setLogicTable("logicTable");
+        GenerateKeyStrategyConfig generateKeyStrategyConfig = new GenerateKeyStrategyConfig();
+        generateKeyStrategyConfig.setColumnName("col_1");
+        generateKeyStrategyConfig.setKeyGeneratorClass(IncrementKeyGenerator.class.getName());
+        tableRuleConfig.setGenerateKeyStrategy(generateKeyStrategyConfig);
+        TableRule actual = new TableRule(tableRuleConfig, createDataSourceRule());
         assertThat(actual.getGenerateKeyColumn(), is("col_1"));
         assertThat(actual.getKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
     }

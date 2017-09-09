@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -48,6 +49,9 @@ public final class InlineExpressionParser {
      * @return result list
      */
     public List<String> evaluate() {
+        if (null == inlineExpression) {
+            return Collections.emptyList();
+        }
         return flatten(evaluate(split()));
     }
     
@@ -134,7 +138,7 @@ public final class InlineExpressionParser {
                 continue;
             }
             if (each instanceof Collection) {
-                result.add(Sets.newHashSet(Collections2.transform((Collection<Object>) each, new Function<Object, String>() {
+                result.add(Sets.newLinkedHashSet(Collections2.transform((Collection<Object>) each, new Function<Object, String>() {
                     
                     @Override
                     public String apply(final Object input) {
