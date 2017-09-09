@@ -28,9 +28,9 @@ Sharding-JDBC的分库分表通过规则配置描述，请简单浏览配置全�
 ```java
 ShardingRule shardingRule = ShardingRule.builder()
         .dataSourceRule(dataSourceRule)
-        .tableRules(tableRuleList)
-        .defaultDatabaseShardingStrategy(new StandardShardingStrategy("sharding_column", new XXXShardingAlgorithm()))
-        .defaultTableShardingStrategy(new StandardShardingStrategy("sharding_column", new XXXShardingAlgorithm())))
+        .tableRuleConfigs(tableRuleList)
+        .defaultDatabaseShardingStrategyConfig(new StandardShardingStrategy("sharding_column", new XXXShardingAlgorithm()))
+        .defaultTableShardingStrategyConfig(new StandardShardingStrategy("sharding_column", new XXXShardingAlgorithm())))
         .build();
 ```
 

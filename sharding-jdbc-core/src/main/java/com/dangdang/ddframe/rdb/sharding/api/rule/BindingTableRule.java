@@ -21,10 +21,9 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -34,14 +33,11 @@ import java.util.List;
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 public final class BindingTableRule {
     
-    private final List<TableRule> tableRules = new LinkedList<>();
-    
-    public BindingTableRule(final TableRule... tableRules) {
-        this.tableRules.addAll(Arrays.asList(tableRules));
-    }
+    private final List<TableRule> tableRules;
     
     /**
      * Adjust contains this logic table in this rule.
@@ -80,7 +76,7 @@ public final class BindingTableRule {
         Preconditions.checkState(-1 != index, String.format("Actual table [%s].[%s] is not in table config", dataSource, otherActualTable));
         for (TableRule each : tableRules) {
             if (each.getLogicTable().equalsIgnoreCase(logicTable)) {
-                return each.getActualTables().get(index).getTableName();
+                return each.getActualDataNodes().get(index).getTableName();
             }
         }
         throw new IllegalStateException(String.format("Cannot find binding actual table, data source: %s, logic table: %s, other actual table: %s", dataSource, logicTable, otherActualTable));

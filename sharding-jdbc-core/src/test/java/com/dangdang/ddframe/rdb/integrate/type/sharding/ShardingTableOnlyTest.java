@@ -22,14 +22,10 @@ import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.PreciseModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.fixture.RangeModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.config.BindingTableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.GenerateKeyStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.After;
@@ -71,43 +67,24 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-            
-            DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
-            dataSourceRuleConfig.setDataSources(each.getValue());
-            shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
-    
-            Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(2, 1);
-            
+            shardingRuleConfig.setDataSources(each.getValue());
             TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
             orderTableRuleConfig.setLogicTable("t_order");
             orderTableRuleConfig.setActualTables("t_order_${0..9}");
-            tableRuleConfigMap.put("t_order", orderTableRuleConfig);
-            
+            shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
             TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
             orderItemTableRuleConfig.setLogicTable("t_order_item");
             orderItemTableRuleConfig.setActualTables("t_order_item_${0..9}");
-            GenerateKeyStrategyConfig generateKeyStrategyConfig = new GenerateKeyStrategyConfig();
-            generateKeyStrategyConfig.setColumnName("item_id");
-            orderItemTableRuleConfig.setGenerateKeyStrategy(generateKeyStrategyConfig);
-            tableRuleConfigMap.put("t_order_item", orderItemTableRuleConfig);
-            
-            shardingRuleConfig.setTableRules(tableRuleConfigMap);
-            
-            
-            BindingTableRuleConfig bindingTableRuleConfig = new BindingTableRuleConfig();
-            bindingTableRuleConfig.setTableNames("t_order, t_order_item");
-            shardingRuleConfig.setBindingTableRules(Collections.singletonList(bindingTableRuleConfig));
-            
-            
-            shardingRuleConfig.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfig());
-            
+            orderItemTableRuleConfig.setKeyGeneratorClass("item_id");
+            shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
+            shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfig());
             StandardShardingStrategyConfig tableShardingStrategyConfig = new StandardShardingStrategyConfig();
             tableShardingStrategyConfig.setShardingColumn("order_id");
             tableShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseModuloTableShardingAlgorithm.class.getName());
             tableShardingStrategyConfig.setRangeAlgorithmClassName(RangeModuloTableShardingAlgorithm.class.getName());
-            shardingRuleConfig.setDefaultTableShardingStrategy(tableShardingStrategyConfig);
-            ShardingRule shardingRule = new ShardingRule(shardingRuleConfig);
-            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
+            shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
+            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build()));
         }
         return shardingDataSources;
     }
@@ -142,7 +119,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
                     //CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     //CHECKSTYLE:ON
-                    if (ex.getMessage().startsWith("Dynamic table")) {
+                    if (null != ex.getMessage() && ex.getMessage().startsWith("Dynamic table")) {
                         continue;
                     }
                     ex.printStackTrace();

@@ -17,14 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.BindingTableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestPreciseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import org.junit.Test;
 
@@ -47,13 +46,11 @@ public final class ShardingRuleTest {
     @Test
     public void assertShardingRuleWithoutStrategy() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfig();
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        ShardingRule actual = shardingRuleConfig.build();
         assertTrue(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().isEmpty());
         assertTrue(actual.getDefaultTableShardingStrategy().getShardingColumns().isEmpty());
     }
@@ -68,14 +65,12 @@ public final class ShardingRuleTest {
     @Test
     public void assertShardingRuleWithDatabaseStrategy() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfig();
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfig());
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfig());
+        ShardingRule actual = shardingRuleConfig.build();
         assertTrue(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().isEmpty());
         assertTrue(actual.getDefaultTableShardingStrategy().getShardingColumns().isEmpty());
     }
@@ -83,14 +78,12 @@ public final class ShardingRuleTest {
     @Test
     public void assertShardingRuleWithTableStrategy() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfig();
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        shardingRuleConfig.setDefaultTableShardingStrategy(new NoneShardingStrategyConfig());
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfig());
+        ShardingRule actual = shardingRuleConfig.build();
         assertTrue(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().isEmpty());
         assertTrue(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().isEmpty());
     }
@@ -98,15 +91,13 @@ public final class ShardingRuleTest {
     @Test
     public void assertShardingRuleWithoutBindingTableRule() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfig();
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfig());
-        shardingRuleConfig.setDefaultTableShardingStrategy(new NoneShardingStrategyConfig());
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfig());
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfig());
+        ShardingRule actual = shardingRuleConfig.build();
         assertTrue(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().isEmpty());
         assertTrue(actual.getDefaultDatabaseShardingStrategy().getShardingColumns().isEmpty());
     }
@@ -114,15 +105,13 @@ public final class ShardingRuleTest {
     @Test
     public void assertFindTableRule() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfig();
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfig());
-        shardingRuleConfig.setDefaultTableShardingStrategy(new NoneShardingStrategyConfig());
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfig());
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfig());
+        ShardingRule actual = shardingRuleConfig.build();
         assertTrue(actual.tryFindTableRule("logicTable").isPresent());
         assertFalse(actual.tryFindTableRule("null").isPresent());
     }
@@ -130,95 +119,81 @@ public final class ShardingRuleTest {
     @Test
     public void assertGetDatabaseShardingStrategyFromTableRule() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfigWithDatabaseShardingStrategy(new NoneShardingStrategyConfig());
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        ShardingRule actual = shardingRuleConfig.build();
         assertThat(actual.getDatabaseShardingStrategy(actual.getTableRule("logicTable")), instanceOf(NoneShardingStrategy.class));
     }
     
     @Test
     public void assertGetDatabaseShardingStrategyFromDefault() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfig();
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfig());
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfig());
+        ShardingRule actual = shardingRuleConfig.build();
         assertThat(actual.getDatabaseShardingStrategy(actual.getTableRule("logicTable")), instanceOf(NoneShardingStrategy.class));
     }
     
     @Test
     public void assertGetDatabaseShardingStrategyForNullValue() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfig();
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategy(null);
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(null);
+        ShardingRule actual = shardingRuleConfig.build();
         assertNotNull(actual.getDatabaseShardingStrategy(actual.getTableRule("logicTable")));
     }
     
     @Test
     public void assertGetTableShardingStrategyFromTableRule() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfigWithTableShardingStrategy(new NoneShardingStrategyConfig());
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        ShardingRule actual = shardingRuleConfig.build();
         assertThat(actual.getDatabaseShardingStrategy(actual.getTableRule("logicTable")), instanceOf(NoneShardingStrategy.class));
     }
     
     @Test
     public void assertGetTableShardingStrategyFromDefault() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfig();
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfig());
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfig());
+        ShardingRule actual = shardingRuleConfig.build();
         assertThat(actual.getTableShardingStrategy(actual.getTableRule("logicTable")), instanceOf(NoneShardingStrategy.class));
     }
     
     @Test
     public void assertGetTableShardingStrategyForNullValue() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfig();
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfig());
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfig());
+        ShardingRule actual = shardingRuleConfig.build();
         assertNotNull(actual.getTableShardingStrategy(actual.getTableRule("logicTable")));
     }
     
     @Test
     public void assertGetBindingTableRuleForNotConfig() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfig();
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        ShardingRule actual = shardingRuleConfig.build();
         assertFalse(actual.findBindingTableRule("logicTable").isPresent());
     }
     
@@ -230,16 +205,14 @@ public final class ShardingRuleTest {
     @Test
     public void assertGetBindingTableRuleForFound() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfig();
         TableRuleConfig subTableRuleConfig = createSubTableRuleConfig();
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(2, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        tableRuleConfigMap.put(subTableRuleConfig.getLogicTable(), subTableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        shardingRuleConfig.setBindingTableRules(Collections.singletonList(createBindingTableRuleConfig()));
-        ShardingRule actual = new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(subTableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.getBindingTableGroups().add(createTableRuleConfig().getLogicTable() + "," + createSubTableRuleConfig().getLogicTable());
+        ShardingRule actual = shardingRuleConfig.build();
         assertThat(actual.findBindingTableRule("logicTable").get().getTableRules().size(), is(2));
     }
     
@@ -279,57 +252,70 @@ public final class ShardingRuleTest {
         assertTrue(createShardingRule().isAllBindingTables(Arrays.asList("logicTable", "subLogicTable")));
     }
     
-    // TODO recover
-//    @Test
-//    public void assertIsShardingColumnForDefaultDatabaseShardingStrategy() {
-//        assertTrue(ShardingRule.builder(createDataSourceRuleConfig()).defaultDatabaseShardingStrategy(new StandardShardingStrategy("column", new TestPreciseShardingAlgorithm()))
-//                .tableRules(createTableRuleConfigWithAllStrategies()).build().isShardingColumn(new Column("column", "")));
-//    }
-//    
-//    @Test
-//    public void assertIsShardingColumnForDefaultTableShardingStrategy() {
-//        assertTrue(ShardingRule.builder(createDataSourceRuleConfig()).defaultTableShardingStrategy(new StandardShardingStrategy("column", new TestPreciseShardingAlgorithm()))
-//                .tableRules(createTableRuleConfigWithAllStrategies()).build().isShardingColumn(new Column("column", "")));
-//    }
-//    
-//    @Test
-//    public void assertIsShardingColumnForDatabaseShardingStrategy() {
-//        assertTrue(ShardingRule.builder(createDataSourceRuleConfig())
-//                .tableRules(createTableRuleConfigWithAllStrategies()).build().isShardingColumn(new Column("column", "logicTable")));
-//    }
-//    
-//    @Test
-//    public void assertIsShardingColumnForTableShardingStrategy() {
-//        assertTrue(ShardingRule.builder(createDataSourceRuleConfig())
-//                .tableRules(createTableRuleConfigWithTableStrategies()).build().isShardingColumn(new Column("column", "logicTable")));
-//    }
-//    
-//    @Test
-//    public void assertIsNotShardingColumn() {
-//        assertFalse(ShardingRule.builder(createDataSourceRuleConfig())
-//                .tableRules(createTableRuleConfigWithAllStrategies()).build().isShardingColumn(new Column("column", "otherTable")));
-//    }
+    @Test
+    public void assertIsShardingColumnForDefaultDatabaseShardingStrategy() {
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
+        StandardShardingStrategyConfig databaseShardingStrategyConfig = new StandardShardingStrategyConfig();
+        databaseShardingStrategyConfig.setShardingColumn("column");
+        databaseShardingStrategyConfig.setPreciseAlgorithmClassName(TestPreciseShardingAlgorithm.class.getName());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
+        assertTrue(shardingRuleConfig.build().isShardingColumn(new Column("column", "")));
+    }
+    
+    @Test
+    public void assertIsShardingColumnForDefaultTableShardingStrategy() {
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
+        StandardShardingStrategyConfig tableShardingStrategyConfig = new StandardShardingStrategyConfig();
+        tableShardingStrategyConfig.setShardingColumn("column");
+        tableShardingStrategyConfig.setPreciseAlgorithmClassName(TestPreciseShardingAlgorithm.class.getName());
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
+        assertTrue(shardingRuleConfig.build().isShardingColumn(new Column("column", "")));
+    }
+    
+    @Test
+    public void assertIsShardingColumnForDatabaseShardingStrategy() {
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
+        assertTrue(shardingRuleConfig.build().isShardingColumn(new Column("column", "logicTable")));
+    }
+    
+    @Test
+    public void assertIsShardingColumnForTableShardingStrategy() {
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithTableStrategies());
+        assertTrue(shardingRuleConfig.build().isShardingColumn(new Column("column", "logicTable")));
+    }
+    
+    @Test
+    public void assertIsNotShardingColumn() {
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
+        assertFalse(shardingRuleConfig.build().isShardingColumn(new Column("column", "otherTable")));
+    }
     
     private ShardingRule createShardingRule() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = createTableRuleConfig();
         TableRuleConfig subTableRuleConfig = createSubTableRuleConfig();
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(2, 1);
-        tableRuleConfigMap.put(tableRuleConfig.getLogicTable(), tableRuleConfig);
-        tableRuleConfigMap.put(subTableRuleConfig.getLogicTable(), subTableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        shardingRuleConfig.setDataSourceRule(createDataSourceRuleConfig());
-        shardingRuleConfig.setBindingTableRules(Collections.singletonList(createBindingTableRuleConfig()));
-        return new ShardingRule(shardingRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(subTableRuleConfig);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
+        shardingRuleConfig.getBindingTableGroups().add(createTableRuleConfig().getLogicTable() + "," + createSubTableRuleConfig().getLogicTable());
+        return shardingRuleConfig.build();
     }
     
-    private DataSourceRuleConfig createDataSourceRuleConfig() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2);
-        dataSourceMap.put("ds0", null);
-        dataSourceMap.put("ds1", null);
-        DataSourceRuleConfig result = new DataSourceRuleConfig();
-        result.setDataSources(dataSourceMap);
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(2);
+        result.put("ds0", null);
+        result.put("ds1", null);
         return result;
     }
     
@@ -344,7 +330,7 @@ public final class ShardingRuleTest {
         TableRuleConfig result = new TableRuleConfig();
         result.setLogicTable("logicTable");
         result.setActualTables("table_0, table_1, table_2");
-        result.setDatabaseShardingStrategy(strategyConfig);
+        result.setDatabaseShardingStrategyConfig(strategyConfig);
         return result;
     }
     
@@ -352,13 +338,7 @@ public final class ShardingRuleTest {
         TableRuleConfig result = new TableRuleConfig();
         result.setLogicTable("logicTable");
         result.setActualTables("table_0, table_1, table_2");
-        result.setTableShardingStrategy(strategyConfig);
-        return result;
-    }
-    
-    private BindingTableRuleConfig createBindingTableRuleConfig() {
-        BindingTableRuleConfig result = new BindingTableRuleConfig();
-        result.setTableNames(createTableRuleConfig().getLogicTable() + "," + createSubTableRuleConfig().getLogicTable());
+        result.setTableShardingStrategyConfig(strategyConfig);
         return result;
     }
     
@@ -376,8 +356,8 @@ public final class ShardingRuleTest {
         StandardShardingStrategyConfig databaseShardingStrategyConfig = new StandardShardingStrategyConfig();
         databaseShardingStrategyConfig.setShardingColumn("column");
         databaseShardingStrategyConfig.setPreciseAlgorithmClassName(TestPreciseShardingAlgorithm.class.getName());
-        result.setDatabaseShardingStrategy(databaseShardingStrategyConfig);
-        result.setTableShardingStrategy(new NoneShardingStrategyConfig());
+        result.setDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
+        result.setTableShardingStrategyConfig(new NoneShardingStrategyConfig());
         return result;
     }
     
@@ -388,7 +368,7 @@ public final class ShardingRuleTest {
         StandardShardingStrategyConfig tableShardingStrategyConfig = new StandardShardingStrategyConfig();
         tableShardingStrategyConfig.setShardingColumn("column");
         tableShardingStrategyConfig.setPreciseAlgorithmClassName(TestPreciseShardingAlgorithm.class.getName());
-        result.setTableShardingStrategy(tableShardingStrategyConfig);
+        result.setTableShardingStrategyConfig(tableShardingStrategyConfig);
         return result;
     }
 }

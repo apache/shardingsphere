@@ -17,10 +17,19 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.config.strategy;
 
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+
 /**
  * Sharding strategy configuration.
  * 
  * @author zhangliang
  */
 public interface ShardingStrategyConfig {
+    
+    /**
+     * Build sharding strategy.
+     * 
+     * @return sharding strategy
+     */
+    ShardingStrategy build();
 }

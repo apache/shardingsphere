@@ -106,25 +106,25 @@ public final class ShardingRuleBuilderTest {
             switch (logicTable) {
                 case "t_order":
                     assertFalse(each.isDynamic());
-                    assertThat(each.getActualTables().size(), is(4));
-                    assertThat(each.getActualTables(), hasItem(new DataNode("ds_0", "t_order_0")));
-                    assertThat(each.getActualTables(), hasItem(new DataNode("ds_0", "t_order_0")));
-                    assertThat(each.getActualTables(), hasItem(new DataNode("ds_1", "t_order_0")));
-                    assertThat(each.getActualTables(), hasItem(new DataNode("ds_1", "t_order_1")));
+                    assertThat(each.getActualDataNodes().size(), is(4));
+                    assertThat(each.getActualDataNodes(), hasItem(new DataNode("ds_0", "t_order_0")));
+                    assertThat(each.getActualDataNodes(), hasItem(new DataNode("ds_0", "t_order_0")));
+                    assertThat(each.getActualDataNodes(), hasItem(new DataNode("ds_1", "t_order_0")));
+                    assertThat(each.getActualDataNodes(), hasItem(new DataNode("ds_1", "t_order_1")));
                     break;
                 case "t_order_item":
                     assertFalse(each.isDynamic());
-                    assertThat(each.getActualTables().size(), is(4));
-                    assertThat(each.getActualTables(), hasItem(new DataNode("ds_0", "t_order_item_0")));
-                    assertThat(each.getActualTables(), hasItem(new DataNode("ds_0", "t_order_item_0")));
-                    assertThat(each.getActualTables(), hasItem(new DataNode("ds_1", "t_order_item_0")));
-                    assertThat(each.getActualTables(), hasItem(new DataNode("ds_1", "t_order_item_1")));
+                    assertThat(each.getActualDataNodes().size(), is(4));
+                    assertThat(each.getActualDataNodes(), hasItem(new DataNode("ds_0", "t_order_item_0")));
+                    assertThat(each.getActualDataNodes(), hasItem(new DataNode("ds_0", "t_order_item_0")));
+                    assertThat(each.getActualDataNodes(), hasItem(new DataNode("ds_1", "t_order_item_0")));
+                    assertThat(each.getActualDataNodes(), hasItem(new DataNode("ds_1", "t_order_item_1")));
                     break;
                 case "t_log":
                     assertTrue(each.isDynamic());
-                    assertThat(each.getActualTables().size(), is(2));
-                    assertThat(each.getActualTables(), hasItem(new DataNode("ds_0", "SHARDING_JDBC DYNAMIC_TABLE_PLACEHOLDER")));
-                    assertThat(each.getActualTables(), hasItem(new DataNode("ds_1", "SHARDING_JDBC DYNAMIC_TABLE_PLACEHOLDER")));
+                    assertThat(each.getActualDataNodes().size(), is(2));
+                    assertThat(each.getActualDataNodes(), hasItem(new DataNode("ds_0", "SHARDING_JDBC DYNAMIC_TABLE_PLACEHOLDER")));
+                    assertThat(each.getActualDataNodes(), hasItem(new DataNode("ds_1", "SHARDING_JDBC DYNAMIC_TABLE_PLACEHOLDER")));
                     break;
                 default:
                     fail();

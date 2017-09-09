@@ -18,11 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
-import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import org.junit.Test;
 
@@ -125,15 +123,11 @@ public final class ShardingDataSourceTest {
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
-        dataSourceRuleConfig.setDataSources(dataSourceMap);
-        shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
+        shardingRuleConfig.setDataSources(dataSourceMap);
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("logicTable");
         tableRuleConfig.setActualTables("table_0, table_1, table_2");
-        tableRuleConfigMap.put("logicTable", tableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        return new ShardingDataSource(new ShardingRule(shardingRuleConfig));
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        return new ShardingDataSource(shardingRuleConfig.build());
     }
 }

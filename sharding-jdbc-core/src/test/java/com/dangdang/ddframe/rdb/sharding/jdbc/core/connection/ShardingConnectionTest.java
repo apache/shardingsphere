@@ -17,11 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.connection;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
@@ -60,19 +58,14 @@ public final class ShardingConnectionTest {
     
     @Before
     public void setUp() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        shardingRuleConfig.setDataSources(dataSourceMap);
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("test");
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put("test", tableRuleConfig);
-        DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
-        dataSourceRuleConfig.setDataSources(dataSourceMap);
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        ShardingRule rule = new ShardingRule(shardingRuleConfig);
-        ShardingContext shardingContext = new ShardingContext(rule, null, null, false);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        ShardingContext shardingContext = new ShardingContext(shardingRuleConfig.build(), null, null, false);
         connection = new ShardingConnection(shardingContext);
     }
     

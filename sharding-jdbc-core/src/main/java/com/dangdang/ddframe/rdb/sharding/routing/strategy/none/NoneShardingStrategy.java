@@ -23,7 +23,6 @@ import lombok.Getter;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.TreeSet;
 
 /**
  * None sharding strategy.
@@ -37,8 +36,6 @@ public final class NoneShardingStrategy implements ShardingStrategy {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(availableTargetNames);
-        return result;
+        return availableTargetNames;
     }
 }

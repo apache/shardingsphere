@@ -72,9 +72,9 @@ public class YamlShardingDataSourceTest {
         int i = 0;
         for (TableRule each : shardingRule.getTableRules()) {
             i++;
-            assertThat(each.getActualTables().size(), is(2));
-            assertThat(each.getActualTables(), hasItem(new DynamicDataNode("db0")));
-            assertThat(each.getActualTables(), hasItem(new DynamicDataNode("db1")));
+            assertThat(each.getActualDataNodes().size(), is(2));
+            assertThat(each.getActualDataNodes(), hasItem(new DynamicDataNode("db0")));
+            assertThat(each.getActualDataNodes(), hasItem(new DynamicDataNode("db1")));
             switch (i) {
                 case 1:
                     assertThat(each.getLogicTable(), is("config"));

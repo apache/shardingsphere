@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.GenerateKeyStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
@@ -110,22 +109,19 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         }
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", dataSource);
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        shardingRuleConfig.setDataSources(dataSourceMap);
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("TABLE_XXX");
-        tableRuleConfig.setActualTables("table_0, table_1, table_2");
+        tableRuleConfig.setActualTables("table_${0..2}");
         ComplexShardingStrategyConfig shardingStrategyConfig = new ComplexShardingStrategyConfig();
         shardingStrategyConfig.setShardingColumns("field1");
         shardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
-        tableRuleConfig.setTableShardingStrategy(shardingStrategyConfig);
-        GenerateKeyStrategyConfig generateKeyStrategyConfig = new GenerateKeyStrategyConfig();
-        generateKeyStrategyConfig.setColumnName("field2");
-        tableRuleConfig.setGenerateKeyStrategy(generateKeyStrategyConfig);
-        tableRuleConfigMap.put("TABLE_XXX", tableRuleConfig);
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
+        tableRuleConfig.setTableShardingStrategyConfig(shardingStrategyConfig);
+        tableRuleConfig.setKeyGeneratorColumnName("field2");
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRuleConfig.setDefaultKeyGeneratorClass(IncrementKeyGenerator.class.getName());
-        return new ShardingRule(shardingRuleConfig);
+        return shardingRuleConfig.build();
     }
     
     @Test

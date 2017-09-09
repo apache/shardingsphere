@@ -17,6 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.config.strategy;
 
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.inline.InlineShardingStrategy;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,4 +35,11 @@ public final class InlineShardingStrategyConfig implements ShardingStrategyConfi
     private String shardingColumn;
     
     private String algorithmInlineExpression;
+    
+    @Override
+    public ShardingStrategy build() {
+        Preconditions.checkNotNull(shardingColumn, "Sharding column cannot be null.");
+        Preconditions.checkNotNull(algorithmInlineExpression, "Algorithm inline expression cannot be null.");
+        return new InlineShardingStrategy(shardingColumn, algorithmInlineExpression);
+    }
 }

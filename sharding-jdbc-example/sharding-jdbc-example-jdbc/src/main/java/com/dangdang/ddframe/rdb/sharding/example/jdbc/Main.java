@@ -18,13 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.example.jdbc;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.api.config.BindingTableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.ModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -34,7 +31,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -120,38 +116,25 @@ public final class Main {
     
     private static ShardingDataSource getShardingDataSource() throws SQLException {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
-        dataSourceRuleConfig.setDataSources(createDataSourceMap());
-        shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
-        
-        
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(2, 1);
+        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
-        tableRuleConfigMap.put("t_order", orderTableRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
         TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item_${[0, 1]}");
-        tableRuleConfigMap.put("t_order_item", orderItemTableRuleConfig);
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-    
-        BindingTableRuleConfig bindingTableRuleConfig = new BindingTableRuleConfig();
-        bindingTableRuleConfig.setTableNames("t_order, t_order_item");
-        shardingRuleConfig.setBindingTableRules(Collections.singletonList(bindingTableRuleConfig));
-    
+        shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
+        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         InlineShardingStrategyConfig databaseShardingStrategyConfig = new InlineShardingStrategyConfig();
         databaseShardingStrategyConfig.setShardingColumn("user_id");
         databaseShardingStrategyConfig.setAlgorithmInlineExpression("ds_jdbc_${user_id % 2}");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategy(databaseShardingStrategyConfig);
-    
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
         StandardShardingStrategyConfig tableShardingStrategyConfig = new StandardShardingStrategyConfig();
         tableShardingStrategyConfig.setShardingColumn("order_id");
         tableShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloTableShardingAlgorithm.class.getName());
-        shardingRuleConfig.setDefaultTableShardingStrategy(tableShardingStrategyConfig);
-        
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig);
-        return new ShardingDataSource(shardingRule);
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
+        return new ShardingDataSource(shardingRuleConfig.build());
     }
     
     private static Map<String, DataSource> createDataSourceMap() {

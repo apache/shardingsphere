@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.ComplexKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.integrate.jaxb.helper.SQLAssertJAXBHelper;
-import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
@@ -84,19 +83,15 @@ public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-            DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
-            dataSourceRuleConfig.setDataSources(each.getValue());
-            shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
-            Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
+            shardingRuleConfig.setDataSources(each.getValue());
             TableRuleConfig tableRuleConfig = new TableRuleConfig();
             tableRuleConfig.setLogicTable("t_order");
-            tableRuleConfigMap.put("t_order", tableRuleConfig);
-            shardingRuleConfig.setTableRules(tableRuleConfigMap);
+            shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
             ComplexShardingStrategyConfig databaseShardingStrategyConfig = new ComplexShardingStrategyConfig();
             databaseShardingStrategyConfig.setShardingColumns("user_id");
             databaseShardingStrategyConfig.setAlgorithmClassName(ComplexKeysModuloDatabaseShardingAlgorithm.class.getName());
-            shardingRuleConfig.setDefaultDatabaseShardingStrategy(databaseShardingStrategyConfig);
-            ShardingRule shardingRule = new ShardingRule(shardingRuleConfig);
+            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
+            ShardingRule shardingRule = shardingRuleConfig.build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;

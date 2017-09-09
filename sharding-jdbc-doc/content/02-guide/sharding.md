@@ -85,9 +85,9 @@ select * from db0.t_order_0 where user_id = ? and order_id = ?;
 ```java
  ShardingRule shardingRule = ShardingRule.builder()
         .dataSourceRule(dataSourceRule)
-        .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
-        .defaultDatabaseShardingStrategy(new StandardShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
-        .defaultTableShardingStrategy(new StandardShardingStrategy("order_id", new ModuloTableShardingAlgorithm()))
+        .tableRuleConfigs(Arrays.asList(orderTableRule, orderItemTableRule))
+        .defaultDatabaseShardingStrategyConfig(new StandardShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
+        .defaultTableShardingStrategyConfig(new StandardShardingStrategy("order_id", new ModuloTableShardingAlgorithm()))
         .build();
 ```
 ## 数据源配置
@@ -127,8 +127,8 @@ Sharding-JDBC认为对于分片策略存有两种维度
  TableRule orderTableRule = TableRule.builder("t_order")
          .actualTables(Arrays.asList("t_order_0", "t_order_1")
          .dataSourceRule(dataSourceRule)
-         .defaultDatabaseShardingStrategy(new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
-         .defaultTableShardingStrategy(new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm())))
+         .defaultDatabaseShardingStrategyConfig(new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
+         .defaultTableShardingStrategyConfig(new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm())))
          .build();
 ```
 
@@ -146,9 +146,9 @@ Sharding-JDBC认为对于分片策略存有两种维度
             .build();
   ShardingRule shardingRule = ShardingRule.builder()
             .dataSourceRule(dataSourceRule)
-            .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
-            .defaultDatabaseShardingStrategy(new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
-            .defaultTableShardingStrategy(new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm()))
+            .tableRuleConfigs(Arrays.asList(orderTableRule, orderItemTableRule))
+            .defaultDatabaseShardingStrategyConfig(new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
+            .defaultTableShardingStrategyConfig(new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm()))
             .build();
 ```
 
@@ -161,14 +161,14 @@ Sharding-JDBC认为对于分片策略存有两种维度
   TableRule orderItemTableRule = TableRule.builder("t_order_item")
             .actualTables(Arrays.asList("t_order_item_0", "t_order_item_1"))
             .dataSourceRule(dataSourceRule)
-            .defaultDatabaseShardingStrategy(new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
-            .defaultTableShardingStrategy(new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm()))
+            .defaultDatabaseShardingStrategyConfig(new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
+            .defaultTableShardingStrategyConfig(new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm()))
             .build();
   ShardingRule shardingRule = ShardingRule.builder()
             .dataSourceRule(dataSourceRule)
-            .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
-            .defaultDatabaseShardingStrategy(new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
-            .defaultTableShardingStrategy(new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm()))
+            .tableRuleConfigs(Arrays.asList(orderTableRule, orderItemTableRule))
+            .defaultDatabaseShardingStrategyConfig(new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
+            .defaultTableShardingStrategyConfig(new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm()))
             .build();
 ```
 

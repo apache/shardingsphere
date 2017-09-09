@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
@@ -49,20 +48,16 @@ public abstract class AbstractStatementParserTest {
         }
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        shardingRuleConfig.setDataSources(dataSourceMap);
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("TABLE_XXX");
         tableRuleConfig.setActualTables("table_0, table_1, table_2");
         ComplexShardingStrategyConfig complexShardingStrategyConfig = new ComplexShardingStrategyConfig();
         complexShardingStrategyConfig.setShardingColumns("field1, field2, field3, field4, field5, field6, field7");
         complexShardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
-        tableRuleConfig.setTableShardingStrategy(complexShardingStrategyConfig);
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(1, 1);
-        tableRuleConfigMap.put("TABLE_XXX", tableRuleConfig);
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
-        dataSourceRuleConfig.setDataSources(dataSourceMap);
-        shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
-        return new ShardingRule(shardingRuleConfig);
+        tableRuleConfig.setTableShardingStrategyConfig(complexShardingStrategyConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        return shardingRuleConfig.build();
     }
 }

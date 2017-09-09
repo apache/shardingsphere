@@ -29,17 +29,17 @@ public final class KeyGeneratorFactoryTest {
     
     @Test
     public void assertCreateKeyGeneratorSuccess() {
-        assertThat(KeyGeneratorFactory.createKeyGenerator(DefaultKeyGenerator.class), instanceOf(DefaultKeyGenerator.class));
+        assertThat(KeyGeneratorFactory.newInstance(DefaultKeyGenerator.class.getName()), instanceOf(DefaultKeyGenerator.class));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertCreateKeyGeneratorFailureWithInstantiationError() {
-        KeyGeneratorFactory.createKeyGenerator(InstantiationKeyGenerator.class);
+        KeyGeneratorFactory.newInstance(InstantiationKeyGenerator.class.getName());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertCreateKeyGeneratorFailureWithIllegalAccess() {
-        KeyGeneratorFactory.createKeyGenerator(IllegalAccessKeyGenerator.class);
+        KeyGeneratorFactory.newInstance(IllegalAccessKeyGenerator.class.getName());
     }
     
     @RequiredArgsConstructor

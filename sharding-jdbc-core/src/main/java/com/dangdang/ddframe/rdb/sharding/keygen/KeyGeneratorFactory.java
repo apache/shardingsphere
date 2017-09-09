@@ -31,14 +31,14 @@ public final class KeyGeneratorFactory {
     /**
      * Create key generator.
      * 
-     * @param keyGeneratorClass key generator class
+     * @param keyGeneratorClassName key generator class name
      * @return key generator instance
      */
-    public static KeyGenerator createKeyGenerator(final Class<? extends KeyGenerator> keyGeneratorClass) {
+    public static KeyGenerator newInstance(final String keyGeneratorClassName) {
         try {
-            return keyGeneratorClass.newInstance();
-        } catch (final InstantiationException | IllegalAccessException ex) {
-            throw new IllegalArgumentException(String.format("Class %s should have public privilege and no argument constructor", keyGeneratorClass.getName()));
+            return (KeyGenerator) Class.forName(keyGeneratorClassName).newInstance();
+        } catch (final ReflectiveOperationException ex) {
+            throw new IllegalArgumentException(String.format("Class %s should have public privilege and no argument constructor", keyGeneratorClassName));
         }
     }
 }

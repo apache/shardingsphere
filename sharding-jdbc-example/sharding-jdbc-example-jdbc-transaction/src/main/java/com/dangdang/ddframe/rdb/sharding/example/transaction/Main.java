@@ -59,10 +59,10 @@ public final class Main {
 //        DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
 //        TableRule orderTableRule = TableRule.builder("t_order").actualTables("t_order_0", "t_order_1").dataSourceRule(dataSourceRule).build();
 //        TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables("t_order_item_0", "t_order_item_1").dataSourceRule(dataSourceRule).build();
-//        ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRules(orderTableRule, orderItemTableRule)
-//                .bindingTableRules(new BindingTableRule(orderTableRule, orderItemTableRule))
-//                .defaultDatabaseShardingStrategy(new StandardShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
-//                .defaultTableShardingStrategy(new StandardShardingStrategy("order_id", new ModuloTableShardingAlgorithm())).build();
+//        ShardingRule shardingRule = ShardingRule.builder(dataSourceRule).tableRuleConfigs(orderTableRule, orderItemTableRule)
+//                .bindingTableGroups(new BindingTableRule(orderTableRule, orderItemTableRule))
+//                .defaultDatabaseShardingStrategyConfig(new StandardShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
+//                .defaultTableShardingStrategyConfig(new StandardShardingStrategy("order_id", new ModuloTableShardingAlgorithm())).build();
 //        return ShardingDataSourceFactory.createDataSource(shardingRule);
 //    }
 //    

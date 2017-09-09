@@ -67,51 +67,51 @@ public final class BindingTableRuleTest {
     public void assertGetTableRules() {
         assertThat(createBindingTableRule().getTableRules().size(), is(2));
         assertThat(createBindingTableRule().getTableRules().get(0).getLogicTable(), is(createTableRule().getLogicTable()));
-        assertThat(createBindingTableRule().getTableRules().get(0).getActualTables(), is(createTableRule().getActualTables()));
+        assertThat(createBindingTableRule().getTableRules().get(0).getActualDataNodes(), is(createTableRule().getActualDataNodes()));
         assertThat(createBindingTableRule().getTableRules().get(1).getLogicTable(), is(createSubTableRule().getLogicTable()));
-        assertThat(createBindingTableRule().getTableRules().get(1).getActualTables(), is(createSubTableRule().getActualTables()));
+        assertThat(createBindingTableRule().getTableRules().get(1).getActualDataNodes(), is(createSubTableRule().getActualDataNodes()));
     }
     
     private BindingTableRule createBindingTableRule() {
-        return new BindingTableRule(createTableRule(), createSubTableRule());
+        return new BindingTableRule(Arrays.asList(createTableRule(), createSubTableRule()));
     }
     
     private TableRule createTableRule() {
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("logicTable");
         tableRuleConfig.setActualTables("ds1.table_0, ds1.table_1, ds2.table_0, ds2.table_1");
-        return new TableRule(tableRuleConfig, createDataSourceRule());
+        return tableRuleConfig.build(createDataSourceMap());
     }
     
     private TableRule createSubTableRule() {
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("subLogicTable");
         tableRuleConfig.setActualTables("ds1.sub_table_0, ds1.sub_table_1, ds2.sub_table_0, ds2.sub_table_1");
-        return new TableRule(tableRuleConfig, createDataSourceRule());
+        return tableRuleConfig.build(createDataSourceMap());
     }
     
-    private DataSourceRule createDataSourceRule() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2);
-        dataSourceMap.put("ds1", null);
-        dataSourceMap.put("ds2", null);
-        return new DataSourceRule(dataSourceMap);
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(2);
+        result.put("ds1", null);
+        result.put("ds2", null);
+        return result;
     }
     
     private BindingTableRule createDynamicBindingTableRule() {
-        return new BindingTableRule(createDynamicTableRule(), createDynamicSubTableRule());
+        return new BindingTableRule(Arrays.asList(createDynamicTableRule(), createDynamicSubTableRule()));
     }
     
     private TableRule createDynamicTableRule() {
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("logicTable");
         tableRuleConfig.setDynamic(true);
-        return new TableRule(tableRuleConfig, createDataSourceRule());
+        return tableRuleConfig.build(createDataSourceMap());
     }
     
     private TableRule createDynamicSubTableRule() {
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("subLogicTable");
         tableRuleConfig.setDynamic(true);
-        return new TableRule(tableRuleConfig, createDataSourceRule());
+        return tableRuleConfig.build(createDataSourceMap());
     }
 }

@@ -34,7 +34,7 @@
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="ds_0, ds_1">
             <rdb:table-rules>
-                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy="databaseShardingStrategy" table-strategy="tableShardingStrategy">
+                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy="databaseShardingStrategyConfig" table-strategy="tableShardingStrategyConfig">
                     <rdb:generate-key-column column-name="order_id"/>
                 </rdb:table-rule>
             </rdb:table-rules>

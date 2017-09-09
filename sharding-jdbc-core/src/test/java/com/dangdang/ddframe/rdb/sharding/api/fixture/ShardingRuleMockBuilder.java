@@ -17,9 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.BindingTableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.DataSourceRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.GenerateKeyStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -33,7 +30,6 @@ import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -81,9 +77,7 @@ public class ShardingRuleMockBuilder {
                 TableRuleConfig result = new TableRuleConfig();
                 result.setLogicTable(input);
                 result.setActualTables(input);
-                GenerateKeyStrategyConfig generateKeyStrategyConfig = new GenerateKeyStrategyConfig();
-                generateKeyStrategyConfig.setColumnName(generateKeyColumnsMap.get(input));
-                result.setGenerateKeyStrategy(generateKeyStrategyConfig);
+                result.setKeyGeneratorColumnName(generateKeyColumnsMap.get(input));
                 return result;
             }
         }));
@@ -95,10 +89,7 @@ public class ShardingRuleMockBuilder {
             tableRuleConfigs.add(tableRuleConfig);
         }
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        DataSourceRuleConfig dataSourceRuleConfig = new DataSourceRuleConfig();
-        dataSourceRuleConfig.setDataSources(ImmutableMap.of("db0", Mockito.mock(DataSource.class), "db1", Mockito.mock(DataSource.class)));
-        shardingRuleConfig.setDataSourceRule(dataSourceRuleConfig);
-        Map<String, TableRuleConfig> tableRuleConfigMap = new HashMap<>(2, 1);
+        shardingRuleConfig.setDataSources(ImmutableMap.of("db0", Mockito.mock(DataSource.class), "db1", Mockito.mock(DataSource.class)));
         for (String each : bindTables) {
             if (existInTableRuleConfig(each)) {
                 continue;
@@ -108,15 +99,12 @@ public class ShardingRuleMockBuilder {
             tableRuleConfigs.add(tableRuleConfig);
         }
         for (TableRuleConfig each : tableRuleConfigs) {
-            tableRuleConfigMap.put(each.getLogicTable(), each);
+            shardingRuleConfig.getTableRuleConfigs().add(each);
             bindTables.add(each.getLogicTable());
         }
-        shardingRuleConfig.setTableRules(tableRuleConfigMap);
-        BindingTableRuleConfig bindingTableRuleConfig = new BindingTableRuleConfig();
-        bindingTableRuleConfig.setTableNames(Joiner.on(",").join(bindTables));
-        shardingRuleConfig.setBindingTableRules(Collections.singletonList(bindingTableRuleConfig));
+        shardingRuleConfig.getBindingTableGroups().add(Joiner.on(",").join(bindTables));
         shardingRuleConfig.setDefaultKeyGeneratorClass(IncrementKeyGenerator.class.getName());
-        return new ShardingRule(shardingRuleConfig);
+        return shardingRuleConfig.build();
     }
     
     private boolean existInTableRuleConfig(final String logicTableName) {

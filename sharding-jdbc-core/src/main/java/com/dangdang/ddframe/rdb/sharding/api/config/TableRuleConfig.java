@@ -18,8 +18,18 @@
 package com.dangdang.ddframe.rdb.sharding.api.config;
 
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.util.InlineExpressionParser;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.sql.DataSource;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Table rule configuration.
@@ -28,7 +38,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public final class TableRuleConfig {
+public class TableRuleConfig {
     
     private String logicTable;
     
@@ -38,9 +48,27 @@ public final class TableRuleConfig {
     
     private String dataSourceNames;
     
-    private ShardingStrategyConfig databaseShardingStrategy;
+    private ShardingStrategyConfig databaseShardingStrategyConfig;
     
-    private ShardingStrategyConfig tableShardingStrategy;
+    private ShardingStrategyConfig tableShardingStrategyConfig;
     
-    private GenerateKeyStrategyConfig generateKeyStrategy;
+    private String keyGeneratorColumnName;
+    
+    private String keyGeneratorClass;
+    
+    /**
+     * Build table rule.
+     *
+     * @param dataSourceMap data source map
+     * @return table rule
+     */
+    public TableRule build(final Map<String, DataSource> dataSourceMap) {
+        Preconditions.checkNotNull(logicTable, "Logic table cannot be null.");
+        List<String> actualTables = new InlineExpressionParser(this.actualTables).evaluate();
+        List<String> dataSourceNames = new InlineExpressionParser(this.dataSourceNames).evaluate();
+        ShardingStrategy databaseShardingStrategy = null == databaseShardingStrategyConfig ? null : databaseShardingStrategyConfig.build();
+        ShardingStrategy tableShardingStrategy = null == tableShardingStrategyConfig ? null : tableShardingStrategyConfig.build();
+        KeyGenerator keyGenerator = null != keyGeneratorColumnName && null != keyGeneratorClass ? KeyGeneratorFactory.newInstance(keyGeneratorClass) : null;
+        return new TableRule(logicTable, dynamic, actualTables, dataSourceNames, dataSourceMap, databaseShardingStrategy, tableShardingStrategy, keyGeneratorColumnName, keyGenerator);
+    }
 }

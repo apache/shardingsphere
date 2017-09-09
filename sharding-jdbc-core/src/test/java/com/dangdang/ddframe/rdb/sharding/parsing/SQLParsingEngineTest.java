@@ -72,7 +72,7 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
         ComplexShardingStrategyConfig orderShardingStrategyConfig = new ComplexShardingStrategyConfig();
         orderShardingStrategyConfig.setShardingColumns("user_id, order_id");
         orderShardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
-        orderTableRuleConfig.setTableShardingStrategy(orderShardingStrategyConfig);
+        orderTableRuleConfig.setTableShardingStrategyConfig(orderShardingStrategyConfig);
         TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item");
@@ -80,7 +80,7 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
         ComplexShardingStrategyConfig orderItemShardingStrategyConfig = new ComplexShardingStrategyConfig();
         orderItemShardingStrategyConfig.setShardingColumns("user_id, order_id, item_id");
         orderItemShardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
-        orderItemTableRuleConfig.setTableShardingStrategy(orderItemShardingStrategyConfig);
+        orderItemTableRuleConfig.setTableShardingStrategyConfig(orderItemShardingStrategyConfig);
         return new ShardingRuleMockBuilder().addTableRuleConfig(orderTableRuleConfig).addTableRuleConfig(orderItemTableRuleConfig)
                 .addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("item_id").addGenerateKeyColumn("t_order_item", "item_id").build();
     }

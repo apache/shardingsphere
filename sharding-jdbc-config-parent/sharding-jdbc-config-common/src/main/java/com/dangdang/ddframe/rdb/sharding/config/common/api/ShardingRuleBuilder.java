@@ -59,14 +59,14 @@ public final class ShardingRuleBuilder {
     public ShardingRule build() {
         return null;
 //        DataSourceRule dataSourceRule = buildDataSourceRule();
-//        TableRule[] tableRules = buildTableRules(dataSourceRule);
+//        TableRule[] tableRuleConfigs = buildTableRules(dataSourceRule);
 //        ShardingRule.ShardingRuleBuilder shardingRuleBuilder = ShardingRule.builder(dataSourceRule);
 //        if (!Strings.isNullOrEmpty(shardingRuleConfig.getKeyGeneratorClass())) {
 //            shardingRuleBuilder.defaultKeyGenerator(newInstance(shardingRuleConfig.getKeyGeneratorClass(), KeyGenerator.class));
 //        }
-//        return shardingRuleBuilder.tableRules(tableRules).bindingTableRules(buildBindingTableRules(tableRules))
-//                .defaultDatabaseShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy()))
-//                .defaultTableShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultTableStrategy())).build();
+//        return shardingRuleBuilder.tableRuleConfigs(tableRuleConfigs).bindingTableGroups(buildBindingTableRules(tableRuleConfigs))
+//                .defaultDatabaseShardingStrategyConfig(buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy()))
+//                .defaultTableShardingStrategyConfig(buildShardingStrategy(shardingRuleConfig.getDefaultTableStrategy())).build();
     }
     
 //    private DataSourceRule buildDataSourceRule() {
@@ -83,8 +83,8 @@ public final class ShardingRuleBuilder {
 //            TableRuleConfig tableRuleConfig = each.getValue();
 //            TableRule.TableRuleBuilder tableRuleBuilder = TableRule.builder(logicTable).dataSourceRule(dataSourceRule)
 //                    .dynamic(tableRuleConfig.isDynamic())
-//                    .databaseShardingStrategy(buildShardingStrategy(tableRuleConfig.getDatabaseStrategy()))
-//                    .tableShardingStrategy(buildShardingStrategy(tableRuleConfig.getTableStrategy()));
+//                    .databaseShardingStrategyConfig(buildShardingStrategy(tableRuleConfig.getDatabaseStrategy()))
+//                    .tableShardingStrategyConfig(buildShardingStrategy(tableRuleConfig.getTableStrategy()));
 //            if (null != tableRuleConfig.getActualTables()) {
 //                List<String> actualTables = new InlineParser(tableRuleConfig.getActualTables()).evaluate();
 //                tableRuleBuilder.actualTables(actualTables.toArray(new String[actualTables.size()]));
@@ -110,7 +110,7 @@ public final class ShardingRuleBuilder {
 //        }
 //    }
 //    
-//    private BindingTableRule[] buildBindingTableRules(final TableRule[] tableRules) {
+//    private BindingTableRule[] buildBindingTableRules(final TableRule[] tableRuleConfigs) {
 //        BindingTableRule[] result = new BindingTableRule[shardingRuleConfig.getBindingTables().size()];
 //        int count = 0;
 //        for (BindingTableRuleConfig each : shardingRuleConfig.getBindingTables()) {
@@ -118,7 +118,7 @@ public final class ShardingRuleBuilder {
 //                
 //                @Override
 //                public TableRule apply(final String input) {
-//                    return findTableRuleByLogicTableName(Arrays.asList(tableRules), input);
+//                    return findTableRuleByLogicTableName(Arrays.asList(tableRuleConfigs), input);
 //                }
 //            });
 //            result[count] = new BindingTableRule(tableRuleList.toArray(new TableRule[tableRuleList.size()]));
@@ -127,8 +127,8 @@ public final class ShardingRuleBuilder {
 //        return result;
 //    }
 //    
-//    private TableRule findTableRuleByLogicTableName(final Collection<TableRule> tableRules, final String logicTableName) {
-//        for (TableRule each : tableRules) {
+//    private TableRule findTableRuleByLogicTableName(final Collection<TableRule> tableRuleConfigs, final String logicTableName) {
+//        for (TableRule each : tableRuleConfigs) {
 //            if (logicTableName.equalsIgnoreCase(each.getLogicTable())) {
 //                return each;
 //            }

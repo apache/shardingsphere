@@ -17,8 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.util;
 
+import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+
+import java.util.List;
 
 /**
  * String utility class.
@@ -66,5 +69,15 @@ public final class StringUtil {
         } catch (final NumberFormatException ex) {
             return false;
         }
+    }
+    
+    /**
+     * Split string value to list by comma delimiter.
+     * 
+     * @param value to be split string value
+     * @return split list
+     */
+    public static List<String> splitWithComma(final String value) {
+        return Splitter.on(",").trimResults().splitToList(value);
     }
 }

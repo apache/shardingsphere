@@ -17,6 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.config.strategy;
 
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithmFactory;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingStrategy;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,4 +35,10 @@ import lombok.Setter;
 public class HintShardingStrategyConfig implements ShardingStrategyConfig {
     
     private String algorithmClassName;
+    
+    @Override
+    public ShardingStrategy build() {
+        Preconditions.checkNotNull(algorithmClassName, "Algorithm class cannot be null.");
+        return new HintShardingStrategy(ShardingAlgorithmFactory.newInstance(algorithmClassName, HintShardingAlgorithm.class));
+    }
 }

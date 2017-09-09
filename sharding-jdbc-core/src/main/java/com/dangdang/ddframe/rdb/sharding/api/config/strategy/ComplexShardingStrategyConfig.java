@@ -17,6 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.config.strategy;
 
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithmFactory;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.util.StringUtil;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,4 +38,11 @@ public class ComplexShardingStrategyConfig implements ShardingStrategyConfig {
     private String shardingColumns;
     
     private String algorithmClassName;
+    
+    @Override
+    public ShardingStrategy build() {
+        Preconditions.checkNotNull(shardingColumns, "Sharding columns cannot be null.");
+        Preconditions.checkNotNull(algorithmClassName, "Algorithm class cannot be null.");
+        return new ComplexShardingStrategy(StringUtil.splitWithComma(shardingColumns), ShardingAlgorithmFactory.newInstance(algorithmClassName, ComplexKeysShardingAlgorithm.class));
+    }
 }

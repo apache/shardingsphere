@@ -17,35 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexKeysShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.complex.ComplexShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.hint.HintShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.inline.InlineShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.util.InlineExpressionParser;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.ToString;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Table rule configuration.
@@ -60,7 +43,7 @@ public final class TableRule {
     
     private final boolean dynamic;
     
-    private final List<DataNode> actualTables;
+    private final List<DataNode> actualDataNodes;
     
     private final ShardingStrategy databaseShardingStrategy;
     
@@ -70,91 +53,33 @@ public final class TableRule {
     
     private final KeyGenerator keyGenerator;
     
-    public TableRule(final TableRuleConfig config, final DataSourceRule dataSourceRule) {
-        logicTable = config.getLogicTable();
-        dynamic = config.isDynamic();
-        List<String> dataSourceNames = new InlineExpressionParser(config.getDataSourceNames()).evaluate();
-        List<String> actualTables = new InlineExpressionParser(config.getActualTables()).evaluate();
-        databaseShardingStrategy = getShardingStrategy(config.getDatabaseShardingStrategy());
-        tableShardingStrategy = getShardingStrategy(config.getTableShardingStrategy());
+    public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final List<String> actualDataSources, final Map<String, DataSource> dataSourceMap,
+                     final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy, final String generateKeyColumn, final KeyGenerator keyGenerator) {
+        this.logicTable = logicTable;
+        this.dynamic = dynamic;
         if (dynamic) {
-            Preconditions.checkNotNull(dataSourceRule);
-            this.actualTables = generateDataNodes(dataSourceRule);
+            actualDataNodes = generateDataNodes(dataSourceMap);
         } else if (null == actualTables || actualTables.isEmpty()) {
-            Preconditions.checkNotNull(dataSourceRule);
-            this.actualTables = generateDataNodes(Collections.singletonList(logicTable), dataSourceRule, dataSourceNames);
+            actualDataNodes = generateDataNodes(Collections.singletonList(logicTable), dataSourceMap, actualDataSources);
         } else {
-            this.actualTables = generateDataNodes(actualTables, dataSourceRule, dataSourceNames);
+            actualDataNodes = generateDataNodes(actualTables, dataSourceMap, actualDataSources);
         }
-        if (null == config.getGenerateKeyStrategy()) {
-            generateKeyColumn = null;
-            keyGenerator = null;
-        } else {
-            generateKeyColumn = config.getGenerateKeyStrategy().getColumnName();
-            keyGenerator = newInstance(config.getGenerateKeyStrategy().getKeyGeneratorClass(), KeyGenerator.class);
-        }
+        this.databaseShardingStrategy = databaseShardingStrategy;
+        this.tableShardingStrategy = tableShardingStrategy;
+        this.generateKeyColumn = generateKeyColumn;
+        this.keyGenerator = keyGenerator;
     }
     
-    private ShardingStrategy getShardingStrategy(final ShardingStrategyConfig config) {
-        if (null == config) {
-            return null;
-        }
-        if (config instanceof StandardShardingStrategyConfig) {
-            StandardShardingStrategyConfig standardShardingStrategyConfig = (StandardShardingStrategyConfig) config;
-            Preconditions.checkNotNull(standardShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
-            Preconditions.checkNotNull(standardShardingStrategyConfig.getPreciseAlgorithmClassName(), "Precise sharding algorithm cannot be null.");
-            return new StandardShardingStrategy(standardShardingStrategyConfig.getShardingColumn(), 
-                    newInstance(standardShardingStrategyConfig.getPreciseAlgorithmClassName(), PreciseShardingAlgorithm.class), 
-                    newInstance(standardShardingStrategyConfig.getRangeAlgorithmClassName(), RangeShardingAlgorithm.class));
-        }
-        if (config instanceof ComplexShardingStrategyConfig) {
-            ComplexShardingStrategyConfig complexShardingStrategyConfig = (ComplexShardingStrategyConfig) config;
-            Preconditions.checkNotNull(complexShardingStrategyConfig.getShardingColumns(), "Sharding columns cannot be null.");
-            Preconditions.checkNotNull(complexShardingStrategyConfig.getAlgorithmClassName(), "Sharding algorithm cannot be null.");
-            return new ComplexShardingStrategy(split(complexShardingStrategyConfig.getShardingColumns()),
-                    newInstance(complexShardingStrategyConfig.getAlgorithmClassName(), ComplexKeysShardingAlgorithm.class));
-        }
-        if (config instanceof HintShardingStrategyConfig) {
-            HintShardingStrategyConfig hintShardingStrategyConfig = (HintShardingStrategyConfig) config;
-            Preconditions.checkNotNull(hintShardingStrategyConfig.getAlgorithmClassName(), "Sharding algorithm cannot be null.");
-            return new HintShardingStrategy(newInstance(hintShardingStrategyConfig.getAlgorithmClassName(), HintShardingAlgorithm.class));
-        }
-        if (config instanceof InlineShardingStrategyConfig) {
-            InlineShardingStrategyConfig inlineShardingStrategyConfig = (InlineShardingStrategyConfig) config;
-            Preconditions.checkNotNull(inlineShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
-            Preconditions.checkNotNull(inlineShardingStrategyConfig.getAlgorithmInlineExpression(), "Inline expression cannot be null.");
-            return new InlineShardingStrategy(inlineShardingStrategyConfig.getShardingColumn(), inlineShardingStrategyConfig.getAlgorithmInlineExpression());
-        }
-        return new NoneShardingStrategy();
-    }
-    
-    private List<String> split(final String value) {
-        return Splitter.on(",").trimResults().splitToList(value);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private <T> T newInstance(final String className, final Class<T> classType) {
-        if (null == className) {
-            return null;
-        }
-        try {
-            return (T) classType.getClassLoader().loadClass(className).newInstance();
-        } catch (final ReflectiveOperationException ex) {
-            throw new ShardingJdbcException(ex);
-        }
-    }
-    
-    private List<DataNode> generateDataNodes(final DataSourceRule dataSourceRule) {
-        Collection<String> dataSourceNames = dataSourceRule.getDataSourceNames();
-        List<DataNode> result = new ArrayList<>(dataSourceNames.size());
-        for (String each : dataSourceNames) {
+    private List<DataNode> generateDataNodes(final Map<String, DataSource> dataSourceMap) {
+        List<DataNode> result = new ArrayList<>(dataSourceMap.size());
+        for (String each : dataSourceMap.keySet()) {
             result.add(new DynamicDataNode(each));
         }
         return result;
     }
     
-    private List<DataNode> generateDataNodes(final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> actualDataSourceNames) {
-        Collection<String> dataSourceNames = getDataSourceNames(dataSourceRule, actualDataSourceNames);
+    private List<DataNode> generateDataNodes(final List<String> actualTables, final Map<String, DataSource> dataSourceMap, final Collection<String> actualDataSourceNames) {
+        Collection<String> dataSourceNames = getDataSourceNames(dataSourceMap, actualDataSourceNames);
         List<DataNode> result = new ArrayList<>(actualTables.size() * (dataSourceNames.isEmpty() ? 1 : dataSourceNames.size()));
         for (String actualTable : actualTables) {
             if (DataNode.isValidDataNode(actualTable)) {
@@ -168,12 +93,12 @@ public final class TableRule {
         return result;
     }
     
-    private Collection<String> getDataSourceNames(final DataSourceRule dataSourceRule, final Collection<String> actualDataSourceNames) {
-        if (null == dataSourceRule) {
+    private Collection<String> getDataSourceNames(final Map<String, DataSource> dataSourceMap, final Collection<String> actualDataSourceNames) {
+        if (null == dataSourceMap) {
             return Collections.emptyList();
         }
         if (null == actualDataSourceNames || actualDataSourceNames.isEmpty()) {
-            return dataSourceRule.getDataSourceNames();
+            return dataSourceMap.keySet();
         }
         return actualDataSourceNames;
     }
@@ -198,8 +123,8 @@ public final class TableRule {
     }
     
     private Collection<DataNode> getStaticDataNodes(final String targetDataSource, final Collection<String> targetTables) {
-        Collection<DataNode> result = new LinkedHashSet<>(actualTables.size());
-        for (DataNode each : actualTables) {
+        Collection<DataNode> result = new LinkedHashSet<>(actualDataNodes.size());
+        for (DataNode each : actualDataNodes) {
             if (targetDataSource.equals(each.getDataSourceName()) && targetTables.contains(each.getTableName())) {
                 result.add(each);
             }
@@ -213,8 +138,8 @@ public final class TableRule {
      * @return actual data source names
      */
     public Collection<String> getActualDatasourceNames() {
-        Collection<String> result = new LinkedHashSet<>(actualTables.size());
-        for (DataNode each : actualTables) {
+        Collection<String> result = new LinkedHashSet<>(actualDataNodes.size());
+        for (DataNode each : actualDataNodes) {
             result.add(each.getDataSourceName());
         }
         return result;
@@ -227,8 +152,8 @@ public final class TableRule {
      * @return names of actual tables
      */
     public Collection<String> getActualTableNames(final String targetDataSource) {
-        Collection<String> result = new LinkedHashSet<>(actualTables.size());
-        for (DataNode each : actualTables) {
+        Collection<String> result = new LinkedHashSet<>(actualDataNodes.size());
+        for (DataNode each : actualDataNodes) {
             if (targetDataSource.equals(each.getDataSourceName())) {
                 result.add(each.getTableName());
             }
@@ -238,7 +163,7 @@ public final class TableRule {
     
     int findActualTableIndex(final String dataSourceName, final String actualTableName) {
         int result = 0;
-        for (DataNode each : actualTables) {
+        for (DataNode each : actualDataNodes) {
             if (each.getDataSourceName().equalsIgnoreCase(dataSourceName) && each.getTableName().equalsIgnoreCase(actualTableName)) {
                 return result;
             }

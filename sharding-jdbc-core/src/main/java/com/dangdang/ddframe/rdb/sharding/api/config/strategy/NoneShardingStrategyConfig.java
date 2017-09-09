@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.config.strategy;
 
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,4 +30,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class NoneShardingStrategyConfig implements ShardingStrategyConfig {
+    
+    @Override
+    public ShardingStrategy build() {
+        return new NoneShardingStrategy();
+    }
 }
