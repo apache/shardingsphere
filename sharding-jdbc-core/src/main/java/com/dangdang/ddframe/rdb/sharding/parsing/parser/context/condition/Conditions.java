@@ -1,6 +1,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

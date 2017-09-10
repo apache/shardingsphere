@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.datasource;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRule;
+import com.dangdang.ddframe.rdb.sharding.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategyType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;

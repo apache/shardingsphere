@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql.dml.insert;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;

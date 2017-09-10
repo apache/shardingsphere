@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 
 import javax.sql.DataSource;

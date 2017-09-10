@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.config;
 
+import com.dangdang.ddframe.rdb.sharding.constant.ShardingProperties;
+import com.dangdang.ddframe.rdb.sharding.constant.ShardingPropertiesConstant;
 import org.junit.Before;
 import org.junit.Test;
 

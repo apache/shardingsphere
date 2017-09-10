@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.RangeShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;

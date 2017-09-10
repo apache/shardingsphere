@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config;
+package com.dangdang.ddframe.rdb.sharding.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api.rule;
+package com.dangdang.ddframe.rdb.sharding.rule;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

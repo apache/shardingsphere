@@ -17,10 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.rule.BindingTableRule;
+import com.dangdang.ddframe.rdb.sharding.rule.DataNode;
+import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.GenerateKeyColumnConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;

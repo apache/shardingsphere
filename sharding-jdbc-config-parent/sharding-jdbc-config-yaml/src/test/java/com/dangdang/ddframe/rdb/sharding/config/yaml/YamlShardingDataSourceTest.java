@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.DynamicDataNode;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.rule.DynamicDataNode;
+import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;

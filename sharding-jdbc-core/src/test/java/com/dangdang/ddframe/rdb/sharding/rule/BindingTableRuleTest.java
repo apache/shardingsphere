@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api.rule;
+package com.dangdang.ddframe.rdb.sharding.rule;
 
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import org.junit.Test;

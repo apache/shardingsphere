@@ -7,7 +7,7 @@
 
     <import resource="datasource/dataSource.xml" />
 
-    <bean id="dataSourceRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule">
+    <bean id="dataSourceRule" class="com.dangdang.ddframe.rdb.sharding.rule.DataSourceRule">
         <constructor-arg index="0">
             <map>
                 <entry key="dbtbl_0" value-ref="dbtbl_0"/>
@@ -17,7 +17,7 @@
         <constructor-arg index="1" value="dbtbl_0" />
     </bean>
     
-    <bean id="orderTableRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.TableRule">
+    <bean id="orderTableRule" class="com.dangdang.ddframe.rdb.sharding.rule.TableRule">
         <constructor-arg value="t_order" index="0"/>
         <constructor-arg value="false" index="1"/>
         <constructor-arg index="2">
@@ -42,7 +42,7 @@
         </constructor-arg>
     </bean>
     
-    <bean id="orderItemTableRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.TableRule">
+    <bean id="orderItemTableRule" class="com.dangdang.ddframe.rdb.sharding.rule.TableRule">
         <constructor-arg value="t_order_item" index="0"/>
         <constructor-arg value="false" index="1"/>
         <constructor-arg index="2">
@@ -87,7 +87,7 @@
         </constructor-arg>
     </bean>
     
-    <bean id="shardingRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule">
+    <bean id="shardingRule" class="com.dangdang.ddframe.rdb.sharding.rule.ShardingRule">
         <constructor-arg index="0" ref="dataSourceRule"/>
         <constructor-arg index="1">
             <list>

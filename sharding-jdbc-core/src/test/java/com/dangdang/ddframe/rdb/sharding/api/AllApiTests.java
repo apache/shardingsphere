@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRuleTest;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataNodeTest;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRuleTest;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DynamicDataNodeTest;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRuleTest;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRuleTest;
+import com.dangdang.ddframe.rdb.sharding.rule.BindingTableRuleTest;
+import com.dangdang.ddframe.rdb.sharding.rule.DataNodeTest;
+import com.dangdang.ddframe.rdb.sharding.rule.DataSourceRuleTest;
+import com.dangdang.ddframe.rdb.sharding.rule.DynamicDataNodeTest;
+import com.dangdang.ddframe.rdb.sharding.rule.ShardingRuleTest;
+import com.dangdang.ddframe.rdb.sharding.rule.TableRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.common.ShardingStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.DatabaseShardingStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RandomMasterSlaveLoadBalanceStrategyTest;

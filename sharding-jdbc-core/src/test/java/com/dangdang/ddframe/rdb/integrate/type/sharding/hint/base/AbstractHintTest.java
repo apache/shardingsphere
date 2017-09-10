@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.common.base.AbstractSQLTest;
 import com.dangdang.ddframe.rdb.common.env.DatabaseEnvironment;
 import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.integrate.type.sharding.hint.helper.DynamicShardingValueHelper;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
