@@ -33,6 +33,8 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -61,9 +63,8 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         factory.addPropertyValue("dataSources", parseDataSources(shardingRuleElement, parserContext));
         parseDefaultDataSource(factory, shardingRuleElement);
         factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfig(shardingRuleElement));
-        // TODO fix bindingTables
-//        factory.addPropertyValue("bindingTables", parseBindingTablesConfig(shardingRuleElement));
-        factory.addPropertyValue("defaultTableShardingStrategyConfig", parseDefaultDatabaseStrategyConfig(shardingRuleElement));
+        factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfig(shardingRuleElement));
+        factory.addPropertyValue("defaultDatabaseShardingStrategyConfig", parseDefaultDatabaseStrategyConfig(shardingRuleElement));
         factory.addPropertyValue("defaultTableShardingStrategyConfig", parseDefaultTableStrategyConfig(shardingRuleElement));
         parseKeyGenerator(factory, shardingRuleElement);
         return factory.getBeanDefinition();
@@ -136,21 +137,18 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         return factory.getBeanDefinition();
     }
     
-    // TODO fix bindingTables
-//    private List<BeanDefinition> parseBindingTablesConfig(final Element element) {
-//        Element bindingTableRulesElement = DomUtils.getChildElementByTagName(element, ShardingJdbcDataSourceBeanDefinitionParserTag.BINDING_TABLE_RULES_TAG);
-//        if (null == bindingTableRulesElement) {
-//            return Collections.emptyList();
-//        }
-//        List<Element> bindingTableRuleElements = DomUtils.getChildElementsByTagName(bindingTableRulesElement, ShardingJdbcDataSourceBeanDefinitionParserTag.BINDING_TABLE_RULE_TAG);
-//        BeanDefinitionBuilder bindingTableRuleFactory = BeanDefinitionBuilder.rootBeanDefinition(BindingTableRuleConfig.class);
-//        List<BeanDefinition> result = new ManagedList<>(bindingTableRuleElements.size());
-//        for (Element bindingTableRuleElement : bindingTableRuleElements) {
-//            bindingTableRuleFactory.addPropertyValue("tableNames", bindingTableRuleElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.LOGIC_TABLES_ATTRIBUTE));
-//            result.add(bindingTableRuleFactory.getBeanDefinition());
-//        }
-//        return result;
-//    }
+    private List<String> parseBindingTablesConfig(final Element element) {
+        Element bindingTableRulesElement = DomUtils.getChildElementByTagName(element, ShardingJdbcDataSourceBeanDefinitionParserTag.BINDING_TABLE_RULES_TAG);
+        if (null == bindingTableRulesElement) {
+            return Collections.emptyList();
+        }
+        List<Element> bindingTableRuleElements = DomUtils.getChildElementsByTagName(bindingTableRulesElement, ShardingJdbcDataSourceBeanDefinitionParserTag.BINDING_TABLE_RULE_TAG);
+        List<String> result = new LinkedList<>();
+        for (Element bindingTableRuleElement : bindingTableRuleElements) {
+            result.add(bindingTableRuleElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.LOGIC_TABLES_ATTRIBUTE));
+        }
+        return result;
+    }
     
     private BeanDefinition parseDefaultDatabaseStrategyConfig(final Element element) {
         return parseDefaultStrategyConfig(element, ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_DATABASE_STRATEGY_ATTRIBUTE);
