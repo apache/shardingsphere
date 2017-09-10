@@ -34,6 +34,7 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,20 +42,20 @@ public final class ShardingDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceWithShardingRuleOnly() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        ShardingRule shardingRule = createShardingRule();
-        assertThat(getShardingRule(ShardingDataSourceFactory.createDataSource(shardingRule)), is(shardingRule));
+        ShardingRuleConfig shardingRuleConfig = createShardingRuleConfig();
+        assertNotNull(getShardingRule(ShardingDataSourceFactory.createDataSource(shardingRuleConfig)));
     }
     
     @Test
     public void assertCreateDataSourceWithShardingRuleAndProperties() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        ShardingRule shardingRule = createShardingRule();
+        ShardingRuleConfig shardingRuleConfig = createShardingRuleConfig();
         Properties props = new Properties();
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule, props);
-        assertThat(getShardingRule(dataSource), is(shardingRule));
+        DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRuleConfig, props);
+        assertNotNull(getShardingRule(dataSource));
         assertThat(getShardingProperties(dataSource), is(props));
     }
     
-    private ShardingRule createShardingRule() throws SQLException {
+    private ShardingRuleConfig createShardingRuleConfig() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -63,13 +64,13 @@ public final class ShardingDataSourceFactoryTest {
         when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", dataSource);
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSources(dataSourceMap);
+        ShardingRuleConfig result = new ShardingRuleConfig();
+        result.setDataSources(dataSourceMap);
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("logicTable");
         tableRuleConfig.setActualTables("table_0, table_1, table_2");
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        return shardingRuleConfig.build();
+        result.getTableRuleConfigs().add(tableRuleConfig);
+        return result;
     }
     
     private ShardingRule getShardingRule(final DataSource dataSource) throws NoSuchFieldException, IllegalAccessException {
