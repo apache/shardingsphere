@@ -15,12 +15,12 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.spring.cases.namespace;
+package com.dangdang.ddframe.rdb.sharding.spring.cases;
 
 import org.springframework.test.context.ContextConfiguration;
 
 import com.dangdang.ddframe.rdb.sharding.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceDefaultStrategy.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceDefaultStrategy.xml")
 public final class WithNamespaceDefaultStrategyTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
 }

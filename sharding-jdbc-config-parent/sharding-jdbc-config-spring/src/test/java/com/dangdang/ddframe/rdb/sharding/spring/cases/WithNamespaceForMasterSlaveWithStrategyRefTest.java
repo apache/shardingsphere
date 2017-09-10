@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.spring.cases.namespace;
+package com.dangdang.ddframe.rdb.sharding.spring.cases;
 
 import com.dangdang.ddframe.rdb.sharding.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -23,8 +23,8 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.Arrays;
 import java.util.List;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceForMasterSlaveWithDefaultStrategy.xml")
-public final class WithNamespaceForMasterSlaveWithDefaultStrategyTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
+@ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceForMasterSlaveWithStrategyRef.xml")
+public final class WithNamespaceForMasterSlaveWithStrategyRefTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
     
     @Override
     protected List<String> getSchemaFiles() {

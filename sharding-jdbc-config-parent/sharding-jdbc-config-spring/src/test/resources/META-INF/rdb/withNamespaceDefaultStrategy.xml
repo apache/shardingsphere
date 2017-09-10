@@ -7,7 +7,7 @@
                         http://www.dangdang.com/schema/ddframe/rdb 
                         http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
                         ">
-    <import resource="../datasource/dataSource.xml" />
+    <import resource="datasource/dataSource.xml" />
 
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">

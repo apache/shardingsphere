@@ -7,7 +7,7 @@
                         http://www.dangdang.com/schema/ddframe/rdb 
                         http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
                         ">
-    <import resource="../datasource/dataSource.xml" />
+    <import resource="datasource/dataSource.xml" />
 
     <rdb:strategy id="databaseStrategy" type="standard" sharding-columns="user_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
 

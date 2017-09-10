@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,20 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.spring.cases.namespace;
+package com.dangdang.ddframe.rdb.sharding.spring.cases;
 
 import com.dangdang.ddframe.rdb.sharding.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceAlgorithmExpression.xml")
-public final class WithNamespaceAlgorithmExpressionTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
+import java.util.Arrays;
+import java.util.List;
+
+@ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceForMasterSlaveWithStrategyType.xml")
+public final class WithNamespaceForMasterSlaveWithStrategyTypeTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
+    
+    @Override
+    protected List<String> getSchemaFiles() {
+        return Arrays.asList("schema/dbtbl_0_master.sql", "schema/dbtbl_0_slave_0.sql", "schema/dbtbl_0_slave_1.sql",
+                "schema/dbtbl_1_master.sql", "schema/dbtbl_1_slave_0.sql", "schema/dbtbl_1_slave_1.sql");
+    }
 }

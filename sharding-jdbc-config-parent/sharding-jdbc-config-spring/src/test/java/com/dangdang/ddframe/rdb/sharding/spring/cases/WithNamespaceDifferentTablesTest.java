@@ -15,11 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.spring.cases.namespace;
+package com.dangdang.ddframe.rdb.sharding.spring.cases;
 
 import com.dangdang.ddframe.rdb.sharding.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceAlgorithmExpressionForDynamic.xml")
-public final class WithNamespaceAlgorithmExpressionForDynamicTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
+@ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceDifferentTables.xml")
+public final class WithNamespaceDifferentTablesTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
 }

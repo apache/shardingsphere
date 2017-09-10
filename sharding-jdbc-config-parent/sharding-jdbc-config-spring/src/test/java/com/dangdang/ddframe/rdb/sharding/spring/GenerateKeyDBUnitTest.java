@@ -29,7 +29,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceGenerateKeyColumns.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceGenerateKeyColumns.xml")
 public class GenerateKeyDBUnitTest extends AbstractSpringDBUnitTest {
     
     @Test

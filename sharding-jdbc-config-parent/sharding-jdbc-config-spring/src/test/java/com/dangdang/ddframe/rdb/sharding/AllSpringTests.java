@@ -18,16 +18,16 @@
 package com.dangdang.ddframe.rdb.sharding;
 
 import com.dangdang.ddframe.rdb.sharding.spring.GenerateKeyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmClassTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmExpressionForDynamicTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmExpressionTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceBindingTablesTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceDefaultStrategyTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceDifferentTablesTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForIndicatedDataSourceNamesTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForMasterSlaveWithDefaultStrategyTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForMasterSlaveWithStrategyRefTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForMasterSlaveWithStrategyTypeTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.WithNamespaceAlgorithmClassTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.WithNamespaceAlgorithmExpressionForDynamicTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.WithNamespaceAlgorithmExpressionTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.WithNamespaceBindingTablesTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.WithNamespaceDefaultStrategyTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.WithNamespaceDifferentTablesTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.WithNamespaceForIndicatedDataSourceNamesTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.WithNamespaceForMasterSlaveWithDefaultStrategyTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.WithNamespaceForMasterSlaveWithStrategyRefTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.WithNamespaceForMasterSlaveWithStrategyTypeTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
