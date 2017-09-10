@@ -24,6 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.util.InlineExpressionParser;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -68,7 +69,7 @@ public class TableRuleConfig {
         List<String> dataSourceNames = new InlineExpressionParser(this.dataSourceNames).evaluate();
         ShardingStrategy databaseShardingStrategy = null == databaseShardingStrategyConfig ? null : databaseShardingStrategyConfig.build();
         ShardingStrategy tableShardingStrategy = null == tableShardingStrategyConfig ? null : tableShardingStrategyConfig.build();
-        KeyGenerator keyGenerator = null != keyGeneratorColumnName && null != keyGeneratorClass ? KeyGeneratorFactory.newInstance(keyGeneratorClass) : null;
+        KeyGenerator keyGenerator = !Strings.isNullOrEmpty(keyGeneratorColumnName) && !Strings.isNullOrEmpty(keyGeneratorClass) ? KeyGeneratorFactory.newInstance(keyGeneratorClass) : null;
         return new TableRule(logicTable, dynamic, actualTables, dataSourceNames, dataSourceMap, databaseShardingStrategy, tableShardingStrategy, keyGeneratorColumnName, keyGenerator);
     }
 }

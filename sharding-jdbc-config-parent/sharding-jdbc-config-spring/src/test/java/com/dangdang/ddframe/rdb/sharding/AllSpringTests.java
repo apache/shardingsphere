@@ -18,8 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding;
 
 import com.dangdang.ddframe.rdb.sharding.spring.GenerateKeyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.WithoutNamespaceDefaultStrategyTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.WithoutNamespaceTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmClassTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmExpressionForDynamicTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmExpressionTest;
@@ -42,8 +40,6 @@ import org.junit.runners.Suite.SuiteClasses;
         WithNamespaceAlgorithmExpressionForDynamicTest.class, 
         WithNamespaceDefaultStrategyTest.class, 
         WithNamespaceBindingTablesTest.class, 
-        WithoutNamespaceTest.class, 
-        WithoutNamespaceDefaultStrategyTest.class, 
         WithNamespaceDifferentTablesTest.class,
         WithNamespaceForIndicatedDataSourceNamesTest.class,
         WithNamespaceForMasterSlaveWithDefaultStrategyTest.class,

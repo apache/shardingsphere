@@ -69,6 +69,7 @@
     <xsd:element name="default-database-strategy">
         <xsd:complexType>
             <xsd:attribute name="sharding-columns" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" use="required" />
             <xsd:attribute name="algorithm-expression" type="xsd:string" use="optional" />
             <xsd:attribute name="algorithm-class" type="xsd:string" use="optional" />
         </xsd:complexType>
@@ -76,6 +77,7 @@
     <xsd:element name="default-table-strategy">
         <xsd:complexType>
             <xsd:attribute name="sharding-columns" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" use="required" />
             <xsd:attribute name="algorithm-expression" type="xsd:string" use="optional" />
             <xsd:attribute name="algorithm-class" type="xsd:string" use="optional" />
         </xsd:complexType>
@@ -84,6 +86,7 @@
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="sharding-columns" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" use="required" />
             <xsd:attribute name="algorithm-expression" type="xsd:string" use="optional" />
             <xsd:attribute name="algorithm-class" type="xsd:string" use="optional" />
         </xsd:complexType>

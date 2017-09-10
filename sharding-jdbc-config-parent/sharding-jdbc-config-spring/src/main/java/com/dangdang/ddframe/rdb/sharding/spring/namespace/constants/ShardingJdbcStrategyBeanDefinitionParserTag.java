@@ -30,6 +30,8 @@ public final class ShardingJdbcStrategyBeanDefinitionParserTag {
     
     public static final String SHARDING_COLUMNS_ATTRIBUTE = "sharding-columns";
     
+    public static final String TYPE = "type";
+    
     public static final String ALGORITHM_CLASS_ATTRIBUTE = "algorithm-class";
     
     public static final String ALGORITHM_EXPRESSION_ATTRIBUTE = "algorithm-expression";

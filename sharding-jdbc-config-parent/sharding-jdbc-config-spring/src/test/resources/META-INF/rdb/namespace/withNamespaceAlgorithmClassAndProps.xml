@@ -26,9 +26,9 @@
         <property name="password" value=""/>
     </bean>
 
-    <rdb:strategy id="databaseStrategy" sharding-columns="user_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
+    <rdb:strategy id="databaseStrategy" type="standard" sharding-columns="user_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
 
-    <rdb:strategy id="tableStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <rdb:strategy id="tableStrategy" type="standard" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
 
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
