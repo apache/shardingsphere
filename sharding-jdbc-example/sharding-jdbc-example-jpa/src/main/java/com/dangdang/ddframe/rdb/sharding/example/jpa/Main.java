@@ -45,13 +45,13 @@ public final class Main {
             System.out.println(orderRepository.selectById(order.getOrderId()));
             System.out.println("--------------");
         }
-
+        
         System.out.println(orderRepository.selectAll());
         System.out.println("--------------");
-
+        
         System.out.println(orderRepository.selectOrderBy());
         System.out.println("--------------");
-
+        
         for (Long each : orderIds) {
             orderRepository.delete(each);
         }

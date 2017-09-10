@@ -13,14 +13,14 @@
                         http://www.dangdang.com/schema/ddframe/rdb 
                         http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd">
     <context:component-scan base-package="com.dangdang.ddframe.rdb.sharding.example.jdbc" />
-
+    
     <bean id="ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="org.postgresql.Driver"/>
         <property name="url" value="jdbc:postgresql://localhost:5432/ds_0"/>
         <property name="username" value="postgres"/>
         <property name="password" value=""/>
     </bean>
-
+    
     <bean id="ds_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="org.postgresql.Driver"/>
         <property name="url" value="jdbc:postgresql://localhost:5432/ds_1"/>
@@ -28,13 +28,13 @@
         <property name="password" value=""/>
     </bean>
     
-    <rdb:strategy id="databaseShardingStrategy" sharding-columns="user_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
-    <rdb:strategy id="tableShardingStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <rdb:strategy id="databaseShardingStrategy" type="standard" sharding-columns="user_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
+    <rdb:strategy id="tableShardingStrategy" type="standard" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.PreciseModuloTableShardingAlgorithm"/>
     
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="ds_0, ds_1">
             <rdb:table-rules>
-                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy="databaseShardingStrategyConfig" table-strategy="tableShardingStrategyConfig">
+                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy="databaseShardingStrategy" table-strategy="tableShardingStrategy">
                     <rdb:generate-key-column column-name="order_id"/>
                 </rdb:table-rule>
             </rdb:table-rules>

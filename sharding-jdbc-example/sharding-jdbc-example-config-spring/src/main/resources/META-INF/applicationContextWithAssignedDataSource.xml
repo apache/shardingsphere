@@ -32,9 +32,9 @@
         <property name="password" value="${dbtbl_config.password}"/>
     </bean>
     
-    <rdb:strategy id="databaseStrategy" sharding-columns="user_id" algorithm-expression="dbtbl_${user_id % 2}"/>
-    <rdb:strategy id="orderTableStrategy" sharding-columns="order_id" algorithm-expression="t_order_${order_id % 4}"/>
-    <rdb:strategy id="orderItemTableStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.config.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <rdb:strategy id="databaseStrategy" type="inline" sharding-columns="user_id" algorithm-expression="dbtbl_${user_id % 2}"/>
+    <rdb:strategy id="orderTableStrategy" type="inline" sharding-columns="order_id" algorithm-expression="t_order_${order_id % 4}"/>
+    <rdb:strategy id="orderItemTableStrategy" type="inline" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.config.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
 
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1,dbtbl_config">
