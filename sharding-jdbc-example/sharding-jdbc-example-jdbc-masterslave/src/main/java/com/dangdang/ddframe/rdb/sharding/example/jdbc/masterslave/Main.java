@@ -104,19 +104,19 @@ public final class Main {
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order_0, t_order_1");
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-    
+        
         TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item_0, t_order_item_1");
         shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
-    
+        
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-    
+        
         StandardShardingStrategyConfig databaseShardingStrategyConfig = new StandardShardingStrategyConfig();
         databaseShardingStrategyConfig.setShardingColumn("user_id");
         databaseShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingAlgorithm.class.getName());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
-    
+        
         StandardShardingStrategyConfig tableShardingStrategyConfig = new StandardShardingStrategyConfig();
         tableShardingStrategyConfig.setShardingColumn("order_id");
         tableShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingAlgorithm.class.getName());
