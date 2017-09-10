@@ -17,10 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.internel;
 
-import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -30,7 +36,21 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public class YamlConfig extends ShardingRuleConfig {
+public class YamlConfig {
+    
+    private Map<String, DataSource> dataSources = new HashMap<>();
+    
+    private String defaultDataSourceName;
+    
+    private Map<String, TableRuleConfig> tables = new HashMap<>();
+    
+    private List<String> bindingTableGroups = new ArrayList<>();
+    
+    private ShardingStrategyConfig defaultDatabaseStrategy;
+    
+    private ShardingStrategyConfig defaultTableStrategy;
+    
+    private String defaultKeyGeneratorClass;
     
     private Properties props = new Properties();
 }

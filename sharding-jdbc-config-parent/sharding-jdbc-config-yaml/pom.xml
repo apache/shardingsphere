@@ -11,11 +11,6 @@
     <artifactId>sharding-jdbc-config-yaml</artifactId>
     <dependencies>
         <dependency>
-            <groupId>com.dangdang</groupId>
-            <artifactId>sharding-jdbc-config-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>

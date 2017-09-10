@@ -38,7 +38,7 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class YamlIntegratedTest extends AbstractYamlShardingDataSourceTest {
+public class YamlIntegrateTest extends AbstractYamlShardingDataSourceTest {
     
     private final String filePath;
     
@@ -56,7 +56,7 @@ public class YamlIntegratedTest extends AbstractYamlShardingDataSourceTest {
     
     @Test
     public void testWithDataSource() throws SQLException, URISyntaxException, IOException {
-        File yamlFile = new File(YamlIntegratedTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = new YamlShardingDataSource(yamlFile);
