@@ -28,6 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.merger.AllMergerTests;
 import com.dangdang.ddframe.rdb.sharding.parsing.AllParsingTests;
 import com.dangdang.ddframe.rdb.sharding.rewrite.AllRewriteTests;
 import com.dangdang.ddframe.rdb.sharding.routing.AllRoutingTests;
+import com.dangdang.ddframe.rdb.sharding.rule.AllRuleTests;
 import com.dangdang.ddframe.rdb.sharding.util.AllUtilTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -36,7 +37,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllConstantsTests.class, 
-        AllApiTests.class, 
+        AllApiTests.class,
+        AllRuleTests.class,
         AllConfigTests.class, 
         AllParsingTests.class, 
         AllRewriteTests.class, 
