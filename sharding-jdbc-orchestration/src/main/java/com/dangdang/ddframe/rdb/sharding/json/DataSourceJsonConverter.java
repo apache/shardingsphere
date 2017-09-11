@@ -18,12 +18,15 @@
 package com.dangdang.ddframe.rdb.sharding.json;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.NamedDataSource;
+import com.google.gson.reflect.TypeToken;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -33,7 +36,7 @@ import java.util.Map.Entry;
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceMapJson {
+public final class DataSourceJsonConverter {
     
     static {
         GsonFactory.registerTypeAdapter(NamedDataSource.class, new DataSourceGsonTypeAdapter());
@@ -51,5 +54,23 @@ public final class DataSourceMapJson {
             result.add(new NamedDataSource(entry.getKey(), entry.getValue()));
         }
         return GsonFactory.getGson().toJson(result);
+    }
+    
+    /**
+     * Convert data source map from json.
+     *
+     * @param json data source map json string
+     * @return data source map
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, DataSource> fromJson(final String json) {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        List<NamedDataSource> namedDataSources = GsonFactory.getGson().fromJson(json, new TypeToken<List<NamedDataSource>>() {
+            
+        }.getType());
+        for (NamedDataSource each : namedDataSources) {
+            result.put(each.getName(), each.getDataSource());
+        }
+        return result;
     }
 }

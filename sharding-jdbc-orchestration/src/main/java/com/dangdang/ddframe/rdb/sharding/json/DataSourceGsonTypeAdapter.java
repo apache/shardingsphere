@@ -23,8 +23,10 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,102 +38,45 @@ import java.util.Map.Entry;
  */
 public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource> {
     
+    private static Collection<Class<?>> generalClassType;
+    
+    static {
+        generalClassType = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class);
+    }
+    
     @Override
     public NamedDataSource read(final JsonReader in) throws IOException {
-        return null;
-//        String jobName = "";
-//        String cron = "";
-//        int shardingTotalCount = 0;
-//        String shardingItemParameters = "";
-//        String jobParameter = "";
-//        boolean failover = false;
-//        boolean misfire = failover;
-//        String description = "";
-//        JobProperties jobProperties = new JobProperties();
-//        JobType jobType = null;
-//        String jobClass = "";
-//        boolean streamingProcess = false;
-//        String scriptCommandLine = "";
-//        Map<String, Object> customizedValueMap = new HashMap<>(32, 1);
-//        in.beginObject();
-//        while (in.hasNext()) {
-//            String jsonName = in.nextName();
-//            switch (jsonName) {
-//                case "jobName":
-//                    jobName = in.nextString();
-//                    break;
-//                case "cron":
-//                    cron = in.nextString();
-//                    break;
-//                case "shardingTotalCount":
-//                    shardingTotalCount = in.nextInt();
-//                    break;
-//                case "shardingItemParameters":
-//                    shardingItemParameters = in.nextString();
-//                    break;
-//                case "jobParameter":
-//                    jobParameter = in.nextString();
-//                    break;
-//                case "failover":
-//                    failover = in.nextBoolean();
-//                    break;
-//                case "misfire":
-//                    misfire = in.nextBoolean();
-//                    break;
-//                case "description":
-//                    description = in.nextString();
-//                    break;
-//                case "jobProperties":
-//                    jobProperties = getJobProperties(in);
-//                    break;
-//                case "jobType":
-//                    jobType = JobType.valueOf(in.nextString());
-//                    break;
-//                case "jobClass":
-//                    jobClass = in.nextString();
-//                    break;
-//                case "streamingProcess":
-//                    streamingProcess = in.nextBoolean();
-//                    break;
-//                case "scriptCommandLine":
-//                    scriptCommandLine = in.nextString();
-//                    break;
-//                default:
-//                    addToCustomizedValueMap(jsonName, in, customizedValueMap);
-//                    break;
-//            }
-//        }
-//        in.endObject();
-//        JobCoreConfiguration coreConfig = getJobCoreConfiguration(jobName, cron, shardingTotalCount, shardingItemParameters,
-//                jobParameter, failover, misfire, description, jobProperties);
-//        JobTypeConfiguration typeConfig = getJobTypeConfiguration(coreConfig, jobType, jobClass, streamingProcess, scriptCommandLine);
-//        return getJobRootConfiguration(typeConfig, customizedValueMap);
-//    }
-//    
-//    private JobProperties getJobProperties(final JsonReader in) throws IOException {
-//        JobProperties result = new JobProperties();
-//        in.beginObject();
-//        while (in.hasNext()) {
-//            switch (in.nextName()) {
-//                case "job_exception_handler":
-//                    result.put(JobProperties.JobPropertiesEnum.JOB_EXCEPTION_HANDLER.getKey(), in.nextString());
-//                    break;
-//                case "executor_service_handler":
-//                    result.put(JobProperties.JobPropertiesEnum.EXECUTOR_SERVICE_HANDLER.getKey(), in.nextString());
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
-//        in.endObject();
-//        return result;
+        String name = "";
+        String clazz = "";
+        Map<String, String> properties = new HashMap<>(64);
+        in.beginObject();
+        while (in.hasNext()) {
+            String jsonName = in.nextName();
+            if ("name".equals(jsonName)) {
+                name = in.nextString();
+            } else if ("clazz".equals(jsonName)) {
+                clazz = in.nextString();
+            } else {
+                properties.put(jsonName, in.nextString());
+            }
+        }
+        in.endObject();
+        DataSource dataSource = null;
+        try {
+            dataSource = (DataSource) Class.forName(clazz).newInstance();
+            for (Entry<String, String> entry : properties.entrySet()) {
+                callSetterMethod(dataSource, getSetterMethodName(entry.getKey()), entry.getValue());
+            }
+        } catch (final ReflectiveOperationException ex) {
+        }
+        return new NamedDataSource(name, dataSource);
     }
     
     @Override
     public void write(final JsonWriter out, final NamedDataSource value) throws IOException {
         out.beginObject();
         out.name("name").value(value.getName());
-        out.name("class").value(value.getDataSource().getClass().getName());
+        out.name("clazz").value(value.getDataSource().getClass().getName());
         Method[] methods = value.getDataSource().getClass().getDeclaredMethods();
         Map<String, Method> getterMethods = new HashMap<>(methods.length, 1);
         Map<String, Method> setterMethods = new HashMap<>(methods.length, 1);
@@ -167,15 +112,15 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
     }
     
     private boolean isGeneralClassType(final Class<?> clazz) {
-        return Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class).contains(clazz);
+        return generalClassType.contains(clazz);
     }
     
     private boolean isVoid(final Class<?> clazz) {
         return void.class == clazz || Void.class == clazz;
     }
     
-    private String getPropertyName(final Method each) {
-        return String.valueOf(each.getName().charAt(3)).toLowerCase() + each.getName().substring(4, each.getName().length());
+    private String getPropertyName(final Method method) {
+        return String.valueOf(method.getName().charAt(3)).toLowerCase() + method.getName().substring(4, method.getName().length());
     }
     
     private Map<String, Method> getPairedGetterMethods(final Map<String, Method> getterMethods, final Map<String, Method> setterMethods) {
@@ -188,13 +133,26 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
         return result;
     }
     
-    private Map<String, Method> getPairedSetterMethods(final Map<String, Method> getterMethods, final Map<String, Method> setterMethods) {
-        Map<String, Method> result = new HashMap<>(setterMethods.size());
-        for (Entry<String, Method> entry : setterMethods.entrySet()) {
-            if (getterMethods.containsKey(entry.getKey())) {
-                result.put(entry.getKey(), entry.getValue());
+    private String getSetterMethodName(final String propertyName) {
+        return "set" + String.valueOf(propertyName.charAt(0)).toUpperCase() + propertyName.substring(1, propertyName.length());
+    }
+    
+    private void callSetterMethod(final DataSource dataSource, final String methodName, final String setterValue) {
+        for (Class<?> each : generalClassType) {
+            try {
+                Method method = dataSource.getClass().getDeclaredMethod(methodName, each);
+                if (boolean.class == each || Boolean.class == each) {
+                    method.invoke(dataSource, Boolean.valueOf(setterValue));
+                } else if (int.class == each || Integer.class == each) {
+                    method.invoke(dataSource, Integer.parseInt(setterValue));
+                } else if (long.class == each || Long.class == each) {
+                    method.invoke(dataSource, Long.parseLong(setterValue));
+                } else {
+                    method.invoke(dataSource, setterValue);
+                }
+                return;
+            } catch (final ReflectiveOperationException ex) {
             }
         }
-        return result;
     }
 }
