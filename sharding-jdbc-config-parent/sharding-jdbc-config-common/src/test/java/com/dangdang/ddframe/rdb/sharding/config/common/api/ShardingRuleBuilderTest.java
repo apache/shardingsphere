@@ -97,9 +97,9 @@ public final class ShardingRuleBuilderTest {
         shardingRuleConfig.setDefaultDatabaseStrategy(getDatabaseStrategyConfig(SingleAlgorithm.class.getName()));
         shardingRuleConfig.setDefaultTableStrategy(getTableStrategyConfigForAlgorithmClass());
         ShardingRule actual = new ShardingRuleBuilder(shardingRuleConfig).build();
-        assertThat(actual.getDataSourceRule().getDataSourceNames().size(), is(2));
-        assertThat(actual.getDataSourceRule().getDataSourceNames(), hasItem("ds_0"));
-        assertThat(actual.getDataSourceRule().getDataSourceNames(), hasItem("ds_1"));
+        assertThat(actual.getDataSourceMap().size(), is(2));
+        assertThat(actual.getDataSourceMap().keySet(), hasItem("ds_0"));
+        assertThat(actual.getDataSourceMap().keySet(), hasItem("ds_1"));
         assertThat(actual.getTableRules().size(), is(3));
         for (TableRule each : actual.getTableRules()) {
             String logicTable = each.getLogicTable();

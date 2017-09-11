@@ -45,11 +45,6 @@ public final class ShardingRuleBuilder {
      */
     public ShardingRule build() {
         ShardingRuleConfig result = new ShardingRuleConfig();
-        if (dataSourceMap.isEmpty()) {
-            result.setDataSources(yamlConfig.getDataSources());
-        } else {
-            result.setDataSources(dataSourceMap);
-        }
         result.setDefaultDataSourceName(yamlConfig.getDefaultDataSourceName());
         for (Entry<String, TableRuleConfig> entry : yamlConfig.getTables().entrySet()) {
             TableRuleConfig tableRuleConfig = entry.getValue();
@@ -60,6 +55,6 @@ public final class ShardingRuleBuilder {
         result.setDefaultDatabaseShardingStrategyConfig(yamlConfig.getDefaultDatabaseStrategy());
         result.setDefaultTableShardingStrategyConfig(yamlConfig.getDefaultTableStrategy());
         result.setDefaultKeyGeneratorClass(yamlConfig.getDefaultKeyGeneratorClass());
-        return result.build();
+        return result.build(dataSourceMap.isEmpty() ? yamlConfig.getDataSources() : dataSourceMap);
     }
 }

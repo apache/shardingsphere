@@ -46,7 +46,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     }
     
     public ShardingDataSource(final ShardingRule shardingRule, final Properties props) throws SQLException {
-        super(shardingRule.getDataSourceRule().getDataSources());
+        super(shardingRule.getDataSourceMap().values());
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executorEngine = new ExecutorEngine(executorSize);

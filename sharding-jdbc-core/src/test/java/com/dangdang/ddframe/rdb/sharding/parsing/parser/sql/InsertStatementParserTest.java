@@ -107,10 +107,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1);
-        dataSourceMap.put("ds", dataSource);
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSources(dataSourceMap);
+        final ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("TABLE_XXX");
         tableRuleConfig.setActualTables("table_${0..2}");
@@ -121,7 +118,9 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         tableRuleConfig.setKeyGeneratorColumnName("field2");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRuleConfig.setDefaultKeyGeneratorClass(IncrementKeyGenerator.class.getName());
-        return shardingRuleConfig.build();
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1);
+        dataSourceMap.put("ds", dataSource);
+        return shardingRuleConfig.build(dataSourceMap);
     }
     
     @Test

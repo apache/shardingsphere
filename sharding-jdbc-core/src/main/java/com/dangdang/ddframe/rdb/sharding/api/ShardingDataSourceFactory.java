@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -37,23 +38,25 @@ public final class ShardingDataSourceFactory {
     /**
      * Create sharding data source.
      * 
+     * @param dataSourceMap data source map
      * @param shardingRuleConfig rule configuration for databases and tables sharding
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final ShardingRuleConfig shardingRuleConfig) throws SQLException {
-        return new ShardingDataSource(shardingRuleConfig.build());
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfig shardingRuleConfig) throws SQLException {
+        return new ShardingDataSource(shardingRuleConfig.build(dataSourceMap));
     }
     
     /**
      * Create sharding data source.
      * 
+     * @param dataSourceMap data source map
      * @param shardingRuleConfig rule configuration for databases and tables sharding
      * @param props properties for data source
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final ShardingRuleConfig shardingRuleConfig, final Properties props) throws SQLException {
-        return new ShardingDataSource(shardingRuleConfig.build(), props);
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfig shardingRuleConfig, final Properties props) throws SQLException {
+        return new ShardingDataSource(shardingRuleConfig.build(dataSourceMap), props);
     }
 }

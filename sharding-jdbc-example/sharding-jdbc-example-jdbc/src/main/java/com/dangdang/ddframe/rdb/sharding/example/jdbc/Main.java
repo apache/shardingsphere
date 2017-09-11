@@ -116,7 +116,6 @@ public final class Main {
     
     private static ShardingDataSource getShardingDataSource() throws SQLException {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
@@ -134,7 +133,7 @@ public final class Main {
         tableShardingStrategyConfig.setShardingColumn("order_id");
         tableShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloTableShardingAlgorithm.class.getName());
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
-        return new ShardingDataSource(shardingRuleConfig.build());
+        return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
     }
     
     private static Map<String, DataSource> createDataSourceMap() {

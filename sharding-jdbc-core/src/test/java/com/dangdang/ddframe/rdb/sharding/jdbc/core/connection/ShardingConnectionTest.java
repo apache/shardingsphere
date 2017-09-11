@@ -58,14 +58,13 @@ public final class ShardingConnectionTest {
     
     @Before
     public void setUp() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSources(dataSourceMap);
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("test");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        ShardingContext shardingContext = new ShardingContext(shardingRuleConfig.build(), null, null, false);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put(DS_NAME, masterSlaveDataSource);
+        ShardingContext shardingContext = new ShardingContext(shardingRuleConfig.build(dataSourceMap), null, null, false);
         connection = new ShardingConnection(shardingContext);
     }
     

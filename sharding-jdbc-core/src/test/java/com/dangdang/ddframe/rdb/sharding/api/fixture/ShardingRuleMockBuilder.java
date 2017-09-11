@@ -89,7 +89,6 @@ public class ShardingRuleMockBuilder {
             tableRuleConfigs.add(tableRuleConfig);
         }
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSources(ImmutableMap.of("db0", Mockito.mock(DataSource.class), "db1", Mockito.mock(DataSource.class)));
         for (String each : bindTables) {
             if (existInTableRuleConfig(each)) {
                 continue;
@@ -104,7 +103,7 @@ public class ShardingRuleMockBuilder {
         }
         shardingRuleConfig.getBindingTableGroups().add(Joiner.on(",").join(bindTables));
         shardingRuleConfig.setDefaultKeyGeneratorClass(IncrementKeyGenerator.class.getName());
-        return shardingRuleConfig.build();
+        return shardingRuleConfig.build(ImmutableMap.of("db0", Mockito.mock(DataSource.class), "db1", Mockito.mock(DataSource.class)));
     }
     
     private boolean existInTableRuleConfig(final String logicTableName) {

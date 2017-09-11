@@ -53,7 +53,7 @@ public class YamlShardingDataSourceTest {
         assertThat(shardingRule.getTableRules().size(), is(3));
         assertThat(shardingRule.getBindingTableRules().size(), is(1));
         assertThat(Arrays.asList(shardingRule.getTableRules().toArray()), hasItems(shardingRule.getBindingTableRules().iterator().next().getTableRules().toArray()));
-        assertThat(shardingRule.getDataSourceRule().getDefaultDataSourceName(), is("db0"));
+        assertThat(shardingRule.getDefaultDataSourceName(), is("db0"));
     }
     
     @Test

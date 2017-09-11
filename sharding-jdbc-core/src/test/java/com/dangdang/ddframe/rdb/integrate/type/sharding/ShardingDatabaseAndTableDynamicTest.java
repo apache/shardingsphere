@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
     
@@ -75,9 +76,8 @@ public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
         }
         isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
-        for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
+        for (Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-            shardingRuleConfig.setDataSources(each.getValue());
             TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
             orderTableRuleConfig.setLogicTable("t_order");
             orderTableRuleConfig.setDynamic(true);
@@ -97,7 +97,7 @@ public class ShardingDatabaseAndTableDynamicTest extends AbstractSQLAssertTest {
             tableShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseDynamicModuloTableShardingAlgorithm.class.getName());
             tableShardingStrategyConfig.setRangeAlgorithmClassName(RangeDynamicModuloTableShardingAlgorithm.class.getName());
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
-            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build()));
+            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build(each.getValue())));
         }
         return shardingDataSources;
     }

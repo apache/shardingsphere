@@ -61,7 +61,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @throws SQLException SQL exception
      */
     public Collection<Connection> getAllConnections(final String dataSourceName) throws SQLException {
-        DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
+        DataSource dataSource = shardingContext.getShardingRule().getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
         Collection<DataSource> dataSources = dataSource instanceof MasterSlaveDataSource
                 ? ((MasterSlaveDataSource) dataSource).getAllDataSources().values() : Collections.singletonList(dataSource);
@@ -86,7 +86,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         if (getCachedConnections().containsKey(dataSourceName)) {
             return getCachedConnections().get(dataSourceName);
         }
-        DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
+        DataSource dataSource = shardingContext.getShardingRule().getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
         String realDataSourceName;
         if (dataSource instanceof MasterSlaveDataSource) {
@@ -120,7 +120,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return getConnection(shardingContext.getShardingRule().getDataSourceRule().getDataSourceNames().iterator().next(), SQLType.DQL).getMetaData();
+        return getConnection(shardingContext.getShardingRule().getDataSourceMap().keySet().iterator().next(), SQLType.DQL).getMetaData();
     }
     
     @Override

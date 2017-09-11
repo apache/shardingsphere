@@ -26,6 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.none.NoneShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.util.StringUtil;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -47,7 +48,9 @@ import java.util.Map;
 @Getter
 public final class ShardingRule {
     
-    private final DataSourceRule dataSourceRule;
+    private final Map<String, DataSource> dataSourceMap;
+    
+    private final String defaultDataSourceName;
     
     private final Collection<TableRule> tableRules;
     
@@ -59,9 +62,10 @@ public final class ShardingRule {
     
     private final KeyGenerator defaultKeyGenerator;
     
-    public ShardingRule(final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<String> bindingTableGroups, 
+    public ShardingRule(final Map<String, DataSource> dataSourceMap, final String defaultDataSourceName, final Collection<TableRule> tableRules, final Collection<String> bindingTableGroups, 
                         final ShardingStrategy defaultDatabaseShardingStrategy, final ShardingStrategy defaultTableShardingStrategy, final KeyGenerator defaultKeyGenerator) {
-        this.dataSourceRule = dataSourceRule;
+        this.dataSourceMap = dataSourceMap;
+        this.defaultDataSourceName = getDefaultDataSourceName(dataSourceMap, defaultDataSourceName);
         this.tableRules = tableRules;
         for (String group : bindingTableGroups) {
             List<TableRule> tableRulesForBinding = new LinkedList<>();
@@ -73,6 +77,16 @@ public final class ShardingRule {
         this.defaultDatabaseShardingStrategy = null == defaultDatabaseShardingStrategy ? new NoneShardingStrategy() : defaultDatabaseShardingStrategy;
         this.defaultTableShardingStrategy = null == defaultTableShardingStrategy ? new NoneShardingStrategy() : defaultTableShardingStrategy;
         this.defaultKeyGenerator = defaultKeyGenerator;
+    }
+    
+    private String getDefaultDataSourceName(final Map<String, DataSource> dataSourceMap, final String defaultDataSourceName) {
+        if (1 == dataSourceMap.size()) {
+            return dataSourceMap.entrySet().iterator().next().getKey();
+        }
+        if (Strings.isNullOrEmpty(defaultDataSourceName)) {
+            return null;
+        }
+        return defaultDataSourceName;
     }
     
     /**
@@ -101,7 +115,7 @@ public final class ShardingRule {
         if (tableRule.isPresent()) {
             return tableRule.get();
         }
-        if (dataSourceRule.getDefaultDataSource().isPresent()) {
+        if (null != defaultDataSourceName) {
             return createTableRuleWithDefaultDataSource(logicTableName);
         }
         throw new ShardingJdbcException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
@@ -109,7 +123,7 @@ public final class ShardingRule {
     
     private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
         Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1, 1);
-        defaultDataSourceMap.put(dataSourceRule.getDefaultDataSourceName(), dataSourceRule.getDefaultDataSource().get());
+        defaultDataSourceMap.put(defaultDataSourceName, dataSourceMap.get(defaultDataSourceName));
         TableRuleConfig config = new TableRuleConfig();
         config.setLogicTable(logicTableName);
         config.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfig());

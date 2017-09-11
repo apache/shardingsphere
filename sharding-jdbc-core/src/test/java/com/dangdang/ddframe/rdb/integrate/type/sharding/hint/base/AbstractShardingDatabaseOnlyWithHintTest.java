@@ -33,7 +33,6 @@ public abstract class AbstractShardingDatabaseOnlyWithHintTest extends AbstractH
     @Override
     protected ShardingRule getShardingRule(final Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSources(dataSourceEntry.getValue());
         TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
         orderTableRuleConfig.setLogicTable("t_order");
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
@@ -46,6 +45,6 @@ public abstract class AbstractShardingDatabaseOnlyWithHintTest extends AbstractH
         databaseShardingStrategyConfig.setAlgorithmClassName(ComplexKeysModuloDatabaseShardingAlgorithm.class.getName());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfig());
-        return shardingRuleConfig.build();
+        return shardingRuleConfig.build(dataSourceEntry.getValue());
     }
 }

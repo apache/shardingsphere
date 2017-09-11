@@ -52,11 +52,7 @@ public abstract class AbstractBaseRouteSqlTest {
     
     @Before
     public void setRouteRuleContext() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds_0", null);
-        dataSourceMap.put("ds_1", null);
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSources(dataSourceMap);
         TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
         orderTableRuleConfig.setLogicTable("order");
         orderTableRuleConfig.setActualTables("order_0, order_1");
@@ -80,7 +76,10 @@ public abstract class AbstractBaseRouteSqlTest {
         defaultShardingStrategyConfig.setRangeAlgorithmClassName(RangeOrderShardingAlgorithm.class.getName());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(defaultShardingStrategyConfig);
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(defaultShardingStrategyConfig);
-        shardingRule = shardingRuleConfig.build();
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        dataSourceMap.put("ds_0", null);
+        dataSourceMap.put("ds_1", null);
+        shardingRule = shardingRuleConfig.build(dataSourceMap);
     }
     
     protected void assertSingleTargetWithoutParameter(final String originSql, final String targetDataSource, final String targetSQL) {

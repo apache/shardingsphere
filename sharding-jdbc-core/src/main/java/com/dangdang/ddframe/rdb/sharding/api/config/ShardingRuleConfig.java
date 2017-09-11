@@ -18,19 +18,17 @@
 package com.dangdang.ddframe.rdb.sharding.api.config;
 
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.rule.DataSourceRule;
-import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.rule.TableRule;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -42,8 +40,6 @@ import java.util.Map;
 @Getter
 @Setter
 public class ShardingRuleConfig {
-    
-    private Map<String, DataSource> dataSources = new HashMap<>();
     
     private String defaultDataSourceName;
     
@@ -60,19 +56,19 @@ public class ShardingRuleConfig {
     /**
      * Build sharding rule.
      *
+     * @param dataSourceMap data source map
      * @return sharding rule
      */
-    public ShardingRule build() {
+    public ShardingRule build(final Map<String, DataSource> dataSourceMap) {
         // TODO should not be null, for parsing only
         // Preconditions.checkNotNull(dataSources, "dataSources cannot be null.");
-        DataSourceRule dataSourceRule = new DataSourceRule(dataSources, defaultDataSourceName);
         Collection<TableRule> tableRules = new LinkedList<>();
         for (TableRuleConfig each : tableRuleConfigs) {
-            tableRules.add(each.build(dataSources));
+            tableRules.add(each.build(dataSourceMap));
         }
         ShardingStrategy defaultDatabaseShardingStrategy = null == defaultDatabaseShardingStrategyConfig ? null : defaultDatabaseShardingStrategyConfig.build();
         ShardingStrategy defaultTableShardingStrategy = null == defaultTableShardingStrategyConfig ? null :  defaultTableShardingStrategyConfig.build();
         KeyGenerator keyGenerator = KeyGeneratorFactory.newInstance(null == defaultKeyGeneratorClass ? DefaultKeyGenerator.class.getName() : defaultKeyGeneratorClass);
-        return new ShardingRule(dataSourceRule, tableRules, bindingTableGroups, defaultDatabaseShardingStrategy, defaultTableShardingStrategy, keyGenerator);
+        return new ShardingRule(dataSourceMap, defaultDataSourceName, tableRules, bindingTableGroups, defaultDatabaseShardingStrategy, defaultTableShardingStrategy, keyGenerator);
     }
 }

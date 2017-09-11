@@ -48,11 +48,10 @@ public abstract class AbstractSoftTransactionIntegrationTest {
     
     private void prepareEnv() throws SQLException {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSources(createDataSourceMap());
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("transaction_test");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        ShardingRule shardingRule = shardingRuleConfig.build();
+        ShardingRule shardingRule = shardingRuleConfig.build(createDataSourceMap());
         shardingDataSource = new ShardingDataSource(shardingRule);
         createTable(shardingDataSource);
         transactionDataSource = createTransactionLogDataSource();

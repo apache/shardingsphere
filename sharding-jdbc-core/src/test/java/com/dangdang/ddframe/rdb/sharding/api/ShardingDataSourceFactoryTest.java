@@ -43,29 +43,33 @@ public final class ShardingDataSourceFactoryTest {
     @Test
     public void assertCreateDataSourceWithShardingRuleOnly() throws SQLException, NoSuchFieldException, IllegalAccessException {
         ShardingRuleConfig shardingRuleConfig = createShardingRuleConfig();
-        assertNotNull(getShardingRule(ShardingDataSourceFactory.createDataSource(shardingRuleConfig)));
+        assertNotNull(getShardingRule(ShardingDataSourceFactory.createDataSource(getDataSourceMap(), shardingRuleConfig)));
     }
     
     @Test
     public void assertCreateDataSourceWithShardingRuleAndProperties() throws SQLException, NoSuchFieldException, IllegalAccessException {
         ShardingRuleConfig shardingRuleConfig = createShardingRuleConfig();
         Properties props = new Properties();
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRuleConfig, props);
+        DataSource dataSource = ShardingDataSourceFactory.createDataSource(getDataSourceMap(), shardingRuleConfig, props);
         assertNotNull(getShardingRule(dataSource));
         assertThat(getShardingProperties(dataSource), is(props));
     }
     
-    private ShardingRuleConfig createShardingRuleConfig() throws SQLException {
+    private Map<String, DataSource> getDataSourceMap() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1);
-        dataSourceMap.put("ds", dataSource);
+        Map<String, DataSource> result = new HashMap<>(1);
+        result.put("ds", dataSource);
+        return result;
+    }
+    
+    private ShardingRuleConfig createShardingRuleConfig() throws SQLException {
+        
         ShardingRuleConfig result = new ShardingRuleConfig();
-        result.setDataSources(dataSourceMap);
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("logicTable");
         tableRuleConfig.setActualTables("table_0, table_1, table_2");

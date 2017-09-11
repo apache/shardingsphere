@@ -51,16 +51,26 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
     //CHECKSTYLE:ON
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
-        factory.addConstructorArgValue(parseShardingRuleConfig(element, parserContext));
+        factory.addConstructorArgValue(parseDataSources(element, parserContext));
+        factory.addConstructorArgValue(parseShardingRuleConfig(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
     }
     
-    private BeanDefinition parseShardingRuleConfig(final Element element, final ParserContext parserContext) {
+    private Map<String, BeanDefinition> parseDataSources(final Element element, final ParserContext parserContext) {
+        Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingJdbcDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
+        List<String> dataSources = Splitter.on(",").trimResults().splitToList(shardingRuleElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATA_SOURCES_TAG));
+        Map<String, BeanDefinition> result = new ManagedMap<>(dataSources.size());
+        for (String each : dataSources) {
+            result.put(each, parserContext.getRegistry().getBeanDefinition(each));
+        }
+        return result;
+    }
+    
+    private BeanDefinition parseShardingRuleConfig(final Element element) {
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingJdbcDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfig.class);
-        factory.addPropertyValue("dataSources", parseDataSources(shardingRuleElement, parserContext));
         parseDefaultDataSource(factory, shardingRuleElement);
         factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfig(shardingRuleElement));
         factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfig(shardingRuleElement));
@@ -75,15 +85,6 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
             factory.addPropertyValue("defaultKeyGeneratorClass", keyGeneratorClass);
         }
-    }
-    
-    private Map<String, BeanDefinition> parseDataSources(final Element element, final ParserContext parserContext) {
-        List<String> dataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATA_SOURCES_TAG));
-        Map<String, BeanDefinition> result = new ManagedMap<>(dataSources.size());
-        for (String each : dataSources) {
-            result.put(each, parserContext.getRegistry().getBeanDefinition(each));
-        }
-        return result;
     }
     
     private void parseDefaultDataSource(final BeanDefinitionBuilder factory, final Element element) {

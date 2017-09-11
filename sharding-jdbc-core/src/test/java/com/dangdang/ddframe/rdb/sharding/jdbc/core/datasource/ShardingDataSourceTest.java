@@ -123,11 +123,10 @@ public final class ShardingDataSourceTest {
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSources(dataSourceMap);
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("logicTable");
         tableRuleConfig.setActualTables("table_0, table_1, table_2");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        return new ShardingDataSource(shardingRuleConfig.build());
+        return new ShardingDataSource(shardingRuleConfig.build(dataSourceMap));
     }
 }

@@ -89,30 +89,7 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
         isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
-            Map<String, DataSource> masterSlaveDataSourceMap = each.getValue();
-            MasterSlaveDataSource masterSlaveDs0 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_0", "dataSource_master_0", "dataSource_slave_0");
-            MasterSlaveDataSource masterSlaveDs1 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_1", "dataSource_master_1", "dataSource_slave_1");
-            MasterSlaveDataSource masterSlaveDs2 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_2", "dataSource_master_2", "dataSource_slave_2");
-            MasterSlaveDataSource masterSlaveDs3 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_3", "dataSource_master_3", "dataSource_slave_3");
-            MasterSlaveDataSource masterSlaveDs4 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_4", "dataSource_master_4", "dataSource_slave_4");
-            MasterSlaveDataSource masterSlaveDs5 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_5", "dataSource_master_5", "dataSource_slave_5");
-            MasterSlaveDataSource masterSlaveDs6 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_6", "dataSource_master_6", "dataSource_slave_6");
-            MasterSlaveDataSource masterSlaveDs7 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_7", "dataSource_master_7", "dataSource_slave_7");
-            MasterSlaveDataSource masterSlaveDs8 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_8", "dataSource_master_8", "dataSource_slave_8");
-            MasterSlaveDataSource masterSlaveDs9 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_9", "dataSource_master_9", "dataSource_slave_9");
-            Map<String, DataSource> msDataSourceMap = new HashMap<>(10);
-            msDataSourceMap.put("ms_0", masterSlaveDs0);
-            msDataSourceMap.put("ms_1", masterSlaveDs1);
-            msDataSourceMap.put("ms_2", masterSlaveDs2);
-            msDataSourceMap.put("ms_3", masterSlaveDs3);
-            msDataSourceMap.put("ms_4", masterSlaveDs4);
-            msDataSourceMap.put("ms_5", masterSlaveDs5);
-            msDataSourceMap.put("ms_6", masterSlaveDs6);
-            msDataSourceMap.put("ms_7", masterSlaveDs7);
-            msDataSourceMap.put("ms_8", masterSlaveDs8);
-            msDataSourceMap.put("ms_9", masterSlaveDs9);
             ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-            shardingRuleConfig.setDataSources(msDataSourceMap);
             TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
             orderTableRuleConfig.setLogicTable("t_order");
             orderTableRuleConfig.setActualTables("t_order_${0..9}");
@@ -135,9 +112,35 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
             tableShardingStrategy.setPreciseAlgorithmClassName(PreciseModuloDatabaseShardingAlgorithm.class.getName());
             tableShardingStrategy.setRangeAlgorithmClassName(RangeModuloDatabaseShardingAlgorithm.class.getName());
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(tableShardingStrategy);
-            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build()));
+            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build(getMasterSlaveDataSourceMap(each))));
         }
         return shardingDataSources;
+    }
+    
+    private Map<String, DataSource> getMasterSlaveDataSourceMap(final Entry<DatabaseType, Map<String, DataSource>> each) throws SQLException {
+        Map<String, DataSource> masterSlaveDataSourceMap = each.getValue();
+        MasterSlaveDataSource masterSlaveDs0 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_0", "dataSource_master_0", "dataSource_slave_0");
+        MasterSlaveDataSource masterSlaveDs1 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_1", "dataSource_master_1", "dataSource_slave_1");
+        MasterSlaveDataSource masterSlaveDs2 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_2", "dataSource_master_2", "dataSource_slave_2");
+        MasterSlaveDataSource masterSlaveDs3 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_3", "dataSource_master_3", "dataSource_slave_3");
+        MasterSlaveDataSource masterSlaveDs4 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_4", "dataSource_master_4", "dataSource_slave_4");
+        MasterSlaveDataSource masterSlaveDs5 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_5", "dataSource_master_5", "dataSource_slave_5");
+        MasterSlaveDataSource masterSlaveDs6 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_6", "dataSource_master_6", "dataSource_slave_6");
+        MasterSlaveDataSource masterSlaveDs7 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_7", "dataSource_master_7", "dataSource_slave_7");
+        MasterSlaveDataSource masterSlaveDs8 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_8", "dataSource_master_8", "dataSource_slave_8");
+        MasterSlaveDataSource masterSlaveDs9 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_9", "dataSource_master_9", "dataSource_slave_9");
+        Map<String, DataSource> result = new HashMap<>(10);
+        result.put("ms_0", masterSlaveDs0);
+        result.put("ms_1", masterSlaveDs1);
+        result.put("ms_2", masterSlaveDs2);
+        result.put("ms_3", masterSlaveDs3);
+        result.put("ms_4", masterSlaveDs4);
+        result.put("ms_5", masterSlaveDs5);
+        result.put("ms_6", masterSlaveDs6);
+        result.put("ms_7", masterSlaveDs7);
+        result.put("ms_8", masterSlaveDs8);
+        result.put("ms_9", masterSlaveDs9);
+        return result;
     }
     
     private MasterSlaveDataSource getMasterSlaveDataSource(final Map<String, DataSource> masterSlaveDataSourceMap, 

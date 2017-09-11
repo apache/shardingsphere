@@ -46,15 +46,14 @@ public class DatabaseTest {
     
     @Before
     public void setRouteRuleContext() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds_0", null);
-        dataSourceMap.put("ds_1", null);
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSources(dataSourceMap);
         HintShardingStrategyConfig databaseShardingStrategyConfig = new HintShardingStrategyConfig();
         databaseShardingStrategyConfig.setAlgorithmClassName(OrderDatabaseHintShardingAlgorithm.class.getName());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
-        shardingRule = shardingRuleConfig.build();
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        dataSourceMap.put("ds_0", null);
+        dataSourceMap.put("ds_1", null);
+        shardingRule = shardingRuleConfig.build(dataSourceMap);
     }
     
     @Test

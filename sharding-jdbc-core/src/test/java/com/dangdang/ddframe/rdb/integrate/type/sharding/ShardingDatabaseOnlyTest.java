@@ -75,8 +75,7 @@ public class ShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
         isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
-            ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-            shardingRuleConfig.setDataSources(each.getValue());
+            final ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
             TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
             orderTableRuleConfig.setLogicTable("t_order");
             orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
@@ -91,7 +90,7 @@ public class ShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
             databaseShardingStrategyConfig.setAlgorithmClassName(ComplexKeysModuloDatabaseShardingAlgorithm.class.getName());
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfig());
-            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build()));
+            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build(each.getValue())));
         }
         return shardingDataSources;
     }

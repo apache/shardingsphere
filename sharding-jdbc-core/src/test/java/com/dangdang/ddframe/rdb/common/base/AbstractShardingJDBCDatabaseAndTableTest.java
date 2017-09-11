@@ -55,7 +55,6 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-            shardingRuleConfig.setDataSources(each.getValue());
             TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
             orderTableRuleConfig.setLogicTable("t_order");
             orderTableRuleConfig.setActualTables("t_order_0, t_order_1");
@@ -80,7 +79,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             tableShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseOrderShardingAlgorithm.class.getName());
             tableShardingStrategyConfig.setRangeAlgorithmClassName(RangeOrderShardingAlgorithm.class.getName());
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
-            ShardingRule shardingRule = shardingRuleConfig.build();
+            ShardingRule shardingRule = shardingRuleConfig.build(each.getValue());
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
     }

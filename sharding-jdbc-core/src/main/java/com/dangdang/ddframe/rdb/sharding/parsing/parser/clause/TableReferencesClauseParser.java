@@ -65,7 +65,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         String tableName = SQLUtil.getExactlyValue(literals);
         Optional<String> alias = aliasClauseParser.parse();
         if (isSingleTableOnly || shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()
-                || shardingRule.getDataSourceRule().getDefaultDataSource().isPresent()) {
+                || shardingRule.getDataSourceMap().containsKey(shardingRule.getDefaultDataSourceName())) {
             sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
             sqlStatement.getTables().add(new Table(tableName, alias));
         }

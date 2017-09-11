@@ -46,10 +46,7 @@ public abstract class AbstractStatementParserTest {
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("ds", dataSource);
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        shardingRuleConfig.setDataSources(dataSourceMap);
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("TABLE_XXX");
         tableRuleConfig.setActualTables("table_0, table_1, table_2");
@@ -58,6 +55,8 @@ public abstract class AbstractStatementParserTest {
         complexShardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
         tableRuleConfig.setTableShardingStrategyConfig(complexShardingStrategyConfig);
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        return shardingRuleConfig.build();
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("ds", dataSource);
+        return shardingRuleConfig.build(dataSourceMap);
     }
 }
