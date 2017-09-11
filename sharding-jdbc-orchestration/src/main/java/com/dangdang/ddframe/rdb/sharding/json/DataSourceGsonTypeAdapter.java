@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.json;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.NamedDataSource;
 import com.google.common.collect.Sets;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

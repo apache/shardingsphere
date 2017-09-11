@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.json;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.NamedDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
