@@ -15,15 +15,23 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config;
+package com.dangdang.ddframe.rdb.sharding.constant;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    ShardingPropertiesConstantTest.class, 
-    ShardingPropertiesTest.class
-    })
-public class AllConfigTests {
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+
+public class ShardingPropertiesConstantTest {
+    
+    @Test
+    public void testFindByKey() {
+        assertThat(ShardingPropertiesConstant.findByKey("sql.show"), is(ShardingPropertiesConstant.SQL_SHOW));
+    }
+    
+    @Test
+    public void testFindByKeyWhenNotFound() {
+        assertNull(ShardingPropertiesConstant.findByKey("empty"));
+    }
 }

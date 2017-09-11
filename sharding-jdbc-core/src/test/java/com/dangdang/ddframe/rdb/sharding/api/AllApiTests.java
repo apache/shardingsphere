@@ -22,8 +22,8 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.sharding.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RandomMasterSlaveLoadBalanceStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinMasterSlaveLoadBalanceStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategyTest;
-import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstantTest;
-import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesTest;
+import com.dangdang.ddframe.rdb.sharding.constant.ShardingPropertiesConstantTest;
+import com.dangdang.ddframe.rdb.sharding.constant.ShardingPropertiesTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
