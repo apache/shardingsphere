@@ -46,7 +46,7 @@ tables:
         algorithmInlineExpression: t_order_item_${id % 2}
 
 bindingTables:
-  - t_order,t_order_no_exist
+  - t_order,t_order_item
 
 #默认数据库分片策略
 defaultDatabaseStrategy:
