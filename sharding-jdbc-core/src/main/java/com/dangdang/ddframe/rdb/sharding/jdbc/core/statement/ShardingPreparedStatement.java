@@ -174,19 +174,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private PreparedStatement generatePreparedStatement(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-        Optional<GeneratedKey> generatedKey = getGeneratedKey();
         Connection connection = getConnection().getConnection(sqlExecutionUnit.getDataSource(), routeResult.getSqlStatement().getType());
-        if (returnGeneratedKeys && generatedKey.isPresent()) {
-            return connection.prepareStatement(sqlExecutionUnit.getSql(), RETURN_GENERATED_KEYS);
-        }
-        return connection.prepareStatement(sqlExecutionUnit.getSql(), resultSetType, resultSetConcurrency, resultSetHoldability);
-    }
-    
-    private Optional<GeneratedKey> getGeneratedKey() {
-        if (null != routeResult && routeResult.getSqlStatement() instanceof InsertStatement) {
-            return Optional.fromNullable(((InsertStatement) routeResult.getSqlStatement()).getGeneratedKey());
-        }
-        return Optional.absent();
+        return returnGeneratedKeys ? connection.prepareStatement(sqlExecutionUnit.getSql(), RETURN_GENERATED_KEYS)
+                : connection.prepareStatement(sqlExecutionUnit.getSql(), resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
     @Override
@@ -209,28 +199,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             currentResultSet = null;
             clearParameters();
         }
-    }
-    
-    @Override
-    public int[] executeBatch() throws SQLException {
-        try {
-            return new BatchPreparedStatementExecutor(getConnection().getShardingContext().getExecutorEngine(), 
-                    getConnection().getShardingContext().getDatabaseType(), routeResult.getSqlStatement().getType(), batchStatementUnits, parameterSets).executeBatch();
-        } finally {
-            clearBatch();
-        }
-    }
-    
-    @Override
-    public ResultSet getGeneratedKeys() throws SQLException {
-        Optional<GeneratedKey> generatedKey = getGeneratedKey();
-        if (returnGeneratedKeys && generatedKey.isPresent()) {
-            return new GeneratedKeysResultSet(routeResult.getGeneratedKeys().iterator(), generatedKey.get().getColumn(), this);
-        }
-        if (1 == routedStatements.size()) {
-            return routedStatements.iterator().next().getGeneratedKeys();
-        }
-        return new GeneratedKeysResultSet();
     }
     
     private List<BatchPreparedStatementUnit> routeBatch() throws SQLException {
@@ -258,6 +226,35 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         BatchPreparedStatementUnit result = new BatchPreparedStatementUnit(sqlExecutionUnit, generatePreparedStatement(sqlExecutionUnit));
         batchStatementUnits.add(result);
         return result;
+    }
+    
+    @Override
+    public int[] executeBatch() throws SQLException {
+        try {
+            return new BatchPreparedStatementExecutor(getConnection().getShardingContext().getExecutorEngine(), 
+                    getConnection().getShardingContext().getDatabaseType(), routeResult.getSqlStatement().getType(), batchStatementUnits, parameterSets).executeBatch();
+        } finally {
+            clearBatch();
+        }
+    }
+    
+    @Override
+    public ResultSet getGeneratedKeys() throws SQLException {
+        Optional<GeneratedKey> generatedKey = getGeneratedKey();
+        if (returnGeneratedKeys && generatedKey.isPresent()) {
+            return new GeneratedKeysResultSet(routeResult.getGeneratedKeys().iterator(), generatedKey.get().getColumn(), this);
+        }
+        if (1 == routedStatements.size()) {
+            return routedStatements.iterator().next().getGeneratedKeys();
+        }
+        return new GeneratedKeysResultSet();
+    }
+    
+    private Optional<GeneratedKey> getGeneratedKey() {
+        if (null != routeResult && routeResult.getSqlStatement() instanceof InsertStatement) {
+            return Optional.fromNullable(((InsertStatement) routeResult.getSqlStatement()).getGeneratedKey());
+        }
+        return Optional.absent();
     }
     
     @Override
