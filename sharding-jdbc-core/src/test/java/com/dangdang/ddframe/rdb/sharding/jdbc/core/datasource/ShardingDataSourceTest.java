@@ -20,18 +20,23 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.constant.ShardingPropertiesConstant;
+import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
+import com.dangdang.ddframe.rdb.sharding.rule.MasterSlaveRule;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -121,12 +126,64 @@ public final class ShardingDataSourceTest {
         assertThat(createShardingDataSource(dataSourceMap).getConnection().getConnection("ds", SQLType.DQL), is(dataSource.getConnection()));
     }
     
+    @Test
+    public void assertRenewWithoutChangeExecutorPoolEngine() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        DataSource originalDataSource = mockDataSource("H2");
+        Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
+        originalDataSourceMap.put("ds", originalDataSource);
+        ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
+        ExecutorEngine originExecutorEngine = getExecutorEngine(shardingDataSource);
+        DataSource newDataSource = mockDataSource("H2");
+        Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
+        newDataSourceMap.put("ds", newDataSource);
+        shardingDataSource.renew(createShardingRuleConfig().build(newDataSourceMap), new Properties());
+        assertThat(originExecutorEngine, is(getExecutorEngine(shardingDataSource)));
+    }
+    
+    @Test
+    public void assertRenewWithChangeExecutorEnginePoolSize() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        DataSource originalDataSource = mockDataSource("H2");
+        Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
+        originalDataSourceMap.put("ds", originalDataSource);
+        ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
+        final ExecutorEngine originExecutorEngine = getExecutorEngine(shardingDataSource);
+        DataSource newDataSource = mockDataSource("H2");
+        Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
+        newDataSourceMap.put("ds", newDataSource);
+        Properties props = new Properties();
+        props.setProperty(ShardingPropertiesConstant.EXECUTOR_SIZE.getKey(), "100");
+        shardingDataSource.renew(createShardingRuleConfig().build(newDataSourceMap), props);
+        assertThat(originExecutorEngine, not(getExecutorEngine(shardingDataSource)));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertRenewWithDatabaseTypeChanged() throws SQLException {
+        DataSource originalDataSource = mockDataSource("H2");
+        Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
+        originalDataSourceMap.put("ds", originalDataSource);
+        ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
+        DataSource newDataSource = mockDataSource("MySQL");
+        Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
+        newDataSourceMap.put("ds", newDataSource);
+        shardingDataSource.renew(createShardingRuleConfig().build(newDataSourceMap), new Properties());
+    }
+    
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        return new ShardingDataSource(createShardingRuleConfig().build(dataSourceMap));
+    }
+    
+    private ShardingRuleConfig createShardingRuleConfig() {
+        ShardingRuleConfig result = new ShardingRuleConfig();
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("logicTable");
         tableRuleConfig.setActualTables("table_0, table_1, table_2");
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        return new ShardingDataSource(shardingRuleConfig.build(dataSourceMap));
+        result.getTableRuleConfigs().add(tableRuleConfig);
+        return result;
+    }
+    
+    private ExecutorEngine getExecutorEngine(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
+        Field field = ShardingDataSource.class.getDeclaredField("executorEngine");
+        field.setAccessible(true);
+        return (ExecutorEngine) field.get(shardingDataSource);
     }
 }

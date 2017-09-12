@@ -46,7 +46,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         databaseType = getDatabaseType(dataSources);
     }
     
-    private DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
+    protected DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
         DatabaseType result = null;
         for (DataSource each : dataSources) {
             DatabaseType databaseType = getDatabaseType(each);

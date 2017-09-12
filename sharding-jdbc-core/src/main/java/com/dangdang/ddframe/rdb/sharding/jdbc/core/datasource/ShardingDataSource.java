@@ -24,6 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
+import com.google.common.base.Preconditions;
 
 import java.sql.SQLException;
 import java.util.Properties;
@@ -35,11 +36,11 @@ import java.util.Properties;
  */
 public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
-    private final ShardingProperties shardingProperties;
+    private ShardingProperties shardingProperties;
     
-    private final ExecutorEngine executorEngine;
+    private ExecutorEngine executorEngine;
     
-    private final ShardingContext shardingContext;
+    private ShardingContext shardingContext;
     
     public ShardingDataSource(final ShardingRule shardingRule) throws SQLException {
         this(shardingRule, new Properties());
@@ -52,6 +53,26 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         executorEngine = new ExecutorEngine(executorSize);
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingContext = new ShardingContext(shardingRule, getDatabaseType(), executorEngine, showSQL);
+    }
+    
+    /**
+     * Renew sharding data source.
+     *
+     * @param newShardingRule new sharding rule
+     * @param newProps new sharding properties
+     * @throws SQLException SQL exception
+     */
+    public void renew(final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
+        Preconditions.checkState(getDatabaseType() == getDatabaseType(newShardingRule.getDataSourceMap().values()), "Cannot change database type dynamically.");
+        ShardingProperties newShardingProperties = new ShardingProperties(null == newProps ? new Properties() : newProps);
+        int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
+        if (shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE) != newExecutorSize) {
+            executorEngine.close();
+            executorEngine = new ExecutorEngine(newExecutorSize);
+        }
+        boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        shardingProperties = newShardingProperties;
+        shardingContext = new ShardingContext(newShardingRule, getDatabaseType(), executorEngine, newShowSQL);
     }
     
     @Override
