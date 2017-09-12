@@ -17,8 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.internel;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,7 +30,7 @@ import java.util.Properties;
 /**
  * Configuration for yaml.
  *
- * @author gaohongtao
+ * @author caohao
  */
 @Getter
 @Setter
@@ -42,13 +40,13 @@ public class YamlConfig {
     
     private String defaultDataSourceName;
     
-    private Map<String, TableRuleConfig> tables = new HashMap<>();
+    private Map<String, YamlTableRuleConfig> tables = new HashMap<>();
     
     private List<String> bindingTableGroups = new ArrayList<>();
     
-    private ShardingStrategyConfig defaultDatabaseStrategy;
+    private YamlShardingStrategyConfig defaultDatabaseStrategy;
     
-    private ShardingStrategyConfig defaultTableStrategy;
+    private YamlShardingStrategyConfig defaultTableStrategy;
     
     private String defaultKeyGeneratorClass;
     

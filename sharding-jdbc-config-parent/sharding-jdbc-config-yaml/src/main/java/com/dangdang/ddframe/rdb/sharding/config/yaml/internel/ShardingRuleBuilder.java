@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.config.yaml.internel;
 
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
@@ -46,14 +45,18 @@ public final class ShardingRuleBuilder {
     public ShardingRule build() {
         ShardingRuleConfig result = new ShardingRuleConfig();
         result.setDefaultDataSourceName(yamlConfig.getDefaultDataSourceName());
-        for (Entry<String, TableRuleConfig> entry : yamlConfig.getTables().entrySet()) {
-            TableRuleConfig tableRuleConfig = entry.getValue();
+        for (Entry<String, YamlTableRuleConfig> entry : yamlConfig.getTables().entrySet()) {
+            YamlTableRuleConfig tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
-            result.getTableRuleConfigs().add(tableRuleConfig);
+            result.getTableRuleConfigs().add(tableRuleConfig.getTableRuleConfig());
         }
         result.getBindingTableGroups().addAll(yamlConfig.getBindingTableGroups());
-        result.setDefaultDatabaseShardingStrategyConfig(yamlConfig.getDefaultDatabaseStrategy());
-        result.setDefaultTableShardingStrategyConfig(yamlConfig.getDefaultTableStrategy());
+        if (null != yamlConfig.getDefaultDatabaseStrategy()) {
+            result.setDefaultDatabaseShardingStrategyConfig(yamlConfig.getDefaultDatabaseStrategy().getShardingStrategy());
+        }
+        if (null != yamlConfig.getDefaultTableStrategy()) {
+            result.setDefaultTableShardingStrategyConfig(yamlConfig.getDefaultTableStrategy().getShardingStrategy());
+        }
         result.setDefaultKeyGeneratorClass(yamlConfig.getDefaultKeyGeneratorClass());
         return result.build(dataSourceMap.isEmpty() ? yamlConfig.getDataSources() : dataSourceMap);
     }

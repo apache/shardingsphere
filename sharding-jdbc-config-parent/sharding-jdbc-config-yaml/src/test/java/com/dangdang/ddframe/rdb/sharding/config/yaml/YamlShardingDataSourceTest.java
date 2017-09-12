@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml;
 
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.rule.DynamicDataNode;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.rule.TableRule;
@@ -91,7 +92,7 @@ public class YamlShardingDataSourceTest {
         }
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ShardingJdbcException.class)
     public void assertClassNotFound() throws IOException, NoSuchFieldException, IllegalAccessException, URISyntaxException, SQLException {
         getShardingRule("/config/config-classNotFound.yaml");
     }
