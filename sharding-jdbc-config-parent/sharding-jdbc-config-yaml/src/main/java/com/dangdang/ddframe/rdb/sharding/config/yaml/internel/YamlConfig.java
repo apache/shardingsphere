@@ -42,7 +42,7 @@ public class YamlConfig {
     
     private Map<String, YamlTableRuleConfig> tables = new HashMap<>();
     
-    private List<String> bindingTableGroups = new ArrayList<>();
+    private List<String> bindingTables = new ArrayList<>();
     
     private YamlShardingStrategyConfig defaultDatabaseStrategy;
     

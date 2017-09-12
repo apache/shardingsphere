@@ -50,7 +50,7 @@ public final class ShardingRuleBuilder {
             tableRuleConfig.setLogicTable(entry.getKey());
             result.getTableRuleConfigs().add(tableRuleConfig.getTableRuleConfig());
         }
-        result.getBindingTableGroups().addAll(yamlConfig.getBindingTableGroups());
+        result.getBindingTableGroups().addAll(yamlConfig.getBindingTables());
         if (null != yamlConfig.getDefaultDatabaseStrategy()) {
             result.setDefaultDatabaseShardingStrategyConfig(yamlConfig.getDefaultDatabaseStrategy().getShardingStrategy());
         }

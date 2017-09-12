@@ -14,7 +14,7 @@ dataSources:
 tables:
   t_order: 
     actualTables: t_order_${0..1}
-    tableShardingStrategy: 
-      standardShardingStrategy:
+    tableStrategy: 
+      standard:
         shardingColumn: order_id
         preciseAlgorithmClassName: com.dangdang.ddframe.rdb.sharding.config.NoThisClass

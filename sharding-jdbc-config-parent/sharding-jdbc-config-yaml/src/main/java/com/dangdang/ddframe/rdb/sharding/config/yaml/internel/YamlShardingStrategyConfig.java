@@ -19,40 +19,40 @@ import lombok.Setter;
 @Setter
 public class YamlShardingStrategyConfig {
     
-    private ComplexShardingStrategyConfig complexShardingStrategy;
+    private ComplexShardingStrategyConfig complex;
     
-    private HintShardingStrategyConfig hintShardingStrategy;
+    private HintShardingStrategyConfig hint;
     
-    private InlineShardingStrategyConfig inlineShardingStrategy;
+    private InlineShardingStrategyConfig inline;
     
-    private NoneShardingStrategyConfig noneShardingStrategyConfig;
+    private NoneShardingStrategyConfig none;
     
-    private StandardShardingStrategyConfig standardShardingStrategy;
+    private StandardShardingStrategyConfig standard;
     
     public ShardingStrategyConfig getShardingStrategy() {
         int shardingStrategyConfigCount = 0;
         ShardingStrategyConfig shardingStrategy = null;
-        if (null != complexShardingStrategy) {
+        if (null != complex) {
             shardingStrategyConfigCount++;
-            shardingStrategy = complexShardingStrategy;
+            shardingStrategy = complex;
         }
-        if (null != inlineShardingStrategy) {
+        if (null != inline) {
             shardingStrategyConfigCount++;
-            shardingStrategy = inlineShardingStrategy;
+            shardingStrategy = inline;
         }
-        if (null != hintShardingStrategy) {
+        if (null != hint) {
             shardingStrategyConfigCount++;
-            shardingStrategy = hintShardingStrategy;
+            shardingStrategy = hint;
         }
-        if (null != standardShardingStrategy) {
+        if (null != standard) {
             shardingStrategyConfigCount++;
-            shardingStrategy = standardShardingStrategy;
+            shardingStrategy = standard;
         }
-        if (null != noneShardingStrategyConfig) {
+        if (null != none) {
             shardingStrategyConfigCount++;
-            shardingStrategy = noneShardingStrategyConfig;
+            shardingStrategy = none;
         }
-        Preconditions.checkArgument(shardingStrategyConfigCount == 1, "Must only have one sharding strategy.");
+        Preconditions.checkArgument(shardingStrategyConfigCount <= 1, "Only allowed 0 or 1 sharding strategy configuration.");
         return shardingStrategy;
     }
 }

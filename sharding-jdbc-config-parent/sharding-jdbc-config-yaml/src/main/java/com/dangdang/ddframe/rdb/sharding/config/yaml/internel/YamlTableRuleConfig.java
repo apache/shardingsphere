@@ -22,9 +22,9 @@ public class YamlTableRuleConfig {
     
     private String dataSourceNames;
     
-    private YamlShardingStrategyConfig databaseShardingStrategy;
+    private YamlShardingStrategyConfig databaseStrategy;
     
-    private YamlShardingStrategyConfig tableShardingStrategy;
+    private YamlShardingStrategyConfig tableStrategy;
     
     private String keyGeneratorColumnName;
     
@@ -42,11 +42,11 @@ public class YamlTableRuleConfig {
         tableRuleConfig.setDynamic(dynamic);
         tableRuleConfig.setActualTables(actualTables);
         tableRuleConfig.setLogicTable(logicTable);
-        if (null != databaseShardingStrategy) {
-            tableRuleConfig.setDatabaseShardingStrategyConfig(databaseShardingStrategy.getShardingStrategy());
+        if (null != databaseStrategy) {
+            tableRuleConfig.setDatabaseShardingStrategyConfig(databaseStrategy.getShardingStrategy());
         }
-        if (null != tableShardingStrategy) {
-            tableRuleConfig.setTableShardingStrategyConfig(tableShardingStrategy.getShardingStrategy());
+        if (null != tableStrategy) {
+            tableRuleConfig.setTableShardingStrategyConfig(tableStrategy.getShardingStrategy());
         }
         tableRuleConfig.setKeyGeneratorClass(keyGeneratorClass);
         tableRuleConfig.setKeyGeneratorColumnName(keyGeneratorColumnName);
