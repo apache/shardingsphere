@@ -137,7 +137,11 @@ public final class ParsingSQLRouter implements SQLRouter {
     }
     
     private void processLimit(final List<Object> parameters, final SelectStatement selectStatement, final boolean isSingleRouting) {
+        if (isSingleRouting) {
+            selectStatement.setLimit(null);
+            return;
+        }
         boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
-        selectStatement.getLimit().processParameters(parameters, !isSingleRouting, isNeedFetchAll);
+        selectStatement.getLimit().processParameters(parameters, isNeedFetchAll);
     }
 }

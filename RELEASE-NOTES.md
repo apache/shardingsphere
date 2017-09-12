@@ -5,6 +5,7 @@
 1. [ISSUE #356](https://github.com/dangdangdotcom/sharding-jdbc/issues/356) 在SQL的Where条件中兼容不是分片列的REGEXP操作符
 1. [ISSUE #362](https://github.com/dangdangdotcom/sharding-jdbc/issues/362) 读写分离使用PreparedStatement并未调用setParameter方法导致出错
 1. [ISSUE #370](https://github.com/dangdangdotcom/sharding-jdbc/issues/370) 使用原生自增主键调用getGeneratedKeys出错
+1. [ISSUE #375](https://github.com/dangdangdotcom/sharding-jdbc/issues/375) 路由至单节点的分页第二页以后的查询取不到数据
 
 ## 1.5.3
 

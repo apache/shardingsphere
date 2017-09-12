@@ -66,14 +66,11 @@ public final class Limit {
      * Fill parameters for rewrite limit.
      *
      * @param parameters parameters
-     * @param isRewrite is rewrite or not
      * @param isFetchAll is fetch all data or not
      */
-    public void processParameters(final List<Object> parameters, final boolean isRewrite, final boolean isFetchAll) {
+    public void processParameters(final List<Object> parameters, final boolean isFetchAll) {
         fill(parameters);
-        if (isRewrite) {
-            rewrite(parameters, isFetchAll);
-        }
+        rewrite(parameters, isFetchAll);
     }
     
     private void fill(final List<Object> parameters) {
