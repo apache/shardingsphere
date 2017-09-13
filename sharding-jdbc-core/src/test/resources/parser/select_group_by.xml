@@ -4,6 +4,10 @@
         <tables>
             <table name="t_order_item" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="76" original-literals="`t_order_item`" />
+        </table-tokens>
+        <order-by-token begin-position-of-statement="162" begin-position-of-prepared-statement="156"/>
         <conditions>
             <condition column-name="order_id" table-name="t_order_item" operator="IN">
                 <value index="0" literal="1000" type="int" />
@@ -24,6 +28,10 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="49" original-literals="t_order" />
+        </table-tokens>
+        <order-by-token begin-position-of-statement="73" begin-position-of-prepared-statement="73"/>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM" alias="orders_sum" />
         </aggregation-select-items>
@@ -38,6 +46,10 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="53" original-literals="t_order" />
+        </table-tokens>
+        <order-by-token begin-position-of-statement="77" begin-position-of-prepared-statement="77"/>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(order_id)" aggregation-type="COUNT" alias="orders_count" />
         </aggregation-select-items>
@@ -52,6 +64,10 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="51" original-literals="t_order" />
+        </table-tokens>
+        <order-by-token begin-position-of-statement="75" begin-position-of-prepared-statement="75"/>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(order_id)" aggregation-type="MAX" alias="max_order_id" />
         </aggregation-select-items>
@@ -66,6 +82,10 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="51" original-literals="t_order" />
+        </table-tokens>
+        <order-by-token begin-position-of-statement="75" begin-position-of-prepared-statement="75"/>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(order_id)" aggregation-type="MIN" alias="min_order_id"/>
         </aggregation-select-items>
@@ -80,6 +100,16 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="49" original-literals="t_order" />
+        </table-tokens>
+        <items-token begin-position="44">
+            <items>
+                <item>COUNT(order_id) AS AVG_DERIVED_COUNT_0 </item>
+                <item>SUM(order_id) AS AVG_DERIVED_SUM_0 </item>
+            </items>
+        </items-token>
+        <order-by-token begin-position-of-statement="73" begin-position-of-prepared-statement="73"/>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(order_id)" aggregation-type="AVG" alias="orders_avg">
                 <derived-column inner-expression="(order_id)" aggregation-type="COUNT" alias="AVG_DERIVED_COUNT_0" />
@@ -97,6 +127,9 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="49" original-literals="t_order" />
+        </table-tokens>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM" alias="orders_sum" />
         </aggregation-select-items>
@@ -112,6 +145,16 @@
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="36" original-literals="t_order" />
+            <table-token begin-position="51" original-literals="t_order_item" />
+        </table-tokens>
+        <items-token begin-position="31">
+            <items>
+                <item>o.user_id AS GROUP_BY_DERIVED_0 </item>
+            </items>
+        </items-token>
+        <order-by-token begin-position-of-statement="195" begin-position-of-prepared-statement="194" />
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -137,6 +180,11 @@
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="47" original-literals="t_order" />
+            <table-token begin-position="62" original-literals="t_order_item" />
+        </table-tokens>
+        <order-by-token begin-position-of-statement="206" begin-position-of-prepared-statement="205" />
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -161,6 +209,11 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="20" original-literals="t_order" />
+        </table-tokens>
+        <row-count-token row-count="5" begin-position="51" />
+        <order-by-token begin-position-of-statement="45" begin-position-of-prepared-statement="45" />
         <group-by-columns>
             <group-by-column name="user_id" order-by-type="ASC" />
         </group-by-columns>
@@ -173,6 +226,10 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="35" original-literals="t_order" />
+        </table-tokens>
+        <row-count-token row-count="5" begin-position="89" />
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM"/>
         </aggregation-select-items>
