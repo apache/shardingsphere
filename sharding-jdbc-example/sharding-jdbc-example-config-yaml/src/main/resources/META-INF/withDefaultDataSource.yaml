@@ -1,4 +1,4 @@
-dataSource:
+dataSources:
   ds_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds_yaml_0
@@ -13,24 +13,27 @@ dataSource:
 tables:
   t_order: 
     actualTables: t_order_${0..1}
-    tableStrategy:
-      shardingColumns: order_id
-      algorithmExpression: t_order_${order_id % 2}
+    tableStrategy: 
+      inline:
+        shardingColumn: order_id
+        algorithmInlineExpression: t_order_${order_id % 2}
         
   t_order_item:
     actualTables: t_order_item_${0..1}
     #绑定表中其余的表的策略与第一张表的策略相同
     tableStrategy: 
-      shardingColumns: order_id
-      algorithmExpression: t_order_item_${order_id % 2}  
+      inline:
+        shardingColumn: order_id
+        algorithmInlineExpression: t_order_item_${order_id % 2}  
 
 bindingTables:
-  - tableNames: t_order,t_order_item
+  - t_order,t_order_item
   
 #默认数据库分片策略
 defaultDatabaseStrategy:
-  shardingColumns: user_id
-  algorithmExpression: ds_${user_id % 2}
+  inline:
+    shardingColumn: user_id
+    algorithmInlineExpression: ds_${user_id % 2}
 
 props:
   sql.show: false
