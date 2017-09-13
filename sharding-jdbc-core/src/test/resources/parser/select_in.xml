@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectInWithNullParameter" parameters="1,null">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <table-tokens>
+            <table-token begin-position="14" original-literals="t_order" />
+        </table-tokens>
+    </assert>
+</asserts>
