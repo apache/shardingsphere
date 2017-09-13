@@ -107,6 +107,8 @@ public class SQLAssertHelper {
         for (String each : parameters) {
             if (each.contains("'")) {
                 preparedStatement.setString(index++, each.replace("'", ""));
+            } else if ("null".equalsIgnoreCase(each)) {
+                preparedStatement.setObject(index++, null);
             } else {
                 preparedStatement.setInt(index++, Integer.valueOf(each));
             }
