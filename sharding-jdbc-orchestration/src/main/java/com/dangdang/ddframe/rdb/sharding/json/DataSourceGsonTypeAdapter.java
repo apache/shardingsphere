@@ -27,9 +27,9 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 /**
  * 作业配置的Json转换适配器.
@@ -48,7 +48,7 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
     public NamedDataSource read(final JsonReader in) throws IOException {
         String name = "";
         String clazz = "";
-        Map<String, String> properties = new HashMap<>(64);
+        Map<String, String> properties = new TreeMap<>();
         in.beginObject();
         while (in.hasNext()) {
             String jsonName = in.nextName();
@@ -78,8 +78,8 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
         out.name("name").value(value.getName());
         out.name("clazz").value(value.getDataSource().getClass().getName());
         Method[] methods = value.getDataSource().getClass().getDeclaredMethods();
-        Map<String, Method> getterMethods = new HashMap<>(methods.length, 1);
-        Map<String, Method> setterMethods = new HashMap<>(methods.length, 1);
+        Map<String, Method> getterMethods = new TreeMap<>();
+        Map<String, Method> setterMethods = new TreeMap<>();
         for (Method each : methods) {
             if (isGetterMethod(each)) {
                 getterMethods.put(getPropertyName(each), each);
@@ -124,7 +124,7 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
     }
     
     private Map<String, Method> getPairedGetterMethods(final Map<String, Method> getterMethods, final Map<String, Method> setterMethods) {
-        Map<String, Method> result = new HashMap<>(getterMethods.size());
+        Map<String, Method> result = new TreeMap<>();
         for (Entry<String, Method> entry : getterMethods.entrySet()) {
             if (setterMethods.containsKey(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
