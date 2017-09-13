@@ -12,7 +12,6 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-jdbc-config-common</module>
         <module>sharding-jdbc-config-yaml</module>
         <module>sharding-jdbc-config-spring</module>
     </modules>
