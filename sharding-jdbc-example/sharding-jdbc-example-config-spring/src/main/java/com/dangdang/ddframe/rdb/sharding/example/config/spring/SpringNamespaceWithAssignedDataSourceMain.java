@@ -35,7 +35,6 @@ public final class SpringNamespaceWithAssignedDataSourceMain {
         service.select();
         service.delete();
         service.select();
-    
         ConfigService configService =  applicationContext.getBean(ConfigService.class);
         configService.select();
     }
