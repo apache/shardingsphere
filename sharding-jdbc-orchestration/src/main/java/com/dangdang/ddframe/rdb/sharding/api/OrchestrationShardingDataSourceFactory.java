@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.json.DataSourceJsonConverter;
 import com.dangdang.ddframe.rdb.sharding.json.GsonFactory;
+import com.dangdang.ddframe.rdb.sharding.json.ShardingRuleConfigConverter;
 import com.dangdang.ddframe.rdb.sharding.reg.base.CoordinatorRegistryCenter;
 import com.google.common.base.Charsets;
 import lombok.AccessLevel;
@@ -105,11 +106,16 @@ public final class OrchestrationShardingDataSourceFactory {
                 if (path.isEmpty()) {
                     return;
                 }
-                if (("/" + name + "/config/sharding").equals(path) || ("/" + name + "/config/datasource").equals(path)) {
-                    ShardingRuleConfig newShardingRuleConfig = GsonFactory.getGson().fromJson(new String(childData.getData(), Charsets.UTF_8), ShardingRuleConfig.class);
+                if (("/" + name + "/config/datasource").equals(path)) {
                     Map<String, DataSource> newDataSourceMap = DataSourceJsonConverter.fromJson(new String(childData.getData(), Charsets.UTF_8));
+                    ShardingRuleConfig shardingRuleConfig = ShardingRuleConfigConverter.fromJson(registryCenter.get("/" + name + "/config/sharding"));
                     // TODO props
-                    shardingDataSource.renew(newShardingRuleConfig.build(newDataSourceMap), new Properties());
+                    shardingDataSource.renew(shardingRuleConfig.build(newDataSourceMap), new Properties());
+                } else if (("/" + name + "/config/sharding").equals(path)) {
+                    ShardingRuleConfig newShardingRuleConfig = ShardingRuleConfigConverter.fromJson(new String(childData.getData(), Charsets.UTF_8));
+                    Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
+                    // TODO props
+                    shardingDataSource.renew(newShardingRuleConfig.build(dataSourceMap), new Properties());
                 }
             }
         });

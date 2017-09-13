@@ -32,7 +32,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 /**
- * 作业配置的Json转换适配器.
+ * Data source gson type adapter.
  *
  * @author zhangliang
  */

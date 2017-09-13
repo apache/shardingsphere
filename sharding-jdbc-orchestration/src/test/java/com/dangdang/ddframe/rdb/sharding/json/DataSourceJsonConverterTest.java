@@ -48,10 +48,10 @@ public final class DataSourceJsonConverterTest {
     
     @Test
     public void assertFromJson() {
-        Map<String, DataSource> dataSources = DataSourceJsonConverter.fromJson(dataSourceMapJson);
-        assertThat(dataSources.size(), is(2));
-        assertDataSource((BasicDataSource) dataSources.get("ds_jdbc_0"), (BasicDataSource) createDataSource("ds_jdbc_0"));
-        assertDataSource((BasicDataSource) dataSources.get("ds_jdbc_1"), (BasicDataSource) createDataSource("ds_jdbc_1"));
+        Map<String, DataSource> actual = DataSourceJsonConverter.fromJson(dataSourceMapJson);
+        assertThat(actual.size(), is(2));
+        assertDataSource((BasicDataSource) actual.get("ds_jdbc_0"), (BasicDataSource) createDataSource("ds_jdbc_0"));
+        assertDataSource((BasicDataSource) actual.get("ds_jdbc_1"), (BasicDataSource) createDataSource("ds_jdbc_1"));
     }
     
     private void assertDataSource(final BasicDataSource actual, final BasicDataSource expect) {
@@ -60,7 +60,6 @@ public final class DataSourceJsonConverterTest {
         assertThat(actual.getDefaultTransactionIsolation(), is(expect.getDefaultTransactionIsolation()));
         assertThat(actual.getRemoveAbandonedTimeout(), is(expect.getRemoveAbandonedTimeout()));
     }
-    
     
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2, 1);

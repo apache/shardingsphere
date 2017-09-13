@@ -46,7 +46,7 @@ public final class DataSourceJsonConverter {
      * Convert data source map to json.
      * 
      * @param dataSources data source map
-     * @return sharding rule configuration json string
+     * @return data source map json string
      */
     public static String toJson(final Map<String, DataSource> dataSources) {
         Collection<NamedDataSource> result = new LinkedList<>();
