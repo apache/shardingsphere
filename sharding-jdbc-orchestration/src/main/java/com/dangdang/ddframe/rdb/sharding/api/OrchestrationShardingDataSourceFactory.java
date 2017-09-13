@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.api;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.json.DataSourceJsonConverter;
-import com.dangdang.ddframe.rdb.sharding.json.GsonFactory;
 import com.dangdang.ddframe.rdb.sharding.json.ShardingRuleConfigConverter;
 import com.dangdang.ddframe.rdb.sharding.reg.base.CoordinatorRegistryCenter;
 import com.google.common.base.Charsets;
@@ -88,7 +87,7 @@ public final class OrchestrationShardingDataSourceFactory {
                                            final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final ShardingRuleConfig shardingRuleConfig) {
         registryCenter.init();
         registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
-        registryCenter.persist("/" + name + "/config/sharding", GsonFactory.getGson().toJson(shardingRuleConfig));
+        registryCenter.persist("/" + name + "/config/sharding", ShardingRuleConfigConverter.toJson(shardingRuleConfig));
         registryCenter.addCacheData("/" + name + "/config");
     }
     

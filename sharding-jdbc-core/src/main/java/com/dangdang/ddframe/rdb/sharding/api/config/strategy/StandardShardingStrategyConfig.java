@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardi
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.RangeShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.StandardShardingStrategy;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,7 +46,7 @@ public class StandardShardingStrategyConfig implements ShardingStrategyConfig {
     public ShardingStrategy build() {
         Preconditions.checkNotNull(shardingColumn, "Sharding column cannot be null.");
         Preconditions.checkNotNull(preciseAlgorithmClassName, "Precise algorithm class cannot be null.");
-        if (null == rangeAlgorithmClassName) {
+        if (Strings.isNullOrEmpty(rangeAlgorithmClassName)) {
             return new StandardShardingStrategy(shardingColumn, ShardingAlgorithmFactory.newInstance(preciseAlgorithmClassName, PreciseShardingAlgorithm.class));
         }
         return new StandardShardingStrategy(shardingColumn, ShardingAlgorithmFactory.newInstance(preciseAlgorithmClassName, PreciseShardingAlgorithm.class), 
