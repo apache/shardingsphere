@@ -8,7 +8,7 @@
     
     <modules>
         <module>sharding-jdbc-core</module>
-        <module>sharding-jdbc-config-parent</module>
+        <module>sharding-jdbc-config</module>
         <module>sharding-jdbc-transaction-parent</module>
         <module>sharding-jdbc-orchestration</module>
     </modules>

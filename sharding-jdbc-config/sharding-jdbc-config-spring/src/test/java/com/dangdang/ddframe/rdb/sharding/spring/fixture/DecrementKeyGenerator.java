@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.fixture;
+package com.dangdang.ddframe.rdb.sharding.spring.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 
