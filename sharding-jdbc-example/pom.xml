@@ -14,6 +14,7 @@
         <module>sharding-jdbc-example-config-spring-masterslave</module>
         <module>sharding-jdbc-example-jdbc-masterslave</module>
         <module>sharding-jdbc-example-jdbc-transaction</module>
+        <module>sharding-jdbc-example-orchestration</module>
     </modules>
     
     <properties>
@@ -64,6 +65,12 @@
             <artifactId>sharding-jdbc-config-spring</artifactId>
             <version>${sharding-jdbc.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.dangdang</groupId>
+            <artifactId>sharding-jdbc-orchestration</artifactId>
+            <version>${sharding-jdbc.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
