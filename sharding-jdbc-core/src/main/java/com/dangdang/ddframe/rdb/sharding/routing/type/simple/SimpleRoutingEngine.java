@@ -18,9 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.routing.type.simple;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.rule.DataNode;
-import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
@@ -30,6 +27,9 @@ import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
+import com.dangdang.ddframe.rdb.sharding.rule.DataNode;
+import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.rule.TableRule;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +37,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Simple routing engine.
@@ -64,11 +62,11 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         List<ShardingValue> databaseShardingValues = getDatabaseShardingValues(tableRule);
         List<ShardingValue> tableShardingValues = getTableShardingValues(tableRule);
         Collection<String> routedDataSources = routeDataSources(tableRule, databaseShardingValues);
-        Map<String, Collection<String>> routedMap = new LinkedHashMap<>(routedDataSources.size());
+        Collection<DataNode> routedDataNodes = new LinkedList<>();
         for (String each : routedDataSources) {
-            routedMap.put(each, routeTables(tableRule, each, tableShardingValues));
+            routedDataNodes.addAll(routeTables(tableRule, each, tableShardingValues));
         }
-        return generateRoutingResult(tableRule, routedMap);
+        return generateRoutingResult(routedDataNodes);
     }
     
     private List<ShardingValue> getDatabaseShardingValues(final TableRule tableRule) {
@@ -124,26 +122,25 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private Collection<String> routeTables(final TableRule tableRule, final String routedDataSource, final List<ShardingValue> tableShardingValues) {
+    private Collection<DataNode> routeTables(final TableRule tableRule, final String routedDataSource, final List<ShardingValue> tableShardingValues) {
         if (tableShardingValues.isEmpty() && tableRule.isDynamic()) {
             throw new UnsupportedOperationException("Dynamic table should contain sharding value.");
         }
         Collection<String> availableTargetTables = tableRule.isDynamic() ? Collections.<String>emptyList() : tableRule.getActualTableNames(routedDataSource);
-        if (tableShardingValues.isEmpty()) {
-            return availableTargetTables;
+        Collection<String> routedTables = tableShardingValues.isEmpty() ? availableTargetTables
+                : shardingRule.getTableShardingStrategy(tableRule).doSharding(availableTargetTables, tableShardingValues);
+        Preconditions.checkState(!routedTables.isEmpty(), "no table route info");
+        Collection<DataNode> result = new LinkedList<>();
+        for (String each : routedTables) {
+            result.add(new DataNode(routedDataSource, each));
         }
-        Collection<String> result = shardingRule.getTableShardingStrategy(tableRule).doSharding(availableTargetTables, tableShardingValues);
-        Preconditions.checkState(!result.isEmpty(), "no table route info");
         return result;
     }
     
-    private RoutingResult generateRoutingResult(final TableRule tableRule, final Map<String, Collection<String>> routedMap) {
+    private RoutingResult generateRoutingResult(final Collection<DataNode> routedDataNodes) {
         RoutingResult result = new RoutingResult();
-        for (Entry<String, Collection<String>> entry : routedMap.entrySet()) {
-            Collection<DataNode> dataNodes = tableRule.getActualDataNodes(entry.getKey(), entry.getValue());
-            for (DataNode each : dataNodes) {
-                result.getTableUnits().getTableUnits().add(new TableUnit(each.getDataSourceName(), logicTableName, each.getTableName()));
-            }
+        for (DataNode each : routedDataNodes) {
+            result.getTableUnits().getTableUnits().add(new TableUnit(each.getDataSourceName(), logicTableName, each.getTableName()));
         }
         return result;
     }
