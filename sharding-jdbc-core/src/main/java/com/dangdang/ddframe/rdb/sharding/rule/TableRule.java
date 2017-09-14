@@ -104,35 +104,6 @@ public final class TableRule {
     }
     
     /**
-     * Get actual data nodes via target data source and actual tables.
-     *
-     * @param targetDataSource target data source name
-     * @param targetTables target actual tables.
-     * @return actual data nodes
-     */
-    public Collection<DataNode> getActualDataNodes(final String targetDataSource, final Collection<String> targetTables) {
-        return dynamic ? getDynamicDataNodes(targetDataSource, targetTables) : getStaticDataNodes(targetDataSource, targetTables);
-    }
-    
-    private Collection<DataNode> getDynamicDataNodes(final String targetDataSource, final Collection<String> targetTables) {
-        Collection<DataNode> result = new LinkedHashSet<>(targetTables.size());
-        for (String each : targetTables) {
-            result.add(new DataNode(targetDataSource, each));
-        }
-        return result;
-    }
-    
-    private Collection<DataNode> getStaticDataNodes(final String targetDataSource, final Collection<String> targetTables) {
-        Collection<DataNode> result = new LinkedHashSet<>(actualDataNodes.size());
-        for (DataNode each : actualDataNodes) {
-            if (targetDataSource.equals(each.getDataSourceName()) && targetTables.contains(each.getTableName())) {
-                result.add(each);
-            }
-        }
-        return result;
-    }
-    
-    /**
      * Get actual data source names.
      *
      * @return actual data source names
