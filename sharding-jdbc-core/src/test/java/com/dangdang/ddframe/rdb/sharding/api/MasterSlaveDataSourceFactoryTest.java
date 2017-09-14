@@ -17,13 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.rule.MasterSlaveRule;
+import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,18 +36,26 @@ public final class MasterSlaveDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceForSingleSlave() throws SQLException {
-        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
-        slaveDataSourceMap.put("slave_ds", new TestDataSource("slave_ds"));
-        assertThat(MasterSlaveDataSourceFactory.createDataSource(
-                new MasterSlaveRule("logic_ds", "master_ds", new TestDataSource("master_ds"), slaveDataSourceMap)), instanceOf(MasterSlaveDataSource.class));
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("master_ds", new TestDataSource("master_ds"));
+        dataSourceMap.put("slave_ds", new TestDataSource("slave_ds"));
+        MasterSlaveRuleConfig masterSlaveRuleConfig = new MasterSlaveRuleConfig();
+        masterSlaveRuleConfig.setName("logic_ds");
+        masterSlaveRuleConfig.setMasterDataSourceName("master_ds");
+        masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slave_ds"));
+        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig), instanceOf(MasterSlaveDataSource.class));
     }
     
     @Test
     public void assertCreateDataSourceForMultipleSlaves() throws SQLException {
-        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(2, 1);
-        slaveDataSourceMap.put("slave_ds_0", new TestDataSource("slave_ds_0"));
-        slaveDataSourceMap.put("slave_ds_1", new TestDataSource("slave_ds_1"));
-        assertThat(MasterSlaveDataSourceFactory.createDataSource(
-                new MasterSlaveRule("logic_ds", "master_ds", new TestDataSource("master_ds"), slaveDataSourceMap)), instanceOf(MasterSlaveDataSource.class));
+        Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
+        dataSourceMap.put("master_ds", new TestDataSource("master_ds"));
+        dataSourceMap.put("slave_ds_0", new TestDataSource("slave_ds_0"));
+        dataSourceMap.put("slave_ds_1", new TestDataSource("slave_ds_1"));
+        MasterSlaveRuleConfig masterSlaveRuleConfig = new MasterSlaveRuleConfig();
+        masterSlaveRuleConfig.setName("logic_ds");
+        masterSlaveRuleConfig.setMasterDataSourceName("master_ds");
+        masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("slave_ds_0", "slave_ds_1"));
+        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig), instanceOf(MasterSlaveDataSource.class));
     }
 }

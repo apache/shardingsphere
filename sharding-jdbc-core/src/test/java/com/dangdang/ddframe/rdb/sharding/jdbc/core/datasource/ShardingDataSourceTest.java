@@ -18,12 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
+import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingPropertiesConstant;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
-import com.dangdang.ddframe.rdb.sharding.rule.MasterSlaveRule;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -31,6 +31,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -56,12 +57,17 @@ public final class ShardingDataSourceTest {
     
     @Test(expected = IllegalStateException.class)
     public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferentForMasterSlave() throws SQLException {
-        DataSource dataSource1 = mockDataSource("MySQL");
+        final DataSource dataSource1 = mockDataSource("MySQL");
         DataSource masterDataSource = mockDataSource("H2");
         DataSource slaveDataSource = mockDataSource("H2");
-        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
-        slaveDataSourceMap.put("slaveDataSource", slaveDataSource);
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(new MasterSlaveRule("ds", "masterDataSource", masterDataSource, slaveDataSourceMap));
+        Map<String, DataSource> masterSlaveDataSourceMap = new HashMap<>(2, 1);
+        masterSlaveDataSourceMap.put("masterDataSource", masterDataSource);
+        masterSlaveDataSourceMap.put("slaveDataSource", slaveDataSource);
+        MasterSlaveRuleConfig masterSlaveRuleConfig = new MasterSlaveRuleConfig();
+        masterSlaveRuleConfig.setName("ds");
+        masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
+        masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slaveDataSource"));
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
@@ -83,12 +89,17 @@ public final class ShardingDataSourceTest {
     
     @Test
     public void assertGetDatabaseProductNameForMasterSlave() throws SQLException {
-        DataSource dataSource1 = mockDataSource("H2");
+        final DataSource dataSource1 = mockDataSource("H2");
         DataSource masterDataSource = mockDataSource("H2");
         DataSource slaveDataSource = mockDataSource("H2");
-        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
+        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(2, 1);
+        slaveDataSourceMap.put("masterDataSource", masterDataSource);
         slaveDataSourceMap.put("slaveDataSource", slaveDataSource);
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(new MasterSlaveRule("ds", "masterDataSource", masterDataSource, slaveDataSourceMap));
+        MasterSlaveRuleConfig masterSlaveRuleConfig = new MasterSlaveRuleConfig();
+        masterSlaveRuleConfig.setName("ds");
+        masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
+        masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slaveDataSource"));
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(slaveDataSourceMap, masterSlaveRuleConfig);
         DataSource dataSource3 = mockDataSource("H2");
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
         dataSourceMap.put("ds1", dataSource1);

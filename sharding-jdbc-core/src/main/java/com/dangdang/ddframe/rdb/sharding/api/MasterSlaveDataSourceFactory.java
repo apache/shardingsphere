@@ -17,13 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.rule.MasterSlaveRule;
+import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Master-slave data source factory.
@@ -38,11 +39,12 @@ public final class MasterSlaveDataSourceFactory {
      *
      * <p>One master data source can configure multiple slave data source.</p>
      *
-     * @param masterSlaveRule master-slave rule
+     * @param dataSourceMap data source map
+     * @param masterSlaveRuleConfig master-slave rule configuration
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final MasterSlaveRule masterSlaveRule) throws SQLException {
-        return new MasterSlaveDataSource(masterSlaveRule);
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfig masterSlaveRuleConfig) throws SQLException {
+        return new MasterSlaveDataSource(masterSlaveRuleConfig.build(dataSourceMap));
     }
 }
