@@ -17,10 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.json.DataSourceJsonConverter;
-import com.dangdang.ddframe.rdb.sharding.json.ShardingRuleConfigConverter;
+import com.dangdang.ddframe.rdb.sharding.json.GsonFactory;
 import com.dangdang.ddframe.rdb.sharding.reg.base.CoordinatorRegistryCenter;
 import com.google.common.base.Charsets;
 import lombok.AccessLevel;
@@ -34,15 +34,14 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Properties;
 
 /**
- * Orchestration sharding data source factory.
+ * Orchestration master slave data source factory.
  * 
  * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OrchestrationShardingDataSourceFactory {
+public final class OrchestrationMasterSlaveDataSourceFactory {
     
     /**
      * Create sharding data source.
@@ -50,48 +49,27 @@ public final class OrchestrationShardingDataSourceFactory {
      * @param name name of sharding data source
      * @param registryCenter registry center
      * @param dataSourceMap data source map
-     * @param shardingRuleConfig rule configuration for databases and tables sharding
+     * @param masterSlaveRuleConfig rule configuration for databases and tables sharding
      * @return sharding data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(
-            final String name, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final ShardingRuleConfig shardingRuleConfig) throws SQLException {
-        initRegistryCenter(name, registryCenter, dataSourceMap, shardingRuleConfig);
-        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
-        addConfigurationChangeListener(name, registryCenter, result);
-        return result;
-    }
-    
-    /**
-     * Create sharding data source.
-     * 
-     * @param name name of sharding data source
-     * @param registryCenter registry center
-     * @param dataSourceMap data source map
-     * @param shardingRuleConfig rule configuration for databases and tables sharding
-     * @param props properties for data source
-     * @return sharding data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSource(
-            final String name, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, 
-            final ShardingRuleConfig shardingRuleConfig, final Properties props) throws SQLException {
-        initRegistryCenter(name, registryCenter, dataSourceMap, shardingRuleConfig);
-        // TODO props
-        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, props);
+            final String name, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfig masterSlaveRuleConfig) throws SQLException {
+        initRegistryCenter(name, registryCenter, dataSourceMap, masterSlaveRuleConfig);
+        MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig);
         addConfigurationChangeListener(name, registryCenter, result);
         return result;
     }
     
     private static void initRegistryCenter(final String name, 
-                                           final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final ShardingRuleConfig shardingRuleConfig) {
+                                           final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfig masterSlaveRuleConfig) {
         registryCenter.init();
         registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
-        registryCenter.persist("/" + name + "/config/sharding", ShardingRuleConfigConverter.toJson(shardingRuleConfig));
+        registryCenter.persist("/" + name + "/config/masterslave", GsonFactory.getGson().toJson(masterSlaveRuleConfig));
         registryCenter.addCacheData("/" + name + "/config");
     }
     
-    private static void addConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
+    private static void addConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final MasterSlaveDataSource masterSlaveDataSource) {
         TreeCache cache = (TreeCache) registryCenter.getRawCache("/" + name + "/config");
         cache.getListenable().addListener(new TreeCacheListener() {
             
@@ -107,14 +85,12 @@ public final class OrchestrationShardingDataSourceFactory {
                 }
                 if (("/" + name + "/config/datasource").equals(path)) {
                     Map<String, DataSource> newDataSourceMap = DataSourceJsonConverter.fromJson(new String(childData.getData(), Charsets.UTF_8));
-                    ShardingRuleConfig shardingRuleConfig = ShardingRuleConfigConverter.fromJson(registryCenter.get("/" + name + "/config/sharding"));
-                    // TODO props
-                    shardingDataSource.renew(shardingRuleConfig.build(newDataSourceMap), new Properties());
-                } else if (("/" + name + "/config/sharding").equals(path)) {
-                    ShardingRuleConfig newShardingRuleConfig = ShardingRuleConfigConverter.fromJson(new String(childData.getData(), Charsets.UTF_8));
+                    MasterSlaveRuleConfig masterSlaveRuleConfig = GsonFactory.getGson().fromJson(registryCenter.get("/" + name + "/config/masterslave"), MasterSlaveRuleConfig.class);
+                    masterSlaveDataSource.renew(masterSlaveRuleConfig.build(newDataSourceMap));
+                } else if (("/" + name + "/config/masterslave").equals(path)) {
+                    MasterSlaveRuleConfig newMasterSlaveRuleConfig = GsonFactory.getGson().fromJson(new String(childData.getData(), Charsets.UTF_8), MasterSlaveRuleConfig.class);
                     Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
-                    // TODO props
-                    shardingDataSource.renew(newShardingRuleConfig.build(dataSourceMap), new Properties());
+                    masterSlaveDataSource.renew(newMasterSlaveRuleConfig.build(dataSourceMap));
                 }
             }
         });

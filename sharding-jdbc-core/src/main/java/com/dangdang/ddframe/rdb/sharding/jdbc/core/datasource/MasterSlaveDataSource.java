@@ -17,11 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
-import com.dangdang.ddframe.rdb.sharding.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.MasterSlaveConnection;
+import com.dangdang.ddframe.rdb.sharding.rule.MasterSlaveRule;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 
@@ -30,6 +30,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         }
     };
     
-    private final MasterSlaveRule masterSlaveRule;
+    private MasterSlaveRule masterSlaveRule;
     
     public MasterSlaveDataSource(final MasterSlaveRule masterSlaveRule) throws SQLException {
         super(getAllDataSources(masterSlaveRule.getMasterDataSource(), masterSlaveRule.getSlaveDataSourceMap().values()));
@@ -103,6 +104,18 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private boolean isMasterRoute(final SQLType sqlType) {
         return SQLType.DQL != sqlType || DML_FLAG.get() || HintManagerHolder.isMasterRouteOnly();
+    }
+    
+    /**
+     * Renew master-slave data source.
+     *
+     * @param masterSlaveRule new master-slave rule
+     * @throws SQLException SQL exception
+     */
+    public void renew(final MasterSlaveRule masterSlaveRule) throws SQLException {
+        Preconditions.checkState(getDatabaseType() == getDatabaseType(Collections.singletonList(masterSlaveRule.getMasterDataSource())), "Cannot change database type dynamically.");
+        Preconditions.checkState(getDatabaseType() == getDatabaseType(masterSlaveRule.getSlaveDataSourceMap().values()), "Cannot change database type dynamically.");
+        this.masterSlaveRule = masterSlaveRule;
     }
     
     @Override
