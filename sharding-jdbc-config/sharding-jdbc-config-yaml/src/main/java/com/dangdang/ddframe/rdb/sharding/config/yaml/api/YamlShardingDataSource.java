@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.api;
 
-import com.dangdang.ddframe.rdb.sharding.config.yaml.internel.ShardingRuleBuilder;
-import com.dangdang.ddframe.rdb.sharding.config.yaml.internel.YamlConfig;
+import com.dangdang.ddframe.rdb.sharding.config.yaml.internel.sharding.ShardingRuleBuilder;
+import com.dangdang.ddframe.rdb.sharding.config.yaml.internel.sharding.YamlShardingConfig;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -36,7 +36,6 @@ import java.util.Map;
 /**
  * Sharding datasource for yaml.
  *
- * @author gaohongtao
  * @author zhangliang
  */
 public class YamlShardingDataSource extends ShardingDataSource {
@@ -57,16 +56,16 @@ public class YamlShardingDataSource extends ShardingDataSource {
         super(new ShardingRuleBuilder(dataSourceMap, unmarshal(yamlByteArray)).build(), unmarshal(yamlByteArray).getProps());
     }
     
-    private static YamlConfig unmarshal(final File yamlFile) throws IOException {
+    private static YamlShardingConfig unmarshal(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            return new Yaml(new Constructor(YamlConfig.class)).loadAs(inputStreamReader, YamlConfig.class);
+            return new Yaml(new Constructor(YamlShardingConfig.class)).loadAs(inputStreamReader, YamlShardingConfig.class);
         }
     }
     
-    private static YamlConfig unmarshal(final byte[] yamlByteArray) throws IOException {
-        return new Yaml(new Constructor(YamlConfig.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlConfig.class);
+    private static YamlShardingConfig unmarshal(final byte[] yamlByteArray) throws IOException {
+        return new Yaml(new Constructor(YamlShardingConfig.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlShardingConfig.class);
     }
 }

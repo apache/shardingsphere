@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.yaml.internel;
+package com.dangdang.ddframe.rdb.sharding.config.yaml.internel.sharding;
 
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
@@ -35,7 +35,7 @@ public final class ShardingRuleBuilder {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final YamlConfig yamlConfig;
+    private final YamlShardingConfig yamlConfig;
     
     /**
      * Build sharding rule from yaml.

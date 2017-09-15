@@ -15,40 +15,35 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.yaml.internel;
+package com.dangdang.ddframe.rdb.sharding.config.yaml.internel.ms;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Configuration for yaml.
+ * Master slave configuration for yaml.
  *
  * @author caohao
  */
 @Getter
 @Setter
-public class YamlConfig {
+public class YamlMasterSlaveConfig {
     
     private Map<String, DataSource> dataSources = new HashMap<>();
     
-    private String defaultDataSourceName;
+    private String name;
     
-    private Map<String, YamlTableRuleConfig> tables = new HashMap<>();
+    private String masterDataSourceName;
     
-    private List<String> bindingTables = new ArrayList<>();
+    private Collection<String> slaveDataSourceNames;
     
-    private YamlShardingStrategyConfig defaultDatabaseStrategy;
-    
-    private YamlShardingStrategyConfig defaultTableStrategy;
-    
-    private String defaultKeyGeneratorClass;
+    private String masterSlaveLoadBalanceStrategyClassName;
     
     private Properties props = new Properties();
 }

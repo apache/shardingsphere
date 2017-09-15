@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * Sharding datasource for spring namespace.
+ * Master-slave datasource for spring namespace.
  *
  * @author zhangliang
  */

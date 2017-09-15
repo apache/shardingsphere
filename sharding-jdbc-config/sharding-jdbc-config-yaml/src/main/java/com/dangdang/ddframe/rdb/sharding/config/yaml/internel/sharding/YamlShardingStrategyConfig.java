@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.sharding.config.yaml.internel;
+package com.dangdang.ddframe.rdb.sharding.config.yaml.internel.sharding;
 
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfig;
