@@ -35,7 +35,7 @@ public final class ShardingRuleBuilder {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final YamlShardingConfig yamlConfig;
+    private final YamlShardingConfig yamlShardingConfig;
     
     /**
      * Build sharding rule from yaml.
@@ -44,20 +44,20 @@ public final class ShardingRuleBuilder {
      */
     public ShardingRule build() {
         ShardingRuleConfig result = new ShardingRuleConfig();
-        result.setDefaultDataSourceName(yamlConfig.getDefaultDataSourceName());
-        for (Entry<String, YamlTableRuleConfig> entry : yamlConfig.getTables().entrySet()) {
+        result.setDefaultDataSourceName(yamlShardingConfig.getDefaultDataSourceName());
+        for (Entry<String, YamlTableRuleConfig> entry : yamlShardingConfig.getTables().entrySet()) {
             YamlTableRuleConfig tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
             result.getTableRuleConfigs().add(tableRuleConfig.getTableRuleConfig());
         }
-        result.getBindingTableGroups().addAll(yamlConfig.getBindingTables());
-        if (null != yamlConfig.getDefaultDatabaseStrategy()) {
-            result.setDefaultDatabaseShardingStrategyConfig(yamlConfig.getDefaultDatabaseStrategy().getShardingStrategy());
+        result.getBindingTableGroups().addAll(yamlShardingConfig.getBindingTables());
+        if (null != yamlShardingConfig.getDefaultDatabaseStrategy()) {
+            result.setDefaultDatabaseShardingStrategyConfig(yamlShardingConfig.getDefaultDatabaseStrategy().getShardingStrategy());
         }
-        if (null != yamlConfig.getDefaultTableStrategy()) {
-            result.setDefaultTableShardingStrategyConfig(yamlConfig.getDefaultTableStrategy().getShardingStrategy());
+        if (null != yamlShardingConfig.getDefaultTableStrategy()) {
+            result.setDefaultTableShardingStrategyConfig(yamlShardingConfig.getDefaultTableStrategy().getShardingStrategy());
         }
-        result.setDefaultKeyGeneratorClass(yamlConfig.getDefaultKeyGeneratorClass());
-        return result.build(dataSourceMap.isEmpty() ? yamlConfig.getDataSources() : dataSourceMap);
+        result.setDefaultKeyGeneratorClass(yamlShardingConfig.getDefaultKeyGeneratorClass());
+        return result.build(dataSourceMap.isEmpty() ? yamlShardingConfig.getDataSources() : dataSourceMap);
     }
 }

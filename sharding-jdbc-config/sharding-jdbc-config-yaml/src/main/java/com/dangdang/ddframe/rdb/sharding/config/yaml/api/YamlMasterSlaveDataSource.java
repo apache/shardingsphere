@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.yaml.internel.ms.MasterSlaveRuleBuilder;
+import com.dangdang.ddframe.rdb.sharding.config.yaml.internel.ms.YamlMasterSlaveConfig;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -56,16 +56,16 @@ public class YamlMasterSlaveDataSource extends MasterSlaveDataSource {
         super(new MasterSlaveRuleBuilder(dataSourceMap, unmarshal(yamlByteArray)).build());
     }
     
-    private static MasterSlaveRuleConfig unmarshal(final File yamlFile) throws IOException {
+    private static YamlMasterSlaveConfig unmarshal(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            return new Yaml(new Constructor(MasterSlaveRuleConfig.class)).loadAs(inputStreamReader, MasterSlaveRuleConfig.class);
+            return new Yaml(new Constructor(YamlMasterSlaveConfig.class)).loadAs(inputStreamReader, YamlMasterSlaveConfig.class);
         }
     }
     
-    private static MasterSlaveRuleConfig unmarshal(final byte[] yamlByteArray) throws IOException {
-        return new Yaml(new Constructor(MasterSlaveRuleConfig.class)).loadAs(new ByteArrayInputStream(yamlByteArray), MasterSlaveRuleConfig.class);
+    private static YamlMasterSlaveConfig unmarshal(final byte[] yamlByteArray) throws IOException {
+        return new Yaml(new Constructor(YamlMasterSlaveConfig.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlMasterSlaveConfig.class);
     }
 }

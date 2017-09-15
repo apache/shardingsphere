@@ -34,7 +34,7 @@ public final class MasterSlaveRuleBuilder {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final MasterSlaveRuleConfig masterSlaveRuleConfig;
+    private final YamlMasterSlaveConfig yamlMasterSlaveConfig;
     
     /**
      * Build master-slave rule from yaml.
@@ -42,6 +42,11 @@ public final class MasterSlaveRuleBuilder {
      * @return master-slave rule from yaml
      */
     public MasterSlaveRule build() {
-        return masterSlaveRuleConfig.build(dataSourceMap);
+        MasterSlaveRuleConfig result = new MasterSlaveRuleConfig();
+        result.setName(yamlMasterSlaveConfig.getName());
+        result.setMasterDataSourceName(yamlMasterSlaveConfig.getMasterDataSourceName());
+        result.setSlaveDataSourceNames(yamlMasterSlaveConfig.getSlaveDataSourceNames());
+        result.setMasterSlaveLoadBalanceStrategyClassName(yamlMasterSlaveConfig.getMasterSlaveLoadBalanceStrategyClassName());
+        return result.build(dataSourceMap.isEmpty() ? yamlMasterSlaveConfig.getDataSources() : dataSourceMap);
     }
 }

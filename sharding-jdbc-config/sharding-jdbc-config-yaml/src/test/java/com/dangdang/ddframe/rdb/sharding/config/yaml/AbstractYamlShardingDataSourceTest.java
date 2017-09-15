@@ -17,16 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml;
 
+import org.apache.commons.dbcp.BasicDataSource;
+import org.h2.tools.RunScript;
+import org.junit.BeforeClass;
+
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import javax.sql.DataSource;
-
-import org.apache.commons.dbcp.BasicDataSource;
-import org.h2.tools.RunScript;
-import org.junit.BeforeClass;
 
 public abstract class AbstractYamlShardingDataSourceTest {
     
@@ -56,6 +56,9 @@ public abstract class AbstractYamlShardingDataSourceTest {
     }
     
     private static List<String> getSchemaFiles() {
-        return Arrays.asList("schema/db0.sql", "schema/db1.sql");
+        return Arrays.asList("schema/sharding/db0.sql", "schema/sharding/db1.sql",
+                "schema/ms/db_master.sql", "schema/ms/db_slave.sql",
+                "schema/sharding_ms/db0_master.sql", "schema/sharding_ms/db0_master.sql",
+                "schema/sharding_ms/db0_slave.sql", "schema/sharding_ms/db1_slave.sql");
     }
 }

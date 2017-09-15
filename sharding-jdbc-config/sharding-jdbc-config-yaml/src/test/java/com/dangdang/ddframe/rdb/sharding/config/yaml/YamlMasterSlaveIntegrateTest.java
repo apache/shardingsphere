@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml;
 
-import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlMasterSlaveDataSource;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -38,7 +38,7 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class YamlIntegrateTest extends AbstractYamlShardingDataSourceTest {
+public class YamlMasterSlaveIntegrateTest extends AbstractYamlShardingDataSourceTest {
     
     private final String filePath;
     
@@ -47,21 +47,19 @@ public class YamlIntegrateTest extends AbstractYamlShardingDataSourceTest {
     @Parameterized.Parameters(name = "{index}:{0}-{1}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-                {"/configWithDataSourceWithoutProps.yaml", true},
-                {"/configWithoutDataSourceWithoutProps.yaml", false},
-                {"/configWithDataSourceWithProps.yaml", true},
-                {"/configWithoutDataSourceWithProps.yaml", false},
+                {"/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true},
+                {"/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", false}
         });
     }
     
     @Test
     public void testWithDataSource() throws SQLException, URISyntaxException, IOException {
-        File yamlFile = new File(YamlIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = new YamlShardingDataSource(yamlFile);
+            dataSource = new YamlMasterSlaveDataSource(yamlFile);
         } else {
-            dataSource = new YamlShardingDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), new Function<String, DataSource>() {
+            dataSource = new YamlMasterSlaveDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave"), new Function<String, DataSource>() {
                 @Override
                 public DataSource apply(final String key) {
                     return createDataSource(key);
@@ -73,7 +71,7 @@ public class YamlIntegrateTest extends AbstractYamlShardingDataSourceTest {
              Statement stm = conn.createStatement()) {
             stm.executeQuery("SELECT * FROM t_order");
             stm.executeQuery("SELECT * FROM t_order_item");
-            stm.executeQuery("SELECT * FROM config");
+            stm.executeQuery("SELECT * FROM t_config");
         }
     }
     
