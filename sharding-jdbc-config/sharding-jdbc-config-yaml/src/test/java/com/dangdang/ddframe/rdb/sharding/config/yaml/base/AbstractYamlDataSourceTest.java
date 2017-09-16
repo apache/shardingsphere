@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.yaml;
+package com.dangdang.ddframe.rdb.sharding.config.yaml.base;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.h2.tools.RunScript;
@@ -28,12 +28,12 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class AbstractYamlShardingDataSourceTest {
+public abstract class AbstractYamlDataSourceTest {
     
     @BeforeClass
     public static void createSchema() throws SQLException {
         for (String each : getSchemaFiles()) {
-            RunScript.execute(createDataSource(getFileName(each)).getConnection(), new InputStreamReader(AbstractYamlShardingDataSourceTest.class.getClassLoader().getResourceAsStream(each)));
+            RunScript.execute(createDataSource(getFileName(each)).getConnection(), new InputStreamReader(AbstractYamlDataSourceTest.class.getClassLoader().getResourceAsStream(each)));
         }
     }
     

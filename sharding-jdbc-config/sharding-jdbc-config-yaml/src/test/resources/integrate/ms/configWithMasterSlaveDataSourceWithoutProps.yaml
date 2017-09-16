@@ -12,12 +12,11 @@ dataSources:
     password: 
     maxActive: 100
 
-name:
+name: 
   db_ms
 
 masterDataSourceName:
-  db_master
+  db_master    
 
 slaveDataSourceNames:
   - db_slave
-  

@@ -15,9 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.yaml;
+package com.dangdang.ddframe.rdb.sharding.config.yaml.integrate;
 
 import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.config.yaml.base.AbstractYamlDataSourceTest;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -38,7 +39,7 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class YamlShardingIntegrateTest extends AbstractYamlShardingDataSourceTest {
+public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
     
     private final String filePath;
     
@@ -47,16 +48,16 @@ public class YamlShardingIntegrateTest extends AbstractYamlShardingDataSourceTes
     @Parameterized.Parameters(name = "{index}:{0}-{1}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-                {"/integrate/sharding/configWithDataSourceWithoutProps.yaml", true},
-                {"/integrate/sharding/configWithoutDataSourceWithoutProps.yaml", false},
-                {"/integrate/sharding/configWithDataSourceWithProps.yaml", true},
-                {"/integrate/sharding/configWithoutDataSourceWithProps.yaml", false},
+                {"/integrate/sharding_ms/configWithDataSourceWithoutProps.yaml", true},
+                {"/integrate/sharding_ms/configWithoutDataSourceWithoutProps.yaml", false},
+                {"/integrate/sharding_ms/configWithDataSourceWithProps.yaml", true},
+                {"/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml", false},
         });
     }
     
     @Test
     public void testWithDataSource() throws SQLException, URISyntaxException, IOException {
-        File yamlFile = new File(YamlShardingIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlShardingWithMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = new YamlShardingDataSource(yamlFile);

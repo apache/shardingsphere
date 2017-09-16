@@ -1,0 +1,51 @@
+dataSources:
+  db0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+  db1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+    
+tables:
+  config:
+    actualTables: t_config
+    
+  t_order: 
+    actualTables: t_order_${0..1}
+    databaseStrategy: 
+      standard:
+        shardingColumn: order_id
+        preciseAlgorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
+    tableStrategy: 
+      inline:
+        shardingColumn: id
+        algorithmInlineExpression: t_order_${id % 2}
+  
+  t_order_item:
+    actualTables: t_order_item_${0..1}
+    #绑定表中其余的表的策略与第一张表的策略相同
+    databaseStrategy: 
+      standard:
+        shardingColumn: order_id
+        preciseAlgorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
+    tableStrategy: 
+      inline:
+        shardingColumn: id
+        algorithmInlineExpression: t_order_item_${id % 2}
+
+bindingTables:
+  - t_order,t_order_item
+#默认数据库分片策略
+defaultDatabaseStrategy:
+  none:
+defaultTableStrategy:
+  complex:
+    shardingColumns: id, order_id
+    algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
+  
