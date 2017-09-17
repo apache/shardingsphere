@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.config;
 
+import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
 import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
@@ -28,6 +29,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -53,13 +55,15 @@ public class ShardingRuleConfig {
     
     private String defaultKeyGeneratorClass;
     
+    private Collection<MasterSlaveRuleConfig> masterSlaveRuleConfigs = new LinkedList<>();
+    
     /**
      * Build sharding rule.
      *
      * @param dataSourceMap data source map
      * @return sharding rule
      */
-    public ShardingRule build(final Map<String, DataSource> dataSourceMap) {
+    public ShardingRule build(final Map<String, DataSource> dataSourceMap) throws SQLException {
         // TODO should not be null, for parsing only
         // Preconditions.checkNotNull(dataSources, "dataSources cannot be null.");
         Collection<TableRule> tableRules = new LinkedList<>();
@@ -69,6 +73,17 @@ public class ShardingRuleConfig {
         ShardingStrategy defaultDatabaseShardingStrategy = null == defaultDatabaseShardingStrategyConfig ? null : defaultDatabaseShardingStrategyConfig.build();
         ShardingStrategy defaultTableShardingStrategy = null == defaultTableShardingStrategyConfig ? null :  defaultTableShardingStrategyConfig.build();
         KeyGenerator keyGenerator = KeyGeneratorFactory.newInstance(null == defaultKeyGeneratorClass ? DefaultKeyGenerator.class.getName() : defaultKeyGeneratorClass);
+        processDataSourceMapWithMasterSlave(dataSourceMap);
         return new ShardingRule(dataSourceMap, defaultDataSourceName, tableRules, bindingTableGroups, defaultDatabaseShardingStrategy, defaultTableShardingStrategy, keyGenerator);
+    }
+    
+    private void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        for (MasterSlaveRuleConfig each : masterSlaveRuleConfigs) {
+            dataSourceMap.put(each.getName(), MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, each));
+            dataSourceMap.remove(each.getMasterDataSourceName());
+            for (String slaveDataSourceName : each.getSlaveDataSourceNames()) {
+                dataSourceMap.remove(slaveDataSourceName);
+            }
+        }
     }
 }

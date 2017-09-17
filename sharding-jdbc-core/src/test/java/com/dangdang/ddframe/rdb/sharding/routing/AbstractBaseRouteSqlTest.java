@@ -33,6 +33,7 @@ import lombok.Getter;
 import org.junit.Before;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,7 +52,7 @@ public abstract class AbstractBaseRouteSqlTest {
     private ShardingRule shardingRule;
     
     @Before
-    public void setRouteRuleContext() {
+    public void setRouteRuleContext() throws SQLException {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
         TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
         orderTableRuleConfig.setLogicTable("order");

@@ -29,6 +29,7 @@ import com.google.common.collect.Lists;
 import org.mockito.Mockito;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -69,7 +70,7 @@ public class ShardingRuleMockBuilder {
         return this;
     }
     
-    public ShardingRule build() {
+    public ShardingRule build() throws SQLException {
         Collection<TableRuleConfig> tableRuleConfigs = Lists.newArrayList(Iterators.transform(generateKeyColumnsMap.keySet().iterator(), new Function<String, TableRuleConfig>() {
             
             @Override

@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,7 +46,7 @@ public class DatabaseTest {
     private ShardingRule shardingRule;
     
     @Before
-    public void setRouteRuleContext() {
+    public void setRouteRuleContext() throws SQLException {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
         HintShardingStrategyConfig databaseShardingStrategyConfig = new HintShardingStrategyConfig();
         databaseShardingStrategyConfig.setAlgorithmClassName(OrderDatabaseHintShardingAlgorithm.class.getName());

@@ -24,12 +24,13 @@ import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Map;
 
 public abstract class AbstractRoutingDatabaseOnlyWithHintTest extends AbstractHintTest {
     
     @Override
-    protected ShardingRule getShardingRule(final Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) {
+    protected ShardingRule getShardingRule(final Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) throws SQLException {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
         HintShardingStrategyConfig shardingStrategyConfig = new HintShardingStrategyConfig();
         shardingStrategyConfig.setAlgorithmClassName(HintModuloDatabaseShardingAlgorithm.class.getName());

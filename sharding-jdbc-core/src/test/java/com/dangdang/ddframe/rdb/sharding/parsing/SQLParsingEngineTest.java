@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
@@ -53,18 +54,18 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     }
     
     @Test
-    public void assertStatement() {
+    public void assertStatement() throws SQLException {
         assertStatement(new SQLParsingEngine(getDatabaseType(), SQLPlaceholderUtil.replaceStatement(SQLStatementHelper.getSql(getTestCaseName()), parameters), buildShardingRule()).parse());
     }
     
     @Test
-    public void assertPreparedStatement() {
+    public void assertPreparedStatement() throws SQLException {
         for (DatabaseType each : SQLStatementHelper.getTypes(getTestCaseName())) {
             assertPreparedStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLStatementHelper.getSql(getTestCaseName())), buildShardingRule()).parse());
         }
     }
     
-    private ShardingRule buildShardingRule() {
+    private ShardingRule buildShardingRule() throws SQLException {
         TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order");

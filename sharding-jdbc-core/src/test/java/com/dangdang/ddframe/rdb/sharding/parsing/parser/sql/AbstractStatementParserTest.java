@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 public abstract class AbstractStatementParserTest {
     
-    protected final ShardingRule createShardingRule() {
+    protected final ShardingRule createShardingRule() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -46,7 +46,6 @@ public abstract class AbstractStatementParserTest {
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("TABLE_XXX");
         tableRuleConfig.setActualTables("table_0, table_1, table_2");
@@ -54,6 +53,7 @@ public abstract class AbstractStatementParserTest {
         complexShardingStrategyConfig.setShardingColumns("field1, field2, field3, field4, field5, field6, field7");
         complexShardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
         tableRuleConfig.setTableShardingStrategyConfig(complexShardingStrategyConfig);
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);

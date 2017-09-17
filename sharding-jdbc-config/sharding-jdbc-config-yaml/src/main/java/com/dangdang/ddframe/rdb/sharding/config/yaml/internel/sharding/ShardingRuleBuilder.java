@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -42,7 +43,7 @@ public final class ShardingRuleBuilder {
      * 
      * @return sharding rule from yaml
      */
-    public ShardingRule build() {
+    public ShardingRule build() throws SQLException {
         ShardingRuleConfig result = new ShardingRuleConfig();
         result.setDefaultDataSourceName(yamlShardingConfig.getDefaultDataSourceName());
         for (Entry<String, YamlTableRuleConfig> entry : yamlShardingConfig.getTables().entrySet()) {

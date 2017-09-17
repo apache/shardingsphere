@@ -57,7 +57,7 @@ public final class ShardingConnectionTest {
     }
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("test");

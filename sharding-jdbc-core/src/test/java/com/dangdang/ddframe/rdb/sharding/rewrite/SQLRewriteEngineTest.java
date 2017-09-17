@@ -36,6 +36,7 @@ import com.google.common.base.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ public final class SQLRewriteEngineTest {
     private Map<String, String> tableTokens;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         shardingRule = new ShardingRuleMockBuilder().addGenerateKeyColumn("table_x", "id").addBindingTable("table_y").build();
         selectStatement = new SelectStatement();
         tableTokens = new HashMap<>(1, 1);

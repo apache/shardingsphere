@@ -106,13 +106,13 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test(expected = UnsupportedOperationException.class)
-    public void parseStatementWithDeleteMultipleTable() {
+    public void parseStatementWithDeleteMultipleTable() throws SQLException {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.MySQL, "DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2", shardingRule).parse();
     }
     
     @Test(expected = UnsupportedOperationException.class)
-    public void parseStatementWithDeleteMultipleTableWithUsing() {
+    public void parseStatementWithDeleteMultipleTableWithUsing() throws SQLException {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2", shardingRule).parse();
     }
@@ -124,7 +124,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         parseWithSpecialSyntax(DatabaseType.Oracle, "DELETE /*+ index(field1) */ ONLY (TABLE_XXX) WHERE field1=1 RETURNING *");
     }
     
-    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
+    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) throws SQLException {
         ShardingRule shardingRule = createShardingRule();
         DMLStatement deleteStatement = (DMLStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule).parse();
         assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
