@@ -17,21 +17,28 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.datasource;
 
-import com.dangdang.ddframe.rdb.sharding.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.MasterSlaveLoadBalanceStrategyType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
+import com.dangdang.ddframe.rdb.sharding.rule.MasterSlaveRule;
+import lombok.Setter;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Master-slave datasource for spring namespace.
  *
  * @author zhangliang
  */
-public class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
+public class SpringMasterSlaveDataSource extends MasterSlaveDataSource implements ApplicationContextAware {
+    
+    @Setter
+    private ApplicationContext applicationContext;
     
     public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
                                        final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap) throws SQLException {
@@ -43,8 +50,18 @@ public class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
         super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategy));
     }
     
-    public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
-                                       final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceStrategyType strategyType) throws SQLException {
+    public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource, 
+                                       final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceStrategyType strategyType) throws SQLException {
         super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategyType.getStrategy()));
+    }
+    
+    @Override
+    public void renew(final MasterSlaveRule masterSlaveRule) throws SQLException {
+        // TODO move to orchestration
+        DataSourceBeanUtil.createDataSourceBean(applicationContext, masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getMasterDataSource());
+        for (Entry<String, DataSource> entry : masterSlaveRule.getSlaveDataSourceMap().entrySet()) {
+            DataSourceBeanUtil.createDataSourceBean(applicationContext, entry.getKey(), entry.getValue());
+        }
+        super.renew(masterSlaveRule);
     }
 }

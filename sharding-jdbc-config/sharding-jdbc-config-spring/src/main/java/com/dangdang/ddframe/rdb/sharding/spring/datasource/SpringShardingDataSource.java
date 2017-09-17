@@ -18,21 +18,46 @@
 package com.dangdang.ddframe.rdb.sharding.spring.datasource;
 
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
+import lombok.Setter;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
  * Sharding datasource for spring namespace.
  *
  * @author caohao
+ * @author zhanglaing
  */
-public class SpringShardingDataSource extends ShardingDataSource {
+public class SpringShardingDataSource extends ShardingDataSource implements ApplicationContextAware {
+    
+    @Setter
+    private ApplicationContext applicationContext;
     
     public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfig shardingRuleConfig, final Properties props) throws SQLException {
         super(shardingRuleConfig.build(dataSourceMap), props);
+    }
+    
+    @Override
+    public void renew(final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
+        // TODO move to orchestration
+        for (Entry<String, DataSource> entry : newShardingRule.getDataSourceMap().entrySet()) {
+            if (entry.getValue() instanceof MasterSlaveDataSource) {
+                for (Entry<String, DataSource> masterSlaveEntry : ((MasterSlaveDataSource) entry.getValue()).getAllDataSources().entrySet()) {
+                    DataSourceBeanUtil.createDataSourceBean(applicationContext, masterSlaveEntry.getKey(), masterSlaveEntry.getValue());
+                }
+            } else {
+                DataSourceBeanUtil.createDataSourceBean(applicationContext, entry.getKey(), entry.getValue());
+            }
+        }
+        super.renew(newShardingRule, newProps);
     }
 }
