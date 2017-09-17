@@ -25,6 +25,8 @@ public final class ShardingRuleConfigConverterTest {
             + "\"databaseShardingStrategyConfig\":{},\"tableShardingStrategyConfig\":{}}"
             + "],\"bindingTableGroups\":[\"t_order, t_order_item\"],\"defaultDatabaseShardingStrategyConfig\":{},";
     
+    private final String masterSlaveRuleConfigJson = ",\"masterSlaveRuleConfigs\":[]}";
+    
     @Test
     public void assertToJsonForStandardStrategy() {
         StandardShardingStrategyConfig actual = new StandardShardingStrategyConfig();
@@ -132,23 +134,26 @@ public final class ShardingRuleConfigConverterTest {
     private String getJsonForStandardStrategy() {
         return commonShardingRuleConfigJson
                 + "\"defaultTableShardingStrategyConfig\":{\"type\":\"STANDARD\",\"shardingColumn\":\"order_id\","
-                + "\"preciseAlgorithmClassName\":\"xxx.XXXPreciseAlgorithm\",\"rangeAlgorithmClassName\":\"xxx.XXXRangeAlgorithm\"}}";
+                + "\"preciseAlgorithmClassName\":\"xxx.XXXPreciseAlgorithm\",\"rangeAlgorithmClassName\":\"xxx.XXXRangeAlgorithm\"}"
+                + masterSlaveRuleConfigJson;
     }
     
     private String getJsonForComplexStrategy() {
-        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"COMPLEX\",\"shardingColumns\":\"order_id,item_id\",\"algorithmClassName\":\"xxx.XXXAlgorithm\"}}";
+        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"COMPLEX\",\"shardingColumns\":\"order_id,item_id\",\"algorithmClassName\":\"xxx.XXXAlgorithm\"}"
+                + masterSlaveRuleConfigJson;
     }
     
     private String getJsonForInlineStrategy() {
-        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"INLINE\",\"shardingColumn\":\"order_id\",\"algorithmInlineExpression\":\"order_${user_id % 2}\"}}";
+        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"INLINE\",\"shardingColumn\":\"order_id\",\"algorithmInlineExpression\":\"order_${user_id % 2}\"}"
+                + masterSlaveRuleConfigJson;
     }
     
     private String getJsonForHintStrategy() {
-        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"HINT\",\"algorithmClassName\":\"xxx.XXXAlgorithm\"}}";
+        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"HINT\",\"algorithmClassName\":\"xxx.XXXAlgorithm\"}" + masterSlaveRuleConfigJson;
     }
     
     private String getJsonForNoneStrategy() {
-        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"NONE\"}}";
+        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"NONE\"}" + masterSlaveRuleConfigJson;
     }
     
     private void assertCommon(final ShardingRuleConfig actual) {
