@@ -16,8 +16,6 @@ public class YamlTableRuleConfig {
     
     private String logicTable;
     
-    private boolean dynamic;
-    
     private String actualTables;
     
     private String dataSourceNames;
@@ -39,7 +37,6 @@ public class YamlTableRuleConfig {
         Preconditions.checkNotNull(logicTable, "Logic table cannot be null.");
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable(logicTable);
-        tableRuleConfig.setDynamic(dynamic);
         tableRuleConfig.setActualTables(actualTables);
         tableRuleConfig.setLogicTable(logicTable);
         if (null != databaseStrategy) {

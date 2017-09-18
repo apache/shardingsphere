@@ -22,13 +22,10 @@ import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.rule.BindingTableRule;
-import com.dangdang.ddframe.rdb.sharding.rule.DynamicDataNode;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.rule.TableRule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.h2.Driver;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -43,9 +40,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 @Slf4j
 public class YamlShardingDataSourceTest {
@@ -65,34 +60,6 @@ public class YamlShardingDataSourceTest {
         dataSourceMap.put("ds", createDataSource());
         ShardingRule shardingRule = getShardingRule(dataSourceMap, "/config/config-min.yaml");
         assertThat(shardingRule.getTableRules().size(), is(1));
-    }
-    
-    @Test
-    @Ignore
-    public void assertDynamic() throws IOException, ReflectiveOperationException, URISyntaxException, SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1);
-        dataSourceMap.put("ds", createDataSource());
-        ShardingRule shardingRule = getShardingRule(dataSourceMap, "/config/config-dynamic.yaml");
-        int i = 0;
-        for (TableRule each : shardingRule.getTableRules()) {
-            i++;
-            assertThat(each.getActualDataNodes().size(), is(2));
-            assertThat(each.getActualDataNodes(), hasItem(new DynamicDataNode("db0")));
-            assertThat(each.getActualDataNodes(), hasItem(new DynamicDataNode("db1")));
-            switch (i) {
-                case 1:
-                    assertThat(each.getLogicTable(), is("config"));
-                    break;
-                case 2:
-                    assertThat(each.getLogicTable(), is("t_order"));
-                    break;
-                case 3:
-                    assertThat(each.getLogicTable(), is("t_order_item"));
-                    break;
-                default:
-                    fail();
-            }
-        }
     }
     
     @Test(expected = ShardingJdbcException.class)

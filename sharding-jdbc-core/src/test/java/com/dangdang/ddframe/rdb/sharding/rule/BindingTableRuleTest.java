@@ -53,11 +53,6 @@ public final class BindingTableRuleTest {
         createBindingTableRule().getBindingActualTable("no_ds", "subLogicTable", "table_1");
     }
     
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertGetBindingActualTablesFailureWhenIsDynamicTable() {
-        createDynamicBindingTableRule().getBindingActualTable("no_ds", "subLogicTable", "table_1");
-    }
-    
     @Test
     public void assertGetAllLogicTables() {
         assertThat(createBindingTableRule().getAllLogicTables(), is((Collection<String>) Arrays.asList("logicTable", "subLogicTable")));
@@ -95,23 +90,5 @@ public final class BindingTableRuleTest {
         result.put("ds1", null);
         result.put("ds2", null);
         return result;
-    }
-    
-    private BindingTableRule createDynamicBindingTableRule() {
-        return new BindingTableRule(Arrays.asList(createDynamicTableRule(), createDynamicSubTableRule()));
-    }
-    
-    private TableRule createDynamicTableRule() {
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
-        tableRuleConfig.setLogicTable("logicTable");
-        tableRuleConfig.setDynamic(true);
-        return tableRuleConfig.build(createDataSourceMap());
-    }
-    
-    private TableRule createDynamicSubTableRule() {
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
-        tableRuleConfig.setLogicTable("subLogicTable");
-        tableRuleConfig.setDynamic(true);
-        return tableRuleConfig.build(createDataSourceMap());
     }
 }

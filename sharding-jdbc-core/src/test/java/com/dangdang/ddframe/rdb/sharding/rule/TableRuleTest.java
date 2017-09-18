@@ -39,60 +39,6 @@ import static org.junit.Assert.assertTrue;
 public final class TableRuleTest {
     
     @Test
-    public void assertTableRuleForDynamicWithoutAnyStrategies() {
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
-        tableRuleConfig.setLogicTable("logicTable");
-        tableRuleConfig.setDynamic(true);
-        TableRule actual = tableRuleConfig.build(createDataSourceMap());
-        assertDynamicTable(actual);
-        assertNull(actual.getDatabaseShardingStrategy());
-        assertNull(actual.getTableShardingStrategy());
-    }
-    
-    @Test
-    public void assertTableRuleForDynamicWithDatabaseStrategy() {
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
-        tableRuleConfig.setLogicTable("logicTable");
-        tableRuleConfig.setDynamic(true);
-        tableRuleConfig.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfig());
-        TableRule actual = tableRuleConfig.build(createDataSourceMap());
-        assertDynamicTable(actual);
-        assertNotNull(actual.getDatabaseShardingStrategy());
-        assertNull(actual.getTableShardingStrategy());
-    }
-    
-    @Test
-    public void assertTableRuleForDynamicWithTableStrategy() {
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
-        tableRuleConfig.setLogicTable("logicTable");
-        tableRuleConfig.setDynamic(true);
-        tableRuleConfig.setTableShardingStrategyConfig(new NoneShardingStrategyConfig());
-        TableRule actual = tableRuleConfig.build(createDataSourceMap());
-        assertDynamicTable(actual);
-        assertNull(actual.getDatabaseShardingStrategy());
-        assertNotNull(actual.getTableShardingStrategy());
-    }
-    
-    @Test
-    public void assertTableRuleForDynamicWithAllStrategies() {
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
-        tableRuleConfig.setLogicTable("logicTable");
-        tableRuleConfig.setDynamic(true);
-        tableRuleConfig.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfig());
-        tableRuleConfig.setTableShardingStrategyConfig(new NoneShardingStrategyConfig());
-        TableRule actual = tableRuleConfig.build(createDataSourceMap());
-        assertDynamicTable(actual);
-        assertNotNull(actual.getDatabaseShardingStrategy());
-        assertNotNull(actual.getTableShardingStrategy());
-    }
-    
-    private void assertDynamicTable(final TableRule actual) {
-        assertThat(actual.getActualDataNodes().size(), is(2));
-        assertTrue(actual.getActualDataNodes().contains(new DynamicDataNode("ds0")));
-        assertTrue(actual.getActualDataNodes().contains(new DynamicDataNode("ds1")));
-    }
-    
-    @Test
     public void assertTableRuleWithoutDataNode() {
         TableRuleConfig tableRuleConfig = new TableRuleConfig();
         tableRuleConfig.setLogicTable("logicTable");

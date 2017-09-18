@@ -25,7 +25,6 @@ import org.junit.runners.Suite;
         ShardingRuleTest.class, 
         TableRuleTest.class, 
         DataNodeTest.class, 
-        DynamicDataNodeTest.class, 
         BindingTableRuleTest.class
     })
 public class AllRuleTests {

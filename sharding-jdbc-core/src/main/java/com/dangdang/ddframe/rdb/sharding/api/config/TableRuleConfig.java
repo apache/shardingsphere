@@ -43,8 +43,6 @@ public class TableRuleConfig {
     
     private String logicTable;
     
-    private boolean dynamic;
-    
     private String actualTables;
     
     private String dataSourceNames;
@@ -70,6 +68,6 @@ public class TableRuleConfig {
         ShardingStrategy databaseShardingStrategy = null == databaseShardingStrategyConfig ? null : databaseShardingStrategyConfig.build();
         ShardingStrategy tableShardingStrategy = null == tableShardingStrategyConfig ? null : tableShardingStrategyConfig.build();
         KeyGenerator keyGenerator = !Strings.isNullOrEmpty(keyGeneratorColumnName) && !Strings.isNullOrEmpty(keyGeneratorClass) ? KeyGeneratorFactory.newInstance(keyGeneratorClass) : null;
-        return new TableRule(logicTable, dynamic, actualTables, dataSourceNames, dataSourceMap, databaseShardingStrategy, tableShardingStrategy, keyGeneratorColumnName, keyGenerator);
+        return new TableRule(logicTable, actualTables, dataSourceNames, dataSourceMap, databaseShardingStrategy, tableShardingStrategy, keyGeneratorColumnName, keyGenerator);
     }
 }

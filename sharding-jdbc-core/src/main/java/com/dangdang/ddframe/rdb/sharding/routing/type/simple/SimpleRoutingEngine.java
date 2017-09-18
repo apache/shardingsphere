@@ -36,7 +36,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -123,10 +122,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     }
     
     private Collection<DataNode> routeTables(final TableRule tableRule, final String routedDataSource, final List<ShardingValue> tableShardingValues) {
-        if (tableShardingValues.isEmpty() && tableRule.isDynamic()) {
-            throw new UnsupportedOperationException("Dynamic table should contain sharding value.");
-        }
-        Collection<String> availableTargetTables = tableRule.isDynamic() ? Collections.<String>emptyList() : tableRule.getActualTableNames(routedDataSource);
+        Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
         Collection<String> routedTables = tableShardingValues.isEmpty() ? availableTargetTables
                 : shardingRule.getTableShardingStrategy(tableRule).doSharding(availableTargetTables, tableShardingValues);
         Preconditions.checkState(!routedTables.isEmpty(), "no table route info");

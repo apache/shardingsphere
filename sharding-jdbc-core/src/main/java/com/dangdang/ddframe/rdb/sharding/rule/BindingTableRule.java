@@ -65,9 +65,6 @@ public final class BindingTableRule {
     public String getBindingActualTable(final String dataSource, final String logicTable, final String otherActualTable) {
         int index = -1;
         for (TableRule each : tableRules) {
-            if (each.isDynamic()) {
-                throw new UnsupportedOperationException("Dynamic table cannot support Binding table.");
-            }
             index = each.findActualTableIndex(dataSource, otherActualTable);
             if (-1 != index) {
                 break;

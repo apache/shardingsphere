@@ -118,9 +118,6 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
                     //CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     //CHECKSTYLE:ON
-                    if (null != ex.getMessage() && ex.getMessage().startsWith("Dynamic table")) {
-                        continue;
-                    }
                     ex.printStackTrace();
                     throw new RuntimeException(ex);
                 }

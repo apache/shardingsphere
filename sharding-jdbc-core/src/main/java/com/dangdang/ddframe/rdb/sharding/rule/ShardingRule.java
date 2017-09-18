@@ -128,7 +128,7 @@ public final class ShardingRule {
         config.setLogicTable(logicTableName);
         config.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfig());
         config.setTableShardingStrategyConfig(new NoneShardingStrategyConfig());
-        return new TableRule(logicTableName, false, null, null, defaultDataSourceMap, null, null, null, null);
+        return new TableRule(logicTableName, null, null, defaultDataSourceMap, null, null, null, null);
     }
     
     /**

@@ -19,9 +19,9 @@ import static org.junit.Assert.assertThat;
 
 public final class ShardingRuleConfigConverterTest {
     
-    private final String commonShardingRuleConfigJson = "{\"tableRuleConfigs\":[{\"logicTable\":\"t_order\",\"dynamic\":false,\"actualTables\":\"t_order_${[0, 1]}\","
+    private final String commonShardingRuleConfigJson = "{\"tableRuleConfigs\":[{\"logicTable\":\"t_order\",\"actualTables\":\"t_order_${[0, 1]}\","
             + "\"databaseShardingStrategyConfig\":{},\"tableShardingStrategyConfig\":{}},"
-            + "{\"logicTable\":\"t_order_item\",\"dynamic\":false,\"actualTables\":\"t_order_item_${[0, 1]}\","
+            + "{\"logicTable\":\"t_order_item\",\"actualTables\":\"t_order_item_${[0, 1]}\","
             + "\"databaseShardingStrategyConfig\":{},\"tableShardingStrategyConfig\":{}}"
             + "],\"bindingTableGroups\":[\"t_order, t_order_item\"],\"defaultDatabaseShardingStrategyConfig\":{},";
     

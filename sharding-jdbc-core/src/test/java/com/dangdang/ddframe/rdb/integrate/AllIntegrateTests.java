@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.integrate;
 
 import com.dangdang.ddframe.rdb.integrate.type.ms.MasterSlaveOnlyTest;
 import com.dangdang.ddframe.rdb.integrate.type.sharding.NullableShardingTableOnlyTest;
-import com.dangdang.ddframe.rdb.integrate.type.sharding.ShardingDatabaseAndTableDynamicTest;
 import com.dangdang.ddframe.rdb.integrate.type.sharding.ShardingDatabaseAndTableTest;
 import com.dangdang.ddframe.rdb.integrate.type.sharding.ShardingDatabaseOnlyTest;
 import com.dangdang.ddframe.rdb.integrate.type.sharding.ShardingMasterSlaveTest;
@@ -36,7 +35,6 @@ import org.junit.runners.Suite.SuiteClasses;
         ShardingMasterSlaveTest.class,
         MasterSlaveOnlyTest.class,
         ShardingDatabaseAndTableTest.class,
-        ShardingDatabaseAndTableDynamicTest.class,
         NullableShardingTableOnlyTest.class,
         AllHintDatabaseOnlyTests.class
     })

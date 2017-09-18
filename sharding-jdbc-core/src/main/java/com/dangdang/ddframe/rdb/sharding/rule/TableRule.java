@@ -41,8 +41,6 @@ public final class TableRule {
     
     private final String logicTable;
     
-    private final boolean dynamic;
-    
     private final List<DataNode> actualDataNodes;
     
     private final ShardingStrategy databaseShardingStrategy;
@@ -53,13 +51,10 @@ public final class TableRule {
     
     private final KeyGenerator keyGenerator;
     
-    public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final List<String> actualDataSources, final Map<String, DataSource> dataSourceMap,
+    public TableRule(final String logicTable, final List<String> actualTables, final List<String> actualDataSources, final Map<String, DataSource> dataSourceMap,
                      final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy, final String generateKeyColumn, final KeyGenerator keyGenerator) {
         this.logicTable = logicTable;
-        this.dynamic = dynamic;
-        if (dynamic) {
-            actualDataNodes = generateDataNodes(dataSourceMap);
-        } else if (null == actualTables || actualTables.isEmpty()) {
+        if (null == actualTables || actualTables.isEmpty()) {
             actualDataNodes = generateDataNodes(Collections.singletonList(logicTable), dataSourceMap, actualDataSources);
         } else {
             actualDataNodes = generateDataNodes(actualTables, dataSourceMap, actualDataSources);
@@ -68,14 +63,6 @@ public final class TableRule {
         this.tableShardingStrategy = tableShardingStrategy;
         this.generateKeyColumn = generateKeyColumn;
         this.keyGenerator = keyGenerator;
-    }
-    
-    private List<DataNode> generateDataNodes(final Map<String, DataSource> dataSourceMap) {
-        List<DataNode> result = new ArrayList<>(dataSourceMap.size());
-        for (String each : dataSourceMap.keySet()) {
-            result.add(new DynamicDataNode(each));
-        }
-        return result;
     }
     
     private List<DataNode> generateDataNodes(final List<String> actualTables, final Map<String, DataSource> dataSourceMap, final Collection<String> actualDataSourceNames) {
