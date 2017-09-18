@@ -1,13 +1,25 @@
 dataSources:
-  db0: !!org.apache.commons.dbcp.BasicDataSource
+  db0_master: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:db0_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxActive: 100
-  db1: !!org.apache.commons.dbcp.BasicDataSource
+  db1_master: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:db1_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+  db0_slave: !!org.apache.commons.dbcp.BasicDataSource
+      driverClassName: org.h2.Driver
+      url: jdbc:h2:mem:db0_slave;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+      username: sa
+      password: 
+      maxActive: 100
+  db1_slave: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db1_slave;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxActive: 100
@@ -48,4 +60,15 @@ defaultTableStrategy:
   complex:
     shardingColumns: id, order_id
     algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
-  
+
+masterSlaveRules:
+  db0_ms:
+    masterDataSourceName:
+      db0_master
+    slaveDataSourceNames:
+      - db0_slave
+  db1_ms:
+    masterDataSourceName:
+      db1_master
+    slaveDataSourceNames:
+      - db1_slave

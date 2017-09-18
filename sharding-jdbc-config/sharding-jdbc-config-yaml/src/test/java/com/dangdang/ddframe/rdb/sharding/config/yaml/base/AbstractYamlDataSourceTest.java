@@ -58,7 +58,7 @@ public abstract class AbstractYamlDataSourceTest {
     private static List<String> getSchemaFiles() {
         return Arrays.asList("schema/sharding/db0.sql", "schema/sharding/db1.sql",
                 "schema/ms/db_master.sql", "schema/ms/db_slave.sql",
-                "schema/sharding_ms/db0_master.sql", "schema/sharding_ms/db0_master.sql",
+                "schema/sharding_ms/db0_master.sql", "schema/sharding_ms/db1_master.sql",
                 "schema/sharding_ms/db0_slave.sql", "schema/sharding_ms/db1_slave.sql");
     }
 }

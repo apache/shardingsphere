@@ -1,5 +1,5 @@
-DROP SCHEMA IF EXISTS `db_1_master`;
-CREATE SCHEMA `db_1_master`;
+DROP SCHEMA IF EXISTS `db1_master`;
+CREATE SCHEMA `db1_master`;
 DROP TABLE IF EXISTS `t_order_0`;
 DROP TABLE IF EXISTS `t_order_1`;
 DROP TABLE IF EXISTS `t_order_2`;

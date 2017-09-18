@@ -17,12 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.internel.sharding;
 
+import com.dangdang.ddframe.rdb.sharding.config.yaml.internel.ms.YamlMasterSlaveConfig;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -49,6 +52,8 @@ public class YamlShardingConfig {
     private YamlShardingStrategyConfig defaultTableStrategy;
     
     private String defaultKeyGeneratorClass;
+    
+    private Collection<YamlMasterSlaveConfig> masterSlaveRules = new LinkedList<>();
     
     private Properties props = new Properties();
 }

@@ -15,7 +15,7 @@ dataSources:
 tables:
   config:
     actualTables: t_config
-    
+
   t_order: 
     actualTables: t_order_${0..1}
     databaseStrategy: 
@@ -48,4 +48,10 @@ defaultTableStrategy:
   complex:
     shardingColumns: id, order_id
     algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
-  
+
+masterSlaveRules:
+  db_ms:
+    masterDataSourceName:
+      db_master
+    slaveDataSourceNames:
+      - db_slaveb_ms
