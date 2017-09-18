@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import org.junit.Test;
@@ -42,13 +42,13 @@ public final class ShardingDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceWithShardingRuleOnly() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        ShardingRuleConfig shardingRuleConfig = createShardingRuleConfig();
+        ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfig();
         assertNotNull(getShardingRule(ShardingDataSourceFactory.createDataSource(getDataSourceMap(), shardingRuleConfig)));
     }
     
     @Test
     public void assertCreateDataSourceWithShardingRuleAndProperties() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        ShardingRuleConfig shardingRuleConfig = createShardingRuleConfig();
+        ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfig();
         Properties props = new Properties();
         DataSource dataSource = ShardingDataSourceFactory.createDataSource(getDataSourceMap(), shardingRuleConfig, props);
         assertNotNull(getShardingRule(dataSource));
@@ -67,10 +67,10 @@ public final class ShardingDataSourceFactoryTest {
         return result;
     }
     
-    private ShardingRuleConfig createShardingRuleConfig() throws SQLException {
+    private ShardingRuleConfiguration createShardingRuleConfig() throws SQLException {
         
-        ShardingRuleConfig result = new ShardingRuleConfig();
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("logicTable");
         tableRuleConfig.setActualTables("table_0, table_1, table_2");
         result.getTableRuleConfigs().add(tableRuleConfig);

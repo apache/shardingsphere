@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.json;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
@@ -35,10 +35,10 @@ import java.io.IOException;
  *
  * @author zhangliang
  */
-public final class ShardingStrategyConfigGsonTypeAdapter extends TypeAdapter<ShardingStrategyConfig> {
+public final class ShardingStrategyConfigurationGsonTypeAdapter extends TypeAdapter<ShardingStrategyConfiguration> {
     
     @Override
-    public ShardingStrategyConfig read(final JsonReader in) throws IOException {
+    public ShardingStrategyConfiguration read(final JsonReader in) throws IOException {
         String type = "";
         String shardingColumn = "";
         String shardingColumns = "";
@@ -79,9 +79,9 @@ public final class ShardingStrategyConfigGsonTypeAdapter extends TypeAdapter<Sha
         return createStrategy(type, shardingColumn, shardingColumns, algorithmClassName, preciseAlgorithmClassName, rangeAlgorithmClassName, algorithmInlineExpression); 
     }
     
-    private ShardingStrategyConfig createStrategy(final String type, final String shardingColumn, final String shardingColumns, 
-                                                  final String algorithmClassName, final String preciseAlgorithmClassName, final String rangeAlgorithmClassName, 
-                                                  final String algorithmInlineExpression) {
+    private ShardingStrategyConfiguration createStrategy(final String type, final String shardingColumn, final String shardingColumns,
+                                                         final String algorithmClassName, final String preciseAlgorithmClassName, final String rangeAlgorithmClassName,
+                                                         final String algorithmInlineExpression) {
         if (type.equals(ShardingStrategyType.STANDARD.name())) {
             return createStandardStrategy(shardingColumn, preciseAlgorithmClassName, rangeAlgorithmClassName);
         }
@@ -95,63 +95,63 @@ public final class ShardingStrategyConfigGsonTypeAdapter extends TypeAdapter<Sha
             return createHintStrategy(algorithmClassName);
         }
         if (type.equals(ShardingStrategyType.NONE.name())) {
-            return new NoneShardingStrategyConfig();
+            return new NoneShardingStrategyConfiguration();
         }
         return null;
     }
     
-    private ShardingStrategyConfig createStandardStrategy(final String shardingColumn, final String preciseAlgorithmClassName, final String rangeAlgorithmClassName) {
-        StandardShardingStrategyConfig result = new StandardShardingStrategyConfig();
+    private ShardingStrategyConfiguration createStandardStrategy(final String shardingColumn, final String preciseAlgorithmClassName, final String rangeAlgorithmClassName) {
+        StandardShardingStrategyConfiguration result = new StandardShardingStrategyConfiguration();
         result.setShardingColumn(shardingColumn);
         result.setPreciseAlgorithmClassName(preciseAlgorithmClassName);
         result.setRangeAlgorithmClassName(rangeAlgorithmClassName);
         return result;
     }
     
-    private ShardingStrategyConfig createComplexStrategy(final String shardingColumns, final String algorithmClassName) {
-        ComplexShardingStrategyConfig result = new ComplexShardingStrategyConfig();
+    private ShardingStrategyConfiguration createComplexStrategy(final String shardingColumns, final String algorithmClassName) {
+        ComplexShardingStrategyConfiguration result = new ComplexShardingStrategyConfiguration();
         result.setShardingColumns(shardingColumns);
         result.setAlgorithmClassName(algorithmClassName);
         return result;
     }
     
-    private ShardingStrategyConfig createInlineStrategy(final String shardingColumn, final String algorithmInlineExpression) {
-        InlineShardingStrategyConfig result = new InlineShardingStrategyConfig();
+    private ShardingStrategyConfiguration createInlineStrategy(final String shardingColumn, final String algorithmInlineExpression) {
+        InlineShardingStrategyConfiguration result = new InlineShardingStrategyConfiguration();
         result.setShardingColumn(shardingColumn);
         result.setAlgorithmInlineExpression(algorithmInlineExpression);
         return result;
     }
     
-    private ShardingStrategyConfig createHintStrategy(final String algorithmClassName) {
-        HintShardingStrategyConfig result = new HintShardingStrategyConfig();
+    private ShardingStrategyConfiguration createHintStrategy(final String algorithmClassName) {
+        HintShardingStrategyConfiguration result = new HintShardingStrategyConfiguration();
         result.setAlgorithmClassName(algorithmClassName);
         return result;
     }
     
     @Override
-    public void write(final JsonWriter out, final ShardingStrategyConfig value) throws IOException {
+    public void write(final JsonWriter out, final ShardingStrategyConfiguration value) throws IOException {
         out.beginObject();
-        if (value instanceof StandardShardingStrategyConfig) {
+        if (value instanceof StandardShardingStrategyConfiguration) {
             out.name("type").value(ShardingStrategyType.STANDARD.name());
-            StandardShardingStrategyConfig shardingStrategyConfig = (StandardShardingStrategyConfig) value;
+            StandardShardingStrategyConfiguration shardingStrategyConfig = (StandardShardingStrategyConfiguration) value;
             out.name("shardingColumn").value(shardingStrategyConfig.getShardingColumn());
             out.name("preciseAlgorithmClassName").value(shardingStrategyConfig.getPreciseAlgorithmClassName());
             out.name("rangeAlgorithmClassName").value(shardingStrategyConfig.getRangeAlgorithmClassName());
-        } else if (value instanceof ComplexShardingStrategyConfig) {
+        } else if (value instanceof ComplexShardingStrategyConfiguration) {
             out.name("type").value(ShardingStrategyType.COMPLEX.name());
-            ComplexShardingStrategyConfig shardingStrategyConfig = (ComplexShardingStrategyConfig) value;
+            ComplexShardingStrategyConfiguration shardingStrategyConfig = (ComplexShardingStrategyConfiguration) value;
             out.name("shardingColumns").value(shardingStrategyConfig.getShardingColumns());
             out.name("algorithmClassName").value(shardingStrategyConfig.getAlgorithmClassName());
-        } else if (value instanceof InlineShardingStrategyConfig) {
+        } else if (value instanceof InlineShardingStrategyConfiguration) {
             out.name("type").value(ShardingStrategyType.INLINE.name());
-            InlineShardingStrategyConfig shardingStrategyConfig = (InlineShardingStrategyConfig) value;
+            InlineShardingStrategyConfiguration shardingStrategyConfig = (InlineShardingStrategyConfiguration) value;
             out.name("shardingColumn").value(shardingStrategyConfig.getShardingColumn());
             out.name("algorithmInlineExpression").value(shardingStrategyConfig.getAlgorithmInlineExpression());
-        } else if (value instanceof HintShardingStrategyConfig) {
+        } else if (value instanceof HintShardingStrategyConfiguration) {
             out.name("type").value(ShardingStrategyType.HINT.name());
-            HintShardingStrategyConfig shardingStrategyConfig = (HintShardingStrategyConfig) value;
+            HintShardingStrategyConfiguration shardingStrategyConfig = (HintShardingStrategyConfiguration) value;
             out.name("algorithmClassName").value(shardingStrategyConfig.getAlgorithmClassName());
-        } else if (value instanceof NoneShardingStrategyConfig) {
+        } else if (value instanceof NoneShardingStrategyConfiguration) {
             out.name("type").value(ShardingStrategyType.NONE.name());
         }
         out.endObject();

@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.rule;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
@@ -124,10 +124,10 @@ public final class ShardingRule {
     private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
         Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1, 1);
         defaultDataSourceMap.put(defaultDataSourceName, dataSourceMap.get(defaultDataSourceName));
-        TableRuleConfig config = new TableRuleConfig();
+        TableRuleConfiguration config = new TableRuleConfiguration();
         config.setLogicTable(logicTableName);
-        config.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfig());
-        config.setTableShardingStrategyConfig(new NoneShardingStrategyConfig());
+        config.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
+        config.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         return new TableRule(logicTableName, null, null, defaultDataSourceMap, null, null, null, null);
     }
     

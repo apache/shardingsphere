@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.namespace.parser;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.spring.datasource.SpringShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.spring.namespace.constants.ShardingJdbcDataSourceBeanDefinitionParserTag;
 import com.google.common.base.Splitter;
@@ -70,7 +70,7 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
     
     private BeanDefinition parseShardingRuleConfig(final Element element) {
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingJdbcDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfig.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfiguration.class);
         parseDefaultDataSource(factory, shardingRuleElement);
         factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfig(shardingRuleElement));
         factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfig(shardingRuleElement));
@@ -105,7 +105,7 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
     }
     
     private BeanDefinition parseTableRuleConfig(final Element tableElement) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(TableRuleConfig.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(TableRuleConfiguration.class);
         factory.addPropertyValue("logicTable", tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.LOGIC_TABLE_ATTRIBUTE));
         String actualTables = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.ACTUAL_TABLES_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(actualTables)) {

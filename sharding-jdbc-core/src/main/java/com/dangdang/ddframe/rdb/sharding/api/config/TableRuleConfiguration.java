@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.config;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
@@ -39,7 +39,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class TableRuleConfig {
+public class TableRuleConfiguration {
     
     private String logicTable;
     
@@ -47,9 +47,9 @@ public class TableRuleConfig {
     
     private String dataSourceNames;
     
-    private ShardingStrategyConfig databaseShardingStrategyConfig;
+    private ShardingStrategyConfiguration databaseShardingStrategyConfig;
     
-    private ShardingStrategyConfig tableShardingStrategyConfig;
+    private ShardingStrategyConfiguration tableShardingStrategyConfig;
     
     private String keyGeneratorColumnName;
     

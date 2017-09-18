@@ -1,13 +1,13 @@
 package com.dangdang.ddframe.rdb.sharding.json;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -17,7 +17,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingRuleConfigConverterTest {
+public final class ShardingRuleConfigurationConverterTest {
     
     private final String commonShardingRuleConfigJson = "{\"tableRuleConfigs\":[{\"logicTable\":\"t_order\",\"actualTables\":\"t_order_${[0, 1]}\","
             + "\"databaseShardingStrategyConfig\":{},\"tableShardingStrategyConfig\":{}},"
@@ -29,49 +29,49 @@ public final class ShardingRuleConfigConverterTest {
     
     @Test
     public void assertToJsonForStandardStrategy() {
-        StandardShardingStrategyConfig actual = new StandardShardingStrategyConfig();
+        StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration();
         actual.setShardingColumn("order_id");
         actual.setPreciseAlgorithmClassName("xxx.XXXPreciseAlgorithm");
         actual.setRangeAlgorithmClassName("xxx.XXXRangeAlgorithm");
-        assertThat(ShardingRuleConfigConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForStandardStrategy()));
+        assertThat(ShardingRuleConfigurationConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForStandardStrategy()));
     }
     
     @Test
     public void assertToJsonForComplexStrategy() {
-        ComplexShardingStrategyConfig actual = new ComplexShardingStrategyConfig();
+        ComplexShardingStrategyConfiguration actual = new ComplexShardingStrategyConfiguration();
         actual.setShardingColumns("order_id,item_id");
         actual.setAlgorithmClassName("xxx.XXXAlgorithm");
-        assertThat(ShardingRuleConfigConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForComplexStrategy()));
+        assertThat(ShardingRuleConfigurationConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForComplexStrategy()));
     }
     
     @Test
     public void assertToJsonForInlineStrategy() {
-        InlineShardingStrategyConfig actual = new InlineShardingStrategyConfig();
+        InlineShardingStrategyConfiguration actual = new InlineShardingStrategyConfiguration();
         actual.setShardingColumn("order_id");
         actual.setAlgorithmInlineExpression("order_${user_id % 2}");
-        assertThat(ShardingRuleConfigConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForInlineStrategy()));
+        assertThat(ShardingRuleConfigurationConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForInlineStrategy()));
     }
     
     @Test
     public void assertToJsonForHintStrategy() {
-        HintShardingStrategyConfig actual = new HintShardingStrategyConfig();
+        HintShardingStrategyConfiguration actual = new HintShardingStrategyConfiguration();
         actual.setAlgorithmClassName("xxx.XXXAlgorithm");
-        assertThat(ShardingRuleConfigConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForHintStrategy()));
+        assertThat(ShardingRuleConfigurationConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForHintStrategy()));
     }
     
     @Test
     public void assertToJsonForNoneStrategy() {
-        NoneShardingStrategyConfig actual = new NoneShardingStrategyConfig();
-        assertThat(ShardingRuleConfigConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForNoneStrategy()));
+        NoneShardingStrategyConfiguration actual = new NoneShardingStrategyConfiguration();
+        assertThat(ShardingRuleConfigurationConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForNoneStrategy()));
     }
     
-    private ShardingRuleConfig getCommonShardingRuleConfig(final ShardingStrategyConfig strategyConfig) {
-        ShardingRuleConfig actual = new ShardingRuleConfig();
-        TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
+    private ShardingRuleConfiguration getCommonShardingRuleConfig(final ShardingStrategyConfiguration strategyConfig) {
+        ShardingRuleConfiguration actual = new ShardingRuleConfiguration();
+        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
         actual.getTableRuleConfigs().add(orderTableRuleConfig);
-        TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
+        TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item_${[0, 1]}");
         actual.getTableRuleConfigs().add(orderItemTableRuleConfig);
@@ -82,9 +82,9 @@ public final class ShardingRuleConfigConverterTest {
     
     @Test
     public void assertFromJsonForStandardStrategy() {
-        ShardingRuleConfig actual = ShardingRuleConfigConverter.fromJson(getJsonForStandardStrategy());
+        ShardingRuleConfiguration actual = ShardingRuleConfigurationConverter.fromJson(getJsonForStandardStrategy());
         assertCommon(actual);
-        StandardShardingStrategyConfig actualShardingStrategy = (StandardShardingStrategyConfig) actual.getDefaultTableShardingStrategyConfig();
+        StandardShardingStrategyConfiguration actualShardingStrategy = (StandardShardingStrategyConfiguration) actual.getDefaultTableShardingStrategyConfig();
         assertThat(actualShardingStrategy.getShardingColumn(), is("order_id"));
         assertThat(actualShardingStrategy.getPreciseAlgorithmClassName(), is("xxx.XXXPreciseAlgorithm"));
         assertThat(actualShardingStrategy.getRangeAlgorithmClassName(), is("xxx.XXXRangeAlgorithm"));
@@ -92,41 +92,41 @@ public final class ShardingRuleConfigConverterTest {
     
     @Test
     public void assertFromJsonForComplexStrategy() {
-        ShardingRuleConfig actual = ShardingRuleConfigConverter.fromJson(getJsonForComplexStrategy());
+        ShardingRuleConfiguration actual = ShardingRuleConfigurationConverter.fromJson(getJsonForComplexStrategy());
         assertCommon(actual);
-        ComplexShardingStrategyConfig actualShardingStrategy = (ComplexShardingStrategyConfig) actual.getDefaultTableShardingStrategyConfig();
+        ComplexShardingStrategyConfiguration actualShardingStrategy = (ComplexShardingStrategyConfiguration) actual.getDefaultTableShardingStrategyConfig();
         assertThat(actualShardingStrategy.getShardingColumns(), is("order_id,item_id"));
         assertThat(actualShardingStrategy.getAlgorithmClassName(), is("xxx.XXXAlgorithm"));
     }
     
     @Test
     public void assertFromJsonForInlineStrategy() {
-        ShardingRuleConfig actual = ShardingRuleConfigConverter.fromJson(getJsonForInlineStrategy());
+        ShardingRuleConfiguration actual = ShardingRuleConfigurationConverter.fromJson(getJsonForInlineStrategy());
         assertCommon(actual);
-        InlineShardingStrategyConfig actualShardingStrategy = (InlineShardingStrategyConfig) actual.getDefaultTableShardingStrategyConfig();
+        InlineShardingStrategyConfiguration actualShardingStrategy = (InlineShardingStrategyConfiguration) actual.getDefaultTableShardingStrategyConfig();
         assertThat(actualShardingStrategy.getShardingColumn(), is("order_id"));
         assertThat(actualShardingStrategy.getAlgorithmInlineExpression(), is("order_${user_id % 2}"));
     }
     
     @Test
     public void assertFromJsonForHintStrategy() {
-        ShardingRuleConfig actual = ShardingRuleConfigConverter.fromJson(getJsonForHintStrategy());
+        ShardingRuleConfiguration actual = ShardingRuleConfigurationConverter.fromJson(getJsonForHintStrategy());
         assertCommon(actual);
-        HintShardingStrategyConfig actualShardingStrategy = (HintShardingStrategyConfig) actual.getDefaultTableShardingStrategyConfig();
+        HintShardingStrategyConfiguration actualShardingStrategy = (HintShardingStrategyConfiguration) actual.getDefaultTableShardingStrategyConfig();
         assertThat(actualShardingStrategy.getAlgorithmClassName(), is("xxx.XXXAlgorithm"));
     }
     
     @Test
     public void assertFromJsonForNoneStrategy() {
-        ShardingRuleConfig actual = ShardingRuleConfigConverter.fromJson(getJsonForNoneStrategy());
+        ShardingRuleConfiguration actual = ShardingRuleConfigurationConverter.fromJson(getJsonForNoneStrategy());
         assertCommon(actual);
-        assertThat(actual.getDefaultTableShardingStrategyConfig(), instanceOf(NoneShardingStrategyConfig.class));
+        assertThat(actual.getDefaultTableShardingStrategyConfig(), instanceOf(NoneShardingStrategyConfiguration.class));
     }
     
     @Test
     public void assertFromJsonForNullStrategy() {
         String actualJson = commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"XXX\"}}";
-        ShardingRuleConfig actual = ShardingRuleConfigConverter.fromJson(actualJson);
+        ShardingRuleConfiguration actual = ShardingRuleConfigurationConverter.fromJson(actualJson);
         assertCommon(actual);
         assertNull(actual.getDefaultTableShardingStrategyConfig());
     }
@@ -156,13 +156,13 @@ public final class ShardingRuleConfigConverterTest {
         return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"NONE\"}" + masterSlaveRuleConfigJson;
     }
     
-    private void assertCommon(final ShardingRuleConfig actual) {
+    private void assertCommon(final ShardingRuleConfiguration actual) {
         assertThat(actual.getTableRuleConfigs().size(), is(2));
-        Iterator<TableRuleConfig> actualTableRuleConfigs = actual.getTableRuleConfigs().iterator();
-        TableRuleConfig orderTableRuleConfig = actualTableRuleConfigs.next();
+        Iterator<TableRuleConfiguration> actualTableRuleConfigs = actual.getTableRuleConfigs().iterator();
+        TableRuleConfiguration orderTableRuleConfig = actualTableRuleConfigs.next();
         assertThat(orderTableRuleConfig.getLogicTable(), is("t_order"));
         assertThat(orderTableRuleConfig.getActualTables(), is("t_order_${[0, 1]}"));
-        TableRuleConfig orderItemTableRuleConfig = actualTableRuleConfigs.next();
+        TableRuleConfiguration orderItemTableRuleConfig = actualTableRuleConfigs.next();
         assertThat(orderItemTableRuleConfig.getLogicTable(), is("t_order_item"));
         assertThat(orderItemTableRuleConfig.getActualTables(), is("t_order_item_${[0, 1]}"));
         assertThat(actual.getBindingTableGroups().size(), is(1));

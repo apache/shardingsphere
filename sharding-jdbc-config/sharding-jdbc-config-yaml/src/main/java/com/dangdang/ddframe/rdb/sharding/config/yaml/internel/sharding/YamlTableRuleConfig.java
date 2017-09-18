@@ -1,6 +1,6 @@
 package com.dangdang.ddframe.rdb.sharding.config.yaml.internel.sharding;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,9 +33,9 @@ public class YamlTableRuleConfig {
      *
      * @return table rule
      */
-    public TableRuleConfig getTableRuleConfig() {
+    public TableRuleConfiguration getTableRuleConfig() {
         Preconditions.checkNotNull(logicTable, "Logic table cannot be null.");
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable(logicTable);
         tableRuleConfig.setActualTables(actualTables);
         tableRuleConfig.setLogicTable(logicTable);

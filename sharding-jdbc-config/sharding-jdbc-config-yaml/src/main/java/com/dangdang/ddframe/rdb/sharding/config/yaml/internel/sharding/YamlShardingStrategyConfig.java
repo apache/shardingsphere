@@ -1,11 +1,11 @@
 package com.dangdang.ddframe.rdb.sharding.config.yaml.internel.sharding;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.NoneShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,19 +19,19 @@ import lombok.Setter;
 @Setter
 public class YamlShardingStrategyConfig {
     
-    private ComplexShardingStrategyConfig complex;
+    private ComplexShardingStrategyConfiguration complex;
     
-    private HintShardingStrategyConfig hint;
+    private HintShardingStrategyConfiguration hint;
     
-    private InlineShardingStrategyConfig inline;
+    private InlineShardingStrategyConfiguration inline;
     
-    private NoneShardingStrategyConfig none;
+    private NoneShardingStrategyConfiguration none;
     
-    private StandardShardingStrategyConfig standard;
+    private StandardShardingStrategyConfiguration standard;
     
-    public ShardingStrategyConfig getShardingStrategy() {
+    public ShardingStrategyConfiguration getShardingStrategy() {
         int shardingStrategyConfigCount = 0;
-        ShardingStrategyConfig shardingStrategy = null;
+        ShardingStrategyConfiguration shardingStrategy = null;
         if (null != complex) {
             shardingStrategyConfigCount++;
             shardingStrategy = complex;

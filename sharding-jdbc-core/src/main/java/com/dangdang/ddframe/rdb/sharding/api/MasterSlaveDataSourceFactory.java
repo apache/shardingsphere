@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -44,7 +44,7 @@ public final class MasterSlaveDataSourceFactory {
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfig masterSlaveRuleConfig) throws SQLException {
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
         return new MasterSlaveDataSource(masterSlaveRuleConfig.build(dataSourceMap));
     }
 }

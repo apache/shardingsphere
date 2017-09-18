@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -43,7 +43,7 @@ public final class ShardingDataSourceFactory {
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfig shardingRuleConfig) throws SQLException {
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) throws SQLException {
         return new ShardingDataSource(shardingRuleConfig.build(dataSourceMap));
     }
     
@@ -56,7 +56,7 @@ public final class ShardingDataSourceFactory {
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfig shardingRuleConfig, final Properties props) throws SQLException {
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
         return new ShardingDataSource(shardingRuleConfig.build(dataSourceMap), props);
     }
 }

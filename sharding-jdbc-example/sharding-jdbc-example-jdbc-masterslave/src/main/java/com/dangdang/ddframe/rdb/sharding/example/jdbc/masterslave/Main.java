@@ -19,10 +19,10 @@ package com.dangdang.ddframe.rdb.sharding.example.jdbc.masterslave;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
-import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.masterslave.algorithm.ModuloShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -98,26 +98,26 @@ public final class Main {
     }
     
     private static ShardingDataSource getShardingDataSource() throws SQLException {
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         
-        TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
+        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order_0, t_order_1");
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
         
-        TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
+        TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item_0, t_order_item_1");
         shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
         
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         
-        StandardShardingStrategyConfig databaseShardingStrategyConfig = new StandardShardingStrategyConfig();
+        StandardShardingStrategyConfiguration databaseShardingStrategyConfig = new StandardShardingStrategyConfiguration();
         databaseShardingStrategyConfig.setShardingColumn("user_id");
         databaseShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingAlgorithm.class.getName());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
         
-        StandardShardingStrategyConfig tableShardingStrategyConfig = new StandardShardingStrategyConfig();
+        StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
         tableShardingStrategyConfig.setShardingColumn("order_id");
         tableShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingAlgorithm.class.getName());
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
@@ -131,7 +131,7 @@ public final class Main {
         masterSlaveDataSourceMap1.put("ds_0_master", createDataSource("ds_0_master"));
         masterSlaveDataSourceMap1.put("ds_0_slave_0", createDataSource("ds_0_slave_0"));
         masterSlaveDataSourceMap1.put("ds_0_slave_1", createDataSource("ds_0_slave_1"));
-        MasterSlaveRuleConfig masterSlaveRuleConfig1 = new MasterSlaveRuleConfig();
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig1.setName("ds_0");
         masterSlaveRuleConfig1.setMasterDataSourceName("ds_0_master");
         masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("ds_0_slave_0", "ds_0_slave_1"));
@@ -140,7 +140,7 @@ public final class Main {
         masterSlaveDataSourceMap1.put("ds_1_master", createDataSource("ds_1_master"));
         masterSlaveDataSourceMap2.put("ds_1_slave_0", createDataSource("ds_1_slave_0"));
         masterSlaveDataSourceMap2.put("ds_1_slave_1", createDataSource("ds_1_slave_1"));
-        MasterSlaveRuleConfig masterSlaveRuleConfig2 = new MasterSlaveRuleConfig();
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig2.setName("ds_1");
         masterSlaveRuleConfig2.setMasterDataSourceName("ds_1_master");
         masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("ds_1_slave_0", "ds_1_slave_1"));

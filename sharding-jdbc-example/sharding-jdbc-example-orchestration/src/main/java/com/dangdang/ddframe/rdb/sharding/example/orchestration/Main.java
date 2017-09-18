@@ -19,10 +19,10 @@ package com.dangdang.ddframe.rdb.sharding.example.orchestration;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.api.OrchestrationShardingDataSourceFactory;
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.example.orchestration.algorithm.ModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.rdb.sharding.reg.zookeeper.ZookeeperConfiguration;
@@ -82,22 +82,22 @@ public final class Main {
         return result;
     }
     
-    private static ShardingRuleConfig crateShardingRuleConfig() throws SQLException {
-        ShardingRuleConfig result = new ShardingRuleConfig();
-        TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
+    private static ShardingRuleConfiguration crateShardingRuleConfig() throws SQLException {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
         result.getTableRuleConfigs().add(orderTableRuleConfig);
-        TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
+        TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item_${[0, 1]}");
         result.getTableRuleConfigs().add(orderItemTableRuleConfig);
         result.getBindingTableGroups().add("t_order, t_order_item");
-        InlineShardingStrategyConfig databaseShardingStrategyConfig = new InlineShardingStrategyConfig();
+        InlineShardingStrategyConfiguration databaseShardingStrategyConfig = new InlineShardingStrategyConfiguration();
         databaseShardingStrategyConfig.setShardingColumn("user_id");
         databaseShardingStrategyConfig.setAlgorithmInlineExpression("ds_jdbc_${user_id % 2}");
         result.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
-        StandardShardingStrategyConfig tableShardingStrategyConfig = new StandardShardingStrategyConfig();
+        StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
         tableShardingStrategyConfig.setShardingColumn("order_id");
         tableShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloTableShardingAlgorithm.class.getName());
         result.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);

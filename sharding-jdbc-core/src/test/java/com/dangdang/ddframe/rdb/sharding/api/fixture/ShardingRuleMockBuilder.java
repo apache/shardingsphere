@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
 import com.google.common.base.Function;
@@ -42,7 +42,7 @@ import java.util.Set;
 // TODO refactor
 public class ShardingRuleMockBuilder {
     
-    private final List<TableRuleConfig> tableRuleConfigs = new LinkedList<>();
+    private final List<TableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
     
     private final List<String> shardingColumns = new LinkedList<>();
     
@@ -50,7 +50,7 @@ public class ShardingRuleMockBuilder {
     
     private final Set<String> bindTables = new HashSet<>();
     
-    public ShardingRuleMockBuilder addTableRuleConfig(final TableRuleConfig tableRuleConfig) {
+    public ShardingRuleMockBuilder addTableRuleConfig(final TableRuleConfiguration tableRuleConfig) {
         tableRuleConfigs.add(tableRuleConfig);
         return this;
     }
@@ -71,11 +71,11 @@ public class ShardingRuleMockBuilder {
     }
     
     public ShardingRule build() throws SQLException {
-        Collection<TableRuleConfig> tableRuleConfigs = Lists.newArrayList(Iterators.transform(generateKeyColumnsMap.keySet().iterator(), new Function<String, TableRuleConfig>() {
+        Collection<TableRuleConfiguration> tableRuleConfigs = Lists.newArrayList(Iterators.transform(generateKeyColumnsMap.keySet().iterator(), new Function<String, TableRuleConfiguration>() {
             
             @Override
-            public TableRuleConfig apply(final String input) {
-                TableRuleConfig result = new TableRuleConfig();
+            public TableRuleConfiguration apply(final String input) {
+                TableRuleConfiguration result = new TableRuleConfiguration();
                 result.setLogicTable(input);
                 result.setActualTables(input);
                 result.setKeyGeneratorColumnName(generateKeyColumnsMap.get(input));
@@ -84,21 +84,21 @@ public class ShardingRuleMockBuilder {
         }));
         tableRuleConfigs.addAll(this.tableRuleConfigs);
         if (tableRuleConfigs.isEmpty()) {
-            TableRuleConfig tableRuleConfig = new TableRuleConfig();
+            TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
             tableRuleConfig.setLogicTable("mock");
             tableRuleConfig.setActualTables("mock");
             tableRuleConfigs.add(tableRuleConfig);
         }
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         for (String each : bindTables) {
             if (existInTableRuleConfig(each)) {
                 continue;
             }
-            TableRuleConfig tableRuleConfig = new TableRuleConfig();
+            TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
             tableRuleConfig.setLogicTable(each);
             tableRuleConfigs.add(tableRuleConfig);
         }
-        for (TableRuleConfig each : tableRuleConfigs) {
+        for (TableRuleConfiguration each : tableRuleConfigs) {
             shardingRuleConfig.getTableRuleConfigs().add(each);
             bindTables.add(each.getLogicTable());
         }
@@ -108,7 +108,7 @@ public class ShardingRuleMockBuilder {
     }
     
     private boolean existInTableRuleConfig(final String logicTableName) {
-        for (TableRuleConfig tableRuleConfig : tableRuleConfigs) {
+        for (TableRuleConfiguration tableRuleConfig : tableRuleConfigs) {
             if (tableRuleConfig.getLogicTable().equals(logicTableName)) {
                 return true;
             }

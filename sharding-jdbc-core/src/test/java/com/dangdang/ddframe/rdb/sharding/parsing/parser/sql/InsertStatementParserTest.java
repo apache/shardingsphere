@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.ListShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestComplexKeysShardingAlgorithm;
@@ -107,11 +107,11 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
-        final ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("TABLE_XXX");
         tableRuleConfig.setActualTables("table_${0..2}");
-        ComplexShardingStrategyConfig shardingStrategyConfig = new ComplexShardingStrategyConfig();
+        ComplexShardingStrategyConfiguration shardingStrategyConfig = new ComplexShardingStrategyConfiguration();
         shardingStrategyConfig.setShardingColumns("field1");
         shardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
         tableRuleConfig.setTableShardingStrategyConfig(shardingStrategyConfig);

@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
  * 
  * @author zhangliang
  */
-public interface ShardingStrategyConfig {
+public interface ShardingStrategyConfiguration {
     
     /**
      * Build sharding strategy.

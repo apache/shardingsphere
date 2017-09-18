@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.api.config;
 
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
@@ -41,21 +41,21 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class ShardingRuleConfig {
+public class ShardingRuleConfiguration {
     
     private String defaultDataSourceName;
     
-    private Collection<TableRuleConfig> tableRuleConfigs = new LinkedList<>();
+    private Collection<TableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
     
     private Collection<String> bindingTableGroups = new LinkedList<>();
     
-    private ShardingStrategyConfig defaultDatabaseShardingStrategyConfig;
+    private ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig;
     
-    private ShardingStrategyConfig defaultTableShardingStrategyConfig;
+    private ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
     
     private String defaultKeyGeneratorClass;
     
-    private Collection<MasterSlaveRuleConfig> masterSlaveRuleConfigs = new LinkedList<>();
+    private Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
     
     /**
      * Build sharding rule.
@@ -67,7 +67,7 @@ public class ShardingRuleConfig {
         // TODO should not be null, for parsing only
         // Preconditions.checkNotNull(dataSources, "dataSources cannot be null.");
         Collection<TableRule> tableRules = new LinkedList<>();
-        for (TableRuleConfig each : tableRuleConfigs) {
+        for (TableRuleConfiguration each : tableRuleConfigs) {
             tableRules.add(each.build(dataSourceMap));
         }
         ShardingStrategy defaultDatabaseShardingStrategy = null == defaultDatabaseShardingStrategyConfig ? null : defaultDatabaseShardingStrategyConfig.build();
@@ -78,7 +78,7 @@ public class ShardingRuleConfig {
     }
     
     private void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        for (MasterSlaveRuleConfig each : masterSlaveRuleConfigs) {
+        for (MasterSlaveRuleConfiguration each : masterSlaveRuleConfigs) {
             dataSourceMap.put(each.getName(), MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, each));
             dataSourceMap.remove(each.getMasterDataSourceName());
             for (String slaveDataSourceName : each.getSlaveDataSourceNames()) {

@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.internel.ms;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.rule.MasterSlaveRule;
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +42,7 @@ public final class MasterSlaveRuleBuilder {
      * @return master-slave rule from yaml
      */
     public MasterSlaveRule build() {
-        MasterSlaveRuleConfig result = new MasterSlaveRuleConfig();
+        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
         result.setName(yamlMasterSlaveConfig.getName());
         result.setMasterDataSourceName(yamlMasterSlaveConfig.getMasterDataSourceName());
         result.setSlaveDataSourceNames(yamlMasterSlaveConfig.getSlaveDataSourceNames());

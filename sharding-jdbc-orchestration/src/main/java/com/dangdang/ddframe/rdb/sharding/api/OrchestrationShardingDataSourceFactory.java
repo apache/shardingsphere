@@ -17,10 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.json.DataSourceJsonConverter;
-import com.dangdang.ddframe.rdb.sharding.json.ShardingRuleConfigConverter;
+import com.dangdang.ddframe.rdb.sharding.json.ShardingRuleConfigurationConverter;
 import com.dangdang.ddframe.rdb.sharding.reg.base.CoordinatorRegistryCenter;
 import com.google.common.base.Charsets;
 import lombok.AccessLevel;
@@ -55,7 +55,7 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(
-            final String name, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final ShardingRuleConfig shardingRuleConfig) throws SQLException {
+            final String name, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) throws SQLException {
         initRegistryCenter(name, registryCenter, dataSourceMap, shardingRuleConfig);
         ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
         addConfigurationChangeListener(name, registryCenter, result);
@@ -74,8 +74,8 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(
-            final String name, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, 
-            final ShardingRuleConfig shardingRuleConfig, final Properties props) throws SQLException {
+            final String name, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap,
+            final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
         initRegistryCenter(name, registryCenter, dataSourceMap, shardingRuleConfig);
         // TODO props
         ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, props);
@@ -84,10 +84,10 @@ public final class OrchestrationShardingDataSourceFactory {
     }
     
     private static void initRegistryCenter(final String name, 
-                                           final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final ShardingRuleConfig shardingRuleConfig) {
+                                           final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
         registryCenter.init();
         registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
-        registryCenter.persist("/" + name + "/config/sharding", ShardingRuleConfigConverter.toJson(shardingRuleConfig));
+        registryCenter.persist("/" + name + "/config/sharding", ShardingRuleConfigurationConverter.toJson(shardingRuleConfig));
         registryCenter.addCacheData("/" + name + "/config");
     }
     
@@ -107,11 +107,11 @@ public final class OrchestrationShardingDataSourceFactory {
                 }
                 if (("/" + name + "/config/datasource").equals(path)) {
                     Map<String, DataSource> newDataSourceMap = DataSourceJsonConverter.fromJson(new String(childData.getData(), Charsets.UTF_8));
-                    ShardingRuleConfig shardingRuleConfig = ShardingRuleConfigConverter.fromJson(registryCenter.get("/" + name + "/config/sharding"));
+                    ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.fromJson(registryCenter.get("/" + name + "/config/sharding"));
                     // TODO props
                     shardingDataSource.renew(shardingRuleConfig.build(newDataSourceMap), new Properties());
                 } else if (("/" + name + "/config/sharding").equals(path)) {
-                    ShardingRuleConfig newShardingRuleConfig = ShardingRuleConfigConverter.fromJson(new String(childData.getData(), Charsets.UTF_8));
+                    ShardingRuleConfiguration newShardingRuleConfig = ShardingRuleConfigurationConverter.fromJson(new String(childData.getData(), Charsets.UTF_8));
                     Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
                     // TODO props
                     shardingDataSource.renew(newShardingRuleConfig.build(dataSourceMap), new Properties());

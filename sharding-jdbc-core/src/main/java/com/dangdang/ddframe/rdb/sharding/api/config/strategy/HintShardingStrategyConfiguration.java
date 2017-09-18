@@ -32,7 +32,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class HintShardingStrategyConfig implements ShardingStrategyConfig {
+public class HintShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
     private String algorithmClassName;
     

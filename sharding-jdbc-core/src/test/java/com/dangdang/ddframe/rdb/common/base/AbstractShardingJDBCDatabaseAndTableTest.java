@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.common.base;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
@@ -54,27 +54,27 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     public void initShardingDataSources() throws SQLException {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
-            ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-            TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
+            ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+            TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
             orderTableRuleConfig.setLogicTable("t_order");
             orderTableRuleConfig.setActualTables("t_order_0, t_order_1");
             shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-            TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
+            TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
             orderItemTableRuleConfig.setLogicTable("t_order_item");
             orderItemTableRuleConfig.setActualTables("t_order_item_0, t_order_item_1");
             orderItemTableRuleConfig.setKeyGeneratorColumnName("item_id");
             orderItemTableRuleConfig.setKeyGeneratorClass(IncrementKeyGenerator.class.getName());
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
-            TableRuleConfig configTableRuleConfig = new TableRuleConfig();
+            TableRuleConfiguration configTableRuleConfig = new TableRuleConfiguration();
             configTableRuleConfig.setLogicTable("t_config");
             shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-            StandardShardingStrategyConfig databaseShardingStrategyConfig = new StandardShardingStrategyConfig();
+            StandardShardingStrategyConfiguration databaseShardingStrategyConfig = new StandardShardingStrategyConfiguration();
             databaseShardingStrategyConfig.setShardingColumn("user_id");
             databaseShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseOrderShardingAlgorithm.class.getName());
             databaseShardingStrategyConfig.setRangeAlgorithmClassName(RangeOrderShardingAlgorithm.class.getName());
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
-            StandardShardingStrategyConfig tableShardingStrategyConfig = new StandardShardingStrategyConfig();
+            StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
             tableShardingStrategyConfig.setShardingColumn("order_id");
             tableShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseOrderShardingAlgorithm.class.getName());
             tableShardingStrategyConfig.setRangeAlgorithmClassName(RangeOrderShardingAlgorithm.class.getName());

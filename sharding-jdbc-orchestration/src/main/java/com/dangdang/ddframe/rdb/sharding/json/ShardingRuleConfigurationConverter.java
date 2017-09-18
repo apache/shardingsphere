@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.json;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ShardingStrategyConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -28,10 +28,10 @@ import lombok.NoArgsConstructor;
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingRuleConfigConverter {
+public final class ShardingRuleConfigurationConverter {
     
     static {
-        GsonFactory.registerTypeAdapter(ShardingStrategyConfig.class, new ShardingStrategyConfigGsonTypeAdapter());
+        GsonFactory.registerTypeAdapter(ShardingStrategyConfiguration.class, new ShardingStrategyConfigurationGsonTypeAdapter());
     }
     
     /**
@@ -40,7 +40,7 @@ public final class ShardingRuleConfigConverter {
      * @param shardingRuleConfig sharding rule configuration
      * @return sharding rule configuration json string
      */
-    public static String toJson(final ShardingRuleConfig shardingRuleConfig) {
+    public static String toJson(final ShardingRuleConfiguration shardingRuleConfig) {
         return GsonFactory.getGson().toJson(shardingRuleConfig);
     }
     
@@ -50,7 +50,7 @@ public final class ShardingRuleConfigConverter {
      * @param json sharding rule configuration json string
      * @return sharding rule configuration
      */
-    public static ShardingRuleConfig fromJson(final String json) {
-        return GsonFactory.getGson().fromJson(json, ShardingRuleConfig.class);
+    public static ShardingRuleConfiguration fromJson(final String json) {
+        return GsonFactory.getGson().fromJson(json, ShardingRuleConfiguration.class);
     }
 }

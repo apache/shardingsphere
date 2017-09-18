@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.integrate.type.sharding.hint.base;
 
 import com.dangdang.ddframe.rdb.integrate.fixture.HintModuloDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 
@@ -31,8 +31,8 @@ public abstract class AbstractRoutingDatabaseOnlyWithHintTest extends AbstractHi
     
     @Override
     protected ShardingRule getShardingRule(final Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) throws SQLException {
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        HintShardingStrategyConfig shardingStrategyConfig = new HintShardingStrategyConfig();
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        HintShardingStrategyConfiguration shardingStrategyConfig = new HintShardingStrategyConfiguration();
         shardingStrategyConfig.setAlgorithmClassName(HintModuloDatabaseShardingAlgorithm.class.getName());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(shardingStrategyConfig);
         return shardingRuleConfig.build(dataSourceEntry.getValue());

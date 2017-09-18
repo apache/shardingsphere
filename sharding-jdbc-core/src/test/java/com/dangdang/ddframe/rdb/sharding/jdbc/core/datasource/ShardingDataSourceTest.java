@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
-import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingPropertiesConstant;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
@@ -63,7 +63,7 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> masterSlaveDataSourceMap = new HashMap<>(2, 1);
         masterSlaveDataSourceMap.put("masterDataSource", masterDataSource);
         masterSlaveDataSourceMap.put("slaveDataSource", slaveDataSource);
-        MasterSlaveRuleConfig masterSlaveRuleConfig = new MasterSlaveRuleConfig();
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig.setName("ds");
         masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slaveDataSource"));
@@ -95,7 +95,7 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> slaveDataSourceMap = new HashMap<>(2, 1);
         slaveDataSourceMap.put("masterDataSource", masterDataSource);
         slaveDataSourceMap.put("slaveDataSource", slaveDataSource);
-        MasterSlaveRuleConfig masterSlaveRuleConfig = new MasterSlaveRuleConfig();
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig.setName("ds");
         masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slaveDataSource"));
@@ -183,9 +183,9 @@ public final class ShardingDataSourceTest {
         return new ShardingDataSource(createShardingRuleConfig().build(dataSourceMap));
     }
     
-    private ShardingRuleConfig createShardingRuleConfig() {
-        ShardingRuleConfig result = new ShardingRuleConfig();
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+    private ShardingRuleConfiguration createShardingRuleConfig() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("logicTable");
         tableRuleConfig.setActualTables("table_0, table_1, table_2");
         result.getTableRuleConfigs().add(tableRuleConfig);

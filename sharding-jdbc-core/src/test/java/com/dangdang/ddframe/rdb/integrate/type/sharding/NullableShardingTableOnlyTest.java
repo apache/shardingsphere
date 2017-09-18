@@ -22,9 +22,9 @@ import com.dangdang.ddframe.rdb.common.env.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.ComplexKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.jaxb.SQLShardingRule;
 import com.dangdang.ddframe.rdb.integrate.jaxb.helper.SQLAssertJAXBHelper;
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
@@ -82,11 +82,11 @@ public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
         isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
-            ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-            TableRuleConfig tableRuleConfig = new TableRuleConfig();
+            ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+            TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
             tableRuleConfig.setLogicTable("t_order");
             shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-            ComplexShardingStrategyConfig databaseShardingStrategyConfig = new ComplexShardingStrategyConfig();
+            ComplexShardingStrategyConfiguration databaseShardingStrategyConfig = new ComplexShardingStrategyConfiguration();
             databaseShardingStrategyConfig.setShardingColumns("user_id");
             databaseShardingStrategyConfig.setAlgorithmClassName(ComplexKeysModuloDatabaseShardingAlgorithm.class.getName());
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);

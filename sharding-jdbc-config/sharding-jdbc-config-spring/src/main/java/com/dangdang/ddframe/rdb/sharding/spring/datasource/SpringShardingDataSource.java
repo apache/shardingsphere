@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.datasource;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
@@ -42,7 +42,7 @@ public class SpringShardingDataSource extends ShardingDataSource implements Appl
     @Setter
     private ApplicationContext applicationContext;
     
-    public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfig shardingRuleConfig, final Properties props) throws SQLException {
+    public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
         super(shardingRuleConfig.build(dataSourceMap), props);
     }
     

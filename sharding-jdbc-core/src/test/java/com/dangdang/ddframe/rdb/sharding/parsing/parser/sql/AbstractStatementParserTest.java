@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.sql;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.ComplexShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestComplexKeysShardingAlgorithm;
 
@@ -46,14 +46,14 @@ public abstract class AbstractStatementParserTest {
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("TABLE_XXX");
         tableRuleConfig.setActualTables("table_0, table_1, table_2");
-        ComplexShardingStrategyConfig complexShardingStrategyConfig = new ComplexShardingStrategyConfig();
+        ComplexShardingStrategyConfiguration complexShardingStrategyConfig = new ComplexShardingStrategyConfiguration();
         complexShardingStrategyConfig.setShardingColumns("field1, field2, field3, field4, field5, field6, field7");
         complexShardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
         tableRuleConfig.setTableShardingStrategyConfig(complexShardingStrategyConfig);
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);

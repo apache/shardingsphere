@@ -33,7 +33,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ComplexShardingStrategyConfig implements ShardingStrategyConfig {
+public class ComplexShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
     private String shardingColumns;
     

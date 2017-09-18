@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.transaction;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm.ModuloShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
@@ -75,25 +75,25 @@ public final class Main {
     }
     
     private static DataSource getShardingDataSource() throws SQLException {
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        TableRuleConfig orderTableRuleConfig = new TableRuleConfig();
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order_0, t_order_1");
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
         
-        TableRuleConfig orderItemTableRuleConfig = new TableRuleConfig();
+        TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item_0, t_order_item_1");
         shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
         
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         
-        StandardShardingStrategyConfig databaseShardingStrategyConfig = new StandardShardingStrategyConfig();
+        StandardShardingStrategyConfiguration databaseShardingStrategyConfig = new StandardShardingStrategyConfiguration();
         databaseShardingStrategyConfig.setShardingColumn("user_id");
         databaseShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingAlgorithm.class.getName());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
         
-        StandardShardingStrategyConfig tableShardingStrategyConfig = new StandardShardingStrategyConfig();
+        StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
         tableShardingStrategyConfig.setShardingColumn("order_id");
         tableShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingAlgorithm.class.getName());
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);

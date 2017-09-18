@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.rule;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -72,14 +72,14 @@ public final class BindingTableRuleTest {
     }
     
     private TableRule createTableRule() {
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("logicTable");
         tableRuleConfig.setActualTables("ds1.table_0, ds1.table_1, ds2.table_0, ds2.table_1");
         return tableRuleConfig.build(createDataSourceMap());
     }
     
     private TableRule createSubTableRule() {
-        TableRuleConfig tableRuleConfig = new TableRuleConfig();
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("subLogicTable");
         tableRuleConfig.setActualTables("ds1.sub_table_0, ds1.sub_table_1, ds2.sub_table_0, ds2.sub_table_1");
         return tableRuleConfig.build(createDataSourceMap());

@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.internel.sharding;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
@@ -44,7 +44,7 @@ public final class ShardingRuleBuilder {
      * @return sharding rule from yaml
      */
     public ShardingRule build() throws SQLException {
-        ShardingRuleConfig result = new ShardingRuleConfig();
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setDefaultDataSourceName(yamlShardingConfig.getDefaultDataSourceName());
         for (Entry<String, YamlTableRuleConfig> entry : yamlShardingConfig.getTables().entrySet()) {
             YamlTableRuleConfig tableRuleConfig = entry.getValue();

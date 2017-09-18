@@ -37,7 +37,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class MasterSlaveRuleConfig {
+public class MasterSlaveRuleConfiguration {
     
     private String name;
     

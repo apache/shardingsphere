@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.routing;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.strategy.HintShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
@@ -47,8 +47,8 @@ public class DatabaseTest {
     
     @Before
     public void setRouteRuleContext() throws SQLException {
-        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
-        HintShardingStrategyConfig databaseShardingStrategyConfig = new HintShardingStrategyConfig();
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        HintShardingStrategyConfiguration databaseShardingStrategyConfig = new HintShardingStrategyConfiguration();
         databaseShardingStrategyConfig.setAlgorithmClassName(OrderDatabaseHintShardingAlgorithm.class.getName());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>();

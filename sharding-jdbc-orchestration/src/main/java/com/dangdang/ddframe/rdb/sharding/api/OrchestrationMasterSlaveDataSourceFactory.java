@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.json.DataSourceJsonConverter;
 import com.dangdang.ddframe.rdb.sharding.json.GsonFactory;
@@ -53,8 +53,8 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(
-            final String name, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfig masterSlaveRuleConfig) throws SQLException {
+    public static DataSource createDataSource(final String name, final CoordinatorRegistryCenter registryCenter, 
+                                              final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
         initRegistryCenter(name, registryCenter, dataSourceMap, masterSlaveRuleConfig);
         MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig);
         addConfigurationChangeListener(name, registryCenter, result);
@@ -62,7 +62,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
     }
     
     private static void initRegistryCenter(final String name, 
-                                           final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfig masterSlaveRuleConfig) {
+                                           final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         registryCenter.init();
         registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
         registryCenter.persist("/" + name + "/config/masterslave", GsonFactory.getGson().toJson(masterSlaveRuleConfig));
@@ -85,10 +85,10 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
                 }
                 if (("/" + name + "/config/datasource").equals(path)) {
                     Map<String, DataSource> newDataSourceMap = DataSourceJsonConverter.fromJson(new String(childData.getData(), Charsets.UTF_8));
-                    MasterSlaveRuleConfig masterSlaveRuleConfig = GsonFactory.getGson().fromJson(registryCenter.get("/" + name + "/config/masterslave"), MasterSlaveRuleConfig.class);
+                    MasterSlaveRuleConfiguration masterSlaveRuleConfig = GsonFactory.getGson().fromJson(registryCenter.get("/" + name + "/config/masterslave"), MasterSlaveRuleConfiguration.class);
                     masterSlaveDataSource.renew(masterSlaveRuleConfig.build(newDataSourceMap));
                 } else if (("/" + name + "/config/masterslave").equals(path)) {
-                    MasterSlaveRuleConfig newMasterSlaveRuleConfig = GsonFactory.getGson().fromJson(new String(childData.getData(), Charsets.UTF_8), MasterSlaveRuleConfig.class);
+                    MasterSlaveRuleConfiguration newMasterSlaveRuleConfig = GsonFactory.getGson().fromJson(new String(childData.getData(), Charsets.UTF_8), MasterSlaveRuleConfiguration.class);
                     Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
                     masterSlaveDataSource.renew(newMasterSlaveRuleConfig.build(dataSourceMap));
                 }

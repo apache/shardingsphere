@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
-import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
@@ -104,7 +104,7 @@ public final class MasterSlaveDataSourceTest {
         dataSourceMap.put("slaveDataSource", slaveDataSource);
         when(masterDataSource.getConnection()).thenReturn(masterConnection);
         when(slaveDataSource.getConnection()).thenReturn(slaveConnection);
-        MasterSlaveRuleConfig masterSlaveRuleConfig = new MasterSlaveRuleConfig();
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig.setName("ds");
         masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slaveDataSource"));
@@ -131,7 +131,7 @@ public final class MasterSlaveDataSourceTest {
         dataSourceMap.put("masterDataSource", masterDataSource);
         dataSourceMap.put("slaveDataSource1", slaveDataSource1);
         dataSourceMap.put("slaveDataSource2", slaveDataSource2);
-        MasterSlaveRuleConfig masterSlaveRuleConfig = new MasterSlaveRuleConfig();
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig.setName("ds");
         masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("slaveDataSource1", "slaveDataSource2"));
