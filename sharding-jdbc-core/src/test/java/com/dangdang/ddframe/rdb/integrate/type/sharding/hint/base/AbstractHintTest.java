@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.integrate.type.sharding.hint.base;
 import com.dangdang.ddframe.rdb.common.base.AbstractSQLTest;
 import com.dangdang.ddframe.rdb.common.env.DatabaseEnvironment;
 import com.dangdang.ddframe.rdb.common.util.DBUnitUtil;
-import com.dangdang.ddframe.rdb.integrate.type.sharding.hint.helper.DynamicShardingValueHelper;
+import com.dangdang.ddframe.rdb.integrate.type.sharding.hint.helper.HintShardingValueHelper;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
@@ -93,10 +93,10 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
         }
     }
     
-    protected void assertDataSet(final String expectedDataSetFile, final DynamicShardingValueHelper helper, 
+    protected void assertDataSet(final String expectedDataSetFile, final HintShardingValueHelper helper, 
                                  final Connection connection, final String sql, 
                                  final DatabaseType type, final Object... params) throws SQLException, DatabaseUnitException {
-        try (DynamicShardingValueHelper anotherHelper = helper) {
+        try (HintShardingValueHelper anotherHelper = helper) {
             assertDataSetEquals(expectedDataSetFile, connection, sql, type, params);
         }
     }

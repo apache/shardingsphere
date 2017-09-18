@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.integrate.type.sharding.hint.type;
 
 import com.dangdang.ddframe.rdb.integrate.type.sharding.hint.base.AbstractRoutingDatabaseOnlyWithHintTest;
-import com.dangdang.ddframe.rdb.integrate.type.sharding.hint.helper.DynamicDatabaseShardingValueHelper;
+import com.dangdang.ddframe.rdb.integrate.type.sharding.hint.helper.HintDatabaseShardingValueHelper;
 import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
@@ -44,11 +44,11 @@ public class RoutingDatabaseOnlyWithHintForSelectTest extends AbstractRoutingDat
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
         for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
             String sql = replacePreparedStatement(DatabaseTestSQL.SELECT_EQUALS_WITH_SINGLE_TABLE_SQL);
-            assertDataSet("integrate/dataset/sharding/db/expect/select/SelectEqualsWithSingleTable_0.xml", new DynamicDatabaseShardingValueHelper(10), 
+            assertDataSet("integrate/dataset/sharding/db/expect/select/SelectEqualsWithSingleTable_0.xml", new HintDatabaseShardingValueHelper(10), 
                     each.getValue().getConnection(), sql, each.getKey(), 10, 1000);
-            assertDataSet("integrate/dataset/sharding/db/expect/select/SelectEqualsWithSingleTable_1.xml", new DynamicDatabaseShardingValueHelper(12), 
+            assertDataSet("integrate/dataset/sharding/db/expect/select/SelectEqualsWithSingleTable_1.xml", new HintDatabaseShardingValueHelper(12), 
                     each.getValue().getConnection(), sql, each.getKey(), 12, 1201);
-            assertDataSet("integrate/dataset/Empty.xml", new DynamicDatabaseShardingValueHelper(12), 
+            assertDataSet("integrate/dataset/Empty.xml", new HintDatabaseShardingValueHelper(12), 
                     each.getValue().getConnection(), sql, each.getKey(), 12, 1000);
         }
     }

@@ -7,18 +7,18 @@ import lombok.Getter;
 
 import java.util.List;
 
-public class DynamicShardingValueHelper implements AutoCloseable {
+public class HintShardingValueHelper implements AutoCloseable {
     
     @Getter(AccessLevel.PROTECTED)
     private final HintManager hintManager;
     
-    public DynamicShardingValueHelper(final int userId, final int orderId) {
+    public HintShardingValueHelper(final int userId, final int orderId) {
         hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_order", "user_id", userId);
         hintManager.addTableShardingValue("t_order", "order_id", orderId);
     }
     
-    public DynamicShardingValueHelper(final List<Integer> userId, final ShardingOperator userIdOperator, final List<Integer> orderId, final ShardingOperator orderIdOperator) {
+    public HintShardingValueHelper(final List<Integer> userId, final ShardingOperator userIdOperator, final List<Integer> orderId, final ShardingOperator orderIdOperator) {
         hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_order", "user_id", userIdOperator, userId.toArray(new Comparable[userId.size()]));
         hintManager.addTableShardingValue("t_order", "order_id", orderIdOperator, orderId.toArray(new Comparable[orderId.size()]));
