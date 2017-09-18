@@ -25,6 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.rule.TableRule;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -64,8 +65,8 @@ public class ShardingRuleConfiguration {
      * @return sharding rule
      */
     public ShardingRule build(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        // TODO should not be null, for parsing only
-        // Preconditions.checkNotNull(dataSources, "dataSources cannot be null.");
+        Preconditions.checkNotNull(dataSourceMap, "dataSources cannot be null.");
+        Preconditions.checkArgument(!dataSourceMap.isEmpty(), "dataSources cannot be null.");
         Collection<TableRule> tableRules = new LinkedList<>();
         for (TableRuleConfiguration each : tableRuleConfigs) {
             tableRules.add(each.build(dataSourceMap));
