@@ -1,6 +1,15 @@
 CREATE SCHEMA IF NOT EXISTS `ds_yaml_config`;
 CREATE SCHEMA IF NOT EXISTS `ds_yaml_0`;
 CREATE SCHEMA IF NOT EXISTS `ds_yaml_1`;
+CREATE SCHEMA IF NOT EXISTS `ds_yaml_master`;
+CREATE SCHEMA IF NOT EXISTS `ds_yaml_slave`;
+
+CREATE TABLE IF NOT EXISTS `ds_yaml_master`.`t_order` (`order_id` BIGINT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(50), PRIMARY KEY (`order_id`));
+CREATE TABLE IF NOT EXISTS `ds_yaml_master`.`t_order_item` (`item_id` BIGINT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, PRIMARY KEY (`item_id`));
+CREATE TABLE IF NOT EXISTS `ds_yaml_master`.`t_config`(`id` BIGINT NOT NULL, `name` VARCHAR(20), `value` VARCHAR(50));
+CREATE TABLE IF NOT EXISTS `ds_yaml_slave`.`t_order` (`order_id` BIGINT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(50), PRIMARY KEY (`order_id`));
+CREATE TABLE IF NOT EXISTS `ds_yaml_slave`.`t_order_item` (`item_id` BIGINT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, PRIMARY KEY (`item_id`));
+CREATE TABLE IF NOT EXISTS `ds_yaml_slave`.`t_config`(`id` BIGINT NOT NULL, `name` VARCHAR(20), `value` VARCHAR(50));
 
 CREATE TABLE IF NOT EXISTS `ds_yaml_config`.`t_config`(`id` BIGINT NOT NULL, `name` VARCHAR(20), `value` VARCHAR(50));
 
@@ -15,6 +24,29 @@ CREATE TABLE IF NOT EXISTS `ds_yaml_1`.`t_order_item_0` (`item_id` BIGINT NOT NU
 CREATE TABLE IF NOT EXISTS `ds_yaml_1`.`t_order_item_1` (`item_id` BIGINT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, PRIMARY KEY (`item_id`));
 
 INSERT INTO `ds_yaml_config`.`t_config` VALUES (1, 'config_key', 'config_value');
+INSERT INTO `ds_yaml_master`.`t_config` VALUES (1, 'config_key', 'config_value');
+INSERT INTO `ds_yaml_slave`.`t_config` VALUES (1, 'config_key', 'config_value');
+
+INSERT INTO `ds_yaml_master`.`t_order` VALUES (1000, 10, 'INIT');
+INSERT INTO `ds_yaml_master`.`t_order` VALUES (1002, 10, 'INIT');
+INSERT INTO `ds_yaml_master`.`t_order` VALUES (1004, 10, 'INIT');
+INSERT INTO `ds_yaml_master`.`t_order` VALUES (1006, 10, 'INIT');
+INSERT INTO `ds_yaml_master`.`t_order` VALUES (1008, 10, 'INIT');
+INSERT INTO `ds_yaml_master`.`t_order_item` VALUES (100001, 1000, 10);
+INSERT INTO `ds_yaml_master`.`t_order_item` VALUES (100201, 1002, 10);
+INSERT INTO `ds_yaml_master`.`t_order_item` VALUES (100401, 1004, 10);
+INSERT INTO `ds_yaml_master`.`t_order_item` VALUES (100601, 1006, 10);
+INSERT INTO `ds_yaml_master`.`t_order_item` VALUES (100801, 1008, 10);
+INSERT INTO `ds_yaml_slave`.`t_order` VALUES (1000, 10, 'INIT');
+INSERT INTO `ds_yaml_slave`.`t_order` VALUES (1002, 10, 'INIT');
+INSERT INTO `ds_yaml_slave`.`t_order` VALUES (1004, 10, 'INIT');
+INSERT INTO `ds_yaml_slave`.`t_order` VALUES (1006, 10, 'INIT');
+INSERT INTO `ds_yaml_slave`.`t_order` VALUES (1008, 10, 'INIT');
+INSERT INTO `ds_yaml_slave`.`t_order_item` VALUES (100001, 1000, 10);
+INSERT INTO `ds_yaml_slave`.`t_order_item` VALUES (100201, 1002, 10);
+INSERT INTO `ds_yaml_slave`.`t_order_item` VALUES (100401, 1004, 10);
+INSERT INTO `ds_yaml_slave`.`t_order_item` VALUES (100601, 1006, 10);
+INSERT INTO `ds_yaml_slave`.`t_order_item` VALUES (100801, 1008, 10);
 
 INSERT INTO `ds_yaml_0`.`t_order_0` VALUES (1000, 10, 'INIT');
 INSERT INTO `ds_yaml_0`.`t_order_0` VALUES (1002, 10, 'INIT');
