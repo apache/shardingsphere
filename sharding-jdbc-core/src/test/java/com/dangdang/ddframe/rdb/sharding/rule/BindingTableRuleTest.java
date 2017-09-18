@@ -86,7 +86,7 @@ public final class BindingTableRuleTest {
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2);
+        Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("ds1", null);
         result.put("ds2", null);
         return result;

@@ -137,7 +137,7 @@ public final class Main {
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2);
+        Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("ds_jdbc_0", createDataSource("ds_jdbc_0"));
         result.put("ds_jdbc_1", createDataSource("ds_jdbc_1"));
         return result;

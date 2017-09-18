@@ -102,7 +102,7 @@ public final class Main {
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2);
+        Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("ds_trans_0", createDataSource("ds_trans_0"));
         result.put("ds_trans_1", createDataSource("ds_trans_1"));
         return result;

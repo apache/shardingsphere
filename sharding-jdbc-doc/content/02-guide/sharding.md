@@ -97,7 +97,7 @@ select * from db0.t_order_0 where user_id = ? and order_id = ?;
 ```
 这里构造器需要一个入参：数据源名称与真实数据源之间的映射关系，这个关系的构造方法如下
 ```java
-Map<String, DataSource> dataSourceMap = new HashMap<>(2);
+Map<String, DataSource> dataSourceMap = new HashMap<>();
 dataSourceMap.put("ds_0", createDataSource("ds_0"));
 dataSourceMap.put("ds_1", createDataSource("ds_1"));
 ```

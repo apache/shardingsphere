@@ -281,7 +281,7 @@ public final class ShardingRuleTest {
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2);
+        Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("ds0", null);
         result.put("ds1", null);
         return result;
