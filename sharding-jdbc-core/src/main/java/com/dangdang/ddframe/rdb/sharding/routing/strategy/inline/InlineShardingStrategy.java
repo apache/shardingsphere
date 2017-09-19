@@ -61,8 +61,8 @@ public final class InlineShardingStrategy implements ShardingStrategy {
     
     private Collection<String> doSharding(final ListShardingValue shardingValue) {
         Collection<String> result = new LinkedList<>();
-        for (PreciseShardingValue<?> eachTableShardingValue : transferToPreciseShardingValues(shardingValue)) {
-            result.add(execute(eachTableShardingValue));
+        for (PreciseShardingValue<?> each : transferToPreciseShardingValues(shardingValue)) {
+            result.add(execute(each));
         }
         return result;
     }
