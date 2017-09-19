@@ -193,7 +193,7 @@ public final class ShardingRule {
                 return false;
             }
         }
-        return true;
+        return !logicTables.isEmpty();
     }
     
     /**
