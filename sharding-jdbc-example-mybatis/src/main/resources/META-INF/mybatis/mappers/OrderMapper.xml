@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dangdang.ddframe.rdb.sharding.example.jdbc.repository.OrderRepository">
+    <resultMap id="baseResultMap" type="com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order">
+        <result column="order_id" property="orderId" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <sql id="baseColumnList">
+        order_id,
+        user_id,
+        status
+    </sql>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="orderId">
+        INSERT INTO t_order (
+          user_id, status
+        )
+        VALUES (
+        #{userId,jdbcType=INTEGER},
+        #{status,jdbcType=VARCHAR}
+        )
+    </insert>
+    
+    <update id="update">
+        UPDATE t_order
+        SET status = 'UPDATED'
+        WHERE user_id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    
+    <delete id="deleteAll">
+        DELETE FROM t_order
+    </delete>
+    
+    <select id="selectAll" resultMap="baseResultMap">
+        SELECT
+        <include refid="baseColumnList"/>
+        FROM t_order
+    </select>
+</mapper>
