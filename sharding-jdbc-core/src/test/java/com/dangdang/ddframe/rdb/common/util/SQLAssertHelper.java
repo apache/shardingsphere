@@ -124,7 +124,7 @@ public class SQLAssertHelper {
             while (expectedTableIterator.next()) {
                 ITable expectedTable = expectedTableIterator.getTable();
                 String actualTableName = expectedTable.getTableMetaData().getTableName();
-                String verifySql = "SELECT * FROM " + actualTableName + " WHERE status = '" + getStatus(file) + "'";
+                String verifySql = "SELECT * FROM " + actualTableName + " WHERE status = '" + getStatus(file) + "'" + getOrderByCondition(actualTableName);
                 ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
                         .createQueryTable(actualTableName, verifySql);
                 assertEquals(expectedTable, actualTable);
@@ -132,6 +132,14 @@ public class SQLAssertHelper {
         }
     }
     
+    private String getOrderByCondition(final String actualTableName) {
+        switch (actualTableName) {
+            case "t_order": return " ORDER BY order_id ASC";
+            case "t_order_item": return " ORDER BY item_id ASC";
+            default: return "";
+        }
+    }
+
     private String getStatus(final File file) {
         return sql.toUpperCase().startsWith("DELETE") ? "init" : file.getParentFile().getName();
     }
