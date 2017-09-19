@@ -50,7 +50,7 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
         return Arrays.asList(new Object[][]{
                 {"/integrate/sharding/configWithDataSourceWithoutProps.yaml", true},
 //                {"/integrate/sharding/configWithoutDataSourceWithoutProps.yaml", false},
-                {"/integrate/sharding/configWithDataSourceWithProps.yaml", true},
+//                {"/integrate/sharding/configWithDataSourceWithProps.yaml", true},
 //                {"/integrate/sharding/configWithoutDataSourceWithProps.yaml", false},
         });
     }

@@ -50,10 +50,3 @@ defaultTableStrategy:
   complex:
     shardingColumns: id, order_id
     algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
-
-masterSlaveRules:
-  db_ms:
-    masterDataSourceName:
-      db_master
-    slaveDataSourceNames:
-      - db_slaveb_ms
