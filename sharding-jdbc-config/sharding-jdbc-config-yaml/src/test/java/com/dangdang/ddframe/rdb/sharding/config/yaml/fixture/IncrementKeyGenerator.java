@@ -23,10 +23,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class IncrementKeyGenerator implements KeyGenerator {
     
-    private final AtomicInteger sequence = new AtomicInteger(100);
+    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
     
     @Override
     public Number generateKey() {
-        return sequence.incrementAndGet();
+        return SEQUENCE.incrementAndGet();
     }
 }

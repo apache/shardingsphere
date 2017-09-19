@@ -74,8 +74,8 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     @SuppressWarnings("unchecked")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingValue<?> shardingValue) {
         Collection<String> result = new LinkedList<>();
-        for (PreciseShardingValue<?> eachTableShardingValue : transferToPreciseShardingValues(shardingValue)) {
-            result.add(preciseShardingAlgorithm.doSharding(availableTargetNames, eachTableShardingValue));
+        for (PreciseShardingValue<?> each : transferToPreciseShardingValues(shardingValue)) {
+            result.add(preciseShardingAlgorithm.doSharding(availableTargetNames, each));
         }
         return result;
     }

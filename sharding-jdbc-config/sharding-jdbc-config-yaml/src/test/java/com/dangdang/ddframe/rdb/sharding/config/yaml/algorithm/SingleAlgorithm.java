@@ -22,10 +22,15 @@ import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardi
 
 import java.util.Collection;
 
-public class SingleAlgorithm implements PreciseShardingAlgorithm {
-    
+public class SingleAlgorithm implements PreciseShardingAlgorithm<Integer> {
+
     @Override
-    public String doSharding(final Collection availableTargetNames, final PreciseShardingValue shardingValue) {
-        return null;
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(shardingValue.getValue() % 10 + "")) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException();
     }
 }

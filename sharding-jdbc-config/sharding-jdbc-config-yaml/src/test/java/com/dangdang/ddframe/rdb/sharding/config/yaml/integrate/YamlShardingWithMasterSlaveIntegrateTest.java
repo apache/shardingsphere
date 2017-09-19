@@ -48,10 +48,10 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
     @Parameterized.Parameters(name = "{index}:{0}-{1}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-                {"/integrate/sharding_ms/configWithDataSourceWithoutProps.yaml", true},
-//                {"/integrate/sharding_ms/configWithoutDataSourceWithoutProps.yaml", false},
-//                {"/integrate/sharding_ms/configWithDataSourceWithProps.yaml", true},
-//                {"/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml", false},
+                {"/integrate/sharding/configWithDataSourceWithoutProps.yaml", true},
+//                {"/integrate/sharding/configWithoutDataSourceWithoutProps.yaml", false},
+                {"/integrate/sharding/configWithDataSourceWithProps.yaml", true},
+//                {"/integrate/sharding/configWithoutDataSourceWithProps.yaml", false},
         });
     }
     
@@ -72,6 +72,7 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
         
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {
+            stm.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));
             stm.executeQuery("SELECT * FROM t_order");
             stm.executeQuery("SELECT * FROM t_order_item");
             stm.executeQuery("SELECT * FROM config");

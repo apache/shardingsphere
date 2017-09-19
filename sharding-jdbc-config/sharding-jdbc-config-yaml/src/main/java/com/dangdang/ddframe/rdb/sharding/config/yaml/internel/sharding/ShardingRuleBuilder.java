@@ -17,18 +17,23 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.internel.sharding;
 
+import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
+import com.dangdang.ddframe.rdb.sharding.config.yaml.internel.ms.YamlMasterSlaveConfig;
 import com.dangdang.ddframe.rdb.sharding.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
  * Sharding rule builder from yaml.
  *
+ * @author caohao
  * @author zhangliang
  */
 @RequiredArgsConstructor
@@ -60,6 +65,16 @@ public final class ShardingRuleBuilder {
             result.setDefaultTableShardingStrategyConfig(yamlShardingConfig.getDefaultTableStrategy().getShardingStrategy());
         }
         result.setDefaultKeyGeneratorClass(yamlShardingConfig.getDefaultKeyGeneratorClass());
+        Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
+        for (YamlMasterSlaveConfig each : yamlShardingConfig.getMasterSlaveRules()) {
+            MasterSlaveRuleConfiguration config = new MasterSlaveRuleConfiguration();
+            config.setName(each.getName());
+            config.setMasterDataSourceName(each.getMasterDataSourceName());
+            config.setSlaveDataSourceNames(each.getSlaveDataSourceNames());
+            config.setMasterSlaveLoadBalanceStrategyClassName(each.getMasterSlaveLoadBalanceStrategyClassName());
+            masterSlaveRuleConfigs.add(config);
+        }
+        result.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);
         return result.build(dataSourceMap.isEmpty() ? yamlShardingConfig.getDataSources() : dataSourceMap);
     }
 }

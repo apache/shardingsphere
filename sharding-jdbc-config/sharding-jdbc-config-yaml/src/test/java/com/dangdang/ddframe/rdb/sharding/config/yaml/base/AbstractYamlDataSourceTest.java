@@ -42,7 +42,6 @@ public abstract class AbstractYamlDataSourceTest {
         result.setDriverClassName(org.h2.Driver.class.getName());
         result.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", dsName));
         result.setUsername("sa");
-        result.setPassword("");
         result.setMaxActive(100);
         return result;
     }
