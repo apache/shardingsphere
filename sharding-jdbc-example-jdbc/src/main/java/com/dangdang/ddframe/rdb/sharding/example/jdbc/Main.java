@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc;
 
-import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfiguration;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.ModuloTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.api.HintManager;
+import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
+import io.shardingjdbc.core.api.config.TableRuleConfiguration;
+import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;

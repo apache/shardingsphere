@@ -17,7 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.config.spring;
 
-import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlMasterSlaveDataSource;
+
+import io.shardingjdbc.config.yaml.api.YamlMasterSlaveDataSource;
 
 import javax.sql.DataSource;
 import java.io.File;

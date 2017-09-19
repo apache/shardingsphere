@@ -17,17 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.transaction;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm.ModuloShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
-import com.dangdang.ddframe.rdb.transaction.soft.api.config.NestedBestEffortsDeliveryJobConfiguration;
-import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
-import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransaction;
-import com.dangdang.ddframe.rdb.transaction.soft.constants.SoftTransactionType;
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
+import io.shardingjdbc.core.api.config.TableRuleConfiguration;
+import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.transaction.api.SoftTransactionManager;
+import io.shardingjdbc.transaction.api.config.NestedBestEffortsDeliveryJobConfiguration;
+import io.shardingjdbc.transaction.api.config.SoftTransactionConfiguration;
+import io.shardingjdbc.transaction.bed.BEDSoftTransaction;
+import io.shardingjdbc.transaction.constants.SoftTransactionType;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;

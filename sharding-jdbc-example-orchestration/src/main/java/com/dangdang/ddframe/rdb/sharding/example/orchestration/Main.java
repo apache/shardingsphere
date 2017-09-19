@@ -17,16 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.orchestration;
 
-import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.api.OrchestrationShardingDataSourceFactory;
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
-import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.InlineShardingStrategyConfiguration;
-import com.dangdang.ddframe.rdb.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import com.dangdang.ddframe.rdb.sharding.example.orchestration.algorithm.ModuloTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.reg.base.CoordinatorRegistryCenter;
-import com.dangdang.ddframe.rdb.sharding.reg.zookeeper.ZookeeperConfiguration;
-import com.dangdang.ddframe.rdb.sharding.reg.zookeeper.ZookeeperRegistryCenter;
+import io.shardingjdbc.core.api.HintManager;
+import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
+import io.shardingjdbc.core.api.config.TableRuleConfiguration;
+import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;

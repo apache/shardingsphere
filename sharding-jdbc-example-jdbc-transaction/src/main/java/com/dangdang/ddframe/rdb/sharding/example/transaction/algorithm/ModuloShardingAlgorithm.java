@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.PreciseShardingValue;
-import com.dangdang.ddframe.rdb.sharding.routing.strategy.standard.PreciseShardingAlgorithm;
+import io.shardingjdbc.core.api.strategy.PreciseShardingValue;
+import io.shardingjdbc.core.routing.strategy.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 

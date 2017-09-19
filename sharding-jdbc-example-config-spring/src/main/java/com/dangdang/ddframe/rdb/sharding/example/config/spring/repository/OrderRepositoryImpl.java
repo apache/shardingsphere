@@ -17,8 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.config.spring.repository;
 
-import com.dangdang.ddframe.rdb.sharding.spring.datasource.SpringShardingDataSource;
+import io.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import org.springframework.stereotype.Repository;
+
 import javax.annotation.Resource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
