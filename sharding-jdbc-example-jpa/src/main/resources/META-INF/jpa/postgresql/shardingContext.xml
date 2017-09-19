@@ -20,11 +20,11 @@
         <property name="password" value=""/>
     </bean>
     
-    <rdb:strategy id="databaseShardingStrategy" type="standard" sharding-columns="user_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
-    <rdb:strategy id="tableShardingStrategy" type="standard" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jpa.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <rdb:strategy id="databaseShardingStrategy" type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.example.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
+    <rdb:strategy id="tableShardingStrategy" type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.example.jpa.algorithm.PreciseModuloTableShardingAlgorithm"/>
     
     <rdb:data-source id="shardingDataSource">
-        <rdb:sharding-rule data-sources="ds_0, ds_1" key-generator-class="com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator">
+        <rdb:sharding-rule data-sources="ds_0, ds_1" key-generator-class="io.shardingjdbc.core.keygen.DefaultKeyGenerator">
             <rdb:table-rules>
                 <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy="databaseShardingStrategy" table-strategy="tableShardingStrategy">
                     <rdb:generate-key-column column-name="order_id"/>

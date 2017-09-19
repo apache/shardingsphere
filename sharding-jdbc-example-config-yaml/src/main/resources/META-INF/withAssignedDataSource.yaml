@@ -15,7 +15,7 @@ dataSources:
     username: root
     password:
 
-defaultKeyGeneratorClass: com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator
+defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
 
 tables:
   t_config:

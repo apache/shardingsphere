@@ -10,7 +10,7 @@
                         http://www.dangdang.com/schema/ddframe/rdb 
                         http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
                         ">
-    <context:component-scan base-package="com.dangdang.ddframe.rdb.sharding.example.config.spring"/>
+    <context:component-scan base-package="io.shardingjdbc.example.config.spring"/>
     <context:property-placeholder location="classpath:META-INF/conf/rdb.properties" ignore-unresolvable="true"/>
 
     <bean id="dbtbl_0_master" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -56,7 +56,7 @@
 
     <rdb:strategy id="databaseStrategy" type="inline" sharding-columns="user_id" algorithm-expression="dbtbl_${user_id % 2}"/>
     <rdb:strategy id="orderTableStrategy" type="inline" sharding-columns="order_id" algorithm-expression="t_order_${order_id % 4}"/>
-    <rdb:strategy id="orderItemTableStrategy" type="standard" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.config.spring.masterslave.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <rdb:strategy id="orderItemTableStrategy" type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.example.config.spring.masterslave.algorithm.PreciseModuloTableShardingAlgorithm"/>
 
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1">
