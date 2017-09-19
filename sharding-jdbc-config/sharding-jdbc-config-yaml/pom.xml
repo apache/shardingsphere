@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
+        <groupId>io.shardingjdbc</groupId>
         <artifactId>sharding-jdbc-config</artifactId>
-        <groupId>com.dangdang</groupId>
         <version>2.0.0.M1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-jdbc-config-yaml</artifactId>
