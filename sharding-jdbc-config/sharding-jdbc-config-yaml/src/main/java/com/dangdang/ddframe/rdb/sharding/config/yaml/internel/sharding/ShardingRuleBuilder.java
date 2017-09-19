@@ -42,6 +42,7 @@ public final class ShardingRuleBuilder {
      * Build sharding rule from yaml.
      * 
      * @return sharding rule from yaml
+     * @throws SQLException SQL exception
      */
     public ShardingRule build() throws SQLException {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
