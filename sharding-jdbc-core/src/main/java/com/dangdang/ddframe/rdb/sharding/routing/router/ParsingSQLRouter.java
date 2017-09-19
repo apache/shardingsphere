@@ -108,7 +108,7 @@ public final class ParsingSQLRouter implements SQLRouter {
     private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
         RoutingEngine routingEngine;
-        if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames)) {
+        if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllInDefaultDataSource(tableNames)) {
             routingEngine = new SimpleRoutingEngine(shardingRule, parameters, tableNames.iterator().next(), sqlStatement);
         } else {
             // TODO config for cartesian set
