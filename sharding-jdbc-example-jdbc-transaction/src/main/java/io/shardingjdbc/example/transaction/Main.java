@@ -37,13 +37,13 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-// CHECKSTYLE:OFF
 public final class Main {
     
     private static boolean useNestedJob = true;
     
+    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws SQLException {
-        // CHECKSTYLE:ON
+    // CHECKSTYLE:ON
         DataSource dataSource = getShardingDataSource();
         updateFailure(dataSource);
     }

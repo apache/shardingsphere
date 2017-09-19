@@ -20,15 +20,13 @@ package io.shardingjdbc.example.jdbc;
 import io.shardingjdbc.example.jdbc.service.OrderService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-// CHECKSTYLE:OFF
-@Service
-@Transactional
-public class Main {
+
+public final class Main {
+    
+    // CHECKSTYLE:OFF    
     public static void main(final String[] args) {
-        // CHECKSTYLE:ON
+    // CHECKSTYLE:ON
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatis/mysql/mybatisContext.xml");
         OrderService orderService = applicationContext.getBean(OrderService.class);
         orderService.clear();

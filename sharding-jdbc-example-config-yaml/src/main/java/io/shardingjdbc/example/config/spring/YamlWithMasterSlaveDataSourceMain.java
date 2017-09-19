@@ -31,7 +31,7 @@ public final class YamlWithMasterSlaveDataSourceMain {
     
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {
-        // CHECKSTYLE:ON
+    // CHECKSTYLE:ON
         YamlMasterSlaveDataSource dataSource =  new YamlMasterSlaveDataSource(
                 new File(YamlWithAssignedDataSourceMain.class.getResource("/META-INF/withMasterSlaveDataSource.yaml").getFile()));
         printSimpleSelect(dataSource);

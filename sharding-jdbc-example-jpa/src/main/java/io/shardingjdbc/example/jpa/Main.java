@@ -24,11 +24,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.util.ArrayList;
 import java.util.List;
 
-// CHECKSTYLE:OFF
 public final class Main {
     
+    // CHECKSTYLE:OFF
     public static void main(final String[] args) {
-        // CHECKSTYLE:ON
+    // CHECKSTYLE:ON
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/jpa/mysql/jpaContext.xml");
         OrderRepository orderRepository = applicationContext.getBean(OrderRepository.class);
         List<Long> orderIds = new ArrayList<>(10);
