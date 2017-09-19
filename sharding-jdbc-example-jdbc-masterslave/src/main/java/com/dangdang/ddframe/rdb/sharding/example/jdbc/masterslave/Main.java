@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.example.jdbc.masterslave;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
 import com.dangdang.ddframe.rdb.sharding.api.config.MasterSlaveRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingRuleConfiguration;
 import com.dangdang.ddframe.rdb.sharding.api.config.TableRuleConfiguration;
@@ -126,25 +125,24 @@ public final class Main {
     }
     
     private static Map<String, DataSource> createDataSourceMap() throws SQLException {
-        final Map<String, DataSource> result = new HashMap<>(2, 1);
-        Map<String, DataSource> masterSlaveDataSourceMap1 = new HashMap<>(3, 1);
-        masterSlaveDataSourceMap1.put("ds_0_master", createDataSource("ds_0_master"));
-        masterSlaveDataSourceMap1.put("ds_0_slave_0", createDataSource("ds_0_slave_0"));
-        masterSlaveDataSourceMap1.put("ds_0_slave_1", createDataSource("ds_0_slave_1"));
+        final Map<String, DataSource> result = new HashMap<>(6, 1);
+        result.put("ds_0_master", createDataSource("ds_0_master"));
+        result.put("ds_0_slave_0", createDataSource("ds_0_slave_0"));
+        result.put("ds_0_slave_1", createDataSource("ds_0_slave_1"));
+        result.put("ds_1_master", createDataSource("ds_1_master"));
+        result.put("ds_1_slave_0", createDataSource("ds_1_slave_0"));
+        result.put("ds_1_slave_1", createDataSource("ds_1_slave_1"));
+        
         MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig1.setName("ds_0");
         masterSlaveRuleConfig1.setMasterDataSourceName("ds_0_master");
         masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("ds_0_slave_0", "ds_0_slave_1"));
-        result.put("ds_0", MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap1, masterSlaveRuleConfig1));
-        Map<String, DataSource> masterSlaveDataSourceMap2 = new HashMap<>(3, 1);
-        masterSlaveDataSourceMap1.put("ds_1_master", createDataSource("ds_1_master"));
-        masterSlaveDataSourceMap2.put("ds_1_slave_0", createDataSource("ds_1_slave_0"));
-        masterSlaveDataSourceMap2.put("ds_1_slave_1", createDataSource("ds_1_slave_1"));
+        
         MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig2.setName("ds_1");
         masterSlaveRuleConfig2.setMasterDataSourceName("ds_1_master");
         masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("ds_1_slave_0", "ds_1_slave_1"));
-        result.put("ds_1", MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap2, masterSlaveRuleConfig2));
+        
         return result;
     }
     
