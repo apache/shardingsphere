@@ -1,0 +1,3 @@
+baseurl = "http://shardingjdbc.io/docs/"
+canonifyurls = true
+theme = "hugo-theme-learn"
