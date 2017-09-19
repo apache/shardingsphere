@@ -2,9 +2,9 @@
 
 [![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
-[![Coverage Status](https://coveralls.io/repos/dangdangdotcom/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/dangdangdotcom/sharding-jdbc?branch=master)
-[![GitHub release](https://img.shields.io/github/release/dangdangdotcom/sharding-jdbc.svg)](https://github.com/dangdangdotcom/sharding-jdbc/releases)
-[![Hex.pm](http://dangdangdotcom.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![Coverage Status](https://coveralls.io/repos/shardingjdbc/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/shardingjdbc/sharding-jdbc?branch=master)
+[![GitHub release](https://img.shields.io/github/release/shardingjdbc/sharding-jdbc.svg)](https://github.com/shardingjdbc/sharding-jdbc/releases)
+[![Hex.pm](http://shardingjdbc.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 
 # [中文主页](http://shardingjdbc.io/index_zh.html)
@@ -45,9 +45,9 @@ Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以
 
 # Architecture
 
-![Architecture](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture.png)
+![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture.png)
 
-# [Release Notes](https://github.com/dangdangdotcom/sharding-jdbc/releases)
+# [Release Notes](https://github.com/shardingjdbc/sharding-jdbc/releases)
 
 # [Roadmap](ROADMAP.md)
 

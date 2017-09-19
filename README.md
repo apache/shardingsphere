@@ -6,9 +6,9 @@
 
 [![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
-[![Coverage Status](https://coveralls.io/repos/dangdangdotcom/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/dangdangdotcom/sharding-jdbc?branch=master)
-[![GitHub release](https://img.shields.io/github/release/dangdangdotcom/sharding-jdbc.svg)](https://github.com/dangdangdotcom/sharding-jdbc/releases)
-[![Hex.pm](http://dangdangdotcom.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![Coverage Status](https://coveralls.io/repos/shardingjdbc/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/shardingjdbc/sharding-jdbc?branch=master)
+[![GitHub release](https://img.shields.io/github/release/shardingjdbc/sharding-jdbc.svg)](https://github.com/shardingjdbc/sharding-jdbc/releases)
+[![Hex.pm](http://shardingjdbc.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 # Overview
 
@@ -47,9 +47,9 @@ Sharding-JDBC is a JDBC extension, provides distributed features such as shardin
 
 # Architecture
 
-![Architecture](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture_en.png)
+![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_en.png)
 
-# [Release Notes](https://github.com/dangdangdotcom/sharding-jdbc/releases)
+# [Release Notes](https://github.com/shardingjdbc/sharding-jdbc/releases)
 
 # [Roadmap](ROADMAP.md)
 
