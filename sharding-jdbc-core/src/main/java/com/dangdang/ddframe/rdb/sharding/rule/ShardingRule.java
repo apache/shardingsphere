@@ -171,6 +171,21 @@ public final class ShardingRule {
     }
     
     /**
+     * Adjust logic tables is all belong to default data source.
+     *
+     * @param logicTables names of logic tables
+     * @return logic tables is all belong to default data source
+     */
+    public boolean isAllInDefaultDataSource(final Collection<String> logicTables) {
+        for (String each : logicTables) {
+            if (tryFindTableRule(each).isPresent()) {
+                return false;
+            }
+        }
+        return !logicTables.isEmpty();
+    }
+    
+    /**
      * Filter all binding tables.
      * 
      * @param logicTables names of logic tables
