@@ -4,7 +4,7 @@ tables:
     databaseStrategy: 
       standard:
         shardingColumn: order_id
-        preciseAlgorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
+        preciseAlgorithmClassName: io.shardingjdbc.config.yaml.algorithm.SingleAlgorithm
     tableStrategy: 
       inline:
         shardingColumn: id
@@ -15,7 +15,7 @@ tables:
     databaseStrategy: 
       standard:
         shardingColumn: order_id
-        preciseAlgorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
+        preciseAlgorithmClassName: io.shardingjdbc.config.yaml.algorithm.SingleAlgorithm
     tableStrategy: 
       inline:
         shardingColumn: id

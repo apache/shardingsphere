@@ -7,13 +7,13 @@ tables:
     databaseStrategy: 
       standard:
         shardingColumn: user_id
-        preciseAlgorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
+        preciseAlgorithmClassName: io.shardingjdbc.config.yaml.algorithm.SingleAlgorithm
     tableStrategy: 
       inline:
         shardingColumn: order_id
         algorithmInlineExpression: t_order_${order_id % 2}
     keyGeneratorColumnName: order_id
-    keyGeneratorClass: com.dangdang.ddframe.rdb.sharding.config.yaml.fixture.IncrementKeyGenerator
+    keyGeneratorClass: io.shardingjdbc.config.yaml.fixture.IncrementKeyGenerator
 
   t_order_item:
     actualTables: t_order_item_${0..1}
@@ -21,7 +21,7 @@ tables:
     databaseStrategy: 
       standard:
         shardingColumn: user_id
-        preciseAlgorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
+        preciseAlgorithmClassName: io.shardingjdbc.config.yaml.algorithm.SingleAlgorithm
     tableStrategy: 
       inline:
         shardingColumn: order_id
@@ -35,7 +35,7 @@ defaultDatabaseStrategy:
 defaultTableStrategy:
   complex:
     shardingColumns: id, order_id
-    algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
+    algorithmClassName: io.shardingjdbc.config.yaml.algorithm.MultiAlgorithm
 
 masterSlaveRules:
   db_ms_0:

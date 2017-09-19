@@ -14,7 +14,7 @@ dataSources:
     
 defaultDataSourceName: db0
 
-defaultKeyGeneratorClass: com.dangdang.ddframe.rdb.sharding.config.yaml.fixture.IncrementKeyGenerator
+defaultKeyGeneratorClass: io.shardingjdbc.config.yaml.fixture.IncrementKeyGenerator
     
 tables:
   config:
@@ -26,7 +26,7 @@ tables:
     databaseStrategy: 
       standard:
         shardingColumn: order_id
-        preciseAlgorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
+        preciseAlgorithmClassName: io.shardingjdbc.config.yaml.algorithm.SingleAlgorithm
     tableStrategy: 
       inline:
         shardingColumn: id
@@ -34,12 +34,12 @@ tables:
   t_order_item:
     actualTables: t_order_item_${0..1}
     keyGeneratorColumnName: order_item_id
-    keyGeneratorClass: com.dangdang.ddframe.rdb.sharding.config.yaml.fixture.DecrementKeyGenerator
+    keyGeneratorClass: io.shardingjdbc.config.yaml.fixture.DecrementKeyGenerator
     #绑定表中其余的表的策略与第一张表的策略相同
     databaseStrategy: 
       standard:
         shardingColumn: order_id
-        preciseAlgorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
+        preciseAlgorithmClassName: io.shardingjdbc.config.yaml.algorithm.SingleAlgorithm
     tableStrategy: 
       inline:
         shardingColumn: id
@@ -52,8 +52,8 @@ bindingTables:
 defaultDatabaseStrategy:
   complex:
       shardingColumns: order_id, user_id
-      algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
+      algorithmClassName: io.shardingjdbc.config.yaml.algorithm.MultiAlgorithm
 defaultTableStrategy:
   complex:
     shardingColumns: id, order_id
-    algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
+    algorithmClassName: io.shardingjdbc.config.yaml.algorithm.MultiAlgorithm

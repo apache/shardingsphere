@@ -17,4 +17,4 @@ tables:
     tableStrategy: 
       standard:
         shardingColumn: order_id
-        preciseAlgorithmClassName: com.dangdang.ddframe.rdb.sharding.config.NoThisClass
+        preciseAlgorithmClassName: io.shardingjdbc.config.yaml.NoThisClass
