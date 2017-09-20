@@ -17,23 +17,21 @@
 
 package io.shardingjdbc.spring.namespace.handler;
 
-import io.shardingjdbc.spring.namespace.parser.MasterSlaveDataSourceBeanDefinitionParser;
 import io.shardingjdbc.spring.namespace.parser.ShardingJdbcDataSourceBeanDefinitionParser;
 import io.shardingjdbc.spring.namespace.parser.ShardingJdbcStrategyBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Spring namespace handler for Sharding-JDBC.
+ * Spring namespace handler for sharding.
  * 
  * @author caohao
  * @author zhangliang
  */
-public final class ShardingJdbcNamespaceHandler extends NamespaceHandlerSupport {
+public final class ShardingNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
         registerBeanDefinitionParser("strategy", new ShardingJdbcStrategyBeanDefinitionParser());
         registerBeanDefinitionParser("data-source", new ShardingJdbcDataSourceBeanDefinitionParser());
-        registerBeanDefinitionParser("master-slave-data-source", new MasterSlaveDataSourceBeanDefinitionParser());
     }
 }

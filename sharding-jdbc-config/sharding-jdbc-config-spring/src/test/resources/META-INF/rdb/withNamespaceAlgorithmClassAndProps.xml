@@ -2,13 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:sharding-jdbc="http://shardingjdbc.io/schema/shardingjdbc" 
+       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding" 
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd 
-                        http://shardingjdbc.io/schema/shardingjdbc 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding-jdbc.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
                         ">
     <context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true"/>
     
@@ -26,19 +26,19 @@
         <property name="password" value=""/>
     </bean>
     
-    <sharding-jdbc:strategy id="databaseStrategy" type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
+    <sharding:strategy id="databaseStrategy" type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
     
-    <sharding-jdbc:strategy id="tableStrategy" type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <sharding:strategy id="tableStrategy" type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
     
-    <sharding-jdbc:data-source id="shardingDataSource">
-        <sharding-jdbc:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
-            <sharding-jdbc:table-rules>
-                <sharding-jdbc:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
-                <sharding-jdbc:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
-            </sharding-jdbc:table-rules>
-        </sharding-jdbc:sharding-rule>
-        <sharding-jdbc:props>
+    <sharding:data-source id="shardingDataSource">
+        <sharding:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
+                <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+        <sharding:props>
             <prop key="sql.show">${sql_show}</prop>
-        </sharding-jdbc:props>
-    </sharding-jdbc:data-source>
+        </sharding:props>
+    </sharding:data-source>
 </beans>

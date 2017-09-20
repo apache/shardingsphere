@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:sharding-jdbc="http://shardingjdbc.io/schema/shardingjdbc"
+       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://shardingjdbc.io/schema/shardingjdbc 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding-jdbc.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
                         ">
     <import resource="datasource/dataSource.xml" />
     
-    <sharding-jdbc:strategy id="databaseStrategy" type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
+    <sharding:strategy id="databaseStrategy" type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
     
-    <sharding-jdbc:strategy id="tableStrategy" type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <sharding:strategy id="tableStrategy" type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
     
-    <sharding-jdbc:data-source id="shardingDatasource">
-        <sharding-jdbc:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
-            <sharding-jdbc:table-rules>
-                <sharding-jdbc:table-rule logic-table="t_order" actual-tables="t_order_0,t_order_1,t_order_2,t_order_3" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
-                <sharding-jdbc:table-rule logic-table="t_order_item" actual-tables="t_order_item_0,t_order_item_1,t_order_item_2,t_order_item_3" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
-            </sharding-jdbc:table-rules>
-            <sharding-jdbc:binding-table-rules>
-                <sharding-jdbc:binding-table-rule logic-tables="t_order, t_order_item"/>
-            </sharding-jdbc:binding-table-rules>
-        </sharding-jdbc:sharding-rule>
-    </sharding-jdbc:data-source>
+    <sharding:data-source id="shardingDatasource">
+        <sharding:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-tables="t_order_0,t_order_1,t_order_2,t_order_3" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
+                <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_0,t_order_item_1,t_order_item_2,t_order_item_3" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
+            </sharding:table-rules>
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order, t_order_item"/>
+            </sharding:binding-table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
 </beans>

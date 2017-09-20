@@ -2,13 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:sharding-jdbc="http://shardingjdbc.io/schema/shardingjdbc"
+       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd 
-                        http://shardingjdbc.io/schema/shardingjdbc 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding-jdbc.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
                         ">
     <context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true"/>
     
@@ -26,20 +26,20 @@
         <property name="password" value=""/>
     </bean>
     
-    <sharding-jdbc:strategy id="databaseStrategy" type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
+    <sharding:strategy id="databaseStrategy" type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
     
-    <sharding-jdbc:strategy id="tableStrategy" type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <sharding:strategy id="tableStrategy" type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
     
-    <sharding-jdbc:data-source id="shardingDataSource">
-        <sharding-jdbc:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0" key-generator-class="io.shardingjdbc.spring.fixture.IncrementKeyGenerator">
-            <sharding-jdbc:table-rules>
-                <sharding-jdbc:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy">
-                    <sharding-jdbc:generate-key-column column-name="order_id"/>
-                </sharding-jdbc:table-rule>
-                <sharding-jdbc:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy">
-                    <sharding-jdbc:generate-key-column column-name="order_item_id" column-key-generator-class="io.shardingjdbc.spring.fixture.DecrementKeyGenerator"/>
-                </sharding-jdbc:table-rule>
-            </sharding-jdbc:table-rules>
-        </sharding-jdbc:sharding-rule>
-    </sharding-jdbc:data-source>
+    <sharding:data-source id="shardingDataSource">
+        <sharding:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0" key-generator-class="io.shardingjdbc.spring.fixture.IncrementKeyGenerator">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy">
+                    <sharding:generate-key-column column-name="order_id"/>
+                </sharding:table-rule>
+                <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy">
+                    <sharding:generate-key-column column-name="order_item_id" column-key-generator-class="io.shardingjdbc.spring.fixture.DecrementKeyGenerator"/>
+                </sharding:table-rule>
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
 </beans>
