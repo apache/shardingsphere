@@ -5,7 +5,7 @@
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
-    <xsd:element name="master-slave-data-source">
+    <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="master-data-source-ref" type="xsd:string" use="required" />

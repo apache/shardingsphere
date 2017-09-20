@@ -29,6 +29,6 @@ public final class MasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser("master-slave-data-source", new MasterSlaveDataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser("data-source", new MasterSlaveDataSourceBeanDefinitionParser());
     }
 }

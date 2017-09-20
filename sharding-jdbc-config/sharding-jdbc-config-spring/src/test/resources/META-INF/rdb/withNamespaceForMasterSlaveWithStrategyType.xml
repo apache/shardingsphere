@@ -12,8 +12,8 @@
                         ">
     <import resource="datasource/masterSlaveDataSource.xml" />
     
-    <master-slave:master-slave-data-source id="dbtbl_0" master-data-source-ref="dbtbl_0_master" slave-data-sources-ref="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-type="RANDOM" />
-    <master-slave:master-slave-data-source id="dbtbl_1" master-data-source-ref="dbtbl_1_master" slave-data-sources-ref="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-type="RANDOM" />
+    <master-slave:data-source id="dbtbl_0" master-data-source-ref="dbtbl_0_master" slave-data-sources-ref="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-type="RANDOM" />
+    <master-slave:data-source id="dbtbl_1" master-data-source-ref="dbtbl_1_master" slave-data-sources-ref="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-type="RANDOM" />
     
     <sharding:strategy id="databaseStrategy" type="inline" sharding-columns="user_id" algorithm-expression="dbtbl_${user_id % 2}"/>
     
