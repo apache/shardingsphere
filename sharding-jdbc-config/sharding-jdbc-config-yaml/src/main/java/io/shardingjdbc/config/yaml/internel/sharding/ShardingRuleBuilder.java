@@ -71,7 +71,8 @@ public final class ShardingRuleBuilder {
             config.setName(each.getKey());
             config.setMasterDataSourceName(each.getValue().getMasterDataSourceName());
             config.setSlaveDataSourceNames(each.getValue().getSlaveDataSourceNames());
-            config.setLoadBalanceAlgorithmClassName(each.getValue().getMasterSlaveLoadBalanceStrategyClassName());
+            config.setLoadBalanceAlgorithmType(each.getValue().getLoadBalanceAlgorithmType());
+            config.setLoadBalanceAlgorithmClassName(each.getValue().getLoadBalanceAlgorithmClassName());
             masterSlaveRuleConfigs.add(config);
         }
         result.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);

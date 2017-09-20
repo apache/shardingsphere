@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.config.yaml.internel.ms;
 
+import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,7 +44,9 @@ public class YamlMasterSlaveConfig {
     
     private Collection<String> slaveDataSourceNames;
     
-    private String masterSlaveLoadBalanceStrategyClassName;
+    private MasterSlaveLoadBalanceAlgorithmType loadBalanceAlgorithmType;
+    
+    private String loadBalanceAlgorithmClassName;
     
     private Properties props = new Properties();
 }
