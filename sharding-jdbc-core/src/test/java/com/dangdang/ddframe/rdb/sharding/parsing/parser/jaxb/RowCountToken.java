@@ -17,18 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class TableToken extends SQLToken {
+public class RowCountToken extends SQLToken {
     
-    @XmlAttribute(name = "original-literals")
-    private String originalLiterals;
+    @XmlAttribute(name = "row-count")
+    private int rowCount;
 }

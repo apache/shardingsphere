@@ -25,6 +25,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -47,7 +49,25 @@ public final class Assert {
     @XmlElementWrapper(name = "table-tokens")
     @XmlElement(name = "table-token")
     private List<TableToken> tableTokens;
-
+    
+    @XmlElement(name = "items-token")
+    private ItemsToken itemsToken;
+    
+    @XmlElement(name = "generated-key-token")
+    private GeneratedKeyToken generatedKeyToken;
+    
+    @XmlElement(name = "multiple-insert-values-token")
+    private MultipleInsertValuesToken multipleInsertValuesToken;
+    
+    @XmlElement(name = "order-by-token")
+    private OrderByToken orderByToken;
+    
+    @XmlElement(name = "offset-token")
+    private OffsetToken offsetToken;
+    
+    @XmlElement(name = "row-count-token")
+    private RowCountToken rowCountToken;
+    
     @XmlElementWrapper(name = "order-by-columns")
     @XmlElement(name = "order-by-column") 
     private List<OrderByColumn> orderByColumns;
@@ -62,4 +82,30 @@ public final class Assert {
     
     @XmlElement 
     private Limit limit;
+    
+    public List<SQLToken> getSqlTokens() {
+        List<SQLToken> result = new ArrayList<SQLToken>(7);
+        if (tableTokens != null) {
+            result.addAll(tableTokens);
+        }
+        if (offsetToken != null) {
+            result.add(offsetToken);
+        }
+        if (rowCountToken != null) {
+            result.add(rowCountToken);
+        }
+        if (itemsToken != null) {
+            result.add(itemsToken);
+        }
+        if (generatedKeyToken != null) {
+            result.add(generatedKeyToken);
+        }
+        if (multipleInsertValuesToken != null) {
+            result.add(multipleInsertValuesToken);
+        }
+        if (orderByToken != null) {
+            result.add(orderByToken);
+        }
+        return result;
+    }
 }

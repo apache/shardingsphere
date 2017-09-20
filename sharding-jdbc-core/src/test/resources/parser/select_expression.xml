@@ -4,6 +4,14 @@
         <tables>
             <table name="t_order" alias="o"/>
         </tables>
+        <table-tokens>
+            <table-token begin-position="31" original-literals="t_order" />
+        </table-tokens>
+        <items-token begin-position="26">
+            <items>
+                <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
+            </items>
+        </items-token>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
         </order-by-columns>
@@ -12,6 +20,9 @@
         <tables>
             <table name="t_order_item" alias="i"/>
         </tables>
+        <table-tokens>
+            <table-token begin-position="37" original-literals="`t_order_item`" />
+        </table-tokens>
         <order-by-columns>
             <order-by-column name="DATE(i.c_date)" order-by-type="DESC" alias="c_date"/>
         </order-by-columns>
@@ -20,6 +31,9 @@
         <tables>
             <table name="t_order" alias="o" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="36" original-literals="t_order" />
+        </table-tokens>
         <aggregation-select-items>
             <aggregation-select-item aggregation-type="COUNT" inner-expression="(o.order_id)" />
         </aggregation-select-items>
@@ -28,6 +42,9 @@
         <tables>
             <table name="t_order_item" alias="t"/>
         </tables>
+        <table-tokens>
+            <table-token begin-position="14" original-literals="t_order_item" />
+        </table-tokens>
         <conditions>
             <condition column-name="item_id" table-name="t_order_item" operator="IN">
                 <value index="1" literal="1" type="int" />
