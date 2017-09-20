@@ -72,10 +72,10 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingJdbcDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfiguration.class);
         parseDefaultDataSource(factory, shardingRuleElement);
+        parseDefaultDatabaseShardingStrategy(factory, shardingRuleElement);
+        parseDefaultTableShardingStrategy(factory, shardingRuleElement);
         factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfig(shardingRuleElement));
         factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfig(shardingRuleElement));
-        factory.addPropertyValue("defaultDatabaseShardingStrategyConfig", parseDefaultDatabaseStrategyConfig(shardingRuleElement));
-        factory.addPropertyValue("defaultTableShardingStrategyConfig", parseDefaultTableStrategyConfig(shardingRuleElement));
         parseKeyGenerator(factory, shardingRuleElement);
         return factory.getBeanDefinition();
     }
@@ -91,6 +91,20 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         String defaultDataSource = element.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_DATA_SOURCE_TAG);
         if (!Strings.isNullOrEmpty(defaultDataSource)) {
             factory.addPropertyValue("defaultDataSourceName", defaultDataSource);
+        }
+    }
+    
+    private void parseDefaultDatabaseShardingStrategy(final BeanDefinitionBuilder factory, final Element element) {
+        String defaultDatabaseShardingStrategy = element.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_DATABASE_STRATEGY_REF_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(defaultDatabaseShardingStrategy)) {
+            factory.addPropertyReference("defaultDatabaseShardingStrategyConfig", defaultDatabaseShardingStrategy);
+        }
+    }
+    
+    private void parseDefaultTableShardingStrategy(final BeanDefinitionBuilder factory, final Element element) {
+        String defaultTableShardingStrategy = element.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_TABLE_STRATEGY_REF_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(defaultTableShardingStrategy)) {
+            factory.addPropertyReference("defaultTableShardingStrategyConfig", defaultTableShardingStrategy);
         }
     }
     
@@ -115,11 +129,11 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         if (!Strings.isNullOrEmpty(dataSourceNames)) {
             factory.addPropertyValue("dataSourceNames", dataSourceNames);
         }
-        String databaseStrategy = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATABASE_STRATEGY_ATTRIBUTE);
+        String databaseStrategy = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATABASE_STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(databaseStrategy)) {
-            factory.addPropertyReference("databaseShardingStrategyConfig", databaseStrategy);    
+            factory.addPropertyReference("databaseShardingStrategyConfig", databaseStrategy);
         }
-        String tableStrategy = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.TABLE_STRATEGY_ATTRIBUTE);
+        String tableStrategy = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.TABLE_STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(tableStrategy)) {
             factory.addPropertyReference("tableShardingStrategyConfig", tableStrategy);
         }
@@ -145,14 +159,6 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
             result.add(bindingTableRuleElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.LOGIC_TABLES_ATTRIBUTE));
         }
         return result;
-    }
-    
-    private BeanDefinition parseDefaultDatabaseStrategyConfig(final Element element) {
-        return parseDefaultStrategyConfig(element, ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_DATABASE_STRATEGY_ATTRIBUTE);
-    }
-    
-    private BeanDefinition parseDefaultTableStrategyConfig(final Element element) {
-        return parseDefaultStrategyConfig(element, ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_TABLE_STRATEGY_ATTRIBUTE);
     }
     
     private BeanDefinition parseDefaultStrategyConfig(final Element element, final String attr) {

@@ -10,31 +10,30 @@
                         http://shardingjdbc.io/schema/shardingjdbc/sharding 
                         http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
                         ">
-    <context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true"/>
+    <context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true" />
     
     <bean id="dbtbl_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="org.h2.Driver"/>
-        <property name="url" value="jdbc:h2:mem:dbtbl_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"/>
-        <property name="username" value="sa"/>
-        <property name="password" value=""/>
+        <property name="driverClassName" value="org.h2.Driver" />
+        <property name="url" value="jdbc:h2:mem:dbtbl_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL" />
+        <property name="username" value="sa" />
+        <property name="password" value="" />
     </bean>
-
+    
     <bean id="dbtbl_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="org.h2.Driver"/>
-        <property name="url" value="jdbc:h2:mem:dbtbl_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"/>
-        <property name="username" value="sa"/>
-        <property name="password" value=""/>
+        <property name="driverClassName" value="org.h2.Driver" />
+        <property name="url" value="jdbc:h2:mem:dbtbl_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL" />
+        <property name="username" value="sa" />
+        <property name="password" value="" />
     </bean>
     
-    <sharding:strategy id="databaseStrategy" type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
-    
-    <sharding:strategy id="tableStrategy" type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
-                <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
+                <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
+                <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
             </sharding:table-rules>
         </sharding:sharding-rule>
         <sharding:props>

@@ -28,6 +28,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingJdbcDataSourceBeanDefinitionParserTag {
     
+    public static final String ROOT_TAG = "data-source";
+    
     public static final String SHARDING_RULE_CONFIG_TAG = "sharding-rule";
     
     public static final String PROPS_TAG = "props";
@@ -52,13 +54,13 @@ public final class ShardingJdbcDataSourceBeanDefinitionParserTag {
     
     public static final String DATA_SOURCE_NAMES_ATTRIBUTE = "data-source-names";
     
-    public static final String DATABASE_STRATEGY_ATTRIBUTE = "database-strategy";
+    public static final String DATABASE_STRATEGY_REF_ATTRIBUTE = "database-strategy-ref";
     
-    public static final String TABLE_STRATEGY_ATTRIBUTE = "table-strategy";
+    public static final String TABLE_STRATEGY_REF_ATTRIBUTE = "table-strategy-ref";
     
-    public static final String DEFAULT_DATABASE_STRATEGY_ATTRIBUTE = "default-database-strategy";
+    public static final String DEFAULT_DATABASE_STRATEGY_REF_ATTRIBUTE = "default-database-strategy-ref";
     
-    public static final String DEFAULT_TABLE_STRATEGY_ATTRIBUTE = "default-table-strategy";
+    public static final String DEFAULT_TABLE_STRATEGY_REF_ATTRIBUTE = "default-table-strategy-ref";
     
     public static final String GENERATE_KEY_COLUMN = "generate-key-column";
     

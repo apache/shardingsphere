@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.spring.namespace.handler;
 
+import io.shardingjdbc.spring.namespace.constants.ShardingJdbcDataSourceBeanDefinitionParserTag;
+import io.shardingjdbc.spring.namespace.constants.ShardingJdbcStrategyBeanDefinitionParserTag;
 import io.shardingjdbc.spring.namespace.parser.ShardingJdbcDataSourceBeanDefinitionParser;
 import io.shardingjdbc.spring.namespace.parser.ShardingJdbcStrategyBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
@@ -31,7 +33,11 @@ public final class ShardingNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser("strategy", new ShardingJdbcStrategyBeanDefinitionParser());
-        registerBeanDefinitionParser("data-source", new ShardingJdbcDataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingJdbcStrategyBeanDefinitionParserTag.STANDARD_STRATEGY_ROOT_TAG, new ShardingJdbcStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingJdbcStrategyBeanDefinitionParserTag.COMPLEX_STRATEGY_ROOT_TAG, new ShardingJdbcStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingJdbcStrategyBeanDefinitionParserTag.INLINE_STRATEGY_ROOT_TAG, new ShardingJdbcStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingJdbcStrategyBeanDefinitionParserTag.HINT_STRATEGY_ROOT_TAG, new ShardingJdbcStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingJdbcStrategyBeanDefinitionParserTag.NONE_STRATEGY_ROOT_TAG, new ShardingJdbcStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingJdbcDataSourceBeanDefinitionParserTag.ROOT_TAG, new ShardingJdbcDataSourceBeanDefinitionParser());
     }
 }

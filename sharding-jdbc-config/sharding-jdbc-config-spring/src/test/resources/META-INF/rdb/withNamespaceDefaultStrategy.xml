@@ -9,14 +9,15 @@
                         ">
     <import resource="datasource/dataSource.xml" />
     
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+    
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
+        <sharding:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0" default-database-strategy-ref="databaseStrategy" default-table-strategy-ref="tableStrategy">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-tables="t_order_0,t_order_1,t_order_2,t_order_3"/>
                 <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_0,t_order_item_1,t_order_item_2,t_order_item_3"/>
             </sharding:table-rules>
-            <sharding:default-database-strategy type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
-            <sharding:default-table-strategy type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
         </sharding:sharding-rule>
     </sharding:data-source>
 </beans>

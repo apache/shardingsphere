@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.spring.namespace.handler;
 
+import io.shardingjdbc.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import io.shardingjdbc.spring.namespace.parser.MasterSlaveDataSourceBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
@@ -29,6 +30,6 @@ public final class MasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser("data-source", new MasterSlaveDataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser(MasterSlaveDataSourceBeanDefinitionParserTag.ROOT_TAG, new MasterSlaveDataSourceBeanDefinitionParser());
     }
 }
