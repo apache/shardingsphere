@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:rdb="http://shardingjdbc.io/schema/shardingjdbc"
+       xmlns:sharding-jdbc="http://shardingjdbc.io/schema/shardingjdbc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
                         http://shardingjdbc.io/schema/shardingjdbc 
-                        http://shardingjdbc.io/schema/shardingjdbc/shardingjdbc.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding-jdbc.xsd 
                         ">
     <import resource="datasource/dataSource.xml" />
     
-    <rdb:strategy id="databaseStrategy" type="inline" sharding-columns="user_id" algorithm-expression="dbtbl_${user_id % 2}"/>
+    <sharding-jdbc:strategy id="databaseStrategy" type="inline" sharding-columns="user_id" algorithm-expression="dbtbl_${user_id % 2}"/>
     
-    <rdb:strategy id="orderTableStrategy" type="inline" sharding-columns="order_id" algorithm-expression="t_order_${order_id % 4}"/>
+    <sharding-jdbc:strategy id="orderTableStrategy" type="inline" sharding-columns="order_id" algorithm-expression="t_order_${order_id % 4}"/>
     
-    <rdb:strategy id="orderItemTableStrategy" type="inline" sharding-columns="order_id" algorithm-expression="t_order_item_${order_id % 4}"/>
+    <sharding-jdbc:strategy id="orderItemTableStrategy" type="inline" sharding-columns="order_id" algorithm-expression="t_order_item_${order_id % 4}"/>
     
-    <rdb:data-source id="shardingDataSource">
-        <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
-            <rdb:table-rules>
-                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..3}, t_order_${0..3}" data-source-names="dbtbl_0, dbtbl_1" database-strategy="databaseStrategy" table-strategy="orderTableStrategy"/>
-                <rdb:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" data-source-names="dbtbl_${0..1}" database-strategy="databaseStrategy"  table-strategy="orderItemTableStrategy"/>
-            </rdb:table-rules>
-        </rdb:sharding-rule>
-    </rdb:data-source>
+    <sharding-jdbc:data-source id="shardingDataSource">
+        <sharding-jdbc:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
+            <sharding-jdbc:table-rules>
+                <sharding-jdbc:table-rule logic-table="t_order" actual-tables="t_order_${0..3}, t_order_${0..3}" data-source-names="dbtbl_0, dbtbl_1" database-strategy="databaseStrategy" table-strategy="orderTableStrategy"/>
+                <sharding-jdbc:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" data-source-names="dbtbl_${0..1}" database-strategy="databaseStrategy"  table-strategy="orderItemTableStrategy"/>
+            </sharding-jdbc:table-rules>
+        </sharding-jdbc:sharding-rule>
+    </sharding-jdbc:data-source>
 </beans>

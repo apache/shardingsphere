@@ -1,1 +1,1 @@
-http\://shardingjdbc.io/schema/shardingjdbc/shardingjdbc.xsd=META-INF/namespace/shardingjdbc.xsd
+http\://shardingjdbc.io/schema/shardingjdbc/sharding-jdbc.xsd=META-INF/namespace/sharding-jdbc.xsd

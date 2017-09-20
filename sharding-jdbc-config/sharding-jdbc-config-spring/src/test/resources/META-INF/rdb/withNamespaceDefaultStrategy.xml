@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:rdb="http://shardingjdbc.io/schema/shardingjdbc"
+       xmlns:sharding-jdbc="http://shardingjdbc.io/schema/shardingjdbc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
                         http://shardingjdbc.io/schema/shardingjdbc 
-                        http://shardingjdbc.io/schema/shardingjdbc/shardingjdbc.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding-jdbc.xsd 
                         ">
     <import resource="datasource/dataSource.xml" />
-
-    <rdb:data-source id="shardingDataSource">
-        <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
-            <rdb:table-rules>
-                <rdb:table-rule logic-table="t_order" actual-tables="t_order_0,t_order_1,t_order_2,t_order_3"/>
-                <rdb:table-rule logic-table="t_order_item" actual-tables="t_order_item_0,t_order_item_1,t_order_item_2,t_order_item_3"/>
-            </rdb:table-rules>
-            <rdb:default-database-strategy type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
-            <rdb:default-table-strategy type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
-        </rdb:sharding-rule>
-    </rdb:data-source>
+    
+    <sharding-jdbc:data-source id="shardingDataSource">
+        <sharding-jdbc:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
+            <sharding-jdbc:table-rules>
+                <sharding-jdbc:table-rule logic-table="t_order" actual-tables="t_order_0,t_order_1,t_order_2,t_order_3"/>
+                <sharding-jdbc:table-rule logic-table="t_order_item" actual-tables="t_order_item_0,t_order_item_1,t_order_item_2,t_order_item_3"/>
+            </sharding-jdbc:table-rules>
+            <sharding-jdbc:default-database-strategy type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
+            <sharding-jdbc:default-table-strategy type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm"/>
+        </sharding-jdbc:sharding-rule>
+    </sharding-jdbc:data-source>
 </beans>
