@@ -42,6 +42,7 @@ public final class RawJdbcJavaShardingDatabaseOnlyMain {
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order");
+        orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
