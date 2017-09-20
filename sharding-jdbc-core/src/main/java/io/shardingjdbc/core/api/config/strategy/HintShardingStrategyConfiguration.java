@@ -19,7 +19,7 @@ package io.shardingjdbc.core.api.config.strategy;
 
 import io.shardingjdbc.core.routing.strategy.ShardingAlgorithmFactory;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
-import io.shardingjdbc.core.routing.strategy.hint.HintShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.hint.HintShardingAlgorithm;
 import io.shardingjdbc.core.routing.strategy.hint.HintShardingStrategy;
 import com.google.common.base.Preconditions;
 import lombok.Getter;

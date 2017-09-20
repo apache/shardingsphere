@@ -17,9 +17,8 @@
 
 package io.shardingjdbc.core.api;
 
-import io.shardingjdbc.core.api.HintManager;
-import io.shardingjdbc.core.api.strategy.ListShardingValue;
-import io.shardingjdbc.core.api.strategy.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.ListShardingValue;
+import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
 import io.shardingjdbc.core.constant.ShardingOperator;

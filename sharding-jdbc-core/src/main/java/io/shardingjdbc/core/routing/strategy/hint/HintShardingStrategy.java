@@ -17,7 +17,8 @@
 
 package io.shardingjdbc.core.routing.strategy.hint;
 
-import io.shardingjdbc.core.api.strategy.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.hint.HintShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.ShardingValue;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import lombok.Getter;
 

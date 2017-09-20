@@ -15,28 +15,27 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.strategy.standard;
+package io.shardingjdbc.core.api.algorithm;
 
-import io.shardingjdbc.core.api.strategy.PreciseShardingValue;
-import io.shardingjdbc.core.routing.strategy.ShardingAlgorithm;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.Collection;
 
 /**
- * Precise sharding algorithm.
+ * Sharding value for list values.
  * 
  * @author zhangliang
- * 
- * @param <T> class type of sharding value
  */
-public interface PreciseShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class ListShardingValue<T extends Comparable<?>> implements ShardingValue {
     
-    /**
-     * Sharding.
-     * 
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValue sharding value
-     * @return sharding result for data source or table's name
-     */
-    String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<T> shardingValue);
+    private final String logicTableName;
+    
+    private final String columnName;
+    
+    private final Collection<T> values;
 }

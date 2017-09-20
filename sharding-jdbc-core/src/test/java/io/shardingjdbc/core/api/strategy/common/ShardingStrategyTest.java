@@ -17,9 +17,9 @@
 
 package io.shardingjdbc.core.api.strategy.common;
 
-import io.shardingjdbc.core.api.strategy.ShardingValue;
-import io.shardingjdbc.core.api.strategy.PreciseShardingValue;
-import io.shardingjdbc.core.api.strategy.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.PreciseShardingValue;
+import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
 import io.shardingjdbc.core.api.strategy.fixture.TestComplexKeysShardingAlgorithm;
 import io.shardingjdbc.core.api.strategy.fixture.TestPreciseShardingAlgorithm;
 import io.shardingjdbc.core.api.strategy.fixture.TestRangeShardingAlgorithm;

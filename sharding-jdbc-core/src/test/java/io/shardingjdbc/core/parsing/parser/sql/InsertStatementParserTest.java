@@ -21,7 +21,7 @@ import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.api.strategy.ListShardingValue;
+import io.shardingjdbc.core.api.algorithm.ListShardingValue;
 import io.shardingjdbc.core.api.strategy.fixture.TestComplexKeysShardingAlgorithm;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingOperator;

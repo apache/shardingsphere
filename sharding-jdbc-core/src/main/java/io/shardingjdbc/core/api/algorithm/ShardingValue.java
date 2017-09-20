@@ -15,26 +15,26 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.strategy;
-
-import com.google.common.collect.Range;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+package io.shardingjdbc.core.api.algorithm;
 
 /**
- * Sharding value for range values.
+ * Sharding value interface.
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class RangeShardingValue<T extends Comparable<?>> implements ShardingValue {
+public interface ShardingValue {
     
-    private final String logicTableName;
+    /**
+     * Get logic table name.
+     *
+     * @return logic table name
+     */
+    String getLogicTableName();
     
-    private final String columnName;
-    
-    private final Range<T> valueRange;
+    /**
+     * Get column name.
+     *
+     * @return column name
+     */
+    String getColumnName();
 }

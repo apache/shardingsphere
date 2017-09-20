@@ -19,8 +19,8 @@ package io.shardingjdbc.core.api.config.strategy;
 
 import io.shardingjdbc.core.routing.strategy.ShardingAlgorithmFactory;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
-import io.shardingjdbc.core.routing.strategy.standard.PreciseShardingAlgorithm;
-import io.shardingjdbc.core.routing.strategy.standard.RangeShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.standard.PreciseShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.standard.RangeShardingAlgorithm;
 import io.shardingjdbc.core.routing.strategy.standard.StandardShardingStrategy;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;

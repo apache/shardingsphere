@@ -15,28 +15,26 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.strategy.hint;
+package io.shardingjdbc.core.api.algorithm.complex;
 
-import io.shardingjdbc.core.api.strategy.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.ShardingValue;
 import io.shardingjdbc.core.routing.strategy.ShardingAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Sharding algorithm for hint without sharding keys.
+ * Complex keys sharding algorithm.
  * 
  * @author zhangliang
  */
-public interface HintShardingAlgorithm extends ShardingAlgorithm {
+public interface ComplexKeysShardingAlgorithm extends ShardingAlgorithm {
     
     /**
      * Sharding.
      * 
-     * <p>sharding value injected by hint, not in SQL.</p>
-     *
      * @param availableTargetNames available data sources or tables's names
-     * @param shardingValue sharding value
-     * @return sharding result for data sources or tables's names
+     * @param shardingValues sharding values
+     * @return sharding results for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, ShardingValue shardingValue);
+    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
 }

@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.routing.strategy;
 
-import io.shardingjdbc.core.api.strategy.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.ShardingValue;
 
 import java.util.Collection;
 

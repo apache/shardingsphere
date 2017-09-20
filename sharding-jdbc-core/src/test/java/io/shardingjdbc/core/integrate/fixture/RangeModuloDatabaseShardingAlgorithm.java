@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.core.integrate.fixture;
 
-import io.shardingjdbc.core.api.strategy.RangeShardingValue;
-import io.shardingjdbc.core.routing.strategy.standard.RangeShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.standard.RangeShardingAlgorithm;
 import com.google.common.collect.Range;
 
 import java.util.Collection;

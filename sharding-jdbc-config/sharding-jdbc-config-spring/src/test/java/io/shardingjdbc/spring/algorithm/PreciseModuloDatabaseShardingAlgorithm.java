@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.spring.algorithm;
 
-import io.shardingjdbc.core.api.strategy.PreciseShardingValue;
-import io.shardingjdbc.core.routing.strategy.standard.PreciseShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.PreciseShardingValue;
+import io.shardingjdbc.core.api.algorithm.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 

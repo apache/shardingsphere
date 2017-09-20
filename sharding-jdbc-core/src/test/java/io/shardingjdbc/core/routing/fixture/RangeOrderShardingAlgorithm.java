@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.core.routing.fixture;
 
-import io.shardingjdbc.core.api.strategy.RangeShardingValue;
-import io.shardingjdbc.core.routing.strategy.standard.RangeShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.standard.RangeShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.HashSet;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.strategy;
+package io.shardingjdbc.core.api.algorithm;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

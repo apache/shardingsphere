@@ -15,26 +15,28 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.strategy.complex;
+package io.shardingjdbc.core.api.algorithm.standard;
 
-import io.shardingjdbc.core.api.strategy.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.PreciseShardingValue;
 import io.shardingjdbc.core.routing.strategy.ShardingAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Complex keys sharding algorithm.
+ * Precise sharding algorithm.
  * 
  * @author zhangliang
+ * 
+ * @param <T> class type of sharding value
  */
-public interface ComplexKeysShardingAlgorithm extends ShardingAlgorithm {
+public interface PreciseShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
     
     /**
      * Sharding.
      * 
      * @param availableTargetNames available data sources or tables's names
-     * @param shardingValues sharding values
-     * @return sharding results for data sources or tables's names
+     * @param shardingValue sharding value
+     * @return sharding result for data source or table's name
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
+    String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<T> shardingValue);
 }

@@ -15,27 +15,28 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.strategy;
+package io.shardingjdbc.core.api.algorithm.standard;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
+import io.shardingjdbc.core.routing.strategy.ShardingAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Sharding value for list values.
+ * Range sharding algorithm.
  * 
  * @author zhangliang
+ * 
+ * @param <T> class type of sharding value
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class ListShardingValue<T extends Comparable<?>> implements ShardingValue {
+public interface RangeShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
     
-    private final String logicTableName;
-    
-    private final String columnName;
-    
-    private final Collection<T> values;
+    /**
+     * Sharding.
+     * 
+     * @param availableTargetNames available data sources or tables's names
+     * @param shardingValue sharding value
+     * @return sharding results for data sources or tables's names
+     */
+    Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<T> shardingValue);
 }

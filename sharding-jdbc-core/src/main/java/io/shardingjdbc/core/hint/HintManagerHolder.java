@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.hint;
 
-import io.shardingjdbc.core.api.strategy.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.ShardingValue;
 import io.shardingjdbc.core.api.HintManager;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.core.parsing.parser.sql;
 
-import io.shardingjdbc.core.api.strategy.ListShardingValue;
-import io.shardingjdbc.core.api.strategy.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.ListShardingValue;
+import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingOperator;

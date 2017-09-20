@@ -1,8 +1,8 @@
 package io.shardingjdbc.core.parsing.parser.context.condition;
 
-import io.shardingjdbc.core.api.strategy.ShardingValue;
-import io.shardingjdbc.core.api.strategy.ListShardingValue;
-import io.shardingjdbc.core.api.strategy.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.ListShardingValue;
+import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
 import io.shardingjdbc.core.parsing.parser.expression.SQLExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
 import org.junit.Test;

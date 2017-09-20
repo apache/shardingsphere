@@ -17,11 +17,12 @@
 
 package io.shardingjdbc.core.api.config;
 
-import io.shardingjdbc.core.api.strategy.slave.MasterSlaveLoadBalanceStrategy;
-import io.shardingjdbc.core.exception.ShardingJdbcException;
-import io.shardingjdbc.core.rule.MasterSlaveRule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.shardingjdbc.core.api.strategy.slave.MasterSlaveLoadBalanceStrategy;
+import io.shardingjdbc.core.api.strategy.slave.MasterSlaveLoadBalanceStrategyType;
+import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.rule.MasterSlaveRule;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,7 +46,9 @@ public class MasterSlaveRuleConfiguration {
     
     private Collection<String> slaveDataSourceNames;
     
-    private String masterSlaveLoadBalanceStrategyClassName;
+    private MasterSlaveLoadBalanceStrategyType loadBalanceStrategyType;
+    
+    private String loadBalanceStrategyClassName;
     
     /**
      * Build master-slave rule.
@@ -62,8 +65,17 @@ public class MasterSlaveRuleConfiguration {
         for (String each : slaveDataSourceNames) {
             slaveDataSources.put(each, dataSourceMap.get(each));
         }
-        MasterSlaveLoadBalanceStrategy slaveLoadBalanceStrategy = Strings.isNullOrEmpty(masterSlaveLoadBalanceStrategyClassName) ? null : newInstance(masterSlaveLoadBalanceStrategyClassName);
-        return new MasterSlaveRule(name, masterDataSourceName, dataSourceMap.get(masterDataSourceName), slaveDataSources, slaveLoadBalanceStrategy);
+        return new MasterSlaveRule(name, masterDataSourceName, dataSourceMap.get(masterDataSourceName), slaveDataSources, getLoadBalanceStrategy());
+    }
+    
+    private MasterSlaveLoadBalanceStrategy getLoadBalanceStrategy() {
+        MasterSlaveLoadBalanceStrategy result;
+        if (null != loadBalanceStrategyType) {
+            result = loadBalanceStrategyType.getStrategy();
+        } else {
+            result = Strings.isNullOrEmpty(loadBalanceStrategyClassName) ? null : newInstance(loadBalanceStrategyClassName);
+        }
+        return result;
     }
     
     public MasterSlaveLoadBalanceStrategy newInstance(final String masterSlaveLoadBalanceStrategyClassName) {

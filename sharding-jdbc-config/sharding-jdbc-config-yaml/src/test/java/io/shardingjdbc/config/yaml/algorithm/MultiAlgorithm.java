@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.config.yaml.algorithm;
 
-import io.shardingjdbc.core.api.strategy.ShardingValue;
-import io.shardingjdbc.core.routing.strategy.complex.ComplexKeysShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.complex.ComplexKeysShardingAlgorithm;
 
 import java.util.Collection;
 
