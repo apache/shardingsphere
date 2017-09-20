@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb"
+       xmlns:rdb="http://shardingjdbc.io/schema/shardingjdbc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://www.dangdang.com/schema/ddframe/rdb 
-                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc 
+                        http://shardingjdbc.io/schema/shardingjdbc/shardingjdbc.xsd 
                         ">
     <import resource="datasource/dataSource.xml" />
 

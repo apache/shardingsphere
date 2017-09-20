@@ -2,13 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb" 
+    xmlns:rdb="http://shardingjdbc.io/schema/shardingjdbc" 
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd 
-                        http://www.dangdang.com/schema/ddframe/rdb 
-                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc 
+                        http://shardingjdbc.io/schema/shardingjdbc/shardingjdbc.xsd 
                         ">
     <context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true"/>
     
