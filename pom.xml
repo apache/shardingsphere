@@ -13,6 +13,7 @@
         <module>sharding-jdbc-example-config-spring</module>
         <module>sharding-jdbc-example-config-spring-masterslave</module>
         <module>sharding-jdbc-example-jdbc-transaction</module>
+        <module>sharding-jdbc-raw-jdbc-example</module>
         <module>sharding-jdbc-example-orchestration</module>
     </modules>
     
