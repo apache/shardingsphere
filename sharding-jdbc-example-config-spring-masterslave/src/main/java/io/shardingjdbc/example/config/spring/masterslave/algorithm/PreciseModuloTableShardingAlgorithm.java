@@ -18,8 +18,8 @@
 
 package io.shardingjdbc.example.config.spring.masterslave.algorithm;
 
-import io.shardingjdbc.core.api.strategy.PreciseShardingValue;
-import io.shardingjdbc.core.routing.strategy.standard.PreciseShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 
