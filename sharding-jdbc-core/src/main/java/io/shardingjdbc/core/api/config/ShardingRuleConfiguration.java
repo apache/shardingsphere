@@ -67,6 +67,7 @@ public class ShardingRuleConfiguration {
     public ShardingRule build(final Map<String, DataSource> dataSourceMap) throws SQLException {
         Preconditions.checkNotNull(dataSourceMap, "dataSources cannot be null.");
         Preconditions.checkArgument(!dataSourceMap.isEmpty(), "dataSources cannot be null.");
+        processDataSourceMapWithMasterSlave(dataSourceMap);
         Collection<TableRule> tableRules = new LinkedList<>();
         for (TableRuleConfiguration each : tableRuleConfigs) {
             tableRules.add(each.build(dataSourceMap));
@@ -74,7 +75,6 @@ public class ShardingRuleConfiguration {
         ShardingStrategy defaultDatabaseShardingStrategy = null == defaultDatabaseShardingStrategyConfig ? null : defaultDatabaseShardingStrategyConfig.build();
         ShardingStrategy defaultTableShardingStrategy = null == defaultTableShardingStrategyConfig ? null :  defaultTableShardingStrategyConfig.build();
         KeyGenerator keyGenerator = KeyGeneratorFactory.newInstance(null == defaultKeyGeneratorClass ? DefaultKeyGenerator.class.getName() : defaultKeyGeneratorClass);
-        processDataSourceMapWithMasterSlave(dataSourceMap);
         return new ShardingRule(dataSourceMap, defaultDataSourceName, tableRules, bindingTableGroups, defaultDatabaseShardingStrategy, defaultTableShardingStrategy, keyGenerator);
     }
     

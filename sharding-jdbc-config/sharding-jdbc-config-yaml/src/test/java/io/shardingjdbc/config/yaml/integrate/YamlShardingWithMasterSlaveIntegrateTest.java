@@ -50,10 +50,10 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
     @Parameterized.Parameters(name = "{index}:{0}-{1}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-//                {"/integrate/sharding_ms/configWithDataSourceWithoutProps.yaml", true},
-//                {"/integrate/sharding_ms/configWithoutDataSourceWithoutProps.yaml", false},
-//                {"/integrate/sharding_ms/configWithDataSourceWithProps.yaml", true},
-//                {"/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml", false},
+                {"/integrate/sharding_ms/configWithDataSourceWithoutProps.yaml", true},
+                {"/integrate/sharding_ms/configWithoutDataSourceWithoutProps.yaml", false},
+                {"/integrate/sharding_ms/configWithDataSourceWithProps.yaml", true},
+                {"/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml", false},
         });
     }
     

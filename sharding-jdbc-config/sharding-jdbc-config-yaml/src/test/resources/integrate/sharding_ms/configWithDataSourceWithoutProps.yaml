@@ -64,12 +64,12 @@ defaultTableStrategy:
     algorithmClassName: io.shardingjdbc.config.yaml.algorithm.MultiAlgorithm
 
 masterSlaveRules:
-  db0_ms:
+  db_ms_0:
     masterDataSourceName:
       db0_master
     slaveDataSourceNames:
       - db0_slave
-  db1_ms:
+  db_ms_1:
     masterDataSourceName:
       db1_master
     slaveDataSourceNames:

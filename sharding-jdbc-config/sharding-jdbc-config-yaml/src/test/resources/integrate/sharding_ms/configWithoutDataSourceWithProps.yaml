@@ -11,7 +11,7 @@ tables:
     tableStrategy: 
       inline:
         shardingColumn: order_id
-        algorithmInlineExpression: t_order_${id % 2}
+        algorithmInlineExpression: t_order_${order_id % 2}
     keyGeneratorColumnName: order_id
     keyGeneratorClass: io.shardingjdbc.config.yaml.fixture.IncrementKeyGenerator
   
@@ -38,12 +38,12 @@ defaultTableStrategy:
     algorithmClassName: io.shardingjdbc.config.yaml.algorithm.MultiAlgorithm
 
 masterSlaveRules:
-  db0_ms:
+  db_ms_0:
     masterDataSourceName:
       db0_master
     slaveDataSourceNames:
       - db0_slave
-  db1_ms:
+  db_ms_1:
     masterDataSourceName:
       db1_master
     slaveDataSourceNames:
