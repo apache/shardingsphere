@@ -33,12 +33,8 @@
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0" key-generator-class="io.shardingjdbc.spring.fixture.IncrementKeyGenerator">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy">
-                    <sharding:generate-key-column column-name="order_id"/>
-                </sharding:table-rule>
-                <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy">
-                    <sharding:generate-key-column column-name="order_item_id" column-key-generator-class="io.shardingjdbc.spring.fixture.DecrementKeyGenerator"/>
-                </sharding:table-rule>
+                <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy" generate-key-column="order_id" />
+                <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy" generate-key-column="order_item_id" column-key-generator-class="io.shardingjdbc.spring.fixture.DecrementKeyGenerator" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>

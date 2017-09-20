@@ -123,14 +123,14 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         if (!Strings.isNullOrEmpty(tableStrategy)) {
             factory.addPropertyReference("tableShardingStrategyConfig", tableStrategy);
         }
-        List<Element> generateKeyColumns = DomUtils.getChildElementsByTagName(tableElement, ShardingJdbcDataSourceBeanDefinitionParserTag.GENERATE_KEY_COLUMN);
-        if (null == generateKeyColumns || generateKeyColumns.isEmpty()) {
-            return factory.getBeanDefinition();
+        String keyGeneratorColumnName = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.GENERATE_KEY_COLUMN);
+        if (!Strings.isNullOrEmpty(keyGeneratorColumnName)) {
+            factory.addPropertyValue("keyGeneratorColumnName", keyGeneratorColumnName);
         }
-        // TODO refactor generateKeyColumns only one, don't need list, need change xsd here
-        Element generateKeyColumn = generateKeyColumns.get(0);
-        factory.addPropertyValue("keyGeneratorColumnName", generateKeyColumn.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_NAME));
-        factory.addPropertyValue("keyGeneratorClass", generateKeyColumn.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_KEY_GENERATOR_CLASS));
+        String keyGeneratorClass = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_KEY_GENERATOR_CLASS);
+        if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
+            factory.addPropertyValue("keyGeneratorClass", keyGeneratorClass);
+        }
         return factory.getBeanDefinition();
     }
     

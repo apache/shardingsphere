@@ -62,8 +62,6 @@ public final class ShardingJdbcDataSourceBeanDefinitionParserTag {
     
     public static final String GENERATE_KEY_COLUMN = "generate-key-column";
     
-    public static final String COLUMN_NAME = "column-name";
-    
     public static final String COLUMN_KEY_GENERATOR_CLASS = "column-key-generator-class";
     
     public static final String KEY_GENERATOR_CLASS = "key-generator-class";

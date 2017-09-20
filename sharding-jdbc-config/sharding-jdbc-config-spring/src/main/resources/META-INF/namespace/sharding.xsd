@@ -37,20 +37,13 @@
     </xsd:element>
     <xsd:element name="table-rule">
         <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element ref="generate-key-column" minOccurs="0" maxOccurs="unbounded"/>
-            </xsd:sequence>
             <xsd:attribute name="logic-table" type="xsd:string" use="required" />
             <xsd:attribute name="dynamic" type="xsd:string" use="optional" />
             <xsd:attribute name="actual-tables" type="xsd:string" use="optional" />
             <xsd:attribute name="data-source-names" type="xsd:string" use="optional" />
             <xsd:attribute name="database-strategy" type="xsd:string" use="optional" />
             <xsd:attribute name="table-strategy" type="xsd:string" use="optional" />
-        </xsd:complexType>
-    </xsd:element>
-    <xsd:element name="generate-key-column">
-        <xsd:complexType>
-            <xsd:attribute name="column-name" type="xsd:string" use="required"/>
+            <xsd:attribute name="generate-key-column" type="xsd:string" use="optional"/>
             <xsd:attribute name="column-key-generator-class" type="xsd:string" use="optional"/>
         </xsd:complexType>
     </xsd:element>
