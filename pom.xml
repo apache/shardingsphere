@@ -6,7 +6,6 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-jdbc-example-jdbc</module>
         <module>sharding-jdbc-example-mybatis</module>
         <module>sharding-jdbc-example-jpa</module>
         <module>sharding-jdbc-example-config-yaml</module>
