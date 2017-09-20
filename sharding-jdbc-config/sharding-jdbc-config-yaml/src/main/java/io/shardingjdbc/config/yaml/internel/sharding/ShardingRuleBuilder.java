@@ -66,12 +66,12 @@ public final class ShardingRuleBuilder {
         }
         result.setDefaultKeyGeneratorClass(yamlShardingConfig.getDefaultKeyGeneratorClass());
         Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
-        for (YamlMasterSlaveConfig each : yamlShardingConfig.getMasterSlaveRules()) {
+        for (Map.Entry<String, YamlMasterSlaveConfig> each : yamlShardingConfig.getMasterSlaveRules().entrySet()) {
             MasterSlaveRuleConfiguration config = new MasterSlaveRuleConfiguration();
-            config.setName(each.getName());
-            config.setMasterDataSourceName(each.getMasterDataSourceName());
-            config.setSlaveDataSourceNames(each.getSlaveDataSourceNames());
-            config.setMasterSlaveLoadBalanceStrategyClassName(each.getMasterSlaveLoadBalanceStrategyClassName());
+            config.setName(each.getKey());
+            config.setMasterDataSourceName(each.getValue().getMasterDataSourceName());
+            config.setSlaveDataSourceNames(each.getValue().getSlaveDataSourceNames());
+            config.setMasterSlaveLoadBalanceStrategyClassName(each.getValue().getMasterSlaveLoadBalanceStrategyClassName());
             masterSlaveRuleConfigs.add(config);
         }
         result.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);

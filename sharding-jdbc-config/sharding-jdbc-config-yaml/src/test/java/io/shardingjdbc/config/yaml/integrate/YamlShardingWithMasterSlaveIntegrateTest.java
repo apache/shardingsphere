@@ -36,6 +36,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -48,10 +50,10 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
     @Parameterized.Parameters(name = "{index}:{0}-{1}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-                {"/integrate/sharding/configWithDataSourceWithoutProps.yaml", true},
-//                {"/integrate/sharding/configWithoutDataSourceWithoutProps.yaml", false},
-//                {"/integrate/sharding/configWithDataSourceWithProps.yaml", true},
-//                {"/integrate/sharding/configWithoutDataSourceWithProps.yaml", false},
+//                {"/integrate/sharding_ms/configWithDataSourceWithoutProps.yaml", true},
+//                {"/integrate/sharding_ms/configWithoutDataSourceWithoutProps.yaml", false},
+//                {"/integrate/sharding_ms/configWithDataSourceWithProps.yaml", true},
+//                {"/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml", false},
         });
     }
     
@@ -62,12 +64,17 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
         if (hasDataSource) {
             dataSource = new YamlShardingDataSource(yamlFile);
         } else {
-            dataSource = new YamlShardingDataSource(Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), new Function<String, DataSource>() {
+            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), new Function<String, DataSource>() {
                 @Override
                 public DataSource apply(final String key) {
                     return createDataSource(key);
                 }
-            }), yamlFile);
+            });
+            Map<String, DataSource> result = new HashMap<>();
+            for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
+                result.put(each.getKey(), each.getValue());
+            }
+            dataSource = new YamlShardingDataSource(result, yamlFile);
         }
         
         try (Connection conn = dataSource.getConnection();

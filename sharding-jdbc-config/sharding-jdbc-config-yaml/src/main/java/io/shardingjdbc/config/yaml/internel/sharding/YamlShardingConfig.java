@@ -23,9 +23,7 @@ import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -53,7 +51,7 @@ public class YamlShardingConfig {
     
     private String defaultKeyGeneratorClass;
     
-    private Collection<YamlMasterSlaveConfig> masterSlaveRules = new LinkedList<>();
+    private Map<String, YamlMasterSlaveConfig> masterSlaveRules = new HashMap<>();
     
     private Properties props = new Properties();
 }
