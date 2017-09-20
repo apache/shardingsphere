@@ -36,7 +36,7 @@
         </encoder>
     </appender>
     
-    <logger name="com.dangdang.ddframe.rdb.transaction.soft.bed.BestEffortsDeliveryJob" level="ERROR" additivity="false">
+    <logger name="io.shardingjdbc.transaction.bed.BestEffortsDeliveryJob" level="ERROR" additivity="false">
         <appender-ref ref="APP_FILE" />
     </logger>
     

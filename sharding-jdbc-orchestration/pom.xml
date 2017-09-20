@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
+        <groupId>io.shardingjdbc</groupId>
         <artifactId>sharding-jdbc</artifactId>
-        <groupId>com.dangdang</groupId>
         <version>2.0.0.M1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -17,7 +17,7 @@
     
     <dependencies>
         <dependency>
-            <groupId>com.dangdang</groupId>
+            <groupId>io.shardingjdbc</groupId>
             <artifactId>sharding-jdbc-core</artifactId>
             <version>${sharding-jdbc.version}</version>
         </dependency>
@@ -34,6 +34,18 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+        </dependency>
         
         <dependency>
             <groupId>junit</groupId>
@@ -46,6 +58,10 @@
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-test</artifactId>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
