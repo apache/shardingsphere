@@ -19,7 +19,7 @@ package io.shardingjdbc.config.yaml.internel.sharding;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
-import io.shardingjdbc.config.yaml.internel.ms.YamlMasterSlaveConfig;
+import io.shardingjdbc.config.yaml.internel.masterslave.YamlMasterSlaveConfig;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
@@ -71,7 +71,8 @@ public final class ShardingRuleBuilder {
             config.setName(each.getKey());
             config.setMasterDataSourceName(each.getValue().getMasterDataSourceName());
             config.setSlaveDataSourceNames(each.getValue().getSlaveDataSourceNames());
-            config.setLoadBalanceAlgorithmClassName(each.getValue().getMasterSlaveLoadBalanceStrategyClassName());
+            config.setLoadBalanceAlgorithmType(each.getValue().getLoadBalanceAlgorithmType());
+            config.setLoadBalanceAlgorithmClassName(each.getValue().getLoadBalanceAlgorithmClassName());
             masterSlaveRuleConfigs.add(config);
         }
         result.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);

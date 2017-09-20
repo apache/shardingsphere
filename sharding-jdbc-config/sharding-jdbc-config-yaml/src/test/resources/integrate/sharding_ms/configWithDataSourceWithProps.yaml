@@ -69,10 +69,12 @@ masterSlaveRules:
       db0_master
     slaveDataSourceNames:
       - db0_slave
+    loadBalanceAlgorithmType: RANDOM
   db_ms_1:
     masterDataSourceName:
       db1_master
     slaveDataSourceNames:
       - db1_slave
+    loadBalanceAlgorithmType: ROUND_ROBIN
 props:
   sql.show: true

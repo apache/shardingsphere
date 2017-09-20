@@ -43,6 +43,7 @@ masterSlaveRules:
       db0_master
     slaveDataSourceNames:
       - db0_slave
+    loadBalanceAlgorithmClassName: io.shardingjdbc.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm
   db_ms_1:
     masterDataSourceName:
       db1_master

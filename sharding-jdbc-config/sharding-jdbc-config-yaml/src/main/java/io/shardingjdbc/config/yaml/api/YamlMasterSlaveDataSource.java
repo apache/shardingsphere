@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.config.yaml.api;
 
-import io.shardingjdbc.config.yaml.internel.ms.MasterSlaveRuleBuilder;
-import io.shardingjdbc.config.yaml.internel.ms.YamlMasterSlaveConfig;
+import io.shardingjdbc.config.yaml.internel.masterslave.MasterSlaveRuleBuilder;
+import io.shardingjdbc.config.yaml.internel.masterslave.YamlMasterSlaveConfig;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;

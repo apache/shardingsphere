@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.config.yaml.internel.sharding;
 
-import io.shardingjdbc.config.yaml.internel.ms.YamlMasterSlaveConfig;
+import io.shardingjdbc.config.yaml.internel.masterslave.YamlMasterSlaveConfig;
 import lombok.Getter;
 import lombok.Setter;
 

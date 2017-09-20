@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.config.yaml.internel.ms;
+package io.shardingjdbc.config.yaml.internel.masterslave;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
@@ -46,7 +46,8 @@ public final class MasterSlaveRuleBuilder {
         result.setName(yamlMasterSlaveConfig.getName());
         result.setMasterDataSourceName(yamlMasterSlaveConfig.getMasterDataSourceName());
         result.setSlaveDataSourceNames(yamlMasterSlaveConfig.getSlaveDataSourceNames());
-        result.setLoadBalanceAlgorithmClassName(yamlMasterSlaveConfig.getMasterSlaveLoadBalanceStrategyClassName());
+        result.setLoadBalanceAlgorithmType(yamlMasterSlaveConfig.getLoadBalanceAlgorithmType());
+        result.setLoadBalanceAlgorithmClassName(yamlMasterSlaveConfig.getLoadBalanceAlgorithmClassName());
         return result.build(dataSourceMap.isEmpty() ? yamlMasterSlaveConfig.getDataSources() : dataSourceMap);
     }
 }
