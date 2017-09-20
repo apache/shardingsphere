@@ -25,6 +25,7 @@ import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import lombok.RequiredArgsConstructor;
@@ -52,8 +53,12 @@ public final class SQLJudgeEngine {
             if (tokenType instanceof Keyword) {
                 if (DefaultKeyword.SELECT == tokenType) {
                     return new SelectStatement();
-                } else if (DefaultKeyword.INSERT == tokenType || DefaultKeyword.UPDATE == tokenType || DefaultKeyword.DELETE == tokenType) {
+                }
+                if (DefaultKeyword.INSERT == tokenType || DefaultKeyword.UPDATE == tokenType || DefaultKeyword.DELETE == tokenType) {
                     return new DMLStatement();
+                }
+                if (DefaultKeyword.CREATE == tokenType || DefaultKeyword.ALTER == tokenType || DefaultKeyword.DROP == tokenType || DefaultKeyword.TRUNCATE == tokenType) {
+                    return new DDLStatement();
                 }
             }
             if (tokenType instanceof Assist && Assist.END == tokenType) {
