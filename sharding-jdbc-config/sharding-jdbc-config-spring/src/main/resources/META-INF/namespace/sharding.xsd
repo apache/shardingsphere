@@ -21,8 +21,8 @@
                 <xsd:element ref="table-rules" minOccurs="1" maxOccurs="1" />
                 <xsd:element ref="binding-table-rules" minOccurs="0" maxOccurs="1" />
             </xsd:sequence>
-            <xsd:attribute name="data-sources" type="xsd:string" use="required" />
-            <xsd:attribute name="default-data-source" type="xsd:string" use="optional" />
+            <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
+            <xsd:attribute name="default-data-source-name" type="xsd:string" use="optional" />
             <xsd:attribute name="default-database-strategy-ref" type="xsd:string" use="optional" />
             <xsd:attribute name="default-table-strategy-ref" type="xsd:string" use="optional" />
             <xsd:attribute name="key-generator-class" type="xsd:string" use="optional" />
@@ -38,7 +38,6 @@
     <xsd:element name="table-rule">
         <xsd:complexType>
             <xsd:attribute name="logic-table" type="xsd:string" use="required" />
-            <xsd:attribute name="dynamic" type="xsd:string" use="optional" />
             <xsd:attribute name="actual-tables" type="xsd:string" use="optional" />
             <xsd:attribute name="data-source-names" type="xsd:string" use="optional" />
             <xsd:attribute name="database-strategy-ref" type="xsd:string" use="optional" />

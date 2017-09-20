@@ -13,7 +13,7 @@
     <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
     
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-data-source-name="dbtbl_0">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
                 <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />

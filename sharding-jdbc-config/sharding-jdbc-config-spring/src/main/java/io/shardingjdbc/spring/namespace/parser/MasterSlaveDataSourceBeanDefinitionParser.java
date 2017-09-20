@@ -64,11 +64,11 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
     }
     
     private String parseMasterDataSourceRef(final Element element) {
-        return element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.MASTER_DATA_SOURCE_REF_ATTRIBUTE);
+        return element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.MASTER_DATA_SOURCE_NAME_ATTRIBUTE);
     }
     
     private Map<String, BeanDefinition> parseSlaveDataSources(final Element element, final ParserContext parserContext) {
-        List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.SLAVE_DATA_SOURCES_REF_ATTRIBUTE));
+        List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE));
         Map<String, BeanDefinition> result = new ManagedMap<>(slaveDataSources.size());
         for (String each : slaveDataSources) {
             result.put(each, parserContext.getRegistry().getBeanDefinition(each));

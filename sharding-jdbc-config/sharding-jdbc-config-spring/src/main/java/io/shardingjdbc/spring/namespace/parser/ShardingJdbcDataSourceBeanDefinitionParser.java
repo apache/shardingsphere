@@ -60,7 +60,7 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
     
     private Map<String, BeanDefinition> parseDataSources(final Element element, final ParserContext parserContext) {
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingJdbcDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
-        List<String> dataSources = Splitter.on(",").trimResults().splitToList(shardingRuleElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATA_SOURCES_TAG));
+        List<String> dataSources = Splitter.on(",").trimResults().splitToList(shardingRuleElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAMES_TAG));
         Map<String, BeanDefinition> result = new ManagedMap<>(dataSources.size());
         for (String each : dataSources) {
             result.put(each, parserContext.getRegistry().getBeanDefinition(each));
@@ -88,7 +88,7 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
     }
     
     private void parseDefaultDataSource(final BeanDefinitionBuilder factory, final Element element) {
-        String defaultDataSource = element.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_DATA_SOURCE_TAG);
+        String defaultDataSource = element.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_DATA_SOURCE_NAME_TAG);
         if (!Strings.isNullOrEmpty(defaultDataSource)) {
             factory.addPropertyValue("defaultDataSourceName", defaultDataSource);
         }
