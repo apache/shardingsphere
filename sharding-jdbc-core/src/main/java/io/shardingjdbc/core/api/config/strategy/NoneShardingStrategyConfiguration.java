@@ -29,7 +29,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class NoneShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+public final class NoneShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
     @Override
     public ShardingStrategy build() {
