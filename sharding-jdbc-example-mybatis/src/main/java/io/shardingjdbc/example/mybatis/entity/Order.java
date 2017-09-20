@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.example.jdbc.entity;
+package io.shardingjdbc.example.mybatis.entity;
 
 public final class Order {
     

@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.example.jdbc.repository;
+package io.shardingjdbc.example.mybatis.repository;
 
-import io.shardingjdbc.example.jdbc.entity.Order;
+import io.shardingjdbc.example.mybatis.entity.Order;
 
 import java.util.List;
 

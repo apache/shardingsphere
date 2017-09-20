@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.example.jdbc.service;
+package io.shardingjdbc.example.mybatis.service;
 
-import io.shardingjdbc.example.jdbc.entity.Order;
-import io.shardingjdbc.example.jdbc.repository.OrderRepository;
+import io.shardingjdbc.example.mybatis.entity.Order;
+import io.shardingjdbc.example.mybatis.repository.OrderRepository;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;

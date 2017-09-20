@@ -12,7 +12,7 @@
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.dangdang.com/schema/ddframe/rdb 
                         http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd">
-    <context:component-scan base-package="io.shardingjdbc.example.jdbc" />
+    <context:component-scan base-package="io.shardingjdbc.example.mybatis" />
     
     <bean id="ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="org.postgresql.Driver"/>
@@ -28,8 +28,8 @@
         <property name="password" value=""/>
     </bean>
     
-    <rdb:strategy id="databaseShardingStrategy" type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.example.jdbc.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
-    <rdb:strategy id="tableShardingStrategy" type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.example.jdbc.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <rdb:strategy id="databaseShardingStrategy" type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.example.mybatis.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
+    <rdb:strategy id="tableShardingStrategy" type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.example.mybatis.algorithm.PreciseModuloTableShardingAlgorithm"/>
     
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="ds_0, ds_1">
