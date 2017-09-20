@@ -19,7 +19,7 @@ package io.shardingjdbc.config.yaml.internel.sharding;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
-import io.shardingjdbc.config.yaml.internel.ms.YamlMasterSlaveConfig;
+import io.shardingjdbc.config.yaml.internel.masterslave.YamlMasterSlaveConfig;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 

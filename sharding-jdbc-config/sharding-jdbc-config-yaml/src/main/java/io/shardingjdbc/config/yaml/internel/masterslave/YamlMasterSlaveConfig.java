@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.config.yaml.internel.ms;
+package io.shardingjdbc.config.yaml.internel.masterslave;
 
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import lombok.Getter;
