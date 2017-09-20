@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.spring.namespace.parser;
 
-import io.shardingjdbc.core.api.strategy.slave.MasterSlaveLoadBalanceStrategyType;
+import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingjdbc.spring.datasource.SpringMasterSlaveDataSource;
 import io.shardingjdbc.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import com.google.common.base.Splitter;
@@ -80,8 +80,8 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
         return element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.STRATEGY_REF_ATTRIBUTE);
     }
     
-    private MasterSlaveLoadBalanceStrategyType parseStrategyType(final Element element) {
+    private MasterSlaveLoadBalanceAlgorithmType parseStrategyType(final Element element) {
         String result = element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.STRATEGY_TYPE_ATTRIBUTE);
-        return Strings.isNullOrEmpty(result) ? MasterSlaveLoadBalanceStrategyType.getDefaultStrategyType() : MasterSlaveLoadBalanceStrategyType.valueOf(result);
+        return Strings.isNullOrEmpty(result) ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType() : MasterSlaveLoadBalanceAlgorithmType.valueOf(result);
     }
 }

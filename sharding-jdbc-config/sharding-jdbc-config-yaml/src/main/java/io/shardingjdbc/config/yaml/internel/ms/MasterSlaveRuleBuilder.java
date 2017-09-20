@@ -46,7 +46,7 @@ public final class MasterSlaveRuleBuilder {
         result.setName(yamlMasterSlaveConfig.getName());
         result.setMasterDataSourceName(yamlMasterSlaveConfig.getMasterDataSourceName());
         result.setSlaveDataSourceNames(yamlMasterSlaveConfig.getSlaveDataSourceNames());
-        result.setLoadBalanceStrategyClassName(yamlMasterSlaveConfig.getMasterSlaveLoadBalanceStrategyClassName());
+        result.setLoadBalanceAlgorithmClassName(yamlMasterSlaveConfig.getMasterSlaveLoadBalanceStrategyClassName());
         return result.build(dataSourceMap.isEmpty() ? yamlMasterSlaveConfig.getDataSources() : dataSourceMap);
     }
 }

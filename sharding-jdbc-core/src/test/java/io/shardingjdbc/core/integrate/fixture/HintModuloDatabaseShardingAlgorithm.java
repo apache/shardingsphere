@@ -17,9 +17,9 @@
 
 package io.shardingjdbc.core.integrate.fixture;
 
-import io.shardingjdbc.core.api.algorithm.ListShardingValue;
-import io.shardingjdbc.core.api.algorithm.ShardingValue;
-import io.shardingjdbc.core.api.algorithm.hint.HintShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;

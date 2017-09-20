@@ -15,26 +15,24 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.algorithm;
+package io.shardingjdbc.core.api.algorithm.masterslave;
+
+import java.util.List;
 
 /**
- * Sharding value interface.
- * 
+ * Master-slave database load-balance algorithm.
+ *
  * @author zhangliang
  */
-public interface ShardingValue {
+public interface MasterSlaveLoadBalanceAlgorithm {
     
     /**
-     * Get logic table name.
-     *
-     * @return logic table name
+     * Get data source.
+     * 
+     * @param name master-slave logic data source name
+     * @param masterDataSourceName name of master data sources
+     * @param slaveDataSourceNames names of slave data sources
+     * @return name of selected data source
      */
-    String getLogicTableName();
-    
-    /**
-     * Get column name.
-     *
-     * @return column name
-     */
-    String getColumnName();
+    String getDataSource(String name, String masterDataSourceName, List<String> slaveDataSourceNames);
 }

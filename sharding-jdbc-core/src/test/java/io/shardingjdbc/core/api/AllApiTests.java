@@ -17,11 +17,11 @@
 
 package io.shardingjdbc.core.api;
 
-import io.shardingjdbc.core.api.strategy.common.ShardingStrategyTest;
-import io.shardingjdbc.core.api.strategy.slave.RandomMasterSlaveLoadBalanceStrategyTest;
-import io.shardingjdbc.core.api.strategy.sharding.DatabaseShardingStrategyTest;
-import io.shardingjdbc.core.api.strategy.slave.RoundRobinMasterSlaveLoadBalanceStrategyTest;
-import io.shardingjdbc.core.api.strategy.table.TableShardingStrategyTest;
+import io.shardingjdbc.core.api.algorithm.common.ShardingStrategyTest;
+import io.shardingjdbc.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithmTest;
+import io.shardingjdbc.core.api.algorithm.sharding.DatabaseShardingStrategyTest;
+import io.shardingjdbc.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithmTest;
+import io.shardingjdbc.core.api.algorithm.table.TableShardingStrategyTest;
 import io.shardingjdbc.core.constant.ShardingPropertiesConstantTest;
 import io.shardingjdbc.core.constant.ShardingPropertiesTest;
 import org.junit.runner.RunWith;
@@ -37,8 +37,8 @@ import org.junit.runners.Suite;
         TableShardingStrategyTest.class, 
         HintManagerTest.class, 
         MasterSlaveDataSourceFactoryTest.class, 
-        RoundRobinMasterSlaveLoadBalanceStrategyTest.class,
-        RandomMasterSlaveLoadBalanceStrategyTest.class
+        RoundRobinMasterSlaveLoadBalanceAlgorithmTest.class,
+        RandomMasterSlaveLoadBalanceAlgorithmTest.class
     })
 public class AllApiTests {
 }

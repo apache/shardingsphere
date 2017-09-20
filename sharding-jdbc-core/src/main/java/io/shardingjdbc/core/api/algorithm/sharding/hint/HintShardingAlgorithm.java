@@ -15,28 +15,28 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.algorithm.standard;
+package io.shardingjdbc.core.api.algorithm.sharding.hint;
 
-import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.routing.strategy.ShardingAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Range sharding algorithm.
+ * Sharding algorithm for hint without sharding keys.
  * 
  * @author zhangliang
- * 
- * @param <T> class type of sharding value
  */
-public interface RangeShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
+public interface HintShardingAlgorithm extends ShardingAlgorithm {
     
     /**
      * Sharding.
      * 
+     * <p>sharding value injected by hint, not in SQL.</p>
+     *
      * @param availableTargetNames available data sources or tables's names
      * @param shardingValue sharding value
-     * @return sharding results for data sources or tables's names
+     * @return sharding result for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<T> shardingValue);
+    Collection<String> doSharding(Collection<String> availableTargetNames, ShardingValue shardingValue);
 }

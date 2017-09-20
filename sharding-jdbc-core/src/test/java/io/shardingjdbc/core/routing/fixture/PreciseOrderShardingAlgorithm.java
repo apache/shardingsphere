@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.core.routing.fixture;
 
-import io.shardingjdbc.core.api.algorithm.PreciseShardingValue;
-import io.shardingjdbc.core.api.algorithm.standard.PreciseShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 

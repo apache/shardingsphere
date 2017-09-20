@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.spring.datasource;
 
-import io.shardingjdbc.core.api.strategy.slave.MasterSlaveLoadBalanceStrategy;
-import io.shardingjdbc.core.api.strategy.slave.MasterSlaveLoadBalanceStrategyType;
+import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
 import lombok.Setter;
@@ -46,13 +46,13 @@ public class SpringMasterSlaveDataSource extends MasterSlaveDataSource implement
     }
     
     public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
-                                       final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceStrategy strategy) throws SQLException {
+                                       final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithm strategy) throws SQLException {
         super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategy));
     }
     
     public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource, 
-                                       final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceStrategyType strategyType) throws SQLException {
-        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategyType.getStrategy()));
+                                       final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithmType strategyType) throws SQLException {
+        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategyType.getAlgorithm()));
     }
     
     @Override

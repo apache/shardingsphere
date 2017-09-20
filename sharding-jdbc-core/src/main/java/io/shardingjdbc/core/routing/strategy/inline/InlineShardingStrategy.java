@@ -17,9 +17,9 @@
 
 package io.shardingjdbc.core.routing.strategy.inline;
 
-import io.shardingjdbc.core.api.algorithm.ListShardingValue;
-import io.shardingjdbc.core.api.algorithm.PreciseShardingValue;
-import io.shardingjdbc.core.api.algorithm.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;

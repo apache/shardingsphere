@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.strategy.common;
+package io.shardingjdbc.core.api.algorithm.common;
 
-import io.shardingjdbc.core.api.algorithm.ShardingValue;
-import io.shardingjdbc.core.api.algorithm.PreciseShardingValue;
-import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
-import io.shardingjdbc.core.api.strategy.fixture.TestComplexKeysShardingAlgorithm;
-import io.shardingjdbc.core.api.strategy.fixture.TestPreciseShardingAlgorithm;
-import io.shardingjdbc.core.api.strategy.fixture.TestRangeShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.fixture.TestPreciseShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.fixture.TestRangeShardingAlgorithm;
 import io.shardingjdbc.core.routing.strategy.complex.ComplexShardingStrategy;
 import io.shardingjdbc.core.routing.strategy.none.NoneShardingStrategy;
 import io.shardingjdbc.core.routing.strategy.standard.StandardShardingStrategy;

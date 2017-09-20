@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.strategy.slave;
+package io.shardingjdbc.core.api.algorithm.masterslave;
 
 import org.junit.Test;
 
@@ -25,9 +25,9 @@ import java.util.List;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public final class RoundRobinMasterSlaveLoadBalanceStrategyTest {
+public final class RoundRobinMasterSlaveLoadBalanceAlgorithmTest {
     
-    private final RoundRobinMasterSlaveLoadBalanceStrategy roundRobinSlaveLoadBalanceStrategy = new RoundRobinMasterSlaveLoadBalanceStrategy();
+    private final RoundRobinMasterSlaveLoadBalanceAlgorithm roundRobinMasterSlaveLoadBalanceAlgorithm = new RoundRobinMasterSlaveLoadBalanceAlgorithm();
     
     @Test
     public void assertGetDataSource() {
@@ -35,8 +35,8 @@ public final class RoundRobinMasterSlaveLoadBalanceStrategyTest {
         String slaveDataSourceName1 = "test_ds_slave_1";
         String slaveDataSourceName2 = "test_ds_slave_2";
         List<String> slaveDataSourceNames = Arrays.asList(slaveDataSourceName1, slaveDataSourceName2);
-        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName1));
-        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName2));
-        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName1));
+        assertThat(roundRobinMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName1));
+        assertThat(roundRobinMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName2));
+        assertThat(roundRobinMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName1));
     }
 }

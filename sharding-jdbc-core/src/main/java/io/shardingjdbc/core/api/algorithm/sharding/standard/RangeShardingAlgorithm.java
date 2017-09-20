@@ -15,28 +15,28 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.algorithm.standard;
+package io.shardingjdbc.core.api.algorithm.sharding.standard;
 
-import io.shardingjdbc.core.api.algorithm.PreciseShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
 import io.shardingjdbc.core.routing.strategy.ShardingAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Precise sharding algorithm.
+ * Range sharding algorithm.
  * 
  * @author zhangliang
  * 
  * @param <T> class type of sharding value
  */
-public interface PreciseShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
+public interface RangeShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
     
     /**
      * Sharding.
      * 
      * @param availableTargetNames available data sources or tables's names
      * @param shardingValue sharding value
-     * @return sharding result for data source or table's name
+     * @return sharding results for data sources or tables's names
      */
-    String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<T> shardingValue);
+    Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<T> shardingValue);
 }

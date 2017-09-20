@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.core.rule;
 
-import io.shardingjdbc.core.api.strategy.slave.MasterSlaveLoadBalanceStrategy;
-import io.shardingjdbc.core.api.strategy.slave.MasterSlaveLoadBalanceStrategyType;
+import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 
@@ -41,7 +41,7 @@ public final class MasterSlaveRule {
     
     private final Map<String, DataSource> slaveDataSourceMap;
     
-    private final MasterSlaveLoadBalanceStrategy strategy;
+    private final MasterSlaveLoadBalanceAlgorithm strategy;
     
     public MasterSlaveRule(final String name, final String masterDataSourceName,
                            final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap) {
@@ -49,7 +49,7 @@ public final class MasterSlaveRule {
     }
     
     public MasterSlaveRule(final String name, final String masterDataSourceName, 
-                           final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceStrategy strategy) {
+                           final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithm strategy) {
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(masterDataSourceName);
         Preconditions.checkNotNull(masterDataSource);
@@ -59,6 +59,6 @@ public final class MasterSlaveRule {
         this.masterDataSourceName = masterDataSourceName;
         this.masterDataSource = masterDataSource;
         this.slaveDataSourceMap = slaveDataSourceMap;
-        this.strategy = null == strategy ? MasterSlaveLoadBalanceStrategyType.getDefaultStrategyType().getStrategy() : strategy;
+        this.strategy = null == strategy ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm() : strategy;
     }
 }

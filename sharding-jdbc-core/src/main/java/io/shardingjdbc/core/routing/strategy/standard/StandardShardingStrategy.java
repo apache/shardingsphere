@@ -17,12 +17,12 @@
 
 package io.shardingjdbc.core.routing.strategy.standard;
 
-import io.shardingjdbc.core.api.algorithm.standard.PreciseShardingAlgorithm;
-import io.shardingjdbc.core.api.algorithm.standard.RangeShardingAlgorithm;
-import io.shardingjdbc.core.api.algorithm.ListShardingValue;
-import io.shardingjdbc.core.api.algorithm.PreciseShardingValue;
-import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
-import io.shardingjdbc.core.api.algorithm.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import com.google.common.base.Optional;
 

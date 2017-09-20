@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.strategy.sharding;
+package io.shardingjdbc.core.api.algorithm.sharding;
 
 import io.shardingjdbc.core.routing.strategy.standard.StandardShardingStrategy;
 import com.google.common.collect.Sets;

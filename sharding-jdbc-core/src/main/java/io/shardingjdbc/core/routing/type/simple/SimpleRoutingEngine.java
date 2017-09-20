@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.routing.type.simple;
 
-import io.shardingjdbc.core.api.algorithm.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;

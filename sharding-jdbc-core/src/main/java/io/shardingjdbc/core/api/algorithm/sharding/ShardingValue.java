@@ -15,26 +15,26 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.algorithm.complex;
-
-import io.shardingjdbc.core.api.algorithm.ShardingValue;
-import io.shardingjdbc.core.routing.strategy.ShardingAlgorithm;
-
-import java.util.Collection;
+package io.shardingjdbc.core.api.algorithm.sharding;
 
 /**
- * Complex keys sharding algorithm.
+ * Sharding value interface.
  * 
  * @author zhangliang
  */
-public interface ComplexKeysShardingAlgorithm extends ShardingAlgorithm {
+public interface ShardingValue {
     
     /**
-     * Sharding.
-     * 
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValues sharding values
-     * @return sharding results for data sources or tables's names
+     * Get logic table name.
+     *
+     * @return logic table name
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
+    String getLogicTableName();
+    
+    /**
+     * Get column name.
+     *
+     * @return column name
+     */
+    String getColumnName();
 }

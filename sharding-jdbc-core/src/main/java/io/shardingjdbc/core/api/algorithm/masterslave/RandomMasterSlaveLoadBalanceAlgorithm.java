@@ -15,26 +15,20 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.strategy.slave;
+package io.shardingjdbc.core.api.algorithm.masterslave;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Random;
 
 /**
- * Round-robin slave database load-balance strategy.
+ * Random slave database load-balance algorithm.
  *
  * @author zhangliang
  */
-public final class RoundRobinMasterSlaveLoadBalanceStrategy implements MasterSlaveLoadBalanceStrategy {
-    
-    private static final ConcurrentHashMap<String, AtomicInteger> COUNT_MAP = new ConcurrentHashMap<>();
+public final class RandomMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {
     
     @Override
     public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
-        AtomicInteger count = COUNT_MAP.containsKey(name) ? COUNT_MAP.get(name) : new AtomicInteger(0);
-        COUNT_MAP.putIfAbsent(name, count);
-        count.compareAndSet(slaveDataSourceNames.size(), 0);
-        return slaveDataSourceNames.get(count.getAndIncrement() % slaveDataSourceNames.size());
+        return slaveDataSourceNames.get(new Random().nextInt(slaveDataSourceNames.size()));
     }
 }

@@ -15,17 +15,27 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.strategy.fixture;
+package io.shardingjdbc.core.api.algorithm.sharding;
 
-import io.shardingjdbc.core.api.algorithm.PreciseShardingValue;
-import io.shardingjdbc.core.api.algorithm.standard.PreciseShardingAlgorithm;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.Collection;
 
-public final class TestPreciseShardingAlgorithm implements PreciseShardingAlgorithm<String> {
+/**
+ * Sharding value for list values.
+ * 
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class ListShardingValue<T extends Comparable<?>> implements ShardingValue {
     
-    @Override
-    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<String> shardingValue) {
-        return shardingValue.getValue();
-    }
+    private final String logicTableName;
+    
+    private final String columnName;
+    
+    private final Collection<T> values;
 }

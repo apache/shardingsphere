@@ -15,27 +15,25 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.algorithm;
+package io.shardingjdbc.core.api.algorithm.sharding;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.Collection;
-
 /**
- * Sharding value for list values.
+ * Sharding value for precise value.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class ListShardingValue<T extends Comparable<?>> implements ShardingValue {
+public final class PreciseShardingValue<T extends Comparable<?>> implements ShardingValue {
     
     private final String logicTableName;
     
     private final String columnName;
     
-    private final Collection<T> values;
+    private final T value;
 }

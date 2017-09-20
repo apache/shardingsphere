@@ -19,8 +19,8 @@ package io.shardingjdbc.core.api.config;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingjdbc.core.api.strategy.slave.MasterSlaveLoadBalanceStrategy;
-import io.shardingjdbc.core.api.strategy.slave.MasterSlaveLoadBalanceStrategyType;
+import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
 import lombok.Getter;
@@ -46,9 +46,9 @@ public class MasterSlaveRuleConfiguration {
     
     private Collection<String> slaveDataSourceNames;
     
-    private MasterSlaveLoadBalanceStrategyType loadBalanceStrategyType;
+    private MasterSlaveLoadBalanceAlgorithmType loadBalanceAlgorithmType;
     
-    private String loadBalanceStrategyClassName;
+    private String loadBalanceAlgorithmClassName;
     
     /**
      * Build master-slave rule.
@@ -65,28 +65,28 @@ public class MasterSlaveRuleConfiguration {
         for (String each : slaveDataSourceNames) {
             slaveDataSources.put(each, dataSourceMap.get(each));
         }
-        return new MasterSlaveRule(name, masterDataSourceName, dataSourceMap.get(masterDataSourceName), slaveDataSources, getLoadBalanceStrategy());
+        return new MasterSlaveRule(name, masterDataSourceName, dataSourceMap.get(masterDataSourceName), slaveDataSources, getLoadBalanceAlgorithm());
     }
     
-    private MasterSlaveLoadBalanceStrategy getLoadBalanceStrategy() {
-        MasterSlaveLoadBalanceStrategy result;
-        if (null != loadBalanceStrategyType) {
-            result = loadBalanceStrategyType.getStrategy();
+    private MasterSlaveLoadBalanceAlgorithm getLoadBalanceAlgorithm() {
+        MasterSlaveLoadBalanceAlgorithm result;
+        if (null != loadBalanceAlgorithmType) {
+            result = loadBalanceAlgorithmType.getAlgorithm();
         } else {
-            result = Strings.isNullOrEmpty(loadBalanceStrategyClassName) ? null : newInstance(loadBalanceStrategyClassName);
+            result = Strings.isNullOrEmpty(loadBalanceAlgorithmClassName) ? null : newInstance(loadBalanceAlgorithmClassName);
         }
         return result;
     }
     
-    public MasterSlaveLoadBalanceStrategy newInstance(final String masterSlaveLoadBalanceStrategyClassName) {
+    public MasterSlaveLoadBalanceAlgorithm newInstance(final String masterSlaveLoadBalanceAlgorithmClassName) {
         try {
-            Class<?> result = Class.forName(masterSlaveLoadBalanceStrategyClassName);
-            if (!MasterSlaveLoadBalanceStrategy.class.isAssignableFrom(result)) {
-                throw new ShardingJdbcException("Class %s should be implement %s", masterSlaveLoadBalanceStrategyClassName, MasterSlaveLoadBalanceStrategy.class.getName());
+            Class<?> result = Class.forName(masterSlaveLoadBalanceAlgorithmClassName);
+            if (!MasterSlaveLoadBalanceAlgorithm.class.isAssignableFrom(result)) {
+                throw new ShardingJdbcException("Class %s should be implement %s", masterSlaveLoadBalanceAlgorithmClassName, MasterSlaveLoadBalanceAlgorithm.class.getName());
             }
-            return (MasterSlaveLoadBalanceStrategy) result.newInstance();
+            return (MasterSlaveLoadBalanceAlgorithm) result.newInstance();
         } catch (final ReflectiveOperationException ex) {
-            throw new ShardingJdbcException("Class %s should have public privilege and no argument constructor", masterSlaveLoadBalanceStrategyClassName);
+            throw new ShardingJdbcException("Class %s should have public privilege and no argument constructor", masterSlaveLoadBalanceAlgorithmClassName);
         }
     }
 }

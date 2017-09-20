@@ -22,7 +22,7 @@ import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingjdbc.core.api.strategy.fixture.TestPreciseShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.fixture.TestPreciseShardingAlgorithm;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.routing.strategy.none.NoneShardingStrategy;
 import org.junit.Test;

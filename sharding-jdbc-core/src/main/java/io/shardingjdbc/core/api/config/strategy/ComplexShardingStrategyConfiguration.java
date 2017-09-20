@@ -19,7 +19,7 @@ package io.shardingjdbc.core.api.config.strategy;
 
 import io.shardingjdbc.core.routing.strategy.ShardingAlgorithmFactory;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
-import io.shardingjdbc.core.api.algorithm.complex.ComplexKeysShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
 import io.shardingjdbc.core.routing.strategy.complex.ComplexShardingStrategy;
 import io.shardingjdbc.core.util.StringUtil;
 import com.google.common.base.Preconditions;

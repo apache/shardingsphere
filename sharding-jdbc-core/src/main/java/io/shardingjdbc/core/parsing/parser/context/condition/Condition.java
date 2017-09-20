@@ -1,8 +1,8 @@
 package io.shardingjdbc.core.parsing.parser.context.condition;
 
-import io.shardingjdbc.core.api.algorithm.ShardingValue;
-import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
-import io.shardingjdbc.core.api.algorithm.ListShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.parsing.parser.expression.SQLExpression;

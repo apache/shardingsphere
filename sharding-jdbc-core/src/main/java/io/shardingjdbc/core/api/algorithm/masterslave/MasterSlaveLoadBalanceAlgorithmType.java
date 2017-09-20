@@ -15,25 +15,31 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.algorithm;
+package io.shardingjdbc.core.api.algorithm.masterslave;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 /**
- * Sharding value for precise value.
- * 
+ * Master-slave database load-balance algorithm type.
+ *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class PreciseShardingValue<T extends Comparable<?>> implements ShardingValue {
+public enum MasterSlaveLoadBalanceAlgorithmType {
     
-    private final String logicTableName;
+    ROUND_ROBIN(new RoundRobinMasterSlaveLoadBalanceAlgorithm()),
+    RANDOM(new RandomMasterSlaveLoadBalanceAlgorithm());
     
-    private final String columnName;
+    private final MasterSlaveLoadBalanceAlgorithm algorithm;
     
-    private final T value;
+    /**
+     * Get default master-slave database load-balance algorithm type.
+     * 
+     * @return default master-slave database load-balance algorithm type
+     */
+    public static MasterSlaveLoadBalanceAlgorithmType getDefaultAlgorithmType() {
+        return ROUND_ROBIN;
+    }
 }

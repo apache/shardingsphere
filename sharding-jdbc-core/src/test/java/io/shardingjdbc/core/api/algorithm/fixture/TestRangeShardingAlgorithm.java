@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.strategy.fixture;
+package io.shardingjdbc.core.api.algorithm.fixture;
 
-import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
-import io.shardingjdbc.core.api.algorithm.standard.RangeShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 
 import java.util.ArrayList;
 import java.util.Collection;

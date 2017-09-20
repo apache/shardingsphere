@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.spring.algorithm;
 
-import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
-import io.shardingjdbc.core.api.algorithm.standard.RangeShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 import com.google.common.collect.Range;
 
 import java.util.Collection;

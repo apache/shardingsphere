@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.algorithm;
+package io.shardingjdbc.core.api.algorithm.sharding;
 
 import com.google.common.collect.Range;
 import lombok.Getter;

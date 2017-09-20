@@ -15,17 +15,22 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.strategy.fixture;
+package io.shardingjdbc.core.api.algorithm.table;
 
-import io.shardingjdbc.core.api.algorithm.ShardingValue;
-import io.shardingjdbc.core.api.algorithm.complex.ComplexKeysShardingAlgorithm;
+import io.shardingjdbc.core.routing.strategy.standard.StandardShardingStrategy;
+import com.google.common.collect.Sets;
+import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 
-public final class TestComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
-        return availableTargetNames;
+public final class TableShardingStrategyTest {
+    
+    @Test
+    public void assertTableShardingStrategyWithSingleShardingColumn() {
+        assertThat(new StandardShardingStrategy("shardingColumn", null).getShardingColumns(), is((Collection<String>) Sets.newTreeSet(Collections.singleton("shardingColumn"))));
     }
 }

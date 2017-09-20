@@ -15,24 +15,26 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.strategy.slave;
+package io.shardingjdbc.core.api.algorithm.sharding.complex;
 
-import java.util.List;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.routing.strategy.ShardingAlgorithm;
+
+import java.util.Collection;
 
 /**
- * Master-slave database load-balance strategy.
- *
+ * Complex keys sharding algorithm.
+ * 
  * @author zhangliang
  */
-public interface MasterSlaveLoadBalanceStrategy {
+public interface ComplexKeysShardingAlgorithm extends ShardingAlgorithm {
     
     /**
-     * Get data source.
+     * Sharding.
      * 
-     * @param name master-slave logic data source name
-     * @param masterDataSourceName name of master data sources
-     * @param slaveDataSourceNames names of slave data sources
-     * @return name of selected data source
+     * @param availableTargetNames available data sources or tables's names
+     * @param shardingValues sharding values
+     * @return sharding results for data sources or tables's names
      */
-    String getDataSource(String name, String masterDataSourceName, List<String> slaveDataSourceNames);
+    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
 }

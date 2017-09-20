@@ -17,11 +17,11 @@
 
 package io.shardingjdbc.core.integrate.fixture;
 
-import io.shardingjdbc.core.api.algorithm.ListShardingValue;
-import io.shardingjdbc.core.api.algorithm.PreciseShardingValue;
-import io.shardingjdbc.core.api.algorithm.RangeShardingValue;
-import io.shardingjdbc.core.api.algorithm.ShardingValue;
-import io.shardingjdbc.core.api.algorithm.complex.ComplexKeysShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
 import com.google.common.collect.Range;
 
 import java.util.Collection;

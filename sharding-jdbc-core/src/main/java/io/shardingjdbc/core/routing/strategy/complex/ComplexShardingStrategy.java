@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.core.routing.strategy.complex;
 
-import io.shardingjdbc.core.api.algorithm.complex.ComplexKeysShardingAlgorithm;
-import io.shardingjdbc.core.api.algorithm.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import lombok.Getter;
 
