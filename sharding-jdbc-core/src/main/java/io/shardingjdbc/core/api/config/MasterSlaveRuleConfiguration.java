@@ -29,6 +29,7 @@ import lombok.Setter;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -44,7 +45,7 @@ public class MasterSlaveRuleConfiguration {
     
     private String masterDataSourceName;
     
-    private Collection<String> slaveDataSourceNames;
+    private Collection<String> slaveDataSourceNames = new LinkedList<>();
     
     private MasterSlaveLoadBalanceAlgorithmType loadBalanceAlgorithmType;
     
