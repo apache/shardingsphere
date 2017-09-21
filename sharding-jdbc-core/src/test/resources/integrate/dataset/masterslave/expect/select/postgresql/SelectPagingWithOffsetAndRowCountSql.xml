@@ -1,5 +1,5 @@
 <dataset>
-    <t_order_item item_id="190002" order_id="1900" user_id="19" status="init" />
-    <t_order_item item_id="190001" order_id="1900" user_id="19" status="init" />
+    <t_order_item ORDER_BY_DERIVED_0="190002" item_id="190002" order_id="1900" user_id="19" status="init" />
+    <t_order_item ORDER_BY_DERIVED_0="190001" item_id="190001" order_id="1900" user_id="19" status="init" />
 </dataset>
 
