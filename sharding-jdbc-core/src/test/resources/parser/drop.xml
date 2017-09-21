@@ -4,16 +4,25 @@
         <tables>
             <table name="t_log" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="11" original-literals="t_log" />
+        </table-tokens>
     </assert>
     <assert id="assertDropTableIfExist">
         <tables>
             <table name="t_log" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="21" original-literals="t_log" />
+        </table-tokens>
     </assert>
     <assert id="assertDropTemporaryTable">
         <tables>
             <table name="t_log" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="21" original-literals="t_log" />
+        </table-tokens>
     </assert>
     <!--// TODO verify sql-->
     <!--<assert id="assertDropTableRestrict">-->
@@ -25,10 +34,16 @@
         <tables>
             <table name="t_log" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="11" original-literals="t_log" />
+        </table-tokens>
     </assert>
     <assert id="assertDropTableCascadeConstraintsAndPurge">
         <tables>
             <table name="t_log" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="11" original-literals="t_log" />
+        </table-tokens>
     </assert>
 </asserts>

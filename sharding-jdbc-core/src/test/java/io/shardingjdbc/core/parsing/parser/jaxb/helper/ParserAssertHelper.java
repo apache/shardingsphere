@@ -11,7 +11,15 @@ import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLPlaceholderExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingjdbc.core.parsing.parser.jaxb.Value;
+import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
+import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
+import io.shardingjdbc.core.parsing.parser.token.MultipleInsertValuesToken;
+import io.shardingjdbc.core.parsing.parser.token.OffsetToken;
+import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
+import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
 import io.shardingjdbc.core.parsing.parser.token.SQLToken;
+import io.shardingjdbc.core.parsing.parser.token.TableToken;
+
 import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 
 import java.util.ArrayList;
@@ -48,7 +56,7 @@ public class ParserAssertHelper {
                     if (valueWithType instanceof Number) {
                         sqlExpressions.add(new SQLNumberExpression((Number) valueWithType));
                     } else {
-                        sqlExpressions.add(new SQLTextExpression(valueWithType.toString()));
+                        sqlExpressions.add(new SQLTextExpression(valueWithType == null ? "" : valueWithType.toString()));
                     }
                 }
             }
@@ -71,25 +79,61 @@ public class ParserAssertHelper {
         return result;
     }
     
-    public static void assertSqlTokens(final List<io.shardingjdbc.core.parsing.parser.jaxb.TableToken> expected, final List<SQLToken> actual) {
-        // TODO add more sql tokens
-        if (null == expected) {
+    public static void assertSqlTokens(final List<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> expected, final List<SQLToken> actual, final boolean isPreparedStatement) {
+        if (null == expected || expected.size() == 0) {
             return;
         }
-        Iterator<io.shardingjdbc.core.parsing.parser.token.TableToken> sqlTokenIterator = buildExpectedTableTokens(expected).iterator();
+        List<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> filteredSqlTokens = filterSqlToken(expected, isPreparedStatement);
+        Iterator<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> sqlTokenIterator = filteredSqlTokens.iterator();
         for (SQLToken each : actual) {
-            io.shardingjdbc.core.parsing.parser.token.TableToken tableToken = sqlTokenIterator.next();
-            assertTrue(new ReflectionEquals(tableToken).matches(each));
+            SQLToken sqlToken = buildExpectedSQLToken(sqlTokenIterator.next(), isPreparedStatement);
+            assertTrue(new ReflectionEquals(sqlToken).matches(each));
         }
         assertFalse(sqlTokenIterator.hasNext());
     }
     
-    private static List<io.shardingjdbc.core.parsing.parser.token.TableToken> buildExpectedTableTokens(final List<io.shardingjdbc.core.parsing.parser.jaxb.TableToken> tableTokens) {
-        List<io.shardingjdbc.core.parsing.parser.token.TableToken> result = new ArrayList<>();
-        for (io.shardingjdbc.core.parsing.parser.jaxb.TableToken each : tableTokens) {
-            result.add(new io.shardingjdbc.core.parsing.parser.token.TableToken(each.getBeginPosition(), each.getOriginalLiterals()));
+    private static List<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> filterSqlToken(final List<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> sqlTokens,
+            final boolean isPreparedStatement) {
+        List<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> result = new ArrayList<>(sqlTokens.size());
+        for (io.shardingjdbc.core.parsing.parser.jaxb.SQLToken each : sqlTokens) {
+            if (isPreparedStatement && (each instanceof io.shardingjdbc.core.parsing.parser.jaxb.OffsetToken 
+                    || each instanceof io.shardingjdbc.core.parsing.parser.jaxb.RowCountToken)) {
+                continue;
+            }
+            result.add(each);
         }
         return result;
+    }
+    
+    private static SQLToken buildExpectedSQLToken(final io.shardingjdbc.core.parsing.parser.jaxb.SQLToken sqlToken, final boolean isPreparedStatement) {
+        if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.TableToken) {
+            return new TableToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.core.parsing.parser.jaxb.TableToken) sqlToken).getOriginalLiterals());
+        } else if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.ItemsToken) {
+            ItemsToken itemsToken = new ItemsToken(sqlToken.getBeginPosition());
+            itemsToken.getItems().addAll(((io.shardingjdbc.core.parsing.parser.jaxb.ItemsToken) sqlToken).getItems());
+            return itemsToken;
+        } else if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.GeneratedKeyToken) {
+            if (isPreparedStatement) {
+                return new GeneratedKeyToken(((io.shardingjdbc.core.parsing.parser.jaxb.GeneratedKeyToken) sqlToken).getBeginPositionOfPreparedStatement());
+            } else {
+                return new GeneratedKeyToken(((io.shardingjdbc.core.parsing.parser.jaxb.GeneratedKeyToken) sqlToken).getBeginPositionOfStatement());
+            }
+        } else if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.MultipleInsertValuesToken) {
+            MultipleInsertValuesToken multipleInsertValuesToken = new MultipleInsertValuesToken(sqlToken.getBeginPosition());
+            multipleInsertValuesToken.getValues().addAll(((io.shardingjdbc.core.parsing.parser.jaxb.MultipleInsertValuesToken) sqlToken).getValues());
+            return multipleInsertValuesToken;
+        } else if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.RowCountToken) {
+            return new RowCountToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.core.parsing.parser.jaxb.RowCountToken) sqlToken).getRowCount());
+        } else if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.OrderByToken) {
+            if (isPreparedStatement) {
+                return new OrderByToken(((io.shardingjdbc.core.parsing.parser.jaxb.OrderByToken) sqlToken).getBeginPositionOfPreparedStatement());
+            } else {
+                return new OrderByToken(((io.shardingjdbc.core.parsing.parser.jaxb.OrderByToken) sqlToken).getBeginPositionOfStatement());
+            }
+        } else if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.OffsetToken) {
+            return new OffsetToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.core.parsing.parser.jaxb.OffsetToken) sqlToken).getOffset());
+        }
+        return null;
     }
     
     public static void assertLimit(final io.shardingjdbc.core.parsing.parser.jaxb.Limit limit, final Limit actual, final boolean isPreparedStatement) {
