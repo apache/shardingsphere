@@ -82,7 +82,7 @@ Sharding-JDBC由于性能方面的考量，决定不支持强一致性分布式�
 
 | *名称*                              | *类型*                                     | *必填* | *默认值*   | *说明*                                                                                       |
 | ---------------------------------- | ------------------------------------------ | ------ | --------- | ------------------------------------------------------------------------------------------- |
-| shardingDataSource                 | ShardingDataSource                         | 是   |           | 事务管理器管理的数据源                                                                         |
+| shardingDataSource                 | ShardingDataSource                         | 是     |           | 事务管理器管理的数据源                                                                         |
 | syncMaxDeliveryTryTimes            | int                                        | 否     | 3         | 同步的事务送达的最大尝试次数                                                                    |
 | storageType                        | enum                                       | 否     | RDB       | 事务日志存储类型。可选值: RDB,MEMORY。使用RDB类型将自动建表                                       |
 | transactionLogDataSource           | DataSource                                 | 否     | null      | 存储事务日志的数据源，如果storageType为RDB则必填                                                 |
