@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.example.config.spring;
 
-import io.shardingjdbc.config.yaml.api.YamlShardingDataSource;
+import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -31,8 +31,7 @@ public final class YamlWithDefaultDataSourceMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {
     // CHECKSTYLE:ON
-        YamlShardingDataSource dataSource =  new YamlShardingDataSource(
-            new File(YamlWithDefaultDataSourceMain.class.getResource("/META-INF/withDefaultDataSource.yaml").getFile()));
+        DataSource dataSource = ShardingDataSourceFactory.createDataSource(new File(YamlWithAssignedDataSourceMain.class.getResource("/META-INF/withDefaultDataSource.yaml").getFile()));
         printJoinSelect(dataSource);
         printGroupBy(dataSource);
     }

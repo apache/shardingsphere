@@ -51,22 +51,17 @@
         </dependency>
         <dependency>
             <groupId>io.shardingjdbc</groupId>
-            <artifactId>sharding-jdbc-transaction</artifactId>
-            <version>${sharding-jdbc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.shardingjdbc</groupId>
-            <artifactId>sharding-jdbc-config-yaml</artifactId>
-            <version>${sharding-jdbc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.shardingjdbc</groupId>
-            <artifactId>sharding-jdbc-config-spring</artifactId>
+            <artifactId>sharding-jdbc-spring-namespace</artifactId>
             <version>${sharding-jdbc.version}</version>
         </dependency>
         <dependency>
             <groupId>io.shardingjdbc</groupId>
             <artifactId>sharding-jdbc-orchestration</artifactId>
+            <version>${sharding-jdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.shardingjdbc</groupId>
+            <artifactId>sharding-jdbc-transaction</artifactId>
             <version>${sharding-jdbc.version}</version>
         </dependency>
         

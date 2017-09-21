@@ -18,7 +18,7 @@
 package io.shardingjdbc.example.config.spring;
 
 
-import io.shardingjdbc.config.yaml.api.YamlMasterSlaveDataSource;
+import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -32,8 +32,7 @@ public final class YamlWithMasterSlaveDataSourceMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {
     // CHECKSTYLE:ON
-        YamlMasterSlaveDataSource dataSource =  new YamlMasterSlaveDataSource(
-                new File(YamlWithAssignedDataSourceMain.class.getResource("/META-INF/withMasterSlaveDataSource.yaml").getFile()));
+        DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(new File(YamlWithAssignedDataSourceMain.class.getResource("/META-INF/withMasterSlaveDataSource.yaml").getFile()));
         printSimpleSelect(dataSource);
         printJoinSelect(dataSource);
         printGroupBy(dataSource);
