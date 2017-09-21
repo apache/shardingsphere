@@ -29,6 +29,7 @@ import io.shardingjdbc.core.rewrite.AllRewriteTests;
 import io.shardingjdbc.core.routing.AllRoutingTests;
 import io.shardingjdbc.core.rule.AllRuleTests;
 import io.shardingjdbc.core.util.AllUtilTests;
+import io.shardingjdbc.core.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -46,7 +47,8 @@ import org.junit.runners.Suite.SuiteClasses;
         AllJDBCTests.class, 
         AllHintTests.class, 
         AllKeygenTests.class, 
-        AllUtilTests.class 
+        AllUtilTests.class,
+        AllYamlTests.class
     })
 public class AllUnitTests {
 }
