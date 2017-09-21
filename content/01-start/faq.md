@@ -14,31 +14,17 @@ next = "/01-start/features/"
 
 Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考[lombok官网](https://projectlombok.org/download.html)。
 
-### 2. 1.5.0版本之前出现java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption().....异常的解决方法？
-
-回答：
-
-Sharding-JDBC在1.5.0版本之前使用Druid作为SQL解析的基础库，需确保业务代码中使用的Druid与Sharding-JDBC使用的版本一致，之前使用的Druid是`1.0.12`版本。
-
-### 3. 使用Spring命名空间时在网上相应地址找不到xsd?
-
-回答：
-
-Spring命名空间使用规范并未强制要求将xsd文件部署至公网地址，因此我们并未将`http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd`部署至公网，但不影响正常使用。
-
-sharding-jdbc-config-spring的jar包中`META-INF\spring.schemas`配置了xsd文件的位置：`META-INF\namespace\rdb.xsd`，需确保jar包中该文件存在。
-
-### 4. Cloud not resolve placeholder ... in string value ...异常的解决方法?
+### 2. Cloud not resolve placeholder ... in string value ...异常的解决方法?
 
 回答：
 
 在Spring的配置文件中，由于inline表达式使用了Groovy语法，Groovy语法的变量符与Spring默认占位符同为`${}`，因此需要在配置文件中增加：
 
 ```xml
-<context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true"/>
+<context:property-placeholder location="classpath:conf/conf.properties" ignore-unresolvable="true" />
 ```
 
-### 5. inline表达式返回结果为何出现浮点数？
+### 3. inline表达式返回结果为何出现浮点数？
 
 回答：
 
@@ -46,7 +32,7 @@ Java的整数相除结果是整数，但是对于inline表达式中的Groovy语�
 想获得除法整数结果需要将A/B改为A.intdiv(B)。
 
 
-### 6. 使用Proxool时分库结果不正确？
+### 4. 使用Proxool时分库结果不正确？
 
 回答：
 
@@ -64,7 +50,7 @@ Java的整数相除结果是整数，但是对于inline表达式中的Groovy语�
 
 PS:sourceforge网站需要翻墙访问。
 
-### 7. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？
+### 5. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？
 
 回答：
 
@@ -82,7 +68,7 @@ SQLServer获取到的列为空字符串和(2)，PostgreSQL获取到的列为空s
 SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;
 ```
 
-### 8. 1.5.x之前支持OR，1.5.x之后不再支持，是什么原因？
+### 6. 1.5.x之前支持OR，1.5.x之后不再支持，是什么原因？
 
 回答：
 
@@ -116,14 +102,14 @@ WHERE id=1 OR status=‘OK’
 
 如果考虑到很多OR和AND的组合就更加复杂，必须组成一个多维递归的树结构。这种性能对于分布式数据库无法接受，也不可控，因此Sharding-JDBC选择不对OR进行支持。
 
-### 9. 如果SQL在Sharding-JDBC中执行不正确，该如何调试？
+### 7. 如果SQL在Sharding-JDBC中执行不正确，该如何调试？
 
 回答：
 
 Sharding-JDBC 1.5.0版本之后提供了sql.show的配置，可以将Sharding-JDBC从解析上下文，到改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
 sql.show配置默认关闭，如果需要请通过配置开启。详情请参见[配置手册](/02-guide/configuration/)。
 
-### 10. 如果只有部分数据库分库分表，是否需要将不分库分表的表也配置在分片规则中？
+### 8. 如果只有部分数据库分库分表，是否需要将不分库分表的表也配置在分片规则中？
 
 回答：
 
@@ -134,7 +120,7 @@ sql.show配置默认关闭，如果需要请通过配置开启。详情请参见
 
 方法2：将不参与分库分表的数据源独立于Sharding-JDBC之外，在应用中使用多个数据源分别处理分片和不分片的情况。
 
-### 11. Sharding-JDBC提供的默认分布式自增主键策略为什么是不连续的，且尾数大多为偶数？
+### 9. Sharding-JDBC提供的默认分布式自增主键策略为什么是不连续的，且尾数大多为偶数？
 
 回答：
 
@@ -143,13 +129,13 @@ Sharding-JDBC采用snowflake算法作为默认的分布式分布式自增主键�
 而snowflake算法的最后4位是在同一毫秒内的访问递增值。因此，如果毫秒内并发度不高，最后4位为零的几率则很大。因此并发度不高的应用生成偶数主键的几率会更高。
 
 
-### 12. 指定了泛型为Long的SingleKeyTableShardingAlgorithm，遇到ClassCastException: Integer can not cast to Long ？
+### 10. 指定了泛型为Long的SingleKeyTableShardingAlgorithm，遇到ClassCastException: Integer can not cast to Long ？
 
 回答：
 
 必须确保数据库表中该字段和分片算法该字段类型一致，如：数据库中该字段类型为int(11)，泛型所对应的分片类型应为Integer，如果需要配置为Long类型，请确保数据库中该字段类型为bigint。
 
-### 13. Sharding-JDBC除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
+### 11. Sharding-JDBC除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
 
 回答：是的，可以支持。但原生自增主键有使用限制，即不能将原生自增主键同时作为分片键使用。
 
