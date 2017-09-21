@@ -28,26 +28,30 @@ next = "/02-guide/transaction"
 配置自增列：
 
 ```java
-TableRule.builder("t_order").generateKeyColumns("order_id");
+TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+tableRuleConfig.setLogicTable("t_order");
+tableRuleConfig.setKeyGeneratorColumnName("order_id");
 ```
 
-设置Id生成器的实现类，该类必须实现com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator接口。
+设置Id生成器的实现类，该类必须实现io.shardingjdbc.core.keygen.KeyGenerator接口。
 
 配置全局生成器(com.xx.xx.KeyGenerator):
 
 ```java
-ShardingRule.builder().defaultKeyGenerator(com.xx.xx.KeyGenerator.class);
-
+ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+shardingRuleConfig.setDefaultKeyGeneratorClass("com.xx.xx.KeyGenerator");
 ```
 
 有时候我们希望部分表的Id生成器与全局Id生成器不同，比如t_order_item表希望使用com.xx.xx.OtherKeyGenerator来生成Id:
 
 ```java
-TableRule.builder("t_order_item").generateKeyColumns("order_item_id", com.xx.xx.OtherKeyGenerator.class);
+TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+tableRuleConfig.setLogicTable("t_order");
+tableRuleConfig.setKeyGeneratorColumnName("order_id");
+tableRuleConfig.setKeyGeneratorClass("com.xx.xx.OtherKeyGenerator");
 ```
 
 这样t_order就使用com.xx.xx.KeyGenerator生成Id，而t_order_item使用com.xx.xx.OtherKeyGenerator生成Id。
-
 
 ### 获取自动生成键
 
@@ -63,7 +67,7 @@ TableRule.builder("t_order_item").generateKeyColumns("order_item_id", com.xx.xx.
 
 # 默认的分布式主键生成器
 
-类名称：com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator
+类名称：io.shardingjdbc.core.keygen.DefaultKeyGenerator
 
 该生成器采用snowflake算法实现，生成的数据为64bit的long型数据。
 在数据库中应该用大于等于64bit的数字类型的字段来保存该值，比如在MySQL中应该使用BIGINT。
