@@ -24,25 +24,57 @@ next = "/02-guide/configuration/"
 
 ## 代码开发示例
 
+### 仅读写分离
+
+```java
+// 构建读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理. masterDataSource, slaveDataSource0, slaveDataSource1等为使用DBCP等连接池配置的真实数据源
+Map<String, DataSource> dataSourceMap = new HashMap<>();
+dataSourceMap.put("masterDataSource", masterDataSource);
+dataSourceMap.put("slaveDataSource0", slaveDataSource0);
+dataSourceMap.put("slaveDataSource1", slaveDataSource1);
+
+// 构建读写分离配置
+MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
+masterSlaveRuleConfig.setName("ms_ds");
+masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
+masterSlaveRuleConfig.getSlaveDataSourceNames().add("slaveDataSource0");
+masterSlaveRuleConfig.getSlaveDataSourceNames().add("slaveDataSource1");
+
+DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig);
+```
+
+### 分库分表 + 读写分离
+
 ```java
 // 构建读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理. masterDataSource0, slaveDataSource00, slaveDataSource01等为使用DBCP等连接池配置的真实数据源
-Map<String, DataSource> slaveDataSourceMap0 = new HashMap<>();
-slaveDataSourceMap0.put("slaveDataSource00", slaveDataSource00);
-slaveDataSourceMap0.put("slaveDataSource01", slaveDataSource01);
-// 可选择主从库负载均衡策略, 默认是ROUND_ROBIN, 还有RANDOM可以选择, 或者自定义负载策略
-DataSource masterSlaveDs0 = MasterSlaveDataSourceFactory.createDataSource("ms_0", "masterDataSource0", masterDataSource0, slaveDataSourceMap0, MasterSlaveLoadBalanceStrategyType.ROUND_ROBIN);
-
-Map<String, DataSource> slaveDataSourceMap1 = new HashMap<>();
-slaveDataSourceMap1.put("slaveDataSource10", slaveDataSource10);
-slaveDataSourceMap1.put("slaveDataSource11", slaveDataSource11);
-DataSource masterSlaveDs1 = MasterSlaveDataSourceFactory.createDataSource("ms_1", "masterDataSource1", masterDataSource1, slaveDataSourceMap1, MasterSlaveLoadBalanceStrategyType.ROUND_ROBIN);
-
-// 构建分库分表数据源
 Map<String, DataSource> dataSourceMap = new HashMap<>();
-dataSourceMap.put("ms_0", masterSlaveDs0);
-dataSourceMap.put("ms_1", masterSlaveDs1);
+dataSourceMap.put("masterDataSource0", masterDataSource0);
+dataSourceMap.put("slaveDataSource00", slaveDataSource00);
+dataSourceMap.put("slaveDataSource01", slaveDataSource01);
 
-// 通过ShardingDataSourceFactory继续创建ShardingDataSource
+dataSourceMap.put("masterDataSource1", masterDataSource1);
+dataSourceMap.put("slaveDataSource10", slaveDataSource10);
+dataSourceMap.put("slaveDataSource11", slaveDataSource11);
+
+// 构建读写分离配置
+MasterSlaveRuleConfiguration masterSlaveRuleConfig0 = new MasterSlaveRuleConfiguration();
+masterSlaveRuleConfig0.setName("ds_0");
+masterSlaveRuleConfig0.setMasterDataSourceName("masterDataSource0");
+masterSlaveRuleConfig0.getSlaveDataSourceNames().add("slaveDataSource00");
+masterSlaveRuleConfig0.getSlaveDataSourceNames().add("slaveDataSource01");
+
+MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration();
+masterSlaveRuleConfig1.setName("ds_1");
+masterSlaveRuleConfig1.setMasterDataSourceName("masterDataSource1");
+masterSlaveRuleConfig1.getSlaveDataSourceNames().add("slaveDataSource10");
+masterSlaveRuleConfig1.getSlaveDataSourceNames().add("slaveDataSource11");
+
+// 通过ShardingSlaveDataSourceFactory继续创建ShardingDataSource
+ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+shardingRuleConfig.getMasterSlaveRuleConfigs().add(masterSlaveRuleConfig0);
+shardingRuleConfig.getMasterSlaveRuleConfigs().add(masterSlaveRuleConfig1);
+
+DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
 ```
 
 ## Spring命名空间配置示例
@@ -52,13 +84,16 @@ dataSourceMap.put("ms_1", masterSlaveDs1);
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb" 
+    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding"
+    xmlns:masterslave="http://shardingjdbc.io/schema/shardingjdbc/masterslave"
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd 
-                        http://www.dangdang.com/schema/ddframe/rdb 
-                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/masterslave 
+                        http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.xsd 
                         ">
     <!-- 配置真实数据源 -->
     <bean id="dbtbl_0_master" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -104,20 +139,19 @@ dataSourceMap.put("ms_1", masterSlaveDs1);
     </bean>
     
     <!-- 定义读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理 -->
-    <rdb:master-slave-data-source id="dbtbl_0" master-data-source-ref="dbtbl_0_master" slave-data-sources-ref="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-type="ROUND_ROBIN" />
-    <rdb:master-slave-data-source id="dbtbl_1" master-data-source-ref="dbtbl_1_master" slave-data-sources-ref="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-type="ROUND_ROBIN" />
+    <master-slave:data-source id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-type="ROUND_ROBIN" />
+    <master-slave:data-source id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-type="ROUND_ROBIN" />
     
-    <!-- 通过rdb:strategy和rdb:data-source继续构建分片数据源 -->
-    <rdb:strategy id="databaseStrategy" sharding-columns="user_id" algorithm-expression="dbtbl_${user_id % 2}"/>
-    <rdb:strategy id="orderTableStrategy" sharding-columns="order_id" algorithm-expression="t_order_${order_id % 4}"/>
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="dbtbl_${user_id % 2}" />
+    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 4}" />
     
-    <rdb:data-source id="shardingDataSource">
-        <rdb:sharding-rule data-sources="dbtbl_0, dbtbl_1">
-            <rdb:table-rules>
-                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy="databaseStrategy" table-strategy="orderTableStrategy"/>
-            </rdb:table-rules>
-        </rdb:sharding-rule>
-    </rdb:data-source>
+    <sharding:data-source id="shardingDataSource">
+        <sharding:sharding-rule data-source-names="dbtbl_0, dbtbl_1">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy"/>
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
 </beans>
 ```
 
