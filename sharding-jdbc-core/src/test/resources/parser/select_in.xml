@@ -7,5 +7,8 @@
         <table-tokens>
             <table-token begin-position="14" original-literals="t_order" />
         </table-tokens>
+        <order-by-columns>
+            <order-by-column name="order_id" order-by-type="ASC" />
+        </order-by-columns>
     </assert>
 </asserts>
