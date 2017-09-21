@@ -15,7 +15,7 @@ next = "/02-guide/hint-sharding-value/"
 ```xml
 <dependency>
     <groupId>com.dangdang</groupId>
-    <artifactId>sharding-jdbc-config-yaml</artifactId>
+    <artifactId>sharding-jdbc</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```
@@ -23,13 +23,18 @@ next = "/02-guide/hint-sharding-value/"
 ### Java示例
 
 ```java
-    DataSource dataSource = new YamlShardingDataSource(yamlFile);
+    DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
 ```
 
 ### 配置示例
 
 ```yaml
 dataSource:
+  ds_default: !!org.apache.commons.dbcp.BasicDataSource
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/ds_default
+      username: root
+      password: 
   ds_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds_0
@@ -41,34 +46,33 @@ dataSource:
     username: root
     password: 
     
-defaultDataSourceName: ds_0
+defaultDataSourceName: ds_default
 
 tables:
-  config:
-    actualTables: t_config
-    
   t_order: 
     actualTables: t_order_${0..1}
-    tableStrategy: &table001
-      shardingColumns: order_id
-      algorithmExpression: t_order_${order_id % 2}
-  
-  #绑定表中其余的表的策略与t_order的策略相同
+    tableStrategy: 
+      inline:
+        shardingColumn: id
+        algorithmInlineExpression: t_order_${id % 2}
   t_order_item:
     actualTables: t_order_item_${0..1}
-    tableStrategy: *table001
+    tableStrategy: 
+      inline:
+        shardingColumn: id
+        algorithmInlineExpression: t_order_item_${id % 2}
 
 bindingTables:
-  - tableNames: t_order,t_order_item
-  - tableNames: ...
+  - t_order,t_order_item
 
 defaultDatabaseStrategy:
-  shardingColumns: none
-  algorithmClassName: com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm
-
-props:
-  sql.show: false
+  none:
   
+defaultTableStrategy:
+  none:
+  
+props:
+  sql.show: true
 ```
 
 ### 配置项说明
@@ -86,29 +90,29 @@ defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默
   
 tables: 分库分表配置，可配置多个logic_table_name
     <logic_table_name>: 逻辑表名
-        dynamic: 是否为动态表
-        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)。
+        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表。
         dataSourceNames: 数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源
-        databaseStrategy: 分库策略
-            shardingColumns: 分片列名，多个列以逗号分隔
-            algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
-            algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
-        tableStrategy: 分表策略
-            shardingColumns: 分片列名，多个列以逗号分隔
-            algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
-            algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
+        databaseStrategy: 分库策略，以下的分片策略只能任选其一
+            standard: 标准分片策略，用于单分片键的场景
+                shardingColumn: 分片列名
+                preciseAlgorithmClassName: 精确的分片算法类名称，用于=和IN。该类需使用默认的构造器或者提供无参数的构造器
+                rangeAlgorithmClassName: 范围的分片算法类名称，用于BETWEEN，可以不配置。该类需使用默认的构造器或者提供无参数的构造器
+            complex: 复合分片策略，用于多分片键的场景
+                shardingColumns : 分片列名，多个列以逗号分隔
+                algorithmClassName: 分片算法类名称。该类需使用默认的构造器或者提供无参数的构造器
+            inline: inline表达式分片策略
+                shardingColumn : 分片列名
+                algorithmExpression: 分库算法表达式，需要符合groovy动态语法
+            hint: Hint分片策略
+                algorithmClassName: 分片算法类名称。该类需使用默认的构造器或者提供无参数的构造器
+            none: 不分片
+        tableStrategy: 分表策略，同分库策略
   bindingTables: 绑定表列表
-  - tableNames: 逻辑表名列表，多个<logic_table_name>以逗号分隔
+  - 逻辑表名列表，多个<logic_table_name>以逗号分隔
   
-defaultDatabaseStrategy: 默认数据库分片策略
-  shardingColumns: 分片列名，多个列以逗号分隔
-  algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
-  algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
-  
-defaultTableStrategy: 默认数据表分片策略
-  shardingColumns: 分片列名，多个列以逗号分隔
-  algorithmClassName: 分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
-  algorithmExpression: 分表算法表达式，与algorithmClassName出现一个即可
+defaultDatabaseStrategy: 默认数据库分片策略，同分库策略
+ 
+defaultTableStrategy: 默认数据表分片策略，同分库策略
 
 props: 属性配置(可选)
     sql.show: 是否开启SQL显示，默认值: false
@@ -130,8 +134,8 @@ props: 属性配置(可选)
 
 ```xml
 <dependency>
-    <groupId>com.dangdang</groupId>
-    <artifactId>sharding-jdbc-config-spring</artifactId>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-spring-namespace</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```
@@ -142,53 +146,52 @@ props: 属性配置(可选)
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb" 
+    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding" 
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd 
-                        http://www.dangdang.com/schema/ddframe/rdb 
-                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
                         ">
-    <context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true"/>
+    <context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true" />
     
     <bean id="dbtbl_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/dbtbl_0"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/dbtbl_0" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
-
+    
     <bean id="dbtbl_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/dbtbl_1"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/dbtbl_1" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
-
-    <rdb:strategy id="databaseStrategy" sharding-columns="user_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloDatabaseShardingAlgorithm"/>
-    <rdb:strategy id="tableStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloTableShardingAlgorithm"/>
-
-    <rdb:data-source id="shardingDataSource">
-        <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
-            <rdb:table-rules>
-                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" table-strategy="tableStrategy"/>
-                <rdb:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
-            </rdb:table-rules>
-            <rdb:binding-table-rules>
-                <rdb:binding-table-rule logic-tables="t_order, t_order_item"/>
-            </rdb:binding-table-rules>
-            <rdb:default-database-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm"/>
-        </rdb:sharding-rule>
-        <rdb:props>
+    
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+    
+    <sharding:data-source id="shardingDataSource">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-data-source-name="dbtbl_0">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
+                <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
+            </sharding:table-rules>
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+            </sharding:binding-table-rules>
+        </sharding:sharding-rule>
+        <sharding:props>
             <prop key="sql.show">true</prop>
-        </rdb:props>
-    </rdb:data-source>
+        </sharding:props>
+    </sharding:data-source>
 </beans>
 ```
 ### 标签说明
 
-#### \<rdb:data-source/\>
+#### \<sharding:data-source/\>
 
 定义sharding-jdbc数据源
 
@@ -197,90 +200,102 @@ props: 属性配置(可选)
 | id                            | 属性         |  String     |   是   | Spring Bean ID |
 | sharding-rule                 | 标签         |   -         |   是   | 分片规则        |
 | binding-table-rules?          | 标签         |   -         |   否   | 绑定表规则       |
-| default-database-strategy?    | 标签         |   -         |   否   | 默认分库策略     |
-| default-table-strategy?       | 标签         |   -         |   否   | 默认分表策略     |
 | props?                        | 标签         |   -         |   否   | 相关属性配置     |
 
-#### \<rdb:sharding-rule/>
+#### \<sharding:sharding-rule/>
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                                    |
-| ----------------------------- | ------------ | ---------- | ------ | -------------------------------------------------------- |
-| data-sources                  | 属性         | String      |   是   | 数据源Bean列表，多个Bean以逗号分隔                           |
-| default-data-source           | 属性         | String      |   否   | 默认数据源名称，未配置分片规则的表将通过默认数据源定位           |
-| table-rules                   | 标签         |   -         |   是   | 分片规则列表                                               |
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                                                |
+| ----------------------------- | ------------ | ---------- | ------ | --------------------------------------------------------------------- |
+| data-source-names             | 属性         | String      |   是   | 数据源Bean列表，多个Bean以逗号分隔                                        |
+| default-data-source-name      | 属性         | String      |   否   | 默认数据源名称，未配置分片规则的表将通过默认数据源定位                        |
+| default-database-strategy-ref | 属性         | String      |   否   | 默认分库策略，对应\<sharding:xxx-strategy>中的策略id，不填则使用不分库的策略 |
+| default-table-strategy-ref    | 属性         | String      |   否   | 默认分表策略，对应\<sharding:xxx-strategy>中的策略id，不填则使用不分表的策略 |
+| table-rules                   | 标签         |   -         |   是   | 分片规则列表                                                            |
 
-#### \<rdb:table-rules/>
+#### \<sharding:table-rules/>
 
 | *名称*                         | *类型*      | *数据类型*  |  *必填* | *说明*  |
 | ----------------------------- | ----------- | ---------- | ------ | ------- |
 | table-rule+                   | 标签         |   -        |   是  | 分片规则 |
 
-#### \<rdb:table-rule/>
+#### \<sharding:table-rule/>
 
 | *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
 | --------------------          | ------------ | ---------- | ------ | ------- |
 | logic-table                   | 属性         |  String     |   是   | 逻辑表名 |
-| dynamic                       | 属性         |  boolean    |   否   | 是否动态表 |
 | actual-tables                 | 属性         |  String     |   否   | 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true) |
-| data-source-names             | 属性         |  String     |   否   | 数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源                    |
-| database-strategy             | 属性         |  String     |   否   | 分库策略，对应\<rdb:strategy>中分库策略id, 如果不填需配置\<rdb:default-database-strategy/> |
-| table-strategy                | 属性         |  String     |   否   | 分表策略，对应\<rdb:strategy>中分表策略id, 如果不填需配置\<rdb:default-table-strategy/>    |
+| data-source-names             | 属性         |  String     |   否   | 数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源                                                    |
+| database-strategy-ref         | 属性         |  String     |   否   | 分库策略，对应\<sharding:xxx-strategy>中的策略id，不填则使用\<sharding:sharding-rule/>配置的default-database-strategy-ref   |
+| table-strategy-ref            | 属性         |  String     |   否   | 分表策略，对应\<sharding:xxx-strategy>中的略id，不填则使用\<sharding:sharding-rule/>配置的default-table-strategy-ref        |
 
-#### \<rdb:binding-table-rules/>
+#### \<sharding:binding-table-rules/>
 
 | *名称*                         | *类型*      | *数据类型*  |  *必填* | *说明*  |
 | ----------------------------- | ----------- |  --------- | ------ | ------- |
 | binding-table-rule            | 标签         |   -         |   是  | 绑定规则 |
 
-#### \<rdb:binding-table-rule/>
+#### \<sharding:binding-table-rule/>
 
 | *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                   |
 | ----------------------------- | ------------ | ---------- | ------ | ------------------------ |
 | logic-tables                  | 属性         |  String     |   是   | 逻辑表名，多个表名以逗号分隔 |
 
-#### \<rdb:default-database-strategy/>
+#### \<sharding:standard-strategy/>
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
-| ----------------------------- | ------------ | ---------- | ------ | ------- |
-| sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔 |
-| algorithm-class               | 属性         |  Class      |   否  | 默认分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithm-expression有且仅有一个出现 |
-| algorithm-expression          | 属性         |  String     |   否  | 默认分库算法表达式，与algorithm-class有且仅有一个出现 |
+标准分片策略，用于单分片键的场景
 
-#### \<rdb:default-table-strategy/\>
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                                                |
+| ----------------------------- | ------------ | ---------- | ------ | --------------------------------------------------------------------- |
+| sharding-column               | 属性         |  String     |   是   | 分片列名                                                               |
+| precise-algorithm-class       | 属性         |  String     |   是   | 精确的分片算法类名称，用于=和IN。该类需使用默认的构造器或者提供无参数的构造器   |
+| range-algorithm-class         | 属性         |  String     |   否   | 范围的分片算法类名称，用于BETWEEN。该类需使用默认的构造器或者提供无参数的构造器 |
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
-| ----------------------------- | ------------ |  --------- | ------ | ------- |
-| sharding-columns              | 属性         |  String     |   是   | 分片列名，多个列以逗号分隔 |
-| algorithm-class               | 属性         |  Class      |   否   | 默认分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithm-expression有且仅有一个出现 |
-| algorithm-expression          | 属性         |  String     |   否   | 默认分表算法表达式，与algorithm-class有且仅有一个出现 |
+#### \<sharding:complex-strategy/>
 
-#### \<rdb:strategy/\>*
+复合分片策略，用于多分片键的场景
 
-定义数据分库或分表策略
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                              |
+| ----------------------------- | ------------ | ---------- | ------ | --------------------------------------------------- |
+| sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔                              |
+| algorithm-class               | 属性         |  String     |   是  | 分片算法全类名，该类需使用默认的构造器或者提供无参数的构造器 |
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
-| ----------------------------- | ------------ | ---------- | ------ | ------- |
-| id                            | 属性         |  String     |   是   | Spring Bean ID |
-| sharding-columns              | 属性         |  String     |   是   | 分片列名，多个列以逗号分隔 |
-| algorithm-class               | 属性         |  Class      |   否   | 分库或分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithm-expression有且仅有一个出现 |
-| algorithm-expression          | 属性         |  String     |   否   | 分库或分表算法表达式，与algorithm-class有且仅有一个出现 |
+#### \<sharding:inline-strategy/>
 
-#### \<rdb:props/\>
+inline表达式分片策略
+
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*       |
+| ----------------------------- | ------------ | ---------- | ------ | ------------ |
+| sharding-column               | 属性         |  String     |   是   | 分片列名      |
+| algorithm-expression          | 属性         |  String     |   是   | 分片算法表达式 |
+
+#### \<sharding:hint-database-strategy/>
+
+Hint方式分片策略
+
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                              |
+| ----------------------------- | ------------ | ---------- | ------ | --------------------------------------------------- |
+| algorithm-class               | 属性         |  String     |   是  | 分片算法全类名，该类需使用默认的构造器或者提供无参数的构造器 |
+
+#### \<sharding:none-strategy/>
+
+不分片的策略
+
+#### \<sharding:props/\>
 
 | *名称*                                | *类型*       | *数据类型*  | *必填* | *说明*                              |
 | ------------------------------------ | ------------ | ---------- | ----- | ----------------------------------- |
 | sql.show                             | 属性         |  boolean   |   是   | 是否开启SQL显示，默认为false不开启     |
 | executor.size                        | 属性         |  int       |   否   | 最大工作线程数量                      |
 
-#### \<rdb:master-slave-data-source/\>
+#### \<master-slave:data-source/\>
 
 定义sharding-jdbc读写分离的数据源
 
 | *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                   |
 | ----------------------------- | ------------ |  --------- | ------ | ---------------------------------------- |
 | id                            | 属性         |  String     |   是   | Spring Bean ID                           |
-| master-data-source-ref        | 标签         |   -         |   是   | 主库数据源Bean ID                         |
-| slave-data-sources-ref        | 标签         |   -         |   是   | 从库数据源Bean列表，多个Bean以逗号分隔       |
+| master-data-source-name       | 标签         |   -         |   是   | 主库数据源Bean ID                         |
+| slave-data-source-names       | 标签         |   -         |   是   | 从库数据源Bean列表，多个Bean以逗号分隔       |
 | strategy-ref?                 | 标签         |   -         |   否   | 主从库复杂策略Bean ID，可以使用自定义复杂策略 |
 | strategy-type?                | 标签         |  String     |   否   | 主从库复杂策略类型<br />可选值：ROUND_ROBIN, RANDOM<br />默认值：ROUND_ROBIN |
 
