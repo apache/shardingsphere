@@ -19,10 +19,13 @@ package io.shardingjdbc.core.api;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.yaml.sharding.YamlShardingDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
@@ -58,5 +61,55 @@ public final class ShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
         return new ShardingDataSource(shardingRuleConfig.build(dataSourceMap), props);
+    }
+    
+    /**
+     * Create sharding data source.
+     *
+     * @param yamlFile yaml file for rule configuration of databases and tables sharding with data sources
+     * @return sharding data source
+     * @throws SQLException SQL exception
+     * @throws SQLException IO exception
+     */
+    public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
+        return new YamlShardingDataSource(yamlFile);
+    }
+    
+    /**
+     * Create sharding data source.
+     *
+     * @param dataSourceMap data source map
+     * @param yamlFile yaml file for rule configuration of databases and tables sharding without data sources
+     * @return sharding data source
+     * @throws SQLException SQL exception
+     * @throws SQLException IO exception
+     */
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
+        return new YamlShardingDataSource(dataSourceMap, yamlFile);
+    }
+    
+    /**
+     * Create sharding data source.
+     *
+     * @param yamlByteArray yaml byte array for rule configuration of databases and tables sharding with data sources
+     * @return sharding data source
+     * @throws SQLException SQL exception
+     * @throws SQLException IO exception
+     */
+    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
+        return new YamlShardingDataSource(yamlByteArray);
+    }
+    
+    /**
+     * Create sharding data source.
+     *
+     * @param dataSourceMap data source map
+     * @param yamlByteArray yaml byte array for rule configuration of databases and tables sharding without data sources
+     * @return sharding data source
+     * @throws SQLException SQL exception
+     * @throws SQLException IO exception
+     */
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException, IOException {
+        return new YamlShardingDataSource(dataSourceMap, yamlByteArray);
     }
 }
