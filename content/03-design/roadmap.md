@@ -16,14 +16,15 @@ next = "/00-overview"
 1. PostgreSQL
 
 ### DQL
+1. Simple
 1. JOIN
 1. BETWEEN
 1. IN
 1. ORDER BY
 1. GROUP BY
-1. COUNT, SUM, MAX, MIN, AVG
+1. Aggregation
 1. LIMIT, rownum, TOP
-1. 非功能型子查询
+1. Simple Sub Query
 
 ### DML
 1. INSERT INTO
@@ -40,7 +41,10 @@ next = "/00-overview"
 ### 配置
 1. Java API
 1. Spring命名空间
-1. Yaml (仅读写分离未完成)
+1. Yaml
+1. 读写分离独立化
+1. 配置集中化
+1. 配置动态化
 
 ### SQL解析
 1. 词法分析
@@ -99,14 +103,14 @@ next = "/00-overview"
 1. HAVING
 1. OR
 1. UNION, UNION ALL
-1. 全子查询
-1. 计算表达式，如：SUM(pv) / COUNT(uv)
-1. 通过SQL注释指定SQL Hint
+1. Calculate Expression, eg: SUM(pv) / COUNT(uv)
+1. Complicated Sub Query
+1. SQL Hint
 
 ### DML
 1. INSERT INTO VALUES (xxx), (xxx)
-1. 多表UPDATE
-1. 多表DELETE
+1. UPDATE Multiple Tables
+1. DELETE Multiple Tables
 
 ### DDL
 1. CREATE VIEW
