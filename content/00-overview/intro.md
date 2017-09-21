@@ -76,50 +76,50 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
 可以通过Java编码的方式配置：
 
 ```java
-        // 配置真实数据源
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        
-        // 配置第一个数据源
-        BasicDataSource dataSource1 = new BasicDataSource();
-        dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource1.setUrl("jdbc:mysql://localhost:3306/ds_0");
-        dataSource1.setUsername("root");
-        dataSource1.setPassword("");
-        dataSourceMap.put("ds_0", dataSource1);
-        
-        // 配置第二个数据源
-        BasicDataSource dataSource2 = new BasicDataSource();
-        dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource2.setUrl("jdbc:mysql://localhost:3306/ds_1");
-        dataSource2.setUsername("root");
-        dataSource2.setPassword("");
-        dataSourceMap.put("ds_1", dataSource2);
-        
-        // 配置Order表规则
-        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-        orderTableRuleConfig.setLogicTable("t_order");
-        orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
-        
-        // 配置分库策略
-        InlineShardingStrategyConfiguration databaseShardingStrategyConfig = new InlineShardingStrategyConfiguration();
-        databaseShardingStrategyConfig.setShardingColumn("user_id");
-        databaseShardingStrategyConfig.setAlgorithmInlineExpression("ds_${user_id % 2}");
-        orderTableRuleConfig.setDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
-        
-        // 配置分表策略
-        InlineShardingStrategyConfiguration tableShardingStrategyConfig = new InlineShardingStrategyConfiguration();
-        tableShardingStrategyConfig.setShardingColumn("order_id");
-        tableShardingStrategyConfig.setAlgorithmInlineExpression("t_order_${order_id % 2}");
-        orderTableRuleConfig.setTableShardingStrategyConfig(tableShardingStrategyConfig);
-        
-        // 配置分片规则
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-        
-        // 省略配置order_item表规则...
-        
-        // 获取数据源对象
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
+    // 配置真实数据源
+    Map<String, DataSource> dataSourceMap = new HashMap<>();
+    
+    // 配置第一个数据源
+    BasicDataSource dataSource1 = new BasicDataSource();
+    dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
+    dataSource1.setUrl("jdbc:mysql://localhost:3306/ds_0");
+    dataSource1.setUsername("root");
+    dataSource1.setPassword("");
+    dataSourceMap.put("ds_0", dataSource1);
+    
+    // 配置第二个数据源
+    BasicDataSource dataSource2 = new BasicDataSource();
+    dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
+    dataSource2.setUrl("jdbc:mysql://localhost:3306/ds_1");
+    dataSource2.setUsername("root");
+    dataSource2.setPassword("");
+    dataSourceMap.put("ds_1", dataSource2);
+    
+    // 配置Order表规则
+    TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
+    orderTableRuleConfig.setLogicTable("t_order");
+    orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
+    
+    // 配置分库策略
+    InlineShardingStrategyConfiguration databaseShardingStrategyConfig = new InlineShardingStrategyConfiguration();
+    databaseShardingStrategyConfig.setShardingColumn("user_id");
+    databaseShardingStrategyConfig.setAlgorithmInlineExpression("ds_${user_id % 2}");
+    orderTableRuleConfig.setDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
+    
+    // 配置分表策略
+    InlineShardingStrategyConfiguration tableShardingStrategyConfig = new InlineShardingStrategyConfiguration();
+    tableShardingStrategyConfig.setShardingColumn("order_id");
+    tableShardingStrategyConfig.setAlgorithmInlineExpression("t_order_${order_id % 2}");
+    orderTableRuleConfig.setTableShardingStrategyConfig(tableShardingStrategyConfig);
+    
+    // 配置分片规则
+    ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+    shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+    
+    // 省略配置order_item表规则...
+    
+    // 获取数据源对象
+    DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
 ```
 
 或通过YAML方式配置，与以上配置等价：
@@ -161,7 +161,7 @@ tables:
 ```
 
 ```java
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
+    DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
 规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：读写分离、多分片键、默认分片规则、分布式主键、级联表绑定等。
@@ -202,7 +202,7 @@ try (
                         http://shardingjdbc.io/schema/shardingjdbc/sharding 
                         http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
                         ">
-    <context:property-placeholder location="classpath:conf/conf.properties" ignore-unresolvable="true"/>
+    <context:property-placeholder location="classpath:conf/conf.properties" ignore-unresolvable="true" />
     
     <bean id="ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
@@ -222,7 +222,7 @@ try (
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
     
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-sources="ds_0,ds_1">
+        <sharding:sharding-rule data-source-names="ds_0,ds_1">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
                 <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />
