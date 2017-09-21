@@ -48,7 +48,6 @@ public class SpringShardingDataSource extends ShardingDataSource implements Appl
     
     @Override
     public void renew(final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
-        // TODO move to orchestration
         for (Entry<String, DataSource> entry : newShardingRule.getDataSourceMap().entrySet()) {
             if (entry.getValue() instanceof MasterSlaveDataSource) {
                 for (Entry<String, DataSource> masterSlaveEntry : ((MasterSlaveDataSource) entry.getValue()).getAllDataSources().entrySet()) {
