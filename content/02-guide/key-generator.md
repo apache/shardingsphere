@@ -59,7 +59,7 @@ TableRule.builder("t_order_item").generateKeyColumns("order_item_id", com.xx.xx.
 ### 其他框架配置
 
 关于Spring，YAML，MyBatis和JPA（Hibernate）的配置请参考
-[示例工程](https://github.com/dangdangdotcom/sharding-jdbc/tree/master/sharding-jdbc-example)。
+[示例工程](https://github.com/shardingjdbc/sharding-jdbc/tree/master/sharding-jdbc-example)。
 
 # 默认的分布式主键生成器
 

@@ -11,10 +11,10 @@ chapter = true
 
 # 概述
 
-[![GitHub release](https://img.shields.io/github/release/dangdangdotcom/sharding-jdbc.svg?style=social&label=Release)](https://github.com/dangdangdotcom/sharding-jdbc/releases)&nbsp;
-[![GitHub stars](https://img.shields.io/github/stars/dangdangdotcom/sharding-jdbc.svg?style=social&label=Star)](https://github.com/dangdangdotcom/sharding-jdbc/stargazers)&nbsp;
-[![GitHub forks](https://img.shields.io/github/forks/dangdangdotcom/sharding-jdbc.svg?style=social&label=Fork)](https://github.com/dangdangdotcom/sharding-jdbc/fork)&nbsp;
-[![GitHub watchers](https://img.shields.io/github/watchers/dangdangdotcom/sharding-jdbc.svg?style=social&label=Watch)](https://github.com/dangdangdotcom/sharding-jdbc/watchers)
+[![GitHub release](https://img.shields.io/github/release/shardingjdbc/sharding-jdbc.svg?style=social&label=Release)](https://github.com/shardingjdbc/sharding-jdbc/releases)&nbsp;
+[![GitHub stars](https://img.shields.io/github/stars/shardingjdbc/sharding-jdbc.svg?style=social&label=Star)](https://github.com/shardingjdbc/sharding-jdbc/stargazers)&nbsp;
+[![GitHub forks](https://img.shields.io/github/forks/shardingjdbc/sharding-jdbc.svg?style=social&label=Fork)](https://github.com/shardingjdbc/sharding-jdbc/fork)&nbsp;
+[![GitHub watchers](https://img.shields.io/github/watchers/shardingjdbc/sharding-jdbc.svg?style=social&label=Watch)](https://github.com/shardingjdbc/sharding-jdbc/watchers)
 
 Sharding-JDBC是一个开源的适用于微服务的分布式数据访问基础类库，它始终以云原生的基础开发套件为目标。
 
@@ -24,9 +24,9 @@ Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功�
 
 
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
-[![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.svg?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
-[![Coverage Status](https://coveralls.io/repos/dangdangdotcom/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/dangdangdotcom/sharding-jdbc?branch=master)
-[![Hex.pm](http://dangdangdotcom.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.svg?branch=master)](https://travis-ci.org/shardingjdbc/sharding-jdbc)
+[![Coverage Status](https://coveralls.io/repos/shardingjdbc/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/shardingjdbc/sharding-jdbc?branch=master)
+[![Hex.pm](http://shardingjdbc.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 # 功能列表
 
@@ -54,9 +54,15 @@ Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功�
 
 ## 6. 灵活多样的配置
 * Java
-* Spring命名空间
 * YAML
 * Inline表达式
+* Spring命名空间
+* Spring boot starter
+
+## 7. 分布式治理能力 (2.0新功能)
+* 配置集中化与动态化，可支持数据源、表与分片策略的动态切换(2.0.0.M1)
+* 客户端的数据库治理，数据源失效自动切换(2.0.0.M2)
+* 基于Open Tracing协议的APM信息输出(2.0.0.M3)
 
 # 交流与参与
 
@@ -64,4 +70,4 @@ Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功�
  - **源码交流群：** 659205143（仅限于讨论与Sharding-JDBC源码实现相关的话题。我们欢迎您在这里与我们交流Sharding-JDBC的架构设计、代码实现以及未来线路规划。此群需要对Sharding-JDBC有先期了解。入群资格：请发布一篇关于Sharding-JDBC的源码分析的文章并将链接通过官方交流群发送给我们。）
  - 报告确定的bug，提交增强功能建议和提交补丁等，请阅读[如何进行贡献](/00-overview/contribution)。
  
- **使用Sharding-JDBC的公司如果方便请留下公司+网址** https://github.com/dangdangdotcom/sharding-jdbc/issues/234
+ **使用Sharding-JDBC的公司如果方便请留下公司+网址** https://github.com/shardingjdbc/sharding-jdbc/issues/234
