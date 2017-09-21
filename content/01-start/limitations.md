@@ -36,7 +36,7 @@ Sharding-JDBC暂时未支持不常用的JDBC方法。
 ### JDBC 4.1
 - 不支持JDBC 4.1接口新功能
 
-查询所有未支持方法，请阅读com.dangdang.ddframe.rdb.sharding.jdbc.unsupported包。
+查询所有未支持方法，请阅读io.shardingjdbc.core.jdbc.unsupported包。
 
 ## SQL语句限制
 
