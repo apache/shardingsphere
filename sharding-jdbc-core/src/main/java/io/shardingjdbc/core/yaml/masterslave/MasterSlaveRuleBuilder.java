@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.internel.masterslave;
+package io.shardingjdbc.core.yaml.masterslave;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.rule.MasterSlaveRule;

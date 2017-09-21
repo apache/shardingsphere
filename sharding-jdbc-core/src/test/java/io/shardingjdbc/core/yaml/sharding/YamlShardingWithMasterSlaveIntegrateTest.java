@@ -15,13 +15,12 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.integrate;
+package io.shardingjdbc.core.yaml.sharding;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import io.shardingjdbc.core.yaml.api.YamlShardingDataSource;
-import io.shardingjdbc.core.yaml.base.AbstractYamlDataSourceTest;
+import io.shardingjdbc.core.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,10 +35,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
+public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
     
     private final String filePath;
     
@@ -48,28 +49,32 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
     @Parameterized.Parameters(name = "{index}:{0}-{1}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/sharding/configWithDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/sharding/configWithoutDataSourceWithoutProps.yaml", false},
-                {"/yaml/integrate/sharding/configWithDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/sharding/configWithoutDataSourceWithProps.yaml", false},
+                {"/yaml/integrate/sharding_ms/configWithDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/sharding_ms/configWithoutDataSourceWithoutProps.yaml", false},
+                {"/yaml/integrate/sharding_ms/configWithDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml", false},
         });
     }
     
     @Test
     public void testWithDataSource() throws SQLException, URISyntaxException, IOException {
-        File yamlFile = new File(YamlShardingIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlShardingWithMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = new YamlShardingDataSource(yamlFile);
         } else {
-            dataSource = new YamlShardingDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), new Function<String, DataSource>() {
+            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), new Function<String, DataSource>() {
                 @Override
                 public DataSource apply(final String key) {
                     return createDataSource(key);
                 }
-            }), yamlFile);
+            });
+            Map<String, DataSource> result = new HashMap<>();
+            for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
+                result.put(each.getKey(), each.getValue());
+            }
+            dataSource = new YamlShardingDataSource(result, yamlFile);
         }
-        
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {
             stm.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));
@@ -78,5 +83,4 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
             stm.executeQuery("SELECT * FROM config");
         }
     }
-    
 }

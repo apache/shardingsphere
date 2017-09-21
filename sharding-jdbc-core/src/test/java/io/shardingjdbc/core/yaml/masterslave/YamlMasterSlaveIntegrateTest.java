@@ -15,13 +15,12 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.integrate;
+package io.shardingjdbc.core.yaml.masterslave;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import io.shardingjdbc.core.yaml.api.YamlMasterSlaveDataSource;
-import io.shardingjdbc.core.yaml.base.AbstractYamlDataSourceTest;
+import io.shardingjdbc.core.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,7 +66,6 @@ public class YamlMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
                 }
             }), yamlFile);
         }
-        
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {
             stm.executeQuery("SELECT * FROM t_order");
@@ -75,5 +73,4 @@ public class YamlMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
             stm.executeQuery("SELECT * FROM t_config");
         }
     }
-    
 }

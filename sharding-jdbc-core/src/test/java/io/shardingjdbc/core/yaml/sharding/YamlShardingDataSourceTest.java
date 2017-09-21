@@ -15,15 +15,13 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml;
+package io.shardingjdbc.core.yaml.sharding;
 
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.BindingTableRule;
 import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.yaml.api.YamlShardingDataSource;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.h2.Driver;
 import org.junit.Test;
@@ -42,7 +40,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.assertThat;
 
-@Slf4j
 public class YamlShardingDataSourceTest {
     
     @Test

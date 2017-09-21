@@ -15,17 +15,22 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.algorithm;
+package io.shardingjdbc.core.yaml.fixture;
 
-import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
-import io.shardingjdbc.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 
-public class MultiAlgorithm implements ComplexKeysShardingAlgorithm {
-    
+public class SingleAlgorithm implements PreciseShardingAlgorithm<Integer> {
+
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
-        return null;
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(shardingValue.getValue() % 10 + "")) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException();
     }
 }

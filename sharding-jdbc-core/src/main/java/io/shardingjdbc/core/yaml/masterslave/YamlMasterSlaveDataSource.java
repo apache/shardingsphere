@@ -15,11 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.api;
+package io.shardingjdbc.core.yaml.masterslave;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.yaml.internel.masterslave.MasterSlaveRuleBuilder;
-import io.shardingjdbc.core.yaml.internel.masterslave.YamlMasterSlaveConfig;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
