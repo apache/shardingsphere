@@ -13,6 +13,7 @@
     
     <modules>
         <module>sharding-jdbc-spring-namespace</module>
+        <module>sharding-jdbc-spring-boot-starter</module>
     </modules>
     
     <dependencies>
@@ -36,6 +37,10 @@
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
