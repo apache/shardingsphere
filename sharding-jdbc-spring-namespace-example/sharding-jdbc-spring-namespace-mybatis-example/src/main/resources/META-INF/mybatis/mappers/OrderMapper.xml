@@ -14,13 +14,13 @@
     </sql>
     
     <update id="createTable">
-        CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+        CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
     </update>
     
     <update id="dropTable">
-        DROP TABLE IF NOT EXISTS t_order;
+        DROP TABLE IF EXISTS t_order;
     </update>
-
+    
     <insert id="insert" useGeneratedKeys="true" keyProperty="orderId">
         INSERT INTO t_order (
           user_id, status
@@ -30,6 +30,10 @@
         #{status,jdbcType=VARCHAR}
         )
     </insert>
+    
+    <delete id="delete">
+        DELETE FROM t_order WHERE order_id = #{orderId,jdbcType=INTEGER}
+    </delete>
     
     <select id="selectAll" resultMap="baseResultMap">
         SELECT

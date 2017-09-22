@@ -25,7 +25,7 @@ public interface OrderRepository {
     
     void createTable();
     
-    void insert(Order model);
+    Long insert(Order model);
     
     List<Order> selectAll();
     

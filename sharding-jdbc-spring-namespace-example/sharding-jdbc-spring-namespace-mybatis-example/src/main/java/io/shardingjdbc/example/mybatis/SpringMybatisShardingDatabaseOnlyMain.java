@@ -15,24 +15,20 @@
  * </p>
  */
 
-package io.shardingjdbc.example.config.spring.masterslave;
+package io.shardingjdbc.example.mybatis;
 
-import io.shardingjdbc.example.config.spring.masterslave.service.OrderService;
+import io.shardingjdbc.example.mybatis.service.OrderService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.sql.SQLException;
 
-public final class SpringNamespaceWithMasterSlaveMain {
+public final class SpringMybatisShardingDatabaseOnlyMain {
     
     // CHECKSTYLE:OFF
-    public static void main(final String[] args) throws SQLException {
+    public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/applicationContextWithMasterSlave.xml");
-        OrderService orderService =  applicationContext.getBean(OrderService.class);
-        orderService.insert();
-        orderService.select();
-        orderService.delete();
-        orderService.select();
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatis/mysql/mybatisShardingDatabaseOnlyContext.xml");
+        OrderService orderService = applicationContext.getBean(OrderService.class);
+        orderService.testAll();
     }
 }
