@@ -44,8 +44,8 @@ public final class RawJdbcJavaShardingDatabaseAndTableMain {
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(getDefaultDatabaseInlineShardingStrategyConfig());
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(getDefaultTableStandardShardingStrategyConfig());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_jdbc_${user_id % 2}"));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", ModuloShardingTableAlgorithm.class.getName()));
         return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
     }
     
@@ -62,20 +62,6 @@ public final class RawJdbcJavaShardingDatabaseAndTableMain {
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item_${[0, 1]}");
         return orderItemTableRuleConfig;
-    }
-    
-    private static InlineShardingStrategyConfiguration getDefaultDatabaseInlineShardingStrategyConfig() {
-        InlineShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig = new InlineShardingStrategyConfiguration();
-        defaultDatabaseShardingStrategyConfig.setShardingColumn("user_id");
-        defaultDatabaseShardingStrategyConfig.setAlgorithmInlineExpression("ds_jdbc_${user_id % 2}");
-        return defaultDatabaseShardingStrategyConfig;
-    }
-    
-    private static StandardShardingStrategyConfiguration getDefaultTableStandardShardingStrategyConfig() {
-        StandardShardingStrategyConfiguration defaultTableStandardShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-        defaultTableStandardShardingStrategyConfig.setShardingColumn("order_id");
-        defaultTableStandardShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingTableAlgorithm.class.getName());
-        return defaultTableStandardShardingStrategyConfig;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {

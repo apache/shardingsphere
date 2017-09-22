@@ -41,7 +41,7 @@ public final class RawJdbcJavaShardingDatabaseOnlyMain {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(getDefaultDatabaseInlineShardingStrategyConfig());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_jdbc_${user_id % 2}"));
         return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
     }
     
@@ -58,13 +58,6 @@ public final class RawJdbcJavaShardingDatabaseOnlyMain {
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item");
         return orderItemTableRuleConfig;
-    }
-    
-    private static InlineShardingStrategyConfiguration getDefaultDatabaseInlineShardingStrategyConfig() {
-        InlineShardingStrategyConfiguration databaseShardingStrategyConfig = new InlineShardingStrategyConfiguration();
-        databaseShardingStrategyConfig.setShardingColumn("user_id");
-        databaseShardingStrategyConfig.setAlgorithmInlineExpression("ds_jdbc_${user_id % 2}");
-        return databaseShardingStrategyConfig;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {

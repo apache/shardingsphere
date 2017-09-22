@@ -48,8 +48,8 @@ public final class RawJdbcJavaShardingAndMasterSlaveMain {
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(getDatabaseStandardShardingStrategyConfiguration());
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(getTableStandardShardingStrategyConfiguration());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", ModuloShardingDatabaseAlgorithm.class.getName()));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", ModuloShardingTableAlgorithm.class.getName()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
         return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
     }
@@ -67,20 +67,6 @@ public final class RawJdbcJavaShardingAndMasterSlaveMain {
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item_${[0, 1]}");
         return orderItemTableRuleConfig;
-    }
-    
-    private static StandardShardingStrategyConfiguration getDatabaseStandardShardingStrategyConfiguration() {
-        StandardShardingStrategyConfiguration databaseShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-        databaseShardingStrategyConfig.setShardingColumn("user_id");
-        databaseShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingDatabaseAlgorithm.class.getName());
-        return databaseShardingStrategyConfig;
-    }
-    
-    private static StandardShardingStrategyConfiguration getTableStandardShardingStrategyConfiguration() {
-        StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-        tableShardingStrategyConfig.setShardingColumn("order_id");
-        tableShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingTableAlgorithm.class.getName());
-        return tableShardingStrategyConfig;
     }
     
     private static List<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
