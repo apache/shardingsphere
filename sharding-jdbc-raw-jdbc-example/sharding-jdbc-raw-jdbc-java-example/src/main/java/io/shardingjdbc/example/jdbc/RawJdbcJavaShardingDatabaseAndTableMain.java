@@ -41,25 +41,41 @@ public final class RawJdbcJavaShardingDatabaseAndTableMain {
     
     private static ShardingDataSource getShardingDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(getDefaultDatabaseInlineShardingStrategyConfig());
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(getDefaultTableStandardShardingStrategyConfig());
+        return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
+    }
+    
+    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
         orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
-        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+        return orderTableRuleConfig;
+    }
+    
+    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item_${[0, 1]}");
-        shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
-        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        InlineShardingStrategyConfiguration databaseShardingStrategyConfig = new InlineShardingStrategyConfiguration();
-        databaseShardingStrategyConfig.setShardingColumn("user_id");
-        databaseShardingStrategyConfig.setAlgorithmInlineExpression("ds_jdbc_${user_id % 2}");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
-        StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-        tableShardingStrategyConfig.setShardingColumn("order_id");
-        tableShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingTableAlgorithm.class.getName());
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
-        return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
+        return orderItemTableRuleConfig;
+    }
+    
+    private static InlineShardingStrategyConfiguration getDefaultDatabaseInlineShardingStrategyConfig() {
+        InlineShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig = new InlineShardingStrategyConfiguration();
+        defaultDatabaseShardingStrategyConfig.setShardingColumn("user_id");
+        defaultDatabaseShardingStrategyConfig.setAlgorithmInlineExpression("ds_jdbc_${user_id % 2}");
+        return defaultDatabaseShardingStrategyConfig;
+    }
+    
+    private static StandardShardingStrategyConfiguration getDefaultTableStandardShardingStrategyConfig() {
+        StandardShardingStrategyConfiguration defaultTableStandardShardingStrategyConfig = new StandardShardingStrategyConfiguration();
+        defaultTableStandardShardingStrategyConfig.setShardingColumn("order_id");
+        defaultTableStandardShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingTableAlgorithm.class.getName());
+        return defaultTableStandardShardingStrategyConfig;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {

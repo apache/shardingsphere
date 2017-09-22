@@ -19,9 +19,7 @@ package io.shardingjdbc.example.jdbc;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.example.jdbc.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingjdbc.example.jdbc.repository.RawJdbcRepository;
 import io.shardingjdbc.example.jdbc.util.DataSourceUtil;
 
@@ -40,21 +38,25 @@ public final class RawJdbcJavaShardingTableOnlyMain {
     
     private static ShardingDataSource getShardingDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+        return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
+    }
+    
+    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
         orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
-        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+        return orderTableRuleConfig;
+    }
+    
+    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item_${[0, 1]}");
-        shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
-        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-        tableShardingStrategyConfig.setShardingColumn("order_id");
-        tableShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingTableAlgorithm.class.getName());
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
-        return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
+        return orderItemTableRuleConfig;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {

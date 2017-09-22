@@ -39,20 +39,32 @@ public final class RawJdbcJavaShardingDatabaseOnlyMain {
     
     private static ShardingDataSource getShardingDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(getDefaultDatabaseInlineShardingStrategyConfig());
+        return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
+    }
+    
+    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order");
         orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
-        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+        return orderTableRuleConfig;
+    }
+    
+    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item");
-        shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
+        return orderItemTableRuleConfig;
+    }
+    
+    private static InlineShardingStrategyConfiguration getDefaultDatabaseInlineShardingStrategyConfig() {
         InlineShardingStrategyConfiguration databaseShardingStrategyConfig = new InlineShardingStrategyConfiguration();
         databaseShardingStrategyConfig.setShardingColumn("user_id");
         databaseShardingStrategyConfig.setAlgorithmInlineExpression("ds_jdbc_${user_id % 2}");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
-        return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
+        return databaseShardingStrategyConfig;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {

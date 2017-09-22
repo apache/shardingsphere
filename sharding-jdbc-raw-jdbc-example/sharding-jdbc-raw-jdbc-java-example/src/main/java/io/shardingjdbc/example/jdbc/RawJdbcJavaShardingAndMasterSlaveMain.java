@@ -32,6 +32,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class RawJdbcJavaShardingAndMasterSlaveMain {
@@ -44,41 +45,55 @@ public final class RawJdbcJavaShardingAndMasterSlaveMain {
     
     private static ShardingDataSource getShardingDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(getDatabaseStandardShardingStrategyConfiguration());
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(getTableStandardShardingStrategyConfiguration());
+        shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
+        return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
+    }
     
+    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
-        orderTableRuleConfig.setActualTables("t_order_0, t_order_1");
+        orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
         orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
-        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+        return orderTableRuleConfig;
+    }
     
+    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
-        orderItemTableRuleConfig.setActualTables("t_order_item_0, t_order_item_1");
-        shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
+        orderItemTableRuleConfig.setActualTables("t_order_item_${[0, 1]}");
+        return orderItemTableRuleConfig;
+    }
     
-        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-    
+    private static StandardShardingStrategyConfiguration getDatabaseStandardShardingStrategyConfiguration() {
         StandardShardingStrategyConfiguration databaseShardingStrategyConfig = new StandardShardingStrategyConfiguration();
         databaseShardingStrategyConfig.setShardingColumn("user_id");
         databaseShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingDatabaseAlgorithm.class.getName());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
+        return databaseShardingStrategyConfig;
+    }
     
+    private static StandardShardingStrategyConfiguration getTableStandardShardingStrategyConfiguration() {
         StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
         tableShardingStrategyConfig.setShardingColumn("order_id");
         tableShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingTableAlgorithm.class.getName());
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
-        
+        return tableShardingStrategyConfig;
+    }
+    
+    private static List<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig1.setName("ds_0");
         masterSlaveRuleConfig1.setMasterDataSourceName("ds_jdbc_master_0");
         masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("ds_jdbc_master_0_slave_0", "ds_jdbc_master_0_slave_1"));
-        
+    
         MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig2.setName("ds_1");
         masterSlaveRuleConfig2.setMasterDataSourceName("ds_jdbc_master_1");
         masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("ds_jdbc_master_1_slave_0", "ds_jdbc_master_1_slave_1"));
-        shardingRuleConfig.setMasterSlaveRuleConfigs(Lists.newArrayList(masterSlaveRuleConfig1, masterSlaveRuleConfig2));
-        return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
+        return Lists.newArrayList(masterSlaveRuleConfig1, masterSlaveRuleConfig2);
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
