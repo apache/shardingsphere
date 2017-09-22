@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingjdbc.io/schema/shardingjdbc/sharding 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd">
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <context:annotation-config />
+    <context:component-scan base-package="io.shardingjdbc.example.jpa"/>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="shardingDataSource" />
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
+        </property>
+        <property name="packagesToScan" value="io.shardingjdbc.example.jpa.entity" />
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.hbm2ddl.auto">create</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
+    <tx:annotation-driven/>
+    
     <bean id="demo_ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_0"/>

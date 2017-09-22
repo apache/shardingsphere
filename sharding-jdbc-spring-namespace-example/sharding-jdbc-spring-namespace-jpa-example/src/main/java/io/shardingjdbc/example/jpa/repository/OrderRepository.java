@@ -23,9 +23,9 @@ import java.util.List;
 
 public interface OrderRepository {
     
-    void insert(Order order);
+    Long insert(Order order);
     
-    void delete(long orderId);
+    void delete(Long orderId);
     
     List<Order> selectAll();
 }

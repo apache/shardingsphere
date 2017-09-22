@@ -34,12 +34,13 @@ public class OrderRepositoryImpl implements OrderRepository {
     private EntityManager entityManager;
     
     @Override
-    public void insert(final Order order) {
+    public Long insert(final Order order) {
         entityManager.persist(order);
+        return order.getOrderId();
     }
     
     @Override
-    public void delete(final long orderId) {
+    public void delete(final Long orderId) {
         Query query = entityManager.createQuery("DELETE FROM Order o WHERE o.orderId = ?1 AND o.userId = 51");
         query.setParameter(1, orderId);
         query.executeUpdate();
