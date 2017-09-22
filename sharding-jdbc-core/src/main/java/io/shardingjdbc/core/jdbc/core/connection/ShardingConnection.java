@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.jdbc.core.connection;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.adapter.AbstractConnectionAdapter;
@@ -25,7 +26,6 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.NamedDataSource;
 import io.shardingjdbc.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingjdbc.core.jdbc.core.statement.ShardingStatement;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -36,8 +36,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Connection that support sharding.
@@ -63,12 +65,19 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     public Collection<Connection> getAllConnections(final String dataSourceName) throws SQLException {
         DataSource dataSource = shardingContext.getShardingRule().getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
-        Collection<DataSource> dataSources = dataSource instanceof MasterSlaveDataSource
-                ? ((MasterSlaveDataSource) dataSource).getAllDataSources().values() : Collections.singletonList(dataSource);
+        Map<String, DataSource> dataSources;
+        if (dataSource instanceof MasterSlaveDataSource) {
+            dataSources = ((MasterSlaveDataSource) dataSource).getAllDataSources();
+        } else {
+            dataSources = new HashMap<>(1, 1);
+            dataSources.put(dataSourceName, dataSource);
+        }
+        
         Collection<Connection> result = new LinkedList<>();
-        for (DataSource each : dataSources) {
-            Connection connection = each.getConnection();
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            Connection connection = entry.getValue().getConnection();
             replayMethodsInvocation(connection);
+            getCachedConnections().put(entry.getKey(), connection);
             result.add(connection);
         }
         return result;
