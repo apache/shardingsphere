@@ -57,7 +57,6 @@ public class SpringMasterSlaveDataSource extends MasterSlaveDataSource implement
     
     @Override
     public void renew(final MasterSlaveRule masterSlaveRule) throws SQLException {
-        // TODO move to orchestration
         DataSourceBeanUtil.createDataSourceBean(applicationContext, masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getMasterDataSource());
         for (Entry<String, DataSource> entry : masterSlaveRule.getSlaveDataSourceMap().entrySet()) {
             DataSourceBeanUtil.createDataSourceBean(applicationContext, entry.getKey(), entry.getValue());

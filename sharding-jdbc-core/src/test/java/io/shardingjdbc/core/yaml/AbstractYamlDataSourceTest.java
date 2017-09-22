@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.base;
+package io.shardingjdbc.core.yaml;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.h2.tools.RunScript;

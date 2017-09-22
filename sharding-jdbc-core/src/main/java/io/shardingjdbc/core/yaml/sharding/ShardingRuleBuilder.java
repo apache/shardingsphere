@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.internel.sharding;
+package io.shardingjdbc.core.yaml.sharding;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.yaml.internel.masterslave.YamlMasterSlaveConfig;
+import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveConfig;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;

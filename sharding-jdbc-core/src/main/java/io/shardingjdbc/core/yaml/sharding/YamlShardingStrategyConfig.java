@@ -1,4 +1,4 @@
-package io.shardingjdbc.core.yaml.internel.sharding;
+package io.shardingjdbc.core.yaml.sharding;
 
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;

@@ -4,7 +4,7 @@ tables:
     databaseStrategy: 
       standard:
         shardingColumn: order_id
-        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.algorithm.SingleAlgorithm
+        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
     tableStrategy: 
       inline:
         shardingColumn: id
@@ -15,7 +15,7 @@ tables:
     databaseStrategy: 
       standard:
         shardingColumn: order_id
-        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.algorithm.SingleAlgorithm
+        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
     tableStrategy: 
       inline:
         shardingColumn: id

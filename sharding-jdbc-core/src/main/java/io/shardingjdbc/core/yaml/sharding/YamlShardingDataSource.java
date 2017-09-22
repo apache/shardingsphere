@@ -15,11 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.api;
+package io.shardingjdbc.core.yaml.sharding;
 
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.core.yaml.internel.sharding.ShardingRuleBuilder;
-import io.shardingjdbc.core.yaml.internel.sharding.YamlShardingConfig;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
