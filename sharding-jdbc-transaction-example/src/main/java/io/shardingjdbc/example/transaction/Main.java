@@ -78,12 +78,12 @@ public final class Main {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
-        orderTableRuleConfig.setActualTables("t_order_0, t_order_1");
+        orderTableRuleConfig.setActualDataNodes("ds_trans_${0..1}.t_order_${0..1}");
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
         
         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
-        orderItemTableRuleConfig.setActualTables("t_order_item_0, t_order_item_1");
+        orderItemTableRuleConfig.setActualDataNodes("ds_trans_${0..1}.t_order_item_${0..1}");
         shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
         
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");

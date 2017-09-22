@@ -19,17 +19,17 @@ defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
 
 tables:
   t_config:
-    actualTables: ds_config.t_config
+    actualDataNodes: ds_config.t_config
 
   t_order: 
-    actualTables: ds_${0..1}.t_order_${0..1}
+    actualDataNodes: ds_${0..1}.t_order_${0..1}
     tableStrategy: 
       inline:
         shardingColumn: order_id
         algorithmInlineExpression: t_order_${order_id % 2}
     keyGeneratorColumnName: order_id
   t_order_item:
-    actualTables: ds_${0..1}.t_order_item_${0..1}
+    actualDataNodes: ds_${0..1}.t_order_item_${0..1}
     #绑定表中其余的表的策略与第一张表的策略相同
     tableStrategy:
       inline:

@@ -52,7 +52,7 @@ public final class RawJdbcJavaShardingDatabaseAndTableMain {
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
-        orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
+        orderTableRuleConfig.setActualDataNodes("ds_jdbc_${0..1}.t_order_${[0, 1]}");
         orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
         return orderTableRuleConfig;
     }
@@ -60,7 +60,7 @@ public final class RawJdbcJavaShardingDatabaseAndTableMain {
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
-        orderItemTableRuleConfig.setActualTables("t_order_item_${[0, 1]}");
+        orderItemTableRuleConfig.setActualDataNodes("ds_jdbc_${0..1}.t_order_item_${[0, 1]}");
         return orderItemTableRuleConfig;
     }
     
