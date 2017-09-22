@@ -125,10 +125,6 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         if (!Strings.isNullOrEmpty(actualTables)) {
             factory.addPropertyValue("actualTables", actualTables);
         }
-        String dataSourceNames = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAMES_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(dataSourceNames)) {
-            factory.addPropertyValue("dataSourceNames", dataSourceNames);
-        }
         String databaseStrategy = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATABASE_STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(databaseStrategy)) {
             factory.addPropertyReference("databaseShardingStrategyConfig", databaseStrategy);

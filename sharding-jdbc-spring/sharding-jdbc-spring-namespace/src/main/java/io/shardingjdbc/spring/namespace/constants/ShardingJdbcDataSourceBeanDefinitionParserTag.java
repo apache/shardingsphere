@@ -52,8 +52,6 @@ public final class ShardingJdbcDataSourceBeanDefinitionParserTag {
     
     public static final String ACTUAL_TABLES_ATTRIBUTE = "actual-tables";
     
-    public static final String DATA_SOURCE_NAMES_ATTRIBUTE = "data-source-names";
-    
     public static final String DATABASE_STRATEGY_REF_ATTRIBUTE = "database-strategy-ref";
     
     public static final String TABLE_STRATEGY_REF_ATTRIBUTE = "table-strategy-ref";

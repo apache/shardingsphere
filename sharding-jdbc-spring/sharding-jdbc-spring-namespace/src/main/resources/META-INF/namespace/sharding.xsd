@@ -39,7 +39,6 @@
         <xsd:complexType>
             <xsd:attribute name="logic-table" type="xsd:string" use="required" />
             <xsd:attribute name="actual-tables" type="xsd:string" use="optional" />
-            <xsd:attribute name="data-source-names" type="xsd:string" use="optional" />
             <xsd:attribute name="database-strategy-ref" type="xsd:string" use="optional" />
             <xsd:attribute name="table-strategy-ref" type="xsd:string" use="optional" />
             <xsd:attribute name="generate-key-column" type="xsd:string" use="optional" />
