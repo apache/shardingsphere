@@ -17,9 +17,13 @@
 
 package io.shardingjdbc.example.mybatis;
 
-import io.shardingjdbc.example.mybatis.service.OrderService;
+import io.shardingjdbc.example.mybatis.entity.Order;
+import io.shardingjdbc.example.mybatis.repository.OrderRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public final class Main {
@@ -28,18 +32,20 @@ public final class Main {
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatis/mysql/mybatisContext.xml");
-        OrderService orderService = applicationContext.getBean(OrderService.class);
-        orderService.clear();
-        orderService.fooService();
-        orderService.select();
-        //[order_id: , user_id: 10, status: UPDATED, order_id: , user_id: 11, status: UPDATED]
-        orderService.clear();
-        try {
-            orderService.fooServiceWithFailure();
-        } catch (final IllegalArgumentException e) {
-            System.out.println("roll back");
+        OrderRepository orderRepository = applicationContext.getBean(OrderRepository.class);
+        orderRepository.dropTable();
+        orderRepository.createTable();
+        List<Long> orderIds = new ArrayList<>(10);
+        for (int i = 0; i < 10; i++) {
+            Order order = new Order();
+            order.setUserId(51);
+            order.setStatus("INSERT_TEST");
+            orderRepository.insert(order);
         }
-        //[]
-        orderService.select();
+        System.out.println(orderRepository.selectAll());
+        System.out.println("--------------");
+        for (Long each : orderIds) {
+            orderRepository.delete(each);
+        }
     }
 }

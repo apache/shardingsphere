@@ -2,16 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:context="http://www.springframework.org/schema/context" 
-    xmlns:tx="http://www.springframework.org/schema/tx"
-    xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb"
+    xmlns:tx="http://www.springframework.org/schema/tx" 
+    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding"
     xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
                         http://www.springframework.org/schema/tx 
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd
-                        http://www.dangdang.com/schema/ddframe/rdb 
-                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd">
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd">
     <context:component-scan base-package="io.shardingjdbc.example.mybatis" />
     
     <bean id="ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -28,18 +28,17 @@
         <property name="password" value=""/>
     </bean>
     
-    <rdb:strategy id="databaseShardingStrategy" type="standard" sharding-columns="user_id" algorithm-class="io.shardingjdbc.example.mybatis.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
-    <rdb:strategy id="tableShardingStrategy" type="standard" sharding-columns="order_id" algorithm-class="io.shardingjdbc.example.mybatis.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-class="io.shardingjdbc.example.mybatis.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
+    <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.example.mybatis.algorithm.PreciseModuloTableShardingAlgorithm"/>
     
-    <rdb:data-source id="shardingDataSource">
-        <rdb:sharding-rule data-sources="ds_0, ds_1">
-            <rdb:table-rules>
-                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy="databaseShardingStrategy" table-strategy="tableShardingStrategy">
-                    <rdb:generate-key-column column-name="order_id"/>
-                </rdb:table-rule>
-            </rdb:table-rules>
-        </rdb:sharding-rule>
-    </rdb:data-source>
+    <sharding:data-source id="shardingDataSource">
+        <sharding:sharding-rule data-source-names="ds_0, ds_1">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column="order_id" />
+                <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column="order_id" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shardingDataSource" />

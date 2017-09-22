@@ -38,10 +38,8 @@ public final class Main {
             order.setStatus("INSERT_TEST");
             orderRepository.insert(order);
         }
-        
         System.out.println(orderRepository.selectAll());
         System.out.println("--------------");
-        
         for (Long each : orderIds) {
             orderRepository.delete(each);
         }
