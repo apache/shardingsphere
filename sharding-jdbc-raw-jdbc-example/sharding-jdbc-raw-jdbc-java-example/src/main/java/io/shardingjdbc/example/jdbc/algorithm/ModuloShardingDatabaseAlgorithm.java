@@ -15,14 +15,15 @@
  * </p>
  */
 
-package io.shardingjdbc.example.orchestration.algorithm;
+package io.shardingjdbc.example.jdbc.algorithm;
+
 
 import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 
-public final class ModuloTableShardingAlgorithm implements PreciseShardingAlgorithm<Integer> {
+public final class ModuloShardingDatabaseAlgorithm implements PreciseShardingAlgorithm<Integer> {
     
     @Override
     public String doSharding(final Collection<String> tableNames, final PreciseShardingValue<Integer> shardingValue) {

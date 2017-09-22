@@ -23,6 +23,7 @@ import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.example.jdbc.algorithm.ModuloShardingDatabaseAlgorithm;
 import io.shardingjdbc.example.jdbc.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingjdbc.example.jdbc.repository.RawJdbcRepository;
 import io.shardingjdbc.example.jdbc.util.DataSourceUtil;
@@ -47,6 +48,7 @@ public final class RawJdbcJavaShardingAndMasterSlaveMain {
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order_0, t_order_1");
+        orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     
         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
@@ -58,7 +60,7 @@ public final class RawJdbcJavaShardingAndMasterSlaveMain {
     
         StandardShardingStrategyConfiguration databaseShardingStrategyConfig = new StandardShardingStrategyConfiguration();
         databaseShardingStrategyConfig.setShardingColumn("user_id");
-        databaseShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingTableAlgorithm.class.getName());
+        databaseShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloShardingDatabaseAlgorithm.class.getName());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
     
         StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();

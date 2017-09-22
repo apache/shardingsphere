@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.example.config.spring;
 
-
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
