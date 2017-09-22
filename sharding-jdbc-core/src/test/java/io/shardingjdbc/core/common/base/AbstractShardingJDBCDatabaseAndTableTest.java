@@ -17,15 +17,16 @@
 
 package io.shardingjdbc.core.common.base;
 
+import com.google.common.base.Joiner;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
 import io.shardingjdbc.core.routing.fixture.PreciseOrderShardingAlgorithm;
 import io.shardingjdbc.core.routing.fixture.RangeOrderShardingAlgorithm;
+import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -36,6 +37,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -53,15 +55,23 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     @Before
     public void initShardingDataSources() throws SQLException {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
-        for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
-            ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        for (Map.Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
+            final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
             TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
             orderTableRuleConfig.setLogicTable("t_order");
-            orderTableRuleConfig.setActualTables("t_order_0, t_order_1");
+            List<String> orderActualDataNodes = new LinkedList<>();
+            for (String dataSourceName : entry.getValue().keySet()) {
+                orderActualDataNodes.add(dataSourceName + ".t_order_${0..1}");
+            }
+            orderTableRuleConfig.setActualTables(Joiner.on(",").join(orderActualDataNodes));
             shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
             TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
             orderItemTableRuleConfig.setLogicTable("t_order_item");
-            orderItemTableRuleConfig.setActualTables("t_order_item_0, t_order_item_1");
+            List<String> orderItemActualDataNodes = new LinkedList<>();
+            for (String dataSourceName : entry.getValue().keySet()) {
+                orderItemActualDataNodes.add(dataSourceName + ".t_order_item_${0..1}");
+            }
+            orderItemTableRuleConfig.setActualTables(Joiner.on(",").join(orderItemActualDataNodes));
             orderItemTableRuleConfig.setKeyGeneratorColumnName("item_id");
             orderItemTableRuleConfig.setKeyGeneratorClass(IncrementKeyGenerator.class.getName());
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
@@ -73,8 +83,8 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
                     new StandardShardingStrategyConfiguration("user_id", PreciseOrderShardingAlgorithm.class.getName(), RangeOrderShardingAlgorithm.class.getName()));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("order_id", PreciseOrderShardingAlgorithm.class.getName(), RangeOrderShardingAlgorithm.class.getName()));
-            ShardingRule shardingRule = shardingRuleConfig.build(each.getValue());
-            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
+            ShardingRule shardingRule = shardingRuleConfig.build(entry.getValue());
+            shardingDataSources.put(entry.getKey(), new ShardingDataSource(shardingRule));
         }
     }
     

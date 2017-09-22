@@ -17,16 +17,16 @@
 
 package io.shardingjdbc.core.rule;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.keygen.KeyGenerator;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import lombok.Getter;
 import lombok.ToString;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,43 +51,34 @@ public final class TableRule {
     
     private final KeyGenerator keyGenerator;
     
-    public TableRule(final String logicTable, final List<String> actualTables, final List<String> actualDataSources, final Map<String, DataSource> dataSourceMap,
+    public TableRule(final String logicTable, final List<String> actualTables, final Map<String, DataSource> dataSourceMap,
                      final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy, final String generateKeyColumn, final KeyGenerator keyGenerator) {
         this.logicTable = logicTable;
-        if (null == actualTables || actualTables.isEmpty()) {
-            actualDataNodes = generateDataNodes(Collections.singletonList(logicTable), dataSourceMap, actualDataSources);
-        } else {
-            actualDataNodes = generateDataNodes(actualTables, dataSourceMap, actualDataSources);
-        }
+        this.actualDataNodes = null == actualTables || actualTables.isEmpty() ? generateDataNodes(logicTable, dataSourceMap) : generateDataNodes(actualTables, dataSourceMap);
         this.databaseShardingStrategy = databaseShardingStrategy;
         this.tableShardingStrategy = tableShardingStrategy;
         this.generateKeyColumn = generateKeyColumn;
         this.keyGenerator = keyGenerator;
     }
     
-    private List<DataNode> generateDataNodes(final List<String> actualTables, final Map<String, DataSource> dataSourceMap, final Collection<String> actualDataSourceNames) {
-        Collection<String> dataSourceNames = getDataSourceNames(dataSourceMap, actualDataSourceNames);
-        List<DataNode> result = new ArrayList<>(actualTables.size() * (dataSourceNames.isEmpty() ? 1 : dataSourceNames.size()));
-        for (String actualTable : actualTables) {
-            if (DataNode.isValidDataNode(actualTable)) {
-                result.add(new DataNode(actualTable));
-            } else {
-                for (String dataSourceName : dataSourceNames) {
-                    result.add(new DataNode(dataSourceName, actualTable));
-                }
-            }
+    private List<DataNode> generateDataNodes(final String logicTable, final Map<String, DataSource> dataSourceMap) {
+        List<DataNode> result = new LinkedList<>();
+        for (String each : dataSourceMap.keySet()) {
+            result.add(new DataNode(each, logicTable));
         }
         return result;
     }
     
-    private Collection<String> getDataSourceNames(final Map<String, DataSource> dataSourceMap, final Collection<String> actualDataSourceNames) {
-        if (null == dataSourceMap) {
-            return Collections.emptyList();
+    private List<DataNode> generateDataNodes(final List<String> actualTables, final Map<String, DataSource> dataSourceMap) {
+        List<DataNode> result = new LinkedList<>();
+        for (String actualTable : actualTables) {
+            Preconditions.checkArgument(DataNode.isValidDataNode(actualTable), String.format("Invalid format for actual data nodes: '%s'", actualTable));
+            DataNode dataNode = new DataNode(actualTable);
+            Preconditions.checkArgument(dataSourceMap.containsKey(dataNode.getDataSourceName()), 
+                    String.format("Cannot find data source name in sharding rule, invalid actual data node is: '%s'", actualTable));
+            result.add(dataNode);
         }
-        if (null == actualDataSourceNames || actualDataSourceNames.isEmpty()) {
-            return dataSourceMap.keySet();
-        }
-        return actualDataSourceNames;
+        return result;
     }
     
     /**

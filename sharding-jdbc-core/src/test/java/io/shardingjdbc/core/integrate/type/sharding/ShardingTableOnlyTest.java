@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.integrate.type.sharding;
 
+import com.google.common.base.Joiner;
 import io.shardingjdbc.core.common.base.AbstractSQLAssertTest;
 import io.shardingjdbc.core.common.env.ShardingTestStrategy;
 import io.shardingjdbc.core.integrate.fixture.PreciseModuloTableShardingAlgorithm;
@@ -38,6 +39,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -65,22 +67,30 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
             return shardingDataSources;
         }
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
-        for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
+        for (Map.Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
             ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
             TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
             orderTableRuleConfig.setLogicTable("t_order");
-            orderTableRuleConfig.setActualTables("t_order_${0..9}");
+            List<String> orderActualDataNodes = new LinkedList<>();
+            for (String dataSourceName : entry.getValue().keySet()) {
+                orderActualDataNodes.add(dataSourceName + ".t_order_${0..9}");
+            }
+            orderTableRuleConfig.setActualTables(Joiner.on(",").join(orderActualDataNodes));
             shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
             TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
             orderItemTableRuleConfig.setLogicTable("t_order_item");
-            orderItemTableRuleConfig.setActualTables("t_order_item_${0..9}");
+            List<String> orderItemActualDataNodes = new LinkedList<>();
+            for (String dataSourceName : entry.getValue().keySet()) {
+                orderItemActualDataNodes.add(dataSourceName + ".t_order_item_${0..9}");
+            }
+            orderItemTableRuleConfig.setActualTables(Joiner.on(",").join(orderItemActualDataNodes));
             orderItemTableRuleConfig.setKeyGeneratorClass("item_id");
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("order_id", PreciseModuloTableShardingAlgorithm.class.getName(), RangeModuloTableShardingAlgorithm.class.getName()));
-            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build(each.getValue())));
+            shardingDataSources.put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(entry.getValue())));
         }
         return shardingDataSources;
     }

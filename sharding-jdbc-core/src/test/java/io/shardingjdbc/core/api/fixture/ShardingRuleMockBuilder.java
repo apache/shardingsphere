@@ -77,7 +77,7 @@ public class ShardingRuleMockBuilder {
             public TableRuleConfiguration apply(final String input) {
                 TableRuleConfiguration result = new TableRuleConfiguration();
                 result.setLogicTable(input);
-                result.setActualTables(input);
+                result.setActualTables("db0." + input + ",db1." + input);
                 result.setKeyGeneratorColumnName(generateKeyColumnsMap.get(input));
                 return result;
             }

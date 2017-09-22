@@ -45,8 +45,6 @@ public class TableRuleConfiguration {
     
     private String actualTables;
     
-    private String dataSourceNames;
-    
     private ShardingStrategyConfiguration databaseShardingStrategyConfig;
     
     private ShardingStrategyConfiguration tableShardingStrategyConfig;
@@ -64,10 +62,9 @@ public class TableRuleConfiguration {
     public TableRule build(final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkNotNull(logicTable, "Logic table cannot be null.");
         List<String> actualTables = new InlineExpressionParser(this.actualTables).evaluate();
-        List<String> dataSourceNames = new InlineExpressionParser(this.dataSourceNames).evaluate();
         ShardingStrategy databaseShardingStrategy = null == databaseShardingStrategyConfig ? null : databaseShardingStrategyConfig.build();
         ShardingStrategy tableShardingStrategy = null == tableShardingStrategyConfig ? null : tableShardingStrategyConfig.build();
         KeyGenerator keyGenerator = !Strings.isNullOrEmpty(keyGeneratorColumnName) && !Strings.isNullOrEmpty(keyGeneratorClass) ? KeyGeneratorFactory.newInstance(keyGeneratorClass) : null;
-        return new TableRule(logicTable, actualTables, dataSourceNames, dataSourceMap, databaseShardingStrategy, tableShardingStrategy, keyGeneratorColumnName, keyGenerator);
+        return new TableRule(logicTable, actualTables, dataSourceMap, databaseShardingStrategy, tableShardingStrategy, keyGeneratorColumnName, keyGenerator);
     }
 }

@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.integrate.type.sharding;
 
+import com.google.common.base.Joiner;
 import io.shardingjdbc.core.common.base.AbstractSQLAssertTest;
 import io.shardingjdbc.core.common.env.ShardingTestStrategy;
 import io.shardingjdbc.core.integrate.fixture.PreciseModuloDatabaseShardingAlgorithm;
@@ -35,6 +36,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -75,16 +77,24 @@ public class ShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
         }
         isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
-        for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
+        for (Map.Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
             ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
             shardingRuleConfig.setDefaultDataSourceName("dataSource_dbtbl_0");
             TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
             orderTableRuleConfig.setLogicTable("t_order");
-            orderTableRuleConfig.setActualTables("t_order_${0..9}");
+            List<String> orderActualDataNodes = new LinkedList<>();
+            for (String dataSourceName : entry.getValue().keySet()) {
+                orderActualDataNodes.add(dataSourceName + ".t_order_${0..9}");
+            }
+            orderTableRuleConfig.setActualTables(Joiner.on(",").join(orderActualDataNodes));
             shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
             TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
             orderItemTableRuleConfig.setLogicTable("t_order_item");
-            orderItemTableRuleConfig.setActualTables("t_order_item_${0..9}");
+            List<String> orderItemActualDataNodes = new LinkedList<>();
+            for (String dataSourceName : entry.getValue().keySet()) {
+                orderItemActualDataNodes.add(dataSourceName + ".t_order_item_${0..9}");
+            }
+            orderItemTableRuleConfig.setActualTables(Joiner.on(",").join(orderItemActualDataNodes));
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             TableRuleConfiguration configTableRuleConfig = new TableRuleConfiguration();
             configTableRuleConfig.setLogicTable("t_config");
@@ -94,7 +104,7 @@ public class ShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
                     new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("order_id", PreciseModuloTableShardingAlgorithm.class.getName(), RangeModuloTableShardingAlgorithm.class.getName()));
-            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build(each.getValue())));
+            shardingDataSources.put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(entry.getValue())));
         }
         return shardingDataSources;
     }

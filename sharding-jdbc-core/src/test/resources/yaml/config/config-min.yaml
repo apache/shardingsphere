@@ -1,3 +1,3 @@
 tables:
   config:
-    actualTables: config_${0..1}
+    actualTables: ds.config_${0..1}

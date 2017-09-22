@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.jdbc.core.datasource;
 
+import com.google.common.base.Joiner;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
@@ -33,6 +34,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -147,7 +150,7 @@ public final class ShardingDataSourceTest {
         DataSource newDataSource = mockDataSource("H2");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
-        shardingDataSource.renew(createShardingRuleConfig().build(newDataSourceMap), new Properties());
+        shardingDataSource.renew(createShardingRuleConfig(newDataSourceMap).build(newDataSourceMap), new Properties());
         assertThat(originExecutorEngine, is(getExecutorEngine(shardingDataSource)));
     }
     
@@ -163,7 +166,7 @@ public final class ShardingDataSourceTest {
         newDataSourceMap.put("ds", newDataSource);
         Properties props = new Properties();
         props.setProperty(ShardingPropertiesConstant.EXECUTOR_SIZE.getKey(), "100");
-        shardingDataSource.renew(createShardingRuleConfig().build(newDataSourceMap), props);
+        shardingDataSource.renew(createShardingRuleConfig(newDataSourceMap).build(newDataSourceMap), props);
         assertThat(originExecutorEngine, not(getExecutorEngine(shardingDataSource)));
     }
     
@@ -176,18 +179,22 @@ public final class ShardingDataSourceTest {
         DataSource newDataSource = mockDataSource("MySQL");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
-        shardingDataSource.renew(createShardingRuleConfig().build(newDataSourceMap), new Properties());
+        shardingDataSource.renew(createShardingRuleConfig(newDataSourceMap).build(newDataSourceMap), new Properties());
     }
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return new ShardingDataSource(createShardingRuleConfig().build(dataSourceMap));
+        return new ShardingDataSource(createShardingRuleConfig(dataSourceMap).build(dataSourceMap));
     }
     
-    private ShardingRuleConfiguration createShardingRuleConfig() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+    private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {
+        final ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("logicTable");
-        tableRuleConfig.setActualTables("table_0, table_1, table_2");
+        List<String> orderActualDataNodes = new LinkedList<>();
+        for (String each : dataSourceMap.keySet()) {
+            orderActualDataNodes.add(each + ".table_${0..2}");
+        }
+        tableRuleConfig.setActualTables(Joiner.on(",").join(orderActualDataNodes));
         result.getTableRuleConfigs().add(tableRuleConfig);
         return result;
     }

@@ -17,19 +17,20 @@
 
 package io.shardingjdbc.core.integrate.type.sharding;
 
-import io.shardingjdbc.core.common.base.AbstractSQLAssertTest;
-import io.shardingjdbc.core.common.env.ShardingTestStrategy;
-import io.shardingjdbc.core.integrate.fixture.PreciseModuloDatabaseShardingAlgorithm;
-import io.shardingjdbc.core.integrate.fixture.RangeModuloDatabaseShardingAlgorithm;
-import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
+import com.google.common.base.Joiner;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingjdbc.core.rule.MasterSlaveRule;
+import io.shardingjdbc.core.common.base.AbstractSQLAssertTest;
+import io.shardingjdbc.core.common.env.ShardingTestStrategy;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
+import io.shardingjdbc.core.integrate.fixture.PreciseModuloDatabaseShardingAlgorithm;
+import io.shardingjdbc.core.integrate.fixture.RangeModuloDatabaseShardingAlgorithm;
+import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.rule.MasterSlaveRule;
 import org.junit.After;
 import org.junit.AfterClass;
 
@@ -37,6 +38,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -88,29 +90,38 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
         }
         isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
-        for (Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
-            ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        for (Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
+            Map<String, DataSource> masterSlaveDataSourceMap = getMasterSlaveDataSourceMap(entry);
+            final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
             TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
             orderTableRuleConfig.setLogicTable("t_order");
-            orderTableRuleConfig.setActualTables("t_order_${0..9}");
+            List<String> orderActualDataNodes = new LinkedList<>();
+            for (String dataSourceName : masterSlaveDataSourceMap.keySet()) {
+                orderActualDataNodes.add(dataSourceName + ".t_order_${0..9}");
+            }
+            orderTableRuleConfig.setActualTables(Joiner.on(",").join(orderActualDataNodes));
             shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
             TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
             orderItemTableRuleConfig.setLogicTable("t_order_item");
-            orderItemTableRuleConfig.setActualTables("t_order_item_${0..9}");
+            List<String> itemOrderActualDataNodes = new LinkedList<>();
+            for (String dataSourceName : masterSlaveDataSourceMap.keySet()) {
+                itemOrderActualDataNodes.add(dataSourceName + ".t_order_item_${0..9}");
+            }
+            orderItemTableRuleConfig.setActualTables(Joiner.on(",").join(itemOrderActualDataNodes));
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             TableRuleConfiguration configTableRuleConfig = new TableRuleConfiguration();
             configTableRuleConfig.setLogicTable("t_config");
-            configTableRuleConfig.setActualTables("t_config");
             shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("t_order_item", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
-            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build(getMasterSlaveDataSourceMap(each))));
+            shardingDataSources.put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(masterSlaveDataSourceMap)));
         }
         return shardingDataSources;
     }
     
+    // TODO use MasterSlaveRuleConfiguration to generate data source map
     private Map<String, DataSource> getMasterSlaveDataSourceMap(final Entry<DatabaseType, Map<String, DataSource>> each) throws SQLException {
         Map<String, DataSource> masterSlaveDataSourceMap = each.getValue();
         MasterSlaveDataSource masterSlaveDs0 = getMasterSlaveDataSource(masterSlaveDataSourceMap, "ms_0", "dataSource_master_0", "dataSource_slave_0");

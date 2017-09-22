@@ -78,8 +78,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     protected File getExpectedFile(final String expected) {
         String strategyName = getShardingStrategy().name();
-        String expectedFile = null == expected ? "integrate/dataset/EmptyTable.xml"
-                : String.format("integrate/dataset/sharding/%s/expect/" + expected, strategyName, strategyName);
+        String expectedFile = null == expected ? "integrate/dataset/EmptyTable.xml" : String.format("integrate/dataset/sharding/%s/expect/" + expected, strategyName, strategyName);
         URL url = AbstractSQLAssertTest.class.getClassLoader().getResource(expectedFile);
         if (null == url) {
             throw new RuntimeException("Wrong expected file:" + expectedFile);
