@@ -8,7 +8,6 @@
     <modules>
         <module>sharding-jdbc-example-mybatis</module>
         <module>sharding-jdbc-example-jpa</module>
-        <module>sharding-jdbc-example-config-spring</module>
         <module>sharding-jdbc-example-config-spring-masterslave</module>
         <module>sharding-jdbc-example-jdbc-transaction</module>
         <module>sharding-jdbc-raw-jdbc-example</module>
