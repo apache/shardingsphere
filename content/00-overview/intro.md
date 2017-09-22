@@ -101,16 +101,10 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
     orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
     
     // 配置分库策略
-    InlineShardingStrategyConfiguration databaseShardingStrategyConfig = new InlineShardingStrategyConfiguration();
-    databaseShardingStrategyConfig.setShardingColumn("user_id");
-    databaseShardingStrategyConfig.setAlgorithmInlineExpression("ds_${user_id % 2}");
-    orderTableRuleConfig.setDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
+    orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
     
     // 配置分表策略
-    InlineShardingStrategyConfiguration tableShardingStrategyConfig = new InlineShardingStrategyConfiguration();
-    tableShardingStrategyConfig.setShardingColumn("order_id");
-    tableShardingStrategyConfig.setAlgorithmInlineExpression("t_order_${order_id % 2}");
-    orderTableRuleConfig.setTableShardingStrategyConfig(tableShardingStrategyConfig);
+    orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
     
     // 配置分片规则
     ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();

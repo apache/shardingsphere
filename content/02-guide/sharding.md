@@ -104,16 +104,8 @@ select * from db0.t_order_0 where user_id = ? and order_id = ?;
     ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
     shardingRuleConfig.getTableRuleConfigs().add(orderTableRule);
     shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRule);
-    
-    ComplexShardingStrategyConfiguration databaseStrategyConfig = new ComplexShardingStrategyConfiguration();
-    databaseStrategyConfig.setShardingColumns("user_id");
-    databaseStrategyConfig.setAlgorithmClassName("xxx.ModuloDatabaseShardingAlgorithm");
-    shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseStrategyConfig);
-    
-    ComplexShardingStrategyConfiguration tableStrategyConfig = new ComplexShardingStrategyConfiguration();
-    tableStrategyConfig.setShardingColumns("order_id");
-    tableStrategyConfig.setAlgorithmClassName("xxx.ModuloTableShardingAlgorithm");
-    shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableStrategyConfig);
+    shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", "xxx.ModuloDatabaseShardingAlgorithm"));
+    shardingRuleConfig.setDefaultTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("order_id", "xxx.ModuloTableShardingAlgorithm"));
 ```
 
 ## 数据源配置
@@ -157,16 +149,8 @@ Sharding-JDBC认为对于分片策略存有两种维度
     orderTableRuleConfig.setLogicTable("t_order");
     orderTableRuleConfig.setActualTables("t_order_0,t_order_1");
     orderTableRuleConfig.setDataSourceNames("ds_0,ds_1");
-    
-    ComplexShardingStrategyConfiguration databaseStrategyConfig = new ComplexShardingStrategyConfiguration();
-    databaseStrategyConfig.setShardingColumns("user_id");
-    databaseStrategyConfig.setAlgorithmClassName("xxx.ModuloDatabaseShardingAlgorithm");
-    orderTableRuleConfig.setDatabaseShardingStrategyConfig(databaseStrategyConfig);
-    
-    ComplexShardingStrategyConfiguration tableStrategyConfig = new ComplexShardingStrategyConfiguration();
-    tableStrategyConfig.setShardingColumns("order_id");
-    tableStrategyConfig.setAlgorithmClassName("xxx.ModuloTableShardingAlgorithm");
-    orderTableRuleConfig.setTableShardingStrategyConfig(tableStrategyConfig);
+    orderTableRuleConfig.setDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", "xxx.ModuloDatabaseShardingAlgorithm"));
+    orderTableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("order_id", "xxx.ModuloTableShardingAlgorithm"));
 ```
 
 如果分片规则中的所有表或大部分表的分片策略相同，可以使用默认策略来简化配置。
@@ -185,16 +169,8 @@ Sharding-JDBC认为对于分片策略存有两种维度
     ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
     shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
-    
-    ComplexShardingStrategyConfiguration databaseStrategyConfig = new ComplexShardingStrategyConfiguration();
-    databaseStrategyConfig.setShardingColumns("user_id");
-    databaseStrategyConfig.setAlgorithmClassName("xxx.ModuloDatabaseShardingAlgorithm");
-    shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseStrategyConfig);
-    
-    ComplexShardingStrategyConfiguration tableStrategyConfig = new ComplexShardingStrategyConfiguration();
-    tableStrategyConfig.setShardingColumns("order_id");
-    tableStrategyConfig.setAlgorithmClassName("xxx.ModuloTableShardingAlgorithm");
-    shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableStrategyConfig);
+    shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", "xxx.ModuloDatabaseShardingAlgorithm"));
+    shardingRuleConfig.setDefaultTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("order_id", "xxx.ModuloTableShardingAlgorithm"));
 ```
 
 ### 分片键
