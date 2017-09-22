@@ -1,3 +1,9 @@
+## 1.5.4.1
+
+### 缺陷修正
+
+1. [ISSUE #382](https://github.com/shardingjdbc/sharding-jdbc/issues/382) 使用完全未配置分片策略的表无法完成查询
+
 ## 1.5.4
 
 ### 缺陷修正
@@ -7,7 +13,6 @@
 1. [ISSUE #370](https://github.com/shardingjdbc/sharding-jdbc/issues/370) 使用原生自增主键调用getGeneratedKeys出错
 1. [ISSUE #375](https://github.com/shardingjdbc/sharding-jdbc/issues/375) 路由至单节点的分页第二页以后的查询取不到数据
 1. [ISSUE #379](https://github.com/shardingjdbc/sharding-jdbc/issues/379) 使用Mybatis时框架调用Connection.getMetaData()时释放连接不正确
-1. [ISSUE #382](https://github.com/shardingjdbc/sharding-jdbc/issues/382) 使用完全未配置分片策略的表无法完成查询
 
 ## 1.5.3
 
