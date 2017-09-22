@@ -48,9 +48,7 @@ public class DatabaseTest {
     @Before
     public void setRouteRuleContext() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        HintShardingStrategyConfiguration databaseShardingStrategyConfig = new HintShardingStrategyConfiguration();
-        databaseShardingStrategyConfig.setAlgorithmClassName(OrderDatabaseHintShardingAlgorithm.class.getName());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(OrderDatabaseHintShardingAlgorithm.class.getName()));
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);

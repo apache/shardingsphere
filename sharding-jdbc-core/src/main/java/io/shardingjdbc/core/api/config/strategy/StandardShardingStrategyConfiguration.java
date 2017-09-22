@@ -17,30 +17,34 @@
 
 package io.shardingjdbc.core.api.config.strategy;
 
-import io.shardingjdbc.core.routing.strategy.ShardingAlgorithmFactory;
-import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
-import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
-import io.shardingjdbc.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
-import io.shardingjdbc.core.routing.strategy.standard.StandardShardingStrategy;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
+import io.shardingjdbc.core.routing.strategy.ShardingAlgorithmFactory;
+import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
+import io.shardingjdbc.core.routing.strategy.standard.StandardShardingStrategy;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Standard strategy configuration.
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class StandardShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+public final class StandardShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
-    private String shardingColumn;
+    private final String shardingColumn;
     
-    private String preciseAlgorithmClassName;
+    private final String preciseAlgorithmClassName;
     
-    private String rangeAlgorithmClassName;
+    private final String rangeAlgorithmClassName;
+    
+    public StandardShardingStrategyConfiguration(final String shardingColumn, final String preciseAlgorithmClassName) {
+        this(shardingColumn, preciseAlgorithmClassName, null);
+    }
     
     @Override
     public ShardingStrategy build() {

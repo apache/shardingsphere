@@ -29,33 +29,25 @@ public final class ShardingRuleConfigurationConverterTest {
     
     @Test
     public void assertToJsonForStandardStrategy() {
-        StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration();
-        actual.setShardingColumn("order_id");
-        actual.setPreciseAlgorithmClassName("xxx.XXXPreciseAlgorithm");
-        actual.setRangeAlgorithmClassName("xxx.XXXRangeAlgorithm");
+        StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration("order_id", "xxx.XXXPreciseAlgorithm", "xxx.XXXRangeAlgorithm");
         assertThat(ShardingRuleConfigurationConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForStandardStrategy()));
     }
     
     @Test
     public void assertToJsonForComplexStrategy() {
-        ComplexShardingStrategyConfiguration actual = new ComplexShardingStrategyConfiguration();
-        actual.setShardingColumns("order_id,item_id");
-        actual.setAlgorithmClassName("xxx.XXXAlgorithm");
+        ComplexShardingStrategyConfiguration actual = new ComplexShardingStrategyConfiguration("order_id,item_id", "xxx.XXXAlgorithm");
         assertThat(ShardingRuleConfigurationConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForComplexStrategy()));
     }
     
     @Test
     public void assertToJsonForInlineStrategy() {
-        InlineShardingStrategyConfiguration actual = new InlineShardingStrategyConfiguration();
-        actual.setShardingColumn("order_id");
-        actual.setAlgorithmInlineExpression("order_${user_id % 2}");
+        InlineShardingStrategyConfiguration actual = new InlineShardingStrategyConfiguration("order_id", "order_${user_id % 2}");
         assertThat(ShardingRuleConfigurationConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForInlineStrategy()));
     }
     
     @Test
     public void assertToJsonForHintStrategy() {
-        HintShardingStrategyConfiguration actual = new HintShardingStrategyConfiguration();
-        actual.setAlgorithmClassName("xxx.XXXAlgorithm");
+        HintShardingStrategyConfiguration actual = new HintShardingStrategyConfiguration("xxx.XXXAlgorithm");
         assertThat(ShardingRuleConfigurationConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForHintStrategy()));
     }
     

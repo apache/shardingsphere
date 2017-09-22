@@ -231,10 +231,7 @@ public final class ShardingRuleTest {
     public void assertIsShardingColumnForDefaultDatabaseShardingStrategy() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
-        StandardShardingStrategyConfiguration databaseShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-        databaseShardingStrategyConfig.setShardingColumn("column");
-        databaseShardingStrategyConfig.setPreciseAlgorithmClassName(TestPreciseShardingAlgorithm.class.getName());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", TestPreciseShardingAlgorithm.class.getName()));
         assertTrue(shardingRuleConfig.build(createDataSourceMap()).isShardingColumn(new Column("column", "")));
     }
     
@@ -242,10 +239,7 @@ public final class ShardingRuleTest {
     public void assertIsShardingColumnForDefaultTableShardingStrategy() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
-        StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-        tableShardingStrategyConfig.setShardingColumn("column");
-        tableShardingStrategyConfig.setPreciseAlgorithmClassName(TestPreciseShardingAlgorithm.class.getName());
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", TestPreciseShardingAlgorithm.class.getName()));
         assertTrue(shardingRuleConfig.build(createDataSourceMap()).isShardingColumn(new Column("column", "")));
     }
     
@@ -321,10 +315,7 @@ public final class ShardingRuleTest {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("logicTable");
         result.setActualTables("table_0, table_1, table_2");
-        StandardShardingStrategyConfiguration databaseShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-        databaseShardingStrategyConfig.setShardingColumn("column");
-        databaseShardingStrategyConfig.setPreciseAlgorithmClassName(TestPreciseShardingAlgorithm.class.getName());
-        result.setDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
+        result.setDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", TestPreciseShardingAlgorithm.class.getName()));
         result.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         return result;
     }
@@ -333,10 +324,7 @@ public final class ShardingRuleTest {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("logicTable");
         result.setActualTables("table_0, table_1, table_2");
-        StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-        tableShardingStrategyConfig.setShardingColumn("column");
-        tableShardingStrategyConfig.setPreciseAlgorithmClassName(TestPreciseShardingAlgorithm.class.getName());
-        result.setTableShardingStrategyConfig(tableShardingStrategyConfig);
+        result.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", TestPreciseShardingAlgorithm.class.getName()));
         return result;
     }
 }

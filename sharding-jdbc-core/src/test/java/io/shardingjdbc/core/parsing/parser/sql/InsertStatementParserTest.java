@@ -111,10 +111,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("TABLE_XXX");
         tableRuleConfig.setActualTables("table_${0..2}");
-        ComplexShardingStrategyConfiguration shardingStrategyConfig = new ComplexShardingStrategyConfiguration();
-        shardingStrategyConfig.setShardingColumns("field1");
-        shardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
-        tableRuleConfig.setTableShardingStrategyConfig(shardingStrategyConfig);
+        tableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("field1", TestComplexKeysShardingAlgorithm.class.getName()));
         tableRuleConfig.setKeyGeneratorColumnName("field2");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRuleConfig.setDefaultKeyGeneratorClass(IncrementKeyGenerator.class.getName());

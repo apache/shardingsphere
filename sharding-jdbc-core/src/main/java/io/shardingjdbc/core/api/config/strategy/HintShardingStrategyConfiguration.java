@@ -17,24 +17,24 @@
 
 package io.shardingjdbc.core.api.config.strategy;
 
+import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
 import io.shardingjdbc.core.routing.strategy.ShardingAlgorithmFactory;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
-import io.shardingjdbc.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
 import io.shardingjdbc.core.routing.strategy.hint.HintShardingStrategy;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Hint sharding strategy configuration.
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class HintShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+public final class HintShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
-    private String algorithmClassName;
+    private final String algorithmClassName;
     
     @Override
     public ShardingStrategy build() {

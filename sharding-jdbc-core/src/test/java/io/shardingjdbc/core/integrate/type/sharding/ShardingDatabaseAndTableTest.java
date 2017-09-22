@@ -90,16 +90,10 @@ public class ShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
             configTableRuleConfig.setLogicTable("t_config");
             shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-            StandardShardingStrategyConfiguration databaseShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-            databaseShardingStrategyConfig.setShardingColumn("user_id");
-            databaseShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseModuloDatabaseShardingAlgorithm.class.getName());
-            databaseShardingStrategyConfig.setRangeAlgorithmClassName(RangeModuloDatabaseShardingAlgorithm.class.getName());
-            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
-            StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-            tableShardingStrategyConfig.setShardingColumn("order_id");
-            tableShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseModuloTableShardingAlgorithm.class.getName());
-            tableShardingStrategyConfig.setRangeAlgorithmClassName(RangeModuloTableShardingAlgorithm.class.getName());
-            shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
+            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
+                    new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
+            shardingRuleConfig.setDefaultTableShardingStrategyConfig(
+                    new StandardShardingStrategyConfiguration("order_id", PreciseModuloTableShardingAlgorithm.class.getName(), RangeModuloTableShardingAlgorithm.class.getName()));
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build(each.getValue())));
         }
         return shardingDataSources;

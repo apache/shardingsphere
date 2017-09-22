@@ -70,18 +70,12 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualTables("t_order");
         orderTableRuleConfig.setDataSourceNames("db0, db1");
-        ComplexShardingStrategyConfiguration orderShardingStrategyConfig = new ComplexShardingStrategyConfiguration();
-        orderShardingStrategyConfig.setShardingColumns("user_id, order_id");
-        orderShardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
-        orderTableRuleConfig.setTableShardingStrategyConfig(orderShardingStrategyConfig);
+        orderTableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id, order_id", TestComplexKeysShardingAlgorithm.class.getName()));
         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         orderItemTableRuleConfig.setActualTables("t_order_item");
         orderItemTableRuleConfig.setDataSourceNames("db0, db1");
-        ComplexShardingStrategyConfiguration orderItemShardingStrategyConfig = new ComplexShardingStrategyConfiguration();
-        orderItemShardingStrategyConfig.setShardingColumns("user_id, order_id, item_id");
-        orderItemShardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
-        orderItemTableRuleConfig.setTableShardingStrategyConfig(orderItemShardingStrategyConfig);
+        orderItemTableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id, order_id, item_id", TestComplexKeysShardingAlgorithm.class.getName()));
         return new ShardingRuleMockBuilder().addTableRuleConfig(orderTableRuleConfig).addTableRuleConfig(orderItemTableRuleConfig)
                 .addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("item_id").addGenerateKeyColumn("t_order_item", "item_id").build();
     }

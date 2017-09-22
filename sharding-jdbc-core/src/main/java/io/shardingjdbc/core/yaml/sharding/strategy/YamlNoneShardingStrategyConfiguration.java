@@ -15,20 +15,12 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.config.strategy;
-
-import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
-import io.shardingjdbc.core.routing.strategy.none.NoneShardingStrategy;
+package io.shardingjdbc.core.yaml.sharding.strategy;
 
 /**
- * None sharding strategy configuration.
+ * None sharding strategy configuration for yaml.
  * 
  * @author zhangliang
  */
-public final class NoneShardingStrategyConfiguration implements ShardingStrategyConfiguration {
-    
-    @Override
-    public ShardingStrategy build() {
-        return new NoneShardingStrategy();
-    }
+public final class YamlNoneShardingStrategyConfiguration implements YamlShardingStrategyConfiguration {
 }

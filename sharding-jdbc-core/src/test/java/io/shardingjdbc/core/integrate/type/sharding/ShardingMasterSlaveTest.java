@@ -102,16 +102,10 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
             configTableRuleConfig.setLogicTable("t_config");
             configTableRuleConfig.setActualTables("t_config");
             shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
-            StandardShardingStrategyConfiguration databaseShardingStrategy = new StandardShardingStrategyConfiguration();
-            databaseShardingStrategy.setShardingColumn("t_order_item");
-            databaseShardingStrategy.setPreciseAlgorithmClassName(PreciseModuloDatabaseShardingAlgorithm.class.getName());
-            databaseShardingStrategy.setRangeAlgorithmClassName(RangeModuloDatabaseShardingAlgorithm.class.getName());
-            shardingRuleConfig.setDefaultTableShardingStrategyConfig(databaseShardingStrategy);
-            StandardShardingStrategyConfiguration tableShardingStrategy = new StandardShardingStrategyConfiguration();
-            tableShardingStrategy.setShardingColumn("user_id");
-            tableShardingStrategy.setPreciseAlgorithmClassName(PreciseModuloDatabaseShardingAlgorithm.class.getName());
-            tableShardingStrategy.setRangeAlgorithmClassName(RangeModuloDatabaseShardingAlgorithm.class.getName());
-            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(tableShardingStrategy);
+            shardingRuleConfig.setDefaultTableShardingStrategyConfig(
+                    new StandardShardingStrategyConfiguration("t_order_item", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
+            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
+                    new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build(getMasterSlaveDataSourceMap(each))));
         }
         return shardingDataSources;

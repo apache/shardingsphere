@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class YamlTableRuleConfig {
+public class YamlTableRuleConfiguration {
     
     private String logicTable;
     
@@ -20,30 +20,30 @@ public class YamlTableRuleConfig {
     
     private String dataSourceNames;
     
-    private YamlShardingStrategyConfig databaseStrategy;
+    private YamlShardingStrategyConfiguration databaseStrategy;
     
-    private YamlShardingStrategyConfig tableStrategy;
+    private YamlShardingStrategyConfiguration tableStrategy;
     
     private String keyGeneratorColumnName;
     
     private String keyGeneratorClass;
     
     /**
-     * Build table rule.
+     * Build table rule configuration.
      *
-     * @return table rule
+     * @return table rule configuration
      */
-    public TableRuleConfiguration getTableRuleConfig() {
+    public TableRuleConfiguration build() {
         Preconditions.checkNotNull(logicTable, "Logic table cannot be null.");
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable(logicTable);
         tableRuleConfig.setActualTables(actualTables);
         tableRuleConfig.setLogicTable(logicTable);
         if (null != databaseStrategy) {
-            tableRuleConfig.setDatabaseShardingStrategyConfig(databaseStrategy.getShardingStrategy());
+            tableRuleConfig.setDatabaseShardingStrategyConfig(databaseStrategy.build());
         }
         if (null != tableStrategy) {
-            tableRuleConfig.setTableShardingStrategyConfig(tableStrategy.getShardingStrategy());
+            tableRuleConfig.setTableShardingStrategyConfig(tableStrategy.build());
         }
         tableRuleConfig.setKeyGeneratorClass(keyGeneratorClass);
         tableRuleConfig.setKeyGeneratorColumnName(keyGeneratorColumnName);

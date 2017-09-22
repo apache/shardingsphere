@@ -17,24 +17,24 @@
 
 package io.shardingjdbc.core.api.config.strategy;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import io.shardingjdbc.core.routing.strategy.inline.InlineShardingStrategy;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Inline sharding strategy configuration.
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class InlineShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
-    private String shardingColumn;
+    private final String shardingColumn;
     
-    private String algorithmInlineExpression;
+    private final String algorithmInlineExpression;
     
     @Override
     public ShardingStrategy build() {

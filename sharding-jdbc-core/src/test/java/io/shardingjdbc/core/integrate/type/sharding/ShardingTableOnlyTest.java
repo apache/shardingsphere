@@ -78,11 +78,8 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-            StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-            tableShardingStrategyConfig.setShardingColumn("order_id");
-            tableShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseModuloTableShardingAlgorithm.class.getName());
-            tableShardingStrategyConfig.setRangeAlgorithmClassName(RangeModuloTableShardingAlgorithm.class.getName());
-            shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
+            shardingRuleConfig.setDefaultTableShardingStrategyConfig(
+                    new StandardShardingStrategyConfiguration("order_id", PreciseModuloTableShardingAlgorithm.class.getName(), RangeModuloTableShardingAlgorithm.class.getName()));
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build(each.getValue())));
         }
         return shardingDataSources;

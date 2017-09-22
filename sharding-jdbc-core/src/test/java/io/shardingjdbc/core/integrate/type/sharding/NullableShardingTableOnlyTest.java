@@ -90,10 +90,7 @@ public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
             TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
             tableRuleConfig.setLogicTable("t_order");
             shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-            ComplexShardingStrategyConfiguration databaseShardingStrategyConfig = new ComplexShardingStrategyConfiguration();
-            databaseShardingStrategyConfig.setShardingColumns("user_id");
-            databaseShardingStrategyConfig.setAlgorithmClassName(ComplexKeysModuloDatabaseShardingAlgorithm.class.getName());
-            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
+            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", ComplexKeysModuloDatabaseShardingAlgorithm.class.getName()));
             ShardingRule shardingRule = shardingRuleConfig.build(each.getValue());
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }

@@ -83,49 +83,21 @@ public final class ShardingStrategyConfigurationGsonTypeAdapter extends TypeAdap
                                                          final String algorithmClassName, final String preciseAlgorithmClassName, final String rangeAlgorithmClassName,
                                                          final String algorithmInlineExpression) {
         if (type.equals(ShardingStrategyType.STANDARD.name())) {
-            return createStandardStrategy(shardingColumn, preciseAlgorithmClassName, rangeAlgorithmClassName);
+            return new StandardShardingStrategyConfiguration(shardingColumn, preciseAlgorithmClassName, rangeAlgorithmClassName);
         }
         if (type.equals(ShardingStrategyType.COMPLEX.name())) {
-            return createComplexStrategy(shardingColumns, algorithmClassName);
+            return new ComplexShardingStrategyConfiguration(shardingColumns, algorithmClassName);
         }
         if (type.equals(ShardingStrategyType.INLINE.name())) {
-            return createInlineStrategy(shardingColumn, algorithmInlineExpression);
+            return new InlineShardingStrategyConfiguration(shardingColumn, algorithmInlineExpression);
         }
         if (type.equals(ShardingStrategyType.HINT.name())) {
-            return createHintStrategy(algorithmClassName);
+            return new HintShardingStrategyConfiguration(algorithmClassName);
         }
         if (type.equals(ShardingStrategyType.NONE.name())) {
             return new NoneShardingStrategyConfiguration();
         }
         return null;
-    }
-    
-    private ShardingStrategyConfiguration createStandardStrategy(final String shardingColumn, final String preciseAlgorithmClassName, final String rangeAlgorithmClassName) {
-        StandardShardingStrategyConfiguration result = new StandardShardingStrategyConfiguration();
-        result.setShardingColumn(shardingColumn);
-        result.setPreciseAlgorithmClassName(preciseAlgorithmClassName);
-        result.setRangeAlgorithmClassName(rangeAlgorithmClassName);
-        return result;
-    }
-    
-    private ShardingStrategyConfiguration createComplexStrategy(final String shardingColumns, final String algorithmClassName) {
-        ComplexShardingStrategyConfiguration result = new ComplexShardingStrategyConfiguration();
-        result.setShardingColumns(shardingColumns);
-        result.setAlgorithmClassName(algorithmClassName);
-        return result;
-    }
-    
-    private ShardingStrategyConfiguration createInlineStrategy(final String shardingColumn, final String algorithmInlineExpression) {
-        InlineShardingStrategyConfiguration result = new InlineShardingStrategyConfiguration();
-        result.setShardingColumn(shardingColumn);
-        result.setAlgorithmInlineExpression(algorithmInlineExpression);
-        return result;
-    }
-    
-    private ShardingStrategyConfiguration createHintStrategy(final String algorithmClassName) {
-        HintShardingStrategyConfiguration result = new HintShardingStrategyConfiguration();
-        result.setAlgorithmClassName(algorithmClassName);
-        return result;
     }
     
     @Override

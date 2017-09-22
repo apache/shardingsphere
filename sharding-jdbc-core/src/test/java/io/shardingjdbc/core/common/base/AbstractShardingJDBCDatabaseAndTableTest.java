@@ -69,16 +69,10 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             configTableRuleConfig.setLogicTable("t_config");
             shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-            StandardShardingStrategyConfiguration databaseShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-            databaseShardingStrategyConfig.setShardingColumn("user_id");
-            databaseShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseOrderShardingAlgorithm.class.getName());
-            databaseShardingStrategyConfig.setRangeAlgorithmClassName(RangeOrderShardingAlgorithm.class.getName());
-            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
-            StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-            tableShardingStrategyConfig.setShardingColumn("order_id");
-            tableShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseOrderShardingAlgorithm.class.getName());
-            tableShardingStrategyConfig.setRangeAlgorithmClassName(RangeOrderShardingAlgorithm.class.getName());
-            shardingRuleConfig.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
+            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
+                    new StandardShardingStrategyConfiguration("user_id", PreciseOrderShardingAlgorithm.class.getName(), RangeOrderShardingAlgorithm.class.getName()));
+            shardingRuleConfig.setDefaultTableShardingStrategyConfig(
+                    new StandardShardingStrategyConfiguration("order_id", PreciseOrderShardingAlgorithm.class.getName(), RangeOrderShardingAlgorithm.class.getName()));
             ShardingRule shardingRule = shardingRuleConfig.build(each.getValue());
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }

@@ -21,52 +21,71 @@ import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveConfig;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
- * Sharding rule builder from yaml.
+ * Sharding configuration for yaml.
  *
  * @author caohao
- * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class ShardingRuleBuilder {
+@Getter
+@Setter
+public class YamlShardingConfiguration {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private Map<String, DataSource> dataSources = new HashMap<>();
     
-    private final YamlShardingConfig yamlShardingConfig;
+    private String defaultDataSourceName;
+    
+    private Map<String, YamlTableRuleConfiguration> tables = new HashMap<>();
+    
+    private List<String> bindingTables = new ArrayList<>();
+    
+    private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
+    
+    private YamlShardingStrategyConfiguration defaultTableStrategy;
+    
+    private String defaultKeyGeneratorClass;
+    
+    private Map<String, YamlMasterSlaveConfig> masterSlaveRules = new HashMap<>();
+    
+    private Properties props = new Properties();
     
     /**
      * Build sharding rule from yaml.
-     * 
+     *
+     * @param dataSourceMap data source map
      * @return sharding rule from yaml
      * @throws SQLException SQL exception
      */
-    public ShardingRule build() throws SQLException {
+    public ShardingRule build(final Map<String, DataSource> dataSourceMap) throws SQLException {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.setDefaultDataSourceName(yamlShardingConfig.getDefaultDataSourceName());
-        for (Entry<String, YamlTableRuleConfig> entry : yamlShardingConfig.getTables().entrySet()) {
-            YamlTableRuleConfig tableRuleConfig = entry.getValue();
+        result.setDefaultDataSourceName(defaultDataSourceName);
+        for (Map.Entry<String, YamlTableRuleConfiguration> entry : tables.entrySet()) {
+            YamlTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
-            result.getTableRuleConfigs().add(tableRuleConfig.getTableRuleConfig());
+            result.getTableRuleConfigs().add(tableRuleConfig.build());
         }
-        result.getBindingTableGroups().addAll(yamlShardingConfig.getBindingTables());
-        if (null != yamlShardingConfig.getDefaultDatabaseStrategy()) {
-            result.setDefaultDatabaseShardingStrategyConfig(yamlShardingConfig.getDefaultDatabaseStrategy().getShardingStrategy());
+        result.getBindingTableGroups().addAll(bindingTables);
+        if (null != defaultDatabaseStrategy) {
+            result.setDefaultDatabaseShardingStrategyConfig(defaultDatabaseStrategy.build());
         }
-        if (null != yamlShardingConfig.getDefaultTableStrategy()) {
-            result.setDefaultTableShardingStrategyConfig(yamlShardingConfig.getDefaultTableStrategy().getShardingStrategy());
+        if (null != defaultTableStrategy) {
+            result.setDefaultTableShardingStrategyConfig(defaultTableStrategy.build());
         }
-        result.setDefaultKeyGeneratorClass(yamlShardingConfig.getDefaultKeyGeneratorClass());
+        result.setDefaultKeyGeneratorClass(defaultKeyGeneratorClass);
         Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
-        for (Entry<String, YamlMasterSlaveConfig> each : yamlShardingConfig.getMasterSlaveRules().entrySet()) {
+        for (Map.Entry<String, YamlMasterSlaveConfig> each : masterSlaveRules.entrySet()) {
             MasterSlaveRuleConfiguration config = new MasterSlaveRuleConfiguration();
             config.setName(each.getKey());
             config.setMasterDataSourceName(each.getValue().getMasterDataSourceName());
@@ -76,6 +95,6 @@ public final class ShardingRuleBuilder {
             masterSlaveRuleConfigs.add(config);
         }
         result.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);
-        return result.build(dataSourceMap.isEmpty() ? yamlShardingConfig.getDataSources() : dataSourceMap);
+        return result.build(dataSourceMap.isEmpty() ? dataSources : dataSourceMap);
     }
 }

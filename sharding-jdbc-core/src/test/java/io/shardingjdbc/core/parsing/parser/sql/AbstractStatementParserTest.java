@@ -49,10 +49,8 @@ public abstract class AbstractStatementParserTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("TABLE_XXX");
         tableRuleConfig.setActualTables("table_0, table_1, table_2");
-        ComplexShardingStrategyConfiguration complexShardingStrategyConfig = new ComplexShardingStrategyConfiguration();
-        complexShardingStrategyConfig.setShardingColumns("field1, field2, field3, field4, field5, field6, field7");
-        complexShardingStrategyConfig.setAlgorithmClassName(TestComplexKeysShardingAlgorithm.class.getName());
-        tableRuleConfig.setTableShardingStrategyConfig(complexShardingStrategyConfig);
+        tableRuleConfig.setTableShardingStrategyConfig(
+                new ComplexShardingStrategyConfiguration("field1, field2, field3, field4, field5, field6, field7", TestComplexKeysShardingAlgorithm.class.getName()));
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
