@@ -93,14 +93,8 @@ public final class Main {
         orderItemTableRuleConfig.setActualTables("t_order_item_${[0, 1]}");
         result.getTableRuleConfigs().add(orderItemTableRuleConfig);
         result.getBindingTableGroups().add("t_order, t_order_item");
-        InlineShardingStrategyConfiguration databaseShardingStrategyConfig = new InlineShardingStrategyConfiguration();
-        databaseShardingStrategyConfig.setShardingColumn("user_id");
-        databaseShardingStrategyConfig.setAlgorithmInlineExpression("ds_jdbc_${user_id % 2}");
-        result.setDefaultDatabaseShardingStrategyConfig(databaseShardingStrategyConfig);
-        StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration();
-        tableShardingStrategyConfig.setShardingColumn("order_id");
-        tableShardingStrategyConfig.setPreciseAlgorithmClassName(ModuloTableShardingAlgorithm.class.getName());
-        result.setDefaultTableShardingStrategyConfig(tableShardingStrategyConfig);
+        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_jdbc_${user_id % 2}"));
+        result.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", ModuloTableShardingAlgorithm.class.getName()));
         return result;
     }
     

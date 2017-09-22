@@ -5,5 +5,5 @@
         <artifactId>sharding-jdbc-example</artifactId>
         <version>2.0.0.M1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-jdbc-example-jdbc-transaction</artifactId>
+    <artifactId>sharding-jdbc-transaction-example</artifactId>
 </project>
