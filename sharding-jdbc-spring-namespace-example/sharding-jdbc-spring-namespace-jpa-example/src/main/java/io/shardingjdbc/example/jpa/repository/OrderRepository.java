@@ -23,15 +23,9 @@ import java.util.List;
 
 public interface OrderRepository {
     
-    Order selectById(long orderId);
-    
-    List<Order> selectAll();
-    
-    List<Order> selectOrderBy();
-    
-    void create(Order order);
-    
-    void update(Order order);
+    void insert(Order order);
     
     void delete(long orderId);
+    
+    List<Order> selectAll();
 }

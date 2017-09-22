@@ -26,7 +26,7 @@
                 <prop key="hibernate.max_fetch_depth">10</prop>
                 <prop key="hibernate.jdbc.fetch_size">100</prop>
                 <prop key="hibernate.jdbc.batch_size">10</prop>
-                <prop key="hibernate.hbm2ddl.auto">none</prop>
+                <prop key="hibernate.hbm2ddl.auto">true</prop>
                 <prop key="hibernate.show_sql">true</prop>
                 <prop key="hibernate.format_sql">true</prop>
                 <prop key="javax.persistence.validation.mode">none</prop>

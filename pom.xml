@@ -6,11 +6,9 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-jdbc-example-mybatis</module>
-        <module>sharding-jdbc-example-jpa</module>
-        <module>sharding-jdbc-example-config-spring-masterslave</module>
         <module>sharding-jdbc-example-jdbc-transaction</module>
         <module>sharding-jdbc-raw-jdbc-example</module>
+        <module>sharding-jdbc-spring-namespace-example</module>
         <module>sharding-jdbc-example-orchestration</module>
     </modules>
     
@@ -32,7 +30,7 @@
         <mybatis-spring.version>1.2.2</mybatis-spring.version>
         <jpa.version>1.0.0.Final</jpa.version>
         <hibernate.version>4.3.11.Final</hibernate.version>
-        <springframework.version>4.1.1.RELEASE</springframework.version>
+        <springframework.version>4.3.11.RELEASE</springframework.version>
         
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>

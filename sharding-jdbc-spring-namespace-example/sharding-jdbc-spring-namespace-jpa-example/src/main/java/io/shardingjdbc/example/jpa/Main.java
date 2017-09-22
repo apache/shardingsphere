@@ -36,20 +36,10 @@ public final class Main {
             Order order = new Order();
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
-            orderRepository.create(order);
-            orderIds.add(order.getOrderId());
-            System.out.println(orderRepository.selectById(order.getOrderId()));
-            System.out.println("--------------");
-            order.setStatus("UPDATE_TEST");
-            orderRepository.update(order);
-            System.out.println(orderRepository.selectById(order.getOrderId()));
-            System.out.println("--------------");
+            orderRepository.insert(order);
         }
         
         System.out.println(orderRepository.selectAll());
-        System.out.println("--------------");
-        
-        System.out.println(orderRepository.selectOrderBy());
         System.out.println("--------------");
         
         for (Long each : orderIds) {
