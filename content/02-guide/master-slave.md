@@ -148,7 +148,7 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="dbtbl_0, dbtbl_1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy"/>
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy"/>
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>

@@ -49,7 +49,7 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
     // 配置Order表规则
     TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
     orderTableRuleConfig.setLogicTable("t_order");
-    orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
+    orderTableRuleConfig.setActualDataNodes("ds_${0..1}.t_order_${[0, 1]}");
     
     // 配置分库策略
     orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
@@ -84,7 +84,7 @@ dataSources:
 
 tables:
   t_order: 
-    actualTables: ds_${0..1}.t_order_${0..1}
+    actualDataNodes: ds_${0..1}.t_order_${0..1}
     databaseStrategy: 
       inline:
         shardingColumn: user_id
@@ -94,7 +94,7 @@ tables:
         shardingColumn: order_id
         algorithmInlineExpression: t_order_${order_id % 2}
   t_order_item: 
-    actualTables: ds_${0..1}.t_order_item_${0..1}
+    actualDataNodes: ds_${0..1}.t_order_item_${0..1}
     databaseStrategy: 
       inline:
         shardingColumn: user_id
@@ -184,8 +184,8 @@ try (
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds_0,ds_1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
-                <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>

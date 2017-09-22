@@ -42,8 +42,7 @@ db1
 ```java
     TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
     orderTableRuleConfig.setLogicTable("t_order");
-    orderTableRuleConfig.setActualTables("t_order_0, t_order_1");
-    orderTableRuleConfig.setDataSourceNames("db0, db1");
+    orderTableRuleConfig.setActualDataNodes("db0.t_order_0, db0.t_order_1, db1.t_order_0, db1.t_order_1");
 ```
 
 ### 自定义分布
@@ -64,7 +63,7 @@ db1
 ```java
     TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
     orderTableRuleConfig.setLogicTable("t_order");
-    orderTableRuleConfig.setActualTables("db0.t_order_0, db0.t_order_1, db1.t_order_2, db1.t_order_3, db1.t_order_4");
+    orderTableRuleConfig.setActualDataNodes("db0.t_order_0, db0.t_order_1, db1.t_order_0, db1.t_order_1");
 ```
 
 ### 本教程采用的数据分布例子
@@ -147,8 +146,7 @@ Sharding-JDBC认为对于分片策略存有两种维度
 ```java
     TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
     orderTableRuleConfig.setLogicTable("t_order");
-    orderTableRuleConfig.setActualTables("t_order_0,t_order_1");
-    orderTableRuleConfig.setDataSourceNames("ds_0,ds_1");
+    orderTableRuleConfig.setActualDataNodes("ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1");
     orderTableRuleConfig.setDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", "xxx.ModuloDatabaseShardingAlgorithm"));
     orderTableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("order_id", "xxx.ModuloTableShardingAlgorithm"));
 ```
@@ -158,13 +156,11 @@ Sharding-JDBC认为对于分片策略存有两种维度
 ```java
     TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
     orderTableRuleConfig.setLogicTable("t_order");
-    orderTableRuleConfig.setActualTables("t_order_0,t_order_1");
-    orderTableRuleConfig.setDataSourceNames("ds_0,ds_1");
+    orderTableRuleConfig.setActualDataNodes("ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1");
     
     TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
     orderItemTableRuleConfig.setLogicTable("t_order_item");
-    orderItemTableRuleConfig.setActualTables("t_order_item_0,t_order_item_1");
-    orderItemTableRuleConfig.setDataSourceNames("ds_0,ds_1");
+    orderItemTableRuleConfig.setActualDataNodes("ds_0.t_order_item_0,ds_0.t_order_item_1,ds_1.t_order_item_0,ds_1.t_order_item_1");
     
     ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
     shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);

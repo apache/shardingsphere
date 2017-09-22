@@ -50,13 +50,13 @@ defaultDataSourceName: ds_default
 
 tables:
   t_order: 
-    actualTables: t_order_${0..1}
+    actualDataNodes: ds_${0..1}.t_order_${0..1}
     tableStrategy: 
       inline:
         shardingColumn: id
         algorithmInlineExpression: t_order_${id % 2}
   t_order_item:
-    actualTables: t_order_item_${0..1}
+    actualDataNodes: ds_${0..1}.t_order_item_${0..1}
     tableStrategy: 
       inline:
         shardingColumn: id
@@ -90,8 +90,7 @@ defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默
   
 tables: 分库分表配置，可配置多个logic_table_name
     <logic_table_name>: 逻辑表名
-        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表。
-        dataSourceNames: 数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源
+        actualDataNodes: 真实数据节点，由库名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示为只分库不分表。
         databaseStrategy: 分库策略，以下的分片策略只能任选其一
             standard: 标准分片策略，用于单分片键的场景
                 shardingColumn: 分片列名
@@ -176,8 +175,8 @@ props: 属性配置(可选)
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-data-source-name="dbtbl_0">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
-                <sharding:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_${0..1}.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
             </sharding:table-rules>
             <sharding:binding-table-rules>
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
@@ -223,8 +222,7 @@ props: 属性配置(可选)
 | *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
 | --------------------          | ------------ | ---------- | ------ | ------- |
 | logic-table                   | 属性         |  String     |   是   | 逻辑表名 |
-| actual-tables                 | 属性         |  String     |   否   | 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true) |
-| data-source-names             | 属性         |  String     |   否   | 数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源                                                    |
+| actual-data-nodes             | 属性         |  String     |   否   | 真实数据节点，由库名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示为只分库不分表                        |
 | database-strategy-ref         | 属性         |  String     |   否   | 分库策略，对应\<sharding:xxx-strategy>中的策略id，不填则使用\<sharding:sharding-rule/>配置的default-database-strategy-ref   |
 | table-strategy-ref            | 属性         |  String     |   否   | 分表策略，对应\<sharding:xxx-strategy>中的略id，不填则使用\<sharding:sharding-rule/>配置的default-table-strategy-ref        |
 
