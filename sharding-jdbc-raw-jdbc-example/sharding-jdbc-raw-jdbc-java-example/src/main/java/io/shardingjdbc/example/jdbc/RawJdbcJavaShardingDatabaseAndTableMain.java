@@ -17,11 +17,11 @@
 
 package io.shardingjdbc.example.jdbc;
 
+import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.example.jdbc.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingjdbc.example.jdbc.repository.RawJdbcRepository;
 import io.shardingjdbc.example.jdbc.util.DataSourceUtil;
@@ -39,14 +39,14 @@ public final class RawJdbcJavaShardingDatabaseAndTableMain {
         new RawJdbcRepository(getShardingDataSource()).testAll();
     }
     
-    private static ShardingDataSource getShardingDataSource() throws SQLException {
+    private static DataSource getShardingDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", ModuloShardingTableAlgorithm.class.getName()));
-        return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {

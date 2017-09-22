@@ -18,11 +18,11 @@
 package io.shardingjdbc.example.jdbc;
 
 import com.google.common.collect.Lists;
+import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.example.jdbc.algorithm.ModuloShardingDatabaseAlgorithm;
 import io.shardingjdbc.example.jdbc.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingjdbc.example.jdbc.repository.RawJdbcRepository;
@@ -43,7 +43,7 @@ public final class RawJdbcJavaShardingAndMasterSlaveMain {
         new RawJdbcRepository(getShardingDataSource()).testAll();
     }
     
-    private static ShardingDataSource getShardingDataSource() throws SQLException {
+    private static DataSource getShardingDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
@@ -51,7 +51,7 @@ public final class RawJdbcJavaShardingAndMasterSlaveMain {
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", ModuloShardingDatabaseAlgorithm.class.getName()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", ModuloShardingTableAlgorithm.class.getName()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
-        return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
