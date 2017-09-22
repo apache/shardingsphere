@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.example.jdbc;
 
+import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.example.jdbc.repository.RawJdbcRepository;
 import io.shardingjdbc.example.jdbc.util.DataSourceUtil;
 
@@ -36,12 +36,12 @@ public final class RawJdbcJavaMasterSlaveOnlyMain {
         new RawJdbcRepository(getMasterSlaveDataSource()).testAll();
     }
     
-    private static MasterSlaveDataSource getMasterSlaveDataSource() throws SQLException {
+    private static DataSource getMasterSlaveDataSource() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig.setName("demo_ds_master_slave");
         masterSlaveRuleConfig.setMasterDataSourceName("demo_ds_master");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
-        return new MasterSlaveDataSource(masterSlaveRuleConfig.build(createDataSourceMap()));
+        return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig);
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
