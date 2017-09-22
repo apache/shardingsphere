@@ -35,7 +35,7 @@
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseShardingStrategy" generate-key-column="order_id" />
-                <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseShardingStrategy" generate-key-column="order_id" />
+                <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseShardingStrategy" generate-key-column="order_item_id" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
@@ -47,7 +47,7 @@
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="shardingDataSource"/>
-        <property name="mapperLocations" value="classpath*:META-INF/mybatis/mappers/OrderMapper.xml"/>
+        <property name="mapperLocations" value="classpath*:META-INF/mybatis/mappers/*.xml"/>
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">

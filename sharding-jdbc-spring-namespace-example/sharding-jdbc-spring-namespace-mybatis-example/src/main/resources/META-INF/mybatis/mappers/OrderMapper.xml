@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.shardingjdbc.example.mybatis.repository.OrderRepository">
-    <resultMap id="baseResultMap" type="io.shardingjdbc.example.mybatis.entity.Order">
+    <resultMap id="baseResultMap" type="io.shardingjdbc.example.mybatis.entity.OrderItem">
+        <result column="order_item_id" property="orderItemId" jdbcType="INTEGER"/>
         <result column="order_id" property="orderId" jdbcType="INTEGER"/>
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
         <result column="status" property="status" jdbcType="VARCHAR"/>
     </resultMap>
-    
-    <sql id="baseColumnList">
-        order_id,
-        user_id,
-        status
-    </sql>
     
     <update id="createIfNotExistsTable">
         CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
@@ -41,7 +36,10 @@
     
     <select id="selectAll" resultMap="baseResultMap">
         SELECT
-        <include refid="baseColumnList"/>
-        FROM t_order
+          i.*
+        FROM 
+          t_order o, t_order_item i
+        WHERE
+          o.order_id = i.order_id
     </select>
 </mapper>

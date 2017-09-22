@@ -72,34 +72,34 @@ public final class RawJdbcJavaShardingAndMasterSlaveMain {
     private static List<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig1.setName("ds_0");
-        masterSlaveRuleConfig1.setMasterDataSourceName("ds_jdbc_master_0");
-        masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("ds_jdbc_master_0_slave_0", "ds_jdbc_master_0_slave_1"));
+        masterSlaveRuleConfig1.setMasterDataSourceName("demo_ds_master_0");
+        masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
     
         MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig2.setName("ds_1");
-        masterSlaveRuleConfig2.setMasterDataSourceName("ds_jdbc_master_1");
-        masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("ds_jdbc_master_1_slave_0", "ds_jdbc_master_1_slave_1"));
+        masterSlaveRuleConfig2.setMasterDataSourceName("demo_ds_master_1");
+        masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
         return Lists.newArrayList(masterSlaveRuleConfig1, masterSlaveRuleConfig2);
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
         final Map<String, DataSource> result = new HashMap<>(6, 1);
-        result.put("ds_jdbc_master_0", DataSourceUtil.createDataSource("ds_jdbc_master_0"));
-        result.put("ds_jdbc_master_0_slave_0", DataSourceUtil.createDataSource("ds_jdbc_master_0_slave_0"));
-        result.put("ds_jdbc_master_0_slave_1", DataSourceUtil.createDataSource("ds_jdbc_master_0_slave_1"));
-        result.put("ds_jdbc_master_1", DataSourceUtil.createDataSource("ds_jdbc_master_1"));
-        result.put("ds_jdbc_master_1_slave_0", DataSourceUtil.createDataSource("ds_jdbc_master_1_slave_0"));
-        result.put("ds_jdbc_master_1_slave_1", DataSourceUtil.createDataSource("ds_jdbc_master_1_slave_1"));
+        result.put("demo_ds_master_0", DataSourceUtil.createDataSource("demo_ds_master_0"));
+        result.put("demo_ds_master_0_slave_0", DataSourceUtil.createDataSource("demo_ds_master_0_slave_0"));
+        result.put("demo_ds_master_0_slave_1", DataSourceUtil.createDataSource("demo_ds_master_0_slave_1"));
+        result.put("demo_ds_master_1", DataSourceUtil.createDataSource("demo_ds_master_1"));
+        result.put("demo_ds_master_1_slave_0", DataSourceUtil.createDataSource("demo_ds_master_1_slave_0"));
+        result.put("demo_ds_master_1_slave_1", DataSourceUtil.createDataSource("demo_ds_master_1_slave_1"));
     
         MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig1.setName("ds_0");
-        masterSlaveRuleConfig1.setMasterDataSourceName("ds_jdbc_master_0");
-        masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("ds_jdbc_master_0_slave_0", "ds_jdbc_master_0_slave_1"));
+        masterSlaveRuleConfig1.setMasterDataSourceName("demo_ds_master_0");
+        masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
     
         MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig2.setName("ds_1");
-        masterSlaveRuleConfig2.setMasterDataSourceName("ds_jdbc_master_1");
-        masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("ds_jdbc_master_1_slave_0", "ds_jdbc_master_1_slave_1"));
+        masterSlaveRuleConfig2.setMasterDataSourceName("demo_ds_master_1");
+        masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
     
         return result;
     }

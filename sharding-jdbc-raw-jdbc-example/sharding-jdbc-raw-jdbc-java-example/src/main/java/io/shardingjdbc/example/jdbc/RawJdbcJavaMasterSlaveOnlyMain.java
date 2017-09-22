@@ -38,17 +38,17 @@ public final class RawJdbcJavaMasterSlaveOnlyMain {
     
     private static MasterSlaveDataSource getMasterSlaveDataSource() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-        masterSlaveRuleConfig.setName("ds_jdbc_master_slave");
-        masterSlaveRuleConfig.setMasterDataSourceName("ds_jdbc_master");
-        masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("ds_jdbc_slave_0", "ds_jdbc_slave_1"));
+        masterSlaveRuleConfig.setName("demo_ds_master_slave");
+        masterSlaveRuleConfig.setMasterDataSourceName("demo_ds_master");
+        masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
         return new MasterSlaveDataSource(masterSlaveRuleConfig.build(createDataSourceMap()));
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
         final Map<String, DataSource> result = new HashMap<>(3, 1);
-        result.put("ds_jdbc_master", DataSourceUtil.createDataSource("ds_jdbc_master"));
-        result.put("ds_jdbc_slave_0", DataSourceUtil.createDataSource("ds_jdbc_slave_0"));
-        result.put("ds_jdbc_slave_1", DataSourceUtil.createDataSource("ds_jdbc_slave_1"));
+        result.put("demo_ds_master", DataSourceUtil.createDataSource("demo_ds_master"));
+        result.put("demo_ds_slave_0", DataSourceUtil.createDataSource("demo_ds_slave_0"));
+        result.put("demo_ds_slave_1", DataSourceUtil.createDataSource("demo_ds_slave_1"));
         return result;
     }
 }

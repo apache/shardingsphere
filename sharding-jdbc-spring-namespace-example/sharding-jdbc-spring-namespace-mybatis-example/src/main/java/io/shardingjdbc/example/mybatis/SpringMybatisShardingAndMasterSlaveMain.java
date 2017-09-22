@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.example.mybatis;
 
-import io.shardingjdbc.example.mybatis.service.OrderService;
+import io.shardingjdbc.example.mybatis.service.DemoService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -28,7 +28,7 @@ public final class SpringMybatisShardingAndMasterSlaveMain {
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatis/mybatisShardingAndMasterSlaveContext.xml");
-        OrderService orderService = applicationContext.getBean(OrderService.class);
-        orderService.testAll();
+        DemoService demo = applicationContext.getBean(DemoService.class);
+        demo.demo();
     }
 }

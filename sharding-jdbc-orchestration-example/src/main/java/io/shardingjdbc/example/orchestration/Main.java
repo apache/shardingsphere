@@ -68,8 +68,8 @@ public final class Main {
     
     private static Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds_jdbc_0", createDataSource("ds_jdbc_0"));
-        result.put("ds_jdbc_1", createDataSource("ds_jdbc_1"));
+        result.put("demo_ds_0", createDataSource("demo_ds_0"));
+        result.put("demo_ds_1", createDataSource("demo_ds_1"));
         return result;
     }
     
@@ -86,14 +86,14 @@ public final class Main {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
-        orderTableRuleConfig.setActualDataNodes("ds_jdbc_${0..1}.t_order_${0..1}");
+        orderTableRuleConfig.setActualDataNodes("demo_ds_${0..1}.t_order_${0..1}");
         result.getTableRuleConfigs().add(orderTableRuleConfig);
         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
-        orderItemTableRuleConfig.setActualDataNodes("ds_jdbc_${0..1}.t_order_item_${0..1}");
+        orderItemTableRuleConfig.setActualDataNodes("demo_ds_${0..1}.t_order_item_${0..1}");
         result.getTableRuleConfigs().add(orderItemTableRuleConfig);
         result.getBindingTableGroups().add("t_order, t_order_item");
-        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_jdbc_${user_id % 2}"));
+        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
         result.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", ModuloTableShardingAlgorithm.class.getName()));
         return result;
     }
