@@ -1,3 +1,9 @@
+## 1.5.4.1
+
+### 缺陷修正
+
+1. [ISSUE #382](https://github.com/shardingjdbc/sharding-jdbc/issues/382) 使用完全未配置分片策略的表无法完成查询
+
 ## 1.5.4
 
 ### 缺陷修正
@@ -7,7 +13,6 @@
 1. [ISSUE #370](https://github.com/shardingjdbc/sharding-jdbc/issues/370) 使用原生自增主键调用getGeneratedKeys出错
 1. [ISSUE #375](https://github.com/shardingjdbc/sharding-jdbc/issues/375) 路由至单节点的分页第二页以后的查询取不到数据
 1. [ISSUE #379](https://github.com/shardingjdbc/sharding-jdbc/issues/379) 使用Mybatis时框架调用Connection.getMetaData()时释放连接不正确
-1. [ISSUE #382](https://github.com/shardingjdbc/sharding-jdbc/issues/382) 使用完全未配置分片策略的表无法完成查询
 
 ## 1.5.3
 
@@ -161,8 +166,9 @@
 1. [ISSUE #36](https://github.com/shardingjdbc/sharding-jdbc/issues/36) ShardingPreparedStatement无法反复设置参数
 1. [ISSUE #114](https://github.com/shardingjdbc/sharding-jdbc/issues/114) ShardingPreparedStatement执行批处理任务时,反复解析sql导致oom
 1. [ISSUE #33](https://github.com/shardingjdbc/sharding-jdbc/issues/33) Limit支持问题
-1. [ISSUE #124](https://github.com/shardingjdbc/sharding-jdbc/issues/124) getUpdateCount返回值不符合JDBC规范
+1. [ISSUE #124](https://github.com/shardingjdbc/sharding-jdbc/issues/124) com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter.getUpdateCount返回值不符合JDBC规范
 1. [ISSUE #141](https://github.com/shardingjdbc/sharding-jdbc/issues/141) 多线程执行器参数设置失效
+
 
 ## 1.3.1
 
