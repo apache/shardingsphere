@@ -135,8 +135,8 @@ try (
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1">
             <rdb:table-rules>
-                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" table-strategy="orderTableStrategy"/>
-                <rdb:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" table-strategy="orderItemTableStrategy"/>
+                <rdb:table-rule logic-table="t_order" actual-data-nodes="t_order_${0..3}" table-strategy="orderTableStrategy"/>
+                <rdb:table-rule logic-table="t_order_item" actual-data-nodes="t_order_item_${0..3}" table-strategy="orderItemTableStrategy"/>
             </rdb:table-rules>
             <rdb:default-database-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm"/>
         </rdb:sharding-rule>

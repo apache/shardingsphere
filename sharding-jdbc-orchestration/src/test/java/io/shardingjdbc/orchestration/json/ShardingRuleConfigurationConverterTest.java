@@ -19,9 +19,9 @@ import static org.junit.Assert.assertThat;
 
 public final class ShardingRuleConfigurationConverterTest {
     
-    private final String commonShardingRuleConfigJson = "{\"tableRuleConfigs\":[{\"logicTable\":\"t_order\",\"actualTables\":\"t_order_${[0, 1]}\","
+    private final String commonShardingRuleConfigJson = "{\"tableRuleConfigs\":[{\"logicTable\":\"t_order\",\"actualDataNodes\":\"t_order_${[0, 1]}\","
             + "\"databaseShardingStrategyConfig\":{},\"tableShardingStrategyConfig\":{}},"
-            + "{\"logicTable\":\"t_order_item\",\"actualTables\":\"t_order_item_${[0, 1]}\","
+            + "{\"logicTable\":\"t_order_item\",\"actualDataNodes\":\"t_order_item_${[0, 1]}\","
             + "\"databaseShardingStrategyConfig\":{},\"tableShardingStrategyConfig\":{}}"
             + "],\"bindingTableGroups\":[\"t_order, t_order_item\"],\"defaultDatabaseShardingStrategyConfig\":{},";
     
@@ -61,11 +61,11 @@ public final class ShardingRuleConfigurationConverterTest {
         ShardingRuleConfiguration actual = new ShardingRuleConfiguration();
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
-        orderTableRuleConfig.setActualTables("t_order_${[0, 1]}");
+        orderTableRuleConfig.setActualDataNodes("t_order_${[0, 1]}");
         actual.getTableRuleConfigs().add(orderTableRuleConfig);
         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
-        orderItemTableRuleConfig.setActualTables("t_order_item_${[0, 1]}");
+        orderItemTableRuleConfig.setActualDataNodes("t_order_item_${[0, 1]}");
         actual.getTableRuleConfigs().add(orderItemTableRuleConfig);
         actual.getBindingTableGroups().add("t_order, t_order_item");
         actual.setDefaultTableShardingStrategyConfig(strategyConfig);
@@ -153,10 +153,10 @@ public final class ShardingRuleConfigurationConverterTest {
         Iterator<TableRuleConfiguration> actualTableRuleConfigs = actual.getTableRuleConfigs().iterator();
         TableRuleConfiguration orderTableRuleConfig = actualTableRuleConfigs.next();
         assertThat(orderTableRuleConfig.getLogicTable(), is("t_order"));
-        assertThat(orderTableRuleConfig.getActualTables(), is("t_order_${[0, 1]}"));
+        assertThat(orderTableRuleConfig.getActualDataNodes(), is("t_order_${[0, 1]}"));
         TableRuleConfiguration orderItemTableRuleConfig = actualTableRuleConfigs.next();
         assertThat(orderItemTableRuleConfig.getLogicTable(), is("t_order_item"));
-        assertThat(orderItemTableRuleConfig.getActualTables(), is("t_order_item_${[0, 1]}"));
+        assertThat(orderItemTableRuleConfig.getActualDataNodes(), is("t_order_item_${[0, 1]}"));
         assertThat(actual.getBindingTableGroups().size(), is(1));
         assertThat(actual.getBindingTableGroups().iterator().next(), is("t_order, t_order_item"));
     }

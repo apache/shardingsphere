@@ -26,10 +26,10 @@ dataSources:
     
 tables:
   config:
-    actualTables: db_ms_${0..1}.t_config
+    actualDataNodes: db_ms_${0..1}.t_config
     
   t_order: 
-    actualTables: db_ms_${0..1}.t_order_${0..2}
+    actualDataNodes: db_ms_${0..1}.t_order_${0..2}
     databaseStrategy: 
       standard:
         shardingColumn: user_id
@@ -42,7 +42,7 @@ tables:
     keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
   
   t_order_item:
-    actualTables: db_ms_${0..1}.t_order_item_${0..1}
+    actualDataNodes: db_ms_${0..1}.t_order_item_${0..1}
     #绑定表中其余的表的策略与第一张表的策略相同
     databaseStrategy: 
       standard:

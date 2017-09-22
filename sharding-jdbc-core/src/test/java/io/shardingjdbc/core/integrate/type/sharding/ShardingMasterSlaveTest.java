@@ -99,7 +99,7 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
             for (String dataSourceName : masterSlaveDataSourceMap.keySet()) {
                 orderActualDataNodes.add(dataSourceName + ".t_order_${0..9}");
             }
-            orderTableRuleConfig.setActualTables(Joiner.on(",").join(orderActualDataNodes));
+            orderTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderActualDataNodes));
             shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
             TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
             orderItemTableRuleConfig.setLogicTable("t_order_item");
@@ -107,7 +107,7 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
             for (String dataSourceName : masterSlaveDataSourceMap.keySet()) {
                 itemOrderActualDataNodes.add(dataSourceName + ".t_order_item_${0..9}");
             }
-            orderItemTableRuleConfig.setActualTables(Joiner.on(",").join(itemOrderActualDataNodes));
+            orderItemTableRuleConfig.setActualDataNodes(Joiner.on(",").join(itemOrderActualDataNodes));
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             TableRuleConfiguration configTableRuleConfig = new TableRuleConfiguration();
             configTableRuleConfig.setLogicTable("t_config");

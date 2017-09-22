@@ -74,14 +74,14 @@ public final class BindingTableRuleTest {
     private TableRule createTableRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("logicTable");
-        tableRuleConfig.setActualTables("ds1.table_0, ds1.table_1, ds2.table_0, ds2.table_1");
+        tableRuleConfig.setActualDataNodes("ds1.table_0, ds1.table_1, ds2.table_0, ds2.table_1");
         return tableRuleConfig.build(createDataSourceMap());
     }
     
     private TableRule createSubTableRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("subLogicTable");
-        tableRuleConfig.setActualTables("ds1.sub_table_0, ds1.sub_table_1, ds2.sub_table_0, ds2.sub_table_1");
+        tableRuleConfig.setActualDataNodes("ds1.sub_table_0, ds1.sub_table_1, ds2.sub_table_0, ds2.sub_table_1");
         return tableRuleConfig.build(createDataSourceMap());
     }
     

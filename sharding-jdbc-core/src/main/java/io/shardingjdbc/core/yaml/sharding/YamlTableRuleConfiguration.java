@@ -16,9 +16,7 @@ public class YamlTableRuleConfiguration {
     
     private String logicTable;
     
-    private String actualTables;
-    
-    private String dataSourceNames;
+    private String actualDataNodes;
     
     private YamlShardingStrategyConfiguration databaseStrategy;
     
@@ -37,7 +35,7 @@ public class YamlTableRuleConfiguration {
         Preconditions.checkNotNull(logicTable, "Logic table cannot be null.");
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable(logicTable);
-        tableRuleConfig.setActualTables(actualTables);
+        tableRuleConfig.setActualDataNodes(actualDataNodes);
         tableRuleConfig.setLogicTable(logicTable);
         if (null != databaseStrategy) {
             tableRuleConfig.setDatabaseShardingStrategyConfig(databaseStrategy.build());

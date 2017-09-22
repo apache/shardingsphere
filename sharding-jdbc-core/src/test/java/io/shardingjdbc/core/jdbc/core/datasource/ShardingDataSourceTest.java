@@ -194,7 +194,7 @@ public final class ShardingDataSourceTest {
         for (String each : dataSourceMap.keySet()) {
             orderActualDataNodes.add(each + ".table_${0..2}");
         }
-        tableRuleConfig.setActualTables(Joiner.on(",").join(orderActualDataNodes));
+        tableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderActualDataNodes));
         result.getTableRuleConfigs().add(tableRuleConfig);
         return result;
     }

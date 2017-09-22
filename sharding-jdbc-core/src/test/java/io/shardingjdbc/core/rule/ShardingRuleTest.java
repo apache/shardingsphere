@@ -284,14 +284,14 @@ public final class ShardingRuleTest {
     private TableRuleConfiguration createTableRuleConfig() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("logicTable");
-        result.setActualTables("ds${0..1}.table_${0..2}");
+        result.setActualDataNodes("ds${0..1}.table_${0..2}");
         return result;
     }
     
     private TableRuleConfiguration createTableRuleConfigWithDatabaseShardingStrategy(final ShardingStrategyConfiguration strategyConfig) {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("logicTable");
-        result.setActualTables("ds${0..1}.table_${0..2}");
+        result.setActualDataNodes("ds${0..1}.table_${0..2}");
         result.setDatabaseShardingStrategyConfig(strategyConfig);
         return result;
     }
@@ -299,7 +299,7 @@ public final class ShardingRuleTest {
     private TableRuleConfiguration createTableRuleConfigWithTableShardingStrategy(final ShardingStrategyConfiguration strategyConfig) {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("logicTable");
-        result.setActualTables("ds${0..1}.table_${0..2}");
+        result.setActualDataNodes("ds${0..1}.table_${0..2}");
         result.setTableShardingStrategyConfig(strategyConfig);
         return result;
     }
@@ -307,14 +307,14 @@ public final class ShardingRuleTest {
     private TableRuleConfiguration createSubTableRuleConfig() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("subLogicTable");
-        result.setActualTables("ds${0..1}.sub_table_${0..2}");
+        result.setActualDataNodes("ds${0..1}.sub_table_${0..2}");
         return result;
     }
     
     private TableRuleConfiguration createTableRuleConfigWithAllStrategies() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("logicTable");
-        result.setActualTables("ds${0..1}.table_${0..2}");
+        result.setActualDataNodes("ds${0..1}.table_${0..2}");
         result.setDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", TestPreciseShardingAlgorithm.class.getName()));
         result.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         return result;
@@ -323,7 +323,7 @@ public final class ShardingRuleTest {
     private TableRuleConfiguration createTableRuleConfigWithTableStrategies() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("logicTable");
-        result.setActualTables("ds${0..1}.table_${0..2}");
+        result.setActualDataNodes("ds${0..1}.table_${0..2}");
         result.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", TestPreciseShardingAlgorithm.class.getName()));
         return result;
     }

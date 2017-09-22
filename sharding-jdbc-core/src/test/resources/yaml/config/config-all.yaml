@@ -18,10 +18,10 @@ defaultKeyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerato
     
 tables:
   config:
-    actualTables: db${0..1}.config_${0..1}
+    actualDataNodes: db${0..1}.config_${0..1}
 
   t_order: 
-    actualTables: db${0..1}.t_order_${0..1}
+    actualDataNodes: db${0..1}.t_order_${0..1}
     databaseStrategy: 
       standard:
         shardingColumn: order_id
@@ -31,7 +31,7 @@ tables:
         shardingColumn: id
         algorithmInlineExpression: t_order_${id % 2}
   t_order_item:
-    actualTables: db${0..1}.t_order_item_${0..1}
+    actualDataNodes: db${0..1}.t_order_item_${0..1}
     keyGeneratorColumnName: order_item_id
     keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.DecrementKeyGenerator
     #绑定表中其余的表的策略与第一张表的策略相同

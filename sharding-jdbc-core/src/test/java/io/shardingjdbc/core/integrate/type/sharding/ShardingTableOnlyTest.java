@@ -75,7 +75,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
             for (String dataSourceName : entry.getValue().keySet()) {
                 orderActualDataNodes.add(dataSourceName + ".t_order_${0..9}");
             }
-            orderTableRuleConfig.setActualTables(Joiner.on(",").join(orderActualDataNodes));
+            orderTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderActualDataNodes));
             shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
             TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
             orderItemTableRuleConfig.setLogicTable("t_order_item");
@@ -83,7 +83,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
             for (String dataSourceName : entry.getValue().keySet()) {
                 orderItemActualDataNodes.add(dataSourceName + ".t_order_item_${0..9}");
             }
-            orderItemTableRuleConfig.setActualTables(Joiner.on(",").join(orderItemActualDataNodes));
+            orderItemTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderItemActualDataNodes));
             orderItemTableRuleConfig.setKeyGeneratorClass("item_id");
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");

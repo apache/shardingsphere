@@ -77,7 +77,7 @@ public class ShardingRuleMockBuilder {
             public TableRuleConfiguration apply(final String input) {
                 TableRuleConfiguration result = new TableRuleConfiguration();
                 result.setLogicTable(input);
-                result.setActualTables("db0." + input + ",db1." + input);
+                result.setActualDataNodes("db0." + input + ",db1." + input);
                 result.setKeyGeneratorColumnName(generateKeyColumnsMap.get(input));
                 return result;
             }
@@ -86,7 +86,7 @@ public class ShardingRuleMockBuilder {
         if (tableRuleConfigs.isEmpty()) {
             TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
             tableRuleConfig.setLogicTable("mock");
-            tableRuleConfig.setActualTables("mock");
+            tableRuleConfig.setActualDataNodes("mock");
             tableRuleConfigs.add(tableRuleConfig);
         }
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();

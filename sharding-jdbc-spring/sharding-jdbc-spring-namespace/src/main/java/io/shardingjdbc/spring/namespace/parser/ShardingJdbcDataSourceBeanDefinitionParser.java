@@ -121,9 +121,9 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
     private BeanDefinition parseTableRuleConfig(final Element tableElement) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(TableRuleConfiguration.class);
         factory.addPropertyValue("logicTable", tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.LOGIC_TABLE_ATTRIBUTE));
-        String actualTables = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.ACTUAL_TABLES_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(actualTables)) {
-            factory.addPropertyValue("actualTables", actualTables);
+        String actualDataNodes = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.ACTUAL_DATA_NODES_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(actualDataNodes)) {
+            factory.addPropertyValue("actualDataNodes", actualDataNodes);
         }
         String databaseStrategy = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATABASE_STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(databaseStrategy)) {

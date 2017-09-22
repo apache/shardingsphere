@@ -63,7 +63,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             for (String dataSourceName : entry.getValue().keySet()) {
                 orderActualDataNodes.add(dataSourceName + ".t_order_${0..1}");
             }
-            orderTableRuleConfig.setActualTables(Joiner.on(",").join(orderActualDataNodes));
+            orderTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderActualDataNodes));
             shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
             TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
             orderItemTableRuleConfig.setLogicTable("t_order_item");
@@ -71,7 +71,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             for (String dataSourceName : entry.getValue().keySet()) {
                 orderItemActualDataNodes.add(dataSourceName + ".t_order_item_${0..1}");
             }
-            orderItemTableRuleConfig.setActualTables(Joiner.on(",").join(orderItemActualDataNodes));
+            orderItemTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderItemActualDataNodes));
             orderItemTableRuleConfig.setKeyGeneratorColumnName("item_id");
             orderItemTableRuleConfig.setKeyGeneratorClass(IncrementKeyGenerator.class.getName());
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);

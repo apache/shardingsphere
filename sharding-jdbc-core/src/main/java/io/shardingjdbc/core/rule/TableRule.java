@@ -51,10 +51,10 @@ public final class TableRule {
     
     private final KeyGenerator keyGenerator;
     
-    public TableRule(final String logicTable, final List<String> actualTables, final Map<String, DataSource> dataSourceMap,
+    public TableRule(final String logicTable, final List<String> actualDataNodes, final Map<String, DataSource> dataSourceMap,
                      final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy, final String generateKeyColumn, final KeyGenerator keyGenerator) {
         this.logicTable = logicTable;
-        this.actualDataNodes = null == actualTables || actualTables.isEmpty() ? generateDataNodes(logicTable, dataSourceMap) : generateDataNodes(actualTables, dataSourceMap);
+        this.actualDataNodes = null == actualDataNodes || actualDataNodes.isEmpty() ? generateDataNodes(logicTable, dataSourceMap) : generateDataNodes(actualDataNodes, dataSourceMap);
         this.databaseShardingStrategy = databaseShardingStrategy;
         this.tableShardingStrategy = tableShardingStrategy;
         this.generateKeyColumn = generateKeyColumn;
@@ -69,13 +69,13 @@ public final class TableRule {
         return result;
     }
     
-    private List<DataNode> generateDataNodes(final List<String> actualTables, final Map<String, DataSource> dataSourceMap) {
+    private List<DataNode> generateDataNodes(final List<String> actualDataNodes, final Map<String, DataSource> dataSourceMap) {
         List<DataNode> result = new LinkedList<>();
-        for (String actualTable : actualTables) {
-            Preconditions.checkArgument(DataNode.isValidDataNode(actualTable), String.format("Invalid format for actual data nodes: '%s'", actualTable));
-            DataNode dataNode = new DataNode(actualTable);
+        for (String each : actualDataNodes) {
+            Preconditions.checkArgument(DataNode.isValidDataNode(each), String.format("Invalid format for actual data nodes: '%s'", each));
+            DataNode dataNode = new DataNode(each);
             Preconditions.checkArgument(dataSourceMap.containsKey(dataNode.getDataSourceName()), 
-                    String.format("Cannot find data source name in sharding rule, invalid actual data node is: '%s'", actualTable));
+                    String.format("Cannot find data source name in sharding rule, invalid actual data node is: '%s'", each));
             result.add(dataNode);
         }
         return result;

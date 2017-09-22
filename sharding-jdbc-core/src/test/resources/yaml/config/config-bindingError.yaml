@@ -1,6 +1,6 @@
 tables:
   t_order: 
-    actualTables: ds.t_order_${0..1}
+    actualDataNodes: ds.t_order_${0..1}
     databaseStrategy: 
       standard:
         shardingColumn: order_id
@@ -10,7 +10,7 @@ tables:
         shardingColumn: id
         algorithmInlineExpression: t_order_${id % 2}
   t_order_item:
-    actualTables: ds.t_order_item_${0..1}
+    actualDataNodes: ds.t_order_item_${0..1}
     #绑定表中其余的表的策略与第一张表的策略相同
     databaseStrategy: 
       standard:

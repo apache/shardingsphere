@@ -50,7 +50,7 @@ public final class ShardingJdbcDataSourceBeanDefinitionParserTag {
     
     public static final String LOGIC_TABLES_ATTRIBUTE = "logic-tables";
     
-    public static final String ACTUAL_TABLES_ATTRIBUTE = "actual-tables";
+    public static final String ACTUAL_DATA_NODES_ATTRIBUTE = "actual-data-nodes";
     
     public static final String DATABASE_STRATEGY_REF_ATTRIBUTE = "database-strategy-ref";
     

@@ -13,7 +13,7 @@ dataSources:
     maxActive: 100
 tables:
   t_order: 
-    actualTables: t_order_${0..1}
+    actualDataNodes: t_order_${0..1}
     tableStrategy: 
       standard:
         shardingColumn: order_id
