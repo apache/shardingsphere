@@ -27,7 +27,7 @@ public final class SpringMybatisMasterSlaveOnlyMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatis/mysql/mybatisMasterSlaveOnlyContext.xml");
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatis/mybatisMasterSlaveOnlyContext.xml");
         OrderService orderService = applicationContext.getBean(OrderService.class);
         orderService.testAll();
     }

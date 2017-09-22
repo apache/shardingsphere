@@ -27,7 +27,7 @@ public final class SpringMybatisShardingDatabaseAndTableMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatis/mysql/mybatisShardingDatabaseAndTableContext.xml");
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatis/mybatisShardingDatabaseAndTableContext.xml");
         OrderService orderService = applicationContext.getBean(OrderService.class);
         orderService.testAll();
     }

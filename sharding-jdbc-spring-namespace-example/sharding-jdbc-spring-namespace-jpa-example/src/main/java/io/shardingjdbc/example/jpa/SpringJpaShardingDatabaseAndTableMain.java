@@ -26,7 +26,7 @@ public final class SpringJpaShardingDatabaseAndTableMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/jpa/jpaShardingDatabaseAndTable.xml");
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/jpa/jpaShardingDatabaseAndTableContext.xml");
         OrderService orderService = applicationContext.getBean(OrderService.class);
         orderService.testAll();
     }

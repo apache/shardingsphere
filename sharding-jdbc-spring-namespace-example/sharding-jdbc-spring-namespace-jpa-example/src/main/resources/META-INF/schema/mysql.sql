@@ -1,5 +1,5 @@
 DROP SCHEMA IF EXISTS demo_ds_0;
-DROP SCHEMA IF EXISTS demo_ds_0;
+DROP SCHEMA IF EXISTS demo_ds_1;
 DROP SCHEMA IF EXISTS demo_ds_master_0;
 DROP SCHEMA IF EXISTS demo_ds_master_0_slave_0;
 DROP SCHEMA IF EXISTS demo_ds_master_0_slave_1;

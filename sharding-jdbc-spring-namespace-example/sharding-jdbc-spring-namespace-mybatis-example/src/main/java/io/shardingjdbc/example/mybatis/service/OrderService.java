@@ -15,8 +15,8 @@ public class OrderService {
     private OrderRepository orderRepository;
     
     public void testAll() {
-        orderRepository.dropTable();
-        orderRepository.createTable();
+        orderRepository.createIfNotExistsTable();
+        orderRepository.truncateTable();
         List<Long> orderIds = new ArrayList<>(10);
         System.out.println("1.Insert--------------");
         for (int i = 0; i < 10; i++) {
@@ -32,5 +32,6 @@ public class OrderService {
             orderRepository.delete(each);
         }
         System.out.println(orderRepository.selectAll());
+        orderRepository.dropTable();
     }
 }

@@ -23,7 +23,9 @@ import java.util.List;
 
 public interface OrderRepository {
     
-    void createTable();
+    void createIfNotExistsTable();
+    
+    void truncateTable();
     
     Long insert(Order model);
     

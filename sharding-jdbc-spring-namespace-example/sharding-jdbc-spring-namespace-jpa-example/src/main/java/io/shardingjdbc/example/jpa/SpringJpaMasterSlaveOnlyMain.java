@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,19 +15,18 @@
  * </p>
  */
 
-package io.shardingjdbc.example.mybatis;
+package io.shardingjdbc.example.jpa;
 
-import io.shardingjdbc.example.mybatis.service.OrderService;
+import io.shardingjdbc.example.jpa.service.OrderService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-
-public final class SpringMybatisShardingAndMasterSlaveMain {
+public final class SpringJpaMasterSlaveOnlyMain {
     
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatis/mybatisShardingAndMasterSlaveContext.xml");
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/jpa/jpaMasterSlaveOnlyContext.xml");
         OrderService orderService = applicationContext.getBean(OrderService.class);
         orderService.testAll();
     }
