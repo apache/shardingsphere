@@ -33,7 +33,7 @@ public final class RawJdbcJavaShardingTableOnlyMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws SQLException {
     // CHECKSTYLE:ON
-        new RawJdbcRepository(getShardingDataSource()).testAll();
+        new RawJdbcRepository(getShardingDataSource()).demo();
     }
     
     private static DataSource getShardingDataSource() throws SQLException {

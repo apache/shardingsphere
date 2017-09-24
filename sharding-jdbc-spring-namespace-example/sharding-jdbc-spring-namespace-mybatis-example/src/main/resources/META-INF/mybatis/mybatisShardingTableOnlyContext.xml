@@ -20,7 +20,6 @@
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
-        <property name="maxActive" value="8"/>
     </bean>
     
     <sharding:standard-strategy id="orderTableShardingStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.example.mybatis.algorithm.PreciseModuloTableShardingAlgorithm"/>

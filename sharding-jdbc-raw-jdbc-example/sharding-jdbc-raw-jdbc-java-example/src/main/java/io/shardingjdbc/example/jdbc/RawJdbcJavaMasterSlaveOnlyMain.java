@@ -33,7 +33,7 @@ public final class RawJdbcJavaMasterSlaveOnlyMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws SQLException {
     // CHECKSTYLE:ON
-        new RawJdbcRepository(getMasterSlaveDataSource()).testAll();
+        new RawJdbcRepository(getMasterSlaveDataSource()).demo();
     }
     
     private static DataSource getMasterSlaveDataSource() throws SQLException {

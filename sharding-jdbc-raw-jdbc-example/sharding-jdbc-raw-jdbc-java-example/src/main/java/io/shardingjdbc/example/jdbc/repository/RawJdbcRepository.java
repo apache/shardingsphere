@@ -17,7 +17,7 @@ public class RawJdbcRepository {
         this.dataSource = dataSource;
     }
     
-    public void testAll() throws SQLException {
+    public void demo() throws SQLException {
         createTable();
         insertData();
         System.out.println("1.Equals Select--------------");
