@@ -7,7 +7,9 @@ import javax.sql.DataSource;
 public class DataSourceUtil {
      
     private static final String URL_PREFIX = "jdbc:mysql://localhost:3306/";
+    
     private static final String USER_NAME = "root";
+    
     private static final String PASSWORD = "";
     
     public static DataSource createDataSource(final String dataSourceName) {
