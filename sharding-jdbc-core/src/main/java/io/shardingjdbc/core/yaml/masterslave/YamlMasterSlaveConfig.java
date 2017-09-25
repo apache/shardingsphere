@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class YamlMasterSlaveConfig {
     
     private String masterDataSourceName;
     
-    private Collection<String> slaveDataSourceNames;
+    private Collection<String> slaveDataSourceNames = new ArrayList<>();
     
     private MasterSlaveLoadBalanceAlgorithmType loadBalanceAlgorithmType;
     

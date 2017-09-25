@@ -59,7 +59,7 @@ public class YamlMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
         if (hasDataSource) {
             dataSource = new YamlMasterSlaveDataSource(yamlFile);
         } else {
-            dataSource = new YamlMasterSlaveDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave"), new Function<String, DataSource>() {
+            dataSource = new YamlMasterSlaveDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), new Function<String, DataSource>() {
                 @Override
                 public DataSource apply(final String key) {
                     return createDataSource(key);

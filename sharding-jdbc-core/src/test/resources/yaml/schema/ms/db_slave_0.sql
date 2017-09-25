@@ -1,5 +1,5 @@
-DROP SCHEMA IF EXISTS `db_slave`;
-CREATE SCHEMA `db_slave`;
+DROP SCHEMA IF EXISTS `db_slave_0`;
+CREATE SCHEMA `db_slave_0`;
 DROP TABLE IF EXISTS `t_order`;
 DROP TABLE IF EXISTS `t_order_item`;
 DROP TABLE IF EXISTS `t_config`;
