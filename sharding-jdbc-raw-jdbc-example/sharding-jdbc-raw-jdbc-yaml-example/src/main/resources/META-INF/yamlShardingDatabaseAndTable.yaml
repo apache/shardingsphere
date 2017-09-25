@@ -1,26 +1,18 @@
 dataSources:
   ds_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_yaml_0
+    url: jdbc:mysql://localhost:3306/demo_ds_0
     username: root
     password: 
   ds_1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_yaml_1
+    url: jdbc:mysql://localhost:3306/demo_ds_1
     username: root
     password: 
-  ds_config: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_yaml_config
-    username: root
-    password:
 
 defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
 
 tables:
-  t_config:
-    actualDataNodes: ds_config.t_config
-
   t_order: 
     actualDataNodes: ds_${0..1}.t_order_${0..1}
     tableStrategy: 
@@ -49,4 +41,4 @@ defaultTableStrategy:
   none:
 
 props:
-  sql.show: false
+  sql.show: true

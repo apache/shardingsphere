@@ -1,0 +1,36 @@
+dataSources:
+  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_0
+    username: root
+    password: 
+  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_1
+    username: root
+    password: 
+
+defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+
+tables:
+  t_order: 
+    actualDataNodes: ds_${0..1}.t_order
+    keyGeneratorColumnName: order_id
+  t_order_item:
+    actualDataNodes: ds_${0..1}.t_order_item
+    keyGeneratorColumnName: item_id
+
+bindingTables:
+  - t_order,t_order_item
+
+#默认数据库分片策略
+defaultDatabaseStrategy:
+  inline:
+    shardingColumn: user_id
+    algorithmInlineExpression: ds_${user_id % 2}
+
+defaultTableStrategy:
+  none:
+
+props:
+  sql.show: true
