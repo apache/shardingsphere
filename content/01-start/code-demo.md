@@ -14,9 +14,9 @@ Sharding-JDBC使用示例的github地址：https://github.com/shardingjdbc/shard
 
 1. 由于涉及到真实数据库环境，需要在准备测试的数据库上运行resources/manual_shcema.sql创建数据库，示例中使用的是MySQL环境，如需使用PostgreSQL、SQLServer或Oracle，请自行创建数据库脚本。
 
-1. 所有代码示例均通过DDL语句自动创建数据表，无需用户手动创建。
+1. 使用示例均通过DDL语句自动创建数据表，无需用户手动创建。
 
-1. 代码示例中关于数据库URL、驱动、用户名、密码的代码、yaml及Spring配置，需要用户自行修改。
+1. 使用示例中关于数据库URL、驱动、用户名、密码的代码、yaml及Spring配置，需要用户自行修改。
 
 1. 读写分离示例代码中的主库和从库需要用户自行在数据库层面配置主从关系，否则落到从库的读请求查询出来的数据会是空值。
 
