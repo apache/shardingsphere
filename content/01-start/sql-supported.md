@@ -2,7 +2,7 @@
 toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "SQL支持详细列表"
-weight = 5
+weight = 6
 prev = "/01-start/limitations"
 next = "/01-start/stress-test"
 

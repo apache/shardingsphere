@@ -172,7 +172,7 @@ h2 {
   font-size: 2.5rem;
   line-height: 110% !important;
   margin: 2.5rem 0 1.5rem 0;
-  text-transform: capitalize;
+  text-transform: none;
 }
 
 h3 {
