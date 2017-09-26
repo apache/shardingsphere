@@ -27,7 +27,7 @@ public final class SpringMybatisShardingDatabaseOnlyMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatis/mybatisShardingDatabaseOnlyContext.xml");
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingDatabaseOnlyContext.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
     }

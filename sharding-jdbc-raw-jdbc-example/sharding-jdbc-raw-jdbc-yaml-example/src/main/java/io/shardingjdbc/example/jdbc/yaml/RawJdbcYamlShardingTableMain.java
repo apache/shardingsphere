@@ -15,20 +15,21 @@
  * </p>
  */
 
-package io.shardingjdbc.example.mybatis;
+package io.shardingjdbc.example.jdbc.yaml;
 
-import io.shardingjdbc.example.mybatis.service.DemoService;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import io.shardingjdbc.core.api.ShardingDataSourceFactory;
+import io.shardingjdbc.example.jdbc.yaml.repository.RawJdbcYamlRepository;
 
+import javax.sql.DataSource;
+import java.io.File;
 
-public final class SpringMybatisShardingDatabaseAndTableMain {
+public final class RawJdbcYamlShardingTableMain {
     
     // CHECKSTYLE:OFF
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws Exception {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingDatabaseAndTableContext.xml");
-        DemoService demoService = applicationContext.getBean(DemoService.class);
-        demoService.demo();
+        DataSource dataSource = ShardingDataSourceFactory.createDataSource(new File(
+                RawJdbcYamlShardingTableMain.class.getResource("/META-INF/yamlShardingTable.yaml").getFile()));
+        new RawJdbcYamlRepository(dataSource).demo();
     }
 }

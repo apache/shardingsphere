@@ -27,7 +27,7 @@ public final class SpringMybatisShardingAndMasterSlaveMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatis/mybatisShardingAndMasterSlaveContext.xml");
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingAndMasterSlaveContext.xml");
         DemoService demo = applicationContext.getBean(DemoService.class);
         demo.demo();
     }
