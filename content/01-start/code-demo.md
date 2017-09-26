@@ -1,14 +1,14 @@
 +++
 toc = true
 date = "2017-08-23T22:38:50+08:00"
-title = "代码示例"
+title = "使用示例"
 weight = 2
 prev = "/01-start/quick-start"
 next = "/01-start/faq"
 
 +++
 
-Sharding-JDBC代码示例github地址：https://github.com/shardingjdbc/sharding-jdbc-example
+Sharding-JDBC使用示例的github地址：https://github.com/shardingjdbc/sharding-jdbc-example
 
 # 注意事项
 
@@ -20,9 +20,9 @@ Sharding-JDBC代码示例github地址：https://github.com/shardingjdbc/sharding
 
 1. 读写分离示例代码中的主库和从库需要用户自行在数据库层面配置主从关系，否则落到从库的读请求查询出来的数据会是空值。
 
-# 原生JDBC代码示例
+# 原生JDBC使用示例
 
-## 基于Java代码的原生JDBC示例
+## 基于Java代码的原生JDBC使用示例
 
 ### 读写分离：
 
@@ -54,7 +54,7 @@ io.shardingjdbc.example.jdbc.java.RawJdbcJavaShardingTableOnlyMain
 io.shardingjdbc.example.jdbc.java.RawJdbcJavaShardingAndMasterSlaveMain
 ```
 
-## 基于Yaml的原生JDBC示例
+## 基于Yaml的原生JDBC使用示例
  
 ### 读写分离：
 
@@ -88,7 +88,7 @@ io.shardingjdbc.example.jdbc.yaml.RawJdbcYamlShardingAndMasterSlaveMain
 
 # Spring代码示例
 
-## 基于JPA的Spring代码示例
+## 基于JPA的Spring使用示例
 
 ### 读写分离：
 
@@ -120,7 +120,7 @@ io.shardingjdbc.example.spring.namespace.jpa.SpringJpaShardingTableMain
 io.shardingjdbc.example.spring.namespace.jpa.SpringJpaShardingDatabaseAndMasterSlaveMain
 ```
 
-## 基于Mybatis的Spring代码示例
+## 基于Mybatis的Spring使用示例
 
 ### 读写分离：
 
@@ -152,9 +152,9 @@ io.shardingjdbc.example.spring.namespace.jpa.SpringMybatisShardingTableMain
 io.shardingjdbc.example.spring.namespace.jpa.SpringMybatisShardingDatabaseAndMasterSlaveMain
 ```
 
-# 动态配置及治理代码示例
+# 数据库服务编排治理使用示例
 
-## 动态配置治理代码示例 sharding-jdbc-orchestration-example 
+## sharding-jdbc-orchestration-example 
 
 1. 准备Zookeeper环境，代码示例中使用的地址为localhost:2181
 
