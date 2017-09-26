@@ -45,7 +45,36 @@ public final class TransactionMain {
     public static void main(final String[] args) throws SQLException {
     // CHECKSTYLE:ON
         DataSource dataSource = getShardingDataSource();
+        dropTable(dataSource);
+        createTable(dataSource);
+        insert(dataSource);
         updateFailure(dataSource);
+    }
+    
+    private static void createTable(final DataSource dataSource) throws SQLException {
+        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
+        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (item_id))");
+    }
+    
+    private static void dropTable(final DataSource dataSource) throws SQLException {
+        executeUpdate(dataSource, "DROP TABLE IF EXISTS t_order_item");
+        executeUpdate(dataSource, "DROP TABLE IF EXISTS t_order");
+    }
+    
+    private static void executeUpdate(final DataSource dataSource, final String sql) throws SQLException {
+        try (
+                Connection conn = dataSource.getConnection();
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }
+    }
+    
+    private static void insert(final DataSource dataSource) throws SQLException {
+        String sql = "INSERT INTO t_order VALUES (1000, 10, 'INIT');";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }
     }
     
     private static void updateFailure(final DataSource dataSource) throws SQLException {
