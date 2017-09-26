@@ -13,4 +13,11 @@
         <module>sharding-jdbc-spring-namespace-mybatis-example</module>
         <module>sharding-jdbc-spring-namespace-jpa-example</module>
     </modules>
+    
+    <dependencies>
+        <dependency>
+            <groupId>io.shardingjdbc</groupId>
+            <artifactId>sharding-jdbc-spring-namespace</artifactId>
+        </dependency>
+    </dependencies>
 </project>
