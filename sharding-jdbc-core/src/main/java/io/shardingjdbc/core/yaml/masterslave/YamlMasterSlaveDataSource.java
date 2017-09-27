@@ -39,31 +39,31 @@ import java.util.Map;
 public class YamlMasterSlaveDataSource extends MasterSlaveDataSource {
     
     public YamlMasterSlaveDataSource(final File yamlFile) throws IOException, SQLException {
-        super(new MasterSlaveRuleBuilder(Collections.<String, DataSource>emptyMap(), unmarshal(yamlFile)).build());
+        super(unmarshal(yamlFile).build(Collections.<String, DataSource>emptyMap()));
     }
     
     public YamlMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws IOException, SQLException {
-        super(new MasterSlaveRuleBuilder(dataSourceMap, unmarshal(yamlFile)).build());
+        super(unmarshal(yamlFile).build(dataSourceMap));
     }
     
     public YamlMasterSlaveDataSource(final byte[] yamlByteArray) throws IOException, SQLException {
-        super(new MasterSlaveRuleBuilder(Collections.<String, DataSource>emptyMap(), unmarshal(yamlByteArray)).build());
+        super(unmarshal(yamlByteArray).build(Collections.<String, DataSource>emptyMap()));
     }
     
     public YamlMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws IOException, SQLException {
-        super(new MasterSlaveRuleBuilder(dataSourceMap, unmarshal(yamlByteArray)).build());
+        super(unmarshal(yamlByteArray).build(dataSourceMap));
     }
     
-    private static YamlMasterSlaveConfig unmarshal(final File yamlFile) throws IOException {
+    private static YamMasterSlaveRuleConfiguration unmarshal(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            return new Yaml(new Constructor(YamlMasterSlaveConfig.class)).loadAs(inputStreamReader, YamlMasterSlaveConfig.class);
+            return new Yaml(new Constructor(YamMasterSlaveRuleConfiguration.class)).loadAs(inputStreamReader, YamMasterSlaveRuleConfiguration.class);
         }
     }
     
-    private static YamlMasterSlaveConfig unmarshal(final byte[] yamlByteArray) throws IOException {
-        return new Yaml(new Constructor(YamlMasterSlaveConfig.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlMasterSlaveConfig.class);
+    private static YamMasterSlaveRuleConfiguration unmarshal(final byte[] yamlByteArray) throws IOException {
+        return new Yaml(new Constructor(YamMasterSlaveRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamMasterSlaveRuleConfiguration.class);
     }
 }

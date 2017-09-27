@@ -54,16 +54,16 @@ public class YamlShardingDataSource extends ShardingDataSource {
         super(unmarshal(yamlByteArray).build(dataSourceMap), unmarshal(yamlByteArray).getProps());
     }
     
-    private static YamlShardingConfiguration unmarshal(final File yamlFile) throws IOException {
+    private static YamlShardingRuleConfiguration unmarshal(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            return new Yaml(new Constructor(YamlShardingConfiguration.class)).loadAs(inputStreamReader, YamlShardingConfiguration.class);
+            return new Yaml(new Constructor(YamlShardingRuleConfiguration.class)).loadAs(inputStreamReader, YamlShardingRuleConfiguration.class);
         }
     }
     
-    private static YamlShardingConfiguration unmarshal(final byte[] yamlByteArray) throws IOException {
-        return new Yaml(new Constructor(YamlShardingConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlShardingConfiguration.class);
+    private static YamlShardingRuleConfiguration unmarshal(final byte[] yamlByteArray) throws IOException {
+        return new Yaml(new Constructor(YamlShardingRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlShardingRuleConfiguration.class);
     }
 }
