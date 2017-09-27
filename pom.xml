@@ -8,6 +8,7 @@
     <modules>
         <module>sharding-jdbc-raw-jdbc-example</module>
         <module>sharding-jdbc-spring-namespace-example</module>
+        <module>sharding-jdbc-spring-boot-example</module>
         <module>sharding-jdbc-orchestration-example</module>
         <module>sharding-jdbc-transaction-example</module>
     </modules>
@@ -20,11 +21,12 @@
         
         <sharding-jdbc.version>2.0.0.M1-SNAPSHOT</sharding-jdbc.version>
         
+        <spring-boot.version>1.5.7.RELEASE</spring-boot.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <mysql-connector-java.version>5.1.30</mysql-connector-java.version>
         <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
         <slf4j.version>1.7.7</slf4j.version>
-        <logback.version>1.1.2</logback.version>
+        <logback.version>1.1.6</logback.version>
         
         <mybatis.version>3.2.8</mybatis.version>
         <mybatis-spring.version>1.2.2</mybatis-spring.version>
@@ -149,6 +151,11 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-tx</artifactId>
                 <version>${springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-jpa</artifactId>
+                <version>${spring-boot.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
