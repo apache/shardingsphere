@@ -62,13 +62,22 @@ public class YamlShardingRuleConfiguration {
     private Properties props = new Properties();
     
     /**
-     * Build sharding rule from yaml.
+     * Get sharding rule from yaml.
      *
      * @param dataSourceMap data source map
      * @return sharding rule from yaml
      * @throws SQLException SQL exception
      */
-    public ShardingRule build(final Map<String, DataSource> dataSourceMap) throws SQLException {
+    public ShardingRule getShardingRule(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        return getShardingRuleConfiguration().build(dataSourceMap.isEmpty() ? dataSources : dataSourceMap);
+    }
+    
+    /**
+     * Get sharding rule configuration from yaml.
+     *
+     * @return sharding rule configuration from yaml
+     */
+    public ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setDefaultDataSourceName(defaultDataSourceName);
         for (Map.Entry<String, YamlTableRuleConfiguration> entry : tables.entrySet()) {
@@ -95,6 +104,6 @@ public class YamlShardingRuleConfiguration {
             masterSlaveRuleConfigs.add(config);
         }
         result.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);
-        return result.build(dataSourceMap.isEmpty() ? dataSources : dataSourceMap);
+        return result;
     }
 }

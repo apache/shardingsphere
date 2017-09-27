@@ -55,17 +55,28 @@ public class YamMasterSlaveRuleConfiguration {
     private Properties props = new Properties();
     
     /**
-     * Build master-slave rule from yaml.
+     * Get master-slave rule from yaml.
      *
+     * @param dataSourceMap data source map
      * @return master-slave rule from yaml
+     * @throws SQLException SQL exception
      */
-    public MasterSlaveRule build(final Map<String, DataSource> dataSourceMap) throws SQLException {
+    public MasterSlaveRule getMasterSlaveRule(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        return getMasterSlaveRuleConfiguration().build(dataSourceMap.isEmpty() ? dataSources : dataSourceMap);
+    }
+    
+    /**
+     * Get master-slave rule configuration from yaml.
+     *
+     * @return master-slave rule configuration from yaml
+     */
+    public MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
         MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
         result.setName(name);
         result.setMasterDataSourceName(masterDataSourceName);
         result.setSlaveDataSourceNames(slaveDataSourceNames);
         result.setLoadBalanceAlgorithmType(loadBalanceAlgorithmType);
         result.setLoadBalanceAlgorithmClassName(loadBalanceAlgorithmClassName);
-        return result.build(dataSourceMap.isEmpty() ? dataSources : dataSourceMap);
+        return result;
     }
 }

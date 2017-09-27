@@ -39,19 +39,19 @@ import java.util.Map;
 public class YamlMasterSlaveDataSource extends MasterSlaveDataSource {
     
     public YamlMasterSlaveDataSource(final File yamlFile) throws IOException, SQLException {
-        super(unmarshal(yamlFile).build(Collections.<String, DataSource>emptyMap()));
+        super(unmarshal(yamlFile).getMasterSlaveRule(Collections.<String, DataSource>emptyMap()));
     }
     
     public YamlMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws IOException, SQLException {
-        super(unmarshal(yamlFile).build(dataSourceMap));
+        super(unmarshal(yamlFile).getMasterSlaveRule(dataSourceMap));
     }
     
     public YamlMasterSlaveDataSource(final byte[] yamlByteArray) throws IOException, SQLException {
-        super(unmarshal(yamlByteArray).build(Collections.<String, DataSource>emptyMap()));
+        super(unmarshal(yamlByteArray).getMasterSlaveRule(Collections.<String, DataSource>emptyMap()));
     }
     
     public YamlMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws IOException, SQLException {
-        super(unmarshal(yamlByteArray).build(dataSourceMap));
+        super(unmarshal(yamlByteArray).getMasterSlaveRule(dataSourceMap));
     }
     
     private static YamMasterSlaveRuleConfiguration unmarshal(final File yamlFile) throws IOException {

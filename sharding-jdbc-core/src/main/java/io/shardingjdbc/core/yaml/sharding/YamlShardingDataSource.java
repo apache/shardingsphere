@@ -39,19 +39,19 @@ import java.util.Map;
 public class YamlShardingDataSource extends ShardingDataSource {
     
     public YamlShardingDataSource(final File yamlFile) throws IOException, SQLException {
-        super(unmarshal(yamlFile).build(Collections.<String, DataSource>emptyMap()), unmarshal(yamlFile).getProps());
+        super(unmarshal(yamlFile).getShardingRule(Collections.<String, DataSource>emptyMap()), unmarshal(yamlFile).getProps());
     }
     
     public YamlShardingDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws IOException, SQLException {
-        super(unmarshal(yamlFile).build(dataSourceMap), unmarshal(yamlFile).getProps());
+        super(unmarshal(yamlFile).getShardingRule(dataSourceMap), unmarshal(yamlFile).getProps());
     }
     
     public YamlShardingDataSource(final byte[] yamlByteArray) throws IOException, SQLException {
-        super(unmarshal(yamlByteArray).build(Collections.<String, DataSource>emptyMap()), unmarshal(yamlByteArray).getProps());
+        super(unmarshal(yamlByteArray).getShardingRule(Collections.<String, DataSource>emptyMap()), unmarshal(yamlByteArray).getProps());
     }
     
     public YamlShardingDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws IOException, SQLException {
-        super(unmarshal(yamlByteArray).build(dataSourceMap), unmarshal(yamlByteArray).getProps());
+        super(unmarshal(yamlByteArray).getShardingRule(dataSourceMap), unmarshal(yamlByteArray).getProps());
     }
     
     private static YamlShardingRuleConfiguration unmarshal(final File yamlFile) throws IOException {
