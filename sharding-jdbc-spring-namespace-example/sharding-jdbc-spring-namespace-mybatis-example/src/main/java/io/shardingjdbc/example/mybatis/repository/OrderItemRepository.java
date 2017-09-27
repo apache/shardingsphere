@@ -17,7 +17,10 @@
 
 package io.shardingjdbc.example.mybatis.repository;
 
+import io.shardingjdbc.example.mybatis.entity.Order;
 import io.shardingjdbc.example.mybatis.entity.OrderItem;
+
+import java.util.List;
 
 public interface OrderItemRepository {
     
@@ -30,4 +33,6 @@ public interface OrderItemRepository {
     void delete(Long orderItemId);
     
     void dropTable();
+    
+    List<Order> selectAll();
 }

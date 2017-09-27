@@ -19,8 +19,6 @@ package io.shardingjdbc.example.mybatis.repository;
 
 import io.shardingjdbc.example.mybatis.entity.Order;
 
-import java.util.List;
-
 public interface OrderRepository {
     
     void createIfNotExistsTable();
@@ -28,8 +26,6 @@ public interface OrderRepository {
     void truncateTable();
     
     Long insert(Order model);
-    
-    List<Order> selectAll();
     
     void delete(Long orderId);
     
