@@ -26,19 +26,17 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "t_order")
+@Table(name = "t_order_item")
 public class OrderItem implements Serializable {
     
-    private static final long serialVersionUID = 661434701950670670L;
+    private static final long serialVersionUID = 263434701950670170L;
     
     @Id
-    @Column(name = "order_id")
+    @Column(name = "order_item_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long orderItemId;
     
-    @Id
     @Column(name = "order_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long orderId;
     
     @Column(name = "user_id")
@@ -46,6 +44,14 @@ public class OrderItem implements Serializable {
     
     @Column(name = "status")
     private String status;
+    
+    public long getOrderItemId() {
+        return orderItemId;
+    }
+    
+    public void setOrderItemId(final long orderItemId) {
+        this.orderItemId = orderItemId;
+    }
     
     public long getOrderId() {
         return orderId;
@@ -73,6 +79,6 @@ public class OrderItem implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("order_id: %s, user_id: %s, status: %s", orderId, userId, status);
+        return String.format("order_item_id: %s, order_id: %s, user_id: %s, status: %s", orderItemId, orderId, userId, status);
     }
 }

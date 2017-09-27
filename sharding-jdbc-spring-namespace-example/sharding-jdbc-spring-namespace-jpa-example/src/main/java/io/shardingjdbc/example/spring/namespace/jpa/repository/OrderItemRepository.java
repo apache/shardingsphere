@@ -17,11 +17,15 @@
 
 package io.shardingjdbc.example.spring.namespace.jpa.repository;
 
-import io.shardingjdbc.example.spring.namespace.jpa.entity.Order;
+import io.shardingjdbc.example.spring.namespace.jpa.entity.OrderItem;
 
-public interface OrderRepository {
+import java.util.List;
+
+public interface OrderItemRepository {
     
-    Long insert(Order order);
+    Long insert(OrderItem orderItemId);
     
-    void delete(Long orderId);
+    void delete(Long orderItemId);
+    
+    List<OrderItem> selectAll();
 }
