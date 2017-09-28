@@ -11,6 +11,7 @@
     
     <modules>
         <module>sharding-jdbc-spring-boot-data-jpa-example</module>
+        <module>sharding-jdbc-spring-boot-data-mybatis-example</module>
     </modules>
 
     <dependencies>
