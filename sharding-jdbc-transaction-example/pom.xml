@@ -11,6 +11,7 @@
         <dependency>
             <groupId>io.shardingjdbc</groupId>
             <artifactId>sharding-jdbc-transaction</artifactId>
+            <version>${sharding-jdbc.version}</version>
         </dependency>
     </dependencies>
 </project>

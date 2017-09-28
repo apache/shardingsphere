@@ -18,6 +18,7 @@
         <dependency>
             <groupId>io.shardingjdbc</groupId>
             <artifactId>sharding-jdbc-core</artifactId>
+            <version>${sharding-jdbc.version}</version>
         </dependency>
     </dependencies>
 </project>
