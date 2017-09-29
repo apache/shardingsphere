@@ -35,15 +35,17 @@ public class DemoService {
             item.setStatus("INSERT_TEST");
             orderItemIds.add(orderItemRepository.save(item).getOrderItemId());
         }
+        List<OrderItem> orderItems = orderItemRepository.findAll();
         System.out.println(orderItemRepository.findAll());
         System.out.println("2.Delete--------------");
-        for (Long each : orderItemIds) {
-            orderItemRepository.delete(each);
+        if (orderItems.size() > 0) {
+            for (Long each : orderItemIds) {
+                orderItemRepository.delete(each);
+            }
+            for (Long each : orderIds) {
+                orderRepository.delete(each);
+            }
         }
         System.out.println(orderItemRepository.findAll());
-        for (Long each : orderIds) {
-            orderRepository.delete(each);
-        }
-        System.out.println(orderRepository.findAll());
     }
 }

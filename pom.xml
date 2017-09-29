@@ -23,6 +23,7 @@
         
         <spring-boot.version>1.5.7.RELEASE</spring-boot.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
+        <hikari-cp.version>2.4.11</hikari-cp.version>
         <mysql-connector-java.version>5.1.30</mysql-connector-java.version>
         <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
         <slf4j.version>1.7.7</slf4j.version>

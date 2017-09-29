@@ -12,7 +12,11 @@
             <pattern>${log.pattern}</pattern>
         </encoder>
     </appender>
-
+    
+    <logger name="org.springframework" level="WARN" />
+    
+    <logger name="com.zaxxer.hikari" level="WARN" />
+    
     <root>
         <level value="INFO" />
         <appender-ref ref="STDOUT" />
