@@ -28,7 +28,6 @@ import lombok.RequiredArgsConstructor;
  */
 // TODO move to a suitable package
 @RequiredArgsConstructor
-@EqualsAndHashCode
 public final class ShardingKey {
     
     /**
@@ -41,4 +40,44 @@ public final class ShardingKey {
      */
     @Getter
     private final String shardingColumn;
+    
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (!(o instanceof ShardingKey)) {
+            return false;
+        } else {
+            ShardingKey other = (ShardingKey) o;
+            String this$logicTable = this.logicTable;
+            String other$logicTable = other.logicTable;
+            if (this$logicTable == null) {
+                if (other$logicTable != null) {
+                    return false;
+                }
+            } else if (!this$logicTable.equalsIgnoreCase(other$logicTable)) {
+                return false;
+            }
+
+            String this$shardingColumn = this.getShardingColumn();
+            String other$shardingColumn = other.getShardingColumn();
+            if (this$shardingColumn == null) {
+                if (other$shardingColumn != null) {
+                    return false;
+                }
+            } else if (!this$shardingColumn.equalsIgnoreCase(other$shardingColumn)) {
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public int hashCode() {
+        int result = 1;
+        String $logicTable = this.logicTable;
+        result = result * 59 + ($logicTable == null ? 0 : $logicTable.toLowerCase().hashCode());
+        String $shardingColumn = this.getShardingColumn();
+        result = result * 59 + ($shardingColumn == null ? 0 : $shardingColumn.toLowerCase().hashCode());
+        return result;
+    }
 }
