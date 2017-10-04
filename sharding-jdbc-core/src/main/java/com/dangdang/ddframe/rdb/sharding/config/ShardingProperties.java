@@ -80,7 +80,7 @@ public final class ShardingProperties {
      */
     @SuppressWarnings("unchecked")
     public <T> T getValue(final ShardingPropertiesConstant shardingPropertiesConstant) {
-        String result = props.getProperty(shardingPropertiesConstant.getKey(), shardingPropertiesConstant.getDefaultValue());
+        String result = String.valueOf(props.getOrDefault(shardingPropertiesConstant.getKey(), shardingPropertiesConstant.getDefaultValue()));
         if (boolean.class == shardingPropertiesConstant.getType()) {
             return (T) Boolean.valueOf(result);
         }
