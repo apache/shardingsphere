@@ -80,15 +80,19 @@ public final class ShardingProperties {
      */
     @SuppressWarnings("unchecked")
     public <T> T getValue(final ShardingPropertiesConstant shardingPropertiesConstant) {
-        String result = String.valueOf(props.getOrDefault(shardingPropertiesConstant.getKey(), shardingPropertiesConstant.getDefaultValue()));
+        Object result = props.getOrDefault(shardingPropertiesConstant.getKey(), shardingPropertiesConstant.getDefaultValue());
         if (boolean.class == shardingPropertiesConstant.getType()) {
-            return (T) Boolean.valueOf(result);
-        }
-        if (int.class == shardingPropertiesConstant.getType()) {
-            return (T) Integer.valueOf(result);
-        }
-        if (long.class == shardingPropertiesConstant.getType()) {
-            return (T) Long.valueOf(result);
+            if (!(result instanceof Boolean)) {
+                return (T) Boolean.valueOf(String.valueOf(result));
+            }
+        }else if (int.class == shardingPropertiesConstant.getType()) {
+            if (!(result instanceof Integer)) {
+                return (T) Integer.valueOf(String.valueOf(result));
+            }
+        } else if (long.class == shardingPropertiesConstant.getType() ) {
+            if (!(result instanceof Long)){
+                return (T) Long.valueOf(String.valueOf(result));
+            }
         }
         return (T) result;
     }
