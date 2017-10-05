@@ -73,27 +73,25 @@ public final class ShardingProperties {
     
     /**
      * Get property value.
-     * 
+     *
      * @param shardingPropertiesConstant sharding properties constant
-     * @param <T> class type of return value
      * @return property value
      */
-    @SuppressWarnings("unchecked")
-    public <T> T getValue(final ShardingPropertiesConstant shardingPropertiesConstant) {
+    public Object getValue(final ShardingPropertiesConstant shardingPropertiesConstant) {
         Object result = props.getOrDefault(shardingPropertiesConstant.getKey(), shardingPropertiesConstant.getDefaultValue());
         if (boolean.class == shardingPropertiesConstant.getType()) {
             if (!(result instanceof Boolean)) {
-                return (T) Boolean.valueOf(String.valueOf(result));
+                return Boolean.valueOf(String.valueOf(result));
             }
         }else if (int.class == shardingPropertiesConstant.getType()) {
             if (!(result instanceof Integer)) {
-                return (T) Integer.valueOf(String.valueOf(result));
+                return Integer.valueOf(String.valueOf(result));
             }
         } else if (long.class == shardingPropertiesConstant.getType() ) {
             if (!(result instanceof Long)){
-                return (T) Long.valueOf(String.valueOf(result));
+                return Long.valueOf(String.valueOf(result));
             }
         }
-        return (T) result;
+        return result;
     }
 }
