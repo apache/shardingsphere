@@ -25,7 +25,7 @@ public class SpringBootMasterSlaveTest {
     private DataSource dataSource;
     
     @Test
-    public void testWithMasterSlaveDataSource() {
+    public void assertWithMasterSlaveDataSource() {
         assertTrue(dataSource instanceof MasterSlaveDataSource);
         for (DataSource each : ((MasterSlaveDataSource) dataSource).getAllDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxActive(), is(16));

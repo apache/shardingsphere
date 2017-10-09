@@ -27,7 +27,7 @@ public class SpringBootShardingTest {
     private DataSource dataSource;
     
     @Test
-    public void testWithShardingDataSource() throws NoSuchFieldException, IllegalAccessException {
+    public void assertWithShardingDataSource() throws NoSuchFieldException, IllegalAccessException {
         assertTrue(dataSource instanceof ShardingDataSource);
         Field field = ShardingDataSource.class.getDeclaredField("shardingContext");
         field.setAccessible(true);
