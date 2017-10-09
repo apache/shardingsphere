@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.merger.common;
 
 import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -61,7 +62,7 @@ public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
         if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
             throw new SQLFeatureNotSupportedException();
         }
-        Object result =  currentResultSetRow.getCell(labelAndIndexMap.get(columnLabel));
+        Object result =  currentResultSetRow.getCell(labelAndIndexMap.containsKey(columnLabel) ? labelAndIndexMap.get(columnLabel) : labelAndIndexMap.get(SQLUtil.getExactlyValue(columnLabel)));
         wasNull = null == result;
         return result;
     }
