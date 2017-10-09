@@ -19,7 +19,7 @@ next = "/01-start"
  - 请确定这不是一个重复的bug。
    查看[Issue Page](https://github.com/shardingjdbc/sharding-jdbc/issues)列表，搜索您要提交的bug是否已经被报告过。
  - 确定在最新版本中该bug存在。我们将不会持续维护所有的发布版本，所有的修改仅根据当前版本。
- - 确认该bug是可以复现的，请尽量提供完整的重现步骤及在github上提供可以复现问题的项目演示代码。
+ - 确认该bug是可以复现的，请尽量提供完整的重现步骤，并在github上提供可以复现问题的项目演示代码。
  
 
 ### 如何提交一个有质量的bug

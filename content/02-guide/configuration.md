@@ -8,14 +8,14 @@ next = "/02-guide/hint-sharding-value/"
 
 +++
 
-## YAML配置
+## 2.YAML配置
 
-## 引入maven依赖
+### 引入maven依赖
 
 ```xml
 <dependency>
-    <groupId>com.dangdang</groupId>
-    <artifactId>sharding-jdbc</artifactId>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-core</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```
@@ -28,66 +28,78 @@ next = "/02-guide/hint-sharding-value/"
 
 ### 配置示例
 
+#### 分库分表
 ```yaml
-dataSource:
-  ds_default: !!org.apache.commons.dbcp.BasicDataSource
-      driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/ds_default
-      username: root
-      password: 
-  ds_0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_0
-    username: root
+dataSources:
+  db0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
     password: 
-  ds_1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_1
-    username: root
+    maxActive: 100
+  db1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
     password: 
+    maxActive: 100
     
-defaultDataSourceName: ds_default
-
 tables:
+  config:
+    actualDataNodes: db${0..1}.t_config
+
   t_order: 
-    actualDataNodes: ds_${0..1}.t_order_${0..1}
+    actualDataNodes: db${0..1}.t_order_${0..1}
+    databaseStrategy: 
+      standard:
+        shardingColumn: user_id
+        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
     tableStrategy: 
       inline:
-        shardingColumn: id
-        algorithmInlineExpression: t_order_${id % 2}
+        shardingColumn: order_id
+        algorithmInlineExpression: t_order_${order_id % 2}
+    keyGeneratorColumnName: order_id
+    keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
+  
   t_order_item:
-    actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+    actualDataNodes: db${0..1}.t_order_item_${0..1}
+    #绑定表中其余的表的策略与第一张表的策略相同
+    databaseStrategy: 
+      standard:
+        shardingColumn: user_id
+        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
     tableStrategy: 
       inline:
-        shardingColumn: id
-        algorithmInlineExpression: t_order_item_${id % 2}
+        shardingColumn: order_id
+        algorithmInlineExpression: t_order_item_${order_id % 2}
 
 bindingTables:
   - t_order,t_order_item
-
+#默认数据库分片策略
 defaultDatabaseStrategy:
   none:
-  
 defaultTableStrategy:
-  none:
-  
+  complex:
+    shardingColumns: id, order_id
+    algorithmClassName: io.shardingjdbc.core.yaml.fixture.MultiAlgorithm
+
 props:
   sql.show: true
 ```
 
-### 配置项说明
+#### 配置项说明
 
 ```yaml
-dataSource: 数据源配置
+dataSources: 数据源配置
   <data_source_name> 可配置多个: !!数据库连接池实现类
     driverClassName: 数据库驱动类名
     url: 数据库url连接
     username: 数据库用户名
     password: 数据库密码
     ... 数据库连接池的其它属性
-    
+
 defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默认数据源定位
-  
+
 tables: 分库分表配置，可配置多个logic_table_name
     <logic_table_name>: 逻辑表名
         actualDataNodes: 真实数据节点，由库名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示为只分库不分表。
@@ -118,16 +130,53 @@ props: 属性配置(可选)
     executor.size: 工作线程数量，默认值: CPU核数
 ```
 
+#### 读写分离
+```yaml
+dataSources:
+  db_master: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+  db_slave_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db_slave_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+  db_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db_slave_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+
+name: db_ms
+
+masterDataSourceName: db_master
+
+slaveDataSourceNames: [db_slave_0, db_slave_1]
+```
+
+#### 配置项说明
+
+```yaml
+dataSource: 数据源配置，同分库分表
+
+name: 分库分表数据源名称
+
+masterDataSourceName: master数据源名称
+
+slaveDataSourceNames：slave数据源名称，用数组表示多个
+```
+
 #### YAML格式特别说明
 !! 表示实现类
 
-& 表示变量定义
+[] 表示多个
 
-* 表示变量引用
-
-- 表示多个
-
-## Spring命名空间配置
+## 3.Spring命名空间配置
 
 ### 引入maven依赖
 
