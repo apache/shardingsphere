@@ -64,8 +64,7 @@ public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest ext
                     preparedStatement.setString(4, "insert");
                     preparedStatement.execute();
                     preparedStatement.close();
-    
-    
+                    
                     preparedStatement = connection.prepareStatement(configSql);
                     preparedStatement.setInt(1,  new Long(System.nanoTime()).intValue());
                     preparedStatement.setString(2, "insert");
