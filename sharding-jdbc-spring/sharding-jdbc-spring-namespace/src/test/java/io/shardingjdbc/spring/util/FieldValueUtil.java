@@ -17,11 +17,14 @@
 
 package io.shardingjdbc.spring.util;
 
+import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.lang.reflect.Field;
 
-import com.google.common.base.Strings;
-
-public class FieldValueUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class FieldValueUtil {
     
     private static Object getFieldValue(final Class<?> clazz, final Object obj, final String fieldName) {
         try {

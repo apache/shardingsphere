@@ -17,15 +17,15 @@
 
 package io.shardingjdbc.spring;
 
-import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.TableRule;
 import io.shardingjdbc.spring.fixture.DecrementKeyGenerator;
 import io.shardingjdbc.spring.fixture.IncrementKeyGenerator;
 import io.shardingjdbc.spring.util.FieldValueUtil;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
 
+import javax.annotation.Resource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,11 +33,9 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.annotation.Resource;
-
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceGenerateKeyColumns.xml")
@@ -74,10 +72,10 @@ public class GenerateKeyDBUnitTest extends AbstractSpringDBUnitTest {
         Object tableRules = FieldValueUtil.getFieldValue(shardingRule, "tableRules");
         assertNotNull(tableRules);
         assertThat(((Collection<TableRule>) tableRules).size(), is(2));
-        Iterator<TableRule> iter = ((Collection<TableRule>) tableRules).iterator();
-        TableRule orderRule = iter.next();
+        Iterator<TableRule> tableRuleIterator = ((Collection<TableRule>) tableRules).iterator();
+        TableRule orderRule = tableRuleIterator.next();
         assertThat(orderRule.getGenerateKeyColumn(), is("order_id"));
-        TableRule orderItemRule = iter.next();
+        TableRule orderItemRule = tableRuleIterator.next();
         assertThat(orderItemRule.getGenerateKeyColumn(), is("order_item_id"));
         assertTrue(orderItemRule.getKeyGenerator() instanceof DecrementKeyGenerator);
     }
