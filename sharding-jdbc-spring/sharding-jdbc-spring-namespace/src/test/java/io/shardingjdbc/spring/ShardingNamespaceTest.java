@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Iterator;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/testShardingNamespace.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/shardingNamespace.xml")
 public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
