@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Iterator;
 
-@ContextConfiguration(locations = "classpath:META-INF/testShardingNamespace.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/testShardingNamespace.xml")
 public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
@@ -111,12 +111,10 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void testTableRuleWithAttributesDataSource() {
-        ShardingRule shardingRule = getShardingRule("shardingRuleWithAttributesDataSource");
+        ShardingRule shardingRule = getShardingRule("tableRuleWithAttributesDataSource");
         assertThat(shardingRule.getTableRules().size(), is(1));
         TableRule tableRule = shardingRule.getTableRules().iterator().next();
         assertThat(tableRule.getLogicTable(), is("t_order"));
-        //TODO 以下测试未通过，可能是程序bug
-        /*
         assertThat(tableRule.getActualDataNodes().size(), is(8));
         assertTrue(tableRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order_0")));
         assertTrue(tableRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order_1")));
@@ -132,7 +130,6 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
                 new String[]{this.applicationContext.getBean("inlineStrategy", InlineShardingStrategyConfiguration.class).getShardingColumn()}));
         assertThat(tableRule.getGenerateKeyColumn(), is("order_id"));
         assertThat(tableRule.getKeyGenerator().getClass().getName(), is("io.shardingjdbc.spring.fixture.IncrementKeyGenerator"));
-        */
     }
     
     @Test
@@ -176,12 +173,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertTrue(showSql);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         assertThat(executorSize, is(10));
-        
-        //TODO 报NullPointerException，程序待完善
-        /*
-        String bar = shardingProperties.getValue(ShardingPropertiesConstant.findByKey("foo"));
-        assertNull(bar);
-        */
+        assertNull(ShardingPropertiesConstant.findByKey("foo"));
     }
     
     @Test
@@ -206,8 +198,8 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_1", "t_order_item")));
     }
     
-    private ShardingRule getShardingRule(final String shardingRuleName) {
-        ShardingDataSource shardingDataSource = this.applicationContext.getBean(shardingRuleName, ShardingDataSource.class);
+    private ShardingRule getShardingRule(final String shardingDataSourceName) {
+        ShardingDataSource shardingDataSource = this.applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
         Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
         return (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
     }

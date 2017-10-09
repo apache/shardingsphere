@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding"
+       xmlns:master-slave="http://shardingjdbc.io/schema/shardingjdbc/masterslave"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/masterslave  
+                        http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.xsd 
+                        ">
+    <import resource="datasource/masterSlaveDataSource.xml" />
+    
+    <bean id="randomStrategy" class="io.shardingjdbc.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    
+    <master-slave:data-source id="defaultMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" />
+    
+    <master-slave:data-source id="randomMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-type="RANDOM" />
+    
+    <master-slave:data-source id="roundRobinMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-type="ROUND_ROBIN" />
+    
+    <master-slave:data-source id="refMasterSlaveDataSource" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-ref="randomStrategy" />
+    
+    <sharding:data-source id="defaultShardingDataSource">
+        <sharding:sharding-rule data-source-names="randomMasterSlaveDataSource,refMasterSlaveDataSource" default-data-source-name="randomMasterSlaveDataSource">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+</beans>

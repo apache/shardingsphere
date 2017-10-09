@@ -17,67 +17,10 @@
 
 package io.shardingjdbc.spring.cases;
 
-import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.core.rule.TableRule;
 import io.shardingjdbc.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
-
-import javax.annotation.Resource;
 
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.Collection;
-import java.util.Iterator;
-
-
 @ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceAlgorithmClass.xml")
 public final class WithNamespaceAlgorithmClassTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
-    
-    @Resource
-    private StandardShardingStrategyConfiguration databaseStrategy;
-    
-    @Resource
-    private StandardShardingStrategyConfiguration tableStrategy;
-    
-    @Resource
-    private ShardingDataSource shardingDataSource;
-    
-    public void testShardingNamespace() {
-        assertShardingStrategy();
-        assertShardingDataSource();
-    }
-    
-    private void assertShardingStrategy() {
-        assertShardingStandardStrategy(databaseStrategy, "user_id", "io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm");
-        assertShardingStandardStrategy(tableStrategy, "order_id", "io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm");
-    }
-    
-    private void assertShardingDataSource() {
-        assertShardingRule();
-        assertShardingTableRule();
-    }
-    
-    private void assertShardingRule() {
-        assertDataSourceName(shardingDataSource);
-        assertDefaultDataSourceName(shardingDataSource);
-    }
-    
-    private void assertShardingTableRule() {
-        Collection<TableRule> tableRules = getTableRules(shardingDataSource);
-        assertThat(tableRules.size(), is(2));
-        Iterator<TableRule> iter = tableRules.iterator();
-        TableRule orderRule = iter.next();
-        assertLogicTable(orderRule, "t_order");
-        assertActualTables(orderRule, "t_order_");
-        assertShardingRuleStrategy(orderRule.getDatabaseShardingStrategy(), databaseStrategy);
-        assertShardingRuleStrategy(orderRule.getTableShardingStrategy(), tableStrategy);
-        TableRule orderItemRule = iter.next();
-        assertLogicTable(orderItemRule, "t_order_item");
-        assertActualTables(orderItemRule, "t_order_item_");
-        assertShardingRuleStrategy(orderItemRule.getDatabaseShardingStrategy(), databaseStrategy);
-        assertShardingRuleStrategy(orderItemRule.getTableShardingStrategy(), tableStrategy);
-    }
 }
