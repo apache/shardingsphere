@@ -77,7 +77,7 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
         out.beginObject();
         out.name("name").value(value.getName());
         out.name("clazz").value(value.getDataSource().getClass().getName());
-        Method[] methods = value.getDataSource().getClass().getDeclaredMethods();
+        Method[] methods = value.getDataSource().getClass().getMethods();
         Map<String, Method> getterMethods = new TreeMap<>();
         Map<String, Method> setterMethods = new TreeMap<>();
         for (Method each : methods) {
