@@ -17,12 +17,13 @@
 
 package io.shardingjdbc.core.integrate.type.ms;
 
+import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.common.base.AbstractSQLAssertTest;
 import io.shardingjdbc.core.common.env.ShardingTestStrategy;
-import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
-import io.shardingjdbc.core.rule.MasterSlaveRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
+import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import org.junit.After;
 
@@ -31,6 +32,7 @@ import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,9 +77,11 @@ public class MasterSlaveOnlyTest extends AbstractSQLAssertTest {
     }
     
     private MasterSlaveDataSource getMasterSlaveDataSource(final Map<String, DataSource> masterSlaveDataSourceMap) throws SQLException {
-        Map<String, DataSource> slaveDs = new HashMap<>(1, 1);
-        slaveDs.put("dataSource_slave_only", masterSlaveDataSourceMap.get("dataSource_slave_only"));
-        return new MasterSlaveDataSource(new MasterSlaveRule("ms_only", "dataSource_master_only", masterSlaveDataSourceMap.get("dataSource_master_only"), slaveDs));
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
+        masterSlaveRuleConfig.setName("ds_ms");
+        masterSlaveRuleConfig.setMasterDataSourceName("dataSource_master_only");
+        masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("dataSource_slave_only"));
+        return (MasterSlaveDataSource)MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig);
     }
     
     @After
