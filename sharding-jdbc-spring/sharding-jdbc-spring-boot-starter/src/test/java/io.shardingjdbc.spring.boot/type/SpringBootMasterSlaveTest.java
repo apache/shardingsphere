@@ -5,11 +5,11 @@ import io.shardingjdbc.spring.boot.SpringBootMain;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import static org.hamcrest.core.Is.is;
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 @ActiveProfiles("masterslave")
 public class SpringBootMasterSlaveTest {
     
-    @Autowired
+    @Resource
     private DataSource dataSource;
     
     @Test
