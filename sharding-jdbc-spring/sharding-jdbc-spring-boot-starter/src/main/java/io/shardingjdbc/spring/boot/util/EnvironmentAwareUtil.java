@@ -1,9 +1,10 @@
 package io.shardingjdbc.spring.boot.util;
 
 import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.util.DataSourceUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
 
@@ -31,12 +32,10 @@ public final class EnvironmentAwareUtil {
             try {
                 Map<String, Object> dataSourceProps = propertyResolver.getSubProperties(each + ".");
                 Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong datasource properties!");
-                DataSource dataSource = DataSourceBuilder.create().driverClassName(dataSourceProps.get("driver-class-name").toString())
-                        .username(dataSourceProps.get("username").toString()).password(dataSourceProps.get("password").toString())
-                        .url(dataSourceProps.get("url").toString()).type((Class<? extends DataSource>) Class.forName(dataSourceProps.get("type").toString())).build();
+                DataSource dataSource = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
                 dataSourceMap.put(each, dataSource);
-            } catch (final ClassNotFoundException ex) {
-                throw new RuntimeException("Can't find datasource type!", ex);
+            } catch (final ReflectiveOperationException ex) {
+                throw new ShardingJdbcException("Can't find datasource type!", ex);
             }
         }
     }
