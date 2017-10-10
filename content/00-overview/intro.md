@@ -98,7 +98,7 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
     // 配置Order表规则
     TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
     orderTableRuleConfig.setLogicTable("t_order");
-    orderTableRuleConfig.setActualDataNodes("ds_${0..1}.t_order_${[0, 1]}");
+    orderTableRuleConfig.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
     
     // 配置分库策略
     orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));

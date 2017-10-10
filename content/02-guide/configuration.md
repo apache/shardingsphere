@@ -24,56 +24,56 @@ next = "/02-guide/hint-sharding-value/"
 
 #### 分库分表
 ```java
-    ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-    
-    TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-    orderTableRuleConfig.setLogicTable("t_order");
-    List<String> orderActualDataNodes = new LinkedList<>();
-    for (String dataSourceName : entry.getValue().keySet()) {
-        orderActualDataNodes.add(dataSourceName + ".t_order_${0..9}");
-    }
-    orderTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderActualDataNodes));
-    shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-    
-    TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
-    orderItemTableRuleConfig.setLogicTable("t_order_item");
-    List<String> orderItemActualDataNodes = new LinkedList<>();
-    for (String dataSourceName : entry.getValue().keySet()) {
-        orderItemActualDataNodes.add(dataSourceName + ".t_order_item_${0..9}");
-    }
-    orderItemTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderItemActualDataNodes));
-    shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
-    
-    TableRuleConfiguration configTableRuleConfig = new TableRuleConfiguration();
-    configTableRuleConfig.setLogicTable("t_config");
-    shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
-    
-    shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-    shardingRuleConfig.setDefaultDataSourceName("dataSource_dbtbl_0");
-    shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
-            new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), 
-            RangeModuloDatabaseShardingAlgorithm.class.getName()));
-    shardingRuleConfig.setDefaultTableShardingStrategyConfig(
-            new StandardShardingStrategyConfiguration("order_id", PreciseModuloTableShardingAlgorithm.class.getName(), 
-            RangeModuloTableShardingAlgorithm.class.getName()));
-    
-    Map<String, DataSource> dataSourceMap = //create datasource map;
-    
-    DataSource shardingDataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
+     DataSource getShardingDataSource() throws SQLException {
+         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
+         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", ModuloShardingTableAlgorithm.class.getName()));
+         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
+     }
+     
+     TableRuleConfiguration getOrderTableRuleConfiguration() {
+         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
+         orderTableRuleConfig.setLogicTable("t_order");
+         orderTableRuleConfig.setActualDataNodes("demo_ds_${0..1}.t_order_${0..1}");
+         orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
+         return orderTableRuleConfig;
+     }
+     
+     TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
+         orderItemTableRuleConfig.setLogicTable("t_order_item");
+         orderItemTableRuleConfig.setActualDataNodes("demo_ds_${0..1}.t_order_item_${0..1}");
+         return orderItemTableRuleConfig;
+     }
+     
+     Map<String, DataSource> createDataSourceMap() {
+         Map<String, DataSource> result = new HashMap<>(2, 1);
+         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
+         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
+         return result;
+     }
 ```
 
 #### 读写分离
 ```java
-    Map<String, DataSource> masterSlaveDataSourceMap = new HashMap<>(1, 1);
-    masterSlaveDataSourceMap.put("dataSource_master_only", yourMasterDataSource);
-    masterSlaveDataSourceMap.put("dataSource_slave_only", yourSlaveDataSource);
-    
-    MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-    masterSlaveRuleConfig.setName("ds_ms");
-    masterSlaveRuleConfig.setMasterDataSourceName("dataSource_master_only");
-    masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("dataSource_slave_only"));
-    
-    DataSource masterSlaveDataSource = MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig);
+     DataSource getMasterSlaveDataSource() throws SQLException {
+         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
+         masterSlaveRuleConfig.setName("demo_ds_master_slave");
+         masterSlaveRuleConfig.setMasterDataSourceName("demo_ds_master");
+         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
+         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig);
+     }
+     
+     Map<String, DataSource> createDataSourceMap() {
+         final Map<String, DataSource> result = new HashMap<>(3, 1);
+         result.put("demo_ds_master", DataSourceUtil.createDataSource("demo_ds_master"));
+         result.put("demo_ds_slave_0", DataSourceUtil.createDataSource("demo_ds_slave_0"));
+         result.put("demo_ds_slave_1", DataSourceUtil.createDataSource("demo_ds_slave_1"));
+         return result;
+     }
 ```
 
 ## 2.YAML配置
