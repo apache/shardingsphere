@@ -163,3 +163,13 @@ io.shardingjdbc.example.spring.namespace.jpa.SpringMybatisShardingDatabaseAndMas
 ```java
 io.shardingjdbc.example.orchestration.OrchestrationMain
 ```
+
+# 柔性事务使用示例
+
+## sharding-jdbc-transaction-example 
+
+1. 运行
+
+```java
+io.shardingjdbc.example.transaction.TransactionMain
+```
