@@ -30,8 +30,8 @@ sharding-jdbc-example                                        使用示例
     ├      ├──sharding-jdbc-spring-namespace-jpa-example     基于Spring的JPA使用示例
     ├      ├──sharding-jdbc-spring-namespace-mybatis-example 基于Spring的Mybatis使用示例
     ├──sharding-jdbc-spring-boot-example                     基于SpringBoot的使用示例
-    ├      ├──sharding-jdbc-spring-namespace-jpa-example     基于Spring Boot Data JPA的使用示例
-    ├      ├──sharding-jdbc-spring-namespace-mybatis-example 基于Spring Boot Data Mybatis的使用示例
+    ├      ├──sharding-jdbc-spring-boot-data-jpa-example     基于Spring Boot Data JPA的使用示例
+    ├      ├──sharding-jdbc-spring-boot-data-mybatis-example 基于Spring Boot Data Mybatis的使用示例
     ├──sharding-jdbc-transaction-example                     柔性事务的使用示例
 
 sharding-jdbc-doc                                            文档md源码模块，不应直接使用，直接阅读官网即可
