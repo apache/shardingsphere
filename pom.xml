@@ -425,8 +425,8 @@
                     <instrumentation>
                         <ignoreTrivial>true</ignoreTrivial>
                         <excludes>
-                            <exclude>com/dangdang/**/*Test.class</exclude>
-                            <exclude>com/dangdang/**/Test*.class</exclude>
+                            <exclude>io/shardingjdbc/**/*Test.class</exclude>
+                            <exclude>io/shardingjdbc/**/Test*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
@@ -436,7 +436,7 @@
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>${coveralls-maven-plugin.version}</version>
             </plugin>
-            <!-- 
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -560,7 +560,7 @@
         </repository>
     </repositories>
     
-    <url>http://www.dangdang.com</url>
+    <url>http://shardingjdbc.io</url>
     <description>RDB Sharding</description>
     <licenses>
         <license>
@@ -571,9 +571,9 @@
     </licenses>
     
     <scm>
-        <connection>scm:https://github.com/dangdangdotcom/sharding-jdbc</connection>
-        <developerConnection>scm:https://github.com/dangdangdotcom/sharding-jdbc</developerConnection>
-        <url>https://github.com/dangdangdotcom/sharding-jdbc</url>
+        <connection>scm:https://github.com/shardingjdbc/sharding-jdbc</connection>
+        <developerConnection>scm:https://github.com/shardingjdbc/sharding-jdbc</developerConnection>
+        <url>https://github.com/shardingjdbc/sharding-jdbc</url>
     </scm>
     
     <mailingLists>
