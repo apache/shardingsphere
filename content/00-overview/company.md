@@ -69,6 +69,6 @@ chapter = true
 
 ## [真信认知科技](http://www.zhenxinsafe.com/)
 
-## [中通快递股份有限公司(http://www.zto.com/)
+## [中通快递股份有限公司](http://www.zto.com/)
 
 ## [足记](http://www.fotoplace.cc/)
