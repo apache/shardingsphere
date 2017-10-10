@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://shardingjdbc.io/schema/shardingjdbc/sharding"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            targetNamespace="http://shardingjdbc.io/schema/shardingjdbc/sharding"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+    <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
+    <xsd:element name="data-source">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="sharding-rule" minOccurs="1" maxOccurs="1" />
+                <xsd:element ref="props" minOccurs="0" maxOccurs="1" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="sharding-rule">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="table-rules" minOccurs="1" maxOccurs="1" />
+                <xsd:element ref="binding-table-rules" minOccurs="0" maxOccurs="1" />
+            </xsd:sequence>
+            <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
+            <xsd:attribute name="default-data-source-name" type="xsd:string" use="optional" />
+            <xsd:attribute name="default-database-strategy-ref" type="xsd:string" use="optional" />
+            <xsd:attribute name="default-table-strategy-ref" type="xsd:string" use="optional" />
+            <xsd:attribute name="key-generator-class" type="xsd:string" use="optional" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="table-rules">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="table-rule" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="table-rule">
+        <xsd:complexType>
+            <xsd:attribute name="logic-table" type="xsd:string" use="required" />
+            <xsd:attribute name="actual-data-nodes" type="xsd:string" use="optional" />
+            <xsd:attribute name="database-strategy-ref" type="xsd:string" use="optional" />
+            <xsd:attribute name="table-strategy-ref" type="xsd:string" use="optional" />
+            <xsd:attribute name="generate-key-column" type="xsd:string" use="optional" />
+            <xsd:attribute name="column-key-generator-class" type="xsd:string" use="optional"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="binding-table-rules">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="binding-table-rule" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="binding-table-rule">
+        <xsd:complexType>
+            <xsd:attribute name="logic-tables" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="standard-strategy">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="sharding-column" type="xsd:string" use="required" />
+            <xsd:attribute name="precise-algorithm-class" type="xsd:string" use="required" />
+            <xsd:attribute name="range-algorithm-class" type="xsd:string" use="optional" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="complex-strategy">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="sharding-columns" type="xsd:string" use="required" />
+            <xsd:attribute name="algorithm-class" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="inline-strategy">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="sharding-column" type="xsd:string" use="required" />
+            <xsd:attribute name="algorithm-expression" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="hint-strategy">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="algorithm-class" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="none-strategy">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="props">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:propsType" />
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

@@ -1,15 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.dangdang</groupId>
+    <groupId>io.shardingjdbc</groupId>
     <artifactId>sharding-jdbc</artifactId>
-    <version>1.5.4.1</version>
+    <version>2.0.0.M1</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
         <module>sharding-jdbc-core</module>
-        <module>sharding-jdbc-config-parent</module>
+        <module>sharding-jdbc-spring</module>
         <module>sharding-jdbc-transaction-parent</module>
+        <module>sharding-jdbc-orchestration</module>
     </modules>
     
     <properties>
@@ -23,11 +24,13 @@
         <commons-pool.version>1.6</commons-pool.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <gson.version>2.6.1</gson.version>
+        <curator.version>2.10.0</curator.version>
         <logback.version>1.1.2</logback.version>
         <slf4j.version>1.7.7</slf4j.version>
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
-        <springframework.version>4.1.1.RELEASE</springframework.version>
+        <springframework.version>4.3.11.RELEASE</springframework.version>
+        <spring-boot.version>1.5.7.RELEASE</spring-boot.version>
         <mysql-connector-java.version>5.1.30</mysql-connector-java.version>
         <h2.version>1.4.196</h2.version>
         <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
@@ -91,6 +94,27 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-framework</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-client</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-recipes</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-test</artifactId>
+                <version>${curator.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -202,6 +226,22 @@
                 <groupId>com.dangdang</groupId>
                 <artifactId>elastic-job-core</artifactId>
                 <version>${elastic-job.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring-boot.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -385,8 +425,8 @@
                     <instrumentation>
                         <ignoreTrivial>true</ignoreTrivial>
                         <excludes>
-                            <exclude>com/dangdang/**/*Test.class</exclude>
-                            <exclude>com/dangdang/**/Test*.class</exclude>
+                            <exclude>io/shardingjdbc/**/*Test.class</exclude>
+                            <exclude>io/shardingjdbc/**/Test*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
@@ -396,7 +436,7 @@
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>${coveralls-maven-plugin.version}</version>
             </plugin>
-            <!-- 
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -520,7 +560,7 @@
         </repository>
     </repositories>
     
-    <url>http://www.dangdang.com</url>
+    <url>http://shardingjdbc.io</url>
     <description>RDB Sharding</description>
     <licenses>
         <license>
@@ -531,9 +571,9 @@
     </licenses>
     
     <scm>
-        <connection>scm:https://github.com/dangdangdotcom/sharding-jdbc</connection>
-        <developerConnection>scm:https://github.com/dangdangdotcom/sharding-jdbc</developerConnection>
-        <url>https://github.com/dangdangdotcom/sharding-jdbc</url>
+        <connection>scm:https://github.com/shardingjdbc/sharding-jdbc</connection>
+        <developerConnection>scm:https://github.com/shardingjdbc/sharding-jdbc</developerConnection>
+        <url>https://github.com/shardingjdbc/sharding-jdbc</url>
     </scm>
     
     <mailingLists>

@@ -1,0 +1,58 @@
+dataSources:
+  db0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+  db1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+    
+defaultDataSourceName: db0
+
+defaultKeyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
+    
+tables:
+  config:
+    actualDataNodes: db${0..1}.config_${0..1}
+
+  t_order: 
+    actualDataNodes: db${0..1}.t_order_${0..1}
+    databaseStrategy: 
+      standard:
+        shardingColumn: order_id
+        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
+    tableStrategy: 
+      inline:
+        shardingColumn: id
+        algorithmInlineExpression: t_order_${id % 2}
+  t_order_item:
+    actualDataNodes: db${0..1}.t_order_item_${0..1}
+    keyGeneratorColumnName: order_item_id
+    keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.DecrementKeyGenerator
+    #绑定表中其余的表的策略与第一张表的策略相同
+    databaseStrategy: 
+      standard:
+        shardingColumn: order_id
+        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
+    tableStrategy: 
+      inline:
+        shardingColumn: id
+        algorithmInlineExpression: t_order_item_${id % 2}
+
+bindingTables:
+  - t_order,t_order_item
+
+#默认数据库分片策略
+defaultDatabaseStrategy:
+  complex:
+      shardingColumns: order_id, user_id
+      algorithmClassName: io.shardingjdbc.core.yaml.fixture.MultiAlgorithm
+defaultTableStrategy:
+  complex:
+    shardingColumns: id, order_id
+    algorithmClassName: io.shardingjdbc.core.yaml.fixture.MultiAlgorithm

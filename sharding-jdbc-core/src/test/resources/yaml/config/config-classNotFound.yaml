@@ -1,0 +1,20 @@
+dataSources:
+  db0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+  db1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+tables:
+  t_order: 
+    actualDataNodes: t_order_${0..1}
+    tableStrategy: 
+      standard:
+        shardingColumn: order_id
+        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.NoThisClass

@@ -1,0 +1,24 @@
+tables:
+  t_order: 
+    actualDataNodes: ds.t_order_${0..1}
+    databaseStrategy: 
+      standard:
+        shardingColumn: order_id
+        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
+    tableStrategy: 
+      inline:
+        shardingColumn: id
+        algorithmInlineExpression: t_order_${id % 2}
+  t_order_item:
+    actualDataNodes: ds.t_order_item_${0..1}
+    #绑定表中其余的表的策略与第一张表的策略相同
+    databaseStrategy: 
+      standard:
+        shardingColumn: order_id
+        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
+    tableStrategy: 
+      inline:
+        shardingColumn: id
+        algorithmInlineExpression: t_order_item_${id % 2}
+bindingTables:
+  - t_order,t_order_no_exist

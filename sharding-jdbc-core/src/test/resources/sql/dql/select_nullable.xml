@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertSelectInWithNullParameter" value="SELECT * FROM t_order WHERE sku_num IN (%s, %s) ORDER BY order_id ASC" type="MySQL,PostgreSQL,SQLServer,Oracle" />
+</sqls>

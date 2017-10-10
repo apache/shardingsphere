@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
+    <sql id="assertSelectOne">
+        <sharding-rule>
+            <data expected="select/SelectOne.xml" />
+        </sharding-rule>
+    </sql>
     <sql id="assertSelectNotEqualsWithSingleTable">
         <sharding-rule value="tbl">
             <data parameter="100000" expected="select/SelectNotEqualsWithSingleTable.xml" />

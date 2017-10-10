@@ -1,3 +1,24 @@
+## 2.0.0.M1
+
+### 里程碑
+
+1. 配置动态化. 可以通过zookeeper作为注册中心动态修改数据源以及分片配置
+1. API调整. 全新的Maven坐标名称, 包名称和spring命名空间名称. 简化和提升API配置, inline表达式全配置支持
+
+### 新功能
+
+1. 新增sharding-jdbc-spring-boot-starter功能
+
+### 功能提升
+
+1. [ISSUE #386](https://github.com/shardingjdbc/sharding-jdbc/issues/386) 支持SELECT 1这种不包含表名称的SQL
+
+### 缺陷修正
+
+1. [ISSUE #387](https://github.com/shardingjdbc/sharding-jdbc/issues/387) 当函数+列名中存在'`'防止关键字时处理出错
+1. [ISSUE #394](https://github.com/shardingjdbc/sharding-jdbc/issues/394) 无法单独close statement
+1. [ISSUE #398](https://github.com/shardingjdbc/sharding-jdbc/issues/398) 使用Hint路由屏蔽表和列名称的大小写区别
+
 ## 1.5.4.1
 
 ### 缺陷修正
