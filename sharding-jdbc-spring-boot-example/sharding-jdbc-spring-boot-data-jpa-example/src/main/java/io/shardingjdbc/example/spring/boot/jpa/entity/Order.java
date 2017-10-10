@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.example.spring.namespace.jpa.entity;
+package io.shardingjdbc.example.spring.boot.jpa.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

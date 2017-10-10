@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,34 +15,16 @@
  * </p>
  */
 
-package io.shardingjdbc.example.spring.namespace.jpa.entity;
+package io.shardingjdbc.example.spring.boot.mybatis.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.io.Serializable;
-
-@Entity
-@Table(name = "t_order_item")
-public class OrderItem implements Serializable {
+public final class OrderItem {
     
-    private static final long serialVersionUID = 261534701950670670L;
-    
-    @Id
-    @Column(name = "order_item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long orderItemId;
     
-    @Column(name = "order_id")
     private long orderId;
     
-    @Column(name = "user_id")
     private int userId;
     
-    @Column(name = "status")
     private String status;
     
     public long getOrderItemId() {
@@ -79,6 +61,6 @@ public class OrderItem implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("order_item_id: %s, order_id: %s, user_id: %s, status: %s", orderItemId, orderId, userId, status);
+        return String.format("item_id:%s, order_id: %s, user_id: %s, status: %s", orderItemId, orderId, userId, status);
     }
 }

@@ -15,20 +15,20 @@
  * </p>
  */
 
-package io.shardingjdbc.example.mybatis;
+package io.shardingjdbc.example.spring.boot.mybatis;
 
-import io.shardingjdbc.example.mybatis.service.DemoService;
+import io.shardingjdbc.example.spring.boot.mybatis.service.DemoService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
-public class SpringBootDataMybatisShardingDatabaseAndTableMain {
+public class SpringBootDataMybatisMain {
     
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = SpringApplication.run(SpringBootDataMybatisShardingDatabaseAndTableMain.class, args);
+        ApplicationContext applicationContext = SpringApplication.run(SpringBootDataMybatisMain.class, args);
         applicationContext.getBean(DemoService.class).demo();
     }
 }

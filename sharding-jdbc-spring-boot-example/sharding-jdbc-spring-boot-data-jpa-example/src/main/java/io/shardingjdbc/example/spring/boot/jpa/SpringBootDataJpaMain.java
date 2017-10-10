@@ -1,6 +1,6 @@
-package io.shardingjdbc.example.spring.namespace.jpa;
+package io.shardingjdbc.example.spring.boot.jpa;
 
-import io.shardingjdbc.example.spring.namespace.jpa.service.DemoService;
+import io.shardingjdbc.example.spring.boot.jpa.service.DemoService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;

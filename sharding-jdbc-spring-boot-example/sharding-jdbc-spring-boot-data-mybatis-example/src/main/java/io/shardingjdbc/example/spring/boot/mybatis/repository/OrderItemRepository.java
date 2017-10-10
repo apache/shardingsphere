@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,10 +15,25 @@
  * </p>
  */
 
-package io.shardingjdbc.example.spring.namespace.jpa.repository;
+package io.shardingjdbc.example.spring.boot.mybatis.repository;
 
-import io.shardingjdbc.example.spring.namespace.jpa.entity.OrderItem;
-import org.springframework.data.jpa.repository.JpaRepository;
+import io.shardingjdbc.example.spring.boot.mybatis.entity.OrderItem;
+import org.apache.ibatis.annotations.Mapper;
 
-public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
+import java.util.List;
+
+@Mapper
+public interface OrderItemRepository {
+    
+    void createIfNotExistsTable();
+    
+    void truncateTable();
+    
+    Long insert(OrderItem model);
+    
+    void delete(Long orderItemId);
+    
+    List<OrderItem> selectAll();
+    
+    void dropTable();
 }

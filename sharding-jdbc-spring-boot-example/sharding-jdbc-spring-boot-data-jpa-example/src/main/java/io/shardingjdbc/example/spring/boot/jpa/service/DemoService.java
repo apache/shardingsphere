@@ -1,9 +1,9 @@
-package io.shardingjdbc.example.spring.namespace.jpa.service;
+package io.shardingjdbc.example.spring.boot.jpa.service;
 
-import io.shardingjdbc.example.spring.namespace.jpa.entity.Order;
-import io.shardingjdbc.example.spring.namespace.jpa.entity.OrderItem;
-import io.shardingjdbc.example.spring.namespace.jpa.repository.OrderItemRepository;
-import io.shardingjdbc.example.spring.namespace.jpa.repository.OrderRepository;
+import io.shardingjdbc.example.spring.boot.jpa.repository.OrderItemRepository;
+import io.shardingjdbc.example.spring.boot.jpa.entity.Order;
+import io.shardingjdbc.example.spring.boot.jpa.entity.OrderItem;
+import io.shardingjdbc.example.spring.boot.jpa.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
