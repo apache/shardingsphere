@@ -8,6 +8,74 @@ next = "/02-guide/hint-sharding-value/"
 
 +++
 
+## 1.JAVA配置
+
+### 引入maven依赖
+
+```xml
+<dependency>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-core</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+### 配置示例
+
+#### 分库分表
+```java
+    ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+    
+    TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
+    orderTableRuleConfig.setLogicTable("t_order");
+    List<String> orderActualDataNodes = new LinkedList<>();
+    for (String dataSourceName : entry.getValue().keySet()) {
+        orderActualDataNodes.add(dataSourceName + ".t_order_${0..9}");
+    }
+    orderTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderActualDataNodes));
+    shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+    
+    TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
+    orderItemTableRuleConfig.setLogicTable("t_order_item");
+    List<String> orderItemActualDataNodes = new LinkedList<>();
+    for (String dataSourceName : entry.getValue().keySet()) {
+        orderItemActualDataNodes.add(dataSourceName + ".t_order_item_${0..9}");
+    }
+    orderItemTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderItemActualDataNodes));
+    shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
+    
+    TableRuleConfiguration configTableRuleConfig = new TableRuleConfiguration();
+    configTableRuleConfig.setLogicTable("t_config");
+    shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
+    
+    shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+    shardingRuleConfig.setDefaultDataSourceName("dataSource_dbtbl_0");
+    shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
+            new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), 
+            RangeModuloDatabaseShardingAlgorithm.class.getName()));
+    shardingRuleConfig.setDefaultTableShardingStrategyConfig(
+            new StandardShardingStrategyConfiguration("order_id", PreciseModuloTableShardingAlgorithm.class.getName(), 
+            RangeModuloTableShardingAlgorithm.class.getName()));
+    
+    Map<String, DataSource> dataSourceMap = //create datasource map;
+    
+    DataSource shardingDataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
+```
+
+#### 读写分离
+```java
+    Map<String, DataSource> masterSlaveDataSourceMap = new HashMap<>(1, 1);
+    masterSlaveDataSourceMap.put("dataSource_master_only", yourMasterDataSource);
+    masterSlaveDataSourceMap.put("dataSource_slave_only", yourSlaveDataSource);
+    
+    MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
+    masterSlaveRuleConfig.setName("ds_ms");
+    masterSlaveRuleConfig.setMasterDataSourceName("dataSource_master_only");
+    masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("dataSource_slave_only"));
+    
+    DataSource masterSlaveDataSource = MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig);
+```
+
 ## 2.YAML配置
 
 ### 引入maven依赖
@@ -43,7 +111,7 @@ dataSources:
     username: sa
     password: 
     maxActive: 100
-    
+
 tables:
   config:
     actualDataNodes: db${0..1}.t_config
@@ -371,3 +439,52 @@ data_source_${id % 2 + 1}
 ```
 
 上面的表达式中data_source_是字符串前缀，id % 2 + 1是groovy代码。
+
+## 4.Spring Boot配置
+
+### 引入maven依赖
+
+```xml
+<dependency>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+### 配置示例
+```yaml
+sharding.jdbc.datasource.names=ds,ds_0,ds_1
+sharding.jdbc.datasource.ds.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds.driver-class-name=org.h2.Driver
+sharding.jdbc.datasource.ds.url=jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+sharding.jdbc.datasource.ds.username=sa
+sharding.jdbc.datasource.ds.password=
+
+sharding.jdbc.datasource.ds_0.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_0.driver-class-name=org.h2.Driver
+sharding.jdbc.datasource.ds_0.url=jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+sharding.jdbc.datasource.ds_0.username=sa
+sharding.jdbc.datasource.ds_0.password=
+
+sharding.jdbc.datasource.ds_1.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_1.url=jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+sharding.jdbc.datasource.ds_1.username=sa
+sharding.jdbc.datasource.ds_1.password=
+
+sharding.jdbc.config.sharding.default-data-source-name=ds
+sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-inline-expression=ds_${user_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.actualDataNodes=ds_${0..1}.t_order_${0..1}
+sharding.jdbc.config.sharding.tables.t_order.tableStrategy.inline.shardingColumn=order_id
+sharding.jdbc.config.sharding.tables.t_order.tableStrategy.inline.algorithmInlineExpression=t_order_${order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.keyGeneratorColumnName=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.actualDataNodes=ds_${0..1}.t_order_item_${0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.tableStrategy.inline.shardingColumn=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.tableStrategy.inline.algorithmInlineExpression=t_order_item_${order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_item.keyGeneratorColumnName=order_item_id
+```
+
+#### 配置项说明
+同[Yaml配置](#配置项说明)
