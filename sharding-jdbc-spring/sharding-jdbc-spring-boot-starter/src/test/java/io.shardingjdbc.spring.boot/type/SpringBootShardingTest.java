@@ -36,5 +36,6 @@ public class SpringBootShardingTest {
         for (DataSource each : shardingContext.getShardingRule().getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxActive(), is(16));
         }
+        assertTrue(shardingContext.isShowSQL());
     }
 }
