@@ -1,7 +1,7 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "模块结构说明"
+title = "模块说明"
 weight = 3
 prev = "/03-design/architecture/"
 next = "/03-design/roadmap/"
