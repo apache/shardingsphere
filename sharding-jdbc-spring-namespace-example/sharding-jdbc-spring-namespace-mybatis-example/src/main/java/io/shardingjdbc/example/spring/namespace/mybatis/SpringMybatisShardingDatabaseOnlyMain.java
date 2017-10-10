@@ -15,20 +15,20 @@
  * </p>
  */
 
-package io.shardingjdbc.example.mybatis;
+package io.shardingjdbc.example.spring.namespace.mybatis;
 
-import io.shardingjdbc.example.mybatis.service.DemoService;
+import io.shardingjdbc.example.spring.namespace.mybatis.service.DemoService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
-public final class SpringMybatisShardingAndMasterSlaveMain {
+public final class SpringMybatisShardingDatabaseOnlyMain {
     
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingAndMasterSlaveContext.xml");
-        DemoService demo = applicationContext.getBean(DemoService.class);
-        demo.demo();
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingDatabaseOnlyContext.xml");
+        DemoService demoService = applicationContext.getBean(DemoService.class);
+        demoService.demo();
     }
 }

@@ -1,9 +1,9 @@
-package io.shardingjdbc.example.mybatis.service;
+package io.shardingjdbc.example.spring.namespace.mybatis.service;
 
-import io.shardingjdbc.example.mybatis.entity.Order;
-import io.shardingjdbc.example.mybatis.entity.OrderItem;
-import io.shardingjdbc.example.mybatis.repository.OrderItemRepository;
-import io.shardingjdbc.example.mybatis.repository.OrderRepository;
+import io.shardingjdbc.example.spring.namespace.mybatis.entity.Order;
+import io.shardingjdbc.example.spring.namespace.mybatis.entity.OrderItem;
+import io.shardingjdbc.example.spring.namespace.mybatis.repository.OrderItemRepository;
+import io.shardingjdbc.example.spring.namespace.mybatis.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

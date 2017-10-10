@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.example.mybatis;
+package io.shardingjdbc.example.spring.namespace.mybatis;
 
-import io.shardingjdbc.example.mybatis.service.DemoService;
+import io.shardingjdbc.example.spring.namespace.mybatis.service.DemoService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

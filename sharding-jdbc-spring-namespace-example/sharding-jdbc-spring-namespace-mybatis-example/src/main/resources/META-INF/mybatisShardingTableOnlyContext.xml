@@ -12,8 +12,7 @@
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://shardingjdbc.io/schema/shardingjdbc/sharding 
                         http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd">
-
-    <context:component-scan base-package="io.shardingjdbc.example.mybatis" />
+    <context:component-scan base-package="io.shardingjdbc.example.spring.namespace.mybatis" />
     
     <bean id="demo_ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
@@ -22,8 +21,8 @@
         <property name="password" value=""/>
     </bean>
     
-    <sharding:standard-strategy id="orderTableShardingStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.example.mybatis.algorithm.PreciseModuloTableShardingAlgorithm"/>
-    <sharding:standard-strategy id="orderItemTableShardingStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.example.mybatis.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <sharding:standard-strategy id="orderTableShardingStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.example.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <sharding:standard-strategy id="orderItemTableShardingStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.example.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm"/>
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds">
@@ -48,7 +47,7 @@
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="io.shardingjdbc.example.mybatis"/>
+        <property name="basePackage" value="io.shardingjdbc.example.spring.namespace.mybatis"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </beans>

@@ -15,7 +15,7 @@
                         http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
                         http://shardingjdbc.io/schema/shardingjdbc/masterslave  
                         http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.xsd">
-    <context:component-scan base-package="io.shardingjdbc.example.mybatis" />
+    <context:component-scan base-package="io.shardingjdbc.example.spring.namespace.mybatis" />
     
     <bean id="demo_ds_master_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
@@ -88,7 +88,7 @@
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="io.shardingjdbc.example.mybatis"/>
+        <property name="basePackage" value="io.shardingjdbc.example.spring.namespace.mybatis"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </beans>

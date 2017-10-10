@@ -15,15 +15,25 @@
  * </p>
  */
 
-package io.shardingjdbc.example.mybatis.entity;
+package io.shardingjdbc.example.spring.namespace.mybatis.entity;
 
-public final class Order {
+public final class OrderItem {
+    
+    private long orderItemId;
     
     private long orderId;
     
     private int userId;
     
     private String status;
+    
+    public long getOrderItemId() {
+        return orderItemId;
+    }
+    
+    public void setOrderItemId(final long orderItemId) {
+        this.orderItemId = orderItemId;
+    }
     
     public long getOrderId() {
         return orderId;
@@ -51,6 +61,6 @@ public final class Order {
     
     @Override
     public String toString() {
-        return String.format("order_id: %s, user_id: %s, status: %s", orderId, userId, status);
+        return String.format("order_item_id:%s, order_id: %s, user_id: %s, status: %s", orderItemId, orderId, userId, status);
     }
 }
