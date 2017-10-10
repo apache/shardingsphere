@@ -176,10 +176,10 @@ Sharding-JDBC的代码编译需要[Maven](http://maven.apache.org/)，请保证I
  - 任何人想要开发任何功能，请先回复该功能所关联的Issue，表明您当前正在这个Issue上工作。
    并在回复的时候为自己设置一个deadline，并添加的回复内容中。
  - 在核心贡献者找到一个导师(shepherd)，导师会在设计与功能实现上给予即时的反馈。
- - 您应该新建一个分支来开始您的工作，分支的名字为当前开发版本/issueId。
-   例如，您想完成一个当前开发版本(2.0.0.M1)中的Issue 111__，那么您的branch名字应为2.0.0.M1/111__。
+ - 您应该新建一个分支来开始您的工作，分支的名字为当前开发的Snapshot版本/issueId。
+   例如，您想完成一个当前开发的Snapshot版本（如：2.0.0-SNAPSHOT）中的Issue 111__，那么您的branch名字应为2.0.0-SNAPSHOT/111__。
    功能名称与导师讨论后确定。
- - 完成后，发送一个pull request到shardingjdbc/sharding-jdbc中当前开发版本的分支（如：2.0.0.M1），请不要提交到master分支中。
+ - 完成后，发送一个pull request到shardingjdbc当前开发的Snapshot版本的分支，请不要提交PR到master分支中。
    接着导师做CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当团队中所有人员对本次修改满意后，导师会将提交合并到当前开发版本的分支中。
  - 最后，恭喜您已经成为了Sharding-JDBC的官方贡献者！
  

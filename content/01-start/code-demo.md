@@ -20,9 +20,9 @@ Sharding-JDBC使用示例的github地址：https://github.com/shardingjdbc/shard
 
 1. 读写分离示例代码中的主库和从库需要用户自行在数据库层面配置主从关系，否则落到从库的读请求查询出来的数据会是空值。
 
-# 原生JDBC使用示例
+# 基于Java代码的原生JDBC使用示例
 
-## 基于Java代码的原生JDBC使用示例
+## sharding-jdbc-raw-jdbc-java-example
 
 ### 读写分离：
 
@@ -54,8 +54,10 @@ io.shardingjdbc.example.jdbc.java.RawJdbcJavaShardingTableOnlyMain
 io.shardingjdbc.example.jdbc.java.RawJdbcJavaShardingAndMasterSlaveMain
 ```
 
-## 基于Yaml的原生JDBC使用示例
- 
+# 基于Yaml的原生JDBC使用示例
+
+## sharding-jdbc-raw-jdbc-yaml-example
+
 ### 读写分离：
 
 ```java
@@ -86,9 +88,9 @@ io.shardingjdbc.example.jdbc.yaml.RawJdbcYamlShardingTableOnlyMain
 io.shardingjdbc.example.jdbc.yaml.RawJdbcYamlShardingAndMasterSlaveMain
 ```
 
-# Spring代码示例
+# 基于JPA的Spring使用示例
 
-## 基于JPA的Spring使用示例
+## sharding-jdbc-spring-namespace-jpa-example
 
 ### 读写分离：
 
@@ -120,7 +122,9 @@ io.shardingjdbc.example.spring.namespace.jpa.SpringJpaShardingTableMain
 io.shardingjdbc.example.spring.namespace.jpa.SpringJpaShardingDatabaseAndMasterSlaveMain
 ```
 
-## 基于Mybatis的Spring使用示例
+# 基于Mybatis的Spring使用示例
+
+## sharding-jdbc-spring-namespace-mybatis-example
 
 ### 读写分离：
 
@@ -152,6 +156,46 @@ io.shardingjdbc.example.spring.namespace.jpa.SpringMybatisShardingTableMain
 io.shardingjdbc.example.spring.namespace.jpa.SpringMybatisShardingDatabaseAndMasterSlaveMain
 ```
 
+# 基于Spring Data JPA的Spring Boot使用示例
+
+## sharding-jdbc-spring-boot-data-jpa-example
+
+### 启动入口类
+
+```java
+io.shardingjdbc.example.spring.boot.starter.jpa.SpringBootDataJpaMain
+```
+
+### 配置说明
+通过修改resources/applicaiton.properties文件中的spring.profiles.active来切换示例配置
+
+```xml
+spring.profiles.active=sharding
+#spring.profiles.active=sharding-db
+#spring.profiles.active=sharding-tbl
+#spring.profiles.active=masterslave
+```
+
+# 基于Spring Data Mybatis的Spring Boot使用示例
+
+## sharding-jdbc-spring-namespace-mybatis-example
+
+### 启动入口类
+
+```java
+io.shardingjdbc.example.spring.boot.jpa.SpringBootDataMybatisMain
+```
+
+### 配置说明
+通过修改resources/applicaiton.properties文件中的spring.profiles.active来切换示例配置
+
+```xml
+spring.profiles.active=sharding
+#spring.profiles.active=sharding-db
+#spring.profiles.active=sharding-tbl
+#spring.profiles.active=masterslave
+```
+
 # 数据库服务编排治理使用示例
 
 ## sharding-jdbc-orchestration-example 
@@ -167,8 +211,6 @@ io.shardingjdbc.example.orchestration.OrchestrationMain
 # 柔性事务使用示例
 
 ## sharding-jdbc-transaction-example 
-
-1. 运行
 
 ```java
 io.shardingjdbc.example.transaction.TransactionMain
