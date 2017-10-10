@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.fixture;
+package io.shardingjdbc.core.fixture;
 
 import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;

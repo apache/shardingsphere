@@ -24,8 +24,8 @@ import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfigur
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
-import io.shardingjdbc.core.routing.fixture.PreciseOrderShardingAlgorithm;
-import io.shardingjdbc.core.routing.fixture.RangeOrderShardingAlgorithm;
+import io.shardingjdbc.core.fixture.PreciseOrderShardingAlgorithm;
+import io.shardingjdbc.core.fixture.RangeOrderShardingAlgorithm;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.AfterClass;
 import org.junit.Before;

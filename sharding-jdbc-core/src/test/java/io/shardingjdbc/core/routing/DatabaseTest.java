@@ -23,7 +23,7 @@ import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguratio
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
-import io.shardingjdbc.core.routing.fixture.OrderDatabaseHintShardingAlgorithm;
+import io.shardingjdbc.core.fixture.OrderDatabaseHintShardingAlgorithm;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.junit.Before;
