@@ -88,12 +88,6 @@ next = "/02-guide/hint-sharding-value/"
 </dependency>
 ```
 
-### Java示例
-
-```java
-    DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
-```
-
 ### 配置示例
 
 #### 分库分表
@@ -155,7 +149,7 @@ props:
   sql.show: true
 ```
 
-#### 配置项说明
+#### 分库分表配置项说明
 
 ```yaml
 dataSources: 数据源配置
@@ -198,6 +192,12 @@ props: 属性配置(可选)
     executor.size: 工作线程数量，默认值: CPU核数
 ```
 
+#### 分库分表数据源构建方式
+
+```java
+    DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
+```
+
 #### 读写分离
 ```yaml
 dataSources:
@@ -227,7 +227,7 @@ masterDataSourceName: db_master
 slaveDataSourceNames: [db_slave_0, db_slave_1]
 ```
 
-#### 配置项说明
+#### 读写分离配置项说明
 
 ```yaml
 dataSource: 数据源配置，同分库分表
@@ -239,7 +239,13 @@ masterDataSourceName: master数据源名称
 slaveDataSourceNames：slave数据源名称，用数组表示多个
 ```
 
-#### YAML格式特别说明
+#### 读写分离数据源构建方式
+
+```java
+    DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
+```
+
+### YAML格式特别说明
 !! 表示实现类
 
 [] 表示多个
@@ -453,6 +459,8 @@ data_source_${id % 2 + 1}
 ```
 
 ### 配置示例
+
+#### 分库分表配置
 ```yaml
 sharding.jdbc.datasource.names=ds,ds_0,ds_1
 sharding.jdbc.datasource.ds.type=org.apache.commons.dbcp.BasicDataSource
@@ -486,5 +494,37 @@ sharding.jdbc.config.sharding.tables.t_order_item.tableStrategy.inline.algorithm
 sharding.jdbc.config.sharding.tables.t_order_item.keyGeneratorColumnName=order_item_id
 ```
 
-#### 配置项说明
-同[Yaml配置](#配置项说明)
+#### 分库分表配置项说明
+同[分库分表Yaml配置](#分库分表配置项说明)
+
+#### 读写分离配置
+```yaml
+sharding.jdbc.datasource.names=ds_master,ds_slave_0,ds_slave_1
+
+sharding.jdbc.datasource.ds_master.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_master.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_master.url=jdbc:mysql://localhost:3306/demo_ds_master
+sharding.jdbc.datasource.ds_master.username=root
+sharding.jdbc.datasource.ds_master.password=
+
+sharding.jdbc.datasource.ds_slave_0.type=com.zaxxer.hikari.HikariDataSource
+sharding.jdbc.datasource.ds_slave_0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_slave_0.url=jdbc:mysql://localhost:3306/demo_ds_slave_0
+sharding.jdbc.datasource.ds_slave_0.username=root
+sharding.jdbc.datasource.ds_slave_0.password=
+
+sharding.jdbc.datasource.ds_slave_1.type=com.zaxxer.hikari.HikariDataSource
+sharding.jdbc.datasource.ds_slave_1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_slave_1.url=jdbc:mysql://localhost:3306/demo_ds_slave_1
+sharding.jdbc.datasource.ds_slave_1.username=root
+sharding.jdbc.datasource.ds_slave_1.password=
+
+sharding.jdbc.config.masterslave.load-balance-algorithm-type=round_robin
+sharding.jdbc.config.masterslave.name=ds_ms
+sharding.jdbc.config.masterslave.masterDataSourceName=ds_master
+sharding.jdbc.config.masterslave.slaveDataSourceNames=ds_slave_0,ds_slave_1
+
+```
+
+#### 读写分离配置项说明
+同[读写分离Yaml配置](#读写分离配置项说明)

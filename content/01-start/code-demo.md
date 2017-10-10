@@ -14,7 +14,7 @@ Sharding-JDBC使用示例的github地址：https://github.com/shardingjdbc/shard
 
 1. 由于涉及到真实数据库环境，需要在准备测试的数据库上运行resources/manual_shcema.sql创建数据库，示例中使用的是MySQL环境，如需使用PostgreSQL、SQLServer或Oracle，请自行创建数据库脚本。
 
-1. 使用示例均通过DDL语句自动创建数据表，无需用户手动创建。
+1. 使用示例均通过DDL语句自动创建数据表，无需手动创建。
 
 1. 使用示例中关于数据库URL、驱动、用户名、密码的代码、yaml及Spring配置，需要用户自行修改。
 
@@ -174,6 +174,7 @@ spring.profiles.active=sharding
 #spring.profiles.active=sharding-db
 #spring.profiles.active=sharding-tbl
 #spring.profiles.active=masterslave
+#spring.profiles.active=sharding-masterslave
 ```
 
 # 基于Spring Data Mybatis的Spring Boot使用示例
@@ -194,6 +195,7 @@ spring.profiles.active=sharding
 #spring.profiles.active=sharding-db
 #spring.profiles.active=sharding-tbl
 #spring.profiles.active=masterslave
+#spring.profiles.active=sharding-masterslave
 ```
 
 # 数据库服务编排治理使用示例
