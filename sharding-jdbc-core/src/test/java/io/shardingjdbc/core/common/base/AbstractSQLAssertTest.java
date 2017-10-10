@@ -162,7 +162,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         if (isPreparedStatement) {
             sqlAssertHelper.executeQueryWithPreparedStatement(isExecute, abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
         } else {
-            sqlAssertHelper.executeQueryWithStatement(isExecute, abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
+            sqlAssertHelper.executeQueryWithStatement(abstractDataSourceAdapter, getParameters(data), expectedDataSetFile);
         }
     }
     

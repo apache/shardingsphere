@@ -78,7 +78,7 @@ public class SQLAssertHelper {
         }
     }
     
-    public void executeQueryWithStatement(final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
+    public void executeQueryWithStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         try (Connection conn = abstractDataSourceAdapter.getConnection()) {
             String querySql = replaceStatement(sql, parameters.toArray());
