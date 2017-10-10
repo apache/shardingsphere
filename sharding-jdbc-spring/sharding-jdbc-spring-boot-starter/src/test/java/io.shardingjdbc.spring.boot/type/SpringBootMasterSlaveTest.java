@@ -1,10 +1,10 @@
 package io.shardingjdbc.spring.boot.type;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.spring.boot.SpringBootMain;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -17,7 +17,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = SpringBootMain.class)
+@SpringBootTest(classes = SpringBootMasterSlaveTest.class)
+@SpringBootApplication
 @ActiveProfiles("masterslave")
 public class SpringBootMasterSlaveTest {
     
