@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
+    <assert id="assertSelectOne">
+    </assert>
     <assert id="assertSelectNotEqualsWithSingleTable" parameters="1">
         <tables>
             <table name="t_order_item" />
