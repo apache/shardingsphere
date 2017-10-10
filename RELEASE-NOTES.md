@@ -4,6 +4,7 @@
 
 1. [ISSUE #387](https://github.com/shardingjdbc/sharding-jdbc/issues/387) 当函数+列名中存在'`'防止关键字时处理出错
 1. [ISSUE #394](https://github.com/shardingjdbc/sharding-jdbc/issues/394) 无法单独close statement
+1. [ISSUE #398](https://github.com/shardingjdbc/sharding-jdbc/issues/398) 使用Hint路由屏蔽表和列名称的大小写区别
 
 ## 1.5.4.1
 

@@ -19,7 +19,6 @@ package io.shardingjdbc.core.hint;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Sharding key.
@@ -27,7 +26,6 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 // TODO move to a suitable package
-@RequiredArgsConstructor
 @EqualsAndHashCode
 public final class ShardingKey {
     
@@ -41,4 +39,9 @@ public final class ShardingKey {
      */
     @Getter
     private final String shardingColumn;
+    
+    public ShardingKey(final String logicTable, final String shardingColumn) {
+        this.logicTable = logicTable.toLowerCase();
+        this.shardingColumn = shardingColumn.toLowerCase();
+    }
 }
