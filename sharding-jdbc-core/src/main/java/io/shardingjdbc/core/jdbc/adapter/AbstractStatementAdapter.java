@@ -46,7 +46,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void close() throws SQLException {
         closed = true;
-        getRoutedStatements().clear();
         Collection<SQLException> exceptions = new LinkedList<>();
         for (Statement each : getRoutedStatements()) {
             try {
@@ -55,6 +54,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
                 exceptions.add(ex);
             }
         }
+        getRoutedStatements().clear();
         throwSQLExceptionIfNecessary(exceptions);
     }
     

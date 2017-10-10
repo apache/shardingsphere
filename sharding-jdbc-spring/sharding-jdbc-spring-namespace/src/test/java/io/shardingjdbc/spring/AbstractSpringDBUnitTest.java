@@ -17,16 +17,8 @@
 
 package io.shardingjdbc.spring;
 
-import java.io.File;
-import java.io.InputStreamReader;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.sql.DataSource;
-
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import lombok.Getter;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.h2.tools.RunScript;
 import org.junit.Before;
@@ -35,7 +27,13 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import lombok.Getter;
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 @TestExecutionListeners(inheritListeners = false, listeners =
     {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class})
@@ -66,10 +64,10 @@ public abstract class AbstractSpringDBUnitTest extends AbstractJUnit4SpringConte
     
     private String getFileName(final String dataSetFile) {
         String fileName = new File(dataSetFile).getName();
-        if (-1 == fileName.lastIndexOf(".")) {
+        if (-1 == fileName.lastIndexOf('.')) {
             return fileName;
         }
-        return fileName.substring(0, fileName.lastIndexOf("."));
+        return fileName.substring(0, fileName.lastIndexOf('.'));
     }
     
     protected List<String> getSchemaFiles() {

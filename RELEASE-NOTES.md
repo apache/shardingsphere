@@ -1,3 +1,10 @@
+## 2.0.0.M1
+
+### 缺陷修正
+
+1. [ISSUE #387](https://github.com/shardingjdbc/sharding-jdbc/issues/387) 当函数+列名中存在'`'防止关键字时处理出错
+1. [ISSUE #394](https://github.com/shardingjdbc/sharding-jdbc/issues/394) 无法单独close statement
+
 ## 1.5.4.1
 
 ### 缺陷修正

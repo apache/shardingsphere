@@ -17,13 +17,14 @@
 
 package io.shardingjdbc.orchestration.json;
 
-import io.shardingjdbc.core.jdbc.core.datasource.NamedDataSource;
 import com.google.common.collect.Sets;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.jdbc.core.datasource.NamedDataSource;
+import io.shardingjdbc.core.util.DataSourceUtil;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -44,11 +45,12 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
         generalClassType = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public NamedDataSource read(final JsonReader in) throws IOException {
         String name = "";
         String clazz = "";
-        Map<String, String> properties = new TreeMap<>();
+        Map<String, Object> properties = new TreeMap<>();
         in.beginObject();
         while (in.hasNext()) {
             String jsonName = in.nextName();
@@ -61,15 +63,11 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
             }
         }
         in.endObject();
-        DataSource dataSource = null;
         try {
-            dataSource = (DataSource) Class.forName(clazz).newInstance();
-            for (Entry<String, String> entry : properties.entrySet()) {
-                callSetterMethod(dataSource, getSetterMethodName(entry.getKey()), entry.getValue());
-            }
+            return new NamedDataSource(name, DataSourceUtil.getDataSource(clazz, properties));
         } catch (final ReflectiveOperationException ex) {
+            throw new ShardingJdbcException(ex);
         }
-        return new NamedDataSource(name, dataSource);
     }
     
     @Override
@@ -77,7 +75,7 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
         out.beginObject();
         out.name("name").value(value.getName());
         out.name("clazz").value(value.getDataSource().getClass().getName());
-        Method[] methods = value.getDataSource().getClass().getDeclaredMethods();
+        Method[] methods = value.getDataSource().getClass().getMethods();
         Map<String, Method> getterMethods = new TreeMap<>();
         Map<String, Method> setterMethods = new TreeMap<>();
         for (Method each : methods) {
@@ -131,28 +129,5 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
             }
         }
         return result;
-    }
-    
-    private String getSetterMethodName(final String propertyName) {
-        return "set" + String.valueOf(propertyName.charAt(0)).toUpperCase() + propertyName.substring(1, propertyName.length());
-    }
-    
-    private void callSetterMethod(final DataSource dataSource, final String methodName, final String setterValue) {
-        for (Class<?> each : generalClassType) {
-            try {
-                Method method = dataSource.getClass().getDeclaredMethod(methodName, each);
-                if (boolean.class == each || Boolean.class == each) {
-                    method.invoke(dataSource, Boolean.valueOf(setterValue));
-                } else if (int.class == each || Integer.class == each) {
-                    method.invoke(dataSource, Integer.parseInt(setterValue));
-                } else if (long.class == each || Long.class == each) {
-                    method.invoke(dataSource, Long.parseLong(setterValue));
-                } else {
-                    method.invoke(dataSource, setterValue);
-                }
-                return;
-            } catch (final ReflectiveOperationException ex) {
-            }
-        }
     }
 }
