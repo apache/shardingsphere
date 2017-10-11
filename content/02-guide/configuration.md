@@ -464,21 +464,21 @@ data_source_${id % 2 + 1}
 ```yaml
 sharding.jdbc.datasource.names=ds,ds_0,ds_1
 sharding.jdbc.datasource.ds.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds.driver-class-name=org.h2.Driver
-sharding.jdbc.datasource.ds.url=jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-sharding.jdbc.datasource.ds.username=sa
+sharding.jdbc.datasource.ds.driverClassName=org.h2.Driver
+sharding.jdbc.datasource.ds.url=jdbc:mysql://localhost:3306/ds
+sharding.jdbc.datasource.ds.username=root
 sharding.jdbc.datasource.ds.password=
 
 sharding.jdbc.datasource.ds_0.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds_0.driver-class-name=org.h2.Driver
-sharding.jdbc.datasource.ds_0.url=jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-sharding.jdbc.datasource.ds_0.username=sa
+sharding.jdbc.datasource.ds_0.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_0.url=jdbc:mysql://localhost:3306/ds_0
+sharding.jdbc.datasource.ds_0.username=root
 sharding.jdbc.datasource.ds_0.password=
 
 sharding.jdbc.datasource.ds_1.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds_1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds_1.url=jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-sharding.jdbc.datasource.ds_1.username=sa
+sharding.jdbc.datasource.ds_1.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_1.url=jdbc:mysql://localhost:3306/ds_1
+sharding.jdbc.datasource.ds_1.username=root
 sharding.jdbc.datasource.ds_1.password=
 
 sharding.jdbc.config.sharding.default-data-source-name=ds
@@ -502,27 +502,27 @@ sharding.jdbc.config.sharding.tables.t_order_item.keyGeneratorColumnName=order_i
 sharding.jdbc.datasource.names=ds_master,ds_slave_0,ds_slave_1
 
 sharding.jdbc.datasource.ds_master.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds_master.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_master.driverClassName=com.mysql.jdbc.Driver
 sharding.jdbc.datasource.ds_master.url=jdbc:mysql://localhost:3306/demo_ds_master
 sharding.jdbc.datasource.ds_master.username=root
 sharding.jdbc.datasource.ds_master.password=
 
-sharding.jdbc.datasource.ds_slave_0.type=com.zaxxer.hikari.HikariDataSource
-sharding.jdbc.datasource.ds_slave_0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_slave_0.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_slave_0.driverClassName=com.mysql.jdbc.Driver
 sharding.jdbc.datasource.ds_slave_0.url=jdbc:mysql://localhost:3306/demo_ds_slave_0
 sharding.jdbc.datasource.ds_slave_0.username=root
 sharding.jdbc.datasource.ds_slave_0.password=
 
-sharding.jdbc.datasource.ds_slave_1.type=com.zaxxer.hikari.HikariDataSource
-sharding.jdbc.datasource.ds_slave_1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_slave_1.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_slave_1.driverClassName=com.mysql.jdbc.Driver
 sharding.jdbc.datasource.ds_slave_1.url=jdbc:mysql://localhost:3306/demo_ds_slave_1
 sharding.jdbc.datasource.ds_slave_1.username=root
 sharding.jdbc.datasource.ds_slave_1.password=
 
 sharding.jdbc.config.masterslave.load-balance-algorithm-type=round_robin
 sharding.jdbc.config.masterslave.name=ds_ms
-sharding.jdbc.config.masterslave.masterDataSourceName=ds_master
-sharding.jdbc.config.masterslave.slaveDataSourceNames=ds_slave_0,ds_slave_1
+sharding.jdbc.config.masterslave.master-data-source-name=ds_master
+sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave_0,ds_slave_1
 
 ```
 
