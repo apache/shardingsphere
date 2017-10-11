@@ -30,26 +30,42 @@ import static org.junit.Assert.assertThat;
 public final class DataSourceUtilTest {
     
     @Test
-    public void assertDataSourceForDBCP() throws ReflectiveOperationException {
-        Map<String, Object> dataSourceProperties = new HashMap<>(3, 1);
-        dataSourceProperties.put("driverClassName", org.h2.Driver.class.getName());
-        dataSourceProperties.put("url", "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        dataSourceProperties.put("username", "sa");
-        BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
+    public void assertDataSourceForDBCPAndCamel() throws ReflectiveOperationException {
+        BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), getDataSourcePoolProperties("driverClassName", "url", "username"));
         assertThat(actual.getDriverClassName(), is(org.h2.Driver.class.getName()));
         assertThat(actual.getUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("sa"));
     }
     
     @Test
-    public void assertDataSourceForHikariCP() throws ReflectiveOperationException {
-        Map<String, Object> dataSourceProperties = new HashMap<>(3, 1);
-        dataSourceProperties.put("driverClassName", org.h2.Driver.class.getName());
-        dataSourceProperties.put("jdbcUrl", "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        dataSourceProperties.put("username", "sa");
-        HikariDataSource actual = (HikariDataSource) DataSourceUtil.getDataSource(HikariDataSource.class.getName(), dataSourceProperties);
+    public void assertDataSourceForDBCPAndHyphen() throws ReflectiveOperationException {
+        BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), getDataSourcePoolProperties("driver-class-name", "url", "username"));
+        assertThat(actual.getDriverClassName(), is(org.h2.Driver.class.getName()));
+        assertThat(actual.getUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getUsername(), is("sa"));
+    }
+    
+    @Test
+    public void assertDataSourceForHikariCPAndCamel() throws ReflectiveOperationException {
+        HikariDataSource actual = (HikariDataSource) DataSourceUtil.getDataSource(HikariDataSource.class.getName(), getDataSourcePoolProperties("driverClassName", "jdbcUrl", "username"));
         assertThat(actual.getDriverClassName(), is(org.h2.Driver.class.getName()));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("sa"));
+    }
+    
+    @Test
+    public void assertDataSourceForHikariCPAndHyphen() throws ReflectiveOperationException {
+        HikariDataSource actual = (HikariDataSource) DataSourceUtil.getDataSource(HikariDataSource.class.getName(), getDataSourcePoolProperties("driver-class-name", "jdbc-url", "username"));
+        assertThat(actual.getDriverClassName(), is(org.h2.Driver.class.getName()));
+        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getUsername(), is("sa"));
+    }
+    
+    private Map<String, Object> getDataSourcePoolProperties(final String driverClassName, final String url, final String username) {
+        Map<String, Object> result = new HashMap<>(3, 1);
+        result.put(driverClassName, org.h2.Driver.class.getName());
+        result.put(url, "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        result.put(username, "sa");
+        return result;
     }
 }

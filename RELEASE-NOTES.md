@@ -1,5 +1,9 @@
 ## 2.0.0.M2
 
+### 功能提升
+
+1. [ISSUE #407](https://github.com/shardingjdbc/sharding-jdbc/issues/407) sharding-jdbc-spring-boot-starter兼容使用减号和驼峰两种方式进行属性配置
+
 ### 缺陷修正
 
 1. [ISSUE #404](https://github.com/shardingjdbc/sharding-jdbc/issues/404) sharding-jdbc-spring-boot-starter不支持HikariDataSource
