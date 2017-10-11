@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertSelectOne" value="SELECT 1 as a" />
+    <sql id="assertSelectOne" value="SELECT 1 as a" type="MySQL,PostgreSQL,SQLServer" />
     <sql id="assertSelectNotEqualsWithSingleTable" value="SELECT * FROM t_order_item WHERE item_id &lt;&gt; %s ORDER BY item_id" />
     <sql id="assertSelectNotEqualsWithSingleTableForExclamationEqual" value="SELECT * FROM t_order_item WHERE item_id != %s ORDER BY item_id" />
     <sql id="assertSelectNotEqualsWithSingleTableForNotIn" value="SELECT * FROM t_order_item WHERE item_id NOT IN (%s) ORDER BY item_id" />
