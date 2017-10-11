@@ -1,3 +1,9 @@
+## 2.0.0.M2
+
+### 缺陷修正
+
+1. [ISSUE #404](https://github.com/shardingjdbc/sharding-jdbc/issues/404) sharding-jdbc-spring-boot-starter不支持HikariDataSource
+
 ## 2.0.0.M1
 
 ### 里程碑

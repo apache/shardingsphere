@@ -49,7 +49,7 @@ public final class DataSourceUtil {
     private static void callSetterMethod(final DataSource dataSource, final String methodName, final String setterValue) {
         for (Class<?> each : generalClassType) {
             try {
-                Method method = dataSource.getClass().getDeclaredMethod(methodName, each);
+                Method method = dataSource.getClass().getMethod(methodName, each);
                 if (boolean.class == each || Boolean.class == each) {
                     method.invoke(dataSource, Boolean.valueOf(setterValue));
                 } else if (int.class == each || Integer.class == each) {
