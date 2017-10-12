@@ -40,7 +40,7 @@ public final class CharType {
      * @return is whitespace or not
      */
     public static boolean isWhitespace(final char ch) {
-        return ch <= 32 && EOI != ch || 160 == ch || ch >= 0x7F && ch <= 0xA0;
+        return ch <= 0x20 && EOI != ch || ch >= 0x7F && ch <= 0xA0;
     }
     
     /**
@@ -50,7 +50,7 @@ public final class CharType {
      * @return is end of input or not
      */
     public static boolean isEndOfInput(final char ch) {
-        return ch == 0x1A;
+        return ch == EOI;
     }
     
     /**
