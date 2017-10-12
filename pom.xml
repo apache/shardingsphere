@@ -35,6 +35,7 @@
         <h2.version>1.4.196</h2.version>
         <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
         <mssql.version>6.1.7.jre7-preview</mssql.version>
+        <hikari-cp.version>2.4.11</hikari-cp.version>
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
         <dbunit.version>2.5.3</dbunit.version>
@@ -192,6 +193,12 @@
                 <groupId>com.microsoft.sqlserver</groupId>
                 <artifactId>mssql-jdbc</artifactId>
                 <version>${mssql.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.zaxxer</groupId>
+                <artifactId>HikariCP-java7</artifactId>
+                <version>${hikari-cp.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

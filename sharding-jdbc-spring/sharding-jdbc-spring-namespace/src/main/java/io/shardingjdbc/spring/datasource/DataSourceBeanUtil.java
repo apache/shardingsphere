@@ -33,7 +33,7 @@ public final class DataSourceBeanUtil {
         BeanDefinition beanDefinition = new GenericBeanDefinition();
         beanDefinition.setBeanClassName(dataSource.getClass().getName());
         beanFactory.registerBeanDefinition(dataSourceName, beanDefinition);
-        Method[] methods = dataSource.getClass().getDeclaredMethods();
+        Method[] methods = dataSource.getClass().getMethods();
         Map<String, Method> getterMethods = new TreeMap<>();
         Map<String, Method> setterMethods = new TreeMap<>();
         for (Method each : methods) {

@@ -26,7 +26,8 @@ import org.junit.runners.Suite;
         StringUtilTest.class,
         InlineExpressionParserTest.class,
         SQLUtilTest.class,
-        EventBusInstanceTest.class
+        EventBusInstanceTest.class,
+        DataSourceUtilTest.class
     })
 public class AllUtilTests {
 }

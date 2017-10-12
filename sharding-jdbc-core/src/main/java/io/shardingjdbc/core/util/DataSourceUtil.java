@@ -1,5 +1,6 @@
 package io.shardingjdbc.core.util;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -43,13 +44,16 @@ public final class DataSourceUtil {
     }
     
     private static String getSetterMethodName(final String propertyName) {
+        if (propertyName.contains("-")) {
+            return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, SET_METHOD_PREFIX + "-" + propertyName);
+        }
         return SET_METHOD_PREFIX + String.valueOf(propertyName.charAt(0)).toUpperCase() + propertyName.substring(1, propertyName.length());
     }
     
     private static void callSetterMethod(final DataSource dataSource, final String methodName, final String setterValue) {
         for (Class<?> each : generalClassType) {
             try {
-                Method method = dataSource.getClass().getDeclaredMethod(methodName, each);
+                Method method = dataSource.getClass().getMethod(methodName, each);
                 if (boolean.class == each || Boolean.class == each) {
                     method.invoke(dataSource, Boolean.valueOf(setterValue));
                 } else if (int.class == each || Integer.class == each) {
