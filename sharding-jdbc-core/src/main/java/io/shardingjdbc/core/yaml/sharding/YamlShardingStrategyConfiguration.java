@@ -52,7 +52,7 @@ public class YamlShardingStrategyConfiguration {
         }
         if (null != inline) {
             shardingStrategyConfigCount++;
-            result = new InlineShardingStrategyConfiguration(inline.getShardingColumn(), inline.getAlgorithmInlineExpression());
+            result = new InlineShardingStrategyConfiguration(inline.getShardingColumn(), inline.getAlgorithmExpression());
         }
         if (null != hint) {
             shardingStrategyConfigCount++;

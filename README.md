@@ -128,21 +128,21 @@ tables:
     databaseStrategy: 
       inline:
         shardingColumn: user_id
-        algorithmInlineExpression: ds_${user_id % 2}
+        algorithmExpression: ds_${user_id % 2}
     tableStrategy: 
       inline:
         shardingColumn: order_id
-        algorithmInlineExpression: t_order_${order_id % 2}
+        algorithmExpression: t_order_${order_id % 2}
   t_order_item: 
     actualDataNodes: ds_${0..1}.t_order_item_${0..1}
     databaseStrategy: 
       inline:
         shardingColumn: user_id
-        algorithmInlineExpression: ds_${user_id % 2}
+        algorithmExpression: ds_${user_id % 2}
     tableStrategy: 
       inline:
         shardingColumn: order_id
-        algorithmInlineExpression: t_order_item_${order_id % 2}
+        algorithmExpression: t_order_item_${order_id % 2}
 ```
 
 ```java

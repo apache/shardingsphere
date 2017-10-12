@@ -31,5 +31,5 @@ public final class YamlInlineShardingStrategyConfiguration implements YamlShardi
     
     private String shardingColumn;
     
-    private String algorithmInlineExpression;
+    private String algorithmExpression;
 }

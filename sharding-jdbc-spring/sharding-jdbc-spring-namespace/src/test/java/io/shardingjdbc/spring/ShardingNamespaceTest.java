@@ -17,10 +17,6 @@
 
 package io.shardingjdbc.spring;
 
-import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
@@ -35,15 +31,18 @@ import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 import io.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import io.shardingjdbc.spring.util.FieldValueUtil;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
+import java.util.Arrays;
+import java.util.Iterator;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.Iterator;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/shardingNamespace.xml")
 public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -74,7 +73,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void testInlineStrategy() {
         InlineShardingStrategyConfiguration inlineStrategy = this.applicationContext.getBean("inlineStrategy", InlineShardingStrategyConfiguration.class);
         assertThat(inlineStrategy.getShardingColumn(), is("order_id"));
-        assertThat(inlineStrategy.getAlgorithmInlineExpression(), is("t_order_${order_id % 4}"));
+        assertThat(inlineStrategy.getAlgorithmExpression(), is("t_order_${order_id % 4}"));
     }
     
     @Test

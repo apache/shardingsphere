@@ -45,7 +45,7 @@ public final class ShardingStrategyConfigurationGsonTypeAdapter extends TypeAdap
         String algorithmClassName = "";
         String preciseAlgorithmClassName = "";
         String rangeAlgorithmClassName = "";
-        String algorithmInlineExpression = "";
+        String algorithmExpression = "";
         in.beginObject();
         while (in.hasNext()) {
             String jsonName = in.nextName();
@@ -68,15 +68,15 @@ public final class ShardingStrategyConfigurationGsonTypeAdapter extends TypeAdap
                 case "rangeAlgorithmClassName":
                     rangeAlgorithmClassName = in.nextString();
                     break;
-                case "algorithmInlineExpression":
-                    algorithmInlineExpression = in.nextString();
+                case "algorithmExpression":
+                    algorithmExpression = in.nextString();
                     break;
                 default:
                     throw new ShardingJdbcException("Cannot convert json for property: %s", jsonName);
             }
         }
         in.endObject();
-        return createStrategy(type, shardingColumn, shardingColumns, algorithmClassName, preciseAlgorithmClassName, rangeAlgorithmClassName, algorithmInlineExpression); 
+        return createStrategy(type, shardingColumn, shardingColumns, algorithmClassName, preciseAlgorithmClassName, rangeAlgorithmClassName, algorithmExpression); 
     }
     
     private ShardingStrategyConfiguration createStrategy(final String type, final String shardingColumn, final String shardingColumns,
@@ -118,7 +118,7 @@ public final class ShardingStrategyConfigurationGsonTypeAdapter extends TypeAdap
             out.name("type").value(ShardingStrategyType.INLINE.name());
             InlineShardingStrategyConfiguration shardingStrategyConfig = (InlineShardingStrategyConfiguration) value;
             out.name("shardingColumn").value(shardingStrategyConfig.getShardingColumn());
-            out.name("algorithmInlineExpression").value(shardingStrategyConfig.getAlgorithmInlineExpression());
+            out.name("algorithmExpression").value(shardingStrategyConfig.getAlgorithmExpression());
         } else if (value instanceof HintShardingStrategyConfiguration) {
             out.name("type").value(ShardingStrategyType.HINT.name());
             HintShardingStrategyConfiguration shardingStrategyConfig = (HintShardingStrategyConfiguration) value;

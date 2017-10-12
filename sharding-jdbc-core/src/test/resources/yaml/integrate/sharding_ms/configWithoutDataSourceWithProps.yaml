@@ -11,7 +11,7 @@ tables:
     tableStrategy: 
       inline:
         shardingColumn: order_id
-        algorithmInlineExpression: t_order_${order_id % 2}
+        algorithmExpression: t_order_${order_id % 2}
     keyGeneratorColumnName: order_id
     keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
   
@@ -25,7 +25,7 @@ tables:
     tableStrategy: 
       inline:
         shardingColumn: order_id
-        algorithmInlineExpression: t_order_item_${order_id % 2}
+        algorithmExpression: t_order_item_${order_id % 2}
 
 bindingTables:
   - t_order,t_order_item

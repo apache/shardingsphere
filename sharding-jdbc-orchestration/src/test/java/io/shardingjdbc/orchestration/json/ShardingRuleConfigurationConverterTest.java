@@ -97,7 +97,7 @@ public final class ShardingRuleConfigurationConverterTest {
         assertCommon(actual);
         InlineShardingStrategyConfiguration actualShardingStrategy = (InlineShardingStrategyConfiguration) actual.getDefaultTableShardingStrategyConfig();
         assertThat(actualShardingStrategy.getShardingColumn(), is("order_id"));
-        assertThat(actualShardingStrategy.getAlgorithmInlineExpression(), is("order_${user_id % 2}"));
+        assertThat(actualShardingStrategy.getAlgorithmExpression(), is("order_${user_id % 2}"));
     }
     
     @Test
@@ -136,7 +136,7 @@ public final class ShardingRuleConfigurationConverterTest {
     }
     
     private String getJsonForInlineStrategy() {
-        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"INLINE\",\"shardingColumn\":\"order_id\",\"algorithmInlineExpression\":\"order_${user_id % 2}\"}"
+        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"INLINE\",\"shardingColumn\":\"order_id\",\"algorithmExpression\":\"order_${user_id % 2}\"}"
                 + masterSlaveRuleConfigJson;
     }
     

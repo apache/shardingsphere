@@ -29,7 +29,7 @@ tables:
     tableStrategy: 
       inline:
         shardingColumn: id
-        algorithmInlineExpression: t_order_${id % 2}
+        algorithmExpression: t_order_${id % 2}
   t_order_item:
     actualDataNodes: db${0..1}.t_order_item_${0..1}
     keyGeneratorColumnName: order_item_id
@@ -42,7 +42,7 @@ tables:
     tableStrategy: 
       inline:
         shardingColumn: id
-        algorithmInlineExpression: t_order_item_${id % 2}
+        algorithmExpression: t_order_item_${id % 2}
 
 bindingTables:
   - t_order,t_order_item
