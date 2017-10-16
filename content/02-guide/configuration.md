@@ -164,7 +164,7 @@ defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默
 
 tables: 分库分表配置，可配置多个logic_table_name
     <logic_table_name>: 逻辑表名
-        actualDataNodes: 真实数据节点，由库名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示为只分库不分表。
+        actualDataNodes: 真实数据节点，由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示为只分库不分表。
         databaseStrategy: 分库策略，以下的分片策略只能任选其一
             standard: 标准分片策略，用于单分片键的场景
                 shardingColumn: 分片列名
@@ -175,7 +175,7 @@ tables: 分库分表配置，可配置多个logic_table_name
                 algorithmClassName: 分片算法类名称。该类需使用默认的构造器或者提供无参数的构造器
             inline: inline表达式分片策略
                 shardingColumn : 分片列名
-                algorithmExpression: 分库算法表达式，需要符合groovy动态语法
+                algorithmInlineExpression: 分库算法Inline表达式，需要符合groovy动态语法
             hint: Hint分片策略
                 algorithmClassName: 分片算法类名称。该类需使用默认的构造器或者提供无参数的构造器
             none: 不分片
@@ -345,7 +345,7 @@ slaveDataSourceNames：slave数据源名称，用数组表示多个
 | *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
 | --------------------          | ------------ | ---------- | ------ | ------- |
 | logic-table                   | 属性         |  String     |   是   | 逻辑表名 |
-| actual-data-nodes             | 属性         |  String     |   否   | 真实数据节点，由库名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示为只分库不分表                        |
+| actual-data-nodes             | 属性         |  String     |   否   | 真实数据节点，由数据源名（读写分离引用<masterslave:data-source>中的id属性） + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示为只分库不分表                        |
 | database-strategy-ref         | 属性         |  String     |   否   | 分库策略，对应\<sharding:xxx-strategy>中的策略id，不填则使用\<sharding:sharding-rule/>配置的default-database-strategy-ref   |
 | table-strategy-ref            | 属性         |  String     |   否   | 分表策略，对应\<sharding:xxx-strategy>中的略id，不填则使用\<sharding:sharding-rule/>配置的default-table-strategy-ref        |
 
