@@ -29,7 +29,7 @@
         </items-token>
         <order-by-columns>
             <order-by-column owner="o" alias="ORDER_BY_DERIVED_0" name="order_id" order-by-type="DESC" />
-            <order-by-column index="1" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+            <order-by-column index="1" order-by-type="ASC" />
         </order-by-columns>
     </assert>
     
@@ -42,6 +42,29 @@
         </table-tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-by-type="ASC" />
+        </order-by-columns>
+    </assert>
+
+    <assert id="assertSelectWithOrderByForDate">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="27" original-literals="t_order_item" />
+        </table-tokens>
+        <items-token begin-position="11">
+            <items>
+                <item>i.c_date AS ORDER_BY_DERIVED_0 </item>
+                <item>o.order_id AS ORDER_BY_DERIVED_1 </item>
+                <item>i.item_id AS ORDER_BY_DERIVED_2 </item>
+            </items>
+        </items-token>
+        <order-by-columns>
+            <order-by-column owner="i" alias="ORDER_BY_DERIVED_0" name="c_date" order-by-type="DESC" />
+            <order-by-column owner="o" alias="ORDER_BY_DERIVED_1" name="order_id" order-by-type="DESC" />
+            <order-by-column owner="i" alias="ORDER_BY_DERIVED_2" name="item_id" order-by-type="ASC" />
         </order-by-columns>
     </assert>
     
