@@ -1,3 +1,9 @@
+## 2.0.0.M2
+
+### 缺陷修正
+
+1. [ISSUE #412](https://github.com/shardingjdbc/sharding-jdbc/issues/412) ShardingConnection开启事务之前获取元数据，造成路由的部分连接事务开启失败
+
 ## 2.0.0.M1
 
 ### 里程碑
