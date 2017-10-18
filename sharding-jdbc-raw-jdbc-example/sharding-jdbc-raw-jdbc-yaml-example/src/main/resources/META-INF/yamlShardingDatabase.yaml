@@ -27,7 +27,7 @@ bindingTables:
 defaultDatabaseStrategy:
   inline:
     shardingColumn: user_id
-    algorithmInlineExpression: ds_${user_id % 2}
+    algorithmExpression: ds_${user_id % 2}
 
 defaultTableStrategy:
   none:
