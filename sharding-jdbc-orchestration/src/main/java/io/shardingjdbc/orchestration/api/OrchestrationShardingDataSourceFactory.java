@@ -22,7 +22,7 @@ import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.instance.InstanceNode;
-import io.shardingjdbc.orchestration.jdbc.datasource.MockShardingDataSource;
+import io.shardingjdbc.orchestration.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingjdbc.orchestration.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.json.ShardingRuleConfigurationConverter;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
@@ -143,7 +143,7 @@ public final class OrchestrationShardingDataSourceFactory {
                 ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.fromJson(registryCenter.get("/" + name + "/config/sharding"));
                 Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
                 for (String each : dataSourceMap.keySet()) {
-                    dataSourceMap.put(each, new MockShardingDataSource());
+                    dataSourceMap.put(each, new CircuitBreakerDataSource());
                 }
                 shardingDataSource.renew(shardingRuleConfig.build(dataSourceMap), new Properties());
             }

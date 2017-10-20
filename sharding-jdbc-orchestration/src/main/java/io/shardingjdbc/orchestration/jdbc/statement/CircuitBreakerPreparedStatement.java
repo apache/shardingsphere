@@ -18,8 +18,8 @@
 package io.shardingjdbc.orchestration.jdbc.statement;
 
 import io.shardingjdbc.core.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
-import io.shardingjdbc.orchestration.jdbc.connection.MockShardingConnection;
-import io.shardingjdbc.orchestration.jdbc.resultset.MockShardingResultSet;
+import io.shardingjdbc.orchestration.jdbc.connection.CircuitBreakerConnection;
+import io.shardingjdbc.orchestration.jdbc.resultset.CircuitBreakerResultSet;
 import lombok.Getter;
 
 import java.io.InputStream;
@@ -41,12 +41,12 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Mock sharding preparedStatement.
+ * Circuit breaker preparedStatement.
  * 
  * @author caohao
  */
 @Getter
-public final class MockShardingPreparedStatement extends AbstractUnsupportedOperationPreparedStatement {
+public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOperationPreparedStatement {
     
     @Override
     public void setNull(final int parameterIndex, final int sqlType) throws SQLException {
@@ -268,12 +268,12 @@ public final class MockShardingPreparedStatement extends AbstractUnsupportedOper
     
     @Override
     public Connection getConnection() throws SQLException {
-        return new MockShardingConnection();
+        return new CircuitBreakerConnection();
     }
     
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
-        return new MockShardingResultSet();
+        return new CircuitBreakerResultSet();
     }
     
     @Override
@@ -283,7 +283,7 @@ public final class MockShardingPreparedStatement extends AbstractUnsupportedOper
     
     @Override
     public ResultSet getResultSet() throws SQLException {
-        return new MockShardingResultSet();
+        return new CircuitBreakerResultSet();
     }
     
     @Override
@@ -303,7 +303,7 @@ public final class MockShardingPreparedStatement extends AbstractUnsupportedOper
     
     @Override
     public ResultSet executeQuery() throws SQLException {
-        return new MockShardingResultSet();
+        return new CircuitBreakerResultSet();
     }
     
     @Override

@@ -21,11 +21,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
- * Mock resultSet metadata.
+ * Circuit breaker result set metadata.
  * 
  * @author caohao
  */
-public final class MockResultSetMetaData implements ResultSetMetaData {
+public final class CircuitBreakerResultSetMetaData implements ResultSetMetaData {
     
     @Override
     public int getColumnCount() throws SQLException {

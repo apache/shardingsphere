@@ -7,11 +7,11 @@ import java.sql.RowIdLifetime;
 import java.sql.SQLException;
 
 /**
- * Mock datasource metadata.
+ * Circuit breaker metadata.
  *
  * @author caohao
  */
-public class MockDatabaseMetaData implements DatabaseMetaData {
+public class CircuitBreakerDatabaseMetaData implements DatabaseMetaData {
     
     @Override
     public boolean allProceduresAreCallable() throws SQLException {

@@ -22,7 +22,7 @@ import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.orchestration.instance.InstanceNode;
-import io.shardingjdbc.orchestration.jdbc.datasource.MockShardingDataSource;
+import io.shardingjdbc.orchestration.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingjdbc.orchestration.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.json.GsonFactory;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
@@ -118,7 +118,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
                 MasterSlaveRuleConfiguration masterSlaveRuleConfig = GsonFactory.getGson().fromJson(new String(childData.getData(), Charsets.UTF_8), MasterSlaveRuleConfiguration.class);
                 Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
                 for (String each : dataSourceMap.keySet()) {
-                    dataSourceMap.put(each, new MockShardingDataSource());
+                    dataSourceMap.put(each, new CircuitBreakerDataSource());
                 }
                 masterSlaveDataSource.renew(masterSlaveRuleConfig.build(dataSourceMap));
             }

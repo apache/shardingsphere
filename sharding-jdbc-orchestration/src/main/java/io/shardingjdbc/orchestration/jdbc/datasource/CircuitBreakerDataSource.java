@@ -18,7 +18,7 @@
 package io.shardingjdbc.orchestration.jdbc.datasource;
 
 import io.shardingjdbc.core.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import io.shardingjdbc.orchestration.jdbc.connection.MockShardingConnection;
+import io.shardingjdbc.orchestration.jdbc.connection.CircuitBreakerConnection;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -27,11 +27,11 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 /**
- * Mock sharding datasource.
+ * Circuit breaker datasource.
  * 
  * @author caohao
  */
-public final class MockShardingDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
+public final class CircuitBreakerDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
     @Override
     public void close() throws Exception {
@@ -39,12 +39,12 @@ public final class MockShardingDataSource extends AbstractUnsupportedOperationDa
     
     @Override
     public Connection getConnection() throws SQLException {
-        return new MockShardingConnection();
+        return new CircuitBreakerConnection();
     }
     
     @Override
     public Connection getConnection(final String username, final String password) throws SQLException {
-        return new MockShardingConnection();
+        return new CircuitBreakerConnection();
     }
     
     @Override

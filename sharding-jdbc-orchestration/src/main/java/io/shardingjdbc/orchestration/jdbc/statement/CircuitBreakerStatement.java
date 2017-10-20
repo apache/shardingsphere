@@ -18,7 +18,7 @@
 package io.shardingjdbc.orchestration.jdbc.statement;
 
 import io.shardingjdbc.core.jdbc.unsupported.AbstractUnsupportedOperationStatement;
-import io.shardingjdbc.orchestration.jdbc.connection.MockShardingConnection;
+import io.shardingjdbc.orchestration.jdbc.connection.CircuitBreakerConnection;
 import lombok.Getter;
 
 import java.sql.Connection;
@@ -27,12 +27,12 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 
 /**
- * Mock sharding statement.
+ * Circuit breaker statement.
  * 
  * @author caohao
  */
 @Getter
-public class MockShardingStatement extends AbstractUnsupportedOperationStatement {
+public class CircuitBreakerStatement extends AbstractUnsupportedOperationStatement {
     
     @Override
     public void close() throws SQLException {
@@ -121,7 +121,7 @@ public class MockShardingStatement extends AbstractUnsupportedOperationStatement
     
     @Override
     public Connection getConnection() throws SQLException {
-        return new MockShardingConnection();
+        return new CircuitBreakerConnection();
     }
     
     @Override

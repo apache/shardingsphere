@@ -37,11 +37,11 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
- * Mock sharding result set.
+ * Circuit breaker result set.
  *
  * @author caohao
  */
-public final class MockShardingResultSet extends AbstractUnsupportedOperationResultSet {
+public final class CircuitBreakerResultSet extends AbstractUnsupportedOperationResultSet {
     
     @Override
     public boolean next() throws SQLException {
@@ -250,7 +250,7 @@ public final class MockShardingResultSet extends AbstractUnsupportedOperationRes
     
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return new MockResultSetMetaData();
+        return new CircuitBreakerResultSetMetaData();
     }
     
     @Override
