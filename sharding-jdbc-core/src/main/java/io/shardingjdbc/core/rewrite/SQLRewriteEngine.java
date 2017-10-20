@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.rewrite;
 
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.rule.BindingTableRule;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
@@ -34,6 +35,7 @@ import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.util.SQLUtil;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -55,6 +57,8 @@ public final class SQLRewriteEngine {
     
     private final String originalSQL;
     
+    private final DatabaseType databaseType;
+    
     private final List<SQLToken> sqlTokens = new LinkedList<>();
     
     private final SQLStatement sqlStatement;
@@ -64,11 +68,13 @@ public final class SQLRewriteEngine {
      * 
      * @param shardingRule databases and tables sharding rule
      * @param originalSQL original SQL
+     * @param databaseType database type
      * @param sqlStatement SQL statement
      */
-    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final SQLStatement sqlStatement) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
+        this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
         sqlTokens.addAll(sqlStatement.getSqlTokens());
     }
@@ -118,7 +124,8 @@ public final class SQLRewriteEngine {
     }
     
     private void appendTableToken(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count, final List<SQLToken> sqlTokens) {
-        String tableName = sqlStatement.getTables().getTableNames().contains(tableToken.getTableName()) ? tableToken.getTableName() : tableToken.getOriginalLiterals();
+        String tableName = 
+                SQLUtil.getOriginalValue(sqlStatement.getTables().getTableNames().contains(tableToken.getTableName()) ? tableToken.getTableName() : tableToken.getOriginalLiterals(), databaseType);
         sqlBuilder.appendTable(tableName);
         int beginPosition = tableToken.getBeginPosition() + tableToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
@@ -127,7 +134,7 @@ public final class SQLRewriteEngine {
     private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count, final List<SQLToken> sqlTokens) {
         for (String item : itemsToken.getItems()) {
             sqlBuilder.appendLiterals(", ");
-            sqlBuilder.appendLiterals(item);
+            sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(item, databaseType));
         }
         int beginPosition = itemsToken.getBeginPosition();
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
@@ -159,10 +166,11 @@ public final class SQLRewriteEngine {
         orderByLiterals.append(" ").append(DefaultKeyword.ORDER).append(" ").append(DefaultKeyword.BY).append(" ");
         int i = 0;
         for (OrderItem each : selectStatement.getOrderByItems()) {
+            String columnLabel = SQLUtil.getOriginalValue(each.getColumnLabel(), databaseType);
             if (0 == i) {
-                orderByLiterals.append(each.getColumnLabel()).append(" ").append(each.getType().name());
+                orderByLiterals.append(columnLabel).append(" ").append(each.getType().name());
             } else {
-                orderByLiterals.append(",").append(each.getColumnLabel()).append(" ").append(each.getType().name());
+                orderByLiterals.append(",").append(columnLabel).append(" ").append(each.getType().name());
             }
             i++;
         }
