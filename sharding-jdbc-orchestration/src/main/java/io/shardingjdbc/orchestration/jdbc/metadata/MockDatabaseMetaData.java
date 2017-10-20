@@ -7,7 +7,7 @@ import java.sql.RowIdLifetime;
 import java.sql.SQLException;
 
 /**
- * Mock sharding datasource.
+ * Mock datasource metadata.
  *
  * @author caohao
  */

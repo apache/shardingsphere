@@ -17,13 +17,15 @@
 
 package io.shardingjdbc.orchestration.api;
 
+import com.google.common.base.Charsets;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingjdbc.orchestration.instance.InstanceNode;
+import io.shardingjdbc.orchestration.jdbc.datasource.MockShardingDataSource;
 import io.shardingjdbc.orchestration.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.json.GsonFactory;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import com.google.common.base.Charsets;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.curator.framework.CuratorFramework;
@@ -59,6 +61,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         initRegistryCenter(name, registryCenter, dataSourceMap, masterSlaveRuleConfig);
         MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig);
         addConfigurationChangeListener(name, registryCenter, result);
+        addInstancesStateChangeListener(name, registryCenter, result);
         return result;
     }
     
@@ -67,6 +70,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         registryCenter.init();
         registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
         registryCenter.persist("/" + name + "/config/masterslave", GsonFactory.getGson().toJson(masterSlaveRuleConfig));
+        registryCenter.persistEphemeral("/" + name + "/state/instances/" + new InstanceNode().getInstanceId(), "");
         registryCenter.addCacheData("/" + name + "/config");
     }
     
@@ -93,6 +97,30 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
                     Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
                     masterSlaveDataSource.renew(newMasterSlaveRuleConfig.build(dataSourceMap));
                 }
+            }
+        });
+    }
+    
+    private static void addInstancesStateChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final MasterSlaveDataSource masterSlaveDataSource) {
+        TreeCache cache = (TreeCache) registryCenter.getRawCache("/" + name + "/state/instances");
+        cache.getListenable().addListener(new TreeCacheListener() {
+            
+            @Override
+            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
+                ChildData childData = event.getData();
+                if (null == childData || null == childData.getData()) {
+                    return;
+                }
+                String path = childData.getPath();
+                if (path.isEmpty() || !"disabled".equals(registryCenter.get(path))) {
+                    return;
+                }
+                MasterSlaveRuleConfiguration masterSlaveRuleConfig = GsonFactory.getGson().fromJson(new String(childData.getData(), Charsets.UTF_8), MasterSlaveRuleConfiguration.class);
+                Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
+                for (String each : dataSourceMap.keySet()) {
+                    dataSourceMap.put(each, new MockShardingDataSource());
+                }
+                masterSlaveDataSource.renew(masterSlaveRuleConfig.build(dataSourceMap));
             }
         });
     }

@@ -38,6 +38,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Mock sharding preparedStatement.
@@ -262,7 +263,7 @@ public final class MockShardingPreparedStatement extends AbstractUnsupportedOper
     
     @Override
     public int[] executeBatch() throws SQLException {
-        return null;
+        return new int[]{-1};
     }
     
     @Override
@@ -297,7 +298,7 @@ public final class MockShardingPreparedStatement extends AbstractUnsupportedOper
     
     @Override
     protected Collection<? extends Statement> getRoutedStatements() {
-        return null;
+        return Collections.emptyList();
     }
     
     @Override

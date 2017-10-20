@@ -17,13 +17,15 @@
 
 package io.shardingjdbc.orchestration.api;
 
+import com.google.common.base.Charsets;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.orchestration.instance.InstanceNode;
+import io.shardingjdbc.orchestration.jdbc.datasource.MockShardingDataSource;
 import io.shardingjdbc.orchestration.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.json.ShardingRuleConfigurationConverter;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import com.google.common.base.Charsets;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.curator.framework.CuratorFramework;
@@ -60,6 +62,7 @@ public final class OrchestrationShardingDataSourceFactory {
         initRegistryCenter(name, registryCenter, dataSourceMap, shardingRuleConfig);
         ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
         addConfigurationChangeListener(name, registryCenter, result);
+        addInstancesStateChangeListener(name, registryCenter, result);
         return result;
     }
     
@@ -89,7 +92,9 @@ public final class OrchestrationShardingDataSourceFactory {
         registryCenter.init();
         registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
         registryCenter.persist("/" + name + "/config/sharding", ShardingRuleConfigurationConverter.toJson(shardingRuleConfig));
+        registryCenter.persistEphemeral("/" + name + "/state/instances/" + new InstanceNode().getInstanceId(), "");
         registryCenter.addCacheData("/" + name + "/config");
+        registryCenter.addCacheData("/" + name + "/state/instances");
     }
     
     private static void addConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
@@ -117,6 +122,30 @@ public final class OrchestrationShardingDataSourceFactory {
                     // TODO props
                     shardingDataSource.renew(newShardingRuleConfig.build(dataSourceMap), new Properties());
                 }
+            }
+        });
+    }
+    
+    private static void addInstancesStateChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
+        TreeCache cache = (TreeCache) registryCenter.getRawCache("/" + name + "/state/instances");
+        cache.getListenable().addListener(new TreeCacheListener() {
+            
+            @Override
+            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
+                ChildData childData = event.getData();
+                if (null == childData || null == childData.getData()) {
+                    return;
+                }
+                String path = childData.getPath();
+                if (path.isEmpty() || !"disabled".equals(registryCenter.get(path))) {
+                    return;
+                }
+                ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.fromJson(registryCenter.get("/" + name + "/config/sharding"));
+                Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
+                for (String each : dataSourceMap.keySet()) {
+                    dataSourceMap.put(each, new MockShardingDataSource());
+                }
+                shardingDataSource.renew(shardingRuleConfig.build(dataSourceMap), new Properties());
             }
         });
     }

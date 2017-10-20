@@ -17,14 +17,13 @@
 
 package io.shardingjdbc.core.jdbc.core.datasource;
 
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.ShardingProperties;
 import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
 import io.shardingjdbc.core.executor.ExecutorEngine;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.connection.ShardingConnection;
-import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.rule.ShardingRule;
 
 import java.sql.SQLException;
 import java.util.Properties;
@@ -63,7 +62,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
      * @throws SQLException SQL exception
      */
     public void renew(final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
-        Preconditions.checkState(getDatabaseType() == getDatabaseType(newShardingRule.getDataSourceMap().values()), "Cannot change database type dynamically.");
+        // TODO to be discuss 
+//        Preconditions.checkState(getDatabaseType() == getDatabaseType(newShardingRule.getDataSourceMap().values()), "Cannot change database type dynamically.");
         ShardingProperties newShardingProperties = new ShardingProperties(null == newProps ? new Properties() : newProps);
         int originalExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
