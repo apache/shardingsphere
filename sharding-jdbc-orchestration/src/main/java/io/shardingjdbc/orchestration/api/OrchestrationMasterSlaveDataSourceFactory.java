@@ -68,10 +68,17 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
     private static void initRegistryCenter(final String name, 
                                            final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         registryCenter.init();
-        registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
-        registryCenter.persist("/" + name + "/config/masterslave", GsonFactory.getGson().toJson(masterSlaveRuleConfig));
+        persist(name, registryCenter, dataSourceMap, masterSlaveRuleConfig);
         registryCenter.persistEphemeral("/" + name + "/state/instances/" + new InstanceNode().getInstanceId(), "");
         registryCenter.addCacheData("/" + name + "/config");
+    }
+    
+    private static void persist(final String name,
+                                final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+        if ("overwrite".equals(registryCenter.get("/" + name + "/config")) || registryCenter.getChildrenKeys("/" + name + "/config").isEmpty()) {
+            registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
+            registryCenter.persist("/" + name + "/config/masterslave", GsonFactory.getGson().toJson(masterSlaveRuleConfig));
+        }
     }
     
     private static void addConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final MasterSlaveDataSource masterSlaveDataSource) {

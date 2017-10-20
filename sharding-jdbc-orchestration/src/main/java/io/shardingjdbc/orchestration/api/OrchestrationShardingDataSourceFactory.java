@@ -90,11 +90,18 @@ public final class OrchestrationShardingDataSourceFactory {
     private static void initRegistryCenter(final String name, 
                                            final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
         registryCenter.init();
-        registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
-        registryCenter.persist("/" + name + "/config/sharding", ShardingRuleConfigurationConverter.toJson(shardingRuleConfig));
+        persist(name, registryCenter, dataSourceMap, shardingRuleConfig);
         registryCenter.persistEphemeral("/" + name + "/state/instances/" + new InstanceNode().getInstanceId(), "");
         registryCenter.addCacheData("/" + name + "/config");
         registryCenter.addCacheData("/" + name + "/state/instances");
+    }
+    
+    private static void persist(final String name,
+                        final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
+        if ("overwrite".equals(registryCenter.get("/" + name + "/config")) || registryCenter.getChildrenKeys("/" + name + "/config").isEmpty()) {
+            registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
+            registryCenter.persist("/" + name + "/config/sharding", ShardingRuleConfigurationConverter.toJson(shardingRuleConfig));
+        }
     }
     
     private static void addConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
