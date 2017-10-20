@@ -11,7 +11,7 @@ import java.sql.SQLException;
  *
  * @author caohao
  */
-public final class MockDatabaseMetaData implements DatabaseMetaData {
+public class MockDatabaseMetaData implements DatabaseMetaData {
     
     @Override
     public boolean allProceduresAreCallable() throws SQLException {
@@ -24,12 +24,12 @@ public final class MockDatabaseMetaData implements DatabaseMetaData {
     }
     
     @Override
-    public final String getURL() throws SQLException {
+    public String getURL() throws SQLException {
         return null;
     }
     
     @Override
-    public final String getUserName() throws SQLException {
+    public String getUserName() throws SQLException {
         return null;
     }
     
@@ -59,32 +59,32 @@ public final class MockDatabaseMetaData implements DatabaseMetaData {
     }
     
     @Override
-    public final String getDatabaseProductName() throws SQLException {
+    public String getDatabaseProductName() throws SQLException {
         return "H2";
     }
     
     @Override
-    public final String getDatabaseProductVersion() throws SQLException {
+    public String getDatabaseProductVersion() throws SQLException {
         return null;
     }
     
     @Override
-    public final String getDriverName() throws SQLException {
+    public String getDriverName() throws SQLException {
         return null;
     }
     
     @Override
-    public final String getDriverVersion() throws SQLException {
+    public String getDriverVersion() throws SQLException {
         return null;
     }
     
     @Override
-    public final int getDriverMajorVersion() {
+    public int getDriverMajorVersion() {
         return 0;
     }
     
     @Override
-    public final int getDriverMinorVersion() {
+    public int getDriverMinorVersion() {
         return 0;
     }
     
@@ -139,42 +139,42 @@ public final class MockDatabaseMetaData implements DatabaseMetaData {
     }
     
     @Override
-    public final String getIdentifierQuoteString() throws SQLException {
+    public String getIdentifierQuoteString() throws SQLException {
         return null;
     }
     
     @Override
-    public final String getSQLKeywords() throws SQLException {
+    public String getSQLKeywords() throws SQLException {
         return null;
     }
     
     @Override
-    public final String getNumericFunctions() throws SQLException {
+    public String getNumericFunctions() throws SQLException {
         return null;
     }
     
     @Override
-    public final String getStringFunctions() throws SQLException {
+    public String getStringFunctions() throws SQLException {
         return null;
     }
     
     @Override
-    public final String getSystemFunctions() throws SQLException {
+    public String getSystemFunctions() throws SQLException {
         return null;
     }
     
     @Override
-    public final String getTimeDateFunctions() throws SQLException {
+    public String getTimeDateFunctions() throws SQLException {
         return null;
     }
     
     @Override
-    public final String getSearchStringEscape() throws SQLException {
+    public String getSearchStringEscape() throws SQLException {
         return null;
     }
     
     @Override
-    public final String getExtraNameCharacters() throws SQLException {
+    public String getExtraNameCharacters() throws SQLException {
         return null;
     }
     
@@ -314,17 +314,17 @@ public final class MockDatabaseMetaData implements DatabaseMetaData {
     }
     
     @Override
-    public final String getSchemaTerm() throws SQLException {
+    public String getSchemaTerm() throws SQLException {
         return null;
     }
     
     @Override
-    public final String getProcedureTerm() throws SQLException {
+    public String getProcedureTerm() throws SQLException {
         return null;
     }
     
     @Override
-    public final String getCatalogTerm() throws SQLException {
+    public String getCatalogTerm() throws SQLException {
         return null;
     }
     
@@ -334,7 +334,7 @@ public final class MockDatabaseMetaData implements DatabaseMetaData {
     }
     
     @Override
-    public final String getCatalogSeparator() throws SQLException {
+    public String getCatalogSeparator() throws SQLException {
         return null;
     }
     
@@ -464,77 +464,77 @@ public final class MockDatabaseMetaData implements DatabaseMetaData {
     }
     
     @Override
-    public final int getMaxBinaryLiteralLength() throws SQLException {
+    public int getMaxBinaryLiteralLength() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxCharLiteralLength() throws SQLException {
+    public int getMaxCharLiteralLength() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxColumnNameLength() throws SQLException {
+    public int getMaxColumnNameLength() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxColumnsInGroupBy() throws SQLException {
+    public int getMaxColumnsInGroupBy() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxColumnsInIndex() throws SQLException {
+    public int getMaxColumnsInIndex() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxColumnsInOrderBy() throws SQLException {
+    public int getMaxColumnsInOrderBy() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxColumnsInSelect() throws SQLException {
+    public int getMaxColumnsInSelect() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxColumnsInTable() throws SQLException {
+    public int getMaxColumnsInTable() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxConnections() throws SQLException {
+    public int getMaxConnections() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxCursorNameLength() throws SQLException {
+    public int getMaxCursorNameLength() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxIndexLength() throws SQLException {
+    public int getMaxIndexLength() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxSchemaNameLength() throws SQLException {
+    public int getMaxSchemaNameLength() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxProcedureNameLength() throws SQLException {
+    public int getMaxProcedureNameLength() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxCatalogNameLength() throws SQLException {
+    public int getMaxCatalogNameLength() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxRowSize() throws SQLException {
+    public int getMaxRowSize() throws SQLException {
         return 0;
     }
     
@@ -544,32 +544,32 @@ public final class MockDatabaseMetaData implements DatabaseMetaData {
     }
     
     @Override
-    public final int getMaxStatementLength() throws SQLException {
+    public int getMaxStatementLength() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxStatements() throws SQLException {
+    public int getMaxStatements() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxTableNameLength() throws SQLException {
+    public int getMaxTableNameLength() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxTablesInSelect() throws SQLException {
+    public int getMaxTablesInSelect() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getMaxUserNameLength() throws SQLException {
+    public int getMaxUserNameLength() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getDefaultTransactionIsolation() throws SQLException {
+    public int getDefaultTransactionIsolation() throws SQLException {
         return 0;
     }
     
@@ -805,33 +805,33 @@ public final class MockDatabaseMetaData implements DatabaseMetaData {
     }
     
     @Override
-    public final int getResultSetHoldability() throws SQLException {
+    public int getResultSetHoldability() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getDatabaseMajorVersion() throws SQLException {
+    public int getDatabaseMajorVersion() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getDatabaseMinorVersion() throws SQLException {
+    public int getDatabaseMinorVersion() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getJDBCMajorVersion() throws SQLException {
+    public int getJDBCMajorVersion() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getJDBCMinorVersion() throws SQLException {
+    public int getJDBCMinorVersion() throws SQLException {
         return 0;
     }
     
     @Override
-    public final int getSQLStateType() throws SQLException {
-        return 0;
+    public int getSQLStateType() throws SQLException {
+        return DatabaseMetaData.sqlStateSQL;
     }
     
     @Override
