@@ -137,13 +137,16 @@ public final class OrchestrationShardingDataSourceFactory {
                     return;
                 }
                 String path = childData.getPath();
-                if (path.isEmpty() || !"disabled".equals(registryCenter.get(path))) {
+                if (path.isEmpty()) {
                     return;
                 }
                 ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.fromJson(registryCenter.get("/" + name + "/config/sharding"));
                 Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
-                for (String each : dataSourceMap.keySet()) {
-                    dataSourceMap.put(each, new CircuitBreakerDataSource());
+                String pathValue = registryCenter.get(path);
+                if ("disabled".equals(pathValue)) {
+                    for (String each : dataSourceMap.keySet()) {
+                        dataSourceMap.put(each, new CircuitBreakerDataSource());
+                    }
                 }
                 shardingDataSource.renew(shardingRuleConfig.build(dataSourceMap), new Properties());
             }
