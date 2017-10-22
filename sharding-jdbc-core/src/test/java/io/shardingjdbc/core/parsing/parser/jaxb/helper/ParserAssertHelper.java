@@ -19,8 +19,7 @@ import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
 import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
 import io.shardingjdbc.core.parsing.parser.token.SQLToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
-
-import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,11 +33,11 @@ import static org.junit.Assert.assertTrue;
 public class ParserAssertHelper {
     
     public static void assertTables(final io.shardingjdbc.core.parsing.parser.jaxb.Tables expected, final io.shardingjdbc.core.parsing.parser.context.table.Tables actual) {
-        assertTrue(new ReflectionEquals(ParserJAXBHelper.getTables(expected)).matches(actual));
+        assertTrue(EqualsBuilder.reflectionEquals(ParserJAXBHelper.getTables(expected), actual));
     }
     
     public static void assertConditions(final io.shardingjdbc.core.parsing.parser.jaxb.Conditions expected, final io.shardingjdbc.core.parsing.parser.context.condition.Conditions actual, final boolean isPreparedStatement) {
-        assertTrue(new ReflectionEquals(buildExpectedConditions(expected, isPreparedStatement)).matches(actual));
+        assertTrue(EqualsBuilder.reflectionEquals(buildExpectedConditions(expected, isPreparedStatement), actual));
     }
     
     private static io.shardingjdbc.core.parsing.parser.context.condition.Conditions buildExpectedConditions(final io.shardingjdbc.core.parsing.parser.jaxb.Conditions conditions, final boolean isPreparedStatement) {
@@ -87,7 +86,7 @@ public class ParserAssertHelper {
         Iterator<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> sqlTokenIterator = filteredSqlTokens.iterator();
         for (SQLToken each : actual) {
             SQLToken sqlToken = buildExpectedSQLToken(sqlTokenIterator.next(), isPreparedStatement);
-            assertTrue(new ReflectionEquals(sqlToken).matches(each));
+            assertTrue(EqualsBuilder.reflectionEquals(sqlToken, each));
         }
         assertFalse(sqlTokenIterator.hasNext());
     }
@@ -143,10 +142,10 @@ public class ParserAssertHelper {
             return;
         }
         if (null != expected.getRowCount()) {
-            assertTrue(new ReflectionEquals(expected.getRowCount()).matches(actual.getRowCount()));
+            assertTrue(EqualsBuilder.reflectionEquals(expected.getRowCount(), actual.getRowCount()));
         }
         if (null != expected.getOffset()) {
-            assertTrue(new ReflectionEquals(expected.getOffset()).matches(actual.getOffset()));
+            assertTrue(EqualsBuilder.reflectionEquals(expected.getOffset(), actual.getOffset()));
         }
     }
     
@@ -179,7 +178,7 @@ public class ParserAssertHelper {
         for (OrderItem each : actual) {
             OrderItem expectedOrderItem = orderByColumns.next();
             // TODO assert nullOrderType
-            assertTrue(new ReflectionEquals(expectedOrderItem, "nullOrderType").matches(each));
+            assertTrue(EqualsBuilder.reflectionEquals(expectedOrderItem, each, "nullOrderType"));
         }
         assertFalse(orderByColumns.hasNext());
     }
@@ -189,7 +188,7 @@ public class ParserAssertHelper {
         for (OrderItem each : actual) {
             OrderItem groupByColumn = groupByColumns.next();
             // TODO assert nullOrderType
-            assertTrue(new ReflectionEquals(groupByColumn, "nullOrderType").matches(each));
+            assertTrue(EqualsBuilder.reflectionEquals(groupByColumn, each, "nullOrderType"));
         }
         assertFalse(groupByColumns.hasNext());
     }
@@ -198,9 +197,9 @@ public class ParserAssertHelper {
         Iterator<AggregationSelectItem> aggregationSelectItems = expected.iterator();
         for (AggregationSelectItem each : actual) {
             AggregationSelectItem aggregationSelectItem = aggregationSelectItems.next();
-            assertTrue(new ReflectionEquals(aggregationSelectItem, "derivedAggregationSelectItems").matches(each));
+            assertTrue(EqualsBuilder.reflectionEquals(aggregationSelectItem, each, "derivedAggregationSelectItems"));
             for (int i = 0; i < each.getDerivedAggregationSelectItems().size(); i++) {
-                assertTrue(new ReflectionEquals(aggregationSelectItem.getDerivedAggregationSelectItems().get(i)).matches(each.getDerivedAggregationSelectItems().get(i)));
+                assertTrue(EqualsBuilder.reflectionEquals(aggregationSelectItem.getDerivedAggregationSelectItems().get(i), each.getDerivedAggregationSelectItems().get(i)));
             }
         }
         assertFalse(aggregationSelectItems.hasNext());
