@@ -21,7 +21,8 @@ import com.google.common.base.Charsets;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.orchestration.instance.InstanceNode;
+import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
+import io.shardingjdbc.orchestration.instance.OrchestrationInstance;
 import io.shardingjdbc.orchestration.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingjdbc.orchestration.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.json.ShardingRuleConfigurationConverter;
@@ -56,10 +57,11 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationShardingConfiguration config) throws SQLException {
-        initRegistryCenter(config);
+        String instanceId = new OrchestrationInstance().getInstanceId();
+        initRegistryCenter(config, instanceId);
         ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig());
         addConfigurationChangeListener(config.getName(), config.getRegistryCenter(), result);
-        addInstancesStateChangeListener(config.getName(), config.getRegistryCenter(), result);
+        addInstancesStateChangeListener(config.getName(), instanceId, config.getRegistryCenter(), result);
         return result;
     }
     
@@ -72,30 +74,35 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
-        initRegistryCenter(config);
+        String instanceId = new OrchestrationInstance().getInstanceId();
+        initRegistryCenter(config, instanceId);
         // TODO props
         ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig(), props);
         addConfigurationChangeListener(config.getName(), config.getRegistryCenter(), result);
+        addInstancesStateChangeListener(config.getName(), instanceId, config.getRegistryCenter(), result);
         return result;
     }
     
-    private static void initRegistryCenter(final OrchestrationShardingConfiguration config) throws SQLException {
-        String name = config.getName();
+    private static void initRegistryCenter(final OrchestrationShardingConfiguration config, final String instanceId) throws SQLException {
         CoordinatorRegistryCenter registryCenter = config.getRegistryCenter();
         registryCenter.init();
-        persist(config);
-        registryCenter.persistEphemeral("/" + name + "/state/instances/" + new InstanceNode().getInstanceId(), "");
-        registryCenter.addCacheData("/" + name + "/config");
-        registryCenter.addCacheData("/" + name + "/state/instances");
+        persistConfig(config);
+        persistState(config, instanceId);
     }
     
-    private static void persist(final OrchestrationShardingConfiguration config) throws SQLException {
+    private static void persistConfig(final OrchestrationShardingConfiguration config) throws SQLException {
         String name = config.getName();
         CoordinatorRegistryCenter registryCenter = config.getRegistryCenter();
         if (config.isOverwrite() || registryCenter.getChildrenKeys("/" + name + "/config").isEmpty()) {
             registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(config.getDataSourceMap()));
             registryCenter.persist("/" + name + "/config/sharding", ShardingRuleConfigurationConverter.toJson(config.getShardingRuleConfig()));
         }
+        registryCenter.addCacheData("/" + name + "/config");
+    }
+    
+    private static void persistState(final OrchestrationShardingConfiguration config, final String instanceId) throws SQLException {
+        config.getRegistryCenter().persistEphemeral("/" + config.getName() + "/state/instances/" + instanceId, "");
+        config.getRegistryCenter().addCacheData("/" + config.getName() + "/state/instances/" + instanceId);
     }
     
     private static void addConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
@@ -127,8 +134,8 @@ public final class OrchestrationShardingDataSourceFactory {
         });
     }
     
-    private static void addInstancesStateChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
-        TreeCache cache = (TreeCache) registryCenter.getRawCache("/" + name + "/state/instances");
+    private static void addInstancesStateChangeListener(final String name, final String instanceId, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
+        TreeCache cache = (TreeCache) registryCenter.getRawCache("/" + name + "/state/instances/" + instanceId);
         cache.getListenable().addListener(new TreeCacheListener() {
             
             @Override
@@ -138,17 +145,17 @@ public final class OrchestrationShardingDataSourceFactory {
                     return;
                 }
                 String path = childData.getPath();
-                if (path.isEmpty()) {
+                if (path.isEmpty() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
                     return;
                 }
                 ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.fromJson(registryCenter.get("/" + name + "/config/sharding"));
                 Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
-                String pathValue = registryCenter.get(path);
-                if ("disabled".equals(pathValue)) {
+                if ("disabled".equals(registryCenter.get(path))) {
                     for (String each : dataSourceMap.keySet()) {
                         dataSourceMap.put(each, new CircuitBreakerDataSource());
                     }
                 }
+                // TODO props
                 shardingDataSource.renew(shardingRuleConfig.build(dataSourceMap), new Properties());
             }
         });

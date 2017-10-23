@@ -23,18 +23,18 @@ import lombok.Getter;
 import java.lang.management.ManagementFactory;
 
 /**
- * Instance Node.
+ * Orchestration instance.
  * 
  * @author caohao
  */
 @Getter
-public final class InstanceNode {
+public final class OrchestrationInstance {
     
     private static final String DELIMITER = "@-@";
     
     private final String instanceId;
     
-    public InstanceNode() {
+    public OrchestrationInstance() {
         instanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     }
 }
