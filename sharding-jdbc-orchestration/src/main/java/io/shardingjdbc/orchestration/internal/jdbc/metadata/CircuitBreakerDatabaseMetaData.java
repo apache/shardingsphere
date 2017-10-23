@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.jdbc.metadata;
+package io.shardingjdbc.orchestration.internal.jdbc.metadata;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

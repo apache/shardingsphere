@@ -1,4 +1,4 @@
-package io.shardingjdbc.orchestration.json;
+package io.shardingjdbc.orchestration.internal.json;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;

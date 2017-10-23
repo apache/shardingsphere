@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.jdbc.connection;
+package io.shardingjdbc.orchestration.internal.jdbc.connection;
 
 import io.shardingjdbc.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import io.shardingjdbc.orchestration.jdbc.metadata.CircuitBreakerDatabaseMetaData;
-import io.shardingjdbc.orchestration.jdbc.statement.CircuitBreakerPreparedStatement;
-import io.shardingjdbc.orchestration.jdbc.statement.CircuitBreakerStatement;
+import io.shardingjdbc.orchestration.internal.jdbc.metadata.CircuitBreakerDatabaseMetaData;
+import io.shardingjdbc.orchestration.internal.jdbc.statement.CircuitBreakerPreparedStatement;
+import io.shardingjdbc.orchestration.internal.jdbc.statement.CircuitBreakerStatement;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

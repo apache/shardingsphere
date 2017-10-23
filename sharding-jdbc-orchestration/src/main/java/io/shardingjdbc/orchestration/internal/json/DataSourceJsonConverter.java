@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.json;
+package io.shardingjdbc.orchestration.internal.json;
 
 import io.shardingjdbc.core.jdbc.core.datasource.NamedDataSource;
 import com.google.gson.reflect.TypeToken;

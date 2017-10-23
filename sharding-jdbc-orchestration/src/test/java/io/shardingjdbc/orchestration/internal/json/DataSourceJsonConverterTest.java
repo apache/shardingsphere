@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.json;
+package io.shardingjdbc.orchestration.internal.json;
 
 import com.mysql.jdbc.Driver;
 import org.apache.commons.dbcp.BasicDataSource;

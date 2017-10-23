@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.instance;
+package io.shardingjdbc.orchestration.internal.instance;
 
-import io.shardingjdbc.orchestration.util.IpUtils;
+import io.shardingjdbc.orchestration.internal.util.IpUtils;
 import lombok.Getter;
 
 import java.lang.management.ManagementFactory;

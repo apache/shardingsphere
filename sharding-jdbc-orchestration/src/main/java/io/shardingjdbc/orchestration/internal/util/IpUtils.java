@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.util;
+package io.shardingjdbc.orchestration.internal.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
