@@ -23,7 +23,7 @@ import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.example.orchestration.algorithm.ModuloTableShardingAlgorithm;
-import io.shardingjdbc.orchestration.api.OrchestrationShardingConfiguration;
+import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
 import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
@@ -39,7 +39,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class OrchestrationMain {
+public final class OrchestrationShardingMain {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
