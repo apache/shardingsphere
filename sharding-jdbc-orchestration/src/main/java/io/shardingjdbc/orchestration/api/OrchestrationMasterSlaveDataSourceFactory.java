@@ -42,42 +42,41 @@ import java.util.Map;
  * Orchestration master slave data source factory.
  * 
  * @author zhangliang 
+ * @author caohao  
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrchestrationMasterSlaveDataSourceFactory {
     
     /**
      * Create sharding data source.
-     * 
-     * @param name name of sharding data source
-     * @param registryCenter registry center
-     * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig rule configuration for databases and tables sharding
+     *
+     * @param config orchestration master slave configuration
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final String name, final CoordinatorRegistryCenter registryCenter, 
-                                              final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
-        initRegistryCenter(name, registryCenter, dataSourceMap, masterSlaveRuleConfig);
-        MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig);
-        addConfigurationChangeListener(name, registryCenter, result);
-        addInstancesStateChangeListener(name, registryCenter, result);
+    public static DataSource createDataSource(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
+        initRegistryCenter(config);
+        MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getMasterSlaveRuleConfiguration());
+        addConfigurationChangeListener(config.getName(), config.getRegistryCenter(), result);
+        addInstancesStateChangeListener(config.getName(), config.getRegistryCenter(), result);
         return result;
     }
     
-    private static void initRegistryCenter(final String name, 
-                                           final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+    private static void initRegistryCenter(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
+        String name = config.getName();
+        CoordinatorRegistryCenter registryCenter = config.getRegistryCenter();
         registryCenter.init();
-        persist(name, registryCenter, dataSourceMap, masterSlaveRuleConfig);
+        persist(config);
         registryCenter.persistEphemeral("/" + name + "/state/instances/" + new InstanceNode().getInstanceId(), "");
         registryCenter.addCacheData("/" + name + "/config");
     }
     
-    private static void persist(final String name,
-                                final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
-        if ("overwrite".equals(registryCenter.get("/" + name + "/config")) || registryCenter.getChildrenKeys("/" + name + "/config").isEmpty()) {
-            registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
-            registryCenter.persist("/" + name + "/config/masterslave", GsonFactory.getGson().toJson(masterSlaveRuleConfig));
+    private static void persist(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
+        String name = config.getName();
+        CoordinatorRegistryCenter registryCenter = config.getRegistryCenter();
+        if (config.isOverwrite() || registryCenter.getChildrenKeys("/" + name + "/config").isEmpty()) {
+            registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(config.getDataSourceMap()));
+            registryCenter.persist("/" + name + "/config/masterslave", GsonFactory.getGson().toJson(config.getMasterSlaveRuleConfiguration()));
         }
     }
     

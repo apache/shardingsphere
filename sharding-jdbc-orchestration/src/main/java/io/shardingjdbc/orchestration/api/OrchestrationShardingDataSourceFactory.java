@@ -43,64 +43,58 @@ import java.util.Properties;
  * Orchestration sharding data source factory.
  * 
  * @author zhangliang 
+ * @author caohao 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrchestrationShardingDataSourceFactory {
     
     /**
      * Create sharding data source.
-     * 
-     * @param name name of sharding data source
-     * @param registryCenter registry center
-     * @param dataSourceMap data source map
-     * @param shardingRuleConfig rule configuration for databases and tables sharding
+     *
+     * @param config orchestration sharding configuration
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(
-            final String name, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) throws SQLException {
-        initRegistryCenter(name, registryCenter, dataSourceMap, shardingRuleConfig);
-        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
-        addConfigurationChangeListener(name, registryCenter, result);
-        addInstancesStateChangeListener(name, registryCenter, result);
+    public static DataSource createDataSource(final OrchestrationShardingConfiguration config) throws SQLException {
+        initRegistryCenter(config);
+        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig());
+        addConfigurationChangeListener(config.getName(), config.getRegistryCenter(), result);
+        addInstancesStateChangeListener(config.getName(), config.getRegistryCenter(), result);
         return result;
     }
     
     /**
      * Create sharding data source.
      * 
-     * @param name name of sharding data source
-     * @param registryCenter registry center
-     * @param dataSourceMap data source map
-     * @param shardingRuleConfig rule configuration for databases and tables sharding
+     * @param config orchestration sharding configuration
      * @param props properties for data source
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(
-            final String name, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap,
-            final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
-        initRegistryCenter(name, registryCenter, dataSourceMap, shardingRuleConfig);
+    public static DataSource createDataSource(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
+        initRegistryCenter(config);
         // TODO props
-        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, props);
-        addConfigurationChangeListener(name, registryCenter, result);
+        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig(), props);
+        addConfigurationChangeListener(config.getName(), config.getRegistryCenter(), result);
         return result;
     }
     
-    private static void initRegistryCenter(final String name, 
-                                           final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
+    private static void initRegistryCenter(final OrchestrationShardingConfiguration config) throws SQLException {
+        String name = config.getName();
+        CoordinatorRegistryCenter registryCenter = config.getRegistryCenter();
         registryCenter.init();
-        persist(name, registryCenter, dataSourceMap, shardingRuleConfig);
+        persist(config);
         registryCenter.persistEphemeral("/" + name + "/state/instances/" + new InstanceNode().getInstanceId(), "");
         registryCenter.addCacheData("/" + name + "/config");
         registryCenter.addCacheData("/" + name + "/state/instances");
     }
     
-    private static void persist(final String name,
-                        final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
-        if ("overwrite".equals(registryCenter.get("/" + name + "/config")) || registryCenter.getChildrenKeys("/" + name + "/config").isEmpty()) {
-            registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
-            registryCenter.persist("/" + name + "/config/sharding", ShardingRuleConfigurationConverter.toJson(shardingRuleConfig));
+    private static void persist(final OrchestrationShardingConfiguration config) throws SQLException {
+        String name = config.getName();
+        CoordinatorRegistryCenter registryCenter = config.getRegistryCenter();
+        if (config.isOverwrite() || registryCenter.getChildrenKeys("/" + name + "/config").isEmpty()) {
+            registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(config.getDataSourceMap()));
+            registryCenter.persist("/" + name + "/config/sharding", ShardingRuleConfigurationConverter.toJson(config.getShardingRuleConfig()));
         }
     }
     
