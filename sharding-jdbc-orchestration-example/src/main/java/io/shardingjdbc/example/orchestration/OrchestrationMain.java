@@ -17,12 +17,13 @@
 
 package io.shardingjdbc.example.orchestration;
 
-import io.shardingjdbc.example.orchestration.algorithm.ModuloTableShardingAlgorithm;
 import io.shardingjdbc.core.api.HintManager;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingjdbc.example.orchestration.algorithm.ModuloTableShardingAlgorithm;
+import io.shardingjdbc.orchestration.api.OrchestrationShardingConfiguration;
 import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
@@ -48,7 +49,8 @@ public final class OrchestrationMain {
     public static void main(final String[] args) throws IOException, SQLException {
     // CHECKSTYLE:ON
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
-        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource("sharding-data-source", regCenter, createDataSourceMap(), crateShardingRuleConfig());
+        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
+                new OrchestrationShardingConfiguration("sharding-data-source", false, regCenter, createDataSourceMap(), crateShardingRuleConfig()));
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);
@@ -99,18 +101,18 @@ public final class OrchestrationMain {
     }
     
     private static void createTable(final DataSource dataSource) throws SQLException {
-        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(50), PRIMARY KEY (`order_id`))");
-        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS `t_order_item` (`item_id` INT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, PRIMARY KEY (`item_id`))");
+        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
+        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order_item (item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (item_id))");
     }
     
     private static void insertData(final DataSource dataSource) throws SQLException {
         for (int orderId = 1000; orderId < 1010; orderId++) {
-            executeUpdate(dataSource, String.format("INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, 10, 'INIT')", orderId));
-            executeUpdate(dataSource, String.format("INSERT INTO `t_order_item` (`item_id`, `order_id`, `user_id`) VALUES (%s01, %s, 10)", orderId, orderId));
+            executeUpdate(dataSource, String.format("INSERT INTO t_order (order_id, user_id, status) VALUES (%s, 10, 'INIT')", orderId));
+            executeUpdate(dataSource, String.format("INSERT INTO t_order_item (item_id, order_id, user_id) VALUES (%s01, %s, 10)", orderId, orderId));
         }
         for (int orderId = 1100; orderId < 1110; orderId++) {
-            executeUpdate(dataSource, String.format("INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, 11, 'INIT')", orderId));
-            executeUpdate(dataSource, String.format("INSERT INTO `t_order_item` (`item_id`, `order_id`, `user_id`) VALUES (%s01, %s, 11)", orderId, orderId));
+            executeUpdate(dataSource, String.format("INSERT INTO t_order (order_id, user_id, status) VALUES (%s, 11, 'INIT')", orderId));
+            executeUpdate(dataSource, String.format("INSERT INTO t_order_item (item_id, order_id, user_id) VALUES (%s01, %s, 11)", orderId, orderId));
         }
     }
     
@@ -163,8 +165,8 @@ public final class OrchestrationMain {
     }
     
     private static void dropTable(final DataSource dataSource) throws SQLException {
-        executeUpdate(dataSource, "DROP TABLE `t_order_item`");
-        executeUpdate(dataSource, "DROP TABLE `t_order`");
+        executeUpdate(dataSource, "DROP TABLE t_order_item");
+        executeUpdate(dataSource, "DROP TABLE t_order");
     }
     
     private static void executeUpdate(final DataSource dataSource, final String sql) throws SQLException {
