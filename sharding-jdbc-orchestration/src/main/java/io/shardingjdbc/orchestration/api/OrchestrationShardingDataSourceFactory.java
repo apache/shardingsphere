@@ -17,11 +17,11 @@
 
 package io.shardingjdbc.orchestration.api;
 
-import com.google.common.base.Charsets;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
+import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.instance.OrchestrationInstance;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
@@ -57,81 +57,44 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationShardingConfiguration config) throws SQLException {
-        String instanceId = new OrchestrationInstance().getInstanceId();
-        initRegistryCenter(config, instanceId);
+        initRegistryCenter(config);
         ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig());
-        addConfigurationChangeListener(config.getName(), config.getRegistryCenter(), result);
-        addInstancesStateChangeListener(config.getName(), instanceId, config.getRegistryCenter(), result);
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, result);
+        addState(config, result);
         return result;
     }
     
     /**
      * Create sharding data source.
-     * 
+     *
      * @param config orchestration sharding configuration
      * @param props properties for data source
      * @return sharding data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
-        String instanceId = new OrchestrationInstance().getInstanceId();
-        initRegistryCenter(config, instanceId);
+        initRegistryCenter(config);
         // TODO props
         ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig(), props);
-        addConfigurationChangeListener(config.getName(), config.getRegistryCenter(), result);
-        addInstancesStateChangeListener(config.getName(), instanceId, config.getRegistryCenter(), result);
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, result);
+        addState(config, result);
         return result;
     }
     
-    private static void initRegistryCenter(final OrchestrationShardingConfiguration config, final String instanceId) throws SQLException {
+    private static void initRegistryCenter(final OrchestrationShardingConfiguration config) throws SQLException {
         CoordinatorRegistryCenter registryCenter = config.getRegistryCenter();
         registryCenter.init();
-        persistConfig(config);
-        persistState(config, instanceId);
     }
     
-    private static void persistConfig(final OrchestrationShardingConfiguration config) throws SQLException {
-        String name = config.getName();
-        CoordinatorRegistryCenter registryCenter = config.getRegistryCenter();
-        if (config.isOverwrite() || registryCenter.getChildrenKeys("/" + name + "/config").isEmpty()) {
-            registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(config.getDataSourceMap()));
-            registryCenter.persist("/" + name + "/config/sharding", ShardingRuleConfigurationConverter.toJson(config.getShardingRuleConfig()));
-        }
-        registryCenter.addCacheData("/" + name + "/config");
+    private static void addState(final OrchestrationShardingConfiguration config, final ShardingDataSource shardingDataSource) throws SQLException {
+        String instanceId = new OrchestrationInstance().getInstanceId();
+        persistState(config, instanceId);
+        addInstancesStateChangeListener(config.getName(), instanceId, config.getRegistryCenter(), shardingDataSource);
     }
     
     private static void persistState(final OrchestrationShardingConfiguration config, final String instanceId) throws SQLException {
         config.getRegistryCenter().persistEphemeral("/" + config.getName() + "/state/instances/" + instanceId, "");
         config.getRegistryCenter().addCacheData("/" + config.getName() + "/state/instances/" + instanceId);
-    }
-    
-    private static void addConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
-        TreeCache cache = (TreeCache) registryCenter.getRawCache("/" + name + "/config");
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
-            @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || null == childData.getData()) {
-                    return;
-                }
-                String path = childData.getPath();
-                if (path.isEmpty()) {
-                    return;
-                }
-                if (("/" + name + "/config/datasource").equals(path)) {
-                    Map<String, DataSource> newDataSourceMap = DataSourceJsonConverter.fromJson(new String(childData.getData(), Charsets.UTF_8));
-                    ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.fromJson(registryCenter.get("/" + name + "/config/sharding"));
-                    // TODO props
-                    shardingDataSource.renew(shardingRuleConfig.build(newDataSourceMap), new Properties());
-                } else if (("/" + name + "/config/sharding").equals(path)) {
-                    ShardingRuleConfiguration newShardingRuleConfig = ShardingRuleConfigurationConverter.fromJson(new String(childData.getData(), Charsets.UTF_8));
-                    Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
-                    // TODO props
-                    shardingDataSource.renew(newShardingRuleConfig.build(dataSourceMap), new Properties());
-                }
-            }
-        });
     }
     
     private static void addInstancesStateChangeListener(final String name, final String instanceId, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
