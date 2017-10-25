@@ -17,11 +17,8 @@
 
 package io.shardingjdbc.orchestration.api;
 
-import io.shardingjdbc.core.api.ShardingDataSourceFactory;
-import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
-import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingjdbc.orchestration.internal.state.InstanceStateService;
+import io.shardingjdbc.orchestration.api.datasource.OrchestrationShardingDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -46,11 +43,7 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationShardingConfiguration config) throws SQLException {
-        config.getRegistryCenter().init();
-        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig());
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, result);
-        new InstanceStateService(config.getRegistryCenter(), config.getName()).addShardingState(result);
-        return result;
+        return new OrchestrationShardingDataSource(config).getDataSource();
     }
     
     /**
@@ -62,12 +55,6 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
-        config.getRegistryCenter().init();
-        // TODO props
-        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig(), props);
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, result);
-        new InstanceStateService(config.getRegistryCenter(), config.getName()).addShardingState(result);
-        return result;
+        return new OrchestrationShardingDataSource(config, props).getDataSource();
     }
-    
 }
