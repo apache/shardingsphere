@@ -22,7 +22,7 @@ import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingjdbc.orchestration.internal.instance.OrchestrationInstance;
+import io.shardingjdbc.orchestration.internal.state.InstanceStateNode;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
@@ -57,7 +57,7 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationShardingConfiguration config) throws SQLException {
-        initRegistryCenter(config);
+        config.getRegistryCenter().init();
         ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig());
         new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, result);
         addState(config, result);
@@ -73,7 +73,7 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
-        initRegistryCenter(config);
+        config.getRegistryCenter().init();
         // TODO props
         ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig(), props);
         new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, result);
@@ -81,13 +81,8 @@ public final class OrchestrationShardingDataSourceFactory {
         return result;
     }
     
-    private static void initRegistryCenter(final OrchestrationShardingConfiguration config) throws SQLException {
-        CoordinatorRegistryCenter registryCenter = config.getRegistryCenter();
-        registryCenter.init();
-    }
-    
     private static void addState(final OrchestrationShardingConfiguration config, final ShardingDataSource shardingDataSource) throws SQLException {
-        String instanceId = new OrchestrationInstance().getInstanceId();
+        String instanceId = new InstanceStateNode().getInstanceId();
         persistState(config, instanceId);
         addInstancesStateChangeListener(config.getName(), instanceId, config.getRegistryCenter(), shardingDataSource);
     }

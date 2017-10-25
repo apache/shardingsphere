@@ -22,7 +22,8 @@ import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationMasterSlaveConfiguration;
-import io.shardingjdbc.orchestration.internal.instance.OrchestrationInstance;
+import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingjdbc.orchestration.internal.state.InstanceStateNode;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
@@ -56,61 +57,22 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
-        String instanceId = new OrchestrationInstance().getInstanceId();
-        initRegistryCenter(config, instanceId);
+        config.getRegistryCenter().init();
         MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getMasterSlaveRuleConfiguration());
-        addConfigurationChangeListener(config.getName(), config.getRegistryCenter(), result);
-        addInstancesStateChangeListener(config.getName(), instanceId, config.getRegistryCenter(), result);
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).addMasterSlaveConfiguration(config, result);
+        addState(config, result);
         return result;
     }
     
-    private static void initRegistryCenter(final OrchestrationMasterSlaveConfiguration config, final String instanceId) throws SQLException {
-        CoordinatorRegistryCenter registryCenter = config.getRegistryCenter();
-        registryCenter.init();
-        persistConfig(config);
+    private static void addState(final OrchestrationMasterSlaveConfiguration config, final MasterSlaveDataSource masterSlaveDataSource) throws SQLException {
+        String instanceId = new InstanceStateNode().getInstanceId();
         persistState(config, instanceId);
-    }
-    
-    private static void persistConfig(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
-        String name = config.getName();
-        CoordinatorRegistryCenter registryCenter = config.getRegistryCenter();
-        if (config.isOverwrite() || registryCenter.getChildrenKeys("/" + name + "/config").isEmpty()) {
-            registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(config.getDataSourceMap()));
-            registryCenter.persist("/" + name + "/config/masterslave", GsonFactory.getGson().toJson(config.getMasterSlaveRuleConfiguration()));
-        }
-        registryCenter.addCacheData("/" + name + "/config");
+        addInstancesStateChangeListener(config.getName(), instanceId, config.getRegistryCenter(), masterSlaveDataSource);
     }
     
     private static void persistState(final OrchestrationMasterSlaveConfiguration config, final String instanceId) throws SQLException {
         config.getRegistryCenter().persistEphemeral("/" + config.getName() + "/state/instances/" + instanceId, "");
         config.getRegistryCenter().addCacheData("/" + config.getName() + "/state/instances/" + instanceId);
-    }
-    
-    private static void addConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final MasterSlaveDataSource masterSlaveDataSource) {
-        TreeCache cache = (TreeCache) registryCenter.getRawCache("/" + name + "/config");
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
-            @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || null == childData.getData()) {
-                    return;
-                }
-                String path = childData.getPath();
-                if (path.isEmpty()) {
-                    return;
-                }
-                if (("/" + name + "/config/datasource").equals(path)) {
-                    Map<String, DataSource> newDataSourceMap = DataSourceJsonConverter.fromJson(new String(childData.getData(), Charsets.UTF_8));
-                    MasterSlaveRuleConfiguration masterSlaveRuleConfig = GsonFactory.getGson().fromJson(registryCenter.get("/" + name + "/config/masterslave"), MasterSlaveRuleConfiguration.class);
-                    masterSlaveDataSource.renew(masterSlaveRuleConfig.build(newDataSourceMap));
-                } else if (("/" + name + "/config/masterslave").equals(path)) {
-                    MasterSlaveRuleConfiguration newMasterSlaveRuleConfig = GsonFactory.getGson().fromJson(new String(childData.getData(), Charsets.UTF_8), MasterSlaveRuleConfiguration.class);
-                    Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
-                    masterSlaveDataSource.renew(newMasterSlaveRuleConfig.build(dataSourceMap));
-                }
-            }
-        });
     }
     
     private static void addInstancesStateChangeListener(final String name, final String instanceId, final CoordinatorRegistryCenter registryCenter, final MasterSlaveDataSource masterSlaveDataSource) {

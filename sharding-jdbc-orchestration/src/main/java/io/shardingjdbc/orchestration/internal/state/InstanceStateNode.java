@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.instance;
+package io.shardingjdbc.orchestration.internal.state;
 
 import io.shardingjdbc.orchestration.internal.util.IpUtils;
 import lombok.Getter;
@@ -28,13 +28,13 @@ import java.lang.management.ManagementFactory;
  * @author caohao
  */
 @Getter
-public final class OrchestrationInstance {
+public final class InstanceStateNode {
     
     private static final String DELIMITER = "@-@";
     
     private final String instanceId;
     
-    public OrchestrationInstance() {
+    public InstanceStateNode() {
         instanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     }
 }

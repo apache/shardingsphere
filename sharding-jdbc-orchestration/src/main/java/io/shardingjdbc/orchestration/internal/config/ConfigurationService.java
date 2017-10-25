@@ -19,7 +19,9 @@ package io.shardingjdbc.orchestration.internal.config;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
+import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.orchestration.api.config.OrchestrationMasterSlaveConfiguration;
 import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
@@ -55,9 +57,41 @@ public final class ConfigurationService {
         addShardingConfigurationChangeListener(config.getName(), config.getRegistryCenter(), shardingDataSource);
     }
     
+    public void addMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config, final MasterSlaveDataSource masterSlaveDataSource) throws SQLException {
+        persistMasterSlaveConfiguration(config);
+        addMasterSlaveConfigurationChangeListener(config.getName(), config.getRegistryCenter(), masterSlaveDataSource);
+    }
+    
     private void persistShardingConfiguration(final OrchestrationShardingConfiguration config) throws SQLException {
         persistShardingRuleConfiguration(config.getShardingRuleConfig(), config.isOverwrite());
         persistDataSourceConfigration(config.getDataSourceMap(), config.isOverwrite());
+    }
+    
+    private void persistMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
+        persistMasterSlaveRuleConfiguration(config.getMasterSlaveRuleConfiguration(), config.isOverwrite());
+        persistDataSourceConfigration(config.getDataSourceMap(), config.isOverwrite());
+    }
+    
+    private void addMasterSlaveConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final MasterSlaveDataSource masterSlaveDataSource) {
+        String cachePath = "/" + name + "/" + ConfigurationNode.ROOT;
+        registryCenter.addCacheData(cachePath);
+        TreeCache cache = (TreeCache) registryCenter.getRawCache(cachePath);
+        cache.getListenable().addListener(new TreeCacheListener() {
+            
+            @Override
+            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
+                ChildData childData = event.getData();
+                if (null == childData || null == childData.getData()) {
+                    return;
+                }
+                String path = childData.getPath();
+                if (path.isEmpty()) {
+                    return;
+                }
+                // TODO props
+                masterSlaveDataSource.renew(loadMasterSlaveRuleConfiguration().build(loadDataSourceMap()));
+            }
+        });
     }
     
     private void addShardingConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
