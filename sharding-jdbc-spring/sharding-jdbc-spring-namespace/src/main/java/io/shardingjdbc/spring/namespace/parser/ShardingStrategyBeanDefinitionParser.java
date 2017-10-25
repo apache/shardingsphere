@@ -27,10 +27,10 @@ import org.w3c.dom.Element;
  *®
  * @author caohao
  */
-public class ShardingJdbcStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        return ShardingJdbcStrategyBeanDefinition.getBeanDefinitionByElement(element);
+        return ShardingStrategyBeanDefinition.getBeanDefinitionByElement(element);
     }
 }

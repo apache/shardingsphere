@@ -44,7 +44,7 @@ import java.util.Properties;
  * 
  * @author caohao
  */
-public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     //CHECKSTYLE:OFF
@@ -159,7 +159,7 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
     
     private BeanDefinition parseDefaultStrategyConfig(final Element element, final String attr) {
         Element strategyElement = DomUtils.getChildElementByTagName(element, attr);
-        return null == strategyElement ? null : ShardingJdbcStrategyBeanDefinition.getBeanDefinitionByElement(strategyElement);
+        return null == strategyElement ? null : ShardingStrategyBeanDefinition.getBeanDefinitionByElement(strategyElement);
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
