@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns="http://shardingjdbc.io/schema/shardingjdbc/masterslave"
+<xsd:schema xmlns="http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://shardingjdbc.io/schema/shardingjdbc/masterslave"
+            targetNamespace="http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
