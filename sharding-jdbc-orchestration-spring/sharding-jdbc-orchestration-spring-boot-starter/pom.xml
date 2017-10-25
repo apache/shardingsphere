@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.shardingjdbc</groupId>
-        <artifactId>sharding-jdbc-spring</artifactId>
+        <artifactId>sharding-jdbc-orchestration-spring</artifactId>
         <version>2.0.0.M2-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>

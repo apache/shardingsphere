@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>io.shardingjdbc</groupId>
-            <artifactId>sharding-jdbc-orchestration</artifactId>
+            <artifactId>sharding-jdbc-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
