@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.dangdang.com/schema/ddframe/reg"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:beans="http://www.springframework.org/schema/beans"
+        targetNamespace="http://www.dangdang.com/schema/ddframe/reg"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified">
+    <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+    
+    <xsd:element name="zookeeper">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType">
+                    <xsd:attribute name="server-lists" type="xsd:string" use="required" />
+                    <xsd:attribute name="namespace" type="xsd:string" use="required" />
+                    <xsd:attribute name="base-sleep-time-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="max-sleep-time-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="max-retries" type="xsd:string" />
+                    <xsd:attribute name="session-timeout-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="connection-timeout-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="digest" type="xsd:string" />
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
