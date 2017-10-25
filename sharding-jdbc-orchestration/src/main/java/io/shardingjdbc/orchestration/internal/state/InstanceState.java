@@ -17,27 +17,11 @@
 
 package io.shardingjdbc.orchestration.internal.state;
 
-import io.shardingjdbc.orchestration.internal.util.IpUtils;
-import lombok.Getter;
-
-import java.lang.management.ManagementFactory;
-
 /**
- * Instance state node.
- * 
+ * Instance state.
+ *
  * @author caohao
  */
-@Getter
-public final class InstanceStateNode {
-    
-    public static final String ROOT = "/state/instances/";
-    
-    private static final String DELIMITER = "@-@";
-    
-    private final String instanceId;
-    
-    public InstanceStateNode() {
-        
-        instanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
-    }
+public enum InstanceState {
+    DISABLED
 }
