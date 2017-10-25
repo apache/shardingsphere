@@ -37,7 +37,6 @@ public final class InstanceStateNode {
     private final String instanceId;
     
     public InstanceStateNode() {
-        
         instanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     }
 }
