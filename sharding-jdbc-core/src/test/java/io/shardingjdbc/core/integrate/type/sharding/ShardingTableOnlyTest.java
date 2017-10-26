@@ -68,7 +68,7 @@ public class ShardingTableOnlyTest extends AbstractSQLAssertTest {
         }
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
-            ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+            final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
             TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
             orderTableRuleConfig.setLogicTable("t_order");
             List<String> orderActualDataNodes = new LinkedList<>();

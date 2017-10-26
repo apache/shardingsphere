@@ -36,11 +36,13 @@ public class ParserAssertHelper {
         assertTrue(EqualsBuilder.reflectionEquals(ParserJAXBHelper.getTables(expected), actual));
     }
     
-    public static void assertConditions(final io.shardingjdbc.core.parsing.parser.jaxb.Conditions expected, final io.shardingjdbc.core.parsing.parser.context.condition.Conditions actual, final boolean isPreparedStatement) {
+    public static void assertConditions(
+            final io.shardingjdbc.core.parsing.parser.jaxb.Conditions expected, final io.shardingjdbc.core.parsing.parser.context.condition.Conditions actual, final boolean isPreparedStatement) {
         assertTrue(EqualsBuilder.reflectionEquals(buildExpectedConditions(expected, isPreparedStatement), actual));
     }
     
-    private static io.shardingjdbc.core.parsing.parser.context.condition.Conditions buildExpectedConditions(final io.shardingjdbc.core.parsing.parser.jaxb.Conditions conditions, final boolean isPreparedStatement) {
+    private static io.shardingjdbc.core.parsing.parser.context.condition.Conditions buildExpectedConditions(
+            final io.shardingjdbc.core.parsing.parser.jaxb.Conditions conditions, final boolean isPreparedStatement) {
         io.shardingjdbc.core.parsing.parser.context.condition.Conditions result = new io.shardingjdbc.core.parsing.parser.context.condition.Conditions();
         if (null == conditions) {
             return result;
@@ -65,7 +67,8 @@ public class ParserAssertHelper {
                     condition = new io.shardingjdbc.core.parsing.parser.context.condition.Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0));
                     break;
                 case BETWEEN:
-                    condition = new io.shardingjdbc.core.parsing.parser.context.condition.Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0), sqlExpressions.get(1));
+                    condition = new io.shardingjdbc.core.parsing.parser.context.condition.Condition(
+                            new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0), sqlExpressions.get(1));
                     break;
                 case IN:
                     condition = new io.shardingjdbc.core.parsing.parser.context.condition.Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions);
