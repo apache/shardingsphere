@@ -23,11 +23,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.shardingjdbc</groupId>
-            <artifactId>sharding-jdbc-spring</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
