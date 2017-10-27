@@ -19,7 +19,7 @@ package io.shardingjdbc.orchestration.spring.namespace.parser;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.orchestration.spring.datasource.SpringShardingDataSource;
+import io.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingJdbcDataSourceBeanDefinitionParserTag;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -50,7 +50,7 @@ public class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDefiniti
     //CHECKSTYLE:OFF
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
     //CHECKSTYLE:ON
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringShardingDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element, parserContext));
         factory.addConstructorArgValue(parseShardingRuleConfig(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));

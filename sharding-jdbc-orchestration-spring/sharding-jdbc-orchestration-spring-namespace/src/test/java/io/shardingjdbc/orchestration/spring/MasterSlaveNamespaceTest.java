@@ -29,7 +29,7 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
 import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.orchestration.spring.datasource.SpringMasterSlaveDataSource;
+import io.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
@@ -74,7 +74,7 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void testShardingDataSourceType() {
-        assertTrue(this.applicationContext.getBean("defaultMasterSlaveDataSource", MasterSlaveDataSource.class) instanceof SpringMasterSlaveDataSource);
+        assertTrue(this.applicationContext.getBean("defaultMasterSlaveDataSource", MasterSlaveDataSource.class) instanceof OrchestrationSpringMasterSlaveDataSource);
     }
     
     private ShardingRule getShardingRule(final String shardingDataSourceName) {

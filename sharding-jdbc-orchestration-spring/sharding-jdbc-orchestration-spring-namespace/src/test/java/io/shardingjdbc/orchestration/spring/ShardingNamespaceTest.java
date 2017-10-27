@@ -29,7 +29,7 @@ import io.shardingjdbc.core.rule.BindingTableRule;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
-import io.shardingjdbc.orchestration.spring.datasource.SpringShardingDataSource;
+import io.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import io.shardingjdbc.orchestration.spring.util.FieldValueUtil;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -177,7 +177,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void testShardingDataSourceType() {
-        assertTrue(this.applicationContext.getBean("simpleShardingDataSource", ShardingDataSource.class) instanceof SpringShardingDataSource);
+        assertTrue(this.applicationContext.getBean("simpleShardingDataSource", ShardingDataSource.class) instanceof OrchestrationSpringShardingDataSource);
     }
     
     @Test

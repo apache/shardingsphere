@@ -19,8 +19,13 @@ package io.shardingjdbc.orchestration.spring.datasource;
 
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
+import io.shardingjdbc.orchestration.api.config.OrchestrationMasterSlaveConfiguration;
+import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingjdbc.orchestration.internal.state.InstanceStateService;
+import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Setter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -31,27 +36,31 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Master-slave datasource for spring namespace.
+ * Orchestration master-slave datasource for spring namespace.
  *
- * @author zhangliang
+ * @author caohao
  */
-public class SpringMasterSlaveDataSource extends MasterSlaveDataSource implements ApplicationContextAware {
+public class OrchestrationSpringMasterSlaveDataSource extends MasterSlaveDataSource implements ApplicationContextAware {
     
     @Setter
     private ApplicationContext applicationContext;
     
-    public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
-                                       final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap) throws SQLException {
-        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap));
+    public OrchestrationSpringMasterSlaveDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap,
+                                                    final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
+        super(masterSlaveRuleConfig.build(dataSourceMap));
+        OrchestrationMasterSlaveConfiguration config = new OrchestrationMasterSlaveConfiguration(name, overwrite, registryCenter, dataSourceMap, masterSlaveRuleConfig);
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).addMasterSlaveConfiguration(config, this);
+        new InstanceStateService(config.getRegistryCenter(), config.getName()).addMasterSlaveState(this);
     }
     
-    public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
-                                       final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithm strategy) throws SQLException {
+    public OrchestrationSpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
+                                                    final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, 
+                                                    final MasterSlaveLoadBalanceAlgorithm strategy) throws SQLException {
         super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategy));
     }
     
-    public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource, 
-                                       final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithmType strategyType) throws SQLException {
+    public OrchestrationSpringMasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource,
+                                                    final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithmType strategyType) throws SQLException {
         super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategyType.getAlgorithm()));
     }
     

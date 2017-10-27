@@ -18,7 +18,7 @@
 package io.shardingjdbc.orchestration.spring.namespace.parser;
 
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import io.shardingjdbc.orchestration.spring.datasource.SpringMasterSlaveDataSource;
+import io.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -44,7 +44,7 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
     //CHECKSTYLE:OFF
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
     //CHECKSTYLE:ON
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringMasterSlaveDataSource.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringMasterSlaveDataSource.class);
         factory.addConstructorArgValue(parseId(element));
         String masterDataSourceName = parseMasterDataSourceRef(element);
         factory.addConstructorArgValue(masterDataSourceName);

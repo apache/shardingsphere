@@ -21,6 +21,10 @@ import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.ShardingRule;
+import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
+import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingjdbc.orchestration.internal.state.InstanceStateService;
+import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Setter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -32,18 +36,21 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Sharding datasource for spring namespace.
+ * Orchestration sharding datasource for spring namespace.
  *
  * @author caohao
- * @author zhanglaing
  */
-public class SpringShardingDataSource extends ShardingDataSource implements ApplicationContextAware {
+public class OrchestrationSpringShardingDataSource extends ShardingDataSource implements ApplicationContextAware {
     
     @Setter
     private ApplicationContext applicationContext;
     
-    public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
+    public OrchestrationSpringShardingDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, 
+                                                 final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
         super(shardingRuleConfig.build(dataSourceMap), props);
+        OrchestrationShardingConfiguration config = new OrchestrationShardingConfiguration(name, overwrite, registryCenter, dataSourceMap, shardingRuleConfig);
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, this);
+        new InstanceStateService(config.getRegistryCenter(), config.getName()).addShardingState(this);
     }
     
     @Override
