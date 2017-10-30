@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.spring.namespace.constants;
+package io.shardingjdbc.orchestration.spring.namespace.constants;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
  * @author caohao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingJdbcDataSourceBeanDefinitionParserTag {
+public final class ShardingDataSourceBeanDefinitionParserTag {
     
     public static final String ROOT_TAG = "data-source";
     

@@ -23,7 +23,7 @@ import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfigurat
 import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
-import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingJdbcStrategyBeanDefinitionParserTag;
+import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingStrategyBeanDefinitionParserTag;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -41,15 +41,15 @@ public class ShardingStrategyBeanDefinition {
     static AbstractBeanDefinition getBeanDefinitionByElement(final Element element) {
         String type = element.getLocalName();
         switch (type) {
-            case ShardingJdbcStrategyBeanDefinitionParserTag.STANDARD_STRATEGY_ROOT_TAG:
+            case ShardingStrategyBeanDefinitionParserTag.STANDARD_STRATEGY_ROOT_TAG:
                 return getStandardShardingStrategyConfigBeanDefinition(element);
-            case ShardingJdbcStrategyBeanDefinitionParserTag.COMPLEX_STRATEGY_ROOT_TAG:
+            case ShardingStrategyBeanDefinitionParserTag.COMPLEX_STRATEGY_ROOT_TAG:
                 return getComplexShardingStrategyConfigBeanDefinition(element);
-            case ShardingJdbcStrategyBeanDefinitionParserTag.INLINE_STRATEGY_ROOT_TAG:
+            case ShardingStrategyBeanDefinitionParserTag.INLINE_STRATEGY_ROOT_TAG:
                 return getInlineShardingStrategyConfigBeanDefinition(element);
-            case ShardingJdbcStrategyBeanDefinitionParserTag.HINT_STRATEGY_ROOT_TAG:
+            case ShardingStrategyBeanDefinitionParserTag.HINT_STRATEGY_ROOT_TAG:
                 return getHintShardingStrategyConfigBeanDefinition(element);
-            case ShardingJdbcStrategyBeanDefinitionParserTag.NONE_STRATEGY_ROOT_TAG:
+            case ShardingStrategyBeanDefinitionParserTag.NONE_STRATEGY_ROOT_TAG:
                 return getNoneShardingStrategyConfigBeanDefinition();
             default:
                 throw new ShardingJdbcException("Cannot support type: %s", type);
@@ -58,29 +58,29 @@ public class ShardingStrategyBeanDefinition {
     
     private static AbstractBeanDefinition getStandardShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(StandardShardingStrategyConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShardingJdbcStrategyBeanDefinitionParserTag.SHARDING_COLUMN_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(ShardingJdbcStrategyBeanDefinitionParserTag.PRECISE_ALGORITHM_CLASS_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(ShardingJdbcStrategyBeanDefinitionParserTag.RANGE_ALGORITHM_CLASS_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.SHARDING_COLUMN_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.PRECISE_ALGORITHM_CLASS_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.RANGE_ALGORITHM_CLASS_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
     private static AbstractBeanDefinition getComplexShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ComplexShardingStrategyConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShardingJdbcStrategyBeanDefinitionParserTag.SHARDING_COLUMNS_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(ShardingJdbcStrategyBeanDefinitionParserTag.ALGORITHM_CLASS_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.SHARDING_COLUMNS_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.ALGORITHM_CLASS_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
     private static AbstractBeanDefinition getInlineShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(InlineShardingStrategyConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShardingJdbcStrategyBeanDefinitionParserTag.SHARDING_COLUMN_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(ShardingJdbcStrategyBeanDefinitionParserTag.ALGORITHM_EXPRESSION_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.SHARDING_COLUMN_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.ALGORITHM_EXPRESSION_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
     private static AbstractBeanDefinition getHintShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(HintShardingStrategyConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShardingJdbcStrategyBeanDefinitionParserTag.ALGORITHM_CLASS_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.ALGORITHM_CLASS_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     

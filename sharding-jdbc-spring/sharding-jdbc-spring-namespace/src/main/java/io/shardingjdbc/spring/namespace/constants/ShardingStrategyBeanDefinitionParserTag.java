@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.spring.namespace.constants;
+package io.shardingjdbc.spring.namespace.constants;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
  * @author caohao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingJdbcStrategyBeanDefinitionParserTag {
+public final class ShardingStrategyBeanDefinitionParserTag {
     
     public static final String STANDARD_STRATEGY_ROOT_TAG = "standard-strategy";
     
