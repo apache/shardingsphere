@@ -38,7 +38,7 @@ import java.util.Map;
  * 
  * @author zhangliang
  */
-public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     //CHECKSTYLE:OFF

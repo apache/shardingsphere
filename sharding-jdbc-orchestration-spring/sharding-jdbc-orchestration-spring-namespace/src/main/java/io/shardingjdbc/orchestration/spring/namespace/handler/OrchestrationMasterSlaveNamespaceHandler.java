@@ -18,18 +18,18 @@
 package io.shardingjdbc.orchestration.spring.namespace.handler;
 
 import io.shardingjdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
-import io.shardingjdbc.orchestration.spring.namespace.parser.MasterSlaveDataSourceBeanDefinitionParser;
+import io.shardingjdbc.orchestration.spring.namespace.parser.OrchestrationMasterSlaveDataSourceBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Spring namespace handler for master-slave.
+ * Orchestration spring namespace handler for master-slave.
  * 
- * @author zhangliang
+ * @author caohao
  */
-public final class MasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
+public final class OrchestrationMasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(MasterSlaveDataSourceBeanDefinitionParserTag.ROOT_TAG, new MasterSlaveDataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser(MasterSlaveDataSourceBeanDefinitionParserTag.ROOT_TAG, new OrchestrationMasterSlaveDataSourceBeanDefinitionParser());
     }
 }

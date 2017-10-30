@@ -17,12 +17,12 @@
 
 package io.shardingjdbc.orchestration.spring.namespace.parser;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingJdbcDataSourceBeanDefinitionParserTag;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -44,13 +44,16 @@ import java.util.Properties;
  * 
  * @author caohao
  */
-public class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public class OrchestrationShardingDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     //CHECKSTYLE:OFF
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
     //CHECKSTYLE:ON
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringShardingDataSource.class);
+        factory.addConstructorArgValue(element.getAttribute("id"));
+        factory.addConstructorArgValue(Boolean.parseBoolean(element.getAttribute("overwrite")));
+        factory.addConstructorArgReference(element.getAttribute("registry-center-ref"));
         factory.addConstructorArgValue(parseDataSources(element, parserContext));
         factory.addConstructorArgValue(parseShardingRuleConfig(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
