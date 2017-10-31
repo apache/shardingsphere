@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.orchestration.internal.config;
 
+import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
@@ -52,8 +53,8 @@ public final class ConfigurationService {
         dataNodeStorage = new DataNodeStorage(regCenter, name);
     }
     
-    public void addShardingConfiguration(final OrchestrationShardingConfiguration config, final ShardingDataSource shardingDataSource) throws SQLException {
-        persistShardingConfiguration(config);
+    public void addShardingConfiguration(final OrchestrationShardingConfiguration config, final Properties props, final ShardingDataSource shardingDataSource) throws SQLException {
+        persistShardingConfiguration(config, props);
         addShardingConfigurationChangeListener(config.getName(), config.getRegistryCenter(), shardingDataSource);
     }
     
@@ -62,8 +63,9 @@ public final class ConfigurationService {
         addMasterSlaveConfigurationChangeListener(config.getName(), config.getRegistryCenter(), masterSlaveDataSource);
     }
     
-    private void persistShardingConfiguration(final OrchestrationShardingConfiguration config) throws SQLException {
+    private void persistShardingConfiguration(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
         persistShardingRuleConfiguration(config.getShardingRuleConfig(), config.isOverwrite());
+        persistShardingProperties(props, config.isOverwrite());
         persistDataSourceConfigration(config.getDataSourceMap(), config.isOverwrite());
     }
     
@@ -88,7 +90,6 @@ public final class ConfigurationService {
                 if (path.isEmpty()) {
                     return;
                 }
-                // TODO props
                 masterSlaveDataSource.renew(loadMasterSlaveRuleConfiguration().build(loadDataSourceMap()));
             }
         });
@@ -110,10 +111,19 @@ public final class ConfigurationService {
                 if (path.isEmpty()) {
                     return;
                 }
-                // TODO props
-                shardingDataSource.renew(loadShardingRuleConfiguration().build(loadDataSourceMap()), new Properties());
+                shardingDataSource.renew(loadShardingRuleConfiguration().build(loadDataSourceMap()), loadShardingProperties());
             }
         });
+    }
+    
+    /**
+     * Load sharding properties.
+     *
+     * @return sharding properties
+     */
+    public Properties loadShardingProperties() {
+        String data = dataNodeStorage.getNodeData(ConfigurationNode.PROPS_NODE_PATH);
+        return Strings.isNullOrEmpty(data) ? new Properties() : GsonFactory.getGson().fromJson(data, Properties.class);
     }
     
     /**
@@ -152,6 +162,18 @@ public final class ConfigurationService {
     public void persistShardingRuleConfiguration(final ShardingRuleConfiguration config, final boolean isOverwrite) {
         if (!dataNodeStorage.isNodeExisted(ConfigurationNode.SHARDING_NODE_PATH) || isOverwrite) {
             dataNodeStorage.fillNode(ConfigurationNode.SHARDING_NODE_PATH, ShardingRuleConfigurationConverter.toJson(config));
+        }
+    }
+    
+    /**
+     * Persist sharding properties.
+     *
+     * @param props sharding properties
+     * @param isOverwrite is overwrite
+     */
+    public void persistShardingProperties(final Properties props, final boolean isOverwrite) {
+        if (!dataNodeStorage.isNodeExisted(ConfigurationNode.PROPS_NODE_PATH) || isOverwrite) {
+            dataNodeStorage.fillNode(ConfigurationNode.PROPS_NODE_PATH, GsonFactory.getGson().toJson(props));
         }
     }
     

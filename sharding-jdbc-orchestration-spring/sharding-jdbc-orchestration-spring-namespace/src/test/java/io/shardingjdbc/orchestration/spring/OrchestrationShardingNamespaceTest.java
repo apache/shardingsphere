@@ -34,12 +34,10 @@ import io.shardingjdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorit
 import io.shardingjdbc.orchestration.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm;
 import io.shardingjdbc.orchestration.spring.algorithm.PreciseModuloTableShardingAlgorithm;
 import io.shardingjdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm;
-import io.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import io.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator;
 import io.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import io.shardingjdbc.orchestration.spring.util.FieldValueUtil;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -177,7 +175,6 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     }
     
     @Test
-    @Ignore
     public void testPropsDataSource() {
         ShardingDataSource shardingDataSource = this.applicationContext.getBean("propsDataSource", ShardingDataSource.class);
         Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
@@ -192,7 +189,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     
     @Test
     public void testShardingDataSourceType() {
-        assertTrue(this.applicationContext.getBean("simpleShardingDataSource", ShardingDataSource.class) instanceof OrchestrationSpringShardingDataSource);
+        assertTrue(this.applicationContext.getBean("simpleShardingDataSource", ShardingDataSource.class) instanceof ShardingDataSource);
     }
     
     @Test

@@ -40,14 +40,14 @@ public class OrchestrationShardingDataSource {
     public OrchestrationShardingDataSource(final OrchestrationShardingConfiguration config) throws SQLException {
         config.getRegistryCenter().init();
         dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig());
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, dataSource);
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, new Properties(), dataSource);
         new InstanceStateService(config.getRegistryCenter(), config.getName()).addShardingState(dataSource);
     }
     
     public OrchestrationShardingDataSource(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
         config.getRegistryCenter().init();
         dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig(), props);
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, dataSource);
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, props, dataSource);
         new InstanceStateService(config.getRegistryCenter(), config.getName()).addShardingState(dataSource);
     }
 }
