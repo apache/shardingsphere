@@ -4,6 +4,7 @@ import io.shardingjdbc.core.common.jaxb.helper.SQLStatementHelper;
 import io.shardingjdbc.core.integrate.jaxb.SQLAssert;
 import io.shardingjdbc.core.integrate.jaxb.SQLAsserts;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.constant.SQLType;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class SQLAssertJAXBHelper {
     
-    public static Collection<Object[]> getDataParameters(final String filePath) {
+    public static Collection<Object[]> getDataParameters(final String filePath, final SQLType sqlType) {
         Collection<Object[]> result = new ArrayList<>();
         URL url = SQLAssertJAXBHelper.class.getClassLoader().getResource(filePath);
         if (null == url) {
@@ -36,10 +37,14 @@ public class SQLAssertJAXBHelper {
                 if (each.isDirectory()) {
                     continue;
                 }
-                result.addAll(dataParameters(each));
+                if (isTypeMatched(each.getName(), sqlType)) {
+                    result.addAll(dataParameters(each));
+                }
             }
         } else {
-            result.addAll(dataParameters(assertFilePath));
+            if (isTypeMatched(assertFilePath.getName(), sqlType)) {
+                result.addAll(dataParameters(assertFilePath));
+            }
         }
         return result;
     }
@@ -71,5 +76,17 @@ public class SQLAssertJAXBHelper {
         result[2] = dbType;
         result[3] = sqlAssert.getSqlShardingRules();
         return result;
+    }
+    
+    private static boolean isTypeMatched(final String fileName, final SQLType sqlType) {
+        switch (sqlType) {
+            case DDL:
+                return fileName.startsWith("alter") || fileName.startsWith("create") || fileName.startsWith("drop") || fileName.startsWith("truncate");
+            case DML:
+                return fileName.startsWith("delete") || fileName.startsWith("insert") || fileName.startsWith("update");
+            case DQL:
+                return fileName.startsWith("select");
+            default: return false;
+        }
     }
 }

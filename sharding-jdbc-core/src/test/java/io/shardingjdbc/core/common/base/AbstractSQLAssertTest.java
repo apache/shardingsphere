@@ -17,36 +17,50 @@
 
 package io.shardingjdbc.core.common.base;
 
+import io.shardingjdbc.core.common.env.DatabaseEnvironment;
+import io.shardingjdbc.core.common.env.ShardingJdbcDatabaseTester;
 import io.shardingjdbc.core.common.env.ShardingTestStrategy;
 import io.shardingjdbc.core.common.util.SQLAssertHelper;
 import io.shardingjdbc.core.integrate.jaxb.SQLAssertData;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
-import io.shardingjdbc.core.integrate.jaxb.helper.SQLAssertJAXBHelper;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
+import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.Getter;
+
+import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.DatabaseUnitException;
+import org.dbunit.IDatabaseTester;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.AfterClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RunWith(Parameterized.class)
+import javax.sql.DataSource;
+
 public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
+    
+    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
     private final String testCaseName;
     
@@ -67,9 +81,23 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         sqlAssertHelper = new SQLAssertHelper(sql);
     }
     
-    @Parameterized.Parameters(name = "{0}In{2}")
-    public static Collection<Object[]> dataParameters() {
-        return SQLAssertJAXBHelper.getDataParameters("integrate/assert");
+    protected static final Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
+        return shardingDataSources;
+    }
+    
+    protected static final void importAllDataSet(final List<String> dataSetFiles) throws Exception {
+        for (DatabaseType databaseType : getDatabaseTypes()) {
+            DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType);
+            for (String each : dataSetFiles) {
+                InputStream is = AbstractSQLTest.class.getClassLoader().getResourceAsStream(each);
+                IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
+                IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getDatabaseName(each)),
+                        dbEnv.getUsername(), dbEnv.getPassword(), dbEnv.getSchema(getDatabaseName(each)));
+                databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
+                databaseTester.setDataSet(dataSet);
+                databaseTester.onSetup();
+            }
+        }
     }
     
     protected abstract ShardingTestStrategy getShardingStrategy();
@@ -207,4 +235,32 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return Strings.isNullOrEmpty(data.getParameter()) ? Collections.<String>emptyList() : Lists.newArrayList(data.getParameter().split(","));
     }
     
+    @AfterClass
+    public static void clear() throws SQLException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        if (!shardingDataSources.isEmpty()) {
+            for (ShardingDataSource each : shardingDataSources.values()) {
+                each.close();
+                closeDataSources(getDataSourceMap(each).values());
+            }
+            shardingDataSources.clear();
+        }
+    }
+    
+    private static Map<String, DataSource> getDataSourceMap(final ShardingDataSource shardingDataSource) 
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Field field = shardingDataSource.getClass().getDeclaredField("shardingContext");
+        field.setAccessible(true);
+        ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);
+        return shardingContext.getShardingRule().getDataSourceMap();
+    }
+    
+    private static void closeDataSources(final Collection<DataSource> dataSources) throws SQLException {
+        for (DataSource each : dataSources) {
+            if (each instanceof BasicDataSource) {
+                ((BasicDataSource) each).close();
+            } else if (each instanceof MasterSlaveDataSource) {
+                closeDataSources(((MasterSlaveDataSource) each).getAllDataSources().values());
+            }
+        }
+    }
 }

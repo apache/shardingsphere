@@ -20,6 +20,9 @@ package io.shardingjdbc.core.common.base;
 import io.shardingjdbc.core.common.env.DatabaseEnvironment;
 import io.shardingjdbc.core.common.env.ShardingJdbcDatabaseTester;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.constant.SQLType;
+import io.shardingjdbc.core.integrate.jaxb.helper.SQLAssertJAXBHelper;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -28,7 +31,6 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
-import org.junit.Before;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -38,8 +40,10 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -141,8 +145,23 @@ public abstract class AbstractSQLTest {
         return databaseTypes;
     }
     
-    @Before
-    public final void importDataSet() throws Exception {
+    protected static String getDatabaseName(final String dataSetFile) {
+        String fileName = new File(dataSetFile).getName();
+        if (-1 == fileName.lastIndexOf(".")) {
+            return fileName;
+        }
+        return fileName.substring(0, fileName.lastIndexOf("."));
+    }
+    
+    protected static Collection<Object[]> dataParameters(final SQLType... sqlTypes) {
+        Collection<Object[]> result = new LinkedList<>();
+        for (SQLType each : sqlTypes) {
+            result.addAll(SQLAssertJAXBHelper.getDataParameters("integrate/assert", each));
+        }
+        return result;
+    }
+    
+    protected final void importDataSet() throws Exception {
         for (DatabaseType databaseType : getDatabaseTypes()) {
             if (databaseType == getCurrentDatabaseType() || null == getCurrentDatabaseType()) {
                 DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType);
@@ -200,13 +219,5 @@ public abstract class AbstractSQLTest {
         }
         BasicDataSource result = buildDataSource(dbName, type);
         dataSourceMap.put(dataSource, result);
-    }
-    
-    private String getDatabaseName(final String dataSetFile) {
-        String fileName = new File(dataSetFile).getName();
-        if (-1 == fileName.lastIndexOf(".")) {
-            return fileName;
-        }
-        return fileName.substring(0, fileName.lastIndexOf("."));
     }
 }

@@ -25,7 +25,10 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
+import org.junit.AfterClass;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -38,12 +41,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class MasterSlaveOnlyTest extends AbstractSQLAssertTest {
+public abstract class AbstractMasterSlaveOnlyTest extends AbstractSQLAssertTest {
     
     private static Map<DatabaseType, MasterSlaveDataSource> masterSlaveDataSources = new HashMap<>();
     
-    public MasterSlaveOnlyTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+    public AbstractMasterSlaveOnlyTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, type, sqlShardingRules);
+    }
+    
+    protected static List<String> getInitFiles() {
+        return Arrays.asList("integrate/dataset/masterslave/init/master_only.xml", "integrate/dataset/masterslave/init/slave_only.xml");
     }
     
     @Override
@@ -64,11 +71,14 @@ public class MasterSlaveOnlyTest extends AbstractSQLAssertTest {
     
     @Override
     protected List<String> getInitDataSetFiles() {
-        return Arrays.asList("integrate/dataset/masterslave/init/master_only.xml", "integrate/dataset/masterslave/init/slave_only.xml");
+        return AbstractMasterSlaveOnlyTest.getInitFiles();
     }
     
     @Override
     protected final Map<DatabaseType, MasterSlaveDataSource> getDataSources() throws SQLException {
+        if (!masterSlaveDataSources.isEmpty()) {
+            return masterSlaveDataSources;
+        }
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             masterSlaveDataSources.put(each.getKey(), getMasterSlaveDataSource(each.getValue()));
@@ -81,12 +91,24 @@ public class MasterSlaveOnlyTest extends AbstractSQLAssertTest {
         masterSlaveRuleConfig.setName("ds_ms");
         masterSlaveRuleConfig.setMasterDataSourceName("dataSource_master_only");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("dataSource_slave_only"));
-        return (MasterSlaveDataSource)MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig);
+        return (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig);
     }
     
     @After
     public final void clearFlag() {
         HintManagerHolder.clear();
         MasterSlaveDataSource.resetDMLFlag();
+    }
+    
+    @AfterClass
+    public static void clear() throws SQLException {
+        if (!masterSlaveDataSources.isEmpty()) {
+            for (MasterSlaveDataSource each : masterSlaveDataSources.values()) {
+                for (DataSource innerEach : each.getAllDataSources().values()) {
+                    ((BasicDataSource) innerEach).close();
+                }
+            }
+            masterSlaveDataSources.clear();
+        }
     }
 }

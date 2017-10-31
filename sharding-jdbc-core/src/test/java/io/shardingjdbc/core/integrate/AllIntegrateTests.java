@@ -17,12 +17,18 @@
 
 package io.shardingjdbc.core.integrate;
 
-import io.shardingjdbc.core.integrate.type.ms.MasterSlaveOnlyTest;
-import io.shardingjdbc.core.integrate.type.sharding.NullableShardingTableOnlyTest;
-import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseAndTableTest;
-import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseOnlyTest;
-import io.shardingjdbc.core.integrate.type.sharding.ShardingMasterSlaveTest;
-import io.shardingjdbc.core.integrate.type.sharding.ShardingTableOnlyTest;
+import io.shardingjdbc.core.integrate.type.ms.MasterSlaveOnlyTest4DMLAndDDL;
+import io.shardingjdbc.core.integrate.type.ms.MasterSlaveOnlyTest4DQL;
+import io.shardingjdbc.core.integrate.type.sharding.NullableShardingTableOnlyTest4DMLAndDDL;
+import io.shardingjdbc.core.integrate.type.sharding.NullableShardingTableOnlyTest4DQL;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseAndTableTest4DMLAndDDL;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseAndTableTest4DQL;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseOnlyTest4DMLAndDDL;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseOnlyTest4DQL;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingMasterSlaveTest4DMLAndDDL;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingMasterSlaveTest4DQL;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingTableOnlyTest4DMLAndDDL;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingTableOnlyTest4DQL;
 import io.shardingjdbc.core.integrate.type.sharding.hint.AllHintDatabaseOnlyTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -30,12 +36,18 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ShardingDatabaseOnlyTest.class,
-        ShardingTableOnlyTest.class,
-        ShardingMasterSlaveTest.class,
-        MasterSlaveOnlyTest.class,
-        ShardingDatabaseAndTableTest.class,
-        NullableShardingTableOnlyTest.class,
+        ShardingDatabaseOnlyTest4DQL.class,
+        ShardingDatabaseOnlyTest4DMLAndDDL.class,
+        ShardingTableOnlyTest4DQL.class,
+        ShardingTableOnlyTest4DMLAndDDL.class,
+        ShardingMasterSlaveTest4DQL.class,
+        ShardingMasterSlaveTest4DMLAndDDL.class,
+        MasterSlaveOnlyTest4DQL.class,
+        MasterSlaveOnlyTest4DMLAndDDL.class,
+        ShardingDatabaseAndTableTest4DQL.class,
+        ShardingDatabaseAndTableTest4DMLAndDDL.class,
+        NullableShardingTableOnlyTest4DQL.class,
+        NullableShardingTableOnlyTest4DMLAndDDL.class,
         AllHintDatabaseOnlyTests.class
     })
 public class AllIntegrateTests {

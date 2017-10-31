@@ -28,32 +28,20 @@ import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguratio
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
-import org.junit.AfterClass;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
+public abstract class AbstractShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
     
-    private static boolean isShutdown;
-    
-    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
-    
-    public ShardingDatabaseOnlyTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+    public AbstractShardingDatabaseOnlyTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, type, sqlShardingRules);
     }
     
-    @Override
-    protected ShardingTestStrategy getShardingStrategy() {
-        return ShardingTestStrategy.db;
-    }
-    
-    @Override
-    protected List<String> getInitDataSetFiles() {
+    protected static List<String> getInitFiles() {
         return Arrays.asList(
                 "integrate/dataset/sharding/db/init/db_0.xml",
                 "integrate/dataset/sharding/db/init/db_1.xml",
@@ -68,11 +56,20 @@ public class ShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
     }
     
     @Override
+    protected ShardingTestStrategy getShardingStrategy() {
+        return ShardingTestStrategy.db;
+    }
+    
+    @Override
+    protected List<String> getInitDataSetFiles() {
+        return AbstractShardingDatabaseOnlyTest.getInitFiles();
+    }
+    
+    @Override
     protected Map<DatabaseType, ShardingDataSource> getDataSources() throws SQLException {
-        if (!shardingDataSources.isEmpty() && !isShutdown) {
-            return shardingDataSources;
+        if (!getShardingDataSources().isEmpty()) {
+            return getShardingDataSources();
         }
-        isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
@@ -87,18 +84,8 @@ public class ShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", ComplexKeysModuloDatabaseShardingAlgorithm.class.getName()));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build(each.getValue())));
+            getShardingDataSources().put(each.getKey(), new ShardingDataSource(shardingRuleConfig.build(each.getValue())));
         }
-        return shardingDataSources;
-    }
-    
-    @AfterClass
-    public static void clear() {
-        isShutdown = true;
-        if (!shardingDataSources.isEmpty()) {
-            for (ShardingDataSource each : shardingDataSources.values()) {
-                each.close();
-            }
-        }
+        return getShardingDataSources();
     }
 }

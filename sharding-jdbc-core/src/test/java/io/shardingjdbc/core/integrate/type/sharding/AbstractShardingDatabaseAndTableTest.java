@@ -30,33 +30,21 @@ import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import org.junit.AfterClass;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class ShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
+public abstract class AbstractShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
     
-    private static boolean isShutdown;
-    
-    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
-    
-    public ShardingDatabaseAndTableTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+    public AbstractShardingDatabaseAndTableTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, type, sqlShardingRules);
     }
     
-    @Override
-    protected ShardingTestStrategy getShardingStrategy() {
-        return ShardingTestStrategy.dbtbl;
-    }
-    
-    @Override
-    protected List<String> getInitDataSetFiles() {
+    protected static List<String> getInitFiles() {
         return Arrays.asList(
                 "integrate/dataset/sharding/dbtbl/init/dbtbl_0.xml",
                 "integrate/dataset/sharding/dbtbl/init/dbtbl_1.xml",
@@ -71,11 +59,20 @@ public class ShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
     }
     
     @Override
+    protected ShardingTestStrategy getShardingStrategy() {
+        return ShardingTestStrategy.dbtbl;
+    }
+    
+    @Override
+    protected List<String> getInitDataSetFiles() {
+        return AbstractShardingDatabaseAndTableTest.getInitFiles();
+    }
+    
+    @Override
     protected final Map<DatabaseType, ShardingDataSource> getDataSources() throws SQLException {
-        if (!shardingDataSources.isEmpty() && !isShutdown) {
-            return shardingDataSources;
+        if (!getShardingDataSources().isEmpty()) {
+            return getShardingDataSources();
         }
-        isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
             ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
@@ -104,18 +101,8 @@ public class ShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
                     new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("order_id", PreciseModuloTableShardingAlgorithm.class.getName(), RangeModuloTableShardingAlgorithm.class.getName()));
-            shardingDataSources.put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(entry.getValue())));
+            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(entry.getValue())));
         }
-        return shardingDataSources;
-    }
-    
-    @AfterClass
-    public static void clear() {
-        isShutdown = true;
-        if (!shardingDataSources.isEmpty()) {
-            for (ShardingDataSource each : shardingDataSources.values()) {
-                each.close();
-            }
-        }
+        return getShardingDataSources();
     }
 }

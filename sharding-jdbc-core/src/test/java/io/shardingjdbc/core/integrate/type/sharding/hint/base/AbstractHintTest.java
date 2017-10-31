@@ -29,6 +29,7 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.AfterClass;
+import org.junit.Before;
 
 import javax.sql.DataSource;
 import java.io.InputStreamReader;
@@ -47,6 +48,15 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
     private static boolean isShutdown;
     
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
+    
+    public AbstractHintTest() {
+        
+    }
+    
+    @Before
+    public void cleanAndInitTable() throws Exception {
+        importDataSet();
+    }
     
     @Override
     protected DatabaseType getCurrentDatabaseType() {
