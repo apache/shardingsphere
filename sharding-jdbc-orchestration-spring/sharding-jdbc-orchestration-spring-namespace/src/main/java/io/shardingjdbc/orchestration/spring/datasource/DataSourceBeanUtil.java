@@ -17,7 +17,7 @@ import java.util.TreeMap;
 /**
  * Data source bean util.
  *
- * @author zhangliang
+ * @author caohao
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class DataSourceBeanUtil {
@@ -28,7 +28,7 @@ public final class DataSourceBeanUtil {
         generalClassType = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class);
     }
     
-    static void createDataSourceBean(final ApplicationContext applicationContext, final String dataSourceName, final DataSource dataSource) {
+    public static void createDataSourceBean(final ApplicationContext applicationContext, final String dataSourceName, final DataSource dataSource) {
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
         BeanDefinition beanDefinition = new GenericBeanDefinition();
         beanDefinition.setBeanClassName(dataSource.getClass().getName());

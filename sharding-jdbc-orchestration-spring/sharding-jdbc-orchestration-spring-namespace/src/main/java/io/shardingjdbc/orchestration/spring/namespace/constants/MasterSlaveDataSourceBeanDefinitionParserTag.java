@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 /**
  * Master-slave data source parser tag constants.
  * 
- * @author zhangliang
+ * @author caohao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MasterSlaveDataSourceBeanDefinitionParserTag {

@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Sharding data source parser for spring namespace.
+ * Orchestration sharding data source parser for spring namespace.
  * 
  * @author caohao
  */

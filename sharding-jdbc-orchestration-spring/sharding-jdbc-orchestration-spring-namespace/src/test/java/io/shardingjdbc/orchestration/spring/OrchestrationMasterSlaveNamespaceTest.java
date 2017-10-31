@@ -21,14 +21,12 @@ import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgo
 import io.shardingjdbc.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import io.shardingjdbc.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import io.shardingjdbc.orchestration.spring.util.FieldValueUtil;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -45,7 +43,12 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     public static void init() {
         EmbedTestingServer.start();
     }
-
+    
+    @Test
+    public void testMasterSlaveDataSourceType() {
+        assertTrue(this.applicationContext.getBean("defaultMasterSlaveDataSource", MasterSlaveDataSource.class) instanceof OrchestrationSpringMasterSlaveDataSource);
+    }
+    
     @Test
     public void testDefaultMaserSlaveDataSource() {
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("defaultMasterSlaveDataSource");
@@ -53,7 +56,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
         assertNotNull(masterSlaveRule.getSlaveDataSourceMap().get("dbtbl_0_slave_0"));
         assertNotNull(masterSlaveRule.getSlaveDataSourceMap().get("dbtbl_0_slave_1"));
     }
-
+    
     @Test
     public void testTypeMasterSlaveDataSource() {
         MasterSlaveRule randomSlaveRule = getMasterSlaveRule("randomMasterSlaveDataSource");
@@ -61,35 +64,12 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
         assertTrue(randomSlaveRule.getStrategy() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
         assertTrue(roundRobinSlaveRule.getStrategy() instanceof RoundRobinMasterSlaveLoadBalanceAlgorithm);
     }
-
+    
     @Test
-    @Ignore
     public void testRefMasterSlaveDataSource() {
         MasterSlaveLoadBalanceAlgorithm randomStrategy = this.applicationContext.getBean("randomStrategy", MasterSlaveLoadBalanceAlgorithm.class);
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSource");
-        assertTrue(masterSlaveRule.getStrategy() == randomStrategy);
-    }
-
-    @Test
-    @Ignore
-    public void testDefaultShardingDataSource() {
-        ShardingRule shardingRule = getShardingRule("defaultShardingDataSource");
-        assertNotNull(shardingRule.getDataSourceMap().get("randomMasterSlaveDataSource"));
-        assertNotNull(shardingRule.getDataSourceMap().get("refMasterSlaveDataSource"));
-        assertThat(shardingRule.getDefaultDataSourceName(), is("randomMasterSlaveDataSource"));
-        assertThat(shardingRule.getTableRules().size(), is(1));
-        assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
-    }
-
-    @Test
-    public void testShardingDataSourceType() {
-        assertTrue(this.applicationContext.getBean("defaultMasterSlaveDataSource", MasterSlaveDataSource.class) instanceof OrchestrationSpringMasterSlaveDataSource);
-    }
-    
-    private ShardingRule getShardingRule(final String shardingDataSourceName) {
-        ShardingDataSource shardingDataSource = this.applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
-        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
-        return (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
+        assertTrue(EqualsBuilder.reflectionEquals(masterSlaveRule.getStrategy(), randomStrategy));
     }
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {

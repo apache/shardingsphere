@@ -24,7 +24,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         OrchestrationMasterSlaveNamespaceTest.class,
-        OrchestrationShardingNamespaceTest.class
+        OrchestrationShardingNamespaceTest.class,
+        OrchestrationShardingMasterSlaveNamespaceTest.class
     })
 public class AllOrchestrationSpringTests {
 }
