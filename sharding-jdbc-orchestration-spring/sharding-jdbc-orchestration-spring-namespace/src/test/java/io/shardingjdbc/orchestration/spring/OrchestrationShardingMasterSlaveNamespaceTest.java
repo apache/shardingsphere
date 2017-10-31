@@ -22,6 +22,7 @@ import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import io.shardingjdbc.orchestration.spring.util.FieldValueUtil;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -39,6 +40,7 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
     }
     
     @Test
+    @Ignore
     public void testDefaultShardingDataSource() {
         ShardingRule shardingRule = getShardingRule();
         assertNotNull(shardingRule.getDataSourceMap().get("randomMasterSlaveDataSource"));

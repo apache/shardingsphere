@@ -66,12 +66,12 @@ public final class ConfigurationService {
     private void persistShardingConfiguration(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
         persistShardingRuleConfiguration(config.getShardingRuleConfig(), config.isOverwrite());
         persistShardingProperties(props, config.isOverwrite());
-        persistDataSourceConfigration(config.getDataSourceMap(), config.isOverwrite());
+        persistDataSourceConfiguration(config.getDataSourceMap(), config.isOverwrite());
     }
     
     private void persistMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
         persistMasterSlaveRuleConfiguration(config.getMasterSlaveRuleConfiguration(), config.isOverwrite());
-        persistDataSourceConfigration(config.getDataSourceMap(), config.isOverwrite());
+        persistDataSourceConfiguration(config.getDataSourceMap(), config.isOverwrite());
     }
     
     private void addMasterSlaveConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final MasterSlaveDataSource masterSlaveDataSource) {
@@ -96,7 +96,14 @@ public final class ConfigurationService {
     }
     
     private void addShardingConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
-        String cachePath = "/" + name + "/" + ConfigurationNode.ROOT;
+        addShardingConfigurationChangeListener(name, ConfigurationNode.DATA_SOURCE_NODE_PATH, registryCenter, shardingDataSource);
+        addShardingConfigurationChangeListener(name, ConfigurationNode.MASTER_SLAVE_NODE_PATH, registryCenter, shardingDataSource);
+        addShardingConfigurationChangeListener(name, ConfigurationNode.SHARDING_NODE_PATH, registryCenter, shardingDataSource);
+        addShardingConfigurationChangeListener(name, ConfigurationNode.PROPS_NODE_PATH, registryCenter, shardingDataSource);
+    }
+    
+    private void addShardingConfigurationChangeListener(final String name, final String node, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
+        String cachePath = "/" + name + "/" + node;
         registryCenter.addCacheData(cachePath);
         TreeCache cache = (TreeCache) registryCenter.getRawCache(cachePath);
         cache.getListenable().addListener(new TreeCacheListener() {
@@ -193,8 +200,9 @@ public final class ConfigurationService {
      * Persist data source configuration.
      *
      * @param dataSourceMap data source map
+     * @param isOverwrite is overwrite config
      */
-    public void persistDataSourceConfigration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
+    public void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
         if (!dataNodeStorage.isNodeExisted(ConfigurationNode.DATA_SOURCE_NODE_PATH) || isOverwrite) {
             dataNodeStorage.fillNode(ConfigurationNode.DATA_SOURCE_NODE_PATH, DataSourceJsonConverter.toJson(dataSourceMap));
         }
