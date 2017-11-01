@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.orchestration.spring.namespace.handler;
 
+import io.shardingjdbc.orchestration.spring.namespace.constants.RegistryCenterBeanDefinitionParserTag;
 import io.shardingjdbc.orchestration.spring.namespace.parser.ZookeeperBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
@@ -29,6 +30,6 @@ public final class RegNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser("zookeeper", new ZookeeperBeanDefinitionParser());
+        registerBeanDefinitionParser(RegistryCenterBeanDefinitionParserTag.ROOT_TAG, new ZookeeperBeanDefinitionParser());
     }
 }
