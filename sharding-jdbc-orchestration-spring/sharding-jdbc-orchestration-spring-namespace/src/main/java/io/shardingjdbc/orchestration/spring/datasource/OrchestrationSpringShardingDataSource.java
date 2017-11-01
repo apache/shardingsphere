@@ -44,31 +44,57 @@ import java.util.Properties;
  */
 public class OrchestrationSpringShardingDataSource extends ShardingDataSource implements ApplicationContextAware {
     
+    private final ConfigurationService configurationService;
+    
+    private final InstanceStateService instanceStateService;
+    
+    private final OrchestrationShardingConfiguration orchestrationShardingConfig;
+    
+    private final Properties props;
+    
     @Setter
     private ApplicationContext applicationContext;
     
     public OrchestrationSpringShardingDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, 
                                                  final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
         super(shardingRuleConfig.build(dataSourceMap), props);
-        Map<String, DataSource> actualDataSourceMap = new HashMap<>();
+        configurationService = new ConfigurationService(registryCenter, name);
+        instanceStateService = new InstanceStateService(registryCenter, name);
+        orchestrationShardingConfig = new OrchestrationShardingConfiguration(
+                name, overwrite, registryCenter, getActualDataSourceMapAndReviseShardingRuleConfiguration(dataSourceMap, shardingRuleConfig), shardingRuleConfig);
+        this.props = props;
+    }
+    
+    /**
+     * initial orchestration spring sharding data source.
+     */
+    public void init() {
+        configurationService.persistShardingConfiguration(orchestrationShardingConfig, props);
+        configurationService.addShardingConfigurationChangeListener(orchestrationShardingConfig.getName(), orchestrationShardingConfig.getRegistryCenter(), this);
+        instanceStateService.addShardingState(this);
+    }
+    
+    private Map<String, DataSource> getActualDataSourceMapAndReviseShardingRuleConfiguration(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
+        Map<String, DataSource> result = new HashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (entry.getValue() instanceof MasterSlaveDataSource) {
                 MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) entry.getValue();
-                actualDataSourceMap.putAll(masterSlaveDataSource.getAllDataSources());
-                MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-                masterSlaveRuleConfig.setName(masterSlaveDataSource.getMasterSlaveRule().getName());
-                masterSlaveRuleConfig.setMasterDataSourceName(masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName());
-                masterSlaveRuleConfig.setSlaveDataSourceNames(masterSlaveDataSource.getMasterSlaveRule().getSlaveDataSourceMap().keySet());
-                masterSlaveRuleConfig.setLoadBalanceAlgorithmClassName(masterSlaveDataSource.getMasterSlaveRule().getStrategy().getClass().getName());
-                shardingRuleConfig.getMasterSlaveRuleConfigs().add(masterSlaveRuleConfig);
+                result.putAll(masterSlaveDataSource.getAllDataSources());
+                shardingRuleConfig.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration(masterSlaveDataSource));
             } else {
-                actualDataSourceMap.put(entry.getKey(), entry.getValue());
+                result.put(entry.getKey(), entry.getValue());
             }
         }
-        OrchestrationShardingConfiguration config = new OrchestrationShardingConfiguration(name, overwrite, registryCenter, actualDataSourceMap, shardingRuleConfig);
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).persistShardingConfiguration(config, props);
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfigurationChangeListener(config.getName(), config.getRegistryCenter(), this);
-        new InstanceStateService(config.getRegistryCenter(), config.getName()).addShardingState(this);
+        return result;
+    }
+    
+    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration(final MasterSlaveDataSource masterSlaveDataSource) {
+        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
+        result.setName(masterSlaveDataSource.getMasterSlaveRule().getName());
+        result.setMasterDataSourceName(masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName());
+        result.setSlaveDataSourceNames(masterSlaveDataSource.getMasterSlaveRule().getSlaveDataSourceMap().keySet());
+        result.setLoadBalanceAlgorithmClassName(masterSlaveDataSource.getMasterSlaveRule().getStrategy().getClass().getName());
+        return result;
     }
     
     @Override

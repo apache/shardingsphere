@@ -36,7 +36,6 @@ import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -62,7 +61,7 @@ public final class InstanceStateService {
      *
      * @param shardingDataSource sharding datasource
      */
-    public void addShardingState(final ShardingDataSource shardingDataSource) throws SQLException {
+    public void addShardingState(final ShardingDataSource shardingDataSource) {
         String instanceNodePath = "/" + name + InstanceStateNode.ROOT + new InstanceStateNode().getInstanceId();
         persistState(instanceNodePath);
         addShardingInstancesStateChangeListener(instanceNodePath, shardingDataSource);
@@ -73,13 +72,13 @@ public final class InstanceStateService {
      *
      * @param masterSlaveDataSource master-slave datasource
      */
-    public void addMasterSlaveState(final MasterSlaveDataSource masterSlaveDataSource) throws SQLException {
+    public void addMasterSlaveState(final MasterSlaveDataSource masterSlaveDataSource) {
         String instanceNodePath = "/" + name + InstanceStateNode.ROOT + new InstanceStateNode().getInstanceId();
         persistState(instanceNodePath);
         addMasterSlaveInstancesStateChangeListener(instanceNodePath, masterSlaveDataSource);
     }
     
-    private void persistState(final String instanceNodePath) throws SQLException {
+    private void persistState(final String instanceNodePath) {
         registryCenter.persistEphemeral(instanceNodePath, "");
         registryCenter.addCacheData(instanceNodePath);
     }

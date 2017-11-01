@@ -36,7 +36,6 @@ import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -59,7 +58,7 @@ public final class ConfigurationService {
      * @param config orchestration sharding configuration
      * @param props sharding properties
      */
-    public void persistShardingConfiguration(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
+    public void persistShardingConfiguration(final OrchestrationShardingConfiguration config, final Properties props) {
         persistShardingRuleConfiguration(config.getShardingRuleConfig(), config.isOverwrite());
         persistShardingProperties(props, config.isOverwrite());
         persistDataSourceConfiguration(config.getDataSourceMap(), config.isOverwrite());
@@ -100,12 +99,12 @@ public final class ConfigurationService {
         });
     }
     
-    public void addMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config, final MasterSlaveDataSource masterSlaveDataSource) throws SQLException {
+    public void addMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config, final MasterSlaveDataSource masterSlaveDataSource) {
         persistMasterSlaveConfiguration(config);
         addMasterSlaveConfigurationChangeListener(config.getName(), config.getRegistryCenter(), masterSlaveDataSource);
     }
     
-    private void persistMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
+    private void persistMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config) {
         persistMasterSlaveRuleConfiguration(config.getMasterSlaveRuleConfiguration(), config.isOverwrite());
         persistDataSourceConfiguration(config.getDataSourceMap(), config.isOverwrite());
     }

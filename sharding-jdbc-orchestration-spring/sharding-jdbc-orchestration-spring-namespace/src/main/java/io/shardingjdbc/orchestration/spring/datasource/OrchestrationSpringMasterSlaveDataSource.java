@@ -40,15 +40,29 @@ import java.util.Map.Entry;
  */
 public class OrchestrationSpringMasterSlaveDataSource extends MasterSlaveDataSource implements ApplicationContextAware {
     
+    private final ConfigurationService configurationService;
+    
+    private final InstanceStateService instanceStateService;
+    
+    private final OrchestrationMasterSlaveConfiguration orchestrationMasterSlaveConfig;
+    
     @Setter
     private ApplicationContext applicationContext;
     
     public OrchestrationSpringMasterSlaveDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap,
                                                     final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
         super(masterSlaveRuleConfig.build(dataSourceMap));
-        OrchestrationMasterSlaveConfiguration config = new OrchestrationMasterSlaveConfiguration(name, overwrite, registryCenter, dataSourceMap, masterSlaveRuleConfig);
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).addMasterSlaveConfiguration(config, this);
-        new InstanceStateService(config.getRegistryCenter(), config.getName()).addMasterSlaveState(this);
+        orchestrationMasterSlaveConfig = new OrchestrationMasterSlaveConfiguration(name, overwrite, registryCenter, dataSourceMap, masterSlaveRuleConfig);
+        configurationService = new ConfigurationService(registryCenter, name);
+        instanceStateService = new InstanceStateService(registryCenter, name);
+    }
+    
+    /**
+     * initial orchestration spring master-slave data source.
+     */
+    public void init() {
+        configurationService.addMasterSlaveConfiguration(orchestrationMasterSlaveConfig, this);
+        instanceStateService.addMasterSlaveState(this);
     }
     
     @Override
