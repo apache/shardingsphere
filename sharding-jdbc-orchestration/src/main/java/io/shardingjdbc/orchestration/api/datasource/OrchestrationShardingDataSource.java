@@ -60,6 +60,6 @@ public class OrchestrationShardingDataSource {
     public void init() {
         configurationService.persistShardingConfiguration(config, new Properties());
         configurationService.addShardingConfigurationChangeListener(dataSource);
-        instanceStateService.addShardingState(dataSource);
+        instanceStateService.persistShardingInstanceOnline(dataSource);
     }
 }

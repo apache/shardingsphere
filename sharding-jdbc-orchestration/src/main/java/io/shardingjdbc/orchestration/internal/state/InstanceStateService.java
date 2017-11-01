@@ -17,16 +17,10 @@
 
 package io.shardingjdbc.orchestration.internal.state;
 
-import com.google.common.base.Charsets;
-import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.orchestration.internal.config.ConfigurationNode;
+import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
-import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
-import io.shardingjdbc.orchestration.internal.json.GsonFactory;
-import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Getter;
 import org.apache.curator.framework.CuratorFramework;
@@ -37,7 +31,6 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 import javax.sql.DataSource;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Instance state service.
@@ -47,43 +40,28 @@ import java.util.Properties;
 @Getter
 public final class InstanceStateService {
     
-    private final ConfigurationNode configStateNode;
-    
     private final InstanceStateNode instanceStateNode;
     
     private final CoordinatorRegistryCenter regCenter;
     
+    private final ConfigurationService configurationService;
+    
     public InstanceStateService(final String name, final CoordinatorRegistryCenter regCenter) {
-        configStateNode = new ConfigurationNode(name);
-        instanceStateNode = new InstanceStateNode(name);
         this.regCenter = regCenter;
+        instanceStateNode = new InstanceStateNode(name);
+        configurationService = new ConfigurationService(name, regCenter);
     }
     
     /**
-     * Add sharding state.
+     * Persist sharding instance online.
      *
      * @param shardingDataSource sharding datasource
      */
-    public void addShardingState(final ShardingDataSource shardingDataSource) {
+    public void persistShardingInstanceOnline(final ShardingDataSource shardingDataSource) {
         String instanceNodePath = instanceStateNode.getFullPath();
-        persistState(instanceNodePath);
-        addShardingInstancesStateChangeListener(instanceNodePath, shardingDataSource);
-    }
-    
-    /**
-     * Add master salve state.
-     *
-     * @param masterSlaveDataSource master-slave datasource
-     */
-    public void addMasterSlaveState(final MasterSlaveDataSource masterSlaveDataSource) {
-        String instanceNodePath = instanceStateNode.getFullPath();
-        persistState(instanceNodePath);
-        addMasterSlaveInstancesStateChangeListener(instanceNodePath, masterSlaveDataSource);
-    }
-    
-    private void persistState(final String instanceNodePath) {
         regCenter.persistEphemeral(instanceNodePath, "");
         regCenter.addCacheData(instanceNodePath);
+        addShardingInstancesStateChangeListener(instanceNodePath, shardingDataSource);
     }
     
     private void addShardingInstancesStateChangeListener(final String instanceNodePath, final ShardingDataSource shardingDataSource) {
@@ -93,24 +71,30 @@ public final class InstanceStateService {
             @Override
             public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
                 ChildData childData = event.getData();
-                if (null == childData || null == childData.getData()) {
+                if (null == childData || null == childData.getData() || childData.getPath().isEmpty() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
                     return;
                 }
-                String path = childData.getPath();
-                if (path.isEmpty() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
-                    return;
-                }
-                ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.fromJson(regCenter.get(configStateNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH)));
-                Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(regCenter.get(configStateNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
-                if (InstanceState.DISABLED.toString().equalsIgnoreCase(regCenter.get(path))) {
+                Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
+                if (InstanceState.DISABLED.toString().equalsIgnoreCase(regCenter.get(childData.getPath()))) {
                     for (String each : dataSourceMap.keySet()) {
                         dataSourceMap.put(each, new CircuitBreakerDataSource());
                     }
                 }
-                // TODO props
-                shardingDataSource.renew(shardingRuleConfig.build(dataSourceMap), new Properties());
+                shardingDataSource.renew(configurationService.loadShardingRuleConfiguration().build(dataSourceMap), configurationService.loadShardingProperties());
             }
         });
+    }
+    
+    /**
+     * Persist master-salve instance online.
+     *
+     * @param masterSlaveDataSource master-slave datasource
+     */
+    public void addMasterSlaveInstanceOnline(final MasterSlaveDataSource masterSlaveDataSource) {
+        String instanceNodePath = instanceStateNode.getFullPath();
+        regCenter.persistEphemeral(instanceNodePath, "");
+        regCenter.addCacheData(instanceNodePath);
+        addMasterSlaveInstancesStateChangeListener(instanceNodePath, masterSlaveDataSource);
     }
     
     private void addMasterSlaveInstancesStateChangeListener(final String instanceNodePath, final MasterSlaveDataSource masterSlaveDataSource) {
@@ -120,22 +104,16 @@ public final class InstanceStateService {
             @Override
             public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
                 ChildData childData = event.getData();
-                if (null == childData || null == childData.getData()) {
+                if (null == childData || null == childData.getData() || childData.getPath().isEmpty() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
                     return;
                 }
-                String path = childData.getPath();
-                if (path.isEmpty() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
-                    return;
-                }
-                MasterSlaveRuleConfiguration masterSlaveRuleConfig = GsonFactory.getGson().fromJson(new String(childData.getData(), Charsets.UTF_8), MasterSlaveRuleConfiguration.class);
-                Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(regCenter.get(configStateNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
-                if (InstanceState.DISABLED.toString().equalsIgnoreCase(regCenter.get(path))) {
+                Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
+                if (InstanceState.DISABLED.toString().equalsIgnoreCase(regCenter.get(childData.getPath()))) {
                     for (String each : dataSourceMap.keySet()) {
                         dataSourceMap.put(each, new CircuitBreakerDataSource());
                     }
                 }
-                // TODO props
-                masterSlaveDataSource.renew(masterSlaveRuleConfig.build(dataSourceMap));
+                masterSlaveDataSource.renew(configurationService.loadMasterSlaveRuleConfiguration().build(dataSourceMap));
             }
         });
     }

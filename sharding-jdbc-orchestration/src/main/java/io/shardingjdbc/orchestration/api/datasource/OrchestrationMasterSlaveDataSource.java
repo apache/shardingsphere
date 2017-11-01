@@ -56,6 +56,6 @@ public class OrchestrationMasterSlaveDataSource {
     public void init() {
         configurationService.persistMasterSlaveConfiguration(config);
         configurationService.addMasterSlaveConfigurationChangeListener(dataSource);
-        instanceStateService.addMasterSlaveState(dataSource);
+        instanceStateService.addMasterSlaveInstanceOnline(dataSource);
     }
 }

@@ -70,7 +70,7 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource im
     public void init() {
         configurationService.persistShardingConfiguration(config, props);
         configurationService.addShardingConfigurationChangeListener(this);
-        instanceStateService.addShardingState(this);
+        instanceStateService.persistShardingInstanceOnline(this);
     }
     
     private Map<String, DataSource> getActualDataSourceMapAndReviseShardingRuleConfiguration(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {

@@ -61,7 +61,7 @@ public class OrchestrationSpringMasterSlaveDataSource extends MasterSlaveDataSou
     public void init() {
         configurationService.persistMasterSlaveConfiguration(config);
         configurationService.addMasterSlaveConfigurationChangeListener(this);
-        instanceStateService.addMasterSlaveState(this);
+        instanceStateService.addMasterSlaveInstanceOnline(this);
     }
     
 //    @Override

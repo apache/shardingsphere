@@ -112,20 +112,6 @@ public final class ConfigurationService {
         });
     }
     
-    private ShardingRuleConfiguration loadShardingRuleConfiguration() {
-        return ShardingRuleConfigurationConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH)));
-    }
-    
-    private Map<String, DataSource> loadDataSourceMap() {
-        return DataSourceJsonConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH))
-        );
-    }
-    
-    private Properties loadShardingProperties() {
-        String data = regCenter.get(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH));
-        return Strings.isNullOrEmpty(data) ? new Properties() : GsonFactory.getGson().fromJson(data, Properties.class);
-    }
-    
     /**
      * Persist master-slave configuration.
      *
@@ -169,7 +155,40 @@ public final class ConfigurationService {
         });
     }
     
-    private MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
+    /**
+     * Load data source configuration.
+     * 
+     * @return data source configuration map
+     */
+    public Map<String, DataSource> loadDataSourceMap() {
+        return DataSourceJsonConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+    }
+    
+    /**
+     * Load sharding rule configuration.
+     * 
+     * @return sharding rule configuration
+     */
+    public ShardingRuleConfiguration loadShardingRuleConfiguration() {
+        return ShardingRuleConfigurationConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH)));
+    }
+    
+    /**
+     * Load sharding properties configuration.
+     * 
+     * @return sharding properties
+     */
+    public Properties loadShardingProperties() {
+        String data = regCenter.get(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH));
+        return Strings.isNullOrEmpty(data) ? new Properties() : GsonFactory.getGson().fromJson(data, Properties.class);
+    }
+    
+    /**
+     * Load master-slave rule configuration.
+     *
+     * @return master-slave rule configuration
+     */
+    public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
         return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH)), MasterSlaveRuleConfiguration.class);
     }
 }
