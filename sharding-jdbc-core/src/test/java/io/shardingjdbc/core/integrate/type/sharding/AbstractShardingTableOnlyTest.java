@@ -116,7 +116,7 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
         }
         if (getSql().startsWith("CREATE") || getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE")) {
             if (getSql().contains("TEMP")) {
-                executeSql("DROP TEMPORARY TABLE t_temp_log");
+                executeSql("DROP TABLE t_temp_log");
             } else {
                 executeSql("DROP TABLE t_log");
             }
