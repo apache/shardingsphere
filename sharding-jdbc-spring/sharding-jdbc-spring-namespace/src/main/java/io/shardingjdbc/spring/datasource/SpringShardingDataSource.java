@@ -19,9 +19,6 @@ package io.shardingjdbc.spring.datasource;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import lombok.Setter;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -33,10 +30,7 @@ import java.util.Properties;
  *
  * @author caohao
  */
-public class SpringShardingDataSource extends ShardingDataSource implements ApplicationContextAware {
-    
-    @Setter
-    private ApplicationContext applicationContext;
+public class SpringShardingDataSource extends ShardingDataSource {
     
     public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
         super(shardingRuleConfig.build(dataSourceMap), props);

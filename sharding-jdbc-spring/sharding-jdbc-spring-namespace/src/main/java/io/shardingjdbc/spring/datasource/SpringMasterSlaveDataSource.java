@@ -21,9 +21,6 @@ import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgo
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
-import lombok.Setter;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -34,10 +31,7 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-public class SpringMasterSlaveDataSource extends MasterSlaveDataSource implements ApplicationContextAware {
-    
-    @Setter
-    private ApplicationContext applicationContext;
+public class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
     
     public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
                                        final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap) throws SQLException {
