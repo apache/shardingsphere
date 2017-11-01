@@ -39,7 +39,7 @@ public final class ShardingDatabaseOnlyWithHintForSelectTest extends AbstractSha
     
     @Before
     public void init() throws SQLException {
-        shardingDataSources = getShardingDataSources();
+        shardingDataSources = initShardingDataSources();
     }
     
     @Test

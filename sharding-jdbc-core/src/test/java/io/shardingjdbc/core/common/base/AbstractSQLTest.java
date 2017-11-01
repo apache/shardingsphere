@@ -22,6 +22,9 @@ import io.shardingjdbc.core.common.env.ShardingJdbcDatabaseTester;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.jaxb.helper.SQLAssertJAXBHelper;
+import io.shardingjdbc.core.jdbc.core.ShardingContext;
+import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -31,12 +34,15 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
+import org.junit.AfterClass;
 
 import javax.sql.DataSource;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -51,12 +57,18 @@ import java.util.Set;
 
 public abstract class AbstractSQLTest {
     
+    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
+    
     private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseType.H2);
     
     private final Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
     
     static {
         init();
+    }
+    
+    protected static final Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
+        return shardingDataSources;
     }
     
     private static synchronized void init() {
@@ -219,5 +231,34 @@ public abstract class AbstractSQLTest {
         }
         BasicDataSource result = buildDataSource(dbName, type);
         dataSourceMap.put(dataSource, result);
+    }
+    
+    @AfterClass
+    public static void clear() throws SQLException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        if (!shardingDataSources.isEmpty()) {
+            for (ShardingDataSource each : shardingDataSources.values()) {
+                each.close();
+                closeDataSources(getDataSourceMap(each).values());
+            }
+            shardingDataSources.clear();
+        }
+    }
+    
+    private static Map<String, DataSource> getDataSourceMap(final ShardingDataSource shardingDataSource) 
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Field field = shardingDataSource.getClass().getDeclaredField("shardingContext");
+        field.setAccessible(true);
+        ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);
+        return shardingContext.getShardingRule().getDataSourceMap();
+    }
+    
+    private static void closeDataSources(final Collection<DataSource> dataSources) throws SQLException {
+        for (DataSource each : dataSources) {
+            if (each instanceof BasicDataSource) {
+                ((BasicDataSource) each).close();
+            } else if (each instanceof MasterSlaveDataSource) {
+                closeDataSources(((MasterSlaveDataSource) each).getAllDataSources().values());
+            }
+        }
     }
 }

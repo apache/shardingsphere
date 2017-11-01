@@ -43,7 +43,7 @@ public final class ShardingDatabaseOnlyWithHintForDMLTest extends AbstractShardi
     
     @Before
     public void init() throws SQLException {
-        shardingDataSources = getShardingDataSources();
+        shardingDataSources = initShardingDataSources();
     }
     
     @Test
