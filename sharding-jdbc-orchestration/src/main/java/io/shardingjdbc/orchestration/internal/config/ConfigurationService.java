@@ -59,6 +59,7 @@ public final class ConfigurationService {
      *
      * @param config orchestration sharding configuration
      * @param props sharding properties
+     * @param shardingDataSource sharding datasource
      */
     public void persistShardingConfiguration(final OrchestrationShardingConfiguration config, final Properties props, final ShardingDataSource shardingDataSource) {
         persistDataSourceConfiguration(config.getDataSourceMap(), config.isOverwrite());
@@ -112,6 +113,7 @@ public final class ConfigurationService {
      * Persist master-slave configuration.
      *
      * @param config orchestration master-slave configuration
+     * @param masterSlaveDataSource master-slave datasource
      */
     public void persistMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config, final MasterSlaveDataSource masterSlaveDataSource) {
         persistDataSourceConfiguration(config.getDataSourceMap(), config.isOverwrite());

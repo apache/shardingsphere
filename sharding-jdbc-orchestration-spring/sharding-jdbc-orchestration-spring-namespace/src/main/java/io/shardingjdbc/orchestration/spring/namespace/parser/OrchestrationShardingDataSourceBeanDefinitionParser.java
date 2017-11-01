@@ -57,7 +57,7 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
         factory.addConstructorArgValue(parseDataSources(element, parserContext));
         factory.addConstructorArgValue(parseShardingRuleConfig(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
-        factory.setInitMethodName("init");
+        factory.setInitMethodName("initShardingOrchestration");
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
     }

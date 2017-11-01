@@ -17,8 +17,10 @@
 
 package io.shardingjdbc.orchestration.api;
 
+import io.shardingjdbc.core.api.ShardingDataSourceFactory;
+import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
-import io.shardingjdbc.orchestration.api.datasource.OrchestrationShardingDataSource;
+import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -55,8 +57,8 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
-        OrchestrationShardingDataSource orchestrationShardingDataSource = new OrchestrationShardingDataSource(config, props);
-        orchestrationShardingDataSource.init();
-        return orchestrationShardingDataSource.getDataSource();
+        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig());
+        new OrchestrationFacade(config.getName(), config.getRegistryCenter()).initShardingOrchestration(config, props, result);
+        return result;
     }
 }

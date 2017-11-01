@@ -52,7 +52,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         factory.addConstructorArgReference(regCenter);
         factory.addConstructorArgValue(parseDataSources(element, parserContext));
         factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element, parserContext));
-        factory.setInitMethodName("init");
+        factory.setInitMethodName("initShardingOrchestration");
         return factory.getBeanDefinition();
     }
     

@@ -38,7 +38,7 @@ public final class ZookeeperBeanDefinitionParser extends AbstractBeanDefinitionP
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder result = BeanDefinitionBuilder.rootBeanDefinition(ZookeeperRegistryCenter.class);
         result.addConstructorArgValue(buildZookeeperConfigurationBeanDefinition(element));
-        result.setInitMethodName("init");
+        result.setInitMethodName("initShardingOrchestration");
         return result.getBeanDefinition();
     }
     

@@ -90,7 +90,7 @@ public final class InstanceStateService {
      *
      * @param masterSlaveDataSource master-slave datasource
      */
-    public void addMasterSlaveInstanceOnline(final MasterSlaveDataSource masterSlaveDataSource) {
+    public void persistMasterSlaveInstanceOnline(final MasterSlaveDataSource masterSlaveDataSource) {
         String instanceNodePath = instanceStateNode.getFullPath();
         regCenter.persistEphemeral(instanceNodePath, "");
         regCenter.addCacheData(instanceNodePath);
