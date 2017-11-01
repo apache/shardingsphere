@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.spring.util;
+package io.shardingjdbc.orchestration.util;
 
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import lombok.AccessLevel;

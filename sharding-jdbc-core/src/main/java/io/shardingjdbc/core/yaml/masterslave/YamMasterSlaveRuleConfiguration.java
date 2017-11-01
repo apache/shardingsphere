@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Master slave configuration for yaml.
@@ -51,8 +50,6 @@ public class YamMasterSlaveRuleConfiguration {
     private MasterSlaveLoadBalanceAlgorithmType loadBalanceAlgorithmType;
     
     private String loadBalanceAlgorithmClassName;
-    
-    private Properties props = new Properties();
     
     /**
      * Get master-slave rule from yaml.
