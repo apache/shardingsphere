@@ -60,7 +60,7 @@ public class YamlOrchestrationMasterSlaveDataSource extends MasterSlaveDataSourc
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            return new Yaml(new Constructor(YamlOrchesrationMasterSlaveRuleConfiguration.class)).loadAs(inputStreamReader, YamlOrchesrationMasterSlaveRuleConfiguration.class);
+            return new Yaml(new Constructor(YamlOrchestrationMasterSlaveRuleConfiguration.class)).loadAs(inputStreamReader, YamlOrchestrationMasterSlaveRuleConfiguration.class);
         }
     }
     

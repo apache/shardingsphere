@@ -29,7 +29,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class YamlOrchesrationMasterSlaveRuleConfiguration extends YamlMasterSlaveRuleConfiguration {
+public class YamlOrchestrationMasterSlaveRuleConfiguration extends YamlMasterSlaveRuleConfiguration {
     
     private boolean overwrite;
     
