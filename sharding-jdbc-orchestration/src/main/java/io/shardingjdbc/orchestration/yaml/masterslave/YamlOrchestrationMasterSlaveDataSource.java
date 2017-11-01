@@ -15,9 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.masterslave;
+package io.shardingjdbc.orchestration.yaml.masterslave;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -32,25 +33,25 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Master-slave datasource for yaml.
+ * Orchestration master-slave datasource for yaml.
  *
  * @author caohao
  */
-public class YamlMasterSlaveDataSource extends MasterSlaveDataSource {
+public class YamlOrchestrationMasterSlaveDataSource extends MasterSlaveDataSource {
     
-    public YamlMasterSlaveDataSource(final File yamlFile) throws IOException, SQLException {
+    public YamlOrchestrationMasterSlaveDataSource(final File yamlFile) throws IOException, SQLException {
         super(unmarshal(yamlFile).getMasterSlaveRule(Collections.<String, DataSource>emptyMap()));
     }
     
-    public YamlMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws IOException, SQLException {
+    public YamlOrchestrationMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws IOException, SQLException {
         super(unmarshal(yamlFile).getMasterSlaveRule(dataSourceMap));
     }
     
-    public YamlMasterSlaveDataSource(final byte[] yamlByteArray) throws IOException, SQLException {
+    public YamlOrchestrationMasterSlaveDataSource(final byte[] yamlByteArray) throws IOException, SQLException {
         super(unmarshal(yamlByteArray).getMasterSlaveRule(Collections.<String, DataSource>emptyMap()));
     }
     
-    public YamlMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws IOException, SQLException {
+    public YamlOrchestrationMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws IOException, SQLException {
         super(unmarshal(yamlByteArray).getMasterSlaveRule(dataSourceMap));
     }
     
@@ -59,7 +60,7 @@ public class YamlMasterSlaveDataSource extends MasterSlaveDataSource {
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            return new Yaml(new Constructor(YamlMasterSlaveRuleConfiguration.class)).loadAs(inputStreamReader, YamlMasterSlaveRuleConfiguration.class);
+            return new Yaml(new Constructor(YamlOrchesrationMasterSlaveRuleConfiguration.class)).loadAs(inputStreamReader, YamlOrchesrationMasterSlaveRuleConfiguration.class);
         }
     }
     

@@ -17,17 +17,17 @@
 
 package io.shardingjdbc.orchestration.yaml;
 
-import io.shardingjdbc.orchestration.yaml.masterslave.OrchestrationYamlMasterSlaveIntegrateTest;
-import io.shardingjdbc.orchestration.yaml.sharding.OrchestrationYamlShardingIntegrateTest;
-import io.shardingjdbc.orchestration.yaml.sharding.OrchestrationYamlShardingWithMasterSlaveIntegrateTest;
+import io.shardingjdbc.orchestration.yaml.masterslave.YamlOrchestrationMasterSlaveIntegrateTest;
+import io.shardingjdbc.orchestration.yaml.sharding.YamlOrchestrationShardingIntegrateTest;
+import io.shardingjdbc.orchestration.yaml.sharding.YamlOrchestrationShardingWithMasterSlaveIntegrateTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        OrchestrationYamlShardingIntegrateTest.class,
-        OrchestrationYamlMasterSlaveIntegrateTest.class,
-        OrchestrationYamlShardingWithMasterSlaveIntegrateTest.class
+        YamlOrchestrationShardingIntegrateTest.class,
+        YamlOrchestrationMasterSlaveIntegrateTest.class,
+        YamlOrchestrationShardingWithMasterSlaveIntegrateTest.class
     })
 public class AllYamlTests {
 }

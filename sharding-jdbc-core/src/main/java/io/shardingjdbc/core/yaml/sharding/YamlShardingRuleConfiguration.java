@@ -20,7 +20,7 @@ package io.shardingjdbc.core.yaml.sharding;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.yaml.masterslave.YamMasterSlaveRuleConfiguration;
+import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -57,7 +57,7 @@ public class YamlShardingRuleConfiguration {
     
     private String defaultKeyGeneratorClass;
     
-    private Map<String, YamMasterSlaveRuleConfiguration> masterSlaveRules = new HashMap<>();
+    private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new HashMap<>();
     
     private Properties props = new Properties();
     
@@ -94,7 +94,7 @@ public class YamlShardingRuleConfiguration {
         }
         result.setDefaultKeyGeneratorClass(defaultKeyGeneratorClass);
         Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
-        for (Map.Entry<String, YamMasterSlaveRuleConfiguration> each : masterSlaveRules.entrySet()) {
+        for (Map.Entry<String, YamlMasterSlaveRuleConfiguration> each : masterSlaveRules.entrySet()) {
             MasterSlaveRuleConfiguration config = new MasterSlaveRuleConfiguration();
             config.setName(each.getKey());
             config.setMasterDataSourceName(each.getValue().getMasterDataSourceName());

@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.orchestration.yaml.masterslave;
 
-import io.shardingjdbc.core.yaml.masterslave.YamMasterSlaveRuleConfiguration;
+import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingjdbc.orchestration.reg.base.RegistryCenter;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +29,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class YamOrchesrationMasterSlaveRuleConfiguration extends YamMasterSlaveRuleConfiguration {
+public class YamlOrchesrationMasterSlaveRuleConfiguration extends YamlMasterSlaveRuleConfiguration {
     
     private boolean overwrite;
     

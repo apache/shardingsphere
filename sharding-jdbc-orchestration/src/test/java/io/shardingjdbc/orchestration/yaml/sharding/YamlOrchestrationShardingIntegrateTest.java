@@ -20,7 +20,6 @@ package io.shardingjdbc.orchestration.yaml.sharding;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import io.shardingjdbc.core.yaml.sharding.YamlShardingDataSource;
 import io.shardingjdbc.orchestration.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
@@ -36,12 +35,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class OrchestrationYamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
+public class YamlOrchestrationShardingIntegrateTest extends AbstractYamlDataSourceTest {
     
     private final String filePath;
     
@@ -50,31 +47,26 @@ public class OrchestrationYamlShardingWithMasterSlaveIntegrateTest extends Abstr
     @Parameterized.Parameters(name = "{index}:{0}-{1}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/sharding_ms/configWithDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/sharding_ms/configWithoutDataSourceWithoutProps.yaml", false},
-                {"/yaml/integrate/sharding_ms/configWithDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml", false},
+                {"/yaml/integrate/sharding/configWithDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/sharding/configWithoutDataSourceWithoutProps.yaml", false},
+                {"/yaml/integrate/sharding/configWithDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/sharding/configWithoutDataSourceWithProps.yaml", false},
         });
     }
     
     @Test
     public void testWithDataSource() throws SQLException, URISyntaxException, IOException {
-        File yamlFile = new File(OrchestrationYamlShardingWithMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlOrchestrationShardingIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = new YamlShardingDataSource(yamlFile);
+            dataSource = new YamlOrchestrationShardingDataSource(yamlFile);
         } else {
-            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), new Function<String, DataSource>() {
+            dataSource = new YamlOrchestrationShardingDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), new Function<String, DataSource>() {
                 @Override
                 public DataSource apply(final String key) {
                     return createDataSource(key);
                 }
-            });
-            Map<String, DataSource> result = new HashMap<>();
-            for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
-                result.put(each.getKey(), each.getValue());
-            }
-            dataSource = new YamlShardingDataSource(result, yamlFile);
+            }), yamlFile);
         }
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {

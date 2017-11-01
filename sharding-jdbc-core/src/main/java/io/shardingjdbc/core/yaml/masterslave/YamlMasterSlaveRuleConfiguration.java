@@ -37,7 +37,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class YamMasterSlaveRuleConfiguration {
+public class YamlMasterSlaveRuleConfiguration {
     
     private Map<String, DataSource> dataSources = new HashMap<>();
     
