@@ -19,6 +19,7 @@ package io.shardingjdbc.orchestration.spring.datasource;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingjdbc.core.rule.MasterSlaveRule;
 import io.shardingjdbc.orchestration.api.config.OrchestrationMasterSlaveConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.state.InstanceStateService;
@@ -30,6 +31,7 @@ import org.springframework.context.ApplicationContextAware;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Orchestration master-slave datasource for spring namespace.
@@ -48,13 +50,13 @@ public class OrchestrationSpringMasterSlaveDataSource extends MasterSlaveDataSou
         new ConfigurationService(config.getRegistryCenter(), config.getName()).addMasterSlaveConfiguration(config, this);
         new InstanceStateService(config.getRegistryCenter(), config.getName()).addMasterSlaveState(this);
     }
-//    
-//    @Override
-//    public void renew(final MasterSlaveRule masterSlaveRule) throws SQLException {
-//        DataSourceBeanUtil.createDataSourceBean(applicationContext, masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getMasterDataSource());
-//        for (Entry<String, DataSource> entry : masterSlaveRule.getSlaveDataSourceMap().entrySet()) {
-//            DataSourceBeanUtil.createDataSourceBean(applicationContext, entry.getKey(), entry.getValue());
-//        }
-//        super.renew(masterSlaveRule);
-//    }
+    
+    @Override
+    public void renew(final MasterSlaveRule masterSlaveRule) throws SQLException {
+        DataSourceBeanUtil.createDataSourceBean(applicationContext, masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getMasterDataSource());
+        for (Entry<String, DataSource> entry : masterSlaveRule.getSlaveDataSourceMap().entrySet()) {
+            DataSourceBeanUtil.createDataSourceBean(applicationContext, entry.getKey(), entry.getValue());
+        }
+        super.renew(masterSlaveRule);
+    }
 }

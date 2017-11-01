@@ -29,6 +29,9 @@ public final class DataSourceBeanUtil {
     }
     
     public static void createDataSourceBean(final ApplicationContext applicationContext, final String dataSourceName, final DataSource dataSource) {
+        if (null == applicationContext) {
+            return;
+        }
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
         BeanDefinition beanDefinition = new GenericBeanDefinition();
         beanDefinition.setBeanClassName(dataSource.getClass().getName());
