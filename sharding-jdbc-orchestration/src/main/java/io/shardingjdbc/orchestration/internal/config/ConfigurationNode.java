@@ -17,11 +17,14 @@
 
 package io.shardingjdbc.orchestration.internal.config;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Data configuration node.
  *
  * @author caohao
  */
+@RequiredArgsConstructor
 public final class ConfigurationNode {
     
     public static final String ROOT = "config";
@@ -33,4 +36,16 @@ public final class ConfigurationNode {
     public static final String MASTER_SLAVE_NODE_PATH = ROOT + "/masterslave";
     
     public static final String PROPS_NODE_PATH = ROOT + "/props";
+    
+    private final String name;
+    
+    /**
+     * Get node full path.
+     *
+     * @param node node name
+     * @return node full path
+     */
+    public String getFullPath(final String node) {
+        return String.format("/%s/%s", name, node);
+    }
 }

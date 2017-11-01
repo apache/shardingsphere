@@ -21,7 +21,6 @@ import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.state.InstanceStateService;
@@ -97,17 +96,17 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource im
         return result;
     }
     
-    @Override
-    public void renew(final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
-        for (Entry<String, DataSource> entry : newShardingRule.getDataSourceMap().entrySet()) {
-            if (entry.getValue() instanceof MasterSlaveDataSource) {
-                for (Entry<String, DataSource> masterSlaveEntry : ((MasterSlaveDataSource) entry.getValue()).getAllDataSources().entrySet()) {
-                    DataSourceBeanUtil.createDataSourceBean(applicationContext, masterSlaveEntry.getKey(), masterSlaveEntry.getValue());
-                }
-            } else {
-                DataSourceBeanUtil.createDataSourceBean(applicationContext, entry.getKey(), entry.getValue());
-            }
-        }
-        super.renew(newShardingRule, newProps);
-    }
+//    @Override
+//    public void renew(final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
+//        for (Entry<String, DataSource> entry : newShardingRule.getDataSourceMap().entrySet()) {
+//            if (entry.getValue() instanceof MasterSlaveDataSource) {
+//                for (Entry<String, DataSource> masterSlaveEntry : ((MasterSlaveDataSource) entry.getValue()).getAllDataSources().entrySet()) {
+//                    DataSourceBeanUtil.createDataSourceBean(applicationContext, masterSlaveEntry.getKey(), masterSlaveEntry.getValue());
+//                }
+//            } else {
+//                DataSourceBeanUtil.createDataSourceBean(applicationContext, entry.getKey(), entry.getValue());
+//            }
+//        }
+//        super.renew(newShardingRule, newProps);
+//    }
 }

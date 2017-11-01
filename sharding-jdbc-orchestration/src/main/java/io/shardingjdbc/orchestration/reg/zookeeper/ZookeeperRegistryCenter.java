@@ -17,10 +17,10 @@
 
 package io.shardingjdbc.orchestration.reg.zookeeper;
 
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -35,10 +35,7 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
-import org.apache.zookeeper.data.Stat;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -162,41 +159,6 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
             return null;
         }
     }
-    
-    @Override
-    public List<String> getChildrenKeys(final String key) {
-        try {
-            List<String> result = client.getChildren().forPath(key);
-            Collections.sort(result, new Comparator<String>() {
-                
-                @Override
-                public int compare(final String o1, final String o2) {
-                    return o2.compareTo(o1);
-                }
-            });
-            return result;
-         //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-        //CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
-            return Collections.emptyList();
-        }
-    }
-    
-    @Override
-    public int getNumChildren(final String key) {
-        try {
-            Stat stat = client.checkExists().forPath(key);
-            if (null != stat) {
-                return stat.getNumChildren();
-            }
-            //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            //CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
-        }
-        return 0;
-    }
 
     @Override
     public boolean isExisted(final String key) {
@@ -248,45 +210,6 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
         //CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
         }
-    }
-    
-    @Override
-    public String persistSequential(final String key, final String value) {
-        try {
-            return client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath(key, value.getBytes(Charsets.UTF_8));
-        //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-        //CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
-        }
-        return null;
-    }
-    
-    @Override
-    public void persistEphemeralSequential(final String key) {
-        try {
-            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(key);
-        //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-        //CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
-        }
-    }
-    
-    @Override
-    public void remove(final String key) {
-        try {
-            client.delete().deletingChildrenIfNeeded().forPath(key);
-        //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-        //CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
-        }
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return client;
     }
     
     @Override

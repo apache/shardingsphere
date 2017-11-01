@@ -17,8 +17,6 @@
 
 package io.shardingjdbc.orchestration.reg.base;
 
-import java.util.List;
-
 /**
  * Coordinator based registry center.
  * 
@@ -35,44 +33,12 @@ public interface CoordinatorRegistryCenter extends RegistryCenter {
     String getDirectly(String key);
     
     /**
-     * Get children keys.
-     * 
-     * @param key key of data
-     * @return children keys list
-     */
-    List<String> getChildrenKeys(String key);
-    
-    /**
-     * Get number of children keys.
-     *
-     * @param key key of data
-     * @return number of children keys
-     */
-    int getNumChildren(String key);
-    
-    /**
      * Persist ephemeral data.
      *
      * @param key key of data
      * @param value value of data
      */
     void persistEphemeral(String key, String value);
-    
-    /**
-     * Persist sequential data.
-     *
-     * @param key key of data
-     * @param value value of data
-     * @return znonde name include 10 sequential digital
-     */
-    String persistSequential(String key, String value);
-    
-    /**
-     * Persist ephemeral sequential data.
-     * 
-     * @param key key of data
-     */
-    void persistEphemeralSequential(String key);
     
     /**
      * Add cache data.

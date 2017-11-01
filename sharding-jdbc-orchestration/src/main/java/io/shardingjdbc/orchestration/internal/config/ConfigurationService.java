@@ -27,7 +27,6 @@ import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfigurati
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
-import io.shardingjdbc.orchestration.internal.storage.DataNodeStorage;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -40,16 +39,19 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * configuration service.
+ * Configuration service.
  * 
  * @author caohao
  */
 public final class ConfigurationService {
     
-    private final DataNodeStorage dataNodeStorage;
+    private final ConfigurationNode configNode;
+    
+    private final CoordinatorRegistryCenter regCenter;
     
     public ConfigurationService(final String name, final CoordinatorRegistryCenter regCenter) {
-        dataNodeStorage = new DataNodeStorage(name, regCenter);
+        configNode = new ConfigurationNode(name);
+        this.regCenter = regCenter;
     }
     
     /**
@@ -131,43 +133,44 @@ public final class ConfigurationService {
     }
     
     private Properties loadShardingProperties() {
-        String data = dataNodeStorage.getNodeData(ConfigurationNode.PROPS_NODE_PATH);
+        String data = regCenter.get(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH));
         return Strings.isNullOrEmpty(data) ? new Properties() : GsonFactory.getGson().fromJson(data, Properties.class);
     }
     
     private ShardingRuleConfiguration loadShardingRuleConfiguration() {
-        return ShardingRuleConfigurationConverter.fromJson(dataNodeStorage.getNodeData(ConfigurationNode.SHARDING_NODE_PATH));
+        return ShardingRuleConfigurationConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH)));
     }
     
     private MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
-        return GsonFactory.getGson().fromJson(dataNodeStorage.getNodeData(ConfigurationNode.MASTER_SLAVE_NODE_PATH), MasterSlaveRuleConfiguration.class);
+        return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH)), MasterSlaveRuleConfiguration.class);
     }
     
     private Map<String, DataSource> loadDataSourceMap() {
-        return DataSourceJsonConverter.fromJson(dataNodeStorage.getNodeData(ConfigurationNode.DATA_SOURCE_NODE_PATH));
+        return DataSourceJsonConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH))
+        );
     }
     
     private void persistShardingRuleConfiguration(final ShardingRuleConfiguration config, final boolean isOverwrite) {
-        if (!dataNodeStorage.isNodeExisted(ConfigurationNode.SHARDING_NODE_PATH) || isOverwrite) {
-            dataNodeStorage.fillNode(ConfigurationNode.SHARDING_NODE_PATH, ShardingRuleConfigurationConverter.toJson(config));
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH), ShardingRuleConfigurationConverter.toJson(config));
         }
     }
     
     private void persistShardingProperties(final Properties props, final boolean isOverwrite) {
-        if (!dataNodeStorage.isNodeExisted(ConfigurationNode.PROPS_NODE_PATH) || isOverwrite) {
-            dataNodeStorage.fillNode(ConfigurationNode.PROPS_NODE_PATH, GsonFactory.getGson().toJson(props));
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH), GsonFactory.getGson().toJson(props));
         }
     }
     
     private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration config, final boolean isOverwrite) {
-        if (!dataNodeStorage.isNodeExisted(ConfigurationNode.MASTER_SLAVE_NODE_PATH) || isOverwrite) {
-            dataNodeStorage.fillNode(ConfigurationNode.MASTER_SLAVE_NODE_PATH, GsonFactory.getGson().toJson(config));
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH), GsonFactory.getGson().toJson(config));
         }
     }
     
     private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
-        if (!dataNodeStorage.isNodeExisted(ConfigurationNode.DATA_SOURCE_NODE_PATH) || isOverwrite) {
-            dataNodeStorage.fillNode(ConfigurationNode.DATA_SOURCE_NODE_PATH, DataSourceJsonConverter.toJson(dataSourceMap));
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceJsonConverter.toJson(dataSourceMap));
         }
     }
 }
