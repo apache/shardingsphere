@@ -164,7 +164,7 @@ defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默
 
 tables: 分库分表配置，可配置多个logic_table_name
     <logic_table_name>: 逻辑表名
-        actualDataNodes: 真实数据节点，由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示为只分库不分表。
+        actualDataNodes: 真实数据节点，由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示将为现有已知的数据源 + 逻辑表名称生成真实数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况。
         databaseStrategy: 分库策略，以下的分片策略只能任选其一
             standard: 标准分片策略，用于单分片键的场景
                 shardingColumn: 分片列名
@@ -345,7 +345,7 @@ slaveDataSourceNames：slave数据源名称，用数组表示多个
 | *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
 | --------------------          | ------------ | ---------- | ------ | ------- |
 | logic-table                   | 属性         |  String     |   是   | 逻辑表名 |
-| actual-data-nodes             | 属性         |  String     |   否   | 真实数据节点，由数据源名（读写分离引用<masterslave:data-source>中的id属性） + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示为只分库不分表                        |
+| actual-data-nodes             | 属性         |  String     |   否   | 真实数据节点，由数据源名（读写分离引用<masterslave:data-source>中的id属性） + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示将为现有已知的数据源 + 逻辑表名称生成真实数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况。|
 | database-strategy-ref         | 属性         |  String     |   否   | 分库策略，对应\<sharding:xxx-strategy>中的策略id，不填则使用\<sharding:sharding-rule/>配置的default-database-strategy-ref   |
 | table-strategy-ref            | 属性         |  String     |   否   | 分表策略，对应\<sharding:xxx-strategy>中的略id，不填则使用\<sharding:sharding-rule/>配置的default-table-strategy-ref        |
 
