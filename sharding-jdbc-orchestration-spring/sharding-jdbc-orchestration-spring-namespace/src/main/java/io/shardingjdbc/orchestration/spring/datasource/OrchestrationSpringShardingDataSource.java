@@ -68,8 +68,7 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource im
      * initial orchestration spring sharding data source.
      */
     public void init() {
-        configurationService.persistShardingConfiguration(config, props);
-        configurationService.addShardingConfigurationChangeListener(this);
+        configurationService.persistShardingConfiguration(config, props, this);
         instanceStateService.persistShardingInstanceOnline(this);
     }
     

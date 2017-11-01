@@ -58,8 +58,7 @@ public class OrchestrationShardingDataSource {
      * Initial orchestration master-slave data source.
      */
     public void init() {
-        configurationService.persistShardingConfiguration(config, new Properties());
-        configurationService.addShardingConfigurationChangeListener(dataSource);
+        configurationService.persistShardingConfiguration(config, props, dataSource);
         instanceStateService.persistShardingInstanceOnline(dataSource);
     }
 }

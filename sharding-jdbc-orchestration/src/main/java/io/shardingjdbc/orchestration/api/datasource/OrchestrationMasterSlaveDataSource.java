@@ -54,8 +54,7 @@ public class OrchestrationMasterSlaveDataSource {
      * Initial orchestration master-slave data source.
      */
     public void init() {
-        configurationService.persistMasterSlaveConfiguration(config);
-        configurationService.addMasterSlaveConfigurationChangeListener(dataSource);
+        configurationService.persistMasterSlaveConfiguration(config, dataSource);
         instanceStateService.addMasterSlaveInstanceOnline(dataSource);
     }
 }

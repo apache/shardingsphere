@@ -60,10 +60,11 @@ public final class ConfigurationService {
      * @param config orchestration sharding configuration
      * @param props sharding properties
      */
-    public void persistShardingConfiguration(final OrchestrationShardingConfiguration config, final Properties props) {
+    public void persistShardingConfiguration(final OrchestrationShardingConfiguration config, final Properties props, final ShardingDataSource shardingDataSource) {
         persistShardingRuleConfiguration(config.getShardingRuleConfig(), config.isOverwrite());
         persistShardingProperties(props, config.isOverwrite());
         persistDataSourceConfiguration(config.getDataSourceMap(), config.isOverwrite());
+        addShardingConfigurationChangeListener(shardingDataSource);
     }
     
     private void persistShardingRuleConfiguration(final ShardingRuleConfiguration config, final boolean isOverwrite) {
@@ -84,12 +85,7 @@ public final class ConfigurationService {
         }
     }
     
-    /**
-     * Add sharding configuration change listener.
-     *
-     * @param shardingDataSource sharding datasource
-     */
-    public void addShardingConfigurationChangeListener(final ShardingDataSource shardingDataSource) {
+    private void addShardingConfigurationChangeListener(final ShardingDataSource shardingDataSource) {
         addShardingConfigurationNodeChangeListener(ConfigurationNode.DATA_SOURCE_NODE_PATH, shardingDataSource);
         addShardingConfigurationNodeChangeListener(ConfigurationNode.SHARDING_NODE_PATH, shardingDataSource);
         addShardingConfigurationNodeChangeListener(ConfigurationNode.PROPS_NODE_PATH, shardingDataSource);
@@ -117,9 +113,10 @@ public final class ConfigurationService {
      *
      * @param config orchestration master-slave configuration
      */
-    public void persistMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config) {
+    public void persistMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config, final MasterSlaveDataSource masterSlaveDataSource) {
         persistMasterSlaveRuleConfiguration(config.getMasterSlaveRuleConfiguration(), config.isOverwrite());
         persistDataSourceConfiguration(config.getDataSourceMap(), config.isOverwrite());
+        addMasterSlaveConfigurationChangeListener(masterSlaveDataSource);
     }
     
     private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration config, final boolean isOverwrite) {
@@ -128,12 +125,7 @@ public final class ConfigurationService {
         }
     }
     
-    /**
-     * Add sharding configuration change listener.
-     *
-     * @param masterSlaveDataSource master-slave datasource
-     */
-    public void addMasterSlaveConfigurationChangeListener(final MasterSlaveDataSource masterSlaveDataSource) {
+    private void addMasterSlaveConfigurationChangeListener(final MasterSlaveDataSource masterSlaveDataSource) {
         addMasterSlaveConfigurationChangeListener(ConfigurationNode.DATA_SOURCE_NODE_PATH, masterSlaveDataSource);
         addMasterSlaveConfigurationChangeListener(ConfigurationNode.MASTER_SLAVE_NODE_PATH, masterSlaveDataSource);
     }
