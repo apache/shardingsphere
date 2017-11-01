@@ -18,14 +18,16 @@
 package io.shardingjdbc.orchestration.api;
 
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.orchestration.api.config.OrchestrationMasterSlaveConfiguration;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Orchestration master slave data source factory.
@@ -38,14 +40,18 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
     
     /**
      * Create sharding data source.
-     *
-     * @param config orchestration master slave configuration
+     * 
+     * @param dataSourceMap data source map
+     * @param masterSlaveRuleConfig master-slave rule configuration
+     * @param orchestrationConfig orchestration master slave configuration
+     * 
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
-        MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getMasterSlaveRuleConfiguration());
-        new OrchestrationFacade(config.getName(), config.getRegistryCenter()).initMasterSlaveOrchestration(config, result);
+    public static DataSource createDataSource(
+            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig);
+        new OrchestrationFacade(orchestrationConfig).initMasterSlaveOrchestration(dataSourceMap, masterSlaveRuleConfig, result);
         return result;
     }
 }

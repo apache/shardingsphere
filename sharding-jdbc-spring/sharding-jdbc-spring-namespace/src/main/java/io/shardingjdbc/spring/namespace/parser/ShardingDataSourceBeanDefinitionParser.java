@@ -157,11 +157,6 @@ public class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDefiniti
         return result;
     }
     
-    private BeanDefinition parseDefaultStrategyConfig(final Element element, final String attr) {
-        Element strategyElement = DomUtils.getChildElementByTagName(element, attr);
-        return null == strategyElement ? null : ShardingStrategyBeanDefinition.getBeanDefinitionByElement(strategyElement);
-    }
-    
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
         Element propsElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);

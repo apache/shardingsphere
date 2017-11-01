@@ -18,14 +18,16 @@
 package io.shardingjdbc.orchestration.api;
 
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
+import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -40,25 +42,33 @@ public final class OrchestrationShardingDataSourceFactory {
     /**
      * Create sharding data source.
      *
-     * @param config orchestration sharding configuration
+     * @param dataSourceMap data source map
+     * @param shardingRuleConfig sharding rule configuration
+     * @param orchestrationConfig orchestration master slave configuration
+     * 
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final OrchestrationShardingConfiguration config) throws SQLException {
-        return createDataSource(config, new Properties());
+    public static DataSource createDataSource(
+            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        return createDataSource(dataSourceMap, shardingRuleConfig, orchestrationConfig, new Properties());
     }
     
     /**
      * Create sharding data source.
      *
-     * @param config orchestration sharding configuration
+     * @param dataSourceMap data source map
+     * @param shardingRuleConfig sharding rule configuration
+     * @param orchestrationConfig orchestration master slave configuration
      * @param props properties for data source
+     * 
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
-        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig());
-        new OrchestrationFacade(config.getName(), config.getRegistryCenter()).initShardingOrchestration(config, props, result);
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, 
+                                              final ShardingRuleConfiguration shardingRuleConfig, final OrchestrationConfiguration orchestrationConfig, final Properties props) throws SQLException {
+        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
+        new OrchestrationFacade(orchestrationConfig).initShardingOrchestration(dataSourceMap, shardingRuleConfig, props, result);
         return result;
     }
 }

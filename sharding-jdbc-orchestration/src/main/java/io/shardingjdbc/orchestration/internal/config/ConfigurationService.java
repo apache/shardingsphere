@@ -22,8 +22,7 @@ import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.orchestration.api.config.OrchestrationMasterSlaveConfiguration;
-import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
@@ -45,44 +44,49 @@ import java.util.Properties;
  */
 public final class ConfigurationService {
     
-    private final CoordinatorRegistryCenter regCenter;
-    
     private final ConfigurationNode configNode;
     
-    public ConfigurationService(final String name, final CoordinatorRegistryCenter regCenter) {
-        this.regCenter = regCenter;
-        configNode = new ConfigurationNode(name);
+    private final CoordinatorRegistryCenter regCenter;
+    
+    private final boolean isOverwrite;
+    
+    public ConfigurationService(final OrchestrationConfiguration config) {
+        configNode = new ConfigurationNode(config.getName());
+        regCenter = config.getRegistryCenter();
+        isOverwrite = config.isOverwrite();
     }
     
     /**
      * Persist sharding configuration.
      *
-     * @param config orchestration sharding configuration
+     * @param dataSourceMap data source map
+     * @param shardingRuleConfig sharding rule configuration
      * @param props sharding properties
      * @param shardingDataSource sharding datasource
      */
-    public void persistShardingConfiguration(final OrchestrationShardingConfiguration config, final Properties props, final ShardingDataSource shardingDataSource) {
-        persistDataSourceConfiguration(config.getDataSourceMap(), config.isOverwrite());
-        persistShardingRuleConfiguration(config.getShardingRuleConfig(), config.isOverwrite());
-        persistShardingProperties(props, config.isOverwrite());
+    public void persistShardingConfiguration(
+            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props, final ShardingDataSource shardingDataSource) {
+        persistDataSourceConfiguration(dataSourceMap);
+        persistShardingRuleConfiguration(shardingRuleConfig);
+        persistShardingProperties(props);
         addShardingConfigurationChangeListener(shardingDataSource);
     }
     
-    private void persistShardingRuleConfiguration(final ShardingRuleConfiguration config, final boolean isOverwrite) {
-        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH))) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH), ShardingRuleConfigurationConverter.toJson(config));
-        }
-    }
-    
-    private void persistShardingProperties(final Properties props, final boolean isOverwrite) {
-        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH))) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH), GsonFactory.getGson().toJson(props));
-        }
-    }
-    
-    private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
+    private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap) {
         if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH))) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceJsonConverter.toJson(dataSourceMap));
+        }
+    }
+    
+    private void persistShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig) {
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH), ShardingRuleConfigurationConverter.toJson(shardingRuleConfig));
+        }
+    }
+    
+    private void persistShardingProperties(final Properties props) {
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH), GsonFactory.getGson().toJson(props));
         }
     }
     
@@ -112,18 +116,20 @@ public final class ConfigurationService {
     /**
      * Persist master-slave configuration.
      *
-     * @param config orchestration master-slave configuration
+     * @param dataSourceMap data source map
+     * @param masterSlaveRuleConfig master-slave rule configuration
      * @param masterSlaveDataSource master-slave datasource
      */
-    public void persistMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config, final MasterSlaveDataSource masterSlaveDataSource) {
-        persistDataSourceConfiguration(config.getDataSourceMap(), config.isOverwrite());
-        persistMasterSlaveRuleConfiguration(config.getMasterSlaveRuleConfiguration(), config.isOverwrite());
+    public void persistMasterSlaveConfiguration(
+            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final MasterSlaveDataSource masterSlaveDataSource) {
+        persistDataSourceConfiguration(dataSourceMap);
+        persistMasterSlaveRuleConfiguration(masterSlaveRuleConfig);
         addMasterSlaveConfigurationChangeListener(masterSlaveDataSource);
     }
     
-    private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration config, final boolean isOverwrite) {
+    private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH))) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH), GsonFactory.getGson().toJson(config));
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH), GsonFactory.getGson().toJson(masterSlaveRuleConfig));
         }
     }
     

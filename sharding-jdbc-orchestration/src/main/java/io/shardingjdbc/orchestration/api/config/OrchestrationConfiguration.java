@@ -17,30 +17,22 @@
 
 package io.shardingjdbc.orchestration.api.config;
 
-import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
-import java.util.Map;
-
 /**
- * Orchestration master slave configuration.
+ * Orchestration configuration.
  *
- * @author caohao
+ * @author zhagliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class OrchestrationMasterSlaveConfiguration {
+public final class OrchestrationConfiguration {
     
     private final String name;
     
-    private final boolean overwrite;
-    
     private final CoordinatorRegistryCenter registryCenter;
     
-    private final Map<String, DataSource> dataSourceMap;
-    
-    private final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
+    private final boolean overwrite;
 }

@@ -52,7 +52,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         factory.addConstructorArgReference(regCenter);
         factory.addConstructorArgValue(parseDataSources(element, parserContext));
         factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element, parserContext));
-        factory.setInitMethodName("initShardingOrchestration");
+        factory.setInitMethodName("init");
         return factory.getBeanDefinition();
     }
     
@@ -98,15 +98,6 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     
     private List<String> parseSlaveDataSources(final Element element) {
         return Splitter.on(",").trimResults().splitToList(element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE));
-    }
-    
-    private Map<String, BeanDefinition> parseSlaveDataSourcesBeanDefinition(final Element element, final ParserContext parserContext) {
-        List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE));
-        Map<String, BeanDefinition> result = new ManagedMap<>(slaveDataSources.size());
-        for (String each : slaveDataSources) {
-            result.put(each, parserContext.getRegistry().getBeanDefinition(each));
-        }
-        return result;
     }
     
     private String parseStrategyRef(final Element element) {

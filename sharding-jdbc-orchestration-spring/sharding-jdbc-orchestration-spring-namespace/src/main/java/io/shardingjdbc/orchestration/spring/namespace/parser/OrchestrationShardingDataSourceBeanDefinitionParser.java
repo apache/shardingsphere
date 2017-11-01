@@ -57,7 +57,7 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
         factory.addConstructorArgValue(parseDataSources(element, parserContext));
         factory.addConstructorArgValue(parseShardingRuleConfig(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
-        factory.setInitMethodName("initShardingOrchestration");
+        factory.setInitMethodName("init");
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
     }
@@ -159,11 +159,6 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
             result.add(bindingTableRuleElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.LOGIC_TABLES_ATTRIBUTE));
         }
         return result;
-    }
-    
-    private BeanDefinition parseDefaultStrategyConfig(final Element element, final String attr) {
-        Element strategyElement = DomUtils.getChildElementByTagName(element, attr);
-        return null == strategyElement ? null : ShardingStrategyBeanDefinition.getBeanDefinitionByElement(strategyElement);
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {

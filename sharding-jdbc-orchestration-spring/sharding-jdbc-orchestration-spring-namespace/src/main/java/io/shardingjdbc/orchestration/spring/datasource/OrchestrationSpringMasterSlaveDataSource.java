@@ -19,9 +19,8 @@ package io.shardingjdbc.orchestration.spring.datasource;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.orchestration.api.config.OrchestrationMasterSlaveConfiguration;
-import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingjdbc.orchestration.internal.state.InstanceStateService;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Setter;
 import org.springframework.context.ApplicationContext;
@@ -38,29 +37,28 @@ import java.util.Map;
  */
 public class OrchestrationSpringMasterSlaveDataSource extends MasterSlaveDataSource implements ApplicationContextAware {
     
-    private final ConfigurationService configurationService;
+    private final OrchestrationConfiguration config;
     
-    private final InstanceStateService instanceStateService;
+    private final Map<String, DataSource> dataSourceMap;
     
-    private final OrchestrationMasterSlaveConfiguration config;
+    private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
     
     @Setter
     private ApplicationContext applicationContext;
     
     public OrchestrationSpringMasterSlaveDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter registryCenter, 
-                                                    final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration config) throws SQLException {
-        super(config.build(dataSourceMap));
-        this.config = new OrchestrationMasterSlaveConfiguration(name, overwrite, registryCenter, dataSourceMap, config);
-        configurationService = new ConfigurationService(name, registryCenter);
-        instanceStateService = new InstanceStateService(name, registryCenter);
+                                                    final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
+        super(masterSlaveRuleConfig.build(dataSourceMap));
+        this.dataSourceMap = dataSourceMap;
+        this.masterSlaveRuleConfig = masterSlaveRuleConfig;
+        config = new OrchestrationConfiguration(name, registryCenter, overwrite);
     }
     
     /**
-     * initial orchestration spring master-slave data source.
+     * Initial all orchestration actions for master-slave data source.
      */
     public void init() {
-        configurationService.persistMasterSlaveConfiguration(config, this);
-        instanceStateService.persistMasterSlaveInstanceOnline(this);
+        new OrchestrationFacade(config).initMasterSlaveOrchestration(dataSourceMap, masterSlaveRuleConfig, this);
     }
     
 //    @Override

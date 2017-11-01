@@ -19,6 +19,7 @@ package io.shardingjdbc.orchestration.internal.state;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
@@ -46,10 +47,10 @@ public final class InstanceStateService {
     
     private final ConfigurationService configurationService;
     
-    public InstanceStateService(final String name, final CoordinatorRegistryCenter regCenter) {
-        this.regCenter = regCenter;
-        instanceStateNode = new InstanceStateNode(name);
-        configurationService = new ConfigurationService(name, regCenter);
+    public InstanceStateService(final OrchestrationConfiguration config) {
+        instanceStateNode = new InstanceStateNode(config.getName());
+        regCenter = config.getRegistryCenter();
+        configurationService = new ConfigurationService(config);
     }
     
     /**
