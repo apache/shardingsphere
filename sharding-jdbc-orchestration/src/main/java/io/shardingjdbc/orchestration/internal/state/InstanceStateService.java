@@ -57,12 +57,22 @@ public final class InstanceStateService {
         this.name = name;
     }
     
+    /**
+     * Add sharding state.
+     *
+     * @param shardingDataSource sharding datasource
+     */
     public void addShardingState(final ShardingDataSource shardingDataSource) throws SQLException {
         String instanceNodePath = "/" + name + InstanceStateNode.ROOT + new InstanceStateNode().getInstanceId();
         persistState(instanceNodePath);
         addShardingInstancesStateChangeListener(instanceNodePath, shardingDataSource);
     }
     
+    /**
+     * Add master salve state.
+     *
+     * @param masterSlaveDataSource master-slave datasource
+     */
     public void addMasterSlaveState(final MasterSlaveDataSource masterSlaveDataSource) throws SQLException {
         String instanceNodePath = "/" + name + InstanceStateNode.ROOT + new InstanceStateNode().getInstanceId();
         persistState(instanceNodePath);

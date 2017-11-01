@@ -39,15 +39,17 @@ public class OrchestrationShardingDataSource {
     
     public OrchestrationShardingDataSource(final OrchestrationShardingConfiguration config) throws SQLException {
         config.getRegistryCenter().init();
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).persistShardingConfiguration(config, new Properties());
         dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig());
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, new Properties(), dataSource);
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfigurationChangeListener(config.getName(), config.getRegistryCenter(), dataSource);
         new InstanceStateService(config.getRegistryCenter(), config.getName()).addShardingState(dataSource);
     }
     
     public OrchestrationShardingDataSource(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
         config.getRegistryCenter().init();
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).persistShardingConfiguration(config, props);
         dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig(), props);
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, props, dataSource);
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfigurationChangeListener(config.getName(), config.getRegistryCenter(), dataSource);
         new InstanceStateService(config.getRegistryCenter(), config.getName()).addShardingState(dataSource);
     }
 }

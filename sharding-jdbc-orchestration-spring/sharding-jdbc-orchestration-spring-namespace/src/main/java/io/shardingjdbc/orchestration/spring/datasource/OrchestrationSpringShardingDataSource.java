@@ -46,7 +46,8 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource im
                                                  final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
         super(shardingRuleConfig.build(dataSourceMap), props);
         OrchestrationShardingConfiguration config = new OrchestrationShardingConfiguration(name, overwrite, registryCenter, dataSourceMap, shardingRuleConfig);
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfiguration(config, props, this);
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).persistShardingConfiguration(config, props);
+        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfigurationChangeListener(config.getName(), config.getRegistryCenter(), this);
         new InstanceStateService(config.getRegistryCenter(), config.getName()).addShardingState(this);
     }
 //    
