@@ -11,6 +11,7 @@
         <module>sharding-jdbc-spring</module>
         <module>sharding-jdbc-transaction-parent</module>
         <module>sharding-jdbc-orchestration</module>
+        <module>sharding-jdbc-orchestration-spring</module>
     </modules>
     
     <properties>
@@ -21,6 +22,7 @@
         
         <lombok.version>1.16.4</lombok.version>
         <guava.version>18.0</guava.version>
+        <common-lang3>3.6</common-lang3>
         <commons-pool.version>1.6</commons-pool.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <gson.version>2.6.1</gson.version>
@@ -95,6 +97,11 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${common-lang3}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.curator</groupId>

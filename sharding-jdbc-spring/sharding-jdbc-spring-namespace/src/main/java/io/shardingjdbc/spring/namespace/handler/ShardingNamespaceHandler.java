@@ -17,10 +17,10 @@
 
 package io.shardingjdbc.spring.namespace.handler;
 
-import io.shardingjdbc.spring.namespace.constants.ShardingJdbcDataSourceBeanDefinitionParserTag;
-import io.shardingjdbc.spring.namespace.constants.ShardingJdbcStrategyBeanDefinitionParserTag;
-import io.shardingjdbc.spring.namespace.parser.ShardingJdbcDataSourceBeanDefinitionParser;
-import io.shardingjdbc.spring.namespace.parser.ShardingJdbcStrategyBeanDefinitionParser;
+import io.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
+import io.shardingjdbc.spring.namespace.constants.ShardingStrategyBeanDefinitionParserTag;
+import io.shardingjdbc.spring.namespace.parser.ShardingDataSourceBeanDefinitionParser;
+import io.shardingjdbc.spring.namespace.parser.ShardingStrategyBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -33,11 +33,11 @@ public final class ShardingNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(ShardingJdbcStrategyBeanDefinitionParserTag.STANDARD_STRATEGY_ROOT_TAG, new ShardingJdbcStrategyBeanDefinitionParser());
-        registerBeanDefinitionParser(ShardingJdbcStrategyBeanDefinitionParserTag.COMPLEX_STRATEGY_ROOT_TAG, new ShardingJdbcStrategyBeanDefinitionParser());
-        registerBeanDefinitionParser(ShardingJdbcStrategyBeanDefinitionParserTag.INLINE_STRATEGY_ROOT_TAG, new ShardingJdbcStrategyBeanDefinitionParser());
-        registerBeanDefinitionParser(ShardingJdbcStrategyBeanDefinitionParserTag.HINT_STRATEGY_ROOT_TAG, new ShardingJdbcStrategyBeanDefinitionParser());
-        registerBeanDefinitionParser(ShardingJdbcStrategyBeanDefinitionParserTag.NONE_STRATEGY_ROOT_TAG, new ShardingJdbcStrategyBeanDefinitionParser());
-        registerBeanDefinitionParser(ShardingJdbcDataSourceBeanDefinitionParserTag.ROOT_TAG, new ShardingJdbcDataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.STANDARD_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.COMPLEX_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.INLINE_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.HINT_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.NONE_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG, new ShardingDataSourceBeanDefinitionParser());
     }
 }

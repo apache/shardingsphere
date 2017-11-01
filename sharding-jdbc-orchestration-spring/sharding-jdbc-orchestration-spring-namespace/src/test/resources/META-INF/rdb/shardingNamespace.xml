@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding" 
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding 
+                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd 
+                        ">
+    <import resource="regCenter.xml" />
+    <import resource="datasource/dataSource.xml" />
+    
+    <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" 
+        precise-algorithm-class="io.shardingjdbc.orchestration.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    
+    <sharding:standard-strategy id="rangeStandardStrategy" sharding-column="order_id" 
+        precise-algorithm-class="io.shardingjdbc.orchestration.spring.algorithm.PreciseModuloTableShardingAlgorithm" 
+        range-algorithm-class="io.shardingjdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm"/>
+    
+    <sharding:complex-strategy id="complexStrategy" sharding-columns="order_id,user_id" 
+        algorithm-class="io.shardingjdbc.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm"/>
+    
+    <sharding:inline-strategy id="inlineStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 4}" />
+    
+    <sharding:hint-strategy id="hintStrategy" algorithm-class="io.shardingjdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorithm" />
+    
+    <sharding:none-strategy id="noneStrategy" />
+    
+    <sharding:data-source id="tableRuleWithAttributesDataSource" registry-center-ref="regCenter">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" generate-key-column="order_id" column-key-generator-class="io.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+    
+    <sharding:data-source id="simpleShardingDataSource" registry-center-ref="regCenter">
+        <sharding:sharding-rule data-source-names="dbtbl_0">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+    
+    <sharding:data-source id="shardingRuleWithAttributesDataSource" registry-center-ref="regCenter">
+        <sharding:sharding-rule 
+            data-source-names="dbtbl_0,dbtbl_1" 
+            default-data-source-name="dbtbl_0" 
+            default-database-strategy-ref="standardStrategy" 
+            default-table-strategy-ref="inlineStrategy" 
+            key-generator-class="io.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+    
+    <sharding:data-source id="multiTableRulesDataSource" registry-center-ref="regCenter">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" />
+                <sharding:table-rule logic-table="t_order_item" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+    
+    <sharding:data-source id="bindingTableRuleDatasource" registry-center-ref="regCenter">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" >
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" />
+                <sharding:table-rule logic-table="t_order_item" />
+            </sharding:table-rules>
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+            </sharding:binding-table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+    
+    <sharding:data-source id="multiBindingTableRulesDatasource" registry-center-ref="regCenter">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" >
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" />
+                <sharding:table-rule logic-table="t_order_item" />
+                <sharding:table-rule logic-table="t_user" />
+                <sharding:table-rule logic-table="t_user_detail" />
+            </sharding:table-rules>
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+                <sharding:binding-table-rule logic-tables="t_user, t_user_detail" />
+            </sharding:binding-table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+    
+    <sharding:data-source id="propsDataSource" registry-center-ref="regCenter">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+        <sharding:props>
+            <prop key="sql.show">${sql_show}</prop>
+            <prop key="executor.size">10</prop>
+            <prop key="foo">bar</prop>
+        </sharding:props>
+    </sharding:data-source>
+</beans>

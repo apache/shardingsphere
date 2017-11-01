@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:reg="http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg 
+                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg/reg.xsd
+                        ">
+    <reg:zookeeper id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+</beans>

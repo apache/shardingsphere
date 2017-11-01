@@ -1,0 +1,3 @@
+http\://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd=META-INF/namespace/sharding.xsd
+http\://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave/master-slave.xsd=META-INF/namespace/master-slave.xsd
+http\://shardingjdbc.io/schema/shardingjdbc/orchestration/reg/reg.xsd=META-INF/namespace/reg.xsd

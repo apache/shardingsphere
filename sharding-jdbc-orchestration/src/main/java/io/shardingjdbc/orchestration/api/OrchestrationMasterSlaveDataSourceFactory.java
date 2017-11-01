@@ -17,83 +17,31 @@
 
 package io.shardingjdbc.orchestration.api;
 
-import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
-import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.orchestration.json.DataSourceJsonConverter;
-import io.shardingjdbc.orchestration.json.GsonFactory;
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import com.google.common.base.Charsets;
+import io.shardingjdbc.orchestration.api.config.OrchestrationMasterSlaveConfiguration;
+import io.shardingjdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Map;
 
 /**
  * Orchestration master slave data source factory.
  * 
  * @author zhangliang 
+ * @author caohao  
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrchestrationMasterSlaveDataSourceFactory {
     
     /**
      * Create sharding data source.
-     * 
-     * @param name name of sharding data source
-     * @param registryCenter registry center
-     * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig rule configuration for databases and tables sharding
+     *
+     * @param config orchestration master slave configuration
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final String name, final CoordinatorRegistryCenter registryCenter, 
-                                              final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
-        initRegistryCenter(name, registryCenter, dataSourceMap, masterSlaveRuleConfig);
-        MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig);
-        addConfigurationChangeListener(name, registryCenter, result);
-        return result;
-    }
-    
-    private static void initRegistryCenter(final String name, 
-                                           final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
-        registryCenter.init();
-        registryCenter.persist("/" + name + "/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
-        registryCenter.persist("/" + name + "/config/masterslave", GsonFactory.getGson().toJson(masterSlaveRuleConfig));
-        registryCenter.addCacheData("/" + name + "/config");
-    }
-    
-    private static void addConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final MasterSlaveDataSource masterSlaveDataSource) {
-        TreeCache cache = (TreeCache) registryCenter.getRawCache("/" + name + "/config");
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
-            @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || null == childData.getData()) {
-                    return;
-                }
-                String path = childData.getPath();
-                if (path.isEmpty()) {
-                    return;
-                }
-                if (("/" + name + "/config/datasource").equals(path)) {
-                    Map<String, DataSource> newDataSourceMap = DataSourceJsonConverter.fromJson(new String(childData.getData(), Charsets.UTF_8));
-                    MasterSlaveRuleConfiguration masterSlaveRuleConfig = GsonFactory.getGson().fromJson(registryCenter.get("/" + name + "/config/masterslave"), MasterSlaveRuleConfiguration.class);
-                    masterSlaveDataSource.renew(masterSlaveRuleConfig.build(newDataSourceMap));
-                } else if (("/" + name + "/config/masterslave").equals(path)) {
-                    MasterSlaveRuleConfiguration newMasterSlaveRuleConfig = GsonFactory.getGson().fromJson(new String(childData.getData(), Charsets.UTF_8), MasterSlaveRuleConfiguration.class);
-                    Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
-                    masterSlaveDataSource.renew(newMasterSlaveRuleConfig.build(dataSourceMap));
-                }
-            }
-        });
+    public static DataSource createDataSource(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
+        return new OrchestrationMasterSlaveDataSource(config).getDataSource();
     }
 }

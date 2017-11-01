@@ -7,6 +7,7 @@
 ### 缺陷修正
 
 1. [ISSUE #404](https://github.com/shardingjdbc/sharding-jdbc/issues/404) sharding-jdbc-spring-boot-starter不支持HikariDataSource
+1. [ISSUE #419](https://github.com/shardingjdbc/sharding-jdbc/issues/419) SQL改写时, 未判断别名是否为关键字未加转义符导致了SQL异常
 
 ## 2.0.0.M1
 

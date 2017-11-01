@@ -83,7 +83,7 @@ public final class ParsingSQLRouter implements SQLRouter {
             processGeneratedKey(parameters, (InsertStatement) sqlStatement, result);
         }
         RoutingResult routingResult = route(parameters, sqlStatement);
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, sqlStatement);
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement);
         boolean isSingleRouting = routingResult.isSingleRouting();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
             processLimit(parameters, (SelectStatement) sqlStatement, isSingleRouting);
