@@ -45,10 +45,6 @@ public class OrchestrationShardingDataSource {
     
     private final InstanceStateService instanceStateService;
     
-    public OrchestrationShardingDataSource(final OrchestrationShardingConfiguration config) throws SQLException {
-        this(config, new Properties());
-    }
-    
     public OrchestrationShardingDataSource(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
         config.getRegistryCenter().init();
         this.config = config;
