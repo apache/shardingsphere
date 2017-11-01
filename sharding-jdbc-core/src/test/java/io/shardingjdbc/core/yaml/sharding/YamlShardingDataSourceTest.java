@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.yaml.sharding;
 
+import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
@@ -75,14 +76,14 @@ public class YamlShardingDataSourceTest {
     }
     
     private ShardingRule getShardingRule(final String fileName) throws NoSuchFieldException, IllegalAccessException, URISyntaxException, IOException, SQLException {
-        return getShardingRule(new YamlShardingDataSource(new File(getClass().getResource(fileName).toURI())));
+        return getShardingRule(ShardingDataSourceFactory.createDataSource(new File(getClass().getResource(fileName).toURI())));
     }
     
     private ShardingRule getShardingRule(final Map<String, DataSource> dataSourceMap, final String fileName) throws ReflectiveOperationException, URISyntaxException, IOException, SQLException {
-        return getShardingRule(new YamlShardingDataSource(dataSourceMap, new File(getClass().getResource(fileName).toURI())));
+        return getShardingRule(ShardingDataSourceFactory.createDataSource(dataSourceMap, new File(getClass().getResource(fileName).toURI())));
     }
     
-    private ShardingRule getShardingRule(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
+    private ShardingRule getShardingRule(final DataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
         Field field = ShardingDataSource.class.getDeclaredField("shardingContext");
         field.setAccessible(true);
         ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);
