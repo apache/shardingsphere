@@ -29,6 +29,7 @@ import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
@@ -44,17 +45,13 @@ import java.util.Properties;
  * 
  * @author caohao
  */
+@RequiredArgsConstructor
 @Getter
 public final class InstanceStateService {
     
     private final String name;
     
     private final CoordinatorRegistryCenter registryCenter;
-    
-    public InstanceStateService(final CoordinatorRegistryCenter regCenter, final String name) {
-        this.registryCenter = regCenter;
-        this.name = name;
-    }
     
     /**
      * Add sharding state.

@@ -28,15 +28,15 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
  */
 public final class DataNodeStorage {
     
-    private final CoordinatorRegistryCenter regCenter;
-    
     private final String name;
+    
+    private final CoordinatorRegistryCenter regCenter;
     
     private final DataNodePath nodePath;
     
-    public DataNodeStorage(final CoordinatorRegistryCenter regCenter, final String name) {
-        this.regCenter = regCenter;
+    public DataNodeStorage(final String name, final CoordinatorRegistryCenter regCenter) {
         this.name = name;
+        this.regCenter = regCenter;
         nodePath = new DataNodePath(name);
     }
     

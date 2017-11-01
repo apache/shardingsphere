@@ -48,7 +48,7 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource im
     
     private final InstanceStateService instanceStateService;
     
-    private final OrchestrationShardingConfiguration orchestrationShardingConfig;
+    private final OrchestrationShardingConfiguration config;
     
     private final Properties props;
     
@@ -58,9 +58,9 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource im
     public OrchestrationSpringShardingDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, 
                                                  final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
         super(shardingRuleConfig.build(dataSourceMap), props);
-        configurationService = new ConfigurationService(registryCenter, name);
-        instanceStateService = new InstanceStateService(registryCenter, name);
-        orchestrationShardingConfig = new OrchestrationShardingConfiguration(
+        configurationService = new ConfigurationService(name, registryCenter);
+        instanceStateService = new InstanceStateService(name, registryCenter);
+        config = new OrchestrationShardingConfiguration(
                 name, overwrite, registryCenter, getActualDataSourceMapAndReviseShardingRuleConfiguration(dataSourceMap, shardingRuleConfig), shardingRuleConfig);
         this.props = props;
     }
@@ -69,8 +69,8 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource im
      * initial orchestration spring sharding data source.
      */
     public void init() {
-        configurationService.persistShardingConfiguration(orchestrationShardingConfig, props);
-        configurationService.addShardingConfigurationChangeListener(orchestrationShardingConfig.getName(), orchestrationShardingConfig.getRegistryCenter(), this);
+        configurationService.persistShardingConfiguration(config, props);
+        configurationService.addShardingConfigurationChangeListener(config.getName(), config.getRegistryCenter(), this);
         instanceStateService.addShardingState(this);
     }
     

@@ -34,12 +34,27 @@ import java.sql.SQLException;
 @Getter
 public class OrchestrationMasterSlaveDataSource {
     
-    private MasterSlaveDataSource dataSource;
+    private final OrchestrationMasterSlaveConfiguration config;
+    
+    private final MasterSlaveDataSource dataSource;
+    
+    private final ConfigurationService configurationService;
+    
+    private final InstanceStateService instanceStateService;
     
     public OrchestrationMasterSlaveDataSource(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
         config.getRegistryCenter().init();
+        this.config = config;
         dataSource = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getMasterSlaveRuleConfiguration());
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).addMasterSlaveConfiguration(config, dataSource);
-        new InstanceStateService(config.getRegistryCenter(), config.getName()).addMasterSlaveState(dataSource);
+        configurationService = new ConfigurationService(config.getName(), config.getRegistryCenter());
+        instanceStateService = new InstanceStateService(config.getName(), config.getRegistryCenter());
+    }
+    
+    /**
+     * Initial orchestration master-slave data source.
+     */
+    public void init() {
+        configurationService.addMasterSlaveConfiguration(config, dataSource);
+        instanceStateService.addMasterSlaveState(dataSource);
     }
 }

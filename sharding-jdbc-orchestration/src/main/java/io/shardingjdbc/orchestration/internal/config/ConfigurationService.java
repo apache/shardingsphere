@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Data configuration service.
+ * configuration service.
  * 
  * @author caohao
  */
@@ -48,8 +48,8 @@ public final class ConfigurationService {
     
     private final DataNodeStorage dataNodeStorage;
     
-    public ConfigurationService(final CoordinatorRegistryCenter regCenter, final String name) {
-        dataNodeStorage = new DataNodeStorage(regCenter, name);
+    public ConfigurationService(final String name, final CoordinatorRegistryCenter regCenter) {
+        dataNodeStorage = new DataNodeStorage(name, regCenter);
     }
     
     /**

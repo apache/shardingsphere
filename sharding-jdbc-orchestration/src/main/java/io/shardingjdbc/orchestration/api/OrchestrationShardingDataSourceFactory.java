@@ -43,7 +43,7 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationShardingConfiguration config) throws SQLException {
-        return new OrchestrationShardingDataSource(config).getDataSource();
+        return createDataSource(config, new Properties());
     }
     
     /**
@@ -55,6 +55,8 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
-        return new OrchestrationShardingDataSource(config, props).getDataSource();
+        OrchestrationShardingDataSource orchestrationShardingDataSource = new OrchestrationShardingDataSource(config, props);
+        orchestrationShardingDataSource.init();
+        return orchestrationShardingDataSource.getDataSource();
     }
 }

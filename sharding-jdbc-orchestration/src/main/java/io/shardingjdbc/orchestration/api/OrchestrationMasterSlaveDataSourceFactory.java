@@ -42,6 +42,8 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
-        return new OrchestrationMasterSlaveDataSource(config).getDataSource();
+        OrchestrationMasterSlaveDataSource orchestrationMasterSlaveDataSource = new OrchestrationMasterSlaveDataSource(config);
+        orchestrationMasterSlaveDataSource.init();
+        return orchestrationMasterSlaveDataSource.getDataSource();
     }
 }

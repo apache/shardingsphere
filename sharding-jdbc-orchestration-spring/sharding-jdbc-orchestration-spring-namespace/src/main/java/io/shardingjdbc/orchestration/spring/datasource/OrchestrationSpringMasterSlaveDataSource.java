@@ -44,24 +44,24 @@ public class OrchestrationSpringMasterSlaveDataSource extends MasterSlaveDataSou
     
     private final InstanceStateService instanceStateService;
     
-    private final OrchestrationMasterSlaveConfiguration orchestrationMasterSlaveConfig;
+    private final OrchestrationMasterSlaveConfiguration config;
     
     @Setter
     private ApplicationContext applicationContext;
     
-    public OrchestrationSpringMasterSlaveDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap,
-                                                    final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
-        super(masterSlaveRuleConfig.build(dataSourceMap));
-        orchestrationMasterSlaveConfig = new OrchestrationMasterSlaveConfiguration(name, overwrite, registryCenter, dataSourceMap, masterSlaveRuleConfig);
-        configurationService = new ConfigurationService(registryCenter, name);
-        instanceStateService = new InstanceStateService(registryCenter, name);
+    public OrchestrationSpringMasterSlaveDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter registryCenter, 
+                                                    final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration config) throws SQLException {
+        super(config.build(dataSourceMap));
+        this.config = new OrchestrationMasterSlaveConfiguration(name, overwrite, registryCenter, dataSourceMap, config);
+        configurationService = new ConfigurationService(name, registryCenter);
+        instanceStateService = new InstanceStateService(name, registryCenter);
     }
     
     /**
      * initial orchestration spring master-slave data source.
      */
     public void init() {
-        configurationService.addMasterSlaveConfiguration(orchestrationMasterSlaveConfig, this);
+        configurationService.addMasterSlaveConfiguration(config, this);
         instanceStateService.addMasterSlaveState(this);
     }
     

@@ -35,21 +35,35 @@ import java.util.Properties;
 @Getter
 public class OrchestrationShardingDataSource {
     
-    private ShardingDataSource dataSource;
+    private final OrchestrationShardingConfiguration config;
+    
+    private final Properties props;
+    
+    private final ShardingDataSource dataSource;
+    
+    private final ConfigurationService configurationService;
+    
+    private final InstanceStateService instanceStateService;
     
     public OrchestrationShardingDataSource(final OrchestrationShardingConfiguration config) throws SQLException {
-        config.getRegistryCenter().init();
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).persistShardingConfiguration(config, new Properties());
-        dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig());
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfigurationChangeListener(config.getName(), config.getRegistryCenter(), dataSource);
-        new InstanceStateService(config.getRegistryCenter(), config.getName()).addShardingState(dataSource);
+        this(config, new Properties());
     }
     
     public OrchestrationShardingDataSource(final OrchestrationShardingConfiguration config, final Properties props) throws SQLException {
         config.getRegistryCenter().init();
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).persistShardingConfiguration(config, props);
-        dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig(), props);
-        new ConfigurationService(config.getRegistryCenter(), config.getName()).addShardingConfigurationChangeListener(config.getName(), config.getRegistryCenter(), dataSource);
-        new InstanceStateService(config.getRegistryCenter(), config.getName()).addShardingState(dataSource);
+        this.config = config;
+        this.props = props;
+        dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(config.getDataSourceMap(), config.getShardingRuleConfig());
+        configurationService = new ConfigurationService(config.getName(), config.getRegistryCenter());
+        instanceStateService = new InstanceStateService(config.getName(), config.getRegistryCenter());
+    }
+    
+    /**
+     * Initial orchestration master-slave data source.
+     */
+    public void init() {
+        configurationService.persistShardingConfiguration(config, new Properties());
+        configurationService.addShardingConfigurationChangeListener(config.getName(), config.getRegistryCenter(), dataSource);
+        instanceStateService.addShardingState(dataSource);
     }
 }
