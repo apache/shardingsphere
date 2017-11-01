@@ -54,13 +54,13 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource im
     @Setter
     private ApplicationContext applicationContext;
     
-    public OrchestrationSpringShardingDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter registryCenter, final Map<String, DataSource> dataSourceMap, 
+    public OrchestrationSpringShardingDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter regCenter, final Map<String, DataSource> dataSourceMap, 
                                                  final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
         super(shardingRuleConfig.build(dataSourceMap), props);
-        configurationService = new ConfigurationService(name, registryCenter);
-        instanceStateService = new InstanceStateService(name, registryCenter);
+        configurationService = new ConfigurationService(name, regCenter);
+        instanceStateService = new InstanceStateService(name, regCenter);
         config = new OrchestrationShardingConfiguration(
-                name, overwrite, registryCenter, getActualDataSourceMapAndReviseShardingRuleConfiguration(dataSourceMap, shardingRuleConfig), shardingRuleConfig);
+                name, overwrite, regCenter, getActualDataSourceMapAndReviseShardingRuleConfiguration(dataSourceMap, shardingRuleConfig), shardingRuleConfig);
         this.props = props;
     }
     
