@@ -31,11 +31,13 @@ import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 
 public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
     
+    private static ConcurrentHashMap<String, IDatabaseConnection> connectionMap = new ConcurrentHashMap<>();
+    
     private String driverClass;
     
     private String connectionUrl;
     
-    private static ConcurrentHashMap<String, IDatabaseConnection> connectionMap = new ConcurrentHashMap<>();
+    private String schema;
     
     public ShardingJdbcDatabaseTester(final String driverClass, final String connectionUrl, final String username,
             final String password, final String schema) throws ClassNotFoundException {
@@ -43,6 +45,7 @@ public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
         super.setOperationListener(IOperationListener.NO_OP_OPERATION_LISTENER);
         this.driverClass = driverClass;
         this.connectionUrl = connectionUrl;
+        this.schema = schema;
     }
     
     @Override
@@ -67,10 +70,10 @@ public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
     }
     
     private IDatabaseConnection getCachedConnection() throws Exception {
-        IDatabaseConnection result = connectionMap.get(connectionUrl);
+        IDatabaseConnection result = connectionMap.get(connectionUrl + schema);
         if (null == result) {
             result = super.getConnection();
-            connectionMap.put(connectionUrl, result);
+            connectionMap.put(connectionUrl + schema, result);
         }
         return result;
     }
