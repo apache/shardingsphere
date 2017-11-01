@@ -59,7 +59,8 @@ public class OrchestrationSpringMasterSlaveDataSource extends MasterSlaveDataSou
      * initial orchestration spring master-slave data source.
      */
     public void init() {
-        configurationService.addMasterSlaveConfiguration(config, this);
+        configurationService.persistMasterSlaveConfiguration(config);
+        configurationService.addMasterSlaveConfigurationChangeListener(this);
         instanceStateService.addMasterSlaveState(this);
     }
     

@@ -18,7 +18,6 @@
 package io.shardingjdbc.orchestration.internal.state;
 
 import io.shardingjdbc.orchestration.internal.util.IpUtils;
-import lombok.Getter;
 
 import java.lang.management.ManagementFactory;
 
@@ -27,16 +26,29 @@ import java.lang.management.ManagementFactory;
  * 
  * @author caohao
  */
-@Getter
 public final class InstanceStateNode {
     
-    public static final String ROOT = "/state/instances/";
+    public static final String ROOT = "state";
+    
+    public static final String INSTANCES_NODE_PATH = ROOT + "/instances";
     
     private static final String DELIMITER = "@-@";
     
+    private final String name;
+    
     private final String instanceId;
     
-    public InstanceStateNode() {
+    public InstanceStateNode(final String name) {
+        this.name = name;
         instanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
+    }
+    
+    /**
+     * Get node full path.
+     *
+     * @return node full path
+     */
+    public String getFullPath() {
+        return String.format("/%s/%s/%s", name, INSTANCES_NODE_PATH, instanceId);
     }
 }

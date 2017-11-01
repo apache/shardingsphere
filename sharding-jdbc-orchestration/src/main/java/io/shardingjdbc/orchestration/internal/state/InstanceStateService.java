@@ -29,7 +29,6 @@ import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
@@ -45,13 +44,20 @@ import java.util.Properties;
  * 
  * @author caohao
  */
-@RequiredArgsConstructor
 @Getter
 public final class InstanceStateService {
     
-    private final String name;
+    private final ConfigurationNode configStateNode;
     
-    private final CoordinatorRegistryCenter registryCenter;
+    private final InstanceStateNode instanceStateNode;
+    
+    private final CoordinatorRegistryCenter regCenter;
+    
+    public InstanceStateService(final String name, final CoordinatorRegistryCenter regCenter) {
+        configStateNode = new ConfigurationNode(name);
+        instanceStateNode = new InstanceStateNode(name);
+        this.regCenter = regCenter;
+    }
     
     /**
      * Add sharding state.
@@ -59,7 +65,7 @@ public final class InstanceStateService {
      * @param shardingDataSource sharding datasource
      */
     public void addShardingState(final ShardingDataSource shardingDataSource) {
-        String instanceNodePath = "/" + name + InstanceStateNode.ROOT + new InstanceStateNode().getInstanceId();
+        String instanceNodePath = instanceStateNode.getFullPath();
         persistState(instanceNodePath);
         addShardingInstancesStateChangeListener(instanceNodePath, shardingDataSource);
     }
@@ -70,18 +76,18 @@ public final class InstanceStateService {
      * @param masterSlaveDataSource master-slave datasource
      */
     public void addMasterSlaveState(final MasterSlaveDataSource masterSlaveDataSource) {
-        String instanceNodePath = "/" + name + InstanceStateNode.ROOT + new InstanceStateNode().getInstanceId();
+        String instanceNodePath = instanceStateNode.getFullPath();
         persistState(instanceNodePath);
         addMasterSlaveInstancesStateChangeListener(instanceNodePath, masterSlaveDataSource);
     }
     
     private void persistState(final String instanceNodePath) {
-        registryCenter.persistEphemeral(instanceNodePath, "");
-        registryCenter.addCacheData(instanceNodePath);
+        regCenter.persistEphemeral(instanceNodePath, "");
+        regCenter.addCacheData(instanceNodePath);
     }
     
     private void addShardingInstancesStateChangeListener(final String instanceNodePath, final ShardingDataSource shardingDataSource) {
-        TreeCache cache = (TreeCache) registryCenter.getRawCache(instanceNodePath);
+        TreeCache cache = (TreeCache) regCenter.getRawCache(instanceNodePath);
         cache.getListenable().addListener(new TreeCacheListener() {
             
             @Override
@@ -94,9 +100,9 @@ public final class InstanceStateService {
                 if (path.isEmpty() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
                     return;
                 }
-                ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.fromJson(registryCenter.get("/" + name + "/" + ConfigurationNode.SHARDING_NODE_PATH));
-                Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/" + ConfigurationNode.DATA_SOURCE_NODE_PATH));
-                if (InstanceState.DISABLED.toString().equalsIgnoreCase(registryCenter.get(path))) {
+                ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.fromJson(regCenter.get(configStateNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH)));
+                Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(regCenter.get(configStateNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+                if (InstanceState.DISABLED.toString().equalsIgnoreCase(regCenter.get(path))) {
                     for (String each : dataSourceMap.keySet()) {
                         dataSourceMap.put(each, new CircuitBreakerDataSource());
                     }
@@ -108,7 +114,7 @@ public final class InstanceStateService {
     }
     
     private void addMasterSlaveInstancesStateChangeListener(final String instanceNodePath, final MasterSlaveDataSource masterSlaveDataSource) {
-        TreeCache cache = (TreeCache) registryCenter.getRawCache(instanceNodePath);
+        TreeCache cache = (TreeCache) regCenter.getRawCache(instanceNodePath);
         cache.getListenable().addListener(new TreeCacheListener() {
             
             @Override
@@ -122,8 +128,8 @@ public final class InstanceStateService {
                     return;
                 }
                 MasterSlaveRuleConfiguration masterSlaveRuleConfig = GsonFactory.getGson().fromJson(new String(childData.getData(), Charsets.UTF_8), MasterSlaveRuleConfiguration.class);
-                Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(registryCenter.get("/" + name + "/config/datasource"));
-                if ("disabled".equals(registryCenter.get(path))) {
+                Map<String, DataSource> dataSourceMap = DataSourceJsonConverter.fromJson(regCenter.get(configStateNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+                if (InstanceState.DISABLED.toString().equalsIgnoreCase(regCenter.get(path))) {
                     for (String each : dataSourceMap.keySet()) {
                         dataSourceMap.put(each, new CircuitBreakerDataSource());
                     }

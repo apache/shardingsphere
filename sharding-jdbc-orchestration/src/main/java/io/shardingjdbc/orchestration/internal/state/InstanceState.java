@@ -23,5 +23,9 @@ package io.shardingjdbc.orchestration.internal.state;
  * @author caohao
  */
 public enum InstanceState {
+    
+    /**
+     * Instance of Sharding-JDBC is disabled.
+     */
     DISABLED
 }

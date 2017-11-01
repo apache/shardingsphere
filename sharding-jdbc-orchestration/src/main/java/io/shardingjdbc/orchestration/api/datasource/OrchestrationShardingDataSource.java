@@ -59,7 +59,7 @@ public class OrchestrationShardingDataSource {
      */
     public void init() {
         configurationService.persistShardingConfiguration(config, new Properties());
-        configurationService.addShardingConfigurationChangeListener(config.getName(), config.getRegistryCenter(), dataSource);
+        configurationService.addShardingConfigurationChangeListener(dataSource);
         instanceStateService.addShardingState(dataSource);
     }
 }
