@@ -7,8 +7,8 @@ import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.util.DataSourceUtil;
-import io.shardingjdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
-import io.shardingjdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
+import io.shardingjdbc.orchestration.spring.boot.masterslave.OrchestrationSpringBootMasterSlaveRuleConfigurationProperties;
+import io.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootShardingRuleConfigurationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -29,14 +29,14 @@ import java.util.Properties;
  * @author caohao
  */
 @Configuration
-@EnableConfigurationProperties({SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class})
-public class SpringBootConfiguration implements EnvironmentAware {
+@EnableConfigurationProperties({OrchestrationSpringBootShardingRuleConfigurationProperties.class, OrchestrationSpringBootMasterSlaveRuleConfigurationProperties.class})
+public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     @Autowired
-    private SpringBootShardingRuleConfigurationProperties shardingProperties;
+    private OrchestrationSpringBootShardingRuleConfigurationProperties shardingProperties;
     
     @Autowired
-    private SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
+    private OrchestrationSpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
