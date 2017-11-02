@@ -1,3 +1,4 @@
-tables:
-  config:
-    actualDataNodes: ds.config_${0..1}
+shardingRule:
+  tables:
+    config:
+      actualDataNodes: ds.config_${0..1}

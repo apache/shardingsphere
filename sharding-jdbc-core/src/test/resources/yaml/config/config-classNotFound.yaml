@@ -11,10 +11,12 @@ dataSources:
     username: sa
     password: 
     maxActive: 100
-tables:
-  t_order: 
-    actualDataNodes: t_order_${0..1}
-    tableStrategy: 
-      standard:
-        shardingColumn: order_id
-        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.NoThisClass
+
+shardingRule:
+  tables:
+    t_order: 
+      actualDataNodes: t_order_${0..1}
+      tableStrategy: 
+        standard:
+          shardingColumn: order_id
+          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.NoThisClass
