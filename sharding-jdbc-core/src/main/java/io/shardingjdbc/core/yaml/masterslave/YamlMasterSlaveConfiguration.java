@@ -48,12 +48,21 @@ public class YamlMasterSlaveConfiguration {
      * @throws SQLException SQL exception
      */
     public MasterSlaveRule getMasterSlaveRule(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        MasterSlaveRuleConfiguration config = new MasterSlaveRuleConfiguration();
-        config.setName(masterSlaveRule.getName());
-        config.setMasterDataSourceName(masterSlaveRule.getMasterDataSourceName());
-        config.setSlaveDataSourceNames(masterSlaveRule.getSlaveDataSourceNames());
-        config.setLoadBalanceAlgorithmType(masterSlaveRule.getLoadBalanceAlgorithmType());
-        config.setLoadBalanceAlgorithmClassName(masterSlaveRule.getLoadBalanceAlgorithmClassName());
-        return config.build(dataSourceMap.isEmpty() ? dataSources : dataSourceMap);
+        return getMasterSlaveRuleConfiguration().build(dataSourceMap.isEmpty() ? dataSources : dataSourceMap);
+    }
+    
+    /**
+     * Get master-slave rule configuration from yaml.
+     *
+     * @return master-slave rule configuration from yaml
+     */
+    public MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() throws SQLException {
+        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
+        result.setName(masterSlaveRule.getName());
+        result.setMasterDataSourceName(masterSlaveRule.getMasterDataSourceName());
+        result.setSlaveDataSourceNames(masterSlaveRule.getSlaveDataSourceNames());
+        result.setLoadBalanceAlgorithmType(masterSlaveRule.getLoadBalanceAlgorithmType());
+        result.setLoadBalanceAlgorithmClassName(masterSlaveRule.getLoadBalanceAlgorithmClassName());
+        return result;
     }
 }

@@ -18,10 +18,12 @@
 package io.shardingjdbc.core.yaml.masterslave;
 
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,4 +49,19 @@ public class YamlMasterSlaveRuleConfiguration {
     private MasterSlaveLoadBalanceAlgorithmType loadBalanceAlgorithmType;
     
     private String loadBalanceAlgorithmClassName;
+    
+    /**
+     * Get master-slave rule configuration from yaml.
+     *
+     * @return master-slave rule configuration from yaml
+     */
+    public MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() throws SQLException {
+        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
+        result.setName(name);
+        result.setMasterDataSourceName(masterDataSourceName);
+        result.setSlaveDataSourceNames(slaveDataSourceNames);
+        result.setLoadBalanceAlgorithmType(loadBalanceAlgorithmType);
+        result.setLoadBalanceAlgorithmClassName(loadBalanceAlgorithmClassName);
+        return result;
+    }
 }
