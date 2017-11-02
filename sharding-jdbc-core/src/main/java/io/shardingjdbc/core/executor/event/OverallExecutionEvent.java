@@ -17,16 +17,18 @@
 
 package io.shardingjdbc.core.executor.event;
 
-import java.util.List;
+import io.shardingjdbc.core.constant.SQLType;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * DML execution event.
+ * Overall sql execution event.
  * 
- * @author zhangliang
+ * @author gaohongtao
  */
-public final class DMLExecutionEvent extends AbstractSQLExecutionEvent {
+@Getter
+@RequiredArgsConstructor
+public class OverallExecutionEvent extends AbstractExecutionEvent {
     
-    public DMLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
-        super(dataSource, sql, parameters);
-    }
+    private final SQLType sqlType;
 }

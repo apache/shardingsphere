@@ -17,9 +17,9 @@
 
 package io.shardingjdbc.core.executor.fixture;
 
+import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.executor.event.EventExecutionType;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface EventCaller {
@@ -32,5 +32,7 @@ public interface EventCaller {
     
     void verifyEventExecutionType(EventExecutionType eventExecutionType);
     
-    void verifyException(SQLException exp);
+    void verifyException(Exception exp);
+    
+    void verifySQLType(SQLType sqlType);
 }

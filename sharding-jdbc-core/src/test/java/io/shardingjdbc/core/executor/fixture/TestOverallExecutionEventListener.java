@@ -15,18 +15,21 @@
  * </p>
  */
 
-package io.shardingjdbc.core.executor.event;
+package io.shardingjdbc.core.executor.fixture;
 
-import java.util.List;
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
+import io.shardingjdbc.core.executor.event.OverallExecutionEvent;
+import lombok.AllArgsConstructor;
 
-/**
- * DML execution event.
- * 
- * @author zhangliang
- */
-public final class DMLExecutionEvent extends AbstractSQLExecutionEvent {
+@AllArgsConstructor
+public final class TestOverallExecutionEventListener {
     
-    public DMLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
-        super(dataSource, sql, parameters);
+    private final EventCaller eventCaller;
+    
+    @Subscribe
+    @AllowConcurrentEvents
+    public void listen(final OverallExecutionEvent event) {
+        ExecutorTestUtil.listen(eventCaller, event);
     }
 }

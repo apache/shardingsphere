@@ -23,13 +23,13 @@ import io.shardingjdbc.core.executor.event.AbstractExecutionEvent;
 import io.shardingjdbc.core.executor.event.DMLExecutionEvent;
 import io.shardingjdbc.core.executor.event.DQLExecutionEvent;
 import io.shardingjdbc.core.executor.event.EventExecutionType;
+import io.shardingjdbc.core.executor.event.OverallExecutionEvent;
 import io.shardingjdbc.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingjdbc.core.executor.threadlocal.ExecutorExceptionHandler;
 import io.shardingjdbc.core.executor.type.batch.BatchPreparedStatementUnit;
 import io.shardingjdbc.core.executor.type.prepared.PreparedStatementUnit;
 import io.shardingjdbc.core.executor.type.statement.StatementUnit;
 import io.shardingjdbc.core.util.EventBusInstance;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -115,6 +115,8 @@ public final class ExecutorEngine implements AutoCloseable {
         if (baseStatementUnits.isEmpty()) {
             return Collections.emptyList();
         }
+        OverallExecutionEvent event = new OverallExecutionEvent(sqlType);
+        EventBusInstance.getInstance().post(event);
         Iterator<? extends BaseStatementUnit> iterator = baseStatementUnits.iterator();
         BaseStatementUnit firstInput = iterator.next();
         ListenableFuture<List<T>> restFutures = asyncExecute(sqlType, Lists.newArrayList(iterator), parameterSets, executeCallback);
@@ -126,9 +128,14 @@ public final class ExecutorEngine implements AutoCloseable {
             //CHECKSTYLE:OFF
         } catch (final Exception ex) {
             //CHECKSTYLE:ON
+            event.setException(ex);
+            event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+            EventBusInstance.getInstance().post(event);
             ExecutorExceptionHandler.handleException(ex);
             return null;
         }
+        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        EventBusInstance.getInstance().post(event);
         List<T> result = Lists.newLinkedList(restOutputs);
         result.add(0, firstOutput);
         return result;
@@ -176,7 +183,7 @@ public final class ExecutorEngine implements AutoCloseable {
             } catch (final SQLException ex) {
                 for (AbstractExecutionEvent each : events) {
                     each.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-                    each.setException(Optional.of(ex));
+                    each.setException(ex);
                     EventBusInstance.getInstance().post(each);
                     ExecutorExceptionHandler.handleException(ex);
                 }

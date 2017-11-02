@@ -70,6 +70,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
                 getExecutorEngine(), SQLType.DQL, createPreparedStatementUnits(DQL_SQL, preparedStatement, "ds_0"), Collections.emptyList());
         assertThat(actual.executeQuery(), is(Collections.singletonList(resultSet)));
         verify(preparedStatement).executeQuery();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
@@ -97,6 +98,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         verify(preparedStatement2).executeQuery();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
@@ -116,6 +118,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
                 getExecutorEngine(), SQLType.DQL, createPreparedStatementUnits(DQL_SQL, preparedStatement, "ds_0"), Collections.emptyList());
         assertThat(actual.executeQuery(), is(Collections.singletonList((ResultSet) null)));
         verify(preparedStatement).executeQuery();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
@@ -141,6 +144,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         verify(preparedStatement2).executeQuery();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
@@ -159,6 +163,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
                 getExecutorEngine(), SQLType.DML, createPreparedStatementUnits(DML_SQL, preparedStatement, "ds_0"), Collections.emptyList());
         assertThat(actual.executeUpdate(), is(10));
         verify(preparedStatement).executeUpdate();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
@@ -182,6 +187,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         verify(preparedStatement2).executeUpdate();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
@@ -201,6 +207,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
                 getExecutorEngine(), SQLType.DML, createPreparedStatementUnits(DML_SQL, preparedStatement, "ds_0"), Collections.emptyList());
         assertThat(actual.executeUpdate(), is(0));
         verify(preparedStatement).executeUpdate();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
@@ -225,6 +232,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         verify(preparedStatement2).executeUpdate();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
@@ -243,6 +251,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
                 getExecutorEngine(), SQLType.DML, createPreparedStatementUnits(DML_SQL, preparedStatement, "ds_0"), Collections.emptyList());
         assertFalse(actual.execute());
         verify(preparedStatement).execute();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
@@ -266,6 +275,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         verify(preparedStatement2).execute();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
@@ -285,6 +295,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
                 getExecutorEngine(), SQLType.DML, createPreparedStatementUnits(DML_SQL, preparedStatement, "ds_0"), Collections.emptyList());
         assertFalse(actual.execute());
         verify(preparedStatement).execute();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
@@ -309,6 +320,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         verify(preparedStatement2).execute();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
@@ -327,6 +339,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
                 getExecutorEngine(), SQLType.DQL, createPreparedStatementUnits(DQL_SQL, preparedStatement, "ds_0"), Collections.emptyList());
         assertTrue(actual.execute());
         verify(preparedStatement).execute();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
@@ -350,6 +363,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         verify(preparedStatement2).execute();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
