@@ -20,9 +20,9 @@ package io.shardingjdbc.orchestration.api;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
+import io.shardingjdbc.orchestration.yaml.YamlOrchestrationShardingRuleConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
@@ -35,7 +35,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -91,8 +90,8 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
-        YamlShardingRuleConfiguration config = unmarshal(yamlFile);
-        return new ShardingDataSource(config.getShardingRule(Collections.<String, DataSource>emptyMap()), config.getProps());
+        YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlFile);
+        return createDataSource(config.getDataSources(), config.getShardingRuleConfiguration(), config.getOrchestration().getOrchestrationConfiguration());
     }
     
     /**
@@ -105,8 +104,8 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
-        YamlShardingRuleConfiguration config = unmarshal(yamlFile);
-        return new ShardingDataSource(config.getShardingRule(dataSourceMap), config.getProps());
+        YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlFile);
+        return createDataSource(dataSourceMap, config.getShardingRuleConfiguration(), config.getOrchestration().getOrchestrationConfiguration());
     }
     
     /**
@@ -118,8 +117,8 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
-        YamlShardingRuleConfiguration config = unmarshal(yamlByteArray);
-        return new ShardingDataSource(config.getShardingRule(Collections.<String, DataSource>emptyMap()), config.getProps());
+        YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlByteArray);
+        return createDataSource(config.getDataSources(), config.getShardingRuleConfiguration(), config.getOrchestration().getOrchestrationConfiguration());
     }
     
     /**
@@ -132,20 +131,20 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException, IOException {
-        YamlShardingRuleConfiguration config = unmarshal(yamlByteArray);
-        return new ShardingDataSource(config.getShardingRule(dataSourceMap), config.getProps());
+        YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlByteArray);
+        return createDataSource(dataSourceMap, config.getShardingRuleConfiguration(), config.getOrchestration().getOrchestrationConfiguration());
     }
     
-    private static YamlShardingRuleConfiguration unmarshal(final File yamlFile) throws IOException {
+    private static YamlOrchestrationShardingRuleConfiguration unmarshal(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            return new Yaml(new Constructor(YamlShardingRuleConfiguration.class)).loadAs(inputStreamReader, YamlShardingRuleConfiguration.class);
+            return new Yaml(new Constructor(YamlOrchestrationShardingRuleConfiguration.class)).loadAs(inputStreamReader, YamlOrchestrationShardingRuleConfiguration.class);
         }
     }
     
-    private static YamlShardingRuleConfiguration unmarshal(final byte[] yamlByteArray) throws IOException {
-        return new Yaml(new Constructor(YamlShardingRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlShardingRuleConfiguration.class);
+    private static YamlOrchestrationShardingRuleConfiguration unmarshal(final byte[] yamlByteArray) throws IOException {
+        return new Yaml(new Constructor(YamlOrchestrationShardingRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlOrchestrationShardingRuleConfiguration.class);
     }
 }

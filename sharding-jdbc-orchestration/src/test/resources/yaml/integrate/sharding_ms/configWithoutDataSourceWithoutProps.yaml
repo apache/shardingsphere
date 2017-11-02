@@ -49,3 +49,10 @@ masterSlaveRules:
       db1_master
     slaveDataSourceNames:
       - db1_slave
+
+orchestration:
+  name: 
+  overwrite: true
+  registryCenter:
+    namespace: orchestration-spring-namespace-test
+    serverLists: localhost:3181

@@ -50,3 +50,10 @@ defaultTableStrategy:
   complex:
     shardingColumns: id, order_id
     algorithmClassName: io.shardingjdbc.orchestration.yaml.fixture.MultiAlgorithm
+
+orchestration:
+  name: 
+  overwrite: true
+  registryCenter:
+    namespace: orchestration-spring-namespace-test
+    serverLists: localhost:3181

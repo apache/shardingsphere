@@ -78,3 +78,10 @@ masterSlaveRules:
     loadBalanceAlgorithmType: ROUND_ROBIN
 props:
   sql.show: true
+
+orchestration:
+  name: 
+  overwrite: true
+  registryCenter:
+    namespace: orchestration-spring-namespace-test
+    serverLists: localhost:3181
