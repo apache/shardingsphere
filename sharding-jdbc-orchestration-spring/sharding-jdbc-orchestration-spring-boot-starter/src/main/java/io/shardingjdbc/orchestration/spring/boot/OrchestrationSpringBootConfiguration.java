@@ -7,9 +7,9 @@ import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.util.DataSourceUtil;
 import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingjdbc.orchestration.spring.boot.masterslave.OrchestrationSpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingjdbc.orchestration.spring.boot.orchestration.OrchestrationSpringBootConfigurationProperties;
-import io.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootShardingRuleConfigurationProperties;
+import io.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
+import io.shardingjdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -30,18 +30,17 @@ import java.util.Properties;
  * @author caohao
  */
 @Configuration
-@EnableConfigurationProperties({OrchestrationSpringBootConfigurationProperties.class, OrchestrationSpringBootShardingRuleConfigurationProperties.class, 
-    OrchestrationSpringBootMasterSlaveRuleConfigurationProperties.class})
+@EnableConfigurationProperties({OrchestrationSpringBootConfigurationProperties.class, SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class})
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     @Autowired
     private OrchestrationSpringBootConfigurationProperties orchestrationProperties;
     
     @Autowired
-    private OrchestrationSpringBootShardingRuleConfigurationProperties shardingProperties;
+    private SpringBootShardingRuleConfigurationProperties shardingProperties;
     
     @Autowired
-    private OrchestrationSpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
+    private SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     

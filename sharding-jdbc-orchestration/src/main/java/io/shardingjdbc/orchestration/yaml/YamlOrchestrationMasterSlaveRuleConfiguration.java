@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.orchestration.yaml;
 
-import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,7 +28,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class YamlOrchestrationMasterSlaveRuleConfiguration extends YamlMasterSlaveRuleConfiguration {
+public class YamlOrchestrationMasterSlaveRuleConfiguration extends YamlMasterSlaveConfiguration {
     
     private YamlOrchestrationConfiguration orchestration;
 }
