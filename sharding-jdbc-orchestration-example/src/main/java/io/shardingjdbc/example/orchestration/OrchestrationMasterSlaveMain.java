@@ -47,7 +47,7 @@ public final class OrchestrationMasterSlaveMain {
     // CHECKSTYLE:ON
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
         DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                createDataSourceMap(), crateMasterSlaveRuleConfig(), new OrchestrationConfiguration("master-slave-data-source", regCenter, false));
+                createDataSourceMap(), crateMasterSlaveRuleConfig(), new OrchestrationConfiguration("orchestration-master-slave-data-source", regCenter, false));
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);

@@ -110,13 +110,13 @@ public final class OrchestrationShardingMasterSlaveMain {
     }
     
     private static List<MasterSlaveRuleConfiguration> crateMasterSlaveRuleConfigs() throws SQLException {
-        MasterSlaveRuleConfiguration config1 = new MasterSlaveRuleConfiguration();
+        final MasterSlaveRuleConfiguration config1 = new MasterSlaveRuleConfiguration();
         config1.setName("demo_ds_0");
         config1.setMasterDataSourceName("demo_ds_master_0");
         config1.setSlaveDataSourceNames(Lists.newArrayList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
         List<MasterSlaveRuleConfiguration> result = new ArrayList<>();
         result.add(config1);
-        MasterSlaveRuleConfiguration config2 = new MasterSlaveRuleConfiguration();
+        final MasterSlaveRuleConfiguration config2 = new MasterSlaveRuleConfiguration();
         config2.setName("demo_ds_1");
         config2.setMasterDataSourceName("demo_ds_master_1");
         config2.setSlaveDataSourceNames(Lists.newArrayList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
