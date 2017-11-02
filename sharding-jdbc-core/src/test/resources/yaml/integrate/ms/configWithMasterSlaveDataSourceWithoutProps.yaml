@@ -18,8 +18,9 @@ dataSources:
       password: 
       maxActive: 100
 
-name: db_ms
-
-masterDataSourceName: db_master
-
-slaveDataSourceNames: [db_slave_0, db_slave_1]
+masterSlaveRule:
+  name: db_ms
+  
+  masterDataSourceName: db_master
+  
+  slaveDataSourceNames: [db_slave_0, db_slave_1]
