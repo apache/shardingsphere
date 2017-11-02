@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import io.shardingjdbc.core.api.HintManager;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingjdbc.orchestration.api.config.OrchestrationMasterSlaveConfiguration;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
@@ -47,7 +47,7 @@ public final class OrchestrationMasterSlaveMain {
     // CHECKSTYLE:ON
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
         DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                new OrchestrationMasterSlaveConfiguration("master-slave-data-source", false, regCenter, createDataSourceMap(), crateMasterSlaveRuleConfig()));
+                createDataSourceMap(), crateMasterSlaveRuleConfig(), new OrchestrationConfiguration("master-slave-data-source", regCenter, false));
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);

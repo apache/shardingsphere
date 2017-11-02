@@ -23,8 +23,8 @@ import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.example.orchestration.algorithm.ModuloTableShardingAlgorithm;
-import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
 import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
@@ -50,7 +50,7 @@ public final class OrchestrationShardingMain {
     // CHECKSTYLE:ON
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
         DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                new OrchestrationShardingConfiguration("sharding-data-source", false, regCenter, createDataSourceMap(), crateShardingRuleConfig()));
+            createDataSourceMap(), createShardingRuleConfig(), new OrchestrationConfiguration("orchestration-sharding-data-source", regCenter, false));
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);
@@ -84,7 +84,7 @@ public final class OrchestrationShardingMain {
         return result;
     }
     
-    private static ShardingRuleConfiguration crateShardingRuleConfig() throws SQLException {
+    private static ShardingRuleConfiguration createShardingRuleConfig() throws SQLException {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");

@@ -26,7 +26,7 @@ import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfigurat
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.example.orchestration.algorithm.ModuloTableShardingAlgorithm;
 import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
@@ -54,7 +54,7 @@ public final class OrchestrationShardingMasterSlaveMain {
     // CHECKSTYLE:ON
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
         DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                new OrchestrationShardingConfiguration("sharding-master-slave-data-source", false, regCenter, createDataSourceMap(), crateShardingRuleConfig()));
+                createDataSourceMap(), createShardingRuleConfig(), new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", regCenter, false));
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);
@@ -92,7 +92,7 @@ public final class OrchestrationShardingMasterSlaveMain {
         return result;
     }
     
-    private static ShardingRuleConfiguration crateShardingRuleConfig() throws SQLException {
+    private static ShardingRuleConfiguration createShardingRuleConfig() throws SQLException {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
@@ -110,11 +110,11 @@ public final class OrchestrationShardingMasterSlaveMain {
     }
     
     private static List<MasterSlaveRuleConfiguration> crateMasterSlaveRuleConfigs() throws SQLException {
-        List<MasterSlaveRuleConfiguration> result = new ArrayList<>();
         MasterSlaveRuleConfiguration config1 = new MasterSlaveRuleConfiguration();
         config1.setName("demo_ds_0");
         config1.setMasterDataSourceName("demo_ds_master_0");
         config1.setSlaveDataSourceNames(Lists.newArrayList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
+        List<MasterSlaveRuleConfiguration> result = new ArrayList<>();
         result.add(config1);
         MasterSlaveRuleConfiguration config2 = new MasterSlaveRuleConfiguration();
         config2.setName("demo_ds_1");
