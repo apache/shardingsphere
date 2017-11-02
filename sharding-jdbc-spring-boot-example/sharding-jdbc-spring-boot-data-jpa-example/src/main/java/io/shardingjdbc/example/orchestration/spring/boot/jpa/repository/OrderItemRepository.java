@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.example.spring.boot.jpa.repository;
+package io.shardingjdbc.example.orchestration.spring.boot.jpa.repository;
 
-import io.shardingjdbc.example.spring.boot.jpa.entity.Order;
+import io.shardingjdbc.example.orchestration.spring.boot.jpa.entity.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
+public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 }

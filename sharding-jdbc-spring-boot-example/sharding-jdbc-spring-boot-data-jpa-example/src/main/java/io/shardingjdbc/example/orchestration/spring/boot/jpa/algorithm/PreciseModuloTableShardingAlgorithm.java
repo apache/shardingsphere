@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.example.spring.boot.jpa.algorithm;
+package io.shardingjdbc.example.orchestration.spring.boot.jpa.algorithm;
 
 import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
