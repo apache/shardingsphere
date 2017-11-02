@@ -1,13 +1,13 @@
 package io.shardingjdbc.orchestration.spring.boot.sharding;
 
-import io.shardingjdbc.core.yaml.sharding.YamlShardingRuleConfiguration;
+import io.shardingjdbc.orchestration.yaml.YamlOrchestrationShardingRuleConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Sharding rule configuration properties.
+ * Orchestration sharding rule configuration properties.
  *
  * @author caohao
  */
 @ConfigurationProperties(prefix = "sharding.jdbc.config.sharding")
-public class OrchestrationSpringBootShardingRuleConfigurationProperties extends YamlShardingRuleConfiguration {
+public class OrchestrationSpringBootShardingRuleConfigurationProperties extends YamlOrchestrationShardingRuleConfiguration {
 }

@@ -2,12 +2,13 @@ package io.shardingjdbc.orchestration.spring.boot;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
-import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.util.DataSourceUtil;
+import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingjdbc.orchestration.spring.boot.masterslave.OrchestrationSpringBootMasterSlaveRuleConfigurationProperties;
+import io.shardingjdbc.orchestration.spring.boot.orchestration.OrchestrationSpringBootConfigurationProperties;
 import io.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootShardingRuleConfigurationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -24,13 +25,17 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Spring boot sharding and master-slave configuration.
+ * Orchestration spring boot sharding and master-slave configuration.
  *
  * @author caohao
  */
 @Configuration
-@EnableConfigurationProperties({OrchestrationSpringBootShardingRuleConfigurationProperties.class, OrchestrationSpringBootMasterSlaveRuleConfigurationProperties.class})
+@EnableConfigurationProperties({OrchestrationSpringBootConfigurationProperties.class, OrchestrationSpringBootShardingRuleConfigurationProperties.class, 
+    OrchestrationSpringBootMasterSlaveRuleConfigurationProperties.class})
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
+    
+    @Autowired
+    private OrchestrationSpringBootConfigurationProperties orchestrationProperties;
     
     @Autowired
     private OrchestrationSpringBootShardingRuleConfigurationProperties shardingProperties;
@@ -44,8 +49,11 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     @Bean
     public DataSource dataSource() throws SQLException {
-        return null == masterSlaveProperties.getMasterDataSourceName() ? ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingProperties.getShardingRuleConfiguration(), props)
-                : MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration());
+        return null == masterSlaveProperties.getMasterDataSourceName() 
+                ? OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, 
+                        shardingProperties.getShardingRuleConfiguration(), orchestrationProperties.getOrchestrationConfiguration())
+                : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
+                        masterSlaveProperties.getMasterSlaveRuleConfiguration(), orchestrationProperties.getOrchestrationConfiguration());
     }
     
     @Override

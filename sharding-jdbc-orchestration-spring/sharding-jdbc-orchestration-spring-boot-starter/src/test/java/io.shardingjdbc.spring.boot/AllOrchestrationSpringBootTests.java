@@ -17,16 +17,16 @@
 
 package io.shardingjdbc.spring.boot;
 
-import io.shardingjdbc.spring.boot.type.SpringBootMasterSlaveTest;
-import io.shardingjdbc.spring.boot.type.SpringBootShardingTest;
+import io.shardingjdbc.spring.boot.type.OrchestrationSpringBootMasterSlaveTest;
+import io.shardingjdbc.spring.boot.type.OrchestrationSpringBootShardingTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        SpringBootMasterSlaveTest.class,
-        SpringBootShardingTest.class 
+        OrchestrationSpringBootMasterSlaveTest.class,
+        OrchestrationSpringBootShardingTest.class 
     })
-public class AllSpringBootTests {
+public class AllOrchestrationSpringBootTests {
 }
