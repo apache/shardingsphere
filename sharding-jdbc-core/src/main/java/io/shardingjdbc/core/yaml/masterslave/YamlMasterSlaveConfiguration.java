@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.core.yaml.masterslave;
 
-import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,21 +47,6 @@ public class YamlMasterSlaveConfiguration {
      * @throws SQLException SQL exception
      */
     public MasterSlaveRule getMasterSlaveRule(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return getMasterSlaveRuleConfiguration().build(dataSourceMap.isEmpty() ? dataSources : dataSourceMap);
-    }
-    
-    /**
-     * Get master-slave rule configuration from yaml.
-     *
-     * @return master-slave rule configuration from yaml
-     */
-    public MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() throws SQLException {
-        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
-        result.setName(masterSlaveRule.getName());
-        result.setMasterDataSourceName(masterSlaveRule.getMasterDataSourceName());
-        result.setSlaveDataSourceNames(masterSlaveRule.getSlaveDataSourceNames());
-        result.setLoadBalanceAlgorithmType(masterSlaveRule.getLoadBalanceAlgorithmType());
-        result.setLoadBalanceAlgorithmClassName(masterSlaveRule.getLoadBalanceAlgorithmClassName());
-        return result;
+        return masterSlaveRule.getMasterSlaveRuleConfiguration().build(dataSourceMap.isEmpty() ? dataSources : dataSourceMap);
     }
 }
