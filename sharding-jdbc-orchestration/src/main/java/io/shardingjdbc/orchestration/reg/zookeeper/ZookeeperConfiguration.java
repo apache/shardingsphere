@@ -18,7 +18,6 @@
 package io.shardingjdbc.orchestration.reg.zookeeper;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -28,7 +27,6 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@RequiredArgsConstructor
 public final class ZookeeperConfiguration {
     
     /**
@@ -36,12 +34,12 @@ public final class ZookeeperConfiguration {
      * 
      * <p>Include ip address and port, multiple servers split by comma. Etc: {@code host1:2181,host2:2181}</p>
      */
-    private final String serverLists;
+    private String serverLists;
     
     /**
      * Namespace of zookeeper.
      */
-    private final String namespace;
+    private String namespace;
     
     /**
      * Base sleep time milliseconds.

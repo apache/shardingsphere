@@ -20,6 +20,7 @@ package io.shardingjdbc.orchestration.yaml.sharding;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingjdbc.orchestration.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
@@ -59,9 +60,9 @@ public class YamlOrchestrationShardingIntegrateTest extends AbstractYamlDataSour
         File yamlFile = new File(YamlOrchestrationShardingIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = new YamlOrchestrationShardingDataSource(yamlFile);
+            dataSource = OrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
         } else {
-            dataSource = new YamlOrchestrationShardingDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), new Function<String, DataSource>() {
+            dataSource = OrchestrationShardingDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), new Function<String, DataSource>() {
                 @Override
                 public DataSource apply(final String key) {
                     return createDataSource(key);

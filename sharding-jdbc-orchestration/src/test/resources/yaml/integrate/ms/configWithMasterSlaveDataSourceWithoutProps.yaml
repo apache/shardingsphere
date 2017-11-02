@@ -23,3 +23,10 @@ name: db_ms
 masterDataSourceName: db_master
 
 slaveDataSourceNames: [db_slave_0, db_slave_1]
+
+orchestration:
+  name: 
+  overwrite: true
+  registryCenter:
+    namespace: orchestration-spring-namespace-test
+    serverLists: localhost:3181

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.yaml.sharding;
+package io.shardingjdbc.orchestration.yaml;
 
 import io.shardingjdbc.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingjdbc.orchestration.reg.base.RegistryCenter;
