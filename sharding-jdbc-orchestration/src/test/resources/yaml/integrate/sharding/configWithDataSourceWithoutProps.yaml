@@ -52,8 +52,8 @@ defaultTableStrategy:
     algorithmClassName: io.shardingjdbc.orchestration.yaml.fixture.MultiAlgorithm
 
 orchestration:
-  name: 
+  name: demo_ds_ms
   overwrite: true
   registryCenter:
-    namespace: orchestration-spring-namespace-test
+    namespace: orchestration-yaml-test
     serverLists: localhost:3181

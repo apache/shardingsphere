@@ -18,6 +18,7 @@
 package io.shardingjdbc.orchestration.reg.zookeeper;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -27,6 +28,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public final class ZookeeperConfiguration {
     
     /**
@@ -72,4 +74,10 @@ public final class ZookeeperConfiguration {
      * <p>Default is not need digest</p>
      */
     private String digest;
+    
+    public ZookeeperConfiguration(final String serverLists, final String namespace) {
+        this.serverLists = serverLists;
+        this.namespace = namespace;
+    }
+    
 }

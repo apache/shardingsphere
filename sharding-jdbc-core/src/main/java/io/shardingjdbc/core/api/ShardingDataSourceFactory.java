@@ -89,7 +89,7 @@ public final class ShardingDataSourceFactory {
      * @param yamlFile yaml file for rule configuration of databases and tables sharding without data sources
      * @return sharding data source
      * @throws SQLException SQL exception
-     * @throws SQLException IO exception
+     * @throws IOException IO exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
         YamlShardingRuleConfiguration config = unmarshal(yamlFile);
@@ -102,7 +102,7 @@ public final class ShardingDataSourceFactory {
      * @param yamlByteArray yaml byte array for rule configuration of databases and tables sharding with data sources
      * @return sharding data source
      * @throws SQLException SQL exception
-     * @throws SQLException IO exception
+     * @throws IOException IO exception
      */
     public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
         YamlShardingRuleConfiguration config = unmarshal(yamlByteArray);
@@ -116,7 +116,7 @@ public final class ShardingDataSourceFactory {
      * @param yamlByteArray yaml byte array for rule configuration of databases and tables sharding without data sources
      * @return sharding data source
      * @throws SQLException SQL exception
-     * @throws SQLException IO exception
+     * @throws IOException IO exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException, IOException {
         YamlShardingRuleConfiguration config = unmarshal(yamlByteArray);
