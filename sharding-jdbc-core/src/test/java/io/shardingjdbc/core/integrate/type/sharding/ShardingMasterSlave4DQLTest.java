@@ -30,9 +30,9 @@ import java.util.Collection;
 import java.util.List;
 
 @RunWith(Parameterized.class)
-public class ShardingMasterSlaveTest4DQL extends AbstractShardingMasterSlaveTest {
+public class ShardingMasterSlave4DQLTest extends AbstractShardingMasterSlaveTest {
     
-    public ShardingMasterSlaveTest4DQL(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+    public ShardingMasterSlave4DQLTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, type, sqlShardingRules);
     }
     

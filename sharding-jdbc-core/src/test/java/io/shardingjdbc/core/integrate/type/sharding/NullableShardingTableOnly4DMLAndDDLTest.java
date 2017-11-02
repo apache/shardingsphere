@@ -17,11 +17,11 @@
 
 package io.shardingjdbc.core.integrate.type.sharding;
 
-import io.shardingjdbc.core.common.base.AbstractSQLAssertTest;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
-import org.junit.BeforeClass;
+
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -29,19 +29,19 @@ import java.util.Collection;
 import java.util.List;
 
 @RunWith(Parameterized.class)
-public class NullableShardingTableOnlyTest4DQL extends AbstractNullableShardingTableOnlyTest {
+public class NullableShardingTableOnly4DMLAndDDLTest extends AbstractNullableShardingTableOnlyTest {
     
-    public NullableShardingTableOnlyTest4DQL(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+    public NullableShardingTableOnly4DMLAndDDLTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, type, sqlShardingRules);
-    }
-    
-    @BeforeClass
-    public static void cleanAndInitTable() throws Exception {
-        AbstractSQLAssertTest.importAllDataSet(AbstractNullableShardingTableOnlyTest.getInitFiles());
     }
     
     @Parameterized.Parameters(name = "{0}In{2}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractNullableShardingTableOnlyTest.dataParameters(SQLType.DQL);
+        return AbstractNullableShardingTableOnlyTest.dataParameters(SQLType.DML, SQLType.DDL);
+    }
+    
+    @Before
+    public void cleanAndInitTable() throws Exception {
+        importDataSet();
     }
 }

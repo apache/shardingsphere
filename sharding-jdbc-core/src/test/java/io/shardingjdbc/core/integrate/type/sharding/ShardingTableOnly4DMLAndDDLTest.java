@@ -30,9 +30,9 @@ import java.util.Collection;
 import java.util.List;
 
 @RunWith(Parameterized.class)
-public class ShardingTableOnlyTest4DMLAndDDL extends AbstractShardingTableOnlyTest {
+public class ShardingTableOnly4DMLAndDDLTest extends AbstractShardingTableOnlyTest {
     
-    public ShardingTableOnlyTest4DMLAndDDL(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+    public ShardingTableOnly4DMLAndDDLTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, type, sqlShardingRules);
     }
     
