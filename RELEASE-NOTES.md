@@ -1,5 +1,9 @@
 ## 2.0.0.M2
 
+### 里程碑
+
+1. 客户端的数据库访问治理，可以熔断数据库访问程序对数据库的访问
+
 ### 功能提升
 
 1. [ISSUE #407](https://github.com/shardingjdbc/sharding-jdbc/issues/407) sharding-jdbc-spring-boot-starter兼容使用减号和驼峰两种方式进行属性配置
