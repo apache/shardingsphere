@@ -6,12 +6,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
-public class SpringBootDataJpaMain {
+public class OrchestrationSpringBootDataJpaMain {
     
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = SpringApplication.run(SpringBootDataJpaMain.class, args);
+        ApplicationContext applicationContext = SpringApplication.run(OrchestrationSpringBootDataJpaMain.class, args);
         applicationContext.getBean(DemoService.class).demo();
     }
 }
