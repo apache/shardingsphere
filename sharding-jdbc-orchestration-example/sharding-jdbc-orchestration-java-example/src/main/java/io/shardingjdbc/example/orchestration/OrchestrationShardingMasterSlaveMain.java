@@ -66,7 +66,9 @@ public final class OrchestrationShardingMasterSlaveMain {
     }
     
     private static CoordinatorRegistryCenter setUpRegistryCenter() {
-        ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(ZOOKEEPER_CONNECTION_STRING, NAMESPACE);
+        ZookeeperConfiguration zkConfig = new ZookeeperConfiguration();
+        zkConfig.setServerLists(ZOOKEEPER_CONNECTION_STRING);
+        zkConfig.setNamespace(NAMESPACE);
         CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(zkConfig);
         result.init();
         return result;
