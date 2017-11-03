@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public class OverallExecutionEvent extends AbstractExecutionEvent {
+public final class OverallExecutionEvent extends AbstractExecutionEvent {
     
     private final SQLType sqlType;
 }
