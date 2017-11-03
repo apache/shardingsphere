@@ -129,7 +129,7 @@ Sharding-JDBC采用snowflake算法作为默认的分布式分布式自增主键�
 而snowflake算法的最后4位是在同一毫秒内的访问递增值。因此，如果毫秒内并发度不高，最后4位为零的几率则很大。因此并发度不高的应用生成偶数主键的几率会更高。
 
 
-### 10. 指定了泛型为Long的SingleKeyTableShardingAlgorithm，遇到ClassCastException: Integer can not cast to Long ？
+### 10. 指定了泛型为Long的SingleKeyTableShardingAlgorithm，遇到ClassCastException: Integer can not cast to Long?
 
 回答：
 
@@ -142,3 +142,59 @@ Sharding-JDBC采用snowflake算法作为默认的分布式分布式自增主键�
 由于Sharding-JDBC并不知晓数据库的表结构，而原生自增主键是不包含在原始SQL中内的，因此Sharding-JDBC无法将该字段解析为分片字段。如自增主键非分片键，则无需关注，可正常返回；若自增主键同时作为分片键使用，Sharding-JDBC无法解析其分片值，导致SQL路由至多张表，从而影响应用的正确性。
 
 而原生自增主键返回的前提条件是INSERT SQL必须最终路由至一张表，因此，面对返回多表的INSERT SQL，自增主键则会返回零。
+
+### 12. Oracle数据库使用Timestamp类型的Order By语句抛出异常提示“Order by value must implements Comparable”?
+
+回答：
+
+针对上面问题解决方式有两种：
+1.配置启动JVM参数“-oracle.jdbc.J2EE13Compliant=true”
+2.通过代码在项目初始化时设置System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true");
+
+原因如下:
+
+com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()方法如下:
+
+```java
+    private List<Comparable<?>> getOrderValues() throws SQLException {
+        List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
+        for (OrderItem each : orderByItems) {
+            Object value = resultSet.getObject(each.getIndex());
+            Preconditions.checkState(null == value || value instanceof Comparable, "Order by value must implements Comparable");
+            result.add((Comparable<?>) value);
+        }
+        return result;
+    }
+```
+
+使用了resultSet.getObject(int index)方法，针对TimeStamp oracle会根据oracle.jdbc.J2EE13Compliant属性判断返回java.sql.TimeStamp还是自定义oralce.sql.TIMESTAMP
+详见ojdbc源码oracle.jdbc.driver.TimestampAccessor#getObject(int var1)方法：
+
+```java
+    Object getObject(int var1) throws SQLException {
+        Object var2 = null;
+        if(this.rowSpaceIndicator == null) {
+            DatabaseError.throwSqlException(21);
+        }
+
+        if(this.rowSpaceIndicator[this.indicatorIndex + var1] != -1) {
+            if(this.externalType != 0) {
+                switch(this.externalType) {
+                case 93:
+                    return this.getTimestamp(var1);
+                default:
+                    DatabaseError.throwSqlException(4);
+                    return null;
+                }
+            }
+
+            if(this.statement.connection.j2ee13Compliant) {
+                var2 = this.getTimestamp(var1);
+            } else {
+                var2 = this.getTIMESTAMP(var1);
+            }
+        }
+
+        return var2;
+    }
+```
