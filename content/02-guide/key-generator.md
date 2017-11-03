@@ -2,7 +2,7 @@
 toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "分布式主键"
-weight = 7
+weight = 8
 prev = "/02-guide/hint-sharding-value"
 next = "/02-guide/transaction"
 

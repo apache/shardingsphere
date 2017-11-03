@@ -1,0 +1,287 @@
++++
+toc = true
+date = "2016-12-06T22:38:50+08:00"
+title = "编排治理"
+weight = 6
+prev = "/02-guide/configuration/"
+next = "/02-guide/hint-sharding-value/"
+
++++
+
+## 1.JAVA配置
+
+### 引入maven依赖
+
+```xml
+<dependency>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-orchestration</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+### 配置示例
+
+```java
+     CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
+     DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(
+                     dataSourceMap, masterSlaveRuleConfig, new OrchestrationConfiguration("orchestration-master-slave-data-source", regCenter, false));
+     
+    private CoordinatorRegistryCenter setUpRegistryCenter() {
+        ZookeeperConfiguration zkConfig = new ZookeeperConfiguration("localhost:2181", "orchestration-namespace");
+        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(zkConfig);
+        result.init();
+        return result;
+    }
+```
+
+## 2.YAML配置
+
+### 引入maven依赖
+
+```xml
+<dependency>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-core</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+### 配置示例
+
+#### 分库分表编排配置项说明
+```yaml
+dataSources:
+  db0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+  db1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+
+shardingRule:
+  tables:
+    config:
+      actualDataNodes: db${0..1}.t_config
+    t_order: 
+      actualDataNodes: db${0..1}.t_order_${0..1}
+      databaseStrategy: 
+        standard:
+          shardingColumn: user_id
+          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmInlineExpression: t_order_${order_id % 2}
+      keyGeneratorColumnName: order_id
+      keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
+    t_order_item:
+      actualDataNodes: db${0..1}.t_order_item_${0..1}
+      #绑定表中其余的表的策略与第一张表的策略相同
+      databaseStrategy: 
+        standard:
+          shardingColumn: user_id
+          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmInlineExpression: t_order_item_${order_id % 2}
+  bindingTables:
+    - t_order,t_order_item
+  #默认数据库分片策略
+  defaultDatabaseStrategy:
+    none:
+  defaultTableStrategy:
+    complex:
+      shardingColumns: id, order_id
+      algorithmClassName: io.shardingjdbc.core.yaml.fixture.MultiAlgorithm
+  props:
+    sql.show: true
+
+orchestration:
+  name: demo_yaml_ds_sharding_ms
+  overwrite: true
+  registryCenter:
+    namespace: orchestration-yaml-demo
+    serverLists: localhost:2181
+```
+
+##### 分库分表编排配置项说明
+
+```yaml
+dataSources: 数据源配置
+
+shardingRule: 分片规则配置
+
+orchestration: 编排配置
+  name: 编排服务节点名称
+  overwrite: 本地配置是否可覆盖注册中心配置<br />如果可覆盖，每次启动都以本地配置为准
+  registryCenter: 注册中心配置
+    namespace: Zookeeper的命名空间
+    serverLists: 连接Zookeeper服务器的列表<br />包括IP地址和端口号<br />多个地址用逗号分隔<br />如: host1:2181,host2:2181
+    baseSleepTimeMilliseconds: 等待重试的间隔时间的初始值<br />单位：毫秒
+    maxSleepTimeMilliseconds: 等待重试的间隔时间的最大值<br />单位：毫秒
+    maxRetries: 最大重试次数
+    sessionTimeoutMilliseconds: 会话超时时间<br />单位：毫秒
+    connectionTimeoutMilliseconds: 连接超时时间<br />单位：毫秒
+    digest: 连接Zookeeper的权限令牌<br />缺省为不需要权限验证
+```
+
+##### 分库分表编排数据源构建方式
+
+```java
+    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
+```
+
+##### 读写分离数据源构建方式
+
+```java
+    DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(yamlFile);
+```
+
+### YAML格式特别说明
+!! 表示实现类
+
+[] 表示多个
+
+## 3.Spring命名空间配置
+
+### 引入maven依赖
+
+```xml
+<dependency>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+### 配置示例
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding" 
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
+                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
+                        ">
+    <context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true" />
+    
+    <bean id="dbtbl_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/dbtbl_0" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
+    </bean>
+    
+    <bean id="dbtbl_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/dbtbl_1" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
+    </bean>
+    
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+    
+    <sharding:data-source id="shardingDataSource" registry-center-ref="regCenter">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-data-source-name="dbtbl_0">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_${0..1}.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
+            </sharding:table-rules>
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+            </sharding:binding-table-rules>
+        </sharding:sharding-rule>
+        <sharding:props>
+            <prop key="sql.show">true</prop>
+        </sharding:props>
+    </sharding:data-source>
+    
+    <reg:zookeeper id="regCenter" server-lists="localhost:2181" namespace="orchestration-spring-namespace" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+</beans>
+```
+### 标签说明
+
+#### \<reg:zookeeper/>
+
+| 属性名                           | 类型   | 是否必填 | 缺省值 | 描述                                                                                               |
+| ------------------------------- |:-------|:-------|:------|:---------------------------------------------------------------------------------------------------|
+| id                              | String | 是     |       | 注册中心在Spring容器中的主键                                                                         |
+| server-lists                    | String | 是     |       | 连接Zookeeper服务器的列表<br />包括IP地址和端口号<br />多个地址用逗号分隔<br />如: host1:2181,host2:2181 |
+| namespace                       | String | 是     |       | Zookeeper的命名空间                                                                                |
+| base-sleep-time-milliseconds    | int    | 否     | 1000  | 等待重试的间隔时间的初始值<br />单位：毫秒                                                               |
+| max-sleep-time-milliseconds     | int    | 否     | 3000  | 等待重试的间隔时间的最大值<br />单位：毫秒                                                               |
+| max-retries                     | int    | 否     | 3     | 最大重试次数                                                                                          |
+| session-timeout-milliseconds    | int    | 否     | 60000 | 会话超时时间<br />单位：毫秒                                                                           |
+| connection-timeout-milliseconds | int    | 否     | 15000 | 连接超时时间<br />单位：毫秒                                                                           |
+| digest                          | String | 否     |       | 连接Zookeeper的权限令牌<br />缺省为不需要权限验证                                                      |
+
+## 4.Spring Boot配置
+
+### 引入maven依赖
+
+```xml
+<dependency>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+### 配置示例
+
+#### 编排分库分表Spring Boot配置
+```yaml
+sharding.jdbc.datasource.names=ds,ds_0,ds_1
+sharding.jdbc.datasource.ds.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds.driverClassName=org.h2.Driver
+sharding.jdbc.datasource.ds.url=jdbc:mysql://localhost:3306/ds
+sharding.jdbc.datasource.ds.username=root
+sharding.jdbc.datasource.ds.password=
+
+sharding.jdbc.datasource.ds_0.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_0.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_0.url=jdbc:mysql://localhost:3306/ds_0
+sharding.jdbc.datasource.ds_0.username=root
+sharding.jdbc.datasource.ds_0.password=
+
+sharding.jdbc.datasource.ds_1.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_1.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_1.url=jdbc:mysql://localhost:3306/ds_1
+sharding.jdbc.datasource.ds_1.username=root
+sharding.jdbc.datasource.ds_1.password=
+
+sharding.jdbc.config.sharding.default-data-source-name=ds
+sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-inline-expression=ds_${user_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.actualDataNodes=ds_${0..1}.t_order_${0..1}
+sharding.jdbc.config.sharding.tables.t_order.tableStrategy.inline.shardingColumn=order_id
+sharding.jdbc.config.sharding.tables.t_order.tableStrategy.inline.algorithmInlineExpression=t_order_${order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.keyGeneratorColumnName=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.actualDataNodes=ds_${0..1}.t_order_item_${0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.tableStrategy.inline.shardingColumn=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.tableStrategy.inline.algorithmInlineExpression=t_order_item_${order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_item.keyGeneratorColumnName=order_item_id
+
+sharding.jdbc.config.orchestration.name=demo_spring_boot_ds_sharding
+sharding.jdbc.config.orchestration.overwrite=true
+sharding.jdbc.config.orchestration.registryCenter.namespace=orchestration-spring-boot-sharding-test
+sharding.jdbc.config.orchestration.registryCenter.server-lists=localhost:3181
+```
+
+#### 编排分库分表Spring Boot配置项说明
+同[分库分表Yaml配置](#分库分表编排配置项说明)
+

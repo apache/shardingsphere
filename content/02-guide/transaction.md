@@ -2,7 +2,7 @@
 toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "事务支持"
-weight = 8
+weight = 9
 prev = "/02-guide/key-generator/"
 next = "/02-guide/subquery/"
 

@@ -200,14 +200,38 @@ spring.profiles.active=sharding
 
 # 数据库服务编排治理使用示例
 
-## sharding-jdbc-orchestration-example 
+准备Zookeeper环境，代码示例中使用的地址为localhost:2181
 
-1. 准备Zookeeper环境，代码示例中使用的地址为localhost:2181
+## sharding-jdbc-orchestration-java-example 
 
 1. 运行
 
 ```java
-io.shardingjdbc.example.orchestration.OrchestrationMain
+io.shardingjdbc.example.orchestration.OrchestrationShardingMain
+```
+
+## sharding-jdbc-orchestration-yaml-example 
+
+1. 运行
+
+```java
+io.shardingjdbc.example.orchestration.yaml.OrchestrationYamlShardingMain
+```
+
+## sharding-jdbc-orchestration-spring-namespace-example 
+
+1. 运行
+
+```java
+io.shardingjdbc.example.orchestration.spring.namespace.OrchestrationSpringMybatisShardingShardingMain
+```
+
+## sharding-jdbc-orchestration-spring-boot-example 
+
+1. 运行
+
+```java
+io.shardingjdbc.example.orchestration.spring.boot.OrchestrationSpringBootDataJpaMain
 ```
 
 # 柔性事务使用示例

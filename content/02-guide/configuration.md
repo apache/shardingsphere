@@ -4,7 +4,7 @@ date = "2016-12-06T22:38:50+08:00"
 title = "配置手册"
 weight = 5
 prev = "/02-guide/master-slave/"
-next = "/02-guide/hint-sharding-value/"
+next = "/02-guide/orchestration/"
 
 +++
 
@@ -106,47 +106,44 @@ dataSources:
     password: 
     maxActive: 100
 
-tables:
-  config:
-    actualDataNodes: db${0..1}.t_config
-
-  t_order: 
-    actualDataNodes: db${0..1}.t_order_${0..1}
-    databaseStrategy: 
-      standard:
-        shardingColumn: user_id
-        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
-    tableStrategy: 
-      inline:
-        shardingColumn: order_id
-        algorithmInlineExpression: t_order_${order_id % 2}
-    keyGeneratorColumnName: order_id
-    keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
-  
-  t_order_item:
-    actualDataNodes: db${0..1}.t_order_item_${0..1}
-    #绑定表中其余的表的策略与第一张表的策略相同
-    databaseStrategy: 
-      standard:
-        shardingColumn: user_id
-        preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
-    tableStrategy: 
-      inline:
-        shardingColumn: order_id
-        algorithmInlineExpression: t_order_item_${order_id % 2}
-
-bindingTables:
-  - t_order,t_order_item
-#默认数据库分片策略
-defaultDatabaseStrategy:
-  none:
-defaultTableStrategy:
-  complex:
-    shardingColumns: id, order_id
-    algorithmClassName: io.shardingjdbc.core.yaml.fixture.MultiAlgorithm
-
-props:
-  sql.show: true
+shardingRule:
+  tables:
+    config:
+      actualDataNodes: db${0..1}.t_config
+    t_order: 
+      actualDataNodes: db${0..1}.t_order_${0..1}
+      databaseStrategy: 
+        standard:
+          shardingColumn: user_id
+          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmInlineExpression: t_order_${order_id % 2}
+      keyGeneratorColumnName: order_id
+      keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
+    t_order_item:
+      actualDataNodes: db${0..1}.t_order_item_${0..1}
+      #绑定表中其余的表的策略与第一张表的策略相同
+      databaseStrategy: 
+        standard:
+          shardingColumn: user_id
+          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmInlineExpression: t_order_item_${order_id % 2}
+  bindingTables:
+    - t_order,t_order_item
+  #默认数据库分片策略
+  defaultDatabaseStrategy:
+    none:
+  defaultTableStrategy:
+    complex:
+      shardingColumns: id, order_id
+      algorithmClassName: io.shardingjdbc.core.yaml.fixture.MultiAlgorithm
+  props:
+    sql.show: true
 ```
 
 #### 分库分表配置项说明
@@ -220,11 +217,12 @@ dataSources:
     password: 
     maxActive: 100
 
-name: db_ms
+masterSlaveRule:
+  name: db_ms
 
-masterDataSourceName: db_master
+  masterDataSourceName: db_master
 
-slaveDataSourceNames: [db_slave_0, db_slave_1]
+  slaveDataSourceNames: [db_slave_0, db_slave_1]
 ```
 
 #### 读写分离配置项说明
