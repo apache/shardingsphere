@@ -15,10 +15,9 @@ dataSources:
     username: root
     password: 
 
-name: 
-  ds_ms
-
-masterDataSourceName:
-  ds_master
-
-slaveDataSourceNames: [ds_slave_0, ds_slave_1]
+masterSlaveRule:
+  name: 
+    ds_ms
+  masterDataSourceName:
+    ds_master
+  slaveDataSourceNames: [ds_slave_0, ds_slave_1]

@@ -3,22 +3,28 @@
     <parent>
         <groupId>io.shardingjdbc</groupId>
         <artifactId>sharding-jdbc-example</artifactId>
-        <version>2.0.0.M1</version>
+        <version>2.0.0.M2</version>
     </parent>
     <artifactId>sharding-jdbc-spring-boot-example</artifactId>
-    <version>2.0.0.M1</version>
+    <version>2.0.0.M2</version>
     <packaging>pom</packaging>
     
     <modules>
         <module>sharding-jdbc-spring-boot-data-jpa-example</module>
         <module>sharding-jdbc-spring-boot-data-mybatis-example</module>
     </modules>
-
+    
     <dependencies>
         <dependency>
             <groupId>io.shardingjdbc</groupId>
             <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
             <version>${sharding-jdbc.version}</version>
+        </dependency>
+    
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>${spring-boot.version}</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>

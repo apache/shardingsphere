@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context" 
+    xmlns:tx="http://www.springframework.org/schema/tx" 
+    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd 
+                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding 
+                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd">
+    <import resource="classpath*:META-INF/regCenter.xml" />
+    <context:component-scan base-package="io.shardingjdbc.example.orchestration.spring.namespace.mybatis" />
+    
+    <bean id="demo_ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+    
+    <sharding:standard-strategy id="orderTableShardingStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.example.orchestration.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <sharding:standard-strategy id="orderItemTableShardingStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.example.orchestration.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    
+    <sharding:data-source id="shardingTableDataSource" registry-center-ref="regCenter">
+        <sharding:sharding-rule data-source-names="demo_ds">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds.t_order_${0..1}" table-strategy-ref="orderTableShardingStrategy" generate-key-column="order_id" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds.t_order_item_${0..1}" table-strategy-ref="orderItemTableShardingStrategy" generate-key-column="order_item_id" />
+            </sharding:table-rules>
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order, t_order_item"/>
+            </sharding:binding-table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+    
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="shardingTableDataSource" />
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="shardingTableDataSource"/>
+        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
+    </bean>
+    
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="io.shardingjdbc.example.orchestration.spring.namespace.mybatis"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+</beans>
