@@ -22,9 +22,6 @@ import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import lombok.Setter;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -36,7 +33,7 @@ import java.util.Properties;
  *
  * @author caohao
  */
-public class OrchestrationSpringShardingDataSource extends ShardingDataSource implements ApplicationContextAware {
+public class OrchestrationSpringShardingDataSource extends ShardingDataSource {
     
     private final OrchestrationConfiguration config;
     
@@ -45,9 +42,6 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource im
     private final ShardingRuleConfiguration shardingRuleConfig;
     
     private final Properties props;
-    
-    @Setter
-    private ApplicationContext applicationContext;
     
     public OrchestrationSpringShardingDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter regCenter, final Map<String, DataSource> dataSourceMap, 
                                                  final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
@@ -64,18 +58,4 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource im
     public void init() {
         new OrchestrationFacade(config).initShardingOrchestration(dataSourceMap, shardingRuleConfig, props, this);
     }
-    
-//    @Override
-//    public void renew(final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
-//        for (Entry<String, DataSource> entry : newShardingRule.getDataSourceMap().entrySet()) {
-//            if (entry.getValue() instanceof MasterSlaveDataSource) {
-//                for (Entry<String, DataSource> masterSlaveEntry : ((MasterSlaveDataSource) entry.getValue()).getAllDataSources().entrySet()) {
-//                    DataSourceBeanUtil.createDataSourceBean(applicationContext, masterSlaveEntry.getKey(), masterSlaveEntry.getValue());
-//                }
-//            } else {
-//                DataSourceBeanUtil.createDataSourceBean(applicationContext, entry.getKey(), entry.getValue());
-//            }
-//        }
-//        super.renew(newShardingRule, newProps);
-//    }
 }

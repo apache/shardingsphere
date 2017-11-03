@@ -22,13 +22,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Orchestration master slave configuration for yaml.
+ * Orchestration master-slave configuration for yaml.
  *
  * @author caohao
  */
 @Getter
 @Setter
-public class YamlOrchestrationMasterSlaveRuleConfiguration extends YamlMasterSlaveConfiguration {
+public final class YamlOrchestrationMasterSlaveRuleConfiguration extends YamlMasterSlaveConfiguration {
     
     private YamlOrchestrationConfiguration orchestration;
 }

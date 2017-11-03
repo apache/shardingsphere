@@ -34,9 +34,9 @@ public class YamlOrchestrationConfiguration {
     
     private String name;
     
-    private boolean overwrite;
-    
     private ZookeeperConfiguration registryCenter;
+    
+    private boolean overwrite;
     
     /**
      * Get orchestration master-slave rule configuration from yaml.

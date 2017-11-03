@@ -23,7 +23,6 @@ import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,8 +40,6 @@ import java.util.Properties;
 @Getter
 @Setter
 public class YamlShardingRuleConfiguration {
-    
-    private Map<String, DataSource> dataSources = new HashMap<>();
     
     private String defaultDataSourceName;
     

@@ -22,23 +22,18 @@ import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * Master slave rule configuration for yaml.
+ * Master-slave rule configuration for yaml.
  *
  * @author caohao
  */
 @Getter
 @Setter
 public class YamlMasterSlaveRuleConfiguration {
-    
-    private Map<String, DataSource> dataSources = new HashMap<>();
     
     private String name;
     

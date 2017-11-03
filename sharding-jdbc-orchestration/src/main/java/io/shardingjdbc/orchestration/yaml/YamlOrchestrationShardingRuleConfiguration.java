@@ -28,7 +28,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class YamlOrchestrationShardingRuleConfiguration extends YamlShardingConfiguration {
+public final class YamlOrchestrationShardingRuleConfiguration extends YamlShardingConfiguration {
     
     private YamlOrchestrationConfiguration orchestration;
 }
