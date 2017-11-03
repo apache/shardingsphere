@@ -2,7 +2,7 @@
 <sqls>
     <sql id="assertDropTable" value="DROP TABLE t_log" />
     <sql id="assertDropTableIfExist" value="DROP TABLE IF EXISTS t_log" type="MySQL,PostgreSQL,SQLServer" />
-    <sql id="assertDropTemporaryTable" value="DROP TEMPORARY TABLE t_log" type="MySQL" />
+    <sql id="assertDropTemporaryTable" value="DROP TEMPORARY TABLE IF EXISTS t_temp_log" type="MySQL" />
     <sql id="assertDropTableRestrict" value="DROP TABLE t_log RESTRICT" type="MySQL,PostgreSQL" />
     <sql id="assertDropTableCascade" value="DROP TABLE t_log CASCADE" type="MySQL,PostgreSQL" />
     <sql id="assertDropTableCascadeConstraintsAndPurge" value="DROP TABLE t_log CASCADE CONSTRAINTS PURGE" type="Oracle" />

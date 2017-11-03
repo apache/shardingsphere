@@ -29,6 +29,7 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.AfterClass;
+import org.junit.Before;
 
 import javax.sql.DataSource;
 import java.io.InputStreamReader;
@@ -44,9 +45,14 @@ import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractHintTest extends AbstractSQLTest {
     
-    private static boolean isShutdown;
+    public AbstractHintTest() {
+        
+    }
     
-    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
+    @Before
+    public void cleanAndInitTable() throws Exception {
+        importDataSet();
+    }
     
     @Override
     protected DatabaseType getCurrentDatabaseType() {
@@ -68,30 +74,16 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
                 "integrate/dataset/sharding/db/init/db_9.xml");
     }
     
-    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException {
-        if (!shardingDataSources.isEmpty() && !isShutdown) {
-            return shardingDataSources;
-        }
-        isShutdown = false;
+    protected final Map<DatabaseType, ShardingDataSource> initShardingDataSources() throws SQLException {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             ShardingRule shardingRule = getShardingRule(each);
-            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
+            getShardingDataSources().put(each.getKey(), new ShardingDataSource(shardingRule));
         }
-        return shardingDataSources;
+        return getShardingDataSources();
     }
     
     protected abstract ShardingRule getShardingRule(Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) throws SQLException;
-    
-    @AfterClass
-    public static void clear() {
-        isShutdown = true;
-        if (!shardingDataSources.isEmpty()) {
-            for (ShardingDataSource each : shardingDataSources.values()) {
-                each.close();
-            }
-        }
-    }
     
     protected void assertDataSet(final String expectedDataSetFile, final HintShardingValueHelper helper, 
                                  final Connection connection, final String sql, 

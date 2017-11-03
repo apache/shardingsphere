@@ -18,68 +18,60 @@
 package io.shardingjdbc.core.integrate.type.sharding;
 
 import com.google.common.base.Joiner;
+
 import io.shardingjdbc.core.common.base.AbstractSQLAssertTest;
 import io.shardingjdbc.core.common.env.ShardingTestStrategy;
-import io.shardingjdbc.core.integrate.fixture.PreciseModuloDatabaseShardingAlgorithm;
 import io.shardingjdbc.core.integrate.fixture.PreciseModuloTableShardingAlgorithm;
-import io.shardingjdbc.core.integrate.fixture.RangeModuloDatabaseShardingAlgorithm;
 import io.shardingjdbc.core.integrate.fixture.RangeModuloTableShardingAlgorithm;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
+import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import org.junit.AfterClass;
+
+import org.junit.After;
+import org.junit.Before;
 
 import javax.sql.DataSource;
+
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.sql.Statement;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class ShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
+public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTest {
     
-    private static boolean isShutdown;
-    
-    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
-    
-    public ShardingDatabaseAndTableTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+    public AbstractShardingTableOnlyTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, type, sqlShardingRules);
+    }
+    
+    protected static List<String> getInitFiles() {
+        return Collections.singletonList("integrate/dataset/sharding/tbl/init/tbl.xml");
     }
     
     @Override
     protected ShardingTestStrategy getShardingStrategy() {
-        return ShardingTestStrategy.dbtbl;
+        return ShardingTestStrategy.tbl;
     }
     
     @Override
     protected List<String> getInitDataSetFiles() {
-        return Arrays.asList(
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_0.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_1.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_2.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_3.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_4.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_5.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_6.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_7.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_8.xml",
-                "integrate/dataset/sharding/dbtbl/init/dbtbl_9.xml");
+        return AbstractShardingTableOnlyTest.getInitFiles();
     }
     
     @Override
     protected final Map<DatabaseType, ShardingDataSource> getDataSources() throws SQLException {
-        if (!shardingDataSources.isEmpty() && !isShutdown) {
-            return shardingDataSources;
+        if (!getShardingDataSources().isEmpty()) {
+            return getShardingDataSources();
         }
-        isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
-            ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-            shardingRuleConfig.setDefaultDataSourceName("dataSource_dbtbl_0");
+            final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
             TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
             orderTableRuleConfig.setLogicTable("t_order");
             List<String> orderActualDataNodes = new LinkedList<>();
@@ -95,26 +87,51 @@ public class ShardingDatabaseAndTableTest extends AbstractSQLAssertTest {
                 orderItemActualDataNodes.add(dataSourceName + ".t_order_item_${0..9}");
             }
             orderItemTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderItemActualDataNodes));
+            orderItemTableRuleConfig.setKeyGeneratorClass("item_id");
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
-            TableRuleConfiguration configTableRuleConfig = new TableRuleConfiguration();
-            configTableRuleConfig.setLogicTable("t_config");
-            shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
-                    new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
+            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("order_id", PreciseModuloTableShardingAlgorithm.class.getName(), RangeModuloTableShardingAlgorithm.class.getName()));
-            shardingDataSources.put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(entry.getValue())));
+            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(entry.getValue())));
         }
-        return shardingDataSources;
+        return getShardingDataSources();
     }
     
-    @AfterClass
-    public static void clear() {
-        isShutdown = true;
-        if (!shardingDataSources.isEmpty()) {
-            for (ShardingDataSource each : shardingDataSources.values()) {
-                each.close();
+    @Before
+    public void initDDLTables() throws SQLException {
+        if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("DROP")) {
+            if (getSql().contains("TEMP")) {
+                executeSql("CREATE TEMPORARY TABLE t_temp_log(id int, status varchar(10))");
+            } else {
+                executeSql("CREATE TABLE t_log(id int, status varchar(10))");
+            }
+        }
+    }
+    
+    @After
+    public void cleanupDdlTables() throws SQLException {
+        if (getSql().startsWith("CREATE") || getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE")) {
+            if (getSql().contains("TEMP")) {
+                executeSql("DROP TABLE t_temp_log");
+            } else {
+                executeSql("DROP TABLE t_log");
+            }
+        }
+    }
+    
+    private void executeSql(final String sql) throws SQLException {
+        for (Map.Entry<DatabaseType, ShardingDataSource> each : getDataSources().entrySet()) {
+            if (getCurrentDatabaseType() == each.getKey()) {
+                try (Connection conn = each.getValue().getConnection();
+                     Statement statement = conn.createStatement()) {
+                    statement.execute(sql);
+                    //CHECKSTYLE:OFF
+                } catch (final Exception ex) {
+                    //CHECKSTYLE:ON
+                    ex.printStackTrace();
+                    throw new RuntimeException(ex);
+                }
             }
         }
     }

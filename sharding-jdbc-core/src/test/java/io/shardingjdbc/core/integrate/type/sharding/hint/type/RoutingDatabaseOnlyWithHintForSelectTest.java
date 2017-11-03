@@ -37,7 +37,7 @@ public class RoutingDatabaseOnlyWithHintForSelectTest extends AbstractRoutingDat
     
     @Before
     public void init() throws SQLException {
-        shardingDataSources = getShardingDataSources();
+        shardingDataSources = initShardingDataSources();
     }
     
     @Test

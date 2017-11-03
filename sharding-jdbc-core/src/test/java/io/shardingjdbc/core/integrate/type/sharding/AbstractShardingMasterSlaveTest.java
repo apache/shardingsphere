@@ -32,7 +32,6 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
 import org.junit.After;
-import org.junit.AfterClass;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -43,23 +42,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
+public abstract class AbstractShardingMasterSlaveTest extends AbstractSQLAssertTest {
     
-    private static boolean isShutdown;
-    
-    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
-    
-    public ShardingMasterSlaveTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+    public AbstractShardingMasterSlaveTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, type, sqlShardingRules);
     }
     
-    @Override
-    protected ShardingTestStrategy getShardingStrategy() {
-        return ShardingTestStrategy.masterslave;
-    }
-    
-    @Override
-    protected List<String> getInitDataSetFiles() {
+    protected static List<String> getInitFiles() {
         return Arrays.asList(
                 "integrate/dataset/sharding/masterslave/init/master_0.xml",
                 "integrate/dataset/sharding/masterslave/init/master_1.xml",
@@ -84,11 +73,20 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
     }
     
     @Override
+    protected ShardingTestStrategy getShardingStrategy() {
+        return ShardingTestStrategy.masterslave;
+    }
+    
+    @Override
+    protected List<String> getInitDataSetFiles() {
+        return AbstractShardingMasterSlaveTest.getInitFiles();
+    }
+    
+    @Override
     protected final Map<DatabaseType, ShardingDataSource> getDataSources() throws SQLException {
-        if (!shardingDataSources.isEmpty() && !isShutdown) {
-            return shardingDataSources;
+        if (!getShardingDataSources().isEmpty()) {
+            return getShardingDataSources();
         }
-        isShutdown = false;
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
             Map<String, DataSource> masterSlaveDataSourceMap = getMasterSlaveDataSourceMap(entry);
@@ -116,9 +114,9 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
                     new StandardShardingStrategyConfiguration("t_order_item", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
-            shardingDataSources.put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(masterSlaveDataSourceMap)));
+            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(masterSlaveDataSourceMap)));
         }
-        return shardingDataSources;
+        return getShardingDataSources();
     }
     
     // TODO use MasterSlaveRuleConfiguration to generate data source map
@@ -159,15 +157,5 @@ public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
     public final void clearFlag() {
         HintManagerHolder.clear();
         MasterSlaveDataSource.resetDMLFlag();
-    }
-    
-    @AfterClass
-    public static void clear() {
-        isShutdown = true;
-        if (!shardingDataSources.isEmpty()) {
-            for (ShardingDataSource each : shardingDataSources.values()) {
-                each.close();
-            }
-        }
     }
 }

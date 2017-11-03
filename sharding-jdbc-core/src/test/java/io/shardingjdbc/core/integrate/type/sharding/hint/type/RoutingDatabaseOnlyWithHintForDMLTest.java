@@ -44,7 +44,7 @@ public class RoutingDatabaseOnlyWithHintForDMLTest extends AbstractRoutingDataba
     
     @Before
     public void init() throws SQLException {
-        shardingDataSources = getShardingDataSources();
+        shardingDataSources = initShardingDataSources();
     }
     
     @Test

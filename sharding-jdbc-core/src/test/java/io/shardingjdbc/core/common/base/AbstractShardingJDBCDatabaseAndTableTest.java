@@ -27,7 +27,6 @@ import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
 import io.shardingjdbc.core.fixture.PreciseOrderShardingAlgorithm;
 import io.shardingjdbc.core.fixture.RangeOrderShardingAlgorithm;
 import io.shardingjdbc.core.rule.ShardingRule;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -36,15 +35,12 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 @RunWith(Parameterized.class)
 public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
-    
-    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
     private DatabaseType databaseType;
     
@@ -53,7 +49,16 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     }
     
     @Before
+    public void cleanAndInitTable() throws Exception {
+        importDataSet();
+    }
+    
+    @Before
     public void initShardingDataSources() throws SQLException {
+        if (!getShardingDataSources().isEmpty()) {
+            return;
+        }
+        
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
             final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
@@ -84,7 +89,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("order_id", PreciseOrderShardingAlgorithm.class.getName(), RangeOrderShardingAlgorithm.class.getName()));
             ShardingRule shardingRule = shardingRuleConfig.build(entry.getValue());
-            shardingDataSources.put(entry.getKey(), new ShardingDataSource(shardingRule));
+            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(shardingRule));
         }
     }
     
@@ -106,15 +111,6 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     }
     
     protected ShardingDataSource getShardingDataSource() {
-        return shardingDataSources.get(databaseType);
-    }
-    
-    @AfterClass
-    public static void clear() {
-        if (!shardingDataSources.isEmpty()) {
-            for (ShardingDataSource each : shardingDataSources.values()) {
-                each.close();
-            }
-        }
+        return getShardingDataSources().get(databaseType);
     }
 }
