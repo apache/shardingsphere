@@ -17,18 +17,18 @@
 
 package io.shardingjdbc.core.integrate;
 
-import io.shardingjdbc.core.integrate.type.ms.MasterSlaveOnly4DMLAndDDLTest;
-import io.shardingjdbc.core.integrate.type.ms.MasterSlaveOnly4DQLTest;
-import io.shardingjdbc.core.integrate.type.sharding.NullableShardingTableOnly4DMLAndDDLTest;
-import io.shardingjdbc.core.integrate.type.sharding.NullableShardingTableOnly4DQLTest;
-import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseAndTable4DMLAndDDLTest;
-import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseAndTable4DQLTest;
-import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseOnly4DMLAndDDLTest;
-import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseOnly4DQLTest;
-import io.shardingjdbc.core.integrate.type.sharding.ShardingMasterSlave4DMLAndDDLTest;
-import io.shardingjdbc.core.integrate.type.sharding.ShardingMasterSlave4DQLTest;
-import io.shardingjdbc.core.integrate.type.sharding.ShardingTableOnly4DMLAndDDLTest;
-import io.shardingjdbc.core.integrate.type.sharding.ShardingTableOnly4DQLTest;
+import io.shardingjdbc.core.integrate.type.ms.MasterSlaveOnlyDMLAndDDLTest;
+import io.shardingjdbc.core.integrate.type.ms.MasterSlaveOnlyDQLTest;
+import io.shardingjdbc.core.integrate.type.sharding.NullableShardingTableOnlyDMLAndDDLTest;
+import io.shardingjdbc.core.integrate.type.sharding.NullableShardingTableOnlyDQLTest;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseAndTableDMLAndDDLTest;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseAndTableDQLTest;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseOnlyDMLAndDDLTest;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingDatabaseOnlyDQLTest;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingMasterSlaveDMLAndDDLTest;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingMasterSlaveDQLTest;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingTableOnlyDMLAndDDLTest;
+import io.shardingjdbc.core.integrate.type.sharding.ShardingTableOnlyDQLTest;
 import io.shardingjdbc.core.integrate.type.sharding.hint.AllHintDatabaseOnlyTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -36,18 +36,18 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ShardingDatabaseOnly4DQLTest.class,
-        ShardingDatabaseOnly4DMLAndDDLTest.class,
-        ShardingTableOnly4DQLTest.class,
-        ShardingTableOnly4DMLAndDDLTest.class,
-        ShardingMasterSlave4DQLTest.class,
-        ShardingMasterSlave4DMLAndDDLTest.class,
-        MasterSlaveOnly4DQLTest.class,
-        MasterSlaveOnly4DMLAndDDLTest.class,
-        ShardingDatabaseAndTable4DQLTest.class,
-        ShardingDatabaseAndTable4DMLAndDDLTest.class,
-        NullableShardingTableOnly4DQLTest.class,
-        NullableShardingTableOnly4DMLAndDDLTest.class,
+        ShardingDatabaseOnlyDQLTest.class,
+        ShardingDatabaseOnlyDMLAndDDLTest.class,
+        ShardingTableOnlyDQLTest.class,
+        ShardingTableOnlyDMLAndDDLTest.class,
+        ShardingMasterSlaveDQLTest.class,
+        ShardingMasterSlaveDMLAndDDLTest.class,
+        MasterSlaveOnlyDQLTest.class,
+        MasterSlaveOnlyDMLAndDDLTest.class,
+        ShardingDatabaseAndTableDQLTest.class,
+        ShardingDatabaseAndTableDMLAndDDLTest.class,
+        NullableShardingTableOnlyDQLTest.class,
+        NullableShardingTableOnlyDMLAndDDLTest.class,
         AllHintDatabaseOnlyTests.class
     })
 public class AllIntegrateTests {

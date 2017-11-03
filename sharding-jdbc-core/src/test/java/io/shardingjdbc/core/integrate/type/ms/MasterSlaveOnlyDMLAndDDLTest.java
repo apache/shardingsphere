@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingjdbc.core.integrate.type.sharding;
+package io.shardingjdbc.core.integrate.type.ms;
 
 import io.shardingjdbc.core.common.base.AbstractSQLTest;
-import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
+import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -30,9 +30,9 @@ import java.util.Collection;
 import java.util.List;
 
 @RunWith(Parameterized.class)
-public class ShardingTableOnly4DMLAndDDLTest extends AbstractShardingTableOnlyTest {
+public class MasterSlaveOnlyDMLAndDDLTest extends AbstractMasterSlaveOnlyTest {
     
-    public ShardingTableOnly4DMLAndDDLTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+    public MasterSlaveOnlyDMLAndDDLTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, type, sqlShardingRules);
     }
     

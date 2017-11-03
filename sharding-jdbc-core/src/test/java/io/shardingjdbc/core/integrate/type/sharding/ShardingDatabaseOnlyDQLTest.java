@@ -30,15 +30,15 @@ import java.util.Collection;
 import java.util.List;
 
 @RunWith(Parameterized.class)
-public class ShardingTableOnly4DQLTest extends AbstractShardingTableOnlyTest {
+public class ShardingDatabaseOnlyDQLTest extends AbstractShardingDatabaseOnlyTest {
     
-    public ShardingTableOnly4DQLTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+    public ShardingDatabaseOnlyDQLTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, type, sqlShardingRules);
     }
     
     @BeforeClass
     public static void cleanAndInitTable() throws Exception {
-        AbstractSQLAssertTest.importAllDataSet(AbstractShardingTableOnlyTest.getInitFiles());
+        AbstractSQLAssertTest.importAllDataSet(AbstractShardingDatabaseOnlyTest.getInitFiles());
     }
     
     @Parameterized.Parameters(name = "{0}In{2}")

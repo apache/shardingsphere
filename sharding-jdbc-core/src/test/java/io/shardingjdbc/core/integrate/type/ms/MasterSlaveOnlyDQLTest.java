@@ -15,13 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.core.integrate.type.sharding;
+package io.shardingjdbc.core.integrate.type.ms;
 
 import io.shardingjdbc.core.common.base.AbstractSQLAssertTest;
 import io.shardingjdbc.core.common.base.AbstractSQLTest;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
+
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -30,15 +31,15 @@ import java.util.Collection;
 import java.util.List;
 
 @RunWith(Parameterized.class)
-public class ShardingMasterSlave4DQLTest extends AbstractShardingMasterSlaveTest {
+public class MasterSlaveOnlyDQLTest extends AbstractMasterSlaveOnlyTest {
     
-    public ShardingMasterSlave4DQLTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
+    public MasterSlaveOnlyDQLTest(final String testCaseName, final String sql, final DatabaseType type, final List<SQLShardingRule> sqlShardingRules) {
         super(testCaseName, sql, type, sqlShardingRules);
     }
     
     @BeforeClass
     public static void cleanAndInitTable() throws Exception {
-        AbstractSQLAssertTest.importAllDataSet(AbstractShardingMasterSlaveTest.getInitFiles());
+        AbstractSQLAssertTest.importAllDataSet(AbstractMasterSlaveOnlyTest.getInitFiles());
     }
     
     @Parameterized.Parameters(name = "{0}In{2}")
