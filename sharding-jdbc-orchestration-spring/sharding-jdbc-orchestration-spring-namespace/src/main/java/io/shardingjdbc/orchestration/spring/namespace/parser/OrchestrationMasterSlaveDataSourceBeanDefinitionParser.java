@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
+import io.shardingjdbc.orchestration.spring.datasource.SpringMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -46,6 +47,30 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
     //CHECKSTYLE:ON
         String regCenter = parseRegistryCenterRef(element);
+        if (Strings.isNullOrEmpty(regCenter)) {
+            return getSpringMasterSlaveDataSourceBean(element, parserContext);
+        } else {
+            return getOrchestrationSpringMasterSlaveDataSourceBean(element, parserContext, regCenter);
+        }
+    }
+    
+    private AbstractBeanDefinition getSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringMasterSlaveDataSource.class);
+        factory.addConstructorArgValue(parseId(element));
+        String masterDataSourceName = parseMasterDataSourceRef(element);
+        factory.addConstructorArgValue(masterDataSourceName);
+        factory.addConstructorArgReference(masterDataSourceName);
+        factory.addConstructorArgValue(parseSlaveDataSourceBeans(element, parserContext));
+        String strategyRef = parseStrategyRef(element);
+        if (!Strings.isNullOrEmpty(strategyRef)) {
+            factory.addConstructorArgReference(strategyRef);
+        } else {
+            factory.addConstructorArgValue(parseStrategyType(element));
+        }
+        return factory.getBeanDefinition();
+    }
+    
+    private AbstractBeanDefinition getOrchestrationSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext, final String regCenter) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringMasterSlaveDataSource.class);
         factory.addConstructorArgValue(parseId(element));
         factory.addConstructorArgValue(parseOverwrite(element));
@@ -94,6 +119,15 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     
     private String parseMasterDataSourceRef(final Element element) {
         return element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.MASTER_DATA_SOURCE_NAME_ATTRIBUTE);
+    }
+    
+    private Map<String, BeanDefinition> parseSlaveDataSourceBeans(final Element element, final ParserContext parserContext) {
+        List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE));
+        Map<String, BeanDefinition> result = new ManagedMap<>(slaveDataSources.size());
+        for (String each : slaveDataSources) {
+            result.put(each, parserContext.getRegistry().getBeanDefinition(each));
+        }
+        return result;
     }
     
     private List<String> parseSlaveDataSources(final Element element) {
