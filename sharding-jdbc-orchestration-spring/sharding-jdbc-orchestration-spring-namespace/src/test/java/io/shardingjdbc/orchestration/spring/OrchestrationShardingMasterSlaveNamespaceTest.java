@@ -39,7 +39,7 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
     }
     
     @Test
-    public void testDefaultShardingDataSource() {
+    public void assertDefaultShardingDataSource() {
         ShardingRule shardingRule = getShardingRule();
         assertNotNull(shardingRule.getDataSourceMap().get("randomMasterSlaveDataSource"));
         assertNotNull(shardingRule.getDataSourceMap().get("refMasterSlaveDataSource"));

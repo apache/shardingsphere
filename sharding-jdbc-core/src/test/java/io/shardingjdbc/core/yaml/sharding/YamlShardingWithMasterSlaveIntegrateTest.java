@@ -58,7 +58,7 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
     }
     
     @Test
-    public void testWithDataSource() throws SQLException, URISyntaxException, IOException {
+    public void assertWithDataSource() throws SQLException, URISyntaxException, IOException {
         File yamlFile = new File(YamlShardingWithMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {

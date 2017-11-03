@@ -30,7 +30,7 @@ import static org.hamcrest.core.Is.is;
 public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest extends AbstractSpringDBUnitTest {
     
     @Test
-    public void testWithAllPlaceholders() throws SQLException {
+    public void assertWithAllPlaceholders() throws SQLException {
         insertData();
         selectData();
     }

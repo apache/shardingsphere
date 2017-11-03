@@ -44,8 +44,8 @@ public final class ZookeeperBeanDefinitionParser extends AbstractBeanDefinitionP
     
     private AbstractBeanDefinition buildZookeeperConfigurationBeanDefinition(final Element element) {
         BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(ZookeeperConfiguration.class);
-        configuration.addConstructorArgValue(element.getAttribute(RegistryCenterBeanDefinitionParserTag.SERVER_LISTS_TAG));
-        configuration.addConstructorArgValue(element.getAttribute(RegistryCenterBeanDefinitionParserTag.NAMESPACE_TAG));
+        addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.SERVER_LISTS_TAG, "serverLists", element, configuration);
+        addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.NAMESPACE_TAG, "namespace", element, configuration);
         addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.BASE_SLEEP_TIME_MILLISECONDS_TAG, "baseSleepTimeMilliseconds", element, configuration);
         addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.MAX_SLEEP_TIME_MILLISECONDS_TAG, "maxSleepTimeMilliseconds", element, configuration);
         addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.MAX_RETRIES_TAG, "maxRetries", element, configuration);

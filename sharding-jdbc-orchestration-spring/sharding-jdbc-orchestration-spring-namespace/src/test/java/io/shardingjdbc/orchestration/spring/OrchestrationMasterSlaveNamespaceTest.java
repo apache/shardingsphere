@@ -45,12 +45,12 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     }
     
     @Test
-    public void testMasterSlaveDataSourceType() {
+    public void assertMasterSlaveDataSourceType() {
         assertTrue(this.applicationContext.getBean("defaultMasterSlaveDataSource", MasterSlaveDataSource.class) instanceof OrchestrationSpringMasterSlaveDataSource);
     }
     
     @Test
-    public void testDefaultMaserSlaveDataSource() {
+    public void assertDefaultMaserSlaveDataSource() {
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("defaultMasterSlaveDataSource");
         assertThat(masterSlaveRule.getMasterDataSourceName(), is("dbtbl_0_master"));
         assertNotNull(masterSlaveRule.getSlaveDataSourceMap().get("dbtbl_0_slave_0"));
@@ -58,7 +58,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     }
     
     @Test
-    public void testTypeMasterSlaveDataSource() {
+    public void assertTypeMasterSlaveDataSource() {
         MasterSlaveRule randomSlaveRule = getMasterSlaveRule("randomMasterSlaveDataSource");
         MasterSlaveRule roundRobinSlaveRule = getMasterSlaveRule("roundRobinMasterSlaveDataSource");
         assertTrue(randomSlaveRule.getStrategy() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
@@ -66,7 +66,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     }
     
     @Test
-    public void testRefMasterSlaveDataSource() {
+    public void assertRefMasterSlaveDataSource() {
         MasterSlaveLoadBalanceAlgorithm randomStrategy = this.applicationContext.getBean("randomStrategy", MasterSlaveLoadBalanceAlgorithm.class);
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSource");
         assertTrue(EqualsBuilder.reflectionEquals(masterSlaveRule.getStrategy(), randomStrategy));

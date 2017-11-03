@@ -70,7 +70,7 @@ public class IPSectionKeyGeneratorTest {
     }
 
     @Test
-    public void testIPV4() throws UnknownHostException, NoSuchFieldException, IllegalAccessException {
+    public void assertIPV4() throws UnknownHostException, NoSuchFieldException, IllegalAccessException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(ipv4Address);
         IPSectionKeyGenerator.initWorkerId();
@@ -80,7 +80,7 @@ public class IPSectionKeyGeneratorTest {
     }
 
     @Test
-    public void testIPV6() throws UnknownHostException, NoSuchFieldException, IllegalAccessException {
+    public void assertIPV6() throws UnknownHostException, NoSuchFieldException, IllegalAccessException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(ipv6Address);
         IPSectionKeyGenerator.initWorkerId();
@@ -90,7 +90,7 @@ public class IPSectionKeyGeneratorTest {
     }
 
     @Test
-    public void testUnknownHost() throws UnknownHostException {
+    public void assertUnknownHost() throws UnknownHostException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenThrow(new UnknownHostException());
         exception.expect(IllegalStateException.class);
