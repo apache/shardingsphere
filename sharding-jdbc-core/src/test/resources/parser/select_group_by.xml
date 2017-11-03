@@ -206,8 +206,7 @@
         <table-tokens>
             <table-token begin-position="20" original-literals="t_order" />
         </table-tokens>
-        <order-by-token begin-position-of-statement="45" begin-position-of-prepared-statement="45"/>
-        <row-count-token row-count="5" begin-position="51" />
+        <row-count-token row-count="5" begin-position="68" />
         <group-by-columns>
             <group-by-column name="user_id" order-by-type="ASC" />
         </group-by-columns>
