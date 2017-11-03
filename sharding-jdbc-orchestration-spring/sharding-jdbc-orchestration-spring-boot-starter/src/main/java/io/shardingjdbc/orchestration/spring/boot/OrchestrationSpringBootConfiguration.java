@@ -34,13 +34,13 @@ import java.util.Properties;
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     @Autowired
-    private OrchestrationSpringBootConfigurationProperties orchestrationProperties;
-    
-    @Autowired
     private SpringBootShardingRuleConfigurationProperties shardingProperties;
     
     @Autowired
     private SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
+    
+    @Autowired
+    private OrchestrationSpringBootConfigurationProperties orchestrationProperties;
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     

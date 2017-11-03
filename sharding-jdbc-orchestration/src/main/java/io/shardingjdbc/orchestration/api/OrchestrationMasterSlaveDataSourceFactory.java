@@ -38,7 +38,7 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * Orchestration master slave data source factory.
+ * Orchestration master-slave data source factory.
  * 
  * @author zhangliang 
  * @author caohao  
@@ -51,7 +51,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      * 
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param orchestrationConfig orchestration master slave configuration
+     * @param orchestrationConfig orchestration master-slave configuration
      * 
      * @return sharding data source
      * @throws SQLException SQL exception

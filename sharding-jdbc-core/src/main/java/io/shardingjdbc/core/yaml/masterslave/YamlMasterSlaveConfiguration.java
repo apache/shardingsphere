@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Master slave configuration for yaml.
+ * Master-slave configuration for yaml.
  *
  * @author caohao
  */

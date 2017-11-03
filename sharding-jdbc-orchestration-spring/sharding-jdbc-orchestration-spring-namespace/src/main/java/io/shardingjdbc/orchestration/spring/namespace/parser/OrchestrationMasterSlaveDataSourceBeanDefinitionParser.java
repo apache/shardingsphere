@@ -49,9 +49,8 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         String regCenter = parseRegistryCenterRef(element);
         if (Strings.isNullOrEmpty(regCenter)) {
             return getSpringMasterSlaveDataSourceBean(element, parserContext);
-        } else {
-            return getOrchestrationSpringMasterSlaveDataSourceBean(element, parserContext, regCenter);
         }
+        return getOrchestrationSpringMasterSlaveDataSourceBean(element, parserContext, regCenter);
     }
     
     private AbstractBeanDefinition getSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext) {

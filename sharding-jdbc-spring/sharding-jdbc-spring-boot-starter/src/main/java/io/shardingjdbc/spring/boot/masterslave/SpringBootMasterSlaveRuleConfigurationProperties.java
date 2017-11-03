@@ -4,7 +4,7 @@ import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Master slave rule configuration properties.
+ * Master-slave rule configuration properties.
  *
  * @author caohao
  */
