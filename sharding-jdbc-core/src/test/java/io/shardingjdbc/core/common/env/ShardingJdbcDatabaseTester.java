@@ -17,9 +17,6 @@
 
 package io.shardingjdbc.core.common.env;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.dbunit.IOperationListener;
 import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.IDatabaseConnection;
@@ -31,26 +28,17 @@ import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 
 public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
     
-    private static ConcurrentHashMap<String, IDatabaseConnection> connectionMap = new ConcurrentHashMap<>();
-    
     private String driverClass;
-    
-    private String connectionUrl;
-    
-    private String schema;
     
     public ShardingJdbcDatabaseTester(final String driverClass, final String connectionUrl, final String username,
             final String password, final String schema) throws ClassNotFoundException {
         super(driverClass, connectionUrl, username, password, schema);
-        super.setOperationListener(IOperationListener.NO_OP_OPERATION_LISTENER);
         this.driverClass = driverClass;
-        this.connectionUrl = connectionUrl;
-        this.schema = schema;
     }
     
     @Override
     public IDatabaseConnection getConnection() throws Exception {
-        IDatabaseConnection result = getCachedConnection();
+        IDatabaseConnection result = super.getConnection();
         DatabaseConfig dbConfig = result.getConfig();
         dbConfig.setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false);
         dbConfig.setProperty(DatabaseConfig.FEATURE_DATATYPE_WARNING, false);
@@ -65,15 +53,6 @@ public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
         } else if ("com.microsoft.sqlserver.jdbc.SQLServerDriver".equals(driverClass)) {
             dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MsSqlDataTypeFactory());
             
-        }
-        return result;
-    }
-    
-    private IDatabaseConnection getCachedConnection() throws Exception {
-        IDatabaseConnection result = connectionMap.get(connectionUrl + schema);
-        if (null == result) {
-            result = super.getConnection();
-            connectionMap.put(connectionUrl + schema, result);
         }
         return result;
     }

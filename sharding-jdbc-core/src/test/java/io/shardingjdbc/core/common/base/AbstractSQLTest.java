@@ -215,7 +215,7 @@ public abstract class AbstractSQLTest {
         result.setUrl(dbEnv.getURL(dbName));
         result.setUsername(dbEnv.getUsername());
         result.setPassword(dbEnv.getPassword());
-        result.setMaxActive(1000);
+        result.setMaxActive(1);
         if (DatabaseType.Oracle == dbEnv.getDatabaseType()) {
             result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dbName));
         }
