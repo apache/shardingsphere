@@ -63,9 +63,13 @@ public class DirectNameSolverFactory extends NameResolver.Factory {
                         resolving = true;
                         for (String endpoint : endpoints) {
                             try {
-                                final URI uri = new URI(endpoint);
-                                if (SCHEMAS.matcher(uri.getScheme()).matches()
-                                        && !Strings.isNullOrEmpty(uri.getPath())) {
+                                val uri = new URI(endpoint);
+                                val schema = uri.getScheme();
+                                val host = uri.getHost();
+                                val port = uri.getPort();
+                                val path = uri.getPath();
+                                if (SCHEMAS.matcher(schema).matches()
+                                        && !Strings.isNullOrEmpty(path)) {
                                     val group = new EquivalentAddressGroup(new InetSocketAddress(uri.getHost(), uri.getPort()));
                                     listener.onAddresses(Collections.singletonList(group), Attributes.EMPTY);
                                 }
@@ -93,6 +97,6 @@ public class DirectNameSolverFactory extends NameResolver.Factory {
 
     @Override
     public String getDefaultScheme() {
-        return scheme;
+        return null;
     }
 }

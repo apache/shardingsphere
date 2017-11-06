@@ -10,6 +10,7 @@ import io.shardingjdbc.orchestration.reg.etcd.api.*;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,24 +46,24 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
 
     @Override
     public Optional<String> get(String key) {
-        final RangeRequest request = RangeRequest.newBuilder()
+        val request = RangeRequest.newBuilder()
                 .setKey(ByteString.copyFromUtf8(key))
                 .build();
-        final RangeResponse response = kvBlockingStub.range(request);
-        final List<io.shardingjdbc.orchestration.reg.etcd.api.KeyValue> keyValues = response.getKvsList();
-        return keyValues.isEmpty() ? Optional.<String>absent() : Optional.of(keyValues.get(0).getValue().toStringUtf8());
+        val response = kvBlockingStub.range(request);
+        val range = response.getKvsList();
+        return range.isEmpty() ? Optional.<String>absent() : Optional.of(range.get(0).getValue().toStringUtf8());
     }
 
     @Override
     public Optional<List<EtcdClient.KeyValue>> list(String dir) {
-        final RangeRequest request = RangeRequest.newBuilder()
+        val request = RangeRequest.newBuilder()
                 .setKey(ByteString.copyFromUtf8(dir))
                 .setRangeEnd(prefix(dir))
                 .build();
-        final RangeResponse response = kvBlockingStub.range(request);
-        final List<io.shardingjdbc.orchestration.reg.etcd.api.KeyValue> keyValues = response.getKvsList();
+        val response = kvBlockingStub.range(request);
+        val range = response.getKvsList();
         List<EtcdClient.KeyValue> result = Lists.newArrayList();
-        for (io.shardingjdbc.orchestration.reg.etcd.api.KeyValue keyValue : keyValues) {
+        for (io.shardingjdbc.orchestration.reg.etcd.api.KeyValue keyValue : range) {
             result.add(EtcdClient.KeyValue.builder()
                     .key(keyValue.getKey().toStringUtf8())
                     .value(keyValue.getValue().toStringUtf8())
@@ -73,36 +74,36 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
 
     @Override
     public Optional<String> put(String key, String value) {
-        final PutRequest request = PutRequest.newBuilder()
+        val request = PutRequest.newBuilder()
                 .setPrevKv(true)
                 .setKey(ByteString.copyFromUtf8(key))
                 .setValue(ByteString.copyFromUtf8(value))
                 .build();
-        final PutResponse response = kvBlockingStub.put(request);
+        val response = kvBlockingStub.put(request);
         return Optional.of(response.getPrevKv().getValue().toStringUtf8());
     }
 
     @Override
     public Optional<String> put(@NonNull String key, @NonNull String value, long ttl) {
-        final Optional<Long> leaseId = lease(ttl);
+        val leaseId = lease(ttl);
         if (!leaseId.isPresent()) {
             throw new RegException("Unable to set up heat beat for key %s", key);
         }
-        final PutRequest request = PutRequest.newBuilder()
+        val request = PutRequest.newBuilder()
                 .setPrevKv(true)
                 .setLease(leaseId.get())
                 .setKey(ByteString.copyFromUtf8(key))
                 .setValue(ByteString.copyFromUtf8(value))
                 .build();
-        final PutResponse response = kvBlockingStub.put(request);
+        val response = kvBlockingStub.put(request);
         return Optional.of(response.getPrevKv().getValue().toStringUtf8());
     }
 
     @Override
     public Optional<List<String>> delete(String key) {
-        final DeleteRangeRequest request = DeleteRangeRequest.newBuilder()
+        val request = DeleteRangeRequest.newBuilder()
                 .build();
-        DeleteRangeResponse response = kvBlockingStub.deleteRange(request);
+        val response = kvBlockingStub.deleteRange(request);
         List<String> deletedKeys = Lists.newArrayList();
         for (io.shardingjdbc.orchestration.reg.etcd.api.KeyValue keyValue : response.getPrevKvsList()) {
             deletedKeys.add(keyValue.getKey().toStringUtf8());
@@ -112,8 +113,8 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
 
     @Override
     public Optional<Long> lease(long ttl) {
-        final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(ttl).build();
-        final LeaseGrantResponse response = leaseBlockingStub.leaseGrant(request);
+        val request = LeaseGrantRequest.newBuilder().setTTL(ttl).build();
+        val response = leaseBlockingStub.leaseGrant(request);
         return Optional.of(response.getID());
     }
 
@@ -132,19 +133,19 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
 
     @Override
     public Optional<Watcher> watch(final @NonNull String key) {
-        final WatcherImpl watcher = new WatcherImpl(key);
-        final StreamObserver<WatchResponse> responseStream = new StreamObserver<WatchResponse>() {
+        final val watcher = new WatcherImpl(key);
+        val responseStream = new StreamObserver<WatchResponse>() {
             @Override
             public void onNext(WatchResponse response) {
                 if (response.getCanceled()) {
                     watchers.remove(response.getWatchId());
                 } else if (response.getCreated()) {
-                    final long id = response.getWatchId();
+                    val id = response.getWatchId();
                     watcher.setId(id);
                     watchers.put(id, watcher);
                 } else {
-                    for (final Event event : response.getEventsList()) {
-                        final WatchEvent watchEvent = WatchEvent.of(event);
+                    for (val event : response.getEventsList()) {
+                        val watchEvent = WatchEvent.of(event);
                         watcher.notify(watchEvent);
                     }
                 }
@@ -161,11 +162,11 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                 log.info("etcd watch complemented");
             }
         };
-        final StreamObserver<WatchRequest> requestStream = watchStub.watch(responseStream);
-        final WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder()
+        val requestStream = watchStub.watch(responseStream);
+        val createWatchRequest = WatchCreateRequest.newBuilder()
                 .setKey(ByteString.copyFromUtf8(key))
                 .build();
-        final WatchRequest request = WatchRequest.newBuilder()
+        val request = WatchRequest.newBuilder()
                 .setCreateRequest(createWatchRequest)
                 .build();
         requestStream.onNext(request);
