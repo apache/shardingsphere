@@ -17,6 +17,8 @@ chapter = true
 
 ## [别吃胖](http://www.biechipang.net/)
 
+## [CIBN微视听（原全聚合）](http://www.91vst.com/)
+
 ## [当当](http://www.dangdang.com/)
 
 ## [东方车联](http://www.dongfang789.com/)
@@ -60,6 +62,8 @@ chapter = true
 ## [特微智能](http://www.trawe.cn/)
 
 ## [唯品会](http://www.vip.com/)
+
+## [五谷图像](http://www.5grain.com/)
 
 ## [下厨房](http://www.xiachufang.com/)
 
