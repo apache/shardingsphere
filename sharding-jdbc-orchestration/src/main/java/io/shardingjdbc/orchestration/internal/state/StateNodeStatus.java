@@ -18,14 +18,14 @@
 package io.shardingjdbc.orchestration.internal.state;
 
 /**
- * Instance state.
+ * State node status.
  *
  * @author caohao
  */
-public enum InstanceState {
+public enum StateNodeStatus {
     
     /**
-     * Instance of Sharding-JDBC is disabled.
+     * Disabled state node.
      */
     DISABLED
 }

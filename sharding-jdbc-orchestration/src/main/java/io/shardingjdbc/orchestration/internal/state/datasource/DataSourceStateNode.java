@@ -15,32 +15,23 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.state;
-
-import io.shardingjdbc.orchestration.internal.util.IpUtils;
-
-import java.lang.management.ManagementFactory;
+package io.shardingjdbc.orchestration.internal.state.datasource;
 
 /**
- * Instance state node.
+ * Data source state node.
  * 
  * @author caohao
  */
-public final class InstanceStateNode {
+public final class DataSourceStateNode {
     
     public static final String ROOT = "state";
     
-    public static final String INSTANCES_NODE_PATH = ROOT + "/instances";
-    
-    private static final String DELIMITER = "@-@";
+    public static final String INSTANCES_NODE_PATH = ROOT + "/datasources";
     
     private final String name;
     
-    private final String instanceId;
-    
-    public InstanceStateNode(final String name) {
+    public DataSourceStateNode(final String name) {
         this.name = name;
-        instanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     }
     
     /**
@@ -49,6 +40,6 @@ public final class InstanceStateNode {
      * @return node full path
      */
     public String getFullPath() {
-        return String.format("/%s/%s/%s", name, INSTANCES_NODE_PATH, instanceId);
+        return String.format("/%s/%s", name, INSTANCES_NODE_PATH);
     }
 }

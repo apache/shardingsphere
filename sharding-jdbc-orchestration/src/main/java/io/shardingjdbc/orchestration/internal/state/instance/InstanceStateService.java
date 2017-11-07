@@ -15,13 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.state;
+package io.shardingjdbc.orchestration.internal.state.instance;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
+import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Getter;
 import org.apache.curator.framework.CuratorFramework;
@@ -76,7 +77,7 @@ public final class InstanceStateService {
                     return;
                 }
                 Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
-                if (InstanceState.DISABLED.toString().equalsIgnoreCase(regCenter.get(childData.getPath()))) {
+                if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(childData.getPath()))) {
                     for (String each : dataSourceMap.keySet()) {
                         dataSourceMap.put(each, new CircuitBreakerDataSource());
                     }
@@ -109,7 +110,7 @@ public final class InstanceStateService {
                     return;
                 }
                 Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
-                if (InstanceState.DISABLED.toString().equalsIgnoreCase(regCenter.get(childData.getPath()))) {
+                if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(childData.getPath()))) {
                     for (String each : dataSourceMap.keySet()) {
                         dataSourceMap.put(each, new CircuitBreakerDataSource());
                     }

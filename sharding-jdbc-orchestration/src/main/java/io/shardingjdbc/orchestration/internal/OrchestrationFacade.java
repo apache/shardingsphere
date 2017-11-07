@@ -6,7 +6,8 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingjdbc.orchestration.internal.state.InstanceStateService;
+import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
+import io.shardingjdbc.orchestration.internal.state.instance.InstanceStateService;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -27,10 +28,13 @@ public final class OrchestrationFacade {
     
     private final InstanceStateService instanceStateService;
     
+    private final DataSourceService dataSourceService;
+    
     public OrchestrationFacade(final OrchestrationConfiguration config) {
         this.config = config;
         configurationService = new ConfigurationService(config);
         instanceStateService = new InstanceStateService(config);
+        dataSourceService = new DataSourceService(config);
     }
     
     /**
@@ -94,5 +98,6 @@ public final class OrchestrationFacade {
         config.getRegistryCenter().init();
         configurationService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, masterSlaveDataSource);
         instanceStateService.persistMasterSlaveInstanceOnline(masterSlaveDataSource);
+        dataSourceService.persistDataSourcesNodeOnline(masterSlaveDataSource);
     }
 }
