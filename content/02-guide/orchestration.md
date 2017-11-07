@@ -87,7 +87,7 @@ instances
 
 ## instances节点 
 
-可在IP地址@-@PID节点写入DISABLED（忽略大小写）表示禁用该实例，删除DISABLED表示启用节点。
+可在IP地址@-@PID节点写入DISABLED（忽略大小写）表示禁用该实例，删除DISABLED表示启用。
 
 Zookeeper命令如下：
 
@@ -95,9 +95,16 @@ Zookeeper命令如下：
 [zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED
 ```
 
-## datasource节点 
+## datasources节点 
 
-可在datasource节点写入DISABLED表示禁用该数据源（预计2.0.0.M3版本发布）。
+在读写分离场景下，可在数据源名称子节点写入DISABLED表示禁用从库数据源，删除DISABLED或节点表示启用。（预计2.0.0.M3版本发布）。
+
+Zookeeper命令如下：
+
+```
+[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/datasources/your_slave_datasource_name DISABLED
+```
+
 
 # 使用示例
 
