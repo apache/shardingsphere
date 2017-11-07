@@ -1,7 +1,7 @@
 package io.shardingjdbc.orchestration.reg.etcd.internal;
 
+import io.grpc.Channel;
 import io.grpc.netty.NettyChannelBuilder;
-import lombok.val;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,10 +63,10 @@ public class EtcdClientBuilder {
     }
 
     public EtcdClient build() {
-        val etcdClient = etcdClientRef.get();
+        final EtcdClient etcdClient = etcdClientRef.get();
         if (etcdClient == null) {
-            val target = "etcd";
-            val channelBuilder = NettyChannelBuilder.forTarget(target)
+            final String target = "etcd";
+            final NettyChannelBuilder channelBuilder = NettyChannelBuilder.forTarget(target)
                     .usePlaintext(true)
                     .idleTimeout(idleTimeout, TimeUnit.MICROSECONDS)
                     .nameResolverFactory(DirectNameSolverFactory.newFactory(target, endpoints));
@@ -77,8 +77,8 @@ public class EtcdClientBuilder {
             if (idle) {
                 channelBuilder.idleTimeout(idleTimeout, TimeUnit.MILLISECONDS);
             }
-            val channel = channelBuilder.build();
-            val newEtcdClient = new EtcdClientImpl(channel);
+            final Channel channel = channelBuilder.build();
+            final EtcdClient newEtcdClient = new EtcdClientImpl(channel);
             if (etcdClientRef.compareAndSet(null, newEtcdClient)) {
                 return newEtcdClient;
             } else {

@@ -1,15 +1,15 @@
 package io.shardingjdbc.orchestration.reg.etcd;
 
+import io.shardingjdbc.orchestration.reg.base.RegistryServer;
 import io.shardingjdbc.orchestration.reg.base.ShardInstance;
-import io.shardingjdbc.orchestration.reg.base.ShardRegistryCenter;
 import io.shardingjdbc.orchestration.reg.base.ShardState;
 
 /**
- * registration center implemented with etcd.
+ * registration server implemented with etcd.
  *
  * @author junxiong
  */
-public class EtcdShardRegistryCenter implements ShardRegistryCenter {
+public class EtcdRegistryServer implements RegistryServer {
 
     @Override
     public void open() {

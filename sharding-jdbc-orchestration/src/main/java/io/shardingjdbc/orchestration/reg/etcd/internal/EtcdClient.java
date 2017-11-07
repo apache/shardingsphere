@@ -2,7 +2,6 @@ package io.shardingjdbc.orchestration.reg.etcd.internal;
 
 import com.google.common.base.Optional;
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Wither;
 
@@ -21,7 +20,7 @@ public interface EtcdClient {
      * @param key key
      * @return value
      */
-    Optional<String> get(@NonNull String key);
+    Optional<String> get(String key);
 
     /**
      * list all child key/value for a directory
@@ -30,7 +29,7 @@ public interface EtcdClient {
      * @param directory directory
      * @return value
      */
-    Optional<List<KeyValue>> list(@NonNull String directory);
+    Optional<List<KeyValue>> list(String directory);
 
     /**
      * put value to a specific key, if result is not absent, it is an update
@@ -39,7 +38,7 @@ public interface EtcdClient {
      * @param value value
      * @return old value
      */
-    Optional<String> put(@NonNull String key, @NonNull String value);
+    Optional<String> put(String key, String value);
 
     /**
      * put value to a specific key, if result is not absent, it is an update
@@ -49,7 +48,7 @@ public interface EtcdClient {
      * @param ttl   time to live in milliseconds
      * @return old value
      */
-    Optional<String> put(@NonNull String key, @NonNull String value, long ttl);
+    Optional<String> put(String key, String value, long ttl);
 
     /**
      * delete a key or a directory
@@ -58,7 +57,7 @@ public interface EtcdClient {
      * @param keyOrDirectory key or directory
      * @return deleted keys
      */
-    Optional<List<String>> delete(@NonNull String keyOrDirectory);
+    Optional<List<String>> delete(String keyOrDirectory);
 
     /**
      * create a lease with a specific ttl in milliseconds
@@ -66,7 +65,7 @@ public interface EtcdClient {
      * @param ttl time to live
      * @return lease id
      */
-    Optional<Long> lease(@NonNull long ttl);
+    Optional<Long> lease(long ttl);
 
     /**
      * watch a keys
@@ -74,7 +73,7 @@ public interface EtcdClient {
      * @param key String
      * @return list of watcher
      */
-    Optional<Watcher> watch(@NonNull String key);
+    Optional<Watcher> watch(String key);
 
     @Value
     @Wither

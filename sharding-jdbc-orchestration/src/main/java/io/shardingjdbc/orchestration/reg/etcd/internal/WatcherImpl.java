@@ -2,7 +2,6 @@ package io.shardingjdbc.orchestration.reg.etcd.internal;
 
 import com.google.common.collect.Lists;
 import lombok.Data;
-import lombok.val;
 
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class WatcherImpl implements Watcher {
     }
 
     public void notify(WatchEvent watchEvent) {
-        for (val listener : listeners) {
+        for (final WatcherListener listener : listeners) {
             listener.onWatch(watchEvent);
         }
     }

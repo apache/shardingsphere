@@ -8,7 +8,7 @@ import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.orchestration.reg.base.ConfigChangeEvent;
 import io.shardingjdbc.orchestration.reg.base.ConfigChangeListener;
-import io.shardingjdbc.orchestration.reg.base.ShardConfigCenter;
+import io.shardingjdbc.orchestration.reg.base.ConfigServer;
 import io.shardingjdbc.orchestration.reg.etcd.internal.*;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import lombok.NonNull;
@@ -25,8 +25,8 @@ import static java.lang.String.format;
 /**
  * @author junxiong
  */
-public class EtcdShardConfigCenter implements ShardConfigCenter, WatcherListener {
-    private static ShardConfigCenter shardConfigCenter;
+public class EtcdConfigServer implements ConfigServer, WatcherListener {
+    private static EtcdConfigServer etcdConfigServer;
     private String namespace;
     private EtcdClient etcdClient;
     private Set<ConfigChangeListener> configChangeListeners = Sets.newCopyOnWriteArraySet();
@@ -34,7 +34,7 @@ public class EtcdShardConfigCenter implements ShardConfigCenter, WatcherListener
     private AtomicBoolean opened = new AtomicBoolean(false);
     private List<Watcher> watchers;
 
-    private EtcdShardConfigCenter(@NonNull EtcdConfiguration etcdConfiguration) {
+    private EtcdConfigServer(@NonNull EtcdConfiguration etcdConfiguration) {
         this.namespace = etcdConfiguration.getNamespace();
         this.etcdClient = EtcdClientBuilder.newBuilder()
                 .endpoints(etcdConfiguration.getServerLists())
@@ -42,11 +42,11 @@ public class EtcdShardConfigCenter implements ShardConfigCenter, WatcherListener
     }
 
     @Synchronized
-    public static ShardConfigCenter from(@NonNull EtcdConfiguration etcdConfiguration) {
-        if (shardConfigCenter == null) {
-            shardConfigCenter = new EtcdShardConfigCenter(etcdConfiguration);
+    public static EtcdConfigServer from(@NonNull EtcdConfiguration etcdConfiguration) {
+        if (etcdConfigServer == null) {
+            etcdConfigServer = new EtcdConfigServer(etcdConfiguration);
         }
-        return shardConfigCenter;
+        return etcdConfigServer;
     }
 
 

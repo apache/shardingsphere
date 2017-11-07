@@ -1,14 +1,14 @@
 package io.shardingjdbc.orchestration.reg.base;
 
 /**
- * Shard registry center
+ * sharding-jdbc registry server
  *
  * @author junxiong
  */
-public interface ShardRegistryCenter extends AutoCloseable {
+public interface RegistryServer extends AutoCloseable {
 
     /**
-     * Open shard registry center, setup event listeners.
+     * Open sharding-jdbc registry server, setup event listeners.
      */
     void open();
 

@@ -8,15 +8,19 @@ import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
  *
  * @author junxiong
  */
-public interface ShardConfigCenter extends AutoCloseable {
+public interface ConfigServer extends AutoCloseable {
 
     /**
-     * Open shard config center, setup event listeners.
+     * Open sharding-jdbc config server, setup connection to backend storage and event listeners.
      */
     void open();
 
     /**
      * save or update master slave rule configuration
+     *
+     * caution: this may conflict with distribute configuration management center.
+     *
+     * MasterSlaveRuleConfiguration is an aggregation of configuration items for CQRS data source strategy.
      *
      * @param masterSlaveRuleConfiguration master slave rule configuration
      */
