@@ -515,7 +515,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven-checkstyle-plugin.version}</version>
                 <configuration>
-                    <configLocation>src/main/resources/dd_checks.xml</configLocation>
+                    <configLocation>src/resources/dd_checks.xml</configLocation>
                 </configuration>
             </plugin>
             <plugin>
