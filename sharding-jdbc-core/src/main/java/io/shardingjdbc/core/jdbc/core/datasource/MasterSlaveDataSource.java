@@ -109,9 +109,8 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
      * Renew master-slave data source.
      *
      * @param masterSlaveRule new master-slave rule
-     * @throws SQLException SQL exception
      */
-    public void renew(final MasterSlaveRule masterSlaveRule) throws SQLException {
+    public void renew(final MasterSlaveRule masterSlaveRule) {
         this.masterSlaveRule = masterSlaveRule;
     }
     

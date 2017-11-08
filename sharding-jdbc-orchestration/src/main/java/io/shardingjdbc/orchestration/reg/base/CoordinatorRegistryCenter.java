@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.orchestration.reg.base;
 
+import java.util.List;
+
 /**
  * Coordinator based registry center.
  * 
@@ -48,11 +50,12 @@ public interface CoordinatorRegistryCenter extends RegistryCenter {
     void addCacheData(String cachePath);
     
     /**
-     * Evict cache data.
+     * 获取子节点名称集合.
      *
-     * @param cachePath cache path
+     * @param key 键
+     * @return 子节点名称集合
      */
-    void evictCacheData(String cachePath);
+    List<String> getChildrenKeys(String key);
     
     /**
      * Get cache's raw object.

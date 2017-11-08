@@ -36,6 +36,8 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,7 +161,27 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
             return null;
         }
     }
-
+    
+    @Override
+    public List<String> getChildrenKeys(final String key) {
+        try {
+            List<String> result = client.getChildren().forPath(key);
+            Collections.sort(result, new Comparator<String>() {
+                
+                @Override
+                public int compare(final String o1, final String o2) {
+                    return o2.compareTo(o1);
+                }
+            });
+            return result;
+            //CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            //CHECKSTYLE:ON
+            RegExceptionHandler.handleException(ex);
+            return Collections.emptyList();
+        }
+    }
+    
     @Override
     public boolean isExisted(final String key) {
         try {
@@ -223,14 +245,6 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
             RegExceptionHandler.handleException(ex);
         }
         caches.put(cachePath + "/", cache);
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-        TreeCache cache = caches.remove(cachePath + "/");
-        if (null != cache) {
-            cache.close();
-        }
     }
     
     @Override

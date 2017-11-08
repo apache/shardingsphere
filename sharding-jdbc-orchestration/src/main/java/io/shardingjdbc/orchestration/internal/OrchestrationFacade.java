@@ -28,13 +28,10 @@ public final class OrchestrationFacade {
     
     private final InstanceStateService instanceStateService;
     
-    private final DataSourceService dataSourceService;
-    
     public OrchestrationFacade(final OrchestrationConfiguration config) {
         this.config = config;
         configurationService = new ConfigurationService(config);
         instanceStateService = new InstanceStateService(config);
-        dataSourceService = new DataSourceService(config);
     }
     
     /**
@@ -98,6 +95,7 @@ public final class OrchestrationFacade {
         config.getRegistryCenter().init();
         configurationService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, masterSlaveDataSource);
         instanceStateService.persistMasterSlaveInstanceOnline(masterSlaveDataSource);
-        dataSourceService.persistDataSourcesNodeOnline(masterSlaveDataSource);
+        new DataSourceService(config).persistDataSourcesNodeOnline(masterSlaveDataSource);
+        masterSlaveDataSource.renew(configurationService.getAvailableMasterSlaveRule());
     }
 }

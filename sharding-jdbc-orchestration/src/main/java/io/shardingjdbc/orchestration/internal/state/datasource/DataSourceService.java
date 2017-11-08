@@ -17,11 +17,10 @@
 
 package io.shardingjdbc.orchestration.internal.state.datasource;
 
-import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingjdbc.core.rule.MasterSlaveRule;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Getter;
 import org.apache.curator.framework.CuratorFramework;
@@ -29,9 +28,6 @@ import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
-
-import javax.sql.DataSource;
-import java.util.Map;
 
 /**
  * Data source service.
@@ -41,14 +37,14 @@ import java.util.Map;
 @Getter
 public final class DataSourceService {
     
-    private final DataSourceStateNode dataSourceStateNode;
+    private final String dataSourceNodePath;
     
     private final CoordinatorRegistryCenter regCenter;
     
     private final ConfigurationService configurationService;
     
     public DataSourceService(final OrchestrationConfiguration config) {
-        dataSourceStateNode = new DataSourceStateNode(config.getName());
+        dataSourceNodePath = new DataSourceStateNode(config.getName()).getFullPath();
         regCenter = config.getRegistryCenter();
         configurationService = new ConfigurationService(config);
     }
@@ -56,33 +52,33 @@ public final class DataSourceService {
     /**
      * Persist master-salve datasources node and add listener.
      *
+     * @param masterSlaveDataSource master-slave datasource
      */
     public void persistDataSourcesNodeOnline(final MasterSlaveDataSource masterSlaveDataSource) {
-        String dataSourceNodePath = dataSourceStateNode.getFullPath();
         regCenter.persist(dataSourceNodePath, "");
         regCenter.addCacheData(dataSourceNodePath);
-        addDataSourcesNodeListener(dataSourceNodePath, masterSlaveDataSource);
+        addDataSourcesNodeListener(masterSlaveDataSource);
     }
     
-    private void addDataSourcesNodeListener(final String dataSourceNodePath, final MasterSlaveDataSource masterSlaveDataSource) {
+    private void addDataSourcesNodeListener(final MasterSlaveDataSource masterSlaveDataSource) {
         TreeCache cache = (TreeCache) regCenter.getRawCache(dataSourceNodePath);
         cache.getListenable().addListener(new TreeCacheListener() {
             
             @Override
             public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
                 ChildData childData = event.getData();
-                if (null == childData || null == childData.getData() || childData.getPath().isEmpty() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
+                if (null == childData || null == childData.getData() || childData.getPath().isEmpty()) {
                     return;
                 }
-                Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
-                String path = childData.getPath();
-                String dataSourceName = path.substring(path.lastIndexOf("/") + 1);
-                MasterSlaveRuleConfiguration ruleConfig = configurationService.loadMasterSlaveRuleConfiguration();
-                if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(path)) && dataSourceMap.containsKey(dataSourceName)) {
-                    dataSourceMap.remove(dataSourceName);
-                    ruleConfig.getSlaveDataSourceNames().remove(dataSourceName);
+                if (TreeCacheEvent.Type.NODE_UPDATED == event.getType() || TreeCacheEvent.Type.NODE_REMOVED == event.getType()) {
+                    MasterSlaveRule masterSlaveRule = configurationService.getAvailableMasterSlaveRule();
+                    if (TreeCacheEvent.Type.NODE_REMOVED == event.getType()) {
+                        String path = childData.getPath();
+                        String dataSourceName = path.substring(path.lastIndexOf("/") + 1);
+                        masterSlaveRule.getSlaveDataSourceMap().remove(dataSourceName);
+                    }
+                    masterSlaveDataSource.renew(masterSlaveRule);
                 }
-                masterSlaveDataSource.renew(ruleConfig.build(dataSourceMap));
             }
         });
     }
