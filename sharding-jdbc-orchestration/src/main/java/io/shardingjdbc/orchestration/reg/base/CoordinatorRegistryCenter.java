@@ -50,12 +50,12 @@ public interface CoordinatorRegistryCenter extends RegistryCenter {
     void addCacheData(String cachePath);
     
     /**
-     * 获取子节点名称集合.
+     * Get node's sub-nodes list.
      *
-     * @param key 键
-     * @return 子节点名称集合
+     * @param path key
+     * @return sub-nodes name list
      */
-    List<String> getChildrenKeys(String key);
+    List<String> getChildrenKeys(String path);
     
     /**
      * Get cache's raw object.
