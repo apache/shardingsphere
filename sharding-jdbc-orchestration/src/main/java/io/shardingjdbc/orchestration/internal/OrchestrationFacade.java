@@ -95,7 +95,7 @@ public final class OrchestrationFacade {
         config.getRegistryCenter().init();
         configurationService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, masterSlaveDataSource);
         instanceStateService.persistMasterSlaveInstanceOnline(masterSlaveDataSource);
-        new DataSourceService(config).persistDataSourcesNodeOnline(masterSlaveDataSource);
+        new DataSourceService(config).initDataSourcesNode(masterSlaveDataSource);
         masterSlaveDataSource.renew(configurationService.getAvailableMasterSlaveRule());
     }
 }

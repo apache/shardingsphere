@@ -206,7 +206,7 @@ public final class ConfigurationService {
      */
     public MasterSlaveRule getAvailableMasterSlaveRule() {
         Map<String, DataSource> dataSourceMap = loadDataSourceMap();
-        String dataSourcesNodePath = new StateNode(name).getDataSourceNodeFullPath();
+        String dataSourcesNodePath = new StateNode(name).getDataSourcesNodeFullPath();
         List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
         MasterSlaveRuleConfiguration ruleConfig = loadMasterSlaveRuleConfiguration();
         for (String each : dataSources) {

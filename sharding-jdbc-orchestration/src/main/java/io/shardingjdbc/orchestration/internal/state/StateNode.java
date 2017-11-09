@@ -28,7 +28,7 @@ public class StateNode {
     
     private static final String INSTANCES_NODE_PATH = ROOT + "/instances";
     
-    private static final String DATASOURCES_NODE_PATH = ROOT + "/datasources";
+    private static final String DATA_SOURCES_NODE_PATH = ROOT + "/datasources";
     
     private final String name;
     
@@ -41,8 +41,8 @@ public class StateNode {
      *
      * @return data source node full path
      */
-    public String getDataSourceNodeFullPath() {
-        return String.format("/%s/%s", name, DATASOURCES_NODE_PATH);
+    public String getDataSourcesNodeFullPath() {
+        return String.format("/%s/%s", name, DATA_SOURCES_NODE_PATH);
     }
     
     

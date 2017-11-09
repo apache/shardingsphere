@@ -18,7 +18,6 @@
 package io.shardingjdbc.orchestration.internal.state.datasource;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.rule.MasterSlaveRule;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
@@ -45,17 +44,17 @@ public final class DataSourceService {
     private final ConfigurationService configurationService;
     
     public DataSourceService(final OrchestrationConfiguration config) {
-        dataSourceNodePath = new StateNode(config.getName()).getDataSourceNodeFullPath();
+        dataSourceNodePath = new StateNode(config.getName()).getDataSourcesNodeFullPath();
         regCenter = config.getRegistryCenter();
         configurationService = new ConfigurationService(config);
     }
     
     /**
-     * Persist master-salve datasources node and add listener.
+     * Persist master-salve data sources node and add listener.
      *
-     * @param masterSlaveDataSource master-slave datasource
+     * @param masterSlaveDataSource master-slave data source
      */
-    public void persistDataSourcesNodeOnline(final MasterSlaveDataSource masterSlaveDataSource) {
+    public void initDataSourcesNode(final MasterSlaveDataSource masterSlaveDataSource) {
         regCenter.persist(dataSourceNodePath, "");
         regCenter.addCacheData(dataSourceNodePath);
         addDataSourcesNodeListener(masterSlaveDataSource);
@@ -72,13 +71,7 @@ public final class DataSourceService {
                     return;
                 }
                 if (TreeCacheEvent.Type.NODE_UPDATED == event.getType() || TreeCacheEvent.Type.NODE_REMOVED == event.getType()) {
-                    MasterSlaveRule masterSlaveRule = configurationService.getAvailableMasterSlaveRule();
-                    if (TreeCacheEvent.Type.NODE_UPDATED == event.getType()) {
-                        String path = childData.getPath();
-                        String dataSourceName = path.substring(path.lastIndexOf("/") + 1);
-                        masterSlaveRule.getSlaveDataSourceMap().remove(dataSourceName);
-                    }
-                    masterSlaveDataSource.renew(masterSlaveRule);
+                    masterSlaveDataSource.renew(configurationService.getAvailableMasterSlaveRule());
                 }
             }
         });
