@@ -61,6 +61,7 @@ public class YamlShardingRuleConfiguration {
      * Get sharding rule configuration from yaml.
      *
      * @return sharding rule configuration from yaml
+     * @throws SQLException SQL exception
      */
     public ShardingRuleConfiguration getShardingRuleConfiguration() throws SQLException {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();

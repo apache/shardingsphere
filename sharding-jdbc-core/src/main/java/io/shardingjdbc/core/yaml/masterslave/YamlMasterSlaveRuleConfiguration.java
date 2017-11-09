@@ -49,6 +49,7 @@ public class YamlMasterSlaveRuleConfiguration {
      * Get master-slave rule configuration from yaml.
      *
      * @return master-slave rule configuration from yaml
+     * @throws SQLException SQL exception
      */
     public MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() throws SQLException {
         MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();

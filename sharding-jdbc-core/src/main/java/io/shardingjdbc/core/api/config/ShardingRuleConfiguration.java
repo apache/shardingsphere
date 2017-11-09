@@ -63,6 +63,7 @@ public class ShardingRuleConfiguration {
      *
      * @param dataSourceMap data source map
      * @return sharding rule
+     * @throws SQLException SQL exception
      */
     public ShardingRule build(final Map<String, DataSource> dataSourceMap) throws SQLException {
         Preconditions.checkNotNull(dataSourceMap, "dataSources cannot be null.");
