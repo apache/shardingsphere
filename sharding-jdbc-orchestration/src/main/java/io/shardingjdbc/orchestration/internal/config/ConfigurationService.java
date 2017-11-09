@@ -212,7 +212,6 @@ public final class ConfigurationService {
         for (String each : dataSources) {
             String dataSourceName = each.substring(each.lastIndexOf("/") + 1);
             String path = dataSourcesNodePath + "/" + each;
-            System.out.println(path);
             if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(path)) && dataSourceMap.containsKey(dataSourceName)) {
                 dataSourceMap.remove(dataSourceName);
                 ruleConfig.getSlaveDataSourceNames().remove(dataSourceName);

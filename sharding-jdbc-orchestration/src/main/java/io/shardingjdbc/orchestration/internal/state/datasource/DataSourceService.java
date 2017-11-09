@@ -72,7 +72,7 @@ public final class DataSourceService {
                 }
                 if (TreeCacheEvent.Type.NODE_UPDATED == event.getType() || TreeCacheEvent.Type.NODE_REMOVED == event.getType()) {
                     MasterSlaveRule masterSlaveRule = configurationService.getAvailableMasterSlaveRule();
-                    if (TreeCacheEvent.Type.NODE_REMOVED == event.getType()) {
+                    if (TreeCacheEvent.Type.NODE_UPDATED == event.getType()) {
                         String path = childData.getPath();
                         String dataSourceName = path.substring(path.lastIndexOf("/") + 1);
                         masterSlaveRule.getSlaveDataSourceMap().remove(dataSourceName);
