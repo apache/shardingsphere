@@ -21,6 +21,7 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Getter;
 import org.apache.curator.framework.CuratorFramework;
@@ -44,7 +45,7 @@ public final class DataSourceService {
     private final ConfigurationService configurationService;
     
     public DataSourceService(final OrchestrationConfiguration config) {
-        dataSourceNodePath = new DataSourceStateNode(config.getName()).getFullPath();
+        dataSourceNodePath = new StateNode(config.getName()).getDataSourceNodeFullPath();
         regCenter = config.getRegistryCenter();
         configurationService = new ConfigurationService(config);
     }

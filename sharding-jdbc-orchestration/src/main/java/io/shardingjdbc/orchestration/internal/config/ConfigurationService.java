@@ -27,8 +27,8 @@ import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
+import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
-import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceStateNode;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -206,7 +206,7 @@ public final class ConfigurationService {
      */
     public MasterSlaveRule getAvailableMasterSlaveRule() {
         Map<String, DataSource> dataSourceMap = loadDataSourceMap();
-        String dataSourcesNodePath = new DataSourceStateNode(name).getFullPath();
+        String dataSourcesNodePath = new StateNode(name).getDataSourceNodeFullPath();
         List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
         MasterSlaveRuleConfiguration ruleConfig = loadMasterSlaveRuleConfiguration();
         for (String each : dataSources) {

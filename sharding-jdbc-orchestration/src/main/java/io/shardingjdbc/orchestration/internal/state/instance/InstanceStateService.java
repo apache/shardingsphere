@@ -22,7 +22,9 @@ import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
+import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
+import io.shardingjdbc.orchestration.internal.util.IpUtils;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Getter;
 import org.apache.curator.framework.CuratorFramework;
@@ -32,6 +34,7 @@ import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 import javax.sql.DataSource;
+import java.lang.management.ManagementFactory;
 import java.util.Map;
 
 /**
@@ -42,14 +45,21 @@ import java.util.Map;
 @Getter
 public final class InstanceStateService {
     
-    private final InstanceStateNode instanceStateNode;
+    private static final String DELIMITER = "@-@";
+    
+    private static final String PID_FLAG = "@";
+    
+    private final StateNode stateNode;
+    
+    private final String instanceNodePath;
     
     private final CoordinatorRegistryCenter regCenter;
     
     private final ConfigurationService configurationService;
     
     public InstanceStateService(final OrchestrationConfiguration config) {
-        instanceStateNode = new InstanceStateNode(config.getName());
+        stateNode = new StateNode(config.getName());
+        instanceNodePath = stateNode.getInstancesNodeFullPath(IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split(PID_FLAG)[0]);
         regCenter = config.getRegistryCenter();
         configurationService = new ConfigurationService(config);
     }
@@ -60,7 +70,6 @@ public final class InstanceStateService {
      * @param shardingDataSource sharding datasource
      */
     public void persistShardingInstanceOnline(final ShardingDataSource shardingDataSource) {
-        String instanceNodePath = instanceStateNode.getFullPath();
         regCenter.persistEphemeral(instanceNodePath, "");
         regCenter.addCacheData(instanceNodePath);
         addShardingInstancesStateChangeListener(instanceNodePath, shardingDataSource);
@@ -93,7 +102,6 @@ public final class InstanceStateService {
      * @param masterSlaveDataSource master-slave datasource
      */
     public void persistMasterSlaveInstanceOnline(final MasterSlaveDataSource masterSlaveDataSource) {
-        String instanceNodePath = instanceStateNode.getFullPath();
         regCenter.persistEphemeral(instanceNodePath, "");
         regCenter.addCacheData(instanceNodePath);
         addMasterSlaveInstancesStateChangeListener(instanceNodePath, masterSlaveDataSource);
