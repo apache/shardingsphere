@@ -31,4 +31,6 @@ import lombok.RequiredArgsConstructor;
 public final class OverallExecutionEvent extends AbstractExecutionEvent {
     
     private final SQLType sqlType;
+    
+    private final int statementUnitSize;
 }

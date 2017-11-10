@@ -35,4 +35,6 @@ public interface EventCaller {
     void verifyException(Exception exp);
     
     void verifySQLType(SQLType sqlType);
+    
+    void verifyStatementUnitSize(int size);
 }

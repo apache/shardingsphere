@@ -115,7 +115,7 @@ public final class ExecutorEngine implements AutoCloseable {
         if (baseStatementUnits.isEmpty()) {
             return Collections.emptyList();
         }
-        OverallExecutionEvent event = new OverallExecutionEvent(sqlType);
+        OverallExecutionEvent event = new OverallExecutionEvent(sqlType, baseStatementUnits.size());
         EventBusInstance.getInstance().post(event);
         Iterator<? extends BaseStatementUnit> iterator = baseStatementUnits.iterator();
         BaseStatementUnit firstInput = iterator.next();
