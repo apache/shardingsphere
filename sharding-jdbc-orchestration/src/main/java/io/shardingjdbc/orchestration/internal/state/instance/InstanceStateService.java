@@ -19,54 +19,38 @@ package io.shardingjdbc.orchestration.internal.state.instance;
 
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
-import io.shardingjdbc.orchestration.internal.util.IpUtils;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import lombok.Getter;
-
-import java.lang.management.ManagementFactory;
 
 /**
  * Instance state service.
  * 
  * @author caohao
  */
-@Getter
 public final class InstanceStateService {
     
-    private static final String DELIMITER = "@-@";
-    
-    private static final String PID_FLAG = "@";
-    
     private final StateNode stateNode;
-    
-    private final String instanceNodePath;
     
     private final CoordinatorRegistryCenter regCenter;
     
     public InstanceStateService(final OrchestrationConfiguration config) {
         stateNode = new StateNode(config.getName());
-        instanceNodePath = stateNode.getInstancesNodeFullPath(IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split(PID_FLAG)[0]);
         regCenter = config.getRegistryCenter();
-    }
-    
-    public String getInstanceNodePath() {
-        return instanceNodePath;
     }
     
     /**
      * Persist sharding instance online.
-     *
      */
     public void persistShardingInstanceOnline() {
+        String instanceNodePath = stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId());
         regCenter.persistEphemeral(instanceNodePath, "");
         regCenter.addCacheData(instanceNodePath);
     }
     
     /**
      * Persist master-salve instance online.
-     *
      */
     public void persistMasterSlaveInstanceOnline() {
+        String instanceNodePath = stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId());
         regCenter.persistEphemeral(instanceNodePath, "");
         regCenter.addCacheData(instanceNodePath);
     }

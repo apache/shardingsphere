@@ -38,37 +38,35 @@ import java.util.Map;
 @Getter
 public final class DataSourceService {
     
-    private final String dataSourceNodePath;
+    private final StateNode stateNode;
     
     private final CoordinatorRegistryCenter regCenter;
     
     private final ConfigurationService configurationService;
     
-    private final String name;
-    
     public DataSourceService(final OrchestrationConfiguration config) {
-        dataSourceNodePath = new StateNode(config.getName()).getDataSourcesNodeFullPath();
+        stateNode = new StateNode(config.getName());
         regCenter = config.getRegistryCenter();
         configurationService = new ConfigurationService(config);
-        name = config.getName();
     }
     
     /**
      * Persist master-salve data sources node.
-     *
      */
     public void persistDataSourcesNode() {
+        String dataSourceNodePath = stateNode.getDataSourcesNodeFullPath();
         regCenter.persist(dataSourceNodePath, "");
         regCenter.addCacheData(dataSourceNodePath);
     }
     
-    public String getDataSourceNodePath() {
-        return dataSourceNodePath;
-    }
-    
+    /**
+     * Get available master-slave rule.
+     * 
+     * @return available master-slave rule
+     */
     public MasterSlaveRule getAvailableMasterSlaveRule() {
         Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
-        String dataSourcesNodePath = new StateNode(name).getDataSourcesNodeFullPath();
+        String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
         List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
         MasterSlaveRuleConfiguration ruleConfig = configurationService.loadMasterSlaveRuleConfiguration();
         for (String each : dataSources) {

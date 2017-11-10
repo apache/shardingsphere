@@ -20,13 +20,16 @@ package io.shardingjdbc.orchestration.internal.listener;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingjdbc.orchestration.internal.config.ConfigurationListenerManager;
+import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceListenerManager;
+import io.shardingjdbc.orchestration.internal.state.instance.InstanceListenerManager;
 
 /**
  * Registry center's listener manager.
  *
  * @author caohao
  */
-public class ListenerManager {
+public final class ListenerManager {
     
     private final ConfigurationListenerManager configurationListenerManager;
     
@@ -40,11 +43,22 @@ public class ListenerManager {
         dataSourceListenerManager = new DataSourceListenerManager(config);
     }
     
+    /**
+     * Initialize listeners for sharding data source.
+     * 
+     * @param shardingDataSource sharding data source
+     */
     public void initShardingListeners(final ShardingDataSource shardingDataSource) {
         configurationListenerManager.addShardingConfigurationChangeListener(shardingDataSource);
         instanceListenerManager.addShardingInstancesStateChangeListener(shardingDataSource);
+        // TODO sharding + master-slave不需要dataSourceListenerManager.addDataSourcesNodeListener(masterSlaveDataSource) ?
     }
     
+    /**
+     * Initialize listeners for master-slave data source.
+     *
+     * @param masterSlaveDataSource master-slave data source
+     */
     public void initMasterSlaveListeners(final MasterSlaveDataSource masterSlaveDataSource) {
         configurationListenerManager.addMasterSlaveConfigurationChangeListener(masterSlaveDataSource);
         instanceListenerManager.addMasterSlaveInstancesStateChangeListener(masterSlaveDataSource);

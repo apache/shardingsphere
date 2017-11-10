@@ -15,15 +15,15 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.listener;
+package io.shardingjdbc.orchestration.internal.state.instance;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
+import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
-import io.shardingjdbc.orchestration.internal.state.instance.InstanceStateService;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
@@ -42,23 +42,23 @@ public class InstanceListenerManager {
     
     private final OrchestrationConfiguration config;
     
-    private final ConfigurationService configurationService;
+    private final StateNode stateNode;
     
-    private final String instanceNodePath;
+    private final ConfigurationService configurationService;
     
     public InstanceListenerManager(final OrchestrationConfiguration config) {
         this.config = config;
+        stateNode = new StateNode(config.getName());
         configurationService = new ConfigurationService(config);
-        instanceNodePath = new InstanceStateService(config).getInstanceNodePath();
     }
     
     /**
      * Add sharding instances state change listener.
-     *
+     * 
      * @param shardingDataSource sharding datasource
      */
     public void addShardingInstancesStateChangeListener(final ShardingDataSource shardingDataSource) {
-        TreeCache cache = (TreeCache) config.getRegistryCenter().getRawCache(instanceNodePath);
+        TreeCache cache = (TreeCache) config.getRegistryCenter().getRawCache(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()));
         cache.getListenable().addListener(new TreeCacheListener() {
             
             @Override
@@ -79,12 +79,12 @@ public class InstanceListenerManager {
     }
     
     /**
-     * Add master slave instances state change listener.
-     *
+     * Add master-slave instances state change listener.
+     * 
      * @param masterSlaveDataSource master slave datasource
      */
     public void addMasterSlaveInstancesStateChangeListener(final MasterSlaveDataSource masterSlaveDataSource) {
-        TreeCache cache = (TreeCache) config.getRegistryCenter().getRawCache(instanceNodePath);
+        TreeCache cache = (TreeCache) config.getRegistryCenter().getRawCache(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()));
         cache.getListenable().addListener(new TreeCacheListener() {
             
             @Override

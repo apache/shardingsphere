@@ -15,13 +15,11 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.listener;
+package io.shardingjdbc.orchestration.internal.config;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.config.ConfigurationNode;
-import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import org.apache.curator.framework.CuratorFramework;
@@ -37,21 +35,20 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
  */
 public class ConfigurationListenerManager {
     
-    private CoordinatorRegistryCenter regCenter;
-    
-    private ConfigurationService configurationService;
-    
-    private DataSourceService dataSourceService;
-    
     private final ConfigurationNode configNode;
     
+    private final CoordinatorRegistryCenter regCenter;
+    
+    private final ConfigurationService configurationService;
+    
+    private final DataSourceService dataSourceService;
+    
     public ConfigurationListenerManager(final OrchestrationConfiguration config) {
-        this.regCenter = config.getRegistryCenter();
         configNode = new ConfigurationNode(config.getName());
+        regCenter = config.getRegistryCenter();
         configurationService = new ConfigurationService(config);
         dataSourceService = new DataSourceService(config);
     }
-    
     
     /**
      * Add sharding configuration node change listener.

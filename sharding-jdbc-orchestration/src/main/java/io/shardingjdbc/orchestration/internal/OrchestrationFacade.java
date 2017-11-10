@@ -41,7 +41,7 @@ public final class OrchestrationFacade {
     
     /**
      * Initial all orchestration actions for sharding data source.
-     *
+     * 
      * @param dataSourceMap data source map
      * @param shardingRuleConfig sharding rule configuration
      * @param props sharding properties
@@ -56,6 +56,7 @@ public final class OrchestrationFacade {
         configurationService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, props);
         instanceStateService.persistShardingInstanceOnline();
         new ListenerManager(config).initShardingListeners(shardingDataSource);
+        // TODO 是否需要renew?
     }
     
     private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
@@ -91,7 +92,7 @@ public final class OrchestrationFacade {
     
     /**
      * Initial all orchestration actions for master-slave data source.
-     *
+     * 
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig sharding rule configuration
      * @param masterSlaveDataSource master-slave datasource

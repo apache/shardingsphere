@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.listener;
+package io.shardingjdbc.orchestration.internal.state.datasource;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
+import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -34,13 +34,16 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
  */
 public class DataSourceListenerManager {
     
-    private final DataSourceService dataSourceService;
+    private final StateNode stateNode;
     
     private final CoordinatorRegistryCenter registryCenter;
     
+    private final DataSourceService dataSourceService;
+    
     public DataSourceListenerManager(final OrchestrationConfiguration config) {
-        dataSourceService = new DataSourceService(config);
+        stateNode = new StateNode(config.getName());
         registryCenter = config.getRegistryCenter();
+        dataSourceService = new DataSourceService(config);
     }
     
     /**
@@ -49,7 +52,7 @@ public class DataSourceListenerManager {
      * @param masterSlaveDataSource master-slave datasource
      */
     public void addDataSourcesNodeListener(final MasterSlaveDataSource masterSlaveDataSource) {
-        TreeCache cache = (TreeCache) registryCenter.getRawCache(dataSourceService.getDataSourceNodePath());
+        TreeCache cache = (TreeCache) registryCenter.getRawCache(stateNode.getDataSourcesNodeFullPath());
         cache.getListenable().addListener(new TreeCacheListener() {
             
             @Override

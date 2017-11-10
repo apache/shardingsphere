@@ -56,8 +56,7 @@ public final class ConfigurationService {
      * @param shardingRuleConfig sharding rule configuration
      * @param props sharding properties
      */
-    public void persistShardingConfiguration(
-            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) {
+    public void persistShardingConfiguration(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) {
         persistDataSourceConfiguration(dataSourceMap);
         persistShardingRuleConfiguration(shardingRuleConfig);
         persistShardingProperties(props);
@@ -87,8 +86,7 @@ public final class ConfigurationService {
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
      */
-    public void persistMasterSlaveConfiguration(
-            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+    public void persistMasterSlaveConfiguration(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         persistDataSourceConfiguration(dataSourceMap);
         persistMasterSlaveRuleConfiguration(masterSlaveRuleConfig);
     }
