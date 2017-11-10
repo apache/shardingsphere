@@ -17,17 +17,18 @@
 
 package io.shardingjdbc.orchestration.internal.state.datasource;
 
-import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingjdbc.core.rule.MasterSlaveRule;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
+import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Getter;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
+
+import javax.sql.DataSource;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Data source service.
@@ -43,37 +44,41 @@ public final class DataSourceService {
     
     private final ConfigurationService configurationService;
     
+    private final String name;
+    
     public DataSourceService(final OrchestrationConfiguration config) {
         dataSourceNodePath = new StateNode(config.getName()).getDataSourcesNodeFullPath();
         regCenter = config.getRegistryCenter();
         configurationService = new ConfigurationService(config);
+        name = config.getName();
     }
     
     /**
-     * Persist master-salve data sources node and add listener.
+     * Persist master-salve data sources node.
      *
-     * @param masterSlaveDataSource master-slave data source
      */
-    public void initDataSourcesNode(final MasterSlaveDataSource masterSlaveDataSource) {
+    public void persistDataSourcesNode() {
         regCenter.persist(dataSourceNodePath, "");
         regCenter.addCacheData(dataSourceNodePath);
-        addDataSourcesNodeListener(masterSlaveDataSource);
     }
     
-    private void addDataSourcesNodeListener(final MasterSlaveDataSource masterSlaveDataSource) {
-        TreeCache cache = (TreeCache) regCenter.getRawCache(dataSourceNodePath);
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
-            @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || null == childData.getData() || childData.getPath().isEmpty()) {
-                    return;
-                }
-                if (TreeCacheEvent.Type.NODE_UPDATED == event.getType() || TreeCacheEvent.Type.NODE_REMOVED == event.getType()) {
-                    masterSlaveDataSource.renew(configurationService.getAvailableMasterSlaveRule());
-                }
+    public String getDataSourceNodePath() {
+        return dataSourceNodePath;
+    }
+    
+    public MasterSlaveRule getAvailableMasterSlaveRule() {
+        Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
+        String dataSourcesNodePath = new StateNode(name).getDataSourcesNodeFullPath();
+        List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
+        MasterSlaveRuleConfiguration ruleConfig = configurationService.loadMasterSlaveRuleConfiguration();
+        for (String each : dataSources) {
+            String dataSourceName = each.substring(each.lastIndexOf("/") + 1);
+            String path = dataSourcesNodePath + "/" + each;
+            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(path)) && dataSourceMap.containsKey(dataSourceName)) {
+                dataSourceMap.remove(dataSourceName);
+                ruleConfig.getSlaveDataSourceNames().remove(dataSourceName);
             }
-        });
+        }
+        return ruleConfig.build(dataSourceMap);
     }
 }

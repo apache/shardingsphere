@@ -6,6 +6,7 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingjdbc.orchestration.internal.state.instance.InstanceStateService;
 
@@ -19,6 +20,7 @@ import java.util.Properties;
  * Orchestration service facade.
  *
  * @author zhangliang
+ * @author caohao
  */
 public final class OrchestrationFacade {
     
@@ -28,10 +30,13 @@ public final class OrchestrationFacade {
     
     private final InstanceStateService instanceStateService;
     
+    private final DataSourceService dataSourceService;
+    
     public OrchestrationFacade(final OrchestrationConfiguration config) {
         this.config = config;
         configurationService = new ConfigurationService(config);
         instanceStateService = new InstanceStateService(config);
+        dataSourceService = new DataSourceService(config);
     }
     
     /**
@@ -48,8 +53,9 @@ public final class OrchestrationFacade {
         if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
             reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
         }
-        configurationService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, props, shardingDataSource);
-        instanceStateService.persistShardingInstanceOnline(shardingDataSource);
+        configurationService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, props);
+        instanceStateService.persistShardingInstanceOnline();
+        new ListenerManager(config).initShardingListeners(shardingDataSource);
     }
     
     private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
@@ -93,9 +99,10 @@ public final class OrchestrationFacade {
     public void initMasterSlaveOrchestration(
             final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final MasterSlaveDataSource masterSlaveDataSource) {
         config.getRegistryCenter().init();
-        configurationService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, masterSlaveDataSource);
-        instanceStateService.persistMasterSlaveInstanceOnline(masterSlaveDataSource);
-        new DataSourceService(config).initDataSourcesNode(masterSlaveDataSource);
-        masterSlaveDataSource.renew(configurationService.getAvailableMasterSlaveRule());
+        configurationService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig);
+        instanceStateService.persistMasterSlaveInstanceOnline();
+        dataSourceService.persistDataSourcesNode();
+        new ListenerManager(config).initMasterSlaveListeners(masterSlaveDataSource);
+        masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
     }
 }
