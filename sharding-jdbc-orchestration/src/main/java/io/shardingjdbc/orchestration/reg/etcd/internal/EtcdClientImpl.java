@@ -6,7 +6,7 @@ import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
 import io.grpc.Channel;
 import io.grpc.stub.StreamObserver;
-import io.shardingjdbc.orchestration.reg.etcd.api.*;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.*;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                 .setKey(ByteString.copyFromUtf8(key))
                 .build();
         final RangeResponse response = kvBlockingStub.range(request);
-        final List<io.shardingjdbc.orchestration.reg.etcd.api.KeyValue> keyValues = response.getKvsList();
+        final List<io.shardingjdbc.orchestration.reg.etcd.internal.stub.KeyValue> keyValues = response.getKvsList();
         return keyValues.isEmpty() ? Optional.<String>absent() : Optional.of(keyValues.get(0).getValue().toStringUtf8());
     }
 
@@ -60,9 +60,9 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                 .setRangeEnd(prefix(dir))
                 .build();
         final RangeResponse response = kvBlockingStub.range(request);
-        final List<io.shardingjdbc.orchestration.reg.etcd.api.KeyValue> keyValues = response.getKvsList();
+        final List<io.shardingjdbc.orchestration.reg.etcd.internal.stub.KeyValue> keyValues = response.getKvsList();
         List<EtcdClient.KeyValue> result = Lists.newArrayList();
-        for (io.shardingjdbc.orchestration.reg.etcd.api.KeyValue keyValue : keyValues) {
+        for (io.shardingjdbc.orchestration.reg.etcd.internal.stub.KeyValue keyValue : keyValues) {
             result.add(EtcdClient.KeyValue.builder()
                     .key(keyValue.getKey().toStringUtf8())
                     .value(keyValue.getValue().toStringUtf8())
@@ -104,7 +104,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                 .build();
         DeleteRangeResponse response = kvBlockingStub.deleteRange(request);
         List<String> deletedKeys = Lists.newArrayList();
-        for (io.shardingjdbc.orchestration.reg.etcd.api.KeyValue keyValue : response.getPrevKvsList()) {
+        for (io.shardingjdbc.orchestration.reg.etcd.internal.stub.KeyValue keyValue : response.getPrevKvsList()) {
             deletedKeys.add(keyValue.getKey().toStringUtf8());
         }
         return Optional.of(deletedKeys);

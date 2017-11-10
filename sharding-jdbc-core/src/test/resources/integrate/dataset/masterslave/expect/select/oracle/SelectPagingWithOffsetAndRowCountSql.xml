@@ -1,4 +1,4 @@
 <dataset>
-    <t_order_item order_by_derived_0="190801" order_id="1908" rownum_="1" user_id="19" status="init_slave" />
-    <t_order_item order_by_derived_0="190800" order_id="1908" rownum_="2" user_id="19" status="init_slave" />
+    <t_order_item order_id="1900" rownum_="3" user_id="19" status="init" />
+    <t_order_item order_id="1900" rownum_="4" user_id="19" status="init" />
 </dataset>

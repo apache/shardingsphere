@@ -1,6 +1,6 @@
 package io.shardingjdbc.orchestration.reg.etcd.internal;
 
-import io.shardingjdbc.orchestration.reg.etcd.api.Event;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.Event;
 import lombok.Builder;
 import lombok.Value;
 

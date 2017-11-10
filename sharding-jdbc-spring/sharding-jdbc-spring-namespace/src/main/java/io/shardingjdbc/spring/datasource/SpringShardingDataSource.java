@@ -18,45 +18,21 @@
 package io.shardingjdbc.spring.datasource;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
-import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.core.rule.ShardingRule;
-import lombok.Setter;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
  * Sharding datasource for spring namespace.
  *
  * @author caohao
- * @author zhanglaing
  */
-public class SpringShardingDataSource extends ShardingDataSource implements ApplicationContextAware {
-    
-    @Setter
-    private ApplicationContext applicationContext;
+public class SpringShardingDataSource extends ShardingDataSource {
     
     public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
         super(shardingRuleConfig.build(dataSourceMap), props);
-    }
-    
-    @Override
-    public void renew(final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
-        for (Entry<String, DataSource> entry : newShardingRule.getDataSourceMap().entrySet()) {
-            if (entry.getValue() instanceof MasterSlaveDataSource) {
-                for (Entry<String, DataSource> masterSlaveEntry : ((MasterSlaveDataSource) entry.getValue()).getAllDataSources().entrySet()) {
-                    DataSourceBeanUtil.createDataSourceBean(applicationContext, masterSlaveEntry.getKey(), masterSlaveEntry.getValue());
-                }
-            } else {
-                DataSourceBeanUtil.createDataSourceBean(applicationContext, entry.getKey(), entry.getValue());
-            }
-        }
-        super.renew(newShardingRule, newProps);
     }
 }

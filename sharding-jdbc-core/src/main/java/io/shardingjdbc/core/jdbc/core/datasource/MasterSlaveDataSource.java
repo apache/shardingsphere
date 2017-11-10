@@ -17,23 +17,18 @@
 
 package io.shardingjdbc.core.jdbc.core.datasource;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingjdbc.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Database that support master-slave.
@@ -110,11 +105,8 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
      * Renew master-slave data source.
      *
      * @param masterSlaveRule new master-slave rule
-     * @throws SQLException SQL exception
      */
-    public void renew(final MasterSlaveRule masterSlaveRule) throws SQLException {
-        Preconditions.checkState(getDatabaseType() == getDatabaseType(Collections.singletonList(masterSlaveRule.getMasterDataSource())), "Cannot change database type dynamically.");
-        Preconditions.checkState(getDatabaseType() == getDatabaseType(masterSlaveRule.getSlaveDataSourceMap().values()), "Cannot change database type dynamically.");
+    public void renew(final MasterSlaveRule masterSlaveRule) {
         this.masterSlaveRule = masterSlaveRule;
     }
     

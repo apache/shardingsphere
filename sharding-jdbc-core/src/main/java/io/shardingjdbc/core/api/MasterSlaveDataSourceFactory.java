@@ -19,14 +19,16 @@ package io.shardingjdbc.core.api;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveDataSource;
+import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -62,7 +64,8 @@ public final class MasterSlaveDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
-        return new YamlMasterSlaveDataSource(yamlFile);
+        YamlMasterSlaveConfiguration config = unmarshal(yamlFile);
+        return new MasterSlaveDataSource(config.getMasterSlaveRule(Collections.<String, DataSource>emptyMap()));
     }
     
     /**
@@ -77,7 +80,8 @@ public final class MasterSlaveDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
-        return new YamlMasterSlaveDataSource(dataSourceMap, yamlFile);
+        YamlMasterSlaveConfiguration config = unmarshal(yamlFile);
+        return new MasterSlaveDataSource(config.getMasterSlaveRule(dataSourceMap));
     }
     
     /**
@@ -91,7 +95,8 @@ public final class MasterSlaveDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
-        return new YamlMasterSlaveDataSource(yamlByteArray);
+        YamlMasterSlaveConfiguration config = unmarshal(yamlByteArray);
+        return new MasterSlaveDataSource(config.getMasterSlaveRule(Collections.<String, DataSource>emptyMap()));
     }
     
     /**
@@ -106,6 +111,20 @@ public final class MasterSlaveDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException, IOException {
-        return new YamlMasterSlaveDataSource(dataSourceMap, yamlByteArray);
+        YamlMasterSlaveConfiguration config = unmarshal(yamlByteArray);
+        return new MasterSlaveDataSource(config.getMasterSlaveRule(dataSourceMap));
+    }
+    
+    private static YamlMasterSlaveConfiguration unmarshal(final File yamlFile) throws IOException {
+        try (
+                FileInputStream fileInputStream = new FileInputStream(yamlFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
+        ) {
+            return new Yaml(new Constructor(YamlMasterSlaveConfiguration.class)).loadAs(inputStreamReader, YamlMasterSlaveConfiguration.class);
+        }
+    }
+    
+    private static YamlMasterSlaveConfiguration unmarshal(final byte[] yamlByteArray) throws IOException {
+        return new Yaml(new Constructor(YamlMasterSlaveConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlMasterSlaveConfiguration.class);
     }
 }

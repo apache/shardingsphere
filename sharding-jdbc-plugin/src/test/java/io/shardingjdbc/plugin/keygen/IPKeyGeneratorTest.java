@@ -66,7 +66,7 @@ public class IPKeyGeneratorTest {
     }
     
     @Test
-    public void testIP() throws UnknownHostException, NoSuchFieldException, IllegalAccessException {
+    public void assertIP() throws UnknownHostException, NoSuchFieldException, IllegalAccessException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(address);
         IPKeyGenerator.initWorkerId();
@@ -76,7 +76,7 @@ public class IPKeyGeneratorTest {
     }
     
     @Test
-    public void testUnknownHost() throws UnknownHostException {
+    public void assertUnknownHost() throws UnknownHostException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenThrow(new UnknownHostException());
         exception.expect(IllegalStateException.class);

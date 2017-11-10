@@ -4,7 +4,6 @@ import io.shardingjdbc.orchestration.internal.util.IpUtils;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.experimental.Wither;
-import lombok.val;
 
 import java.lang.management.ManagementFactory;
 
@@ -26,6 +25,12 @@ public class ShardInstance {
      * sharding-jdbc instance identity
      */
     String id;
+
+    /**
+     * sharding jdbc host
+     */
+    String host;
+
     /**
      * instance state, either ENABLED or DISABLED
      */
@@ -37,8 +42,9 @@ public class ShardInstance {
      * @return Sharding jdbc instance
      */
     public static ShardInstance localInstance() {
-        val javaVmName = ManagementFactory.getRuntimeMXBean().getName();
-        val id = IpUtils.getIp() + DELIMITER + javaVmName.split("@")[0];
-        return new ShardInstance(id, ShardState.ENABLED);
+        final String javaVmName = ManagementFactory.getRuntimeMXBean().getName();
+        final String host = IpUtils.getIp();
+        final String id = host + DELIMITER + javaVmName.split("@")[0];
+        return new ShardInstance(id, host, ShardState.ENABLED);
     }
 }

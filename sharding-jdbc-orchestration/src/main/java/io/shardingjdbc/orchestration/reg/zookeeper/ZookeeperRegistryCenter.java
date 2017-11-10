@@ -17,10 +17,10 @@
 
 package io.shardingjdbc.orchestration.reg.zookeeper;
 
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -35,13 +35,8 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
-import org.apache.zookeeper.data.Stat;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
@@ -67,7 +62,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     
     @Override
     public void init() {
-        log.debug("Elastic job: zookeeper registry center init, server lists is: {}.", zkConfig.getServerLists());
+        log.debug("Elastic job: zookeeper registry center initShardingOrchestration, server lists is: {}.", zkConfig.getServerLists());
         CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
                 .connectString(zkConfig.getServerLists())
                 .retryPolicy(new ExponentialBackoffRetry(zkConfig.getBaseSleepTimeMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getMaxSleepTimeMilliseconds()))
@@ -175,29 +170,14 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
                 }
             });
             return result;
-         //CHECKSTYLE:OFF
+            //CHECKSTYLE:OFF
         } catch (final Exception ex) {
-        //CHECKSTYLE:ON
+            //CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
             return Collections.emptyList();
         }
     }
     
-    @Override
-    public int getNumChildren(final String key) {
-        try {
-            Stat stat = client.checkExists().forPath(key);
-            if (null != stat) {
-                return stat.getNumChildren();
-            }
-            //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            //CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
-        }
-        return 0;
-    }
-
     @Override
     public boolean isExisted(final String key) {
         try {
@@ -251,45 +231,6 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     }
     
     @Override
-    public String persistSequential(final String key, final String value) {
-        try {
-            return client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath(key, value.getBytes(Charsets.UTF_8));
-        //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-        //CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
-        }
-        return null;
-    }
-    
-    @Override
-    public void persistEphemeralSequential(final String key) {
-        try {
-            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(key);
-        //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-        //CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
-        }
-    }
-    
-    @Override
-    public void remove(final String key) {
-        try {
-            client.delete().deletingChildrenIfNeeded().forPath(key);
-        //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-        //CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
-        }
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return client;
-    }
-    
-    @Override
     public void addCacheData(final String cachePath) {
         TreeCache cache = new TreeCache(client, cachePath);
         try {
@@ -300,14 +241,6 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
             RegExceptionHandler.handleException(ex);
         }
         caches.put(cachePath + "/", cache);
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-        TreeCache cache = caches.remove(cachePath + "/");
-        if (null != cache) {
-            cache.close();
-        }
     }
     
     @Override

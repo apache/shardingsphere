@@ -1,0 +1,59 @@
+shardingRule:
+  tables:
+    config:
+      actualDataNodes: db_ms_${0..1}.t_config
+      
+    t_order: 
+      actualDataNodes: db_ms_${0..1}.t_order_${0..1}
+      databaseStrategy: 
+        standard:
+          shardingColumn: user_id
+          preciseAlgorithmClassName: io.shardingjdbc.orchestration.yaml.fixture.SingleAlgorithm
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_${order_id % 2}
+      keyGeneratorColumnName: order_id
+      keyGeneratorClass: io.shardingjdbc.orchestration.yaml.fixture.IncrementKeyGenerator
+    
+    t_order_item:
+      actualDataNodes: db_ms_${0..1}.t_order_item_${0..1}
+      #绑定表中其余的表的策略与第一张表的策略相同
+      databaseStrategy: 
+        standard:
+          shardingColumn: user_id
+          preciseAlgorithmClassName: io.shardingjdbc.orchestration.yaml.fixture.SingleAlgorithm
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_item_${order_id % 2}
+  bindingTables:
+    - t_order,t_order_item
+  #默认数据库分片策略
+  defaultDatabaseStrategy:
+    none:
+  defaultTableStrategy:
+    complex:
+      shardingColumns: id, order_id
+      algorithmClassName: io.shardingjdbc.orchestration.yaml.fixture.MultiAlgorithm
+  
+  masterSlaveRules:
+    db_ms_0:
+      masterDataSourceName:
+        db0_master
+      slaveDataSourceNames:
+        - db0_slave
+    db_ms_1:
+      masterDataSourceName:
+        db1_master
+      slaveDataSourceNames:
+        - db1_slave
+  props:
+    sql.show: true
+
+orchestration:
+  name: demo_ds_ms
+  overwrite: true
+  registryCenter:
+    namespace: orchestration-yaml-test
+    serverLists: localhost:3181

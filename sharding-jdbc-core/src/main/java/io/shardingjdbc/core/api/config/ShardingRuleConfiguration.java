@@ -17,15 +17,15 @@
 
 package io.shardingjdbc.core.api.config;
 
-import io.shardingjdbc.core.api.config.strategy.ShardingStrategyConfiguration;
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
+import io.shardingjdbc.core.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingjdbc.core.keygen.DefaultKeyGenerator;
 import io.shardingjdbc.core.keygen.KeyGenerator;
 import io.shardingjdbc.core.keygen.KeyGeneratorFactory;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -63,6 +63,7 @@ public class ShardingRuleConfiguration {
      *
      * @param dataSourceMap data source map
      * @return sharding rule
+     * @throws SQLException SQL exception
      */
     public ShardingRule build(final Map<String, DataSource> dataSourceMap) throws SQLException {
         Preconditions.checkNotNull(dataSourceMap, "dataSources cannot be null.");

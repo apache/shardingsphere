@@ -65,20 +65,4 @@ public interface RegistryCenter {
      * @param value value of data
      */
     void update(String key, String value);
-    
-    /**
-     * Remove data.
-     *
-     * @param key key of data
-     */
-    void remove(String key);
-    
-    /**
-     * Get registry center's raw client.
-     * 
-     * <p>Such as: zookeeper or redis client.</p>
-     * 
-     * @return raw client of registry center
-     */
-    Object getRawClient();
 }

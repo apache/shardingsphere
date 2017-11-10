@@ -17,8 +17,11 @@
 
 package io.shardingjdbc.core.executor.fixture;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.executor.event.AbstractExecutionEvent;
+import io.shardingjdbc.core.executor.event.AbstractSQLExecutionEvent;
 import io.shardingjdbc.core.executor.event.EventExecutionType;
+import io.shardingjdbc.core.executor.event.OverallExecutionEvent;
 import io.shardingjdbc.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -29,11 +32,18 @@ import java.lang.reflect.Field;
 public final class ExecutorTestUtil {
     
     public static void listen(final EventCaller eventCaller, final AbstractExecutionEvent event) {
-        eventCaller.verifyDataSource(event.getDataSource());
-        eventCaller.verifySQL(event.getSql());
-        eventCaller.verifyParameters(event.getParameters());
-        eventCaller.verifyEventExecutionType(event.getEventExecutionType());
-        if (EventExecutionType.EXECUTE_FAILURE == event.getEventExecutionType() && event.getException().isPresent()) {
+        if (event instanceof AbstractSQLExecutionEvent) {
+            AbstractSQLExecutionEvent sqlExecutionEvent = (AbstractSQLExecutionEvent) event;
+            eventCaller.verifyDataSource(sqlExecutionEvent.getDataSource());
+            eventCaller.verifySQL(sqlExecutionEvent.getSql());
+            eventCaller.verifyParameters(sqlExecutionEvent.getParameters());
+            eventCaller.verifyEventExecutionType(sqlExecutionEvent.getEventExecutionType());
+            
+        } else if (event instanceof OverallExecutionEvent) {
+            eventCaller.verifySQLType(((OverallExecutionEvent) event).getSqlType());
+        }
+        Preconditions.checkState((EventExecutionType.EXECUTE_FAILURE == event.getEventExecutionType()) == event.getException().isPresent());
+        if (EventExecutionType.EXECUTE_FAILURE == event.getEventExecutionType()) {
             eventCaller.verifyException(event.getException().get());
         }
     }

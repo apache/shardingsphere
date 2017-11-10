@@ -2,8 +2,8 @@
 <sqls>
     <sql id="assertCreateTable" value="CREATE TABLE t_log(id int, status varchar(10))" />
     <sql id="assertCreateTableIfNotExist" value="CREATE TABLE IF NOT EXISTS t_log(id int, status varchar(10))" type="MySQL,PostgreSQL" />
-    <sql id="assertCreateTemporaryTable" value="CREATE TEMPORARY TABLE IF NOT EXISTS t_log(id int, status varchar(10))" type="MySQL,PostgreSQL" />
-    <sql id="assertCreateGlobalTemporaryTable" value="CREATE GLOBAL TEMPORARY TABLE t_log(id int, status varchar(10))" type="Oracle,PostgreSQL" />
-    <sql id="assertCreateLocalTempTable" value="CREATE LOCAL TEMP TABLE t_log(id int, status varchar(10))" type="PostgreSQL" />
+    <sql id="assertCreateTemporaryTable" value="CREATE TEMPORARY TABLE IF NOT EXISTS t_temp_log(id int, status varchar(10))" type="MySQL,PostgreSQL" />
+    <sql id="assertCreateGlobalTemporaryTable" value="CREATE GLOBAL TEMPORARY TABLE t_temp_log(id int, status varchar(10))" type="Oracle,PostgreSQL" />
+    <sql id="assertCreateLocalTempTable" value="CREATE LOCAL TEMP TABLE t_temp_log(id int, status varchar(10))" type="PostgreSQL" />
     <sql id="assertCreateUnloggedTable" value="CREATE UNLOGGED TABLE t_log(id int, status varchar(10))" type="PostgreSQL" />
 </sqls>

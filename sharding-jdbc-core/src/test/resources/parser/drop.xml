@@ -18,10 +18,10 @@
     </assert>
     <assert id="assertDropTemporaryTable">
         <tables>
-            <table name="t_log" />
+            <table name="t_temp_log" />
         </tables>
         <table-tokens>
-            <table-token begin-position="21" original-literals="t_log" />
+            <table-token begin-position="31" original-literals="t_temp_log" />
         </table-tokens>
     </assert>
     <!--// TODO verify sql-->

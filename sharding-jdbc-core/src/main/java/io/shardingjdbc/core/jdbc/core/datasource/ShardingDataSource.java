@@ -62,8 +62,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
      * @throws SQLException SQL exception
      */
     public void renew(final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
-        // TODO to be discussed later
-        // Preconditions.checkState(getDatabaseType() == getDatabaseType(newShardingRule.getDataSourceMap().values()), "Cannot change database type dynamically.");
         ShardingProperties newShardingProperties = new ShardingProperties(null == newProps ? new Properties() : newProps);
         int originalExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);

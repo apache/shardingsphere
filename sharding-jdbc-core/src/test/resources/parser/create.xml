@@ -18,26 +18,26 @@
     </assert>
     <assert id="assertCreateTemporaryTable">
         <tables>
-            <table name="t_log" />
+            <table name="t_temp_log" />
         </tables>
         <table-tokens>
-            <table-token begin-position="37" original-literals="t_log" />
+            <table-token begin-position="37" original-literals="t_temp_log" />
         </table-tokens>
     </assert>
     <assert id="assertCreateGlobalTemporaryTable">
         <tables>
-            <table name="t_log" />
+            <table name="t_temp_log" />
         </tables>
         <table-tokens>
-            <table-token begin-position="30" original-literals="t_log" />
+            <table-token begin-position="30" original-literals="t_temp_log" />
         </table-tokens>
     </assert>
     <assert id="assertCreateLocalTempTable">
         <tables>
-            <table name="t_log" />
+            <table name="t_temp_log" />
         </tables>
         <table-tokens>
-            <table-token begin-position="24" original-literals="t_log" />
+            <table-token begin-position="24" original-literals="t_temp_log" />
         </table-tokens>
     </assert>
     <assert id="assertCreateUnloggedTable">

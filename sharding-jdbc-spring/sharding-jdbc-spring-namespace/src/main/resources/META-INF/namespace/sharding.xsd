@@ -13,7 +13,6 @@
                 <xsd:element ref="props" minOccurs="0" maxOccurs="1" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="registry-center-ref" type="xsd:string" use="optional" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="sharding-rule">

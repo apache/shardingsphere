@@ -20,15 +20,15 @@ package io.shardingjdbc.core.integrate.type.sharding.hint.base;
 import io.shardingjdbc.core.common.base.AbstractSQLTest;
 import io.shardingjdbc.core.common.env.DatabaseEnvironment;
 import io.shardingjdbc.core.common.util.DBUnitUtil;
-import io.shardingjdbc.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.rule.ShardingRule;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.junit.AfterClass;
+import org.junit.Before;
 
 import javax.sql.DataSource;
 import java.io.InputStreamReader;
@@ -36,7 +36,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,9 +43,14 @@ import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractHintTest extends AbstractSQLTest {
     
-    private static boolean isShutdown;
+    public AbstractHintTest() {
+        
+    }
     
-    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
+    @Before
+    public void cleanAndInitTable() throws Exception {
+        importDataSet();
+    }
     
     @Override
     protected DatabaseType getCurrentDatabaseType() {
@@ -68,30 +72,16 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
                 "integrate/dataset/sharding/db/init/db_9.xml");
     }
     
-    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() throws SQLException {
-        if (!shardingDataSources.isEmpty() && !isShutdown) {
-            return shardingDataSources;
-        }
-        isShutdown = false;
+    protected final Map<DatabaseType, ShardingDataSource> initShardingDataSources() throws SQLException {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             ShardingRule shardingRule = getShardingRule(each);
-            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
+            getShardingDataSources().put(each.getKey(), new ShardingDataSource(shardingRule));
         }
-        return shardingDataSources;
+        return getShardingDataSources();
     }
     
     protected abstract ShardingRule getShardingRule(Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) throws SQLException;
-    
-    @AfterClass
-    public static void clear() {
-        isShutdown = true;
-        if (!shardingDataSources.isEmpty()) {
-            for (ShardingDataSource each : shardingDataSources.values()) {
-                each.close();
-            }
-        }
-    }
     
     protected void assertDataSet(final String expectedDataSetFile, final HintShardingValueHelper helper, 
                                  final Connection connection, final String sql, 

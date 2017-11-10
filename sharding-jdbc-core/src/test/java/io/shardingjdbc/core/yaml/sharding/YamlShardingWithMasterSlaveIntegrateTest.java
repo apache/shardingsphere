@@ -20,6 +20,7 @@ package io.shardingjdbc.core.yaml.sharding;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
@@ -57,11 +58,11 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
     }
     
     @Test
-    public void testWithDataSource() throws SQLException, URISyntaxException, IOException {
+    public void assertWithDataSource() throws SQLException, URISyntaxException, IOException {
         File yamlFile = new File(YamlShardingWithMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = new YamlShardingDataSource(yamlFile);
+            dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
         } else {
             Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), new Function<String, DataSource>() {
                 @Override
@@ -73,7 +74,7 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
             for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
                 result.put(each.getKey(), each.getValue());
             }
-            dataSource = new YamlShardingDataSource(result, yamlFile);
+            dataSource = ShardingDataSourceFactory.createDataSource(result, yamlFile);
         }
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {

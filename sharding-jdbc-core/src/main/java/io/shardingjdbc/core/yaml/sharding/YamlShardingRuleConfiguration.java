@@ -19,31 +19,21 @@ package io.shardingjdbc.core.yaml.sharding;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
-import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.yaml.masterslave.YamMasterSlaveRuleConfiguration;
+import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
- * Sharding configuration for yaml.
+ * Sharding rule configuration for yaml.
  *
  * @author caohao
  */
 @Getter
 @Setter
 public class YamlShardingRuleConfiguration {
-    
-    private Map<String, DataSource> dataSources = new HashMap<>();
     
     private String defaultDataSourceName;
     
@@ -57,27 +47,17 @@ public class YamlShardingRuleConfiguration {
     
     private String defaultKeyGeneratorClass;
     
-    private Map<String, YamMasterSlaveRuleConfiguration> masterSlaveRules = new HashMap<>();
+    private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new HashMap<>();
     
     private Properties props = new Properties();
-    
-    /**
-     * Get sharding rule from yaml.
-     *
-     * @param dataSourceMap data source map
-     * @return sharding rule from yaml
-     * @throws SQLException SQL exception
-     */
-    public ShardingRule getShardingRule(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return getShardingRuleConfiguration().build(dataSourceMap.isEmpty() ? dataSources : dataSourceMap);
-    }
     
     /**
      * Get sharding rule configuration from yaml.
      *
      * @return sharding rule configuration from yaml
+     * @throws SQLException SQL exception
      */
-    public ShardingRuleConfiguration getShardingRuleConfiguration() {
+    public ShardingRuleConfiguration getShardingRuleConfiguration() throws SQLException {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setDefaultDataSourceName(defaultDataSourceName);
         for (Map.Entry<String, YamlTableRuleConfiguration> entry : tables.entrySet()) {
@@ -94,14 +74,14 @@ public class YamlShardingRuleConfiguration {
         }
         result.setDefaultKeyGeneratorClass(defaultKeyGeneratorClass);
         Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
-        for (Map.Entry<String, YamMasterSlaveRuleConfiguration> each : masterSlaveRules.entrySet()) {
-            MasterSlaveRuleConfiguration config = new MasterSlaveRuleConfiguration();
-            config.setName(each.getKey());
-            config.setMasterDataSourceName(each.getValue().getMasterDataSourceName());
-            config.setSlaveDataSourceNames(each.getValue().getSlaveDataSourceNames());
-            config.setLoadBalanceAlgorithmType(each.getValue().getLoadBalanceAlgorithmType());
-            config.setLoadBalanceAlgorithmClassName(each.getValue().getLoadBalanceAlgorithmClassName());
-            masterSlaveRuleConfigs.add(config);
+        for (Map.Entry<String, YamlMasterSlaveRuleConfiguration> each : masterSlaveRules.entrySet()) {
+            MasterSlaveRuleConfiguration msRuleConfig = new MasterSlaveRuleConfiguration();
+            msRuleConfig.setName(each.getKey());
+            msRuleConfig.setMasterDataSourceName(each.getValue().getMasterDataSourceName());
+            msRuleConfig.setSlaveDataSourceNames(each.getValue().getSlaveDataSourceNames());
+            msRuleConfig.setLoadBalanceAlgorithmType(each.getValue().getLoadBalanceAlgorithmType());
+            msRuleConfig.setLoadBalanceAlgorithmClassName(each.getValue().getLoadBalanceAlgorithmClassName());
+            masterSlaveRuleConfigs.add(msRuleConfig);
         }
         result.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);
         return result;

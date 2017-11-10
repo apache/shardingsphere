@@ -17,16 +17,18 @@
 
 package io.shardingjdbc.orchestration.internal.config;
 
+import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.orchestration.api.config.OrchestrationMasterSlaveConfiguration;
-import io.shardingjdbc.orchestration.api.config.OrchestrationShardingConfiguration;
+import io.shardingjdbc.core.rule.MasterSlaveRule;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
-import io.shardingjdbc.orchestration.internal.storage.DataNodeStorage;
+import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
+import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceStateNode;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -35,85 +37,138 @@ import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Data configuration service.
+ * Configuration service.
  * 
  * @author caohao
  */
 public final class ConfigurationService {
     
-    private final DataNodeStorage dataNodeStorage;
+    private final ConfigurationNode configNode;
     
-    public ConfigurationService(final CoordinatorRegistryCenter regCenter, final String name) {
-        dataNodeStorage = new DataNodeStorage(regCenter, name);
+    private final CoordinatorRegistryCenter regCenter;
+    
+    private final String name;
+    
+    private final boolean isOverwrite;
+    
+    public ConfigurationService(final OrchestrationConfiguration config) {
+        configNode = new ConfigurationNode(config.getName());
+        regCenter = config.getRegistryCenter();
+        name = config.getName();
+        isOverwrite = config.isOverwrite();
     }
     
-    public void addShardingConfiguration(final OrchestrationShardingConfiguration config, final ShardingDataSource shardingDataSource) throws SQLException {
-        persistShardingConfiguration(config);
-        addShardingConfigurationChangeListener(config.getName(), config.getRegistryCenter(), shardingDataSource);
+    /**
+     * Persist sharding configuration.
+     *
+     * @param dataSourceMap data source map
+     * @param shardingRuleConfig sharding rule configuration
+     * @param props sharding properties
+     * @param shardingDataSource sharding datasource
+     */
+    public void persistShardingConfiguration(
+            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props, final ShardingDataSource shardingDataSource) {
+        persistDataSourceConfiguration(dataSourceMap);
+        persistShardingRuleConfiguration(shardingRuleConfig);
+        persistShardingProperties(props);
+        addShardingConfigurationChangeListener(shardingDataSource);
     }
     
-    public void addMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config, final MasterSlaveDataSource masterSlaveDataSource) throws SQLException {
-        persistMasterSlaveConfiguration(config);
-        addMasterSlaveConfigurationChangeListener(config.getName(), config.getRegistryCenter(), masterSlaveDataSource);
+    private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap) {
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceJsonConverter.toJson(dataSourceMap));
+        }
     }
     
-    private void persistShardingConfiguration(final OrchestrationShardingConfiguration config) throws SQLException {
-        persistShardingRuleConfiguration(config.getShardingRuleConfig(), config.isOverwrite());
-        persistDataSourceConfigration(config.getDataSourceMap(), config.isOverwrite());
+    private void persistShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig) {
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH), ShardingRuleConfigurationConverter.toJson(shardingRuleConfig));
+        }
     }
     
-    private void persistMasterSlaveConfiguration(final OrchestrationMasterSlaveConfiguration config) throws SQLException {
-        persistMasterSlaveRuleConfiguration(config.getMasterSlaveRuleConfiguration(), config.isOverwrite());
-        persistDataSourceConfigration(config.getDataSourceMap(), config.isOverwrite());
+    private void persistShardingProperties(final Properties props) {
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH), GsonFactory.getGson().toJson(props));
+        }
     }
     
-    private void addMasterSlaveConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final MasterSlaveDataSource masterSlaveDataSource) {
-        String cachePath = "/" + name + "/" + ConfigurationNode.ROOT;
-        registryCenter.addCacheData(cachePath);
-        TreeCache cache = (TreeCache) registryCenter.getRawCache(cachePath);
+    private void addShardingConfigurationChangeListener(final ShardingDataSource shardingDataSource) {
+        addShardingConfigurationNodeChangeListener(ConfigurationNode.DATA_SOURCE_NODE_PATH, shardingDataSource);
+        addShardingConfigurationNodeChangeListener(ConfigurationNode.SHARDING_NODE_PATH, shardingDataSource);
+        addShardingConfigurationNodeChangeListener(ConfigurationNode.PROPS_NODE_PATH, shardingDataSource);
+    }
+    
+    private void addShardingConfigurationNodeChangeListener(final String node, final ShardingDataSource shardingDataSource) {
+        String cachePath = configNode.getFullPath(node);
+        regCenter.addCacheData(cachePath);
+        TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
         cache.getListenable().addListener(new TreeCacheListener() {
             
             @Override
             public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
                 ChildData childData = event.getData();
-                if (null == childData || null == childData.getData()) {
+                if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
                     return;
                 }
-                String path = childData.getPath();
-                if (path.isEmpty()) {
-                    return;
-                }
-                // TODO props
-                masterSlaveDataSource.renew(loadMasterSlaveRuleConfiguration().build(loadDataSourceMap()));
+                shardingDataSource.renew(loadShardingRuleConfiguration().build(loadDataSourceMap()), loadShardingProperties());
             }
         });
     }
     
-    private void addShardingConfigurationChangeListener(final String name, final CoordinatorRegistryCenter registryCenter, final ShardingDataSource shardingDataSource) {
-        String cachePath = "/" + name + "/" + ConfigurationNode.ROOT;
-        registryCenter.addCacheData(cachePath);
-        TreeCache cache = (TreeCache) registryCenter.getRawCache(cachePath);
+    /**
+     * Persist master-slave configuration.
+     *
+     * @param dataSourceMap data source map
+     * @param masterSlaveRuleConfig master-slave rule configuration
+     * @param masterSlaveDataSource master-slave datasource
+     */
+    public void persistMasterSlaveConfiguration(
+            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final MasterSlaveDataSource masterSlaveDataSource) {
+        persistDataSourceConfiguration(dataSourceMap);
+        persistMasterSlaveRuleConfiguration(masterSlaveRuleConfig);
+        addMasterSlaveConfigurationChangeListener(masterSlaveDataSource);
+    }
+    
+    private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH), GsonFactory.getGson().toJson(masterSlaveRuleConfig));
+        }
+    }
+    
+    private void addMasterSlaveConfigurationChangeListener(final MasterSlaveDataSource masterSlaveDataSource) {
+        addMasterSlaveConfigurationChangeListener(ConfigurationNode.DATA_SOURCE_NODE_PATH, masterSlaveDataSource);
+        addMasterSlaveConfigurationChangeListener(ConfigurationNode.MASTER_SLAVE_NODE_PATH, masterSlaveDataSource);
+    }
+    
+    private void addMasterSlaveConfigurationChangeListener(final String node, final MasterSlaveDataSource masterSlaveDataSource) {
+        String cachePath = configNode.getFullPath(node);
+        regCenter.addCacheData(cachePath);
+        TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
         cache.getListenable().addListener(new TreeCacheListener() {
             
             @Override
             public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
                 ChildData childData = event.getData();
-                if (null == childData || null == childData.getData()) {
+                if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
                     return;
                 }
-                String path = childData.getPath();
-                if (path.isEmpty()) {
-                    return;
-                }
-                // TODO props
-                shardingDataSource.renew(loadShardingRuleConfiguration().build(loadDataSourceMap()), new Properties());
+                masterSlaveDataSource.renew(getAvailableMasterSlaveRule());
             }
         });
+    }
+    
+    /**
+     * Load data source configuration.
+     * 
+     * @return data source configuration map
+     */
+    public Map<String, DataSource> loadDataSourceMap() {
+        return DataSourceJsonConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
     }
     
     /**
@@ -122,59 +177,46 @@ public final class ConfigurationService {
      * @return sharding rule configuration
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration() {
-        return ShardingRuleConfigurationConverter.fromJson(dataNodeStorage.getNodeData(ConfigurationNode.SHARDING_NODE_PATH));
+        return ShardingRuleConfigurationConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH)));
     }
     
     /**
-     * Load master slave rule configuration.
+     * Load sharding properties configuration.
+     * 
+     * @return sharding properties
+     */
+    public Properties loadShardingProperties() {
+        String data = regCenter.get(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH));
+        return Strings.isNullOrEmpty(data) ? new Properties() : GsonFactory.getGson().fromJson(data, Properties.class);
+    }
+    
+    /**
+     * Load master-slave rule configuration.
      *
-     * @return master slave rule configuration
+     * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
-        return GsonFactory.getGson().fromJson(dataNodeStorage.getNodeData(ConfigurationNode.MASTER_SLAVE_NODE_PATH), MasterSlaveRuleConfiguration.class);
+        return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH)), MasterSlaveRuleConfiguration.class);
     }
     
     /**
-     * Load data source configuration.
+     * Get available master-slave rule.
      *
-     * @return master data source configuration
+     * @return available master-slave rule
      */
-    public Map<String, DataSource> loadDataSourceMap() {
-        return DataSourceJsonConverter.fromJson(dataNodeStorage.getNodeData(ConfigurationNode.DATA_SOURCE_NODE_PATH));
-    }
-    
-    /**
-     * Persist sharding rule configuration.
-     * 
-     * @param config sharding rule configuration
-     * @param isOverwrite is overwrite config
-     */
-    public void persistShardingRuleConfiguration(final ShardingRuleConfiguration config, final boolean isOverwrite) {
-        if (!dataNodeStorage.isNodeExisted(ConfigurationNode.SHARDING_NODE_PATH) || isOverwrite) {
-            dataNodeStorage.fillNode(ConfigurationNode.SHARDING_NODE_PATH, ShardingRuleConfigurationConverter.toJson(config));
+    public MasterSlaveRule getAvailableMasterSlaveRule() {
+        Map<String, DataSource> dataSourceMap = loadDataSourceMap();
+        String dataSourcesNodePath = new DataSourceStateNode(name).getFullPath();
+        List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
+        MasterSlaveRuleConfiguration ruleConfig = loadMasterSlaveRuleConfiguration();
+        for (String each : dataSources) {
+            String dataSourceName = each.substring(each.lastIndexOf("/") + 1);
+            String path = dataSourcesNodePath + "/" + each;
+            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(path)) && dataSourceMap.containsKey(dataSourceName)) {
+                dataSourceMap.remove(dataSourceName);
+                ruleConfig.getSlaveDataSourceNames().remove(dataSourceName);
+            }
         }
-    }
-    
-    /**
-     * Persist master slave rule configuration.
-     *
-     * @param config master slave rule configuration
-     * @param isOverwrite is overwrite config
-     */
-    public void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration config, final boolean isOverwrite) {
-        if (!dataNodeStorage.isNodeExisted(ConfigurationNode.MASTER_SLAVE_NODE_PATH) || isOverwrite) {
-            dataNodeStorage.fillNode(ConfigurationNode.MASTER_SLAVE_NODE_PATH, GsonFactory.getGson().toJson(config));
-        }
-    }
-    
-    /**
-     * Persist data source configuration.
-     *
-     * @param dataSourceMap data source map
-     */
-    public void persistDataSourceConfigration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
-        if (!dataNodeStorage.isNodeExisted(ConfigurationNode.DATA_SOURCE_NODE_PATH) || isOverwrite) {
-            dataNodeStorage.fillNode(ConfigurationNode.DATA_SOURCE_NODE_PATH, DataSourceJsonConverter.toJson(dataSourceMap));
-        }
+        return ruleConfig.build(dataSourceMap);
     }
 }

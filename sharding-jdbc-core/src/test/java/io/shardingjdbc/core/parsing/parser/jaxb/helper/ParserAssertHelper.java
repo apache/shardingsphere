@@ -11,14 +11,7 @@ import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLPlaceholderExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingjdbc.core.parsing.parser.jaxb.Value;
-import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
-import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
-import io.shardingjdbc.core.parsing.parser.token.MultipleInsertValuesToken;
-import io.shardingjdbc.core.parsing.parser.token.OffsetToken;
-import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
-import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
-import io.shardingjdbc.core.parsing.parser.token.SQLToken;
-import io.shardingjdbc.core.parsing.parser.token.TableToken;
+import io.shardingjdbc.core.parsing.parser.token.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.ArrayList;
@@ -26,9 +19,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ParserAssertHelper {
     
@@ -36,11 +27,13 @@ public class ParserAssertHelper {
         assertTrue(EqualsBuilder.reflectionEquals(ParserJAXBHelper.getTables(expected), actual));
     }
     
-    public static void assertConditions(final io.shardingjdbc.core.parsing.parser.jaxb.Conditions expected, final io.shardingjdbc.core.parsing.parser.context.condition.Conditions actual, final boolean isPreparedStatement) {
+    public static void assertConditions(
+            final io.shardingjdbc.core.parsing.parser.jaxb.Conditions expected, final io.shardingjdbc.core.parsing.parser.context.condition.Conditions actual, final boolean isPreparedStatement) {
         assertTrue(EqualsBuilder.reflectionEquals(buildExpectedConditions(expected, isPreparedStatement), actual));
     }
     
-    private static io.shardingjdbc.core.parsing.parser.context.condition.Conditions buildExpectedConditions(final io.shardingjdbc.core.parsing.parser.jaxb.Conditions conditions, final boolean isPreparedStatement) {
+    private static io.shardingjdbc.core.parsing.parser.context.condition.Conditions buildExpectedConditions(
+            final io.shardingjdbc.core.parsing.parser.jaxb.Conditions conditions, final boolean isPreparedStatement) {
         io.shardingjdbc.core.parsing.parser.context.condition.Conditions result = new io.shardingjdbc.core.parsing.parser.context.condition.Conditions();
         if (null == conditions) {
             return result;
@@ -65,7 +58,8 @@ public class ParserAssertHelper {
                     condition = new io.shardingjdbc.core.parsing.parser.context.condition.Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0));
                     break;
                 case BETWEEN:
-                    condition = new io.shardingjdbc.core.parsing.parser.context.condition.Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0), sqlExpressions.get(1));
+                    condition = new io.shardingjdbc.core.parsing.parser.context.condition.Condition(
+                            new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0), sqlExpressions.get(1));
                     break;
                 case IN:
                     condition = new io.shardingjdbc.core.parsing.parser.context.condition.Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions);

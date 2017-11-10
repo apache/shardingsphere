@@ -36,10 +36,7 @@ import java.util.LinkedList;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecutorTest {
     
@@ -62,6 +59,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
                 createPreparedStatementUnits(SQL, preparedStatement, "ds_0", 2), Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
         assertThat(actual.executeBatch(), is(new int[] {10, 20}));
         verify(preparedStatement).executeBatch();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(1));
@@ -87,6 +85,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(preparedStatement2).executeBatch();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(8)).verifySQL(SQL);
@@ -107,6 +106,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
                 createPreparedStatementUnits(SQL, preparedStatement, "ds_0", 2), Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement).executeBatch();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(1));
@@ -133,6 +133,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(preparedStatement2).executeBatch();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
+        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(8)).verifySQL(SQL);
