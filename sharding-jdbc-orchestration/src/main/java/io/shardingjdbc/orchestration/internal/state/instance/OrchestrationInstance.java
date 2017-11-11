@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import java.lang.management.ManagementFactory;
 
 /**
- * 治理运行实例.
+ * Orchestration instance.
  * 
  * @author zhangliang
  */
@@ -39,7 +39,7 @@ public final class OrchestrationInstance {
     private static final String PID_FLAG = "@";
     
     /**
-     * 治理实例主键.
+     * Orchestration instance id.
      */
     private final String instanceId;
     
