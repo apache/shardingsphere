@@ -55,7 +55,7 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource {
     /**
      * Initial all orchestration actions for sharding data source.
      */
-    public void init() {
+    public void init() throws SQLException {
         new OrchestrationFacade(config).initShardingOrchestration(dataSourceMap, shardingRuleConfig, props, this);
     }
 }

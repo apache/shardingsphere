@@ -18,7 +18,9 @@
 package io.shardingjdbc.orchestration.internal.state.datasource;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
+import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
@@ -27,6 +29,7 @@ import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import lombok.Getter;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +60,30 @@ public final class DataSourceService {
         String dataSourceNodePath = stateNode.getDataSourcesNodeFullPath();
         regCenter.persist(dataSourceNodePath, "");
         regCenter.addCacheData(dataSourceNodePath);
+    }
+    
+    /**
+     * Get available sharding rule.
+     *
+     * @return available sharding rule
+     * @throws SQLException SQL exception
+     */
+    public ShardingRule getAvailableShardingRule() throws SQLException {
+        Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
+        String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
+        List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
+        ShardingRuleConfiguration ruleConfig = configurationService.loadShardingRuleConfiguration();
+        for (String each : dataSources) {
+            String dataSourceName = each.substring(each.lastIndexOf("/") + 1);
+            String path = dataSourcesNodePath + "/" + each;
+            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(path)) && dataSourceMap.containsKey(dataSourceName)) {
+                dataSourceMap.remove(dataSourceName);
+                for (MasterSlaveRuleConfiguration msRuleConfig : ruleConfig.getMasterSlaveRuleConfigs()) {
+                    msRuleConfig.getSlaveDataSourceNames().remove(dataSourceName);
+                }
+            }
+        }
+        return ruleConfig.build(dataSourceMap);
     }
     
     /**

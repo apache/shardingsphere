@@ -18,7 +18,9 @@
 package io.shardingjdbc.orchestration.internal.state.datasource;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import org.apache.curator.framework.CuratorFramework;
@@ -38,20 +40,45 @@ public class DataSourceListenerManager {
     
     private final CoordinatorRegistryCenter registryCenter;
     
+    private final ConfigurationService configurationService;
+    
     private final DataSourceService dataSourceService;
     
     public DataSourceListenerManager(final OrchestrationConfiguration config) {
         stateNode = new StateNode(config.getName());
         registryCenter = config.getRegistryCenter();
+        configurationService = new ConfigurationService(config);
         dataSourceService = new DataSourceService(config);
     }
     
     /**
-     * Add data source node change listener.
+     * Add sharding data source node change listener.
+     *
+     * @param shardingDataSource master-slave datasource
+     */
+    public void addShardingDataSourcesNodeListener(final ShardingDataSource shardingDataSource) {
+        TreeCache cache = (TreeCache) registryCenter.getRawCache(stateNode.getDataSourcesNodeFullPath());
+        cache.getListenable().addListener(new TreeCacheListener() {
+            
+            @Override
+            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
+                ChildData childData = event.getData();
+                if (null == childData || null == childData.getData() || childData.getPath().isEmpty()) {
+                    return;
+                }
+                if (TreeCacheEvent.Type.NODE_UPDATED == event.getType() || TreeCacheEvent.Type.NODE_REMOVED == event.getType()) {
+                    shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
+                }
+            }
+        });
+    }
+    
+    /**
+     * Add master-slave data source node change listener.
      *
      * @param masterSlaveDataSource master-slave datasource
      */
-    public void addDataSourcesNodeListener(final MasterSlaveDataSource masterSlaveDataSource) {
+    public void addMasterSlaveDataSourcesNodeListener(final MasterSlaveDataSource masterSlaveDataSource) {
         TreeCache cache = (TreeCache) registryCenter.getRawCache(stateNode.getDataSourcesNodeFullPath());
         cache.getListenable().addListener(new TreeCacheListener() {
             

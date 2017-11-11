@@ -51,7 +51,7 @@ public final class ListenerManager {
     public void initShardingListeners(final ShardingDataSource shardingDataSource) {
         configurationListenerManager.addShardingConfigurationChangeListener(shardingDataSource);
         instanceListenerManager.addShardingInstancesStateChangeListener(shardingDataSource);
-        // TODO sharding + master-slave不需要dataSourceListenerManager.addDataSourcesNodeListener(masterSlaveDataSource) ?
+        dataSourceListenerManager.addShardingDataSourcesNodeListener(shardingDataSource);
     }
     
     /**
@@ -62,6 +62,6 @@ public final class ListenerManager {
     public void initMasterSlaveListeners(final MasterSlaveDataSource masterSlaveDataSource) {
         configurationListenerManager.addMasterSlaveConfigurationChangeListener(masterSlaveDataSource);
         instanceListenerManager.addMasterSlaveInstancesStateChangeListener(masterSlaveDataSource);
-        dataSourceListenerManager.addDataSourcesNodeListener(masterSlaveDataSource);
+        dataSourceListenerManager.addMasterSlaveDataSourcesNodeListener(masterSlaveDataSource);
     }
 }

@@ -73,7 +73,7 @@ public class ConfigurationListenerManager {
                 if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
                     return;
                 }
-                shardingDataSource.renew(configurationService.loadShardingRuleConfiguration().build(configurationService.loadDataSourceMap()), configurationService.loadShardingProperties());
+                shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
             }
         });
     }

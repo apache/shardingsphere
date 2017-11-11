@@ -28,6 +28,7 @@ import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService
 import io.shardingjdbc.orchestration.internal.state.instance.InstanceStateService;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -63,17 +64,19 @@ public final class OrchestrationFacade {
      * @param shardingRuleConfig sharding rule configuration
      * @param props sharding properties
      * @param shardingDataSource sharding datasource
+     * @throws SQLException SQL exception
      */
     public void initShardingOrchestration(
-            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props, final ShardingDataSource shardingDataSource) {
+            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props, final ShardingDataSource shardingDataSource) throws SQLException {
         config.getRegistryCenter().init();
         if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
             reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
         }
         configurationService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, props);
         instanceStateService.persistShardingInstanceOnline();
+        dataSourceService.persistDataSourcesNode();
         new ListenerManager(config).initShardingListeners(shardingDataSource);
-        // TODO 是否需要renew?
+        shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), props);
     }
     
     private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
