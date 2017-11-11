@@ -23,7 +23,7 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
+import io.shardingjdbc.orchestration.internal.listener.ListenerFactory;
 import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingjdbc.orchestration.internal.state.instance.InstanceStateService;
 
@@ -50,11 +50,14 @@ public final class OrchestrationFacade {
     
     private final DataSourceService dataSourceService;
     
+    private final ListenerFactory listenerManager;
+    
     public OrchestrationFacade(final OrchestrationConfiguration config) {
         this.config = config;
         configurationService = new ConfigurationService(config);
         instanceStateService = new InstanceStateService(config);
         dataSourceService = new DataSourceService(config);
+        listenerManager = new ListenerFactory(config);
     }
     
     /**
@@ -75,7 +78,7 @@ public final class OrchestrationFacade {
         configurationService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, props);
         instanceStateService.persistShardingInstanceOnline();
         dataSourceService.persistDataSourcesNode();
-        new ListenerManager(config).initShardingListeners(shardingDataSource);
+        listenerManager.initShardingListeners(shardingDataSource);
         shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), props);
     }
     
@@ -123,7 +126,7 @@ public final class OrchestrationFacade {
         configurationService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig);
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
-        new ListenerManager(config).initMasterSlaveListeners(masterSlaveDataSource);
+        listenerManager.initMasterSlaveListeners(masterSlaveDataSource);
         masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
     }
 }

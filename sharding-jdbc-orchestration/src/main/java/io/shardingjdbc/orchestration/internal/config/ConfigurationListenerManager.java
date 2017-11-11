@@ -20,7 +20,7 @@ package io.shardingjdbc.orchestration.internal.config;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.listener.AbstractListenerManager;
+import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import org.apache.curator.framework.CuratorFramework;
@@ -34,7 +34,7 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
  *
  * @author caohao
  */
-public class ConfigurationListenerManager extends AbstractListenerManager {
+public final class ConfigurationListenerManager implements ListenerManager {
     
     private final ConfigurationNode configNode;
     
@@ -52,13 +52,13 @@ public class ConfigurationListenerManager extends AbstractListenerManager {
     }
     
     @Override
-    public void addShardingDataSourceChangedListener(final ShardingDataSource shardingDataSource) {
-        addShardingConfigurationNodeChangeListener(ConfigurationNode.DATA_SOURCE_NODE_PATH, shardingDataSource);
-        addShardingConfigurationNodeChangeListener(ConfigurationNode.SHARDING_NODE_PATH, shardingDataSource);
-        addShardingConfigurationNodeChangeListener(ConfigurationNode.PROPS_NODE_PATH, shardingDataSource);
+    public void start(final ShardingDataSource shardingDataSource) {
+        start(ConfigurationNode.DATA_SOURCE_NODE_PATH, shardingDataSource);
+        start(ConfigurationNode.SHARDING_NODE_PATH, shardingDataSource);
+        start(ConfigurationNode.PROPS_NODE_PATH, shardingDataSource);
     }
     
-    private void addShardingConfigurationNodeChangeListener(final String node, final ShardingDataSource shardingDataSource) {
+    private void start(final String node, final ShardingDataSource shardingDataSource) {
         String cachePath = configNode.getFullPath(node);
         regCenter.addCacheData(cachePath);
         TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
@@ -76,12 +76,12 @@ public class ConfigurationListenerManager extends AbstractListenerManager {
     }
     
     @Override
-    public void addMasterSlaveDataSourceChangedListener(final MasterSlaveDataSource masterSlaveDataSource) {
-        addMasterSlaveConfigurationChangeListener(ConfigurationNode.DATA_SOURCE_NODE_PATH, masterSlaveDataSource);
-        addMasterSlaveConfigurationChangeListener(ConfigurationNode.MASTER_SLAVE_NODE_PATH, masterSlaveDataSource);
+    public void start(final MasterSlaveDataSource masterSlaveDataSource) {
+        start(ConfigurationNode.DATA_SOURCE_NODE_PATH, masterSlaveDataSource);
+        start(ConfigurationNode.MASTER_SLAVE_NODE_PATH, masterSlaveDataSource);
     }
     
-    private void addMasterSlaveConfigurationChangeListener(final String node, final MasterSlaveDataSource masterSlaveDataSource) {
+    private void start(final String node, final MasterSlaveDataSource masterSlaveDataSource) {
         String cachePath = configNode.getFullPath(node);
         regCenter.addCacheData(cachePath);
         TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);

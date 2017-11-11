@@ -19,49 +19,26 @@ package io.shardingjdbc.orchestration.internal.listener;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.config.ConfigurationListenerManager;
-import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceListenerManager;
-import io.shardingjdbc.orchestration.internal.state.instance.InstanceListenerManager;
 
 /**
  * Registry center's listener manager.
  *
  * @author caohao
  */
-public final class ListenerManager {
-    
-    private final ConfigurationListenerManager configurationListenerManager;
-    
-    private final InstanceListenerManager instanceListenerManager;
-    
-    private final DataSourceListenerManager dataSourceListenerManager;
-    
-    public ListenerManager(final OrchestrationConfiguration config) {
-        configurationListenerManager = new ConfigurationListenerManager(config);
-        instanceListenerManager = new InstanceListenerManager(config);
-        dataSourceListenerManager = new DataSourceListenerManager(config);
-    }
+public interface ListenerManager {
     
     /**
-     * Initialize listeners for sharding data source.
-     * 
-     * @param shardingDataSource sharding data source
-     */
-    public void initShardingListeners(final ShardingDataSource shardingDataSource) {
-        configurationListenerManager.addShardingDataSourceChangedListener(shardingDataSource);
-        instanceListenerManager.addShardingDataSourceChangedListener(shardingDataSource);
-        dataSourceListenerManager.addShardingDataSourceChangedListener(shardingDataSource);
-    }
-    
-    /**
-     * Initialize listeners for master-slave data source.
+     * Start sharding datasource change listener.
      *
-     * @param masterSlaveDataSource master-slave data source
+     * @param shardingDataSource sharding datasource
      */
-    public void initMasterSlaveListeners(final MasterSlaveDataSource masterSlaveDataSource) {
-        configurationListenerManager.addMasterSlaveDataSourceChangedListener(masterSlaveDataSource);
-        instanceListenerManager.addMasterSlaveDataSourceChangedListener(masterSlaveDataSource);
-        dataSourceListenerManager.addMasterSlaveDataSourceChangedListener(masterSlaveDataSource);
-    }
+    void start(ShardingDataSource shardingDataSource);
+    
+    
+    /**
+     * Start master-slave datasource change listener.
+     *
+     * @param masterSlaveDataSource master-slave datasource
+     */
+    void start(MasterSlaveDataSource masterSlaveDataSource);
 }
