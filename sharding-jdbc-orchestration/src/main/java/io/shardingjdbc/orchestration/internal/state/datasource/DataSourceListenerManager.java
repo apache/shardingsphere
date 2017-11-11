@@ -21,6 +21,7 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingjdbc.orchestration.internal.listener.AbstractListenerManager;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import org.apache.curator.framework.CuratorFramework;
@@ -34,7 +35,7 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
  *
  * @author caohao
  */
-public class DataSourceListenerManager {
+public class DataSourceListenerManager extends AbstractListenerManager {
     
     private final StateNode stateNode;
     
@@ -51,12 +52,8 @@ public class DataSourceListenerManager {
         dataSourceService = new DataSourceService(config);
     }
     
-    /**
-     * Add sharding data source node change listener.
-     *
-     * @param shardingDataSource master-slave datasource
-     */
-    public void addShardingDataSourcesNodeListener(final ShardingDataSource shardingDataSource) {
+    @Override
+    public void addShardingDataSourceChangedListener(final ShardingDataSource shardingDataSource) {
         TreeCache cache = (TreeCache) registryCenter.getRawCache(stateNode.getDataSourcesNodeFullPath());
         cache.getListenable().addListener(new TreeCacheListener() {
             
@@ -73,12 +70,8 @@ public class DataSourceListenerManager {
         });
     }
     
-    /**
-     * Add master-slave data source node change listener.
-     *
-     * @param masterSlaveDataSource master-slave datasource
-     */
-    public void addMasterSlaveDataSourcesNodeListener(final MasterSlaveDataSource masterSlaveDataSource) {
+    @Override
+    public void addMasterSlaveDataSourceChangedListener(final MasterSlaveDataSource masterSlaveDataSource) {
         TreeCache cache = (TreeCache) registryCenter.getRawCache(stateNode.getDataSourcesNodeFullPath());
         cache.getListenable().addListener(new TreeCacheListener() {
             

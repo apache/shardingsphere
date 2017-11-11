@@ -49,9 +49,9 @@ public final class ListenerManager {
      * @param shardingDataSource sharding data source
      */
     public void initShardingListeners(final ShardingDataSource shardingDataSource) {
-        configurationListenerManager.addShardingConfigurationChangeListener(shardingDataSource);
-        instanceListenerManager.addShardingInstancesStateChangeListener(shardingDataSource);
-        dataSourceListenerManager.addShardingDataSourcesNodeListener(shardingDataSource);
+        configurationListenerManager.addShardingDataSourceChangedListener(shardingDataSource);
+        instanceListenerManager.addShardingDataSourceChangedListener(shardingDataSource);
+        dataSourceListenerManager.addShardingDataSourceChangedListener(shardingDataSource);
     }
     
     /**
@@ -60,8 +60,8 @@ public final class ListenerManager {
      * @param masterSlaveDataSource master-slave data source
      */
     public void initMasterSlaveListeners(final MasterSlaveDataSource masterSlaveDataSource) {
-        configurationListenerManager.addMasterSlaveConfigurationChangeListener(masterSlaveDataSource);
-        instanceListenerManager.addMasterSlaveInstancesStateChangeListener(masterSlaveDataSource);
-        dataSourceListenerManager.addMasterSlaveDataSourcesNodeListener(masterSlaveDataSource);
+        configurationListenerManager.addMasterSlaveDataSourceChangedListener(masterSlaveDataSource);
+        instanceListenerManager.addMasterSlaveDataSourceChangedListener(masterSlaveDataSource);
+        dataSourceListenerManager.addMasterSlaveDataSourceChangedListener(masterSlaveDataSource);
     }
 }
