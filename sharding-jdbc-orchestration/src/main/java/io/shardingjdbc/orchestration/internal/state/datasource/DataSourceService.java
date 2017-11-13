@@ -62,6 +62,26 @@ public final class DataSourceService {
         regCenter.addCacheData(dataSourceNodePath);
     }
     
+    
+    /**
+     * Justify if has disabled datasource.
+     *
+     * @return if has disabled datasouce
+     */
+    public boolean hasDisabledDataSource() {
+        boolean result = false;
+        String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
+        List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
+        for (String each : dataSources) {
+            String path = dataSourcesNodePath + "/" + each;
+            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(path))) {
+                result = true;
+            }
+        }
+        return result;
+    }
+    
+    
     /**
      * Get available sharding rule.
      *

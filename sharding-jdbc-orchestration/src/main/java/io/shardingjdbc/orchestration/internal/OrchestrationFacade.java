@@ -79,7 +79,9 @@ public final class OrchestrationFacade {
         instanceStateService.persistShardingInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initShardingListeners(shardingDataSource);
-        shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), props);
+        if (dataSourceService.hasDisabledDataSource()) {
+            shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), props);
+        }
     }
     
     private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
@@ -127,6 +129,8 @@ public final class OrchestrationFacade {
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initMasterSlaveListeners(masterSlaveDataSource);
-        masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
+        if (dataSourceService.hasDisabledDataSource()) {
+            masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
+        }
     }
 }
