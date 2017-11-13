@@ -50,7 +50,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     public DataSource dataSource() throws SQLException {
         return null == masterSlaveProperties.getMasterDataSourceName() 
                 ? OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, 
-                        shardingProperties.getShardingRuleConfiguration(), orchestrationProperties.getOrchestrationConfiguration())
+                        shardingProperties.getShardingRuleConfiguration(), orchestrationProperties.getOrchestrationConfiguration(), shardingProperties.getData(), shardingProperties.getProps())
                 : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
                         masterSlaveProperties.getMasterSlaveRuleConfiguration(), orchestrationProperties.getOrchestrationConfiguration());
     }

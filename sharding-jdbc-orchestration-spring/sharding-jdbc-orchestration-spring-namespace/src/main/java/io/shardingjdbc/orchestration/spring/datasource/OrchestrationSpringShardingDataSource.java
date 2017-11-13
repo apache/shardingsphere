@@ -44,8 +44,8 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource {
     private final Properties props;
     
     public OrchestrationSpringShardingDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter regCenter, final Map<String, DataSource> dataSourceMap, 
-                                                 final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
-        super(shardingRuleConfig.build(dataSourceMap), props);
+                                                 final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) throws SQLException {
+        super(shardingRuleConfig.build(dataSourceMap), configMap, props);
         this.dataSourceMap = dataSourceMap;
         this.shardingRuleConfig = shardingRuleConfig;
         this.props = props;
@@ -54,6 +54,8 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource {
     
     /**
      * Initial all orchestration actions for sharding data source.
+     * 
+     * @throws SQLException SQL exception
      */
     public void init() throws SQLException {
         new OrchestrationFacade(config).initShardingOrchestration(dataSourceMap, shardingRuleConfig, props, this);

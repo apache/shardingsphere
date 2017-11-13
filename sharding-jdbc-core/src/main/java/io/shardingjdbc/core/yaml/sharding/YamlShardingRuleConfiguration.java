@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Sharding rule configuration for yaml.
@@ -54,6 +55,8 @@ public class YamlShardingRuleConfiguration {
     private String defaultKeyGeneratorClass;
     
     private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new HashMap<>();
+    
+    private Map<String, Object> data = new ConcurrentHashMap<>();
     
     private Properties props = new Properties();
     

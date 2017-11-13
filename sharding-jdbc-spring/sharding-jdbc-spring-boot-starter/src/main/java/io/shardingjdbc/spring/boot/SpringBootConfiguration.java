@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Spring boot sharding and master-slave configuration.
@@ -40,11 +41,14 @@ public class SpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
+    private final Map<String, Object> configMap = new ConcurrentHashMap<>();
+    
     private final Properties props = new Properties();
     
     @Bean
     public DataSource dataSource() throws SQLException {
-        return null == masterSlaveProperties.getMasterDataSourceName() ? ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingProperties.getShardingRuleConfiguration(), props)
+        return null == masterSlaveProperties.getMasterDataSourceName() 
+                ? ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingProperties.getShardingRuleConfiguration(), configMap, shardingProperties.getProps())
                 : MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration());
     }
     
