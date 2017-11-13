@@ -79,7 +79,7 @@ Sharding-JDBC is a JDBC extension, provides distributed features such as shardin
     Map<String, DataSource> dataSourceMap = new HashMap<>();
     
     BasicDataSource dataSource1 = new BasicDataSource();
-    dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
+    dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource1.setUrl("jdbc:mysql://localhost:3306/ds_0");
     dataSource1.setUsername("root");
     dataSource1.setPassword("");
