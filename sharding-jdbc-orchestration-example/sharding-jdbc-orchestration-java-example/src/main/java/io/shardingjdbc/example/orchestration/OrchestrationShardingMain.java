@@ -38,6 +38,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class OrchestrationShardingMain {
     
@@ -50,7 +52,7 @@ public final class OrchestrationShardingMain {
     // CHECKSTYLE:ON
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
         DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-            createDataSourceMap(), createShardingRuleConfig(), new OrchestrationConfiguration("orchestration-sharding-data-source", regCenter, false));
+            createDataSourceMap(), createShardingRuleConfig(), new OrchestrationConfiguration("orchestration-sharding-data-source", regCenter, false), new ConcurrentHashMap(), new Properties());
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);

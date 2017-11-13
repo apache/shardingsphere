@@ -27,6 +27,8 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class RawJdbcJavaShardingTableOnlyMain {
     
@@ -41,7 +43,7 @@ public final class RawJdbcJavaShardingTableOnlyMain {
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new ConcurrentHashMap<String, Object>(), new Properties());
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
