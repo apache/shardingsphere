@@ -80,7 +80,7 @@ Sharding-JDBC的分库分表通过规则配置描述，请简单浏览配置全�
     
     // 配置第一个数据源
     BasicDataSource dataSource1 = new BasicDataSource();
-    dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
+    dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource1.setUrl("jdbc:mysql://localhost:3306/ds_0");
     dataSource1.setUsername("root");
     dataSource1.setPassword("");
