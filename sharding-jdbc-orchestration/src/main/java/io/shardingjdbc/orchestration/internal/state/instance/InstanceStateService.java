@@ -24,6 +24,9 @@ import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeListener;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeType;
 import lombok.Getter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -67,22 +70,19 @@ public final class InstanceStateService {
     }
     
     private void addShardingInstancesStateChangeListener(final String instanceNodePath, final ShardingDataSource shardingDataSource) {
-        TreeCache cache = (TreeCache) regCenter.getRawCache(instanceNodePath);
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
+        regCenter.addRegistryChangeListener(instanceNodePath, new RegistryChangeListener() {
             @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || null == childData.getData() || childData.getPath().isEmpty() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
-                    return;
-                }
-                Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
-                if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(childData.getPath()))) {
-                    for (String each : dataSourceMap.keySet()) {
-                        dataSourceMap.put(each, new CircuitBreakerDataSource());
+            public void onRegistryChange(RegistryChangeEvent registryChangeEvent) throws Exception {
+                if (RegistryChangeType.UPDATED == registryChangeEvent.getType() && registryChangeEvent.getPayload().isPresent()) {
+                    String instanceStateKey = registryChangeEvent.getPayload().get().getKey();
+                    Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
+                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(instanceStateKey))) {
+                        for (String each : dataSourceMap.keySet()) {
+                            dataSourceMap.put(each, new CircuitBreakerDataSource());
+                        }
                     }
+                    shardingDataSource.renew(configurationService.loadShardingRuleConfiguration().build(dataSourceMap), configurationService.loadShardingProperties());
                 }
-                shardingDataSource.renew(configurationService.loadShardingRuleConfiguration().build(dataSourceMap), configurationService.loadShardingProperties());
             }
         });
     }
@@ -100,22 +100,19 @@ public final class InstanceStateService {
     }
     
     private void addMasterSlaveInstancesStateChangeListener(final String instanceNodePath, final MasterSlaveDataSource masterSlaveDataSource) {
-        TreeCache cache = (TreeCache) regCenter.getRawCache(instanceNodePath);
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
+        regCenter.addRegistryChangeListener(instanceNodePath, new RegistryChangeListener() {
             @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || null == childData.getData() || childData.getPath().isEmpty() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
-                    return;
-                }
-                Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
-                if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(childData.getPath()))) {
-                    for (String each : dataSourceMap.keySet()) {
-                        dataSourceMap.put(each, new CircuitBreakerDataSource());
+            public void onRegistryChange(RegistryChangeEvent registryChangeEvent) throws Exception {
+                if (RegistryChangeType.UPDATED == registryChangeEvent.getType() && registryChangeEvent.getPayload().isPresent()) {
+                    String instanceKey = registryChangeEvent.getPayload().get().getKey();
+                    Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
+                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(instanceKey))) {
+                        for (String each : dataSourceMap.keySet()) {
+                            dataSourceMap.put(each, new CircuitBreakerDataSource());
+                        }
                     }
+                    masterSlaveDataSource.renew(configurationService.loadMasterSlaveRuleConfiguration().build(dataSourceMap));
                 }
-                masterSlaveDataSource.renew(configurationService.loadMasterSlaveRuleConfiguration().build(dataSourceMap));
             }
         });
     }

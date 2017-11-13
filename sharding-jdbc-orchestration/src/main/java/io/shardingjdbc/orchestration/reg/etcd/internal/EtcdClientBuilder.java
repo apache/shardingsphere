@@ -22,6 +22,8 @@ public class EtcdClientBuilder {
     private boolean keepAlive = false;
     private boolean idle = false;
     private long idleTimeout = 1000 * 60L;
+    private long timeout;
+    private int maxRetry;
 
     public static EtcdClientBuilder newBuilder() {
         return new EtcdClientBuilder();

@@ -17,11 +17,15 @@
 
 package io.shardingjdbc.orchestration.internal.state.datasource;
 
+import com.google.common.base.Optional;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeListener;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeType;
 import lombok.Getter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -61,20 +65,15 @@ public final class DataSourceService {
     }
     
     private void addDataSourcesNodeListener(final MasterSlaveDataSource masterSlaveDataSource) {
-        TreeCache cache = (TreeCache) regCenter.getRawCache(dataSourceNodePath);
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
+        regCenter.addRegistryChangeListener(dataSourceNodePath, new RegistryChangeListener() {
             @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || null == childData.getData() || childData.getPath().isEmpty()) {
-                    return;
-                }
-                if (TreeCacheEvent.Type.NODE_UPDATED == event.getType() || TreeCacheEvent.Type.NODE_REMOVED == event.getType()) {
+            public void onRegistryChange(RegistryChangeEvent registryChangeEvent) throws Exception {
+                Optional<RegistryChangeEvent.Payload> payload = registryChangeEvent.getPayload();
+                if (payload.isPresent()) {
                     MasterSlaveRule masterSlaveRule = configurationService.getAvailableMasterSlaveRule();
-                    if (TreeCacheEvent.Type.NODE_UPDATED == event.getType()) {
-                        String path = childData.getPath();
-                        String dataSourceName = path.substring(path.lastIndexOf("/") + 1);
+                    if (RegistryChangeType.UPDATED == registryChangeEvent.getType()) {
+                        String datasourceKey = payload.get().getKey();
+                        String dataSourceName = datasourceKey.substring(datasourceKey.lastIndexOf("/") + 1);
                         masterSlaveRule.getSlaveDataSourceMap().remove(dataSourceName);
                     }
                     masterSlaveDataSource.renew(masterSlaveRule);

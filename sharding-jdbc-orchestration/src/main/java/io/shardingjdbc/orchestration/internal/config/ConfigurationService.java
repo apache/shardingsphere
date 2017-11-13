@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.orchestration.internal.config;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
@@ -30,6 +31,9 @@ import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConv
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
 import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceStateNode;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeListener;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeType;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
@@ -106,16 +110,12 @@ public final class ConfigurationService {
     private void addShardingConfigurationNodeChangeListener(final String node, final ShardingDataSource shardingDataSource) {
         String cachePath = configNode.getFullPath(node);
         regCenter.addCacheData(cachePath);
-        TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
+        regCenter.addRegistryChangeListener(cachePath, new RegistryChangeListener() {
             @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
-                    return;
+            public void onRegistryChange(RegistryChangeEvent registryChangeEvent) throws Exception {
+                if (RegistryChangeType.UPDATED == registryChangeEvent.getType() && registryChangeEvent.getPayload().isPresent()) {
+                    shardingDataSource.renew(loadShardingRuleConfiguration().build(loadDataSourceMap()), loadShardingProperties());
                 }
-                shardingDataSource.renew(loadShardingRuleConfiguration().build(loadDataSourceMap()), loadShardingProperties());
             }
         });
     }
@@ -148,16 +148,12 @@ public final class ConfigurationService {
     private void addMasterSlaveConfigurationChangeListener(final String node, final MasterSlaveDataSource masterSlaveDataSource) {
         String cachePath = configNode.getFullPath(node);
         regCenter.addCacheData(cachePath);
-        TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
+        regCenter.addRegistryChangeListener(cachePath, new RegistryChangeListener() {
             @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
-                    return;
+            public void onRegistryChange(RegistryChangeEvent registryChangeEvent) throws Exception {
+                if (RegistryChangeType.UPDATED == registryChangeEvent.getType() && registryChangeEvent.getPayload().isPresent()) {
+                    masterSlaveDataSource.renew(getAvailableMasterSlaveRule());
                 }
-                masterSlaveDataSource.renew(getAvailableMasterSlaveRule());
             }
         });
     }

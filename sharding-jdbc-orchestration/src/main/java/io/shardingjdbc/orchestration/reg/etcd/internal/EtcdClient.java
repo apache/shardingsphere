@@ -29,7 +29,7 @@ public interface EtcdClient {
      * @param directory directory
      * @return value
      */
-    Optional<List<KeyValue>> list(String directory);
+    List<KeyValue> list(String directory);
 
     /**
      * put value to a specific key, if result is not absent, it is an update

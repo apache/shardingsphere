@@ -17,6 +17,9 @@
 
 package io.shardingjdbc.orchestration.reg.base;
 
+import lombok.AllArgsConstructor;
+import lombok.Value;
+
 import java.util.List;
 
 /**
@@ -56,12 +59,12 @@ public interface CoordinatorRegistryCenter extends RegistryCenter {
      * @return sub-nodes name list
      */
     List<String> getChildrenKeys(String path);
-    
+
     /**
-     * Get cache's raw object.
-     * 
-     * @param cachePath cache path
-     * @return cache's raw object
+     * Add registry change listener to a specific path
+     * @param path key or directory
+     * @param registryChangeListener the listener object
      */
-    Object getRawCache(String cachePath);
+    void addRegistryChangeListener(String path, RegistryChangeListener registryChangeListener);
+
 }

@@ -54,21 +54,21 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
 
     @Override
-    public Optional<List<EtcdClient.KeyValue>> list(String dir) {
+    public List<EtcdClient.KeyValue> list(String dir) {
         final RangeRequest request = RangeRequest.newBuilder()
                 .setKey(ByteString.copyFromUtf8(dir))
                 .setRangeEnd(prefix(dir))
                 .build();
         final RangeResponse response = kvBlockingStub.range(request);
         final List<io.shardingjdbc.orchestration.reg.etcd.internal.stub.KeyValue> keyValues = response.getKvsList();
-        List<EtcdClient.KeyValue> result = Lists.newArrayList();
+        List<EtcdClient.KeyValue> children = Lists.newArrayList();
         for (io.shardingjdbc.orchestration.reg.etcd.internal.stub.KeyValue keyValue : keyValues) {
-            result.add(EtcdClient.KeyValue.builder()
+            children.add(EtcdClient.KeyValue.builder()
                     .key(keyValue.getKey().toStringUtf8())
                     .value(keyValue.getValue().toStringUtf8())
                     .build());
         }
-        return Optional.of(result);
+        return children;
     }
 
     @Override

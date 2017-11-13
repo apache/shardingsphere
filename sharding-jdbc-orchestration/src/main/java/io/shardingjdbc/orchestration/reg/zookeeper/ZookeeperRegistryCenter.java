@@ -19,7 +19,11 @@ package io.shardingjdbc.orchestration.reg.zookeeper;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.base.Optional;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeListener;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeType;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,6 +33,8 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
+import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
+import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.zookeeper.CreateMode;
@@ -39,6 +45,8 @@ import org.apache.zookeeper.data.ACL;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * Zookeeper based registry center.
@@ -177,7 +185,48 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
             return Collections.emptyList();
         }
     }
-    
+
+    @Override
+    public void addRegistryChangeListener(final String path, final RegistryChangeListener registryChangeListener) {
+        TreeCache treeCache = this.getRawCache(path);
+        if (treeCache == null) {
+            this.addCacheData(path);
+            treeCache = this.getRawCache(path);
+        }
+        treeCache.getListenable().addListener(new TreeCacheListener() {
+            @Override
+            public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception {
+                ChildData data = event.getData();
+                Optional<RegistryChangeEvent.Payload> payload;
+                if (data == null || isEmpty(data.getPath()) || data.getData() == null) {
+                    payload = Optional.absent();
+                } else {
+                    payload = Optional.of(new RegistryChangeEvent.Payload(data.getPath(), new String(data.getData())));
+                }
+                switch (event.getType()) {
+                    case NODE_ADDED:
+                        break;
+                    case INITIALIZED:
+                        break;
+                    case CONNECTION_LOST:
+                        break;
+                    case CONNECTION_SUSPENDED:
+                        break;
+                    case CONNECTION_RECONNECTED:
+                        break;
+                    case NODE_UPDATED:
+                        registryChangeListener.onRegistryChange(new RegistryChangeEvent(RegistryChangeType.UPDATED, payload));
+                        break;
+                    case NODE_REMOVED:
+                        registryChangeListener.onRegistryChange(new RegistryChangeEvent(RegistryChangeType.DELETED, payload));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
     @Override
     public boolean isExisted(final String key) {
         try {
@@ -242,9 +291,8 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
         }
         caches.put(cachePath + "/", cache);
     }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
+
+    private TreeCache getRawCache(final String cachePath) {
         return caches.get(cachePath + "/");
     }
 }
