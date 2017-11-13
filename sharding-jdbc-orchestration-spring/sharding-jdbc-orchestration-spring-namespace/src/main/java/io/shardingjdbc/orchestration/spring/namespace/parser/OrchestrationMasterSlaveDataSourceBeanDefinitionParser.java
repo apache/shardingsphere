@@ -69,7 +69,6 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         } else {
             factory.addConstructorArgValue(parseStrategyType(element));
         }
-        factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         return factory.getBeanDefinition();
     }
     
@@ -80,6 +79,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         factory.addConstructorArgReference(regCenter);
         factory.addConstructorArgValue(parseDataSources(element, parserContext));
         factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element, parserContext));
+        factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         factory.setInitMethodName("init");
         return factory.getBeanDefinition();
     }
