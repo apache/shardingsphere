@@ -24,6 +24,7 @@ import io.shardingjdbc.core.rule.MasterSlaveRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -35,16 +36,16 @@ public class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
     
     public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
                                        final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap) throws SQLException {
-        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap));
+        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap), Collections.<String, Object>emptyMap());
     }
     
     public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
                                        final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithm strategy) throws SQLException {
-        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategy));
+        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategy), Collections.<String, Object>emptyMap());
     }
     
     public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource,
                                        final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithmType strategyType) throws SQLException {
-        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategyType.getAlgorithm()));
+        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategyType.getAlgorithm()), Collections.<String, Object>emptyMap());
     }
 }

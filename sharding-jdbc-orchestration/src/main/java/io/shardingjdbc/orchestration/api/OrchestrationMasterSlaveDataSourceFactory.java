@@ -66,6 +66,25 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
     /**
      * Create master-slave data source.
      *
+     * @param dataSourceMap data source map
+     * @param masterSlaveRuleConfig master-slave rule configuration
+     * @param orchestrationConfig orchestration master-slave configuration
+     * @param configMap config map
+     *
+     * @return sharding data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(
+            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
+            final OrchestrationConfiguration orchestrationConfig, final Map<String, Object> configMap) throws SQLException {
+        MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap);
+        new OrchestrationFacade(orchestrationConfig).initMasterSlaveOrchestration(dataSourceMap, masterSlaveRuleConfig, result);
+        return result;
+    }
+    
+    /**
+     * Create master-slave data source.
+     *
      * <p>One master data source can configure multiple slave data source.</p>
      *
      * @param yamlFile yaml file for master-slave rule configuration with data sources

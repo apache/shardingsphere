@@ -54,6 +54,7 @@ public final class OrchestrationShardingDataSourceFactory {
      * @param dataSourceMap data source map
      * @param shardingRuleConfig sharding rule configuration
      * @param orchestrationConfig orchestration master-slave configuration
+     * @param configMap config map
      * @param props properties for data source
      *
      * @return sharding data source

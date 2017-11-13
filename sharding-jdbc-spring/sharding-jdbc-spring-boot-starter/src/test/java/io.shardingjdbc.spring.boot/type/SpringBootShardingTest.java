@@ -1,5 +1,6 @@
 package io.shardingjdbc.spring.boot.type;
 
+import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -13,6 +14,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -37,5 +40,8 @@ public class SpringBootShardingTest {
             assertThat(((BasicDataSource) each).getMaxActive(), is(16));
         }
         assertTrue(shardingContext.isShowSQL());
+        Map<String, Object> configMap = new ConcurrentHashMap<>();
+        configMap.put("key1", "value1");
+        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
     }
 }
