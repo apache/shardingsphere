@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,21 +15,17 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.yaml;
-
-import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveConfiguration;
-import io.shardingjdbc.orchestration.api.config.OrchestratorConfiguration;
-import lombok.Getter;
-import lombok.Setter;
+package io.shardingjdbc.orchestration.reg.zookeeper.state;
 
 /**
- * Orchestration master-slave configuration for yaml.
+ * State node status.
  *
  * @author caohao
  */
-@Getter
-@Setter
-public final class YamlOrchestrationMasterSlaveRuleConfiguration extends YamlMasterSlaveConfiguration {
+public enum StateNodeStatus {
     
-    private OrchestratorConfiguration orchestration;
+    /**
+     * Disabled state node.
+     */
+    DISABLED
 }

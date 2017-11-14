@@ -18,6 +18,7 @@
 package io.shardingjdbc.orchestration.yaml;
 
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
+import io.shardingjdbc.orchestration.api.config.OrchestratorConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,5 +31,5 @@ import lombok.Setter;
 @Setter
 public final class YamlOrchestrationShardingRuleConfiguration extends YamlShardingConfiguration {
     
-    private YamlOrchestrationConfiguration orchestration;
+    private OrchestratorConfiguration orchestration;
 }

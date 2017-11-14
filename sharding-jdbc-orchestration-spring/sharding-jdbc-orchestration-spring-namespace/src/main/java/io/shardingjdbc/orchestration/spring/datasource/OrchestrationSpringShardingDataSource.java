@@ -19,9 +19,8 @@ package io.shardingjdbc.orchestration.spring.datasource;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.api.OrchestratorBuilder;
+import io.shardingjdbc.orchestration.api.config.OrchestratorConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -35,7 +34,7 @@ import java.util.Properties;
  */
 public class OrchestrationSpringShardingDataSource extends ShardingDataSource {
     
-    private final OrchestrationConfiguration config;
+    private final OrchestratorConfiguration config;
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -43,19 +42,22 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource {
     
     private final Properties props;
     
-    public OrchestrationSpringShardingDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter regCenter, final Map<String, DataSource> dataSourceMap, 
-                                                 final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
+    public OrchestrationSpringShardingDataSource(final String name, final boolean overwrite,
+                                                 final Map<String, String> registryCenter,
+                                                 final Map<String, DataSource> dataSourceMap,
+                                                 final ShardingRuleConfiguration shardingRuleConfig,
+                                                 final Properties props) throws SQLException {
         super(shardingRuleConfig.build(dataSourceMap), props);
         this.dataSourceMap = dataSourceMap;
         this.shardingRuleConfig = shardingRuleConfig;
         this.props = props;
-        config = new OrchestrationConfiguration(name, regCenter, overwrite);
+        config = new OrchestratorConfiguration(name, overwrite, registryCenter);
     }
     
     /**
-     * Initial all orchestration actions for sharding data source.
+     * Initial all registryCenter actions for sharding data source.
      */
     public void init() {
-        new OrchestrationFacade(config).initShardingOrchestration(dataSourceMap, shardingRuleConfig, props, this);
+        OrchestratorBuilder.newBuilder().with(config).build().orchestrateShardingDatasource(dataSourceMap, shardingRuleConfig, this, props);
     }
 }

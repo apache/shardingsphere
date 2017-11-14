@@ -18,21 +18,36 @@
 package io.shardingjdbc.orchestration.api.config;
 
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Orchestration configuration.
  *
  * @author zhagliang
  */
-@RequiredArgsConstructor
 @Getter
-public final class OrchestrationConfiguration {
-    
-    private final String name;
-    
-    private final CoordinatorRegistryCenter registryCenter;
-    
-    private final boolean overwrite;
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public final class OrchestratorConfiguration {
+    /**
+     * Name of the orchestrator instance.
+     */
+    private String name;
+
+    /**
+     * If overwrite is enabled, orchestrator will trying to overwrite configuration in backend when it is started.
+     */
+    private boolean overwrite;
+
+    /**
+     * Customizable properties for orchestrator, it will be passed to underline storage
+     * for example, server list, storage type, etc.
+     */
+    private Map<String, String> registryCenter;
+
+
 }

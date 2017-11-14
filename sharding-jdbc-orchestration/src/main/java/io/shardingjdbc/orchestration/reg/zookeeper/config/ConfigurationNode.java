@@ -15,31 +15,37 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.state.datasource;
+package io.shardingjdbc.orchestration.reg.zookeeper.config;
+
+import lombok.RequiredArgsConstructor;
 
 /**
- * Data source state node.
- * 
+ * Data configuration node.
+ *
  * @author caohao
  */
-public final class DataSourceStateNode {
+@RequiredArgsConstructor
+public final class ConfigurationNode {
     
-    public static final String ROOT = "state";
+    public static final String ROOT = "config";
     
-    public static final String INSTANCES_NODE_PATH = ROOT + "/datasources";
+    public static final String DATA_SOURCE_NODE_PATH = ROOT + "/datasource";
+    
+    public static final String SHARDING_NODE_PATH = ROOT + "/sharding";
+    
+    public static final String MASTER_SLAVE_NODE_PATH = ROOT + "/masterslave";
+    
+    public static final String PROPS_NODE_PATH = ROOT + "/props";
     
     private final String name;
-    
-    public DataSourceStateNode(final String name) {
-        this.name = name;
-    }
     
     /**
      * Get node full path.
      *
+     * @param node node name
      * @return node full path
      */
-    public String getFullPath() {
-        return String.format("/%s/%s", name, INSTANCES_NODE_PATH);
+    public String getFullPath(final String node) {
+        return String.format("/%s/%s", name, node);
     }
 }

@@ -7,6 +7,7 @@ import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.util.DataSourceUtil;
 import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingjdbc.orchestration.api.OrchestratorBuilder;
 import io.shardingjdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingjdbc.orchestration.spring.boot.orchestration.OrchestrationSpringBootConfigurationProperties;
 import io.shardingjdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
@@ -46,9 +47,11 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     public DataSource dataSource() throws SQLException {
         return null == masterSlaveProperties.getMasterDataSourceName() 
                 ? OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, 
-                        shardingProperties.getShardingRuleConfiguration(), orchestrationProperties.getOrchestrationConfiguration())
+                        shardingProperties.getShardingRuleConfiguration(), OrchestratorBuilder.newBuilder()
+                                    .with(orchestrationProperties.getOrchestrationConfiguration()).build())
                 : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
-                        masterSlaveProperties.getMasterSlaveRuleConfiguration(), orchestrationProperties.getOrchestrationConfiguration());
+                        masterSlaveProperties.getMasterSlaveRuleConfiguration(), OrchestratorBuilder.newBuilder()
+                        .with(orchestrationProperties.getOrchestrationConfiguration()).build());
     }
     
     @Override

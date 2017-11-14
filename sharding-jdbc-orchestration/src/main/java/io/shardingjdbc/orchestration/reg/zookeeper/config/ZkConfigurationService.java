@@ -15,30 +15,24 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.config;
+package io.shardingjdbc.orchestration.reg.zookeeper.config;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
-import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
-import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceStateNode;
+import io.shardingjdbc.orchestration.reg.base.ConfigurationService;
+import io.shardingjdbc.orchestration.reg.zookeeper.state.StateNodeStatus;
+import io.shardingjdbc.orchestration.reg.zookeeper.state.datasource.DataSourceStateNode;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.base.RegistryChangeEvent;
 import io.shardingjdbc.orchestration.reg.base.RegistryChangeListener;
 import io.shardingjdbc.orchestration.reg.base.RegistryChangeType;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -50,7 +44,7 @@ import java.util.Properties;
  * 
  * @author caohao
  */
-public final class ConfigurationService {
+public final class ZkConfigurationService implements ConfigurationService {
     
     private final ConfigurationNode configNode;
     
@@ -60,11 +54,11 @@ public final class ConfigurationService {
     
     private final boolean isOverwrite;
     
-    public ConfigurationService(final OrchestrationConfiguration config) {
-        configNode = new ConfigurationNode(config.getName());
-        regCenter = config.getRegistryCenter();
-        name = config.getName();
-        isOverwrite = config.isOverwrite();
+    public ZkConfigurationService(String name, boolean isOverwrite, CoordinatorRegistryCenter registryCenter) {
+        this.name = name;
+        this.isOverwrite = isOverwrite;
+        this.regCenter = registryCenter;
+        this.configNode = new ConfigurationNode(name);
     }
     
     /**
@@ -75,6 +69,7 @@ public final class ConfigurationService {
      * @param props sharding properties
      * @param shardingDataSource sharding datasource
      */
+    @Override
     public void persistShardingConfiguration(
             final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props, final ShardingDataSource shardingDataSource) {
         persistDataSourceConfiguration(dataSourceMap);
@@ -127,6 +122,7 @@ public final class ConfigurationService {
      * @param masterSlaveRuleConfig master-slave rule configuration
      * @param masterSlaveDataSource master-slave datasource
      */
+    @Override
     public void persistMasterSlaveConfiguration(
             final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final MasterSlaveDataSource masterSlaveDataSource) {
         persistDataSourceConfiguration(dataSourceMap);
@@ -163,6 +159,7 @@ public final class ConfigurationService {
      * 
      * @return data source configuration map
      */
+    @Override
     public Map<String, DataSource> loadDataSourceMap() {
         return DataSourceJsonConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
     }
@@ -172,6 +169,7 @@ public final class ConfigurationService {
      * 
      * @return sharding rule configuration
      */
+    @Override
     public ShardingRuleConfiguration loadShardingRuleConfiguration() {
         return ShardingRuleConfigurationConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH)));
     }
@@ -181,6 +179,7 @@ public final class ConfigurationService {
      * 
      * @return sharding properties
      */
+    @Override
     public Properties loadShardingProperties() {
         String data = regCenter.get(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH));
         return Strings.isNullOrEmpty(data) ? new Properties() : GsonFactory.getGson().fromJson(data, Properties.class);
@@ -191,6 +190,7 @@ public final class ConfigurationService {
      *
      * @return master-slave rule configuration
      */
+    @Override
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
         return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH)), MasterSlaveRuleConfiguration.class);
     }
@@ -200,6 +200,7 @@ public final class ConfigurationService {
      *
      * @return available master-slave rule
      */
+    @Override
     public MasterSlaveRule getAvailableMasterSlaveRule() {
         Map<String, DataSource> dataSourceMap = loadDataSourceMap();
         String dataSourcesNodePath = new DataSourceStateNode(name).getFullPath();

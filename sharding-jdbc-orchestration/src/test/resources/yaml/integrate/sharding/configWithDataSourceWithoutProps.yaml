@@ -57,4 +57,4 @@ orchestration:
   overwrite: true
   registryCenter:
     namespace: orchestration-yaml-test
-    serverLists: localhost:3181
+    server-lists: localhost:3181

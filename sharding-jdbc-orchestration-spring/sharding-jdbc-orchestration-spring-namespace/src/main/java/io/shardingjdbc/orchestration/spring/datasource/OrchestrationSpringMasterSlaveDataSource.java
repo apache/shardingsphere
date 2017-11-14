@@ -19,9 +19,8 @@ package io.shardingjdbc.orchestration.spring.datasource;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.api.OrchestratorBuilder;
+import io.shardingjdbc.orchestration.api.config.OrchestratorConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -34,24 +33,26 @@ import java.util.Map;
  */
 public class OrchestrationSpringMasterSlaveDataSource extends MasterSlaveDataSource {
     
-    private final OrchestrationConfiguration config;
+    private final OrchestratorConfiguration config;
     
     private final Map<String, DataSource> dataSourceMap;
     
     private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
     
-    public OrchestrationSpringMasterSlaveDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter registryCenter, 
-                                                    final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
+    public OrchestrationSpringMasterSlaveDataSource(final String name, final boolean overwrite,
+                                                    final Map<String, String> registryCenter,
+                                                    final Map<String, DataSource> dataSourceMap,
+                                                    final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
         super(masterSlaveRuleConfig.build(dataSourceMap));
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRuleConfig = masterSlaveRuleConfig;
-        config = new OrchestrationConfiguration(name, registryCenter, overwrite);
+        config = new OrchestratorConfiguration(name, overwrite, registryCenter);
     }
     
     /**
-     * Initial all orchestration actions for master-slave data source.
+     * Initial all registryCenter actions for master-slave data source.
      */
     public void init() {
-        new OrchestrationFacade(config).initMasterSlaveOrchestration(dataSourceMap, masterSlaveRuleConfig, this);
+        OrchestratorBuilder.newBuilder().with(config).build().orchestrateMasterSlaveDatasource(dataSourceMap, masterSlaveRuleConfig, this);
     }
 }

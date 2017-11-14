@@ -4,10 +4,17 @@ import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
-import io.shardingjdbc.orchestration.internal.state.instance.InstanceStateService;
+import io.shardingjdbc.orchestration.api.Orchestrator;
+import io.shardingjdbc.orchestration.api.config.OrchestratorConfiguration;
+import io.shardingjdbc.orchestration.reg.base.ConfigurationService;
+import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.base.DataSourceService;
+import io.shardingjdbc.orchestration.reg.base.InstanceStateService;
+import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
+import io.shardingjdbc.orchestration.reg.zookeeper.config.ZkConfigurationService;
+import io.shardingjdbc.orchestration.reg.zookeeper.state.datasource.ZkDataSourceService;
+import io.shardingjdbc.orchestration.reg.zookeeper.state.instance.ZkInstanceStateService;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -16,35 +23,37 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Orchestration service facade.
+ * Orchestration service facade， default implementation.
  *
  * @author zhangliang
  */
-public final class OrchestrationFacade {
-    
-    private final OrchestrationConfiguration config;
-    
+public class OrchestratorImpl implements Orchestrator {
+
     private final ConfigurationService configurationService;
-    
     private final InstanceStateService instanceStateService;
-    
-    public OrchestrationFacade(final OrchestrationConfiguration config) {
-        this.config = config;
-        configurationService = new ConfigurationService(config);
-        instanceStateService = new InstanceStateService(config);
+    private final DataSourceService dataSourceService;
+
+    public OrchestratorImpl(ConfigurationService configurationService,
+                            InstanceStateService instanceStateService,
+                            DataSourceService dataSourceService) {
+        this.configurationService = configurationService;
+        this.instanceStateService = instanceStateService;
+        this.dataSourceService = dataSourceService;
     }
-    
+
     /**
-     * Initial all orchestration actions for sharding data source.
+     * Initial all registryCenter actions for sharding data source.
      *
      * @param dataSourceMap data source map
      * @param shardingRuleConfig sharding rule configuration
      * @param props sharding properties
      * @param shardingDataSource sharding datasource
      */
-    public void initShardingOrchestration(
-            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props, final ShardingDataSource shardingDataSource) {
-        config.getRegistryCenter().init();
+    @Override
+    public void orchestrateShardingDatasource(final Map<String, DataSource> dataSourceMap,
+                                              final ShardingRuleConfiguration shardingRuleConfig,
+                                              final ShardingDataSource shardingDataSource,
+                                              final Properties props) {
         if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
             reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
         }
@@ -84,18 +93,18 @@ public final class OrchestrationFacade {
     }
     
     /**
-     * Initial all orchestration actions for master-slave data source.
+     * Initial all registryCenter actions for master-slave data source.
      *
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig sharding rule configuration
      * @param masterSlaveDataSource master-slave datasource
      */
-    public void initMasterSlaveOrchestration(
+    @Override
+    public void orchestrateMasterSlaveDatasource(
             final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final MasterSlaveDataSource masterSlaveDataSource) {
-        config.getRegistryCenter().init();
         configurationService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, masterSlaveDataSource);
         instanceStateService.persistMasterSlaveInstanceOnline(masterSlaveDataSource);
-        new DataSourceService(config).persistDataSourcesNodeOnline(masterSlaveDataSource);
+        dataSourceService.persistDataSourcesNodeOnline(masterSlaveDataSource);
         masterSlaveDataSource.renew(configurationService.getAvailableMasterSlaveRule());
     }
 }

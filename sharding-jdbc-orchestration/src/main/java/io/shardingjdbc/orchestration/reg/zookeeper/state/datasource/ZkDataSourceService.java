@@ -15,23 +15,15 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.state.datasource;
+package io.shardingjdbc.orchestration.reg.zookeeper.state.datasource;
 
 import com.google.common.base.Optional;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import io.shardingjdbc.orchestration.reg.base.RegistryChangeEvent;
-import io.shardingjdbc.orchestration.reg.base.RegistryChangeListener;
-import io.shardingjdbc.orchestration.reg.base.RegistryChangeType;
+import io.shardingjdbc.orchestration.reg.base.*;
+import io.shardingjdbc.orchestration.reg.base.DataSourceService;
+import io.shardingjdbc.orchestration.reg.zookeeper.state.datasource.DataSourceStateNode;
 import lombok.Getter;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 /**
  * Data source service.
@@ -39,7 +31,7 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
  * @author caohao
  */
 @Getter
-public final class DataSourceService {
+public final class ZkDataSourceService implements DataSourceService {
     
     private final String dataSourceNodePath;
     
@@ -47,10 +39,10 @@ public final class DataSourceService {
     
     private final ConfigurationService configurationService;
     
-    public DataSourceService(final OrchestrationConfiguration config) {
-        dataSourceNodePath = new DataSourceStateNode(config.getName()).getFullPath();
-        regCenter = config.getRegistryCenter();
-        configurationService = new ConfigurationService(config);
+    public ZkDataSourceService(final String name, final ConfigurationService configurationService, final CoordinatorRegistryCenter registryCenter) {
+        this.regCenter = registryCenter;
+        this.dataSourceNodePath = new DataSourceStateNode(name).getFullPath();
+        this.configurationService = configurationService;
     }
     
     /**
@@ -58,7 +50,7 @@ public final class DataSourceService {
      *
      * @param masterSlaveDataSource master-slave datasource
      */
-    public void persistDataSourcesNodeOnline(final MasterSlaveDataSource masterSlaveDataSource) {
+    @Override public void persistDataSourcesNodeOnline(final MasterSlaveDataSource masterSlaveDataSource) {
         regCenter.persist(dataSourceNodePath, "");
         regCenter.addCacheData(dataSourceNodePath);
         addDataSourcesNodeListener(masterSlaveDataSource);

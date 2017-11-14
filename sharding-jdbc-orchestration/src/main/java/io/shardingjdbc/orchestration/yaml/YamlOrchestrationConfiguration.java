@@ -17,11 +17,11 @@
 
 package io.shardingjdbc.orchestration.yaml;
 
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
-import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
+import io.shardingjdbc.orchestration.api.config.OrchestratorConfiguration;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Map;
 
 /**
  * Orchestration configuration for yaml.
@@ -34,16 +34,16 @@ public class YamlOrchestrationConfiguration {
     
     private String name;
     
-    private ZookeeperConfiguration registryCenter;
-    
     private boolean overwrite;
+
+    private Map<String, String> registryCenter;
     
     /**
-     * Get orchestration master-slave rule configuration from yaml.
+     * Get registryCenter master-slave rule configuration from yaml.
      *
-     * @return orchestration master-slave rule configuration from yaml
+     * @return registryCenter master-slave rule configuration from yaml
      */
-    public OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration(getName(), new ZookeeperRegistryCenter(registryCenter), overwrite);
+    public OrchestratorConfiguration getOrchestrationConfiguration() {
+        return new OrchestratorConfiguration(name, overwrite, registryCenter);
     }
 }

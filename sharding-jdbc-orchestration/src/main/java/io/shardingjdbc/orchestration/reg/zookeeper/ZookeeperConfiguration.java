@@ -17,8 +17,13 @@
 
 package io.shardingjdbc.orchestration.reg.zookeeper;
 
-import lombok.Getter;
-import lombok.Setter;
+import io.shardingjdbc.orchestration.api.config.OrchestratorConfiguration;
+import io.shardingjdbc.orchestration.reg.base.RegistryCenterConfiguration;
+import io.shardingjdbc.orchestration.reg.base.RegistryChangeEvent;
+import lombok.*;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Map;
 
 /**
  * Zookeeper based registry center configuration.
@@ -27,7 +32,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public final class ZookeeperConfiguration {
+public final class ZookeeperConfiguration implements RegistryCenterConfiguration {
     
     /**
      * Zookeeper server list.
@@ -72,4 +77,30 @@ public final class ZookeeperConfiguration {
      * <p>Default is not need digest</p>
      */
     private String digest;
+
+    public static ZookeeperConfiguration from(OrchestratorConfiguration configuration) {
+        ZookeeperConfiguration zkConfig = new ZookeeperConfiguration();
+        Map<String, String> props = configuration.getRegistryCenter();
+        if (props != null && !props.isEmpty()) {
+            zkConfig.setNamespace(get(props, "namespace", zkConfig.namespace));
+            zkConfig.setServerLists(get(props, "server-lists", zkConfig.serverLists));
+            zkConfig.setBaseSleepTimeMilliseconds(get(props, "base-sleep-time-milliseconds", zkConfig.baseSleepTimeMilliseconds));
+            zkConfig.setMaxSleepTimeMilliseconds(get(props, "max-sleep-time-milliseconds", zkConfig.maxSleepTimeMilliseconds));
+            zkConfig.setMaxRetries(get(props, "max-retries", zkConfig.maxRetries));
+            zkConfig.setSessionTimeoutMilliseconds(get(props, "session-timeout-milliseconds", zkConfig.sessionTimeoutMilliseconds));
+            zkConfig.setConnectionTimeoutMilliseconds(get(props, "connection-timeout-milliseconds", zkConfig.connectionTimeoutMilliseconds));
+            zkConfig.setDigest(get(props, "digest", zkConfig.digest));
+        }
+        return zkConfig;
+    }
+
+    private static int get(Map<String, String> properties, String key, int defaultValue) {
+        String value = properties.get(key);
+        return StringUtils.isEmpty(value) ? defaultValue : Integer.parseInt(value);
+    }
+
+    private static String get(Map<String, String> properties, String key, String defaultValue) {
+        return properties.containsKey(key) ? properties.get(key) : defaultValue;
+    }
+
 }

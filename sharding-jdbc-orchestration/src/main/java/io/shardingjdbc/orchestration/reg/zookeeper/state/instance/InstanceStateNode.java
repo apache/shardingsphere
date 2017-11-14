@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.state.instance;
+package io.shardingjdbc.orchestration.reg.zookeeper.state.instance;
 
 import io.shardingjdbc.orchestration.internal.util.IpUtils;
 

@@ -15,24 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.state.instance;
+package io.shardingjdbc.orchestration.reg.zookeeper.state.instance;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingjdbc.orchestration.reg.base.*;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
-import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import io.shardingjdbc.orchestration.reg.base.RegistryChangeEvent;
-import io.shardingjdbc.orchestration.reg.base.RegistryChangeListener;
-import io.shardingjdbc.orchestration.reg.base.RegistryChangeType;
+import io.shardingjdbc.orchestration.reg.zookeeper.state.StateNodeStatus;
 import lombok.Getter;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -43,7 +33,7 @@ import java.util.Map;
  * @author caohao
  */
 @Getter
-public final class InstanceStateService {
+public final class ZkInstanceStateService implements InstanceStateService {
     
     private final InstanceStateNode instanceStateNode;
     
@@ -51,10 +41,10 @@ public final class InstanceStateService {
     
     private final ConfigurationService configurationService;
     
-    public InstanceStateService(final OrchestrationConfiguration config) {
-        instanceStateNode = new InstanceStateNode(config.getName());
-        regCenter = config.getRegistryCenter();
-        configurationService = new ConfigurationService(config);
+    public ZkInstanceStateService(final String name, final ConfigurationService configurationService, final CoordinatorRegistryCenter registryCenter) {
+        this.regCenter = registryCenter;
+        this.configurationService = configurationService;
+        this.instanceStateNode = new InstanceStateNode(name);
     }
     
     /**
@@ -62,6 +52,7 @@ public final class InstanceStateService {
      *
      * @param shardingDataSource sharding datasource
      */
+    @Override
     public void persistShardingInstanceOnline(final ShardingDataSource shardingDataSource) {
         String instanceNodePath = instanceStateNode.getFullPath();
         regCenter.persistEphemeral(instanceNodePath, "");
@@ -92,6 +83,7 @@ public final class InstanceStateService {
      *
      * @param masterSlaveDataSource master-slave datasource
      */
+    @Override
     public void persistMasterSlaveInstanceOnline(final MasterSlaveDataSource masterSlaveDataSource) {
         String instanceNodePath = instanceStateNode.getFullPath();
         regCenter.persistEphemeral(instanceNodePath, "");

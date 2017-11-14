@@ -15,17 +15,31 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.state;
+package io.shardingjdbc.orchestration.reg.zookeeper.state.datasource;
 
 /**
- * State node status.
- *
+ * Data source state node.
+ * 
  * @author caohao
  */
-public enum StateNodeStatus {
+public final class DataSourceStateNode {
+    
+    public static final String ROOT = "state";
+    
+    public static final String INSTANCES_NODE_PATH = ROOT + "/datasources";
+    
+    private final String name;
+    
+    public DataSourceStateNode(final String name) {
+        this.name = name;
+    }
     
     /**
-     * Disabled state node.
+     * Get node full path.
+     *
+     * @return node full path
      */
-    DISABLED
+    public String getFullPath() {
+        return String.format("/%s/%s", name, INSTANCES_NODE_PATH);
+    }
 }
