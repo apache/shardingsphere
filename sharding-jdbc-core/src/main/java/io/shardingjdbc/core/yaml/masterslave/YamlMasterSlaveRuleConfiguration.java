@@ -47,7 +47,7 @@ public class YamlMasterSlaveRuleConfiguration {
     
     private String loadBalanceAlgorithmClassName;
     
-    private Map<String, Object> data = new ConcurrentHashMap<>();
+    private Map<String, Object> configMap = new ConcurrentHashMap<>();
     
     /**
      * Get master-slave rule configuration from yaml.

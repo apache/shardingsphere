@@ -56,7 +56,7 @@ public class YamlShardingRuleConfiguration {
     
     private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new HashMap<>();
     
-    private Map<String, Object> data = new ConcurrentHashMap<>();
+    private Map<String, Object> configMap = new ConcurrentHashMap<>();
     
     private Properties props = new Properties();
     

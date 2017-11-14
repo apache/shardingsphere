@@ -69,7 +69,7 @@ public final class ShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlShardingConfiguration config = unmarshal(yamlFile);
-        return new ShardingDataSource(config.getShardingRule(Collections.<String, DataSource>emptyMap()), config.getShardingRule().getData(), config.getShardingRule().getProps());
+        return new ShardingDataSource(config.getShardingRule(Collections.<String, DataSource>emptyMap()), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
     }
     
     /**
@@ -83,7 +83,7 @@ public final class ShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
         YamlShardingConfiguration config = unmarshal(yamlFile);
-        return new ShardingDataSource(config.getShardingRule(dataSourceMap), config.getShardingRule().getData(), config.getShardingRule().getProps());
+        return new ShardingDataSource(config.getShardingRule(dataSourceMap), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
     }
     
     /**
@@ -96,7 +96,7 @@ public final class ShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
         YamlShardingConfiguration config = unmarshal(yamlByteArray);
-        return new ShardingDataSource(config.getShardingRule(Collections.<String, DataSource>emptyMap()), config.getShardingRule().getData(), config.getShardingRule().getProps());
+        return new ShardingDataSource(config.getShardingRule(Collections.<String, DataSource>emptyMap()), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
     }
     
     /**
@@ -110,7 +110,7 @@ public final class ShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException, IOException {
         YamlShardingConfiguration config = unmarshal(yamlByteArray);
-        return new ShardingDataSource(config.getShardingRule(dataSourceMap), config.getShardingRule().getData(), config.getShardingRule().getProps());
+        return new ShardingDataSource(config.getShardingRule(dataSourceMap), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
     }
     
     private static YamlShardingConfiguration unmarshal(final File yamlFile) throws IOException {

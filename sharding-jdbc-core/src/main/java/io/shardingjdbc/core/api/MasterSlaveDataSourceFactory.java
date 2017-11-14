@@ -70,7 +70,7 @@ public final class MasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlMasterSlaveConfiguration config = unmarshal(yamlFile);
-        return new MasterSlaveDataSource(config.getMasterSlaveRule(Collections.<String, DataSource>emptyMap()), config.getMasterSlaveRule().getData());
+        return new MasterSlaveDataSource(config.getMasterSlaveRule(Collections.<String, DataSource>emptyMap()), config.getMasterSlaveRule().getConfigMap());
     }
     
     /**
@@ -86,7 +86,7 @@ public final class MasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
         YamlMasterSlaveConfiguration config = unmarshal(yamlFile);
-        return new MasterSlaveDataSource(config.getMasterSlaveRule(dataSourceMap), config.getMasterSlaveRule().getData());
+        return new MasterSlaveDataSource(config.getMasterSlaveRule(dataSourceMap), config.getMasterSlaveRule().getConfigMap());
     }
     
     /**
@@ -101,7 +101,7 @@ public final class MasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
         YamlMasterSlaveConfiguration config = unmarshal(yamlByteArray);
-        return new MasterSlaveDataSource(config.getMasterSlaveRule(Collections.<String, DataSource>emptyMap()), config.getMasterSlaveRule().getData());
+        return new MasterSlaveDataSource(config.getMasterSlaveRule(Collections.<String, DataSource>emptyMap()), config.getMasterSlaveRule().getConfigMap());
     }
     
     /**
@@ -117,7 +117,7 @@ public final class MasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException, IOException {
         YamlMasterSlaveConfiguration config = unmarshal(yamlByteArray);
-        return new MasterSlaveDataSource(config.getMasterSlaveRule(dataSourceMap), config.getMasterSlaveRule().getData());
+        return new MasterSlaveDataSource(config.getMasterSlaveRule(dataSourceMap), config.getMasterSlaveRule().getConfigMap());
     }
     
     private static YamlMasterSlaveConfiguration unmarshal(final File yamlFile) throws IOException {
