@@ -75,7 +75,7 @@ public class YamlMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
         }
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfigMap(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {
             stm.executeQuery("SELECT * FROM t_order");

@@ -56,7 +56,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     public MasterSlaveDataSource(final MasterSlaveRule masterSlaveRule, final Map<String, Object> configMap) throws SQLException {
         super(getAllDataSources(masterSlaveRule.getMasterDataSource(), masterSlaveRule.getSlaveDataSourceMap().values()));
         if (!configMap.isEmpty()) {
-            ConfigMapContext.getInstance().getMasterSlaveConfigMap().putAll(configMap);
+            ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
         }
         this.masterSlaveRule = masterSlaveRule;
     }

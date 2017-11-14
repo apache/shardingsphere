@@ -87,7 +87,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
         Object masterSlaveDataSource = this.applicationContext.getBean("configMapDataSource");
         Map<String, Object> configMap = new HashMap<>();
         configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfigMap(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
         assertThat(masterSlaveDataSource, instanceOf(MasterSlaveDataSource.class));
     }
 }
