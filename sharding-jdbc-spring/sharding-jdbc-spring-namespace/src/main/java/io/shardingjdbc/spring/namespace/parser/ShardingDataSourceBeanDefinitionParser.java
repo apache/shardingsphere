@@ -159,7 +159,7 @@ public class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDefiniti
     }
     
     private Map parseConfigMap(final Element element, final ParserContext parserContext, final BeanDefinition beanDefinition) {
-        Element dataElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.DATA_TAG);
+        Element dataElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.CONFIG_MAP_TAG);
         return null == dataElement ? Collections.<String, Class<?>>emptyMap() : parserContext.getDelegate().parseMapElement(dataElement, beanDefinition);
     }
     

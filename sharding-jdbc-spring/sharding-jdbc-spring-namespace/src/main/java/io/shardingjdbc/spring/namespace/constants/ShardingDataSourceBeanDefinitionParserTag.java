@@ -32,7 +32,7 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     
     public static final String SHARDING_RULE_CONFIG_TAG = "sharding-rule";
     
-    public static final String DATA_TAG = "data";
+    public static final String CONFIG_MAP_TAG = "config-map";
     
     public static final String PROPS_TAG = "props";
     

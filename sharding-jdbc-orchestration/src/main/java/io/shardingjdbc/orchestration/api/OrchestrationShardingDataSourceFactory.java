@@ -80,7 +80,7 @@ public final class OrchestrationShardingDataSourceFactory {
         YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlFile);
         YamlShardingRuleConfiguration shardingRuleConfig = config.getShardingRule();
         return createDataSource(config.getDataSources(), shardingRuleConfig.getShardingRuleConfiguration(), config.getOrchestration().getOrchestrationConfiguration(), 
-                shardingRuleConfig.getData(), shardingRuleConfig.getProps());
+                shardingRuleConfig.getConfigMap(), shardingRuleConfig.getProps());
     }
     
     /**
@@ -96,7 +96,7 @@ public final class OrchestrationShardingDataSourceFactory {
         YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlFile);
         YamlShardingRuleConfiguration shardingRuleConfig = config.getShardingRule();
         return createDataSource(dataSourceMap, shardingRuleConfig.getShardingRuleConfiguration(), config.getOrchestration().getOrchestrationConfiguration(), 
-                shardingRuleConfig.getData(), shardingRuleConfig.getProps());
+                shardingRuleConfig.getConfigMap(), shardingRuleConfig.getProps());
     }
     
     /**
@@ -111,7 +111,7 @@ public final class OrchestrationShardingDataSourceFactory {
         YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlByteArray);
         YamlShardingRuleConfiguration shardingRuleConfig = config.getShardingRule();
         return createDataSource(config.getDataSources(), shardingRuleConfig.getShardingRuleConfiguration(), config.getOrchestration().getOrchestrationConfiguration(), 
-                shardingRuleConfig.getData(), shardingRuleConfig.getProps());
+                shardingRuleConfig.getConfigMap(), shardingRuleConfig.getProps());
     }
     
     /**
@@ -127,7 +127,7 @@ public final class OrchestrationShardingDataSourceFactory {
         YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlByteArray);
         YamlShardingRuleConfiguration shardingRuleConfig = config.getShardingRule();
         return createDataSource(dataSourceMap, shardingRuleConfig.getShardingRuleConfiguration(), config.getOrchestration().getOrchestrationConfiguration(), 
-                shardingRuleConfig.getData(), shardingRuleConfig.getProps());
+                shardingRuleConfig.getConfigMap(), shardingRuleConfig.getProps());
     }
     
     private static YamlOrchestrationShardingRuleConfiguration unmarshal(final File yamlFile) throws IOException {

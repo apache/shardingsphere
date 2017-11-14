@@ -9,7 +9,7 @@
     <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:all>
-                <xsd:element ref="data" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="config-map" minOccurs="0" maxOccurs="1" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="master-data-source-name" type="xsd:string" use="required" />
@@ -18,7 +18,7 @@
             <xsd:attribute name="strategy-type" type="xsd:string" use="optional" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="data">
+    <xsd:element name="config-map">
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension base="beans:mapType" />
