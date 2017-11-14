@@ -67,4 +67,3 @@ public final class RawJdbcJavaShardingTableOnlyMain {
         return result;
     }
 }
-fix bug
