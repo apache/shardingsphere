@@ -53,20 +53,6 @@ public final class MasterSlaveDataSourceFactory {
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
-        return new MasterSlaveDataSource(masterSlaveRuleConfig.build(dataSourceMap), Collections.<String, Object>emptyMap());
-    }
-    
-    /**
-     * Create master-slave data source.
-     *
-     * <p>One master data source can configure multiple slave data source.</p>
-     *
-     * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig master-slave rule configuration
-     * @return master-slave data source
-     * @throws SQLException SQL exception
-     */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
                                               final Map<String, Object> configMap) throws SQLException {
         return new MasterSlaveDataSource(masterSlaveRuleConfig.build(dataSourceMap), configMap);

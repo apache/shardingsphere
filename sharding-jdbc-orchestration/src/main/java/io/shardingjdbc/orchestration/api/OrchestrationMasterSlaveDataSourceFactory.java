@@ -48,23 +48,6 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
     
     /**
      * Create master-slave data source.
-     * 
-     * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param orchestrationConfig orchestration master-slave configuration
-     * 
-     * @return sharding data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSource(
-            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig);
-        new OrchestrationFacade(orchestrationConfig).initMasterSlaveOrchestration(dataSourceMap, masterSlaveRuleConfig, result);
-        return result;
-    }
-    
-    /**
-     * Create master-slave data source.
      *
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
@@ -94,7 +77,8 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(config.getDataSources(), config.getMasterSlaveRule().getMasterSlaveRuleConfiguration(), config.getOrchestration().getOrchestrationConfiguration());
+        return createDataSource(config.getDataSources(), config.getMasterSlaveRule().getMasterSlaveRuleConfiguration(), 
+                config.getOrchestration().getOrchestrationConfiguration(), config.getMasterSlaveRule().getData());
     }
     
     /**
@@ -110,7 +94,8 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(dataSourceMap, config.getMasterSlaveRule().getMasterSlaveRuleConfiguration(), config.getOrchestration().getOrchestrationConfiguration());
+        return createDataSource(dataSourceMap, config.getMasterSlaveRule().getMasterSlaveRuleConfiguration(), 
+                config.getOrchestration().getOrchestrationConfiguration(), config.getMasterSlaveRule().getData());
     }
     
     /**
@@ -125,7 +110,8 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlByteArray);
-        return createDataSource(config.getDataSources(), config.getMasterSlaveRule().getMasterSlaveRuleConfiguration(), config.getOrchestration().getOrchestrationConfiguration());
+        return createDataSource(config.getDataSources(), config.getMasterSlaveRule().getMasterSlaveRuleConfiguration(), 
+                config.getOrchestration().getOrchestrationConfiguration(), config.getMasterSlaveRule().getData());
     }
     
     /**
@@ -141,7 +127,8 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException, IOException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlByteArray);
-        return createDataSource(dataSourceMap, config.getMasterSlaveRule().getMasterSlaveRuleConfiguration(), config.getOrchestration().getOrchestrationConfiguration());
+        return createDataSource(dataSourceMap, config.getMasterSlaveRule().getMasterSlaveRuleConfiguration(), 
+                config.getOrchestration().getOrchestrationConfiguration(), config.getMasterSlaveRule().getData());
     }
     
     private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final File yamlFile) throws IOException {

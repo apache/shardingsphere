@@ -109,7 +109,7 @@ public final class MasterSlaveDataSourceTest {
         masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slaveDataSource"));
         try {
-            ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig)).getDatabaseType();
+            ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap())).getDatabaseType();
         } finally {
             verify(masterConnection).close();
             verify(slaveConnection).close();
@@ -135,7 +135,8 @@ public final class MasterSlaveDataSourceTest {
         masterSlaveRuleConfig.setName("ds");
         masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("slaveDataSource1", "slaveDataSource2"));
-        assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig)).getDatabaseType(), is(DatabaseType.H2));
+        assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
+                masterSlaveRuleConfig, Collections.<String, Object>emptyMap())).getDatabaseType(), is(DatabaseType.H2));
         verify(masterConnection).close();
         verify(slaveConnection1).close();
         verify(slaveConnection2).close();
