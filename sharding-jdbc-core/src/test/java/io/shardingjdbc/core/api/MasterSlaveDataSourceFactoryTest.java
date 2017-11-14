@@ -49,7 +49,7 @@ public final class MasterSlaveDataSourceFactoryTest {
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
         assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap), instanceOf(MasterSlaveDataSource.class));
-        MatcherAssert.assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
+        MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfigMap(), is(configMap));
     }
     
     @Test
@@ -65,6 +65,6 @@ public final class MasterSlaveDataSourceFactoryTest {
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
         assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap), instanceOf(MasterSlaveDataSource.class));
-        MatcherAssert.assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
+        MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfigMap(), is(configMap));
     }
 }

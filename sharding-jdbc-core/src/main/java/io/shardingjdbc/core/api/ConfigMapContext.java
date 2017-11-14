@@ -35,7 +35,10 @@ public final class ConfigMapContext {
     private static final ConfigMapContext INSTANCE = new ConfigMapContext();
     
     @Getter
-    private Map<String, Object> configMap = new ConcurrentHashMap<>();
+    private Map<String, Object> shardingConfigMap = new ConcurrentHashMap<>();
+    
+    @Getter
+    private Map<String, Object> masterSlaveConfigMap = new ConcurrentHashMap<>();
     
     /**
      * Get a new instance for {@code ConfigMapContext}.

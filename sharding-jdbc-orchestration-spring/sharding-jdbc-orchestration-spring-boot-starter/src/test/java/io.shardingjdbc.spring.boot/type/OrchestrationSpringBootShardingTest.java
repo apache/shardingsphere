@@ -66,6 +66,6 @@ public class OrchestrationSpringBootShardingTest {
         assertTrue(shardingContext.isShowSQL());
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getShardingConfigMap(), is(configMap));
     }
 }

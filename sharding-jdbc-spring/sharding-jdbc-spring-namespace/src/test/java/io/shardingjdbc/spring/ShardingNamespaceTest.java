@@ -170,7 +170,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         ShardingDataSource shardingDataSource = this.applicationContext.getBean("propsDataSource", ShardingDataSource.class);
         Map<String, Object> configMap = new HashMap<>();
         configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getShardingConfigMap(), is(configMap));
         Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
         assertTrue((boolean) FieldValueUtil.getFieldValue(shardingContext, "showSQL"));
         ShardingProperties shardingProperties = (ShardingProperties) FieldValueUtil.getFieldValue(shardingDataSource, "shardingProperties", true);

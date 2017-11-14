@@ -77,7 +77,7 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
         }
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getShardingConfigMap(), is(configMap));
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {
             stm.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));

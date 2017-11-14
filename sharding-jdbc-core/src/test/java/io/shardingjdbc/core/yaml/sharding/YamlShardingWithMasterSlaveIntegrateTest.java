@@ -83,7 +83,7 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
         }
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfigMap(), is(configMap));
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {
             stm.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));

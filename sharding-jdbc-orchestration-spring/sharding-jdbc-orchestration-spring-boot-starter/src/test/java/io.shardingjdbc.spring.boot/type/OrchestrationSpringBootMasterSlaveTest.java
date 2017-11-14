@@ -60,6 +60,6 @@ public class OrchestrationSpringBootMasterSlaveTest {
         }
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfigMap(), is(configMap));
     }
 }

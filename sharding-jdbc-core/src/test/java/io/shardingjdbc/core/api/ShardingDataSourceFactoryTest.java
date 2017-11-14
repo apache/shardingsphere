@@ -49,7 +49,7 @@ public final class ShardingDataSourceFactoryTest {
         configMap.put("key1", "value1");
         DataSource dataSource = ShardingDataSourceFactory.createDataSource(getDataSourceMap(), shardingRuleConfig, configMap, props);
         assertNotNull(getShardingRule(dataSource));
-        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getShardingConfigMap(), is(configMap));
         assertThat(getShardingProperties(dataSource), is(props));
     }
     
