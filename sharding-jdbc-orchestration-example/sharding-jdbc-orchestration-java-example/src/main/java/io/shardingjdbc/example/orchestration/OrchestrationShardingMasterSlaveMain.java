@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class OrchestrationShardingMasterSlaveMain {
     
@@ -55,7 +56,7 @@ public final class OrchestrationShardingMasterSlaveMain {
     // CHECKSTYLE:ON
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
         DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                createDataSourceMap(), createShardingRuleConfig(), new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", regCenter, false), new HashMap<String, Object>(), new Properties());
+                createDataSourceMap(), createShardingRuleConfig(), new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", regCenter, false), new ConcurrentHashMap<String, Object>(), new Properties());
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);

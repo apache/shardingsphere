@@ -29,7 +29,6 @@ import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.pool.ObjectPool;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -40,6 +39,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class OrchestrationShardingMain {
     
@@ -51,8 +51,8 @@ public final class OrchestrationShardingMain {
     public static void main(final String[] args) throws IOException, SQLException {
     // CHECKSTYLE:ON
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
-        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), 
-                createShardingRuleConfig(), new OrchestrationConfiguration("orchestration-sharding-data-source", regCenter, false), new HashMap<String, Object>(), new Properties());
+        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
+            createDataSourceMap(), createShardingRuleConfig(), new OrchestrationConfiguration("orchestration-sharding-data-source", regCenter, false), new ConcurrentHashMap(), new Properties());
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);
