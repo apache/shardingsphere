@@ -1,0 +1,2 @@
+io.shardingjdbc.orchestration.reg.etcd.EtcdOrchestratorFactory
+io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperOrchestratorFactory
