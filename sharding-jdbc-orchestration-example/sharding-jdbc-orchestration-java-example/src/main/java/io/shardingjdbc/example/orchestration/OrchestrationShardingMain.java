@@ -52,7 +52,7 @@ public final class OrchestrationShardingMain {
     // CHECKSTYLE:ON
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
         DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-            createDataSourceMap(), createShardingRuleConfig(), new OrchestrationConfiguration("orchestration-sharding-data-source", regCenter, false), new ConcurrentHashMap(), new Properties());
+            createDataSourceMap(), createShardingRuleConfig(), new ConcurrentHashMap<String, Object>(), new Properties(), new OrchestrationConfiguration("orchestration-sharding-data-source", regCenter, false));
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);

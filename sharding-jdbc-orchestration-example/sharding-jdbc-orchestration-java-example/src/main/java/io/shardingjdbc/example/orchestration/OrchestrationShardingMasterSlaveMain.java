@@ -56,7 +56,7 @@ public final class OrchestrationShardingMasterSlaveMain {
     // CHECKSTYLE:ON
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
         DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                createDataSourceMap(), createShardingRuleConfig(), new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", regCenter, false), new ConcurrentHashMap<String, Object>(), new Properties());
+                createDataSourceMap(), createShardingRuleConfig(), new ConcurrentHashMap<String, Object>(), new Properties(), new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", regCenter, false));
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);

@@ -35,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class OrchestrationMasterSlaveMain {
     
@@ -47,7 +48,7 @@ public final class OrchestrationMasterSlaveMain {
     // CHECKSTYLE:ON
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
         DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                createDataSourceMap(), crateMasterSlaveRuleConfig(), new OrchestrationConfiguration("orchestration-master-slave-data-source", regCenter, false));
+                createDataSourceMap(), crateMasterSlaveRuleConfig(), new ConcurrentHashMap<String, Object>(), new OrchestrationConfiguration("orchestration-master-slave-data-source", regCenter, false));
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);
