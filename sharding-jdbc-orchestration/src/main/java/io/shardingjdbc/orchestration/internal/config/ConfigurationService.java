@@ -18,6 +18,7 @@
 package io.shardingjdbc.orchestration.internal.config;
 
 import com.google.common.base.Strings;
+import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
@@ -113,6 +114,15 @@ public final class ConfigurationService {
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration() {
         return ShardingRuleConfigurationConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH)));
+    }
+    
+    /**
+     * Load config map.
+     *
+     * @return config map
+     */
+    public ConfigMapContext loadConfigMap() {
+        return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.CONFIG_MAP_NODE_PATH)), ConfigMapContext.class);
     }
     
     /**

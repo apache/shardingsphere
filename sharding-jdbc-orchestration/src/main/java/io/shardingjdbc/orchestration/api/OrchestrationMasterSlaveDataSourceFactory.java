@@ -61,7 +61,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
             final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
             final OrchestrationConfiguration orchestrationConfig, final Map<String, Object> configMap) throws SQLException {
         MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap);
-        new OrchestrationFacade(orchestrationConfig).initMasterSlaveOrchestration(dataSourceMap, masterSlaveRuleConfig, result);
+        new OrchestrationFacade(orchestrationConfig).initMasterSlaveOrchestration(dataSourceMap, masterSlaveRuleConfig, result, configMap);
         return result;
     }
     

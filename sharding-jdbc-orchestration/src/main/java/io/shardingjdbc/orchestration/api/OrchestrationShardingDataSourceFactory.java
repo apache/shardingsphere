@@ -64,7 +64,7 @@ public final class OrchestrationShardingDataSourceFactory {
             final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
             final OrchestrationConfiguration orchestrationConfig, final Map<String, Object> configMap, final Properties props) throws SQLException {
         ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, configMap, props);
-        new OrchestrationFacade(orchestrationConfig).initShardingOrchestration(dataSourceMap, shardingRuleConfig, props, result);
+        new OrchestrationFacade(orchestrationConfig).initShardingOrchestration(dataSourceMap, shardingRuleConfig, configMap, props, result);
         return result;
     }
     

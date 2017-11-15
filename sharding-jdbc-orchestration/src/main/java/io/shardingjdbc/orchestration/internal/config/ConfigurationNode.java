@@ -35,6 +35,8 @@ public final class ConfigurationNode {
     
     public static final String MASTER_SLAVE_NODE_PATH = ROOT + "/masterslave";
     
+    public static final String CONFIG_MAP_NODE_PATH = ROOT + "/configmap";
+    
     public static final String PROPS_NODE_PATH = ROOT + "/props";
     
     private final String name;

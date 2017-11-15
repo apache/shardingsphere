@@ -65,12 +65,14 @@ public final class OrchestrationFacade {
      * 
      * @param dataSourceMap data source map
      * @param shardingRuleConfig sharding rule configuration
+     * @param configMap config map
      * @param props sharding properties
      * @param shardingDataSource sharding datasource
      * @throws SQLException SQL exception
      */
     public void initShardingOrchestration(
-            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props, final ShardingDataSource shardingDataSource) throws SQLException {
+            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, 
+            final Properties props, final ShardingDataSource shardingDataSource) throws SQLException {
         config.getRegistryCenter().init();
         if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
             reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
@@ -80,7 +82,7 @@ public final class OrchestrationFacade {
         dataSourceService.persistDataSourcesNode();
         listenerManager.initShardingListeners(shardingDataSource);
         if (dataSourceService.hasDisabledDataSource()) {
-            shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), props);
+            shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configMap, props);
         }
     }
     
@@ -121,16 +123,18 @@ public final class OrchestrationFacade {
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig sharding rule configuration
      * @param masterSlaveDataSource master-slave datasource
+     * @param configMap config map
      */
     public void initMasterSlaveOrchestration(
-            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final MasterSlaveDataSource masterSlaveDataSource) {
+            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
+            final MasterSlaveDataSource masterSlaveDataSource, final Map<String, Object> configMap) {
         config.getRegistryCenter().init();
         configurationService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig);
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initMasterSlaveListeners(masterSlaveDataSource);
         if (dataSourceService.hasDisabledDataSource()) {
-            masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
+            masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule(), configMap);
         }
     }
 }

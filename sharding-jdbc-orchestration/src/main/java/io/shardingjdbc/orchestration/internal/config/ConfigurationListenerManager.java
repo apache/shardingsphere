@@ -70,7 +70,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
                 if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
                     return;
                 }
-                shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
+                shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadConfigMap().getShardingConfig(), configurationService.loadShardingProperties());
             }
         });
     }
@@ -93,7 +93,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
                 if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
                     return;
                 }
-                masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
+                masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule(), configurationService.loadConfigMap().getMasterSlaveConfig());
             }
         });
     }

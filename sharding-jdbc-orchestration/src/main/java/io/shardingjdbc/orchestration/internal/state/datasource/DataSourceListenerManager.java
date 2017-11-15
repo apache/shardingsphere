@@ -64,7 +64,7 @@ public final class DataSourceListenerManager implements ListenerManager {
                     return;
                 }
                 if (TreeCacheEvent.Type.NODE_UPDATED == event.getType() || TreeCacheEvent.Type.NODE_REMOVED == event.getType()) {
-                    shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
+                    shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadConfigMap().getShardingConfig(), configurationService.loadShardingProperties());
                 }
             }
         });
@@ -82,7 +82,7 @@ public final class DataSourceListenerManager implements ListenerManager {
                     return;
                 }
                 if (TreeCacheEvent.Type.NODE_UPDATED == event.getType() || TreeCacheEvent.Type.NODE_REMOVED == event.getType()) {
-                    masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
+                    masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule(), configurationService.loadConfigMap().getMasterSlaveConfig());
                 }
             }
         });
