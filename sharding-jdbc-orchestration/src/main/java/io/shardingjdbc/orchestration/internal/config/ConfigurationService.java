@@ -72,8 +72,8 @@ public final class ConfigurationService {
     }
     
     private void persistShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig) {
-        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH))) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH), ShardingRuleConfigurationConverter.toJson(shardingRuleConfig));
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH), ShardingRuleConfigurationConverter.toJson(shardingRuleConfig));
         }
     }
     
@@ -84,8 +84,8 @@ public final class ConfigurationService {
     }
     
     private void persistShardingProperties(final Properties props) {
-        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH))) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH), GsonFactory.getGson().toJson(props));
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH), GsonFactory.getGson().toJson(props));
         }
     }
     
@@ -103,14 +103,14 @@ public final class ConfigurationService {
     }
     
     private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
-        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH))) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH), GsonFactory.getGson().toJson(masterSlaveRuleConfig));
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH), GsonFactory.getGson().toJson(masterSlaveRuleConfig));
         }
     }
     
     private void persistMasterSlaveConfigMap(final Map<String, Object> configMap) {
-        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH))) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH), GsonFactory.getGson().toJson(configMap));
+        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH))) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH), GsonFactory.getGson().toJson(configMap));
         }
     }
     
@@ -129,7 +129,7 @@ public final class ConfigurationService {
      * @return sharding rule configuration
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration() {
-        return ShardingRuleConfigurationConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_NODE_PATH)));
+        return ShardingRuleConfigurationConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH)));
     }
     
     /**
@@ -137,6 +137,7 @@ public final class ConfigurationService {
      *
      * @return sharding config map
      */
+    @SuppressWarnings("unchecked")
     public Map<String, Object> loadShardingConfigMap() {
         return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH)), Map.class);
     }
@@ -147,7 +148,7 @@ public final class ConfigurationService {
      * @return sharding properties
      */
     public Properties loadShardingProperties() {
-        String data = regCenter.get(configNode.getFullPath(ConfigurationNode.PROPS_NODE_PATH));
+        String data = regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH));
         return Strings.isNullOrEmpty(data) ? new Properties() : GsonFactory.getGson().fromJson(data, Properties.class);
     }
     
@@ -157,17 +158,17 @@ public final class ConfigurationService {
      * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
-        return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_NODE_PATH)), MasterSlaveRuleConfiguration.class);
+        return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)), MasterSlaveRuleConfiguration.class);
     }
-    
     
     /**
      * Load master-slave config map.
      *
      * @return master-slave config map
      */
+    @SuppressWarnings("unchecked")
     public Map<String, Object> loadMasterSlaveConfigMap() {
-        return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH)), Map.class);
+        return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH)), Map.class);
+        
     }
-    
 }

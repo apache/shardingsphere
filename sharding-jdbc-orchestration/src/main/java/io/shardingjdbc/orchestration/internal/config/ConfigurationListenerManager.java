@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.orchestration.internal.config;
 
+import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
@@ -54,8 +55,9 @@ public final class ConfigurationListenerManager implements ListenerManager {
     @Override
     public void start(final ShardingDataSource shardingDataSource) {
         start(ConfigurationNode.DATA_SOURCE_NODE_PATH, shardingDataSource);
-        start(ConfigurationNode.SHARDING_NODE_PATH, shardingDataSource);
-        start(ConfigurationNode.PROPS_NODE_PATH, shardingDataSource);
+        start(ConfigurationNode.SHARDING_RULE_NODE_PATH, shardingDataSource);
+        start(ConfigurationNode.SHARDING_PROPS_NODE_PATH, shardingDataSource);
+        initShardingConfigMapListener();
     }
     
     private void start(final String node, final ShardingDataSource shardingDataSource) {
@@ -75,10 +77,29 @@ public final class ConfigurationListenerManager implements ListenerManager {
         });
     }
     
+    private void initShardingConfigMapListener() {
+        String cachePath = configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH);
+        regCenter.addCacheData(cachePath);
+        TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
+        cache.getListenable().addListener(new TreeCacheListener() {
+            
+            @Override
+            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
+                ChildData childData = event.getData();
+                if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
+                    return;
+                }
+                ConfigMapContext.getInstance().getShardingConfig().clear();
+                ConfigMapContext.getInstance().getShardingConfig().putAll(configurationService.loadShardingConfigMap());
+            }
+        });
+    }
+    
     @Override
     public void start(final MasterSlaveDataSource masterSlaveDataSource) {
         start(ConfigurationNode.DATA_SOURCE_NODE_PATH, masterSlaveDataSource);
-        start(ConfigurationNode.MASTER_SLAVE_NODE_PATH, masterSlaveDataSource);
+        start(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH, masterSlaveDataSource);
+        initMasterSlaveConfigMapListener();
     }
     
     private void start(final String node, final MasterSlaveDataSource masterSlaveDataSource) {
@@ -97,4 +118,23 @@ public final class ConfigurationListenerManager implements ListenerManager {
             }
         });
     }
+    
+    private void initMasterSlaveConfigMapListener() {
+        String cachePath = configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH);
+        regCenter.addCacheData(cachePath);
+        TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
+        cache.getListenable().addListener(new TreeCacheListener() {
+            
+            @Override
+            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
+                ChildData childData = event.getData();
+                if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
+                    return;
+                }
+                ConfigMapContext.getInstance().getMasterSlaveConfig().clear();
+                ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configurationService.loadMasterSlaveConfigMap());
+            }
+        });
+    }
+    
 }
