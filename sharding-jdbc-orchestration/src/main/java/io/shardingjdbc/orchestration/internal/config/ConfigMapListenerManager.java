@@ -17,11 +17,11 @@
 
 package io.shardingjdbc.orchestration.internal.config;
 
+import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
-import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -30,11 +30,11 @@ import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 /**
- * Configuration listener manager.
+ * Config map listener manager.
  *
  * @author caohao
  */
-public final class ConfigurationListenerManager implements ListenerManager {
+public final class ConfigMapListenerManager implements ListenerManager {
     
     private final ConfigurationNode configNode;
     
@@ -42,58 +42,46 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     private final ConfigurationService configurationService;
     
-    private final DataSourceService dataSourceService;
-    
-    public ConfigurationListenerManager(final OrchestrationConfiguration config) {
+    public ConfigMapListenerManager(final OrchestrationConfiguration config) {
         configNode = new ConfigurationNode(config.getName());
         regCenter = config.getRegistryCenter();
         configurationService = new ConfigurationService(config);
-        dataSourceService = new DataSourceService(config);
     }
     
     @Override
     public void start(final ShardingDataSource shardingDataSource) {
-        start(ConfigurationNode.DATA_SOURCE_NODE_PATH, shardingDataSource);
-        start(ConfigurationNode.SHARDING_RULE_NODE_PATH, shardingDataSource);
-        start(ConfigurationNode.SHARDING_PROPS_NODE_PATH, shardingDataSource);
-    }
-    
-    private void start(final String node, final ShardingDataSource shardingDataSource) {
-        String cachePath = configNode.getFullPath(node);
+        String cachePath = configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH);
         regCenter.addCacheData(cachePath);
         TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
         cache.getListenable().addListener(new TreeCacheListener() {
-            
+        
             @Override
             public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
                 ChildData childData = event.getData();
                 if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
                     return;
                 }
-                shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
+                ConfigMapContext.getInstance().getShardingConfig().clear();
+                ConfigMapContext.getInstance().getShardingConfig().putAll(configurationService.loadShardingConfigMap());
             }
         });
     }
     
     @Override
     public void start(final MasterSlaveDataSource masterSlaveDataSource) {
-        start(ConfigurationNode.DATA_SOURCE_NODE_PATH, masterSlaveDataSource);
-        start(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH, masterSlaveDataSource);
-    }
-    
-    private void start(final String node, final MasterSlaveDataSource masterSlaveDataSource) {
-        String cachePath = configNode.getFullPath(node);
+        String cachePath = configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH);
         regCenter.addCacheData(cachePath);
         TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
         cache.getListenable().addListener(new TreeCacheListener() {
-            
+        
             @Override
             public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
                 ChildData childData = event.getData();
                 if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
                     return;
                 }
-                masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
+                ConfigMapContext.getInstance().getMasterSlaveConfig().clear();
+                ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configurationService.loadMasterSlaveConfigMap());
             }
         });
     }

@@ -20,6 +20,7 @@ package io.shardingjdbc.orchestration.internal.listener;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingjdbc.orchestration.internal.config.ConfigMapListenerManager;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationListenerManager;
 import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceListenerManager;
 import io.shardingjdbc.orchestration.internal.state.instance.InstanceListenerManager;
@@ -35,11 +36,14 @@ public final class ListenerFactory {
     
     private final InstanceListenerManager instanceListenerManager;
     
+    private final ConfigMapListenerManager configMapListenerManager;
+    
     private final DataSourceListenerManager dataSourceListenerManager;
     
     public ListenerFactory(final OrchestrationConfiguration config) {
         configurationListenerManager = new ConfigurationListenerManager(config);
         instanceListenerManager = new InstanceListenerManager(config);
+        configMapListenerManager = new ConfigMapListenerManager(config);
         dataSourceListenerManager = new DataSourceListenerManager(config);
     }
     
@@ -52,6 +56,7 @@ public final class ListenerFactory {
         configurationListenerManager.start(shardingDataSource);
         instanceListenerManager.start(shardingDataSource);
         dataSourceListenerManager.start(shardingDataSource);
+        configMapListenerManager.start(shardingDataSource);
     }
     
     /**
@@ -63,5 +68,6 @@ public final class ListenerFactory {
         configurationListenerManager.start(masterSlaveDataSource);
         instanceListenerManager.start(masterSlaveDataSource);
         dataSourceListenerManager.start(masterSlaveDataSource);
+        configMapListenerManager.start(masterSlaveDataSource);
     }
 }
