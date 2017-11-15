@@ -70,8 +70,7 @@ public final class InstanceListenerManager implements ListenerManager {
                         dataSourceMap.put(each, new CircuitBreakerDataSource());
                     }
                 }
-                shardingDataSource.renew(configurationService.loadShardingRuleConfiguration().build(dataSourceMap), 
-                        configurationService.loadConfigMap().getShardingConfig(), configurationService.loadShardingProperties());
+                shardingDataSource.renew(configurationService.loadShardingRuleConfiguration().build(dataSourceMap), configurationService.loadShardingProperties());
             }
         });
     }
@@ -93,7 +92,7 @@ public final class InstanceListenerManager implements ListenerManager {
                         dataSourceMap.put(each, new CircuitBreakerDataSource());
                     }
                 }
-                masterSlaveDataSource.renew(configurationService.loadMasterSlaveRuleConfiguration().build(dataSourceMap), configurationService.loadConfigMap().getMasterSlaveConfig());
+                masterSlaveDataSource.renew(configurationService.loadMasterSlaveRuleConfiguration().build(dataSourceMap));
             }
         });
     }

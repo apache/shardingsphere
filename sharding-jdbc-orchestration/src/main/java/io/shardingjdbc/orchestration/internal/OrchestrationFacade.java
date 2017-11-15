@@ -77,12 +77,12 @@ public final class OrchestrationFacade {
         if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
             reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
         }
-        configurationService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, props);
+        configurationService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, configMap, props);
         instanceStateService.persistShardingInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initShardingListeners(shardingDataSource);
         if (dataSourceService.hasDisabledDataSource()) {
-            shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configMap, props);
+            shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), props);
         }
     }
     
@@ -129,12 +129,12 @@ public final class OrchestrationFacade {
             final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
             final MasterSlaveDataSource masterSlaveDataSource, final Map<String, Object> configMap) {
         config.getRegistryCenter().init();
-        configurationService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig);
+        configurationService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, configMap);
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initMasterSlaveListeners(masterSlaveDataSource);
         if (dataSourceService.hasDisabledDataSource()) {
-            masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule(), configMap);
+            masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
         }
     }
 }

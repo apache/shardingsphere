@@ -114,9 +114,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
      *
      * @param masterSlaveRule new master-slave rule
      */
-    public void renew(final MasterSlaveRule masterSlaveRule, final Map<String, Object> configMap) {
-        ConfigMapContext.getInstance().getShardingConfig().clear();
-        ConfigMapContext.getInstance().getShardingConfig().putAll(configMap);
+    public void renew(final MasterSlaveRule masterSlaveRule) {
         this.masterSlaveRule = masterSlaveRule;
     }
     
