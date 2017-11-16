@@ -1,5 +1,6 @@
 package io.shardingjdbc.orchestration.reg.etcd.internal;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -12,10 +13,10 @@ import java.util.List;
  */
 public class RegistryPath {
     private static final String SEP = "/";
-    private List<String> paths;
+    private List<String> paths = Lists.newArrayList();
 
     private RegistryPath(List<String> paths) {
-        this.paths = paths;
+        this.paths.addAll(paths);
     }
 
     public static RegistryPath from(String... paths) {
@@ -23,8 +24,9 @@ public class RegistryPath {
     }
 
     public RegistryPath join(String path) {
-        paths.add(path);
-        return this;
+        List<String> newPaths = Lists.newArrayList(paths);
+        newPaths.add(path);
+        return new RegistryPath(newPaths);
     }
 
     public String asNodeKey() {

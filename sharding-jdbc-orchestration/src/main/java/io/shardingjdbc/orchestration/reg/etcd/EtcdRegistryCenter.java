@@ -23,12 +23,14 @@ import java.util.List;
 public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     private EtcdConfiguration etcdConfiguration;
     private EtcdClient etcdClient;
+    private RegistryPath root = RegistryPath.from("");
 
     public EtcdRegistryCenter(EtcdConfiguration etcdConfiguration) {
         this.etcdConfiguration = etcdConfiguration;
         this.etcdClient = EtcdClientBuilder.newBuilder()
                 .endpoints(etcdConfiguration.getServerLists())
                 .build();
+        this.root = this.root.join(etcdConfiguration.getNamespace());
     }
 
     private String namespace(String keyOrPath) {
