@@ -34,7 +34,7 @@ public class EtcdInstanceStateServiceImpl implements InstanceStateService {
     private CoordinatorRegistryCenter registryCenter;
     private RegistryPath instanceStatePath;
 
-    EtcdInstanceStateServiceImpl(String name, ConfigurationService configurationService, CoordinatorRegistryCenter registryCenter) {
+    public EtcdInstanceStateServiceImpl(String name, ConfigurationService configurationService, CoordinatorRegistryCenter registryCenter) {
         this.configurationService = configurationService;
         this.registryCenter = registryCenter;
         this.instanceStatePath = RegistryPath.from(name, "state", "instances");

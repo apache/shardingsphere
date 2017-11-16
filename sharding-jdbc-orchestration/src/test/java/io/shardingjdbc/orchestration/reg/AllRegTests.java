@@ -5,6 +5,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        RegistryPathTest.class,
+        EtcdOrchestratorTest.class,
         OrchestratorBuilderIntegrateTest.class
 })
 public class AllRegTests {

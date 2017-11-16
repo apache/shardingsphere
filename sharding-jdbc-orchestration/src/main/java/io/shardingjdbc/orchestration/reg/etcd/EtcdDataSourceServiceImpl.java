@@ -14,7 +14,7 @@ public class EtcdDataSourceServiceImpl implements DataSourceService {
     private ConfigurationService configurationService;
     private RegistryPath dataSourceNodePath;
 
-    EtcdDataSourceServiceImpl(String name, ConfigurationService configurationService, CoordinatorRegistryCenter registryCenter) {
+    public EtcdDataSourceServiceImpl(String name, ConfigurationService configurationService, CoordinatorRegistryCenter registryCenter) {
         this.registryCenter = registryCenter;
         this.configurationService = configurationService;
         this.dataSourceNodePath = RegistryPath.from(name, "state", "datasources");

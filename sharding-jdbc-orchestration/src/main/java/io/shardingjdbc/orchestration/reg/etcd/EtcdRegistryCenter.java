@@ -21,20 +21,29 @@ import java.util.List;
  * @author junxiong
  */
 public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
-    private EtcdConfiguration etcdConfiguration;
+    private String namespace;
+    private long timeToLive;
     private EtcdClient etcdClient;
     private RegistryPath root = RegistryPath.from("");
 
     public EtcdRegistryCenter(EtcdConfiguration etcdConfiguration) {
-        this.etcdConfiguration = etcdConfiguration;
+        this.namespace = etcdConfiguration.getNamespace();
+        this.timeToLive = etcdConfiguration.getTimeToLive();
         this.etcdClient = EtcdClientBuilder.newBuilder()
                 .endpoints(etcdConfiguration.getServerLists())
                 .build();
         this.root = this.root.join(etcdConfiguration.getNamespace());
     }
 
-    private String namespace(String keyOrPath) {
-        return StringUtils.join(new String[]{etcdConfiguration.getNamespace(), keyOrPath}, "/");
+    public EtcdRegistryCenter(String namespace, long timetoLive, EtcdClient etcdClient) {
+        this.namespace = namespace;
+        this.timeToLive = timetoLive;
+        this.etcdClient = etcdClient;
+        this.root = this.root.join(namespace);
+    }
+
+    private String namespace(String path) {
+        return root.join(path).asNodeKey();
     }
 
     @Override
@@ -50,7 +59,7 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
      */
     @Override
     public void persistEphemeral(@NonNull final String key, @NonNull final String value) {
-        etcdClient.put(namespace(key), value, etcdConfiguration.getTimeToLive());
+        etcdClient.put(namespace(key), value, timeToLive);
     }
 
     @Override

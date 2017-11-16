@@ -1,0 +1,25 @@
+{
+  "tableRuleConfigs": [{
+    "logicTable": "t_order",
+    "actualDataNodes": "demo_ds_${0..1}.t_order_${0..1}",
+    "databaseShardingStrategyConfig": {},
+    "tableShardingStrategyConfig": {}
+  }, {
+    "logicTable": "t_order_item",
+    "actualDataNodes": "demo_ds_${0..1}.t_order_item_${0..1}",
+    "databaseShardingStrategyConfig": {},
+    "tableShardingStrategyConfig": {}
+  }],
+  "bindingTableGroups": ["t_order, t_order_item"],
+  "defaultDatabaseShardingStrategyConfig": {
+    "type": "INLINE",
+    "shardingColumn": "user_id",
+    "algorithmExpression": "demo_ds_${user_id % 2}"
+  },
+  "defaultTableShardingStrategyConfig": {
+    "type": "STANDARD",
+    "shardingColumn": "order_id",
+    "preciseAlgorithmClassName": "io.shardingjdbc.example.orchestration.algorithm.ModuloTableShardingAlgorithm"
+  },
+  "masterSlaveRuleConfigs": []
+}
