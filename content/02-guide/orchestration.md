@@ -9,8 +9,9 @@ next = "/02-guide/hint-sharding-value/"
 +++
 2.0.0.M1版本开始，Sharding-JDBC提供了数据库治理功能，主要包括：
 
-* 配置集中化与动态化，可支持数据源、表与分片策略的动态切换(2.0.0.M1)
-* 客户端的数据库治理，数据源失效自动切换(2.0.0.M2)
+* 配置集中化与动态化，可支持数据源、表与分片及读写分离策略的动态切换(2.0.0.M1)
+* 客户端的数据库治理，运行实例禁用启用(2.0.0.M2)
+* 客户端的数据库治理，读写分离Slave数据源禁用启用及ConfigMap支持(2.0.0.M3)
 
 # 
 
@@ -22,16 +23,20 @@ next = "/02-guide/hint-sharding-value/"
 
 注册中心在定义的命名空间下，创建数据库访问对象运行节点，用于区分不同数据库访问实例。命名空间中包含2个数据子节点，分别是config, state。
 
-### config节点
+## config节点
 
-数据治理相关配置信息，以JSON格式存储，包括数据源，分库分表，读写分离及Properties配置，可通过修改节点来实现对于配置的动态管理。
+数据治理相关配置信息，以JSON格式存储，包括数据源，分库分表，读写分离、ConfigMap及Properties配置，可通过修改节点来实现对于配置的动态管理。
 
 ```
 config
     ├──datasource                                数据源配置
-    ├──sharding                                  分库分表（包括分库分表+读写分离）配置
+    ├──sharding                                  分库分表（包括分库分表+读写分离）配置根节点
+    ├      ├──rule                               分库分表（包括分库分表+读写分离）规则
+    ├      ├──configmap                          分库分表ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}
+    ├      ├──props                              Properties配置
     ├──masterslave                               读写分离独立使用配置
-    ├──props                                     Properties配置
+    ├      ├──rule                               读写分离规则
+    ├      ├──configmap                          读写分离ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}                               
 ```
 
 ### datasource子节点
@@ -44,13 +49,33 @@ config
 
 ### sharding子节点
 
+#### rule子节点
+
 分库分表配置，包括分库分表+读写分离配置
 
 ```json
 {"tableRuleConfigs":[{"logicTable":"t_order","actualDataNodes":"demo_ds.t_order_${0..1}","databaseShardingStrategyConfig":{},"tableShardingStrategyConfig":{"type":"STANDARD","shardingColumn":"order_id","preciseAlgorithmClassName":"io.shardingjdbc.example.orchestration.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm","rangeAlgorithmClassName":""},"keyGeneratorColumnName":"order_id"},{"logicTable":"t_order_item","actualDataNodes":"demo_ds.t_order_item_${0..1}","databaseShardingStrategyConfig":{},"tableShardingStrategyConfig":{"type":"STANDARD","shardingColumn":"order_id","preciseAlgorithmClassName":"io.shardingjdbc.example.orchestration.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm","rangeAlgorithmClassName":""},"keyGeneratorColumnName":"order_item_id"}],"bindingTableGroups":["t_order, t_order_item"],"defaultDatabaseShardingStrategyConfig":{},"defaultTableShardingStrategyConfig":{},"masterSlaveRuleConfigs":[]}
 ```
 
+#### configmap子节点
+
+分库分表ConfigMap配置，以K/V形式存储
+
+```json
+{"key1":"value1"}
+```
+
+#### props子节点
+
+相对于sharding-jdbc配置里面的Sharding Properties
+
+```json
+{"executor.size":"20","sql.show":"true"}
+```
+
 ### masterslave子节点
+
+#### rule子节点
 
 读写分离独立使用时使用该配置
 
@@ -58,12 +83,12 @@ config
 {"name":"ds_ms","masterDataSourceName":"ds_master","slaveDataSourceNames":["ds_slave_0","ds_slave_1"],"loadBalanceAlgorithmType":"ROUND_ROBIN"}
 ```
 
-### props子节点
+#### configmap子节点
 
-相对于sharding-jdbc配置里面的Sharding Properties
+读写分离ConfigMap配置，以K/V形式存储
 
 ```json
-{"executor.size":"20","sql.show":"true"}
+{"key1":"value1"}
 ```
 
 ## state节点
@@ -97,14 +122,13 @@ Zookeeper命令如下：
 
 ## datasources节点 
 
-在读写分离（或分库分表+读写分离）场景下，可在数据源名称子节点中写入DISABLED表示禁用从库数据源，删除DISABLED或节点表示启用。（预计2.0.0.M3版本发布）。
+在读写分离（或分库分表+读写分离）场景下，可在数据源名称子节点中写入DISABLED表示禁用从库数据源，删除DISABLED或节点表示启用。（2.0.0.M3及以上版本支持）。
 
 Zookeeper命令如下：
 
 ```
 [zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/datasources/your_slave_datasource_name DISABLED
 ```
-
 
 # 使用示例
 
