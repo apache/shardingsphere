@@ -77,6 +77,9 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
+        if (!getCachedConnections().isEmpty()) {
+            return getCachedConnections().values().iterator().next().getMetaData();
+        }
         return getConnections(null == cachedSQLType ? SQLType.DML : cachedSQLType).iterator().next().getMetaData();
     }
     
