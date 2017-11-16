@@ -23,10 +23,12 @@ public class EtcdOrchestratorFactory implements OrchestratorFactory {
 
     @Override
     public Orchestrator create(OrchestratorConfiguration configuration) {
+        String name = configuration.getName();
+        boolean overwrite = configuration.isOverwrite();
         CoordinatorRegistryCenter registryCenter = setUpCoordinatorRegistryCenter(configuration);
-        ConfigurationService configurationService = new EtcdConfigurationService(registryCenter);
-        DataSourceService dataSourceService = new EtcdDataSourceService(registryCenter);
-        InstanceStateService instanceStateService = new EtcdInstanceStateService(registryCenter);
+        ConfigurationService configurationService = new EtcdConfigurationServiceImpl(name, overwrite, registryCenter);
+        DataSourceService dataSourceService = new EtcdDataSourceServiceImpl(name, configurationService, registryCenter);
+        InstanceStateService instanceStateService = new EtcdInstanceStateServiceImpl(name, configurationService, registryCenter);
         return new OrchestratorImpl(configurationService, instanceStateService, dataSourceService);
     }
 

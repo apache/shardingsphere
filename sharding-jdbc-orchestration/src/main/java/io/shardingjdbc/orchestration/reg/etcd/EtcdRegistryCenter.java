@@ -10,6 +10,7 @@ import io.shardingjdbc.orchestration.reg.base.RegistryChangeType;
 import io.shardingjdbc.orchestration.reg.etcd.internal.*;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,9 +31,13 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
                 .build();
     }
 
+    private String namespace(String keyOrPath) {
+        return StringUtils.join(new String[]{etcdConfiguration.getNamespace(), keyOrPath}, "/");
+    }
+
     @Override
     public String getDirectly(@NonNull final String key) {
-        return get(key);
+        return get(namespace(key));
     }
 
     /**
@@ -43,7 +48,7 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
      */
     @Override
     public void persistEphemeral(@NonNull final String key, @NonNull final String value) {
-        etcdClient.put(key, value, etcdConfiguration.getTimeToLive());
+        etcdClient.put(namespace(key), value, etcdConfiguration.getTimeToLive());
     }
 
     @Override
@@ -53,7 +58,7 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
 
     @Override
     public List<String> getChildrenKeys(String path) {
-        List<EtcdClient.KeyValue> children = etcdClient.list(path);
+        List<EtcdClient.KeyValue> children = etcdClient.list(namespace(path));
         List<String> keys = Lists.newArrayList();
         for (EtcdClient.KeyValue keyValue : children) {
             keys.add(keyValue.getKey());
@@ -63,7 +68,7 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
 
     @Override
     public void addRegistryChangeListener(final String path, final RegistryChangeListener registryChangeListener) {
-        Optional<Watcher> watcherOptional = etcdClient.watch(path);
+        Optional<Watcher> watcherOptional = etcdClient.watch(namespace(path));
         WatcherListener listener = new WatcherListener() {
             @Override
             public void onWatch(WatchEvent watchEvent) {
@@ -108,22 +113,22 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
 
     @Override
     public String get(@NonNull final String key) {
-        Optional<String> value = etcdClient.get(key);
+        Optional<String> value = etcdClient.get(namespace(key));
         return value.orNull();
     }
 
     @Override
     public boolean isExisted(@NonNull final String key) {
-        return get(key) != null;
+        return get(namespace(key)) != null;
     }
 
     @Override
     public void persist(String key, String value) {
-        etcdClient.put(key, value);
+        etcdClient.put(namespace(key), value);
     }
 
     @Override
     public void update(String key, String value) {
-        etcdClient.put(key, value);
+        etcdClient.put(namespace(key), value);
     }
 }

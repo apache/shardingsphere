@@ -21,7 +21,7 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.reg.base.*;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
-import io.shardingjdbc.orchestration.reg.zookeeper.state.StateNodeStatus;
+import io.shardingjdbc.orchestration.reg.base.StateNodeStatus;
 import lombok.Getter;
 
 import javax.sql.DataSource;

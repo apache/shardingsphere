@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.reg.zookeeper.state;
+package io.shardingjdbc.orchestration.reg.base;
 
 /**
  * State node status.
@@ -23,6 +23,10 @@ package io.shardingjdbc.orchestration.reg.zookeeper.state;
  * @author caohao
  */
 public enum StateNodeStatus {
+    /**
+     * Enable state node.
+     */
+    ENABLED,
     
     /**
      * Disabled state node.

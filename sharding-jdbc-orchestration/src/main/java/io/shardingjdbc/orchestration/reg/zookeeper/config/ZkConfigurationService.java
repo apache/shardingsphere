@@ -27,7 +27,7 @@ import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
 import io.shardingjdbc.orchestration.reg.base.ConfigurationService;
-import io.shardingjdbc.orchestration.reg.zookeeper.state.StateNodeStatus;
+import io.shardingjdbc.orchestration.reg.base.StateNodeStatus;
 import io.shardingjdbc.orchestration.reg.zookeeper.state.datasource.DataSourceStateNode;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.base.RegistryChangeEvent;
