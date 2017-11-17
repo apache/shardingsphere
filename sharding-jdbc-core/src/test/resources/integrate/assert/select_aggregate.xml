@@ -30,9 +30,4 @@
             <data expected="select_aggregate/SelectCount.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectSumAlias">
-        <sharding-rule>
-            <data expected="select_aggregate/SelectSum.xml" />
-        </sharding-rule>
-    </sql>
 </sqls>
