@@ -30,3 +30,6 @@ next = "/02-guide/sharding/"
 
 ## SQL Hint
 对于分片字段非SQL决定，而由其他外置条件决定的场景，可使用SQL Hint灵活的注入分片字段。例：内部系统，按照员工登录ID分库，而数据库中并无此字段。SQL Hint支持通过ThreadLocal和SQL注释(待实现)两种方式使用。
+
+## Config Map
+通过ConfigMap可以配置分库分表或读写分离数据源的元数据，可通过调用ConfigMapContext.getInstance()获取ConfigMap中的shardingConfig和masterSlaveConfig数据。例：如果机器权重不同则流量可能不同，可通过ConfigMap配置机器权重元数据。
