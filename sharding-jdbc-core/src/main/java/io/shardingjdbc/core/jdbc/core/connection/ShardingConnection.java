@@ -72,10 +72,9 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
             dataSources = new HashMap<>(1, 1);
             dataSources.put(dataSourceName, dataSource);
         }
-        
         Collection<Connection> result = new LinkedList<>();
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            Connection connection = entry.getValue().getConnection();
+            Connection connection = getCachedConnections().containsKey(entry.getKey()) ? getCachedConnections().get(entry.getKey()) : entry.getValue().getConnection();
             replayMethodsInvocation(connection);
             getCachedConnections().put(entry.getKey(), connection);
             result.add(connection);
