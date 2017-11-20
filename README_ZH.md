@@ -51,7 +51,7 @@ Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以
 
 # Architecture
 
-![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture.png)
+![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_v2.png)
 
 # [Release Notes](https://github.com/shardingjdbc/sharding-jdbc/releases)
 

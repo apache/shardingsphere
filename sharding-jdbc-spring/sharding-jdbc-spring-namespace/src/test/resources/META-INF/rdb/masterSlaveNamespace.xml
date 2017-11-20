@@ -22,6 +22,12 @@
     
     <master-slave:data-source id="refMasterSlaveDataSource" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-ref="randomStrategy" />
     
+    <master-slave:data-source id="configMapDataSource" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-ref="randomStrategy">
+        <master-slave:config-map>
+            <entry key="key1" value="value1" />
+        </master-slave:config-map>
+    </master-slave:data-source>
+    
     <sharding:data-source id="defaultShardingDataSource">
         <sharding:sharding-rule data-source-names="randomMasterSlaveDataSource,refMasterSlaveDataSource" default-data-source-name="randomMasterSlaveDataSource">
             <sharding:table-rules>

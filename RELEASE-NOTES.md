@@ -1,3 +1,15 @@
+## 2.0.0.M3
+
+### 里程碑
+
+1. 读写分离从库治理，可以禁用从库的访问
+1. ConfigMap支持，可以在分片和读写分离策略中获取预定义的元数据
+
+### 缺陷修正
+
+1. [ISSUE #436](https://github.com/shardingjdbc/sharding-jdbc/issues/436) 读写分离多从库配置RoundRobin算法并使用MyBatis时，只能路由到同一从库
+1. [ISSUE #452](https://github.com/shardingjdbc/sharding-jdbc/issues/452) DDL语句分片至多个表会造成连接泄漏的问题
+
 ## 2.0.0.M2
 
 ### 里程碑

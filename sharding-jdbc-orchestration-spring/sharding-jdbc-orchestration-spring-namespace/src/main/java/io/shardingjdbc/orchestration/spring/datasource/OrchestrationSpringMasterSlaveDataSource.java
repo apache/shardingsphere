@@ -40,11 +40,15 @@ public class OrchestrationSpringMasterSlaveDataSource extends MasterSlaveDataSou
     
     private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
     
+    private final Map<String, Object> configMap;
+    
     public OrchestrationSpringMasterSlaveDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter registryCenter, 
-                                                    final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
-        super(masterSlaveRuleConfig.build(dataSourceMap));
+                                                    final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
+                                                    final Map<String, Object> configMap) throws SQLException {
+        super(masterSlaveRuleConfig.build(dataSourceMap), configMap);
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRuleConfig = masterSlaveRuleConfig;
+        this.configMap = configMap;
         config = new OrchestrationConfiguration(name, registryCenter, overwrite);
     }
     
@@ -52,6 +56,6 @@ public class OrchestrationSpringMasterSlaveDataSource extends MasterSlaveDataSou
      * Initial all orchestration actions for master-slave data source.
      */
     public void init() {
-        new OrchestrationFacade(config).initMasterSlaveOrchestration(dataSourceMap, masterSlaveRuleConfig, this);
+        new OrchestrationFacade(config).initMasterSlaveOrchestration(dataSourceMap, masterSlaveRuleConfig, this, configMap);
     }
 }

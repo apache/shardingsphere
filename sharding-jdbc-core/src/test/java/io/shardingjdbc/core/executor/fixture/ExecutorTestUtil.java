@@ -41,6 +41,7 @@ public final class ExecutorTestUtil {
             
         } else if (event instanceof OverallExecutionEvent) {
             eventCaller.verifySQLType(((OverallExecutionEvent) event).getSqlType());
+            eventCaller.verifyStatementUnitSize(((OverallExecutionEvent) event).getStatementUnitSize());
         }
         Preconditions.checkState((EventExecutionType.EXECUTE_FAILURE == event.getEventExecutionType()) == event.getException().isPresent());
         if (EventExecutionType.EXECUTE_FAILURE == event.getEventExecutionType()) {

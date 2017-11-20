@@ -36,6 +36,7 @@ import org.junit.After;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -150,7 +151,7 @@ public abstract class AbstractShardingMasterSlaveTest extends AbstractSQLAssertT
                                                            final String name, final String masterDataSourceName, final String slaveDataSourceName) throws SQLException {
         Map<String, DataSource> slaveDs0 = new HashMap<>(1, 1);
         slaveDs0.put(slaveDataSourceName, masterSlaveDataSourceMap.get(slaveDataSourceName));
-        return new MasterSlaveDataSource(new MasterSlaveRule(name, masterDataSourceName, masterSlaveDataSourceMap.get(masterDataSourceName), slaveDs0));
+        return new MasterSlaveDataSource(new MasterSlaveRule(name, masterDataSourceName, masterSlaveDataSourceMap.get(masterDataSourceName), slaveDs0), Collections.<String, Object>emptyMap());
     }
     
     @After

@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.shardingjdbc</groupId>
     <artifactId>sharding-jdbc-plugin</artifactId>
-    <version>2.0.0.M2</version>
+    <version>2.0.0.M3</version>
     <packaging>pom</packaging>
     
     <properties>
-        <sharding-jdbc.version>2.0.0.M2</sharding-jdbc.version>
+        <sharding-jdbc.version>2.0.0.M3</sharding-jdbc.version>
         <junit.version>4.12</junit.version>
         <powermock.version>1.6.6</powermock.version>
         <java.version>1.7</java.version>

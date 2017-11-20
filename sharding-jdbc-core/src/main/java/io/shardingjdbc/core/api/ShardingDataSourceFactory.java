@@ -46,27 +46,17 @@ public final class ShardingDataSourceFactory {
     
     /**
      * Create sharding data source.
-     * 
+     *
      * @param dataSourceMap data source map
      * @param shardingRuleConfig rule configuration for databases and tables sharding
-     * @return sharding data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) throws SQLException {
-        return new ShardingDataSource(shardingRuleConfig.build(dataSourceMap));
-    }
-    
-    /**
-     * Create sharding data source.
-     * 
-     * @param dataSourceMap data source map
-     * @param shardingRuleConfig rule configuration for databases and tables sharding
+     * @param configMap config map
      * @param props properties for data source
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
-        return new ShardingDataSource(shardingRuleConfig.build(dataSourceMap), props);
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
+                                              final Map<String, Object> configMap, final Properties props) throws SQLException {
+        return new ShardingDataSource(shardingRuleConfig.build(dataSourceMap), configMap, props);
     }
     
     /**
@@ -79,7 +69,7 @@ public final class ShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlShardingConfiguration config = unmarshal(yamlFile);
-        return new ShardingDataSource(config.getShardingRule(Collections.<String, DataSource>emptyMap()), config.getShardingRule().getProps());
+        return new ShardingDataSource(config.getShardingRule(Collections.<String, DataSource>emptyMap()), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
     }
     
     /**
@@ -93,7 +83,7 @@ public final class ShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
         YamlShardingConfiguration config = unmarshal(yamlFile);
-        return new ShardingDataSource(config.getShardingRule(dataSourceMap), config.getShardingRule().getProps());
+        return new ShardingDataSource(config.getShardingRule(dataSourceMap), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
     }
     
     /**
@@ -106,7 +96,7 @@ public final class ShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
         YamlShardingConfiguration config = unmarshal(yamlByteArray);
-        return new ShardingDataSource(config.getShardingRule(Collections.<String, DataSource>emptyMap()), config.getShardingRule().getProps());
+        return new ShardingDataSource(config.getShardingRule(Collections.<String, DataSource>emptyMap()), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
     }
     
     /**
@@ -120,7 +110,7 @@ public final class ShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException, IOException {
         YamlShardingConfiguration config = unmarshal(yamlByteArray);
-        return new ShardingDataSource(config.getShardingRule(dataSourceMap), config.getShardingRule().getProps());
+        return new ShardingDataSource(config.getShardingRule(dataSourceMap), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
     }
     
     private static YamlShardingConfiguration unmarshal(final File yamlFile) throws IOException {

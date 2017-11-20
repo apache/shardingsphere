@@ -20,6 +20,7 @@ package io.shardingjdbc.core.yaml.sharding;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -69,6 +75,9 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
                 }
             }), yamlFile);
         }
+        Map<String, Object> configMap = new ConcurrentHashMap<>();
+        configMap.put("key1", "value1");
+        assertThat(ConfigMapContext.getInstance().getShardingConfig(), is(configMap));
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {
             stm.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));

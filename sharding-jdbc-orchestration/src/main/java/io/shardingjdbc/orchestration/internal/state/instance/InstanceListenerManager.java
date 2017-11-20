@@ -15,15 +15,16 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.state;
+package io.shardingjdbc.orchestration.internal.state.instance;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import lombok.Getter;
+import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
+import io.shardingjdbc.orchestration.internal.state.StateNode;
+import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
@@ -34,39 +35,27 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Instance state service.
- * 
+ * Instance listener manager.
+ *
  * @author caohao
  */
-@Getter
-public final class InstanceStateService {
+public final class InstanceListenerManager implements ListenerManager {
     
-    private final InstanceStateNode instanceStateNode;
+    private final OrchestrationConfiguration config;
     
-    private final CoordinatorRegistryCenter regCenter;
+    private final StateNode stateNode;
     
     private final ConfigurationService configurationService;
     
-    public InstanceStateService(final OrchestrationConfiguration config) {
-        instanceStateNode = new InstanceStateNode(config.getName());
-        regCenter = config.getRegistryCenter();
+    public InstanceListenerManager(final OrchestrationConfiguration config) {
+        this.config = config;
+        stateNode = new StateNode(config.getName());
         configurationService = new ConfigurationService(config);
     }
     
-    /**
-     * Persist sharding instance online.
-     *
-     * @param shardingDataSource sharding datasource
-     */
-    public void persistShardingInstanceOnline(final ShardingDataSource shardingDataSource) {
-        String instanceNodePath = instanceStateNode.getFullPath();
-        regCenter.persistEphemeral(instanceNodePath, "");
-        regCenter.addCacheData(instanceNodePath);
-        addShardingInstancesStateChangeListener(instanceNodePath, shardingDataSource);
-    }
-    
-    private void addShardingInstancesStateChangeListener(final String instanceNodePath, final ShardingDataSource shardingDataSource) {
-        TreeCache cache = (TreeCache) regCenter.getRawCache(instanceNodePath);
+    @Override
+    public void start(final ShardingDataSource shardingDataSource) {
+        TreeCache cache = (TreeCache) config.getRegistryCenter().getRawCache(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()));
         cache.getListenable().addListener(new TreeCacheListener() {
             
             @Override
@@ -76,7 +65,7 @@ public final class InstanceStateService {
                     return;
                 }
                 Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
-                if (InstanceState.DISABLED.toString().equalsIgnoreCase(regCenter.get(childData.getPath()))) {
+                if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(config.getRegistryCenter().get(childData.getPath()))) {
                     for (String each : dataSourceMap.keySet()) {
                         dataSourceMap.put(each, new CircuitBreakerDataSource());
                     }
@@ -86,20 +75,9 @@ public final class InstanceStateService {
         });
     }
     
-    /**
-     * Persist master-salve instance online.
-     *
-     * @param masterSlaveDataSource master-slave datasource
-     */
-    public void persistMasterSlaveInstanceOnline(final MasterSlaveDataSource masterSlaveDataSource) {
-        String instanceNodePath = instanceStateNode.getFullPath();
-        regCenter.persistEphemeral(instanceNodePath, "");
-        regCenter.addCacheData(instanceNodePath);
-        addMasterSlaveInstancesStateChangeListener(instanceNodePath, masterSlaveDataSource);
-    }
-    
-    private void addMasterSlaveInstancesStateChangeListener(final String instanceNodePath, final MasterSlaveDataSource masterSlaveDataSource) {
-        TreeCache cache = (TreeCache) regCenter.getRawCache(instanceNodePath);
+    @Override
+    public void start(final MasterSlaveDataSource masterSlaveDataSource) {
+        TreeCache cache = (TreeCache) config.getRegistryCenter().getRawCache(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()));
         cache.getListenable().addListener(new TreeCacheListener() {
             
             @Override
@@ -109,7 +87,7 @@ public final class InstanceStateService {
                     return;
                 }
                 Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
-                if (InstanceState.DISABLED.toString().equalsIgnoreCase(regCenter.get(childData.getPath()))) {
+                if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(config.getRegistryCenter().get(childData.getPath()))) {
                     for (String each : dataSourceMap.keySet()) {
                         dataSourceMap.put(each, new CircuitBreakerDataSource());
                     }

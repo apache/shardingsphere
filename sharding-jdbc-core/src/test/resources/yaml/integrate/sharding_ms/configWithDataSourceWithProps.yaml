@@ -79,3 +79,5 @@ shardingRule:
       loadBalanceAlgorithmType: ROUND_ROBIN
   props:
     sql.show: true
+  configMap:
+    key1: value1

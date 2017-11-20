@@ -91,7 +91,7 @@ public abstract class AbstractMasterSlaveOnlyTest extends AbstractSQLAssertTest 
         masterSlaveRuleConfig.setName("ds_ms");
         masterSlaveRuleConfig.setMasterDataSourceName("dataSource_master_only");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("dataSource_slave_only"));
-        return (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig);
+        return (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap());
     }
     
     @After

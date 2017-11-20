@@ -70,7 +70,8 @@ public final class ShardingDataSourceTest {
         masterSlaveRuleConfig.setName("ds");
         masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slaveDataSource"));
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig);
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(
+                masterSlaveDataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap());
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
@@ -102,7 +103,7 @@ public final class ShardingDataSourceTest {
         masterSlaveRuleConfig.setName("ds");
         masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slaveDataSource"));
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(slaveDataSourceMap, masterSlaveRuleConfig);
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(slaveDataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap());
         DataSource dataSource3 = mockDataSource("H2");
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
         dataSourceMap.put("ds1", dataSource1);

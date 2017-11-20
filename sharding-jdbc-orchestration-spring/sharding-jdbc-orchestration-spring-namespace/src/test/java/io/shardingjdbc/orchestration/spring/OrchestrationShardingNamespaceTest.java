@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.orchestration.spring;
 
+import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
@@ -43,7 +44,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
@@ -177,6 +180,9 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     @Test
     public void assertPropsDataSource() {
         ShardingDataSource shardingDataSource = this.applicationContext.getBean("propsDataSource", ShardingDataSource.class);
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put("key1", "value1");
+        assertThat(ConfigMapContext.getInstance().getShardingConfig(), is(configMap));
         Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
         assertTrue((boolean) FieldValueUtil.getFieldValue(shardingContext, "showSQL"));
         ShardingProperties shardingProperties = (ShardingProperties) FieldValueUtil.getFieldValue(shardingDataSource, "shardingProperties", true);
@@ -189,7 +195,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     
     @Test
     public void assertShardingDataSourceType() {
-        assertTrue(this.applicationContext.getBean("simpleShardingDataSource", ShardingDataSource.class) instanceof ShardingDataSource);
+        assertTrue(this.applicationContext.getBean("simpleShardingDataSource") instanceof ShardingDataSource);
     }
     
     @Test

@@ -36,3 +36,5 @@ shardingRule:
     complex:
       shardingColumns: id, order_id
       algorithmClassName: io.shardingjdbc.core.yaml.fixture.MultiAlgorithm
+  configMap:
+    key1: value1
