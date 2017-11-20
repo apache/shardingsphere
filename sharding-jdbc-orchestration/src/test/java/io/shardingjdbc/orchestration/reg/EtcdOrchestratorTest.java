@@ -2,7 +2,6 @@ package io.shardingjdbc.orchestration.reg;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.gson.Gson;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
@@ -15,7 +14,10 @@ import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
 import io.shardingjdbc.orchestration.reg.base.*;
-import io.shardingjdbc.orchestration.reg.etcd.*;
+import io.shardingjdbc.orchestration.reg.etcd.EtcdConfigurationServiceImpl;
+import io.shardingjdbc.orchestration.reg.etcd.EtcdDataSourceServiceImpl;
+import io.shardingjdbc.orchestration.reg.etcd.EtcdInstanceStateServiceImpl;
+import io.shardingjdbc.orchestration.reg.etcd.EtcdRegistryCenter;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClient;
 import io.shardingjdbc.orchestration.reg.stub.EtcdClientStub;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -28,6 +30,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static io.shardingjdbc.orchestration.reg.etcd.internal.LocalInstance.getID;
 import static java.lang.String.format;
@@ -44,6 +47,13 @@ public class EtcdOrchestratorTest {
     @Before
     public void before() {
         etcdClient = new EtcdClientStub();
+        // uncomment below line to test on real etcd sever.
+//        etcdClient = EtcdClientBuilder.newBuilder()
+//                .endpoints("http://localhost:2379")
+//                .maxRetry(5)
+//                .timeout(5000)
+//                .span(500)
+//                .build();
     }
 
     @Test
@@ -93,6 +103,9 @@ public class EtcdOrchestratorTest {
         etcdClient.put("/test/pms/config/sharding", ShardingRuleConfigurationConverter.toJson(shardingRuleConfiguration));
         etcdClient.put("/test/pms/config/props", GsonFactory.getGson().toJson(new Properties()));
 
+        // wait for change event to fire
+        TimeUnit.SECONDS.sleep(1);
+
         verify(shardingDataSource, times(3)).renew(isA(ShardingRule.class), isA(Properties.class));
     }
 
@@ -109,6 +122,9 @@ public class EtcdOrchestratorTest {
 
         etcdClient.put(format("/test/pms/state/instances/%s", getID()), StateNodeStatus.DISABLED.name());
 
+        // wait for change event to fire
+        TimeUnit.SECONDS.sleep(1);
+
         verify(shardingDataSource, times(1)).renew(isA(ShardingRule.class), isA(Properties.class));
     }
 
@@ -124,6 +140,9 @@ public class EtcdOrchestratorTest {
         etcdClient.put("/test/pms/config/datasource", DataSourceJsonConverter.toJson(dataSourceMap));
         etcdClient.put("/test/pms/config/masterslave", GsonFactory.getGson().toJson(masterSlaveRuleConfiguration));
 
+        // wait for change event to fire
+        TimeUnit.SECONDS.sleep(1);
+
         verify(masterSlaveDataSource, times(3)).renew(isA(MasterSlaveRule.class));
     }
 
@@ -137,6 +156,9 @@ public class EtcdOrchestratorTest {
         orchestrator.orchestrateMasterSlaveDatasource(dataSourceMap, masterSlaveRuleConfiguration, masterSlaveDataSource);
 
         etcdClient.put(format("/test/pms/state/instances/%s", getID()), StateNodeStatus.DISABLED.name());
+
+        // wait for change event to fire.
+        TimeUnit.SECONDS.sleep(1);
 
         // orchestrator explicitly invoke the renew method when orchestrate master slave data source, so plus the event trigger, it will be two times.
         verify(masterSlaveDataSource, times(2)).renew(isA(MasterSlaveRule.class));

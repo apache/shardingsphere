@@ -7,14 +7,18 @@ import com.google.common.collect.Maps;
 import io.shardingjdbc.orchestration.reg.etcd.internal.*;
 import lombok.Value;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class EtcdClientStub implements EtcdClient {
 
     private Map<String, Element> elements = Maps.newConcurrentMap();
     private Map<String, Watcher> watchers = Maps.newConcurrentMap();
+
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     @Override
     public Optional<String> get(String key) {
@@ -27,14 +31,14 @@ public class EtcdClientStub implements EtcdClient {
     }
 
     @Override
-    public List<KeyValue> list(String directory) {
-        List<KeyValue> children = Lists.newArrayList();
+    public Optional<List<String>> list(String directory) {
+        List<String> children = Lists.newArrayList();
         for (String key : elements.keySet()) {
             if (key.startsWith(directory)) {
-                children.add(KeyValue.builder().key(key).value(elements.get(key).getValue()).build());
+                children.add(key);
             }
         }
-        return children;
+        return Optional.of(children);
     }
 
     @Override
@@ -68,17 +72,23 @@ public class EtcdClientStub implements EtcdClient {
         return Optional.of(keys);
     }
 
-    private void fireEvent(Element element, WatchEvent.WatchEventType type) {
+    private void fireEvent(final Element element, final WatchEvent.WatchEventType type) {
         for (String keyOrPath : watchers.keySet()) {
             if (element.getKey().startsWith(keyOrPath)) {
-                WatcherImpl watcher = (WatcherImpl) watchers.get(keyOrPath);
-                for (WatcherListener listener : watcher.getListeners()) {
-                    listener.onWatch(WatchEvent.builder()
-                            .watchEventType(type)
-                            .key(element.getKey())
-                            .value(element.getValue())
-                            .id(watcher.getId())
-                            .build());
+                final WatcherImpl watcher = (WatcherImpl) watchers.get(keyOrPath);
+                for (final WatcherListener listener : watcher.getListeners()) {
+                    scheduler.schedule(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onWatch(WatchEvent.builder()
+                                    .watchEventType(type)
+                                    .key(element.getKey())
+                                    .value(element.getValue())
+                                    .id(watcher.getId())
+                                    .build());
+                        }
+                    }, 300, TimeUnit.MILLISECONDS);
+
                 }
             }
         }

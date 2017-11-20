@@ -29,7 +29,7 @@ public interface EtcdClient {
      * @param directory directory
      * @return value
      */
-    List<KeyValue> list(String directory);
+    Optional<List<String>> list(String directory);
 
     /**
      * put value to a specific key, if result is not absent, it is an update
@@ -78,7 +78,7 @@ public interface EtcdClient {
     @Value
     @Wither
     @Builder
-    class KeyValue {
+    class KeyedValue {
         String key, value;
     }
 

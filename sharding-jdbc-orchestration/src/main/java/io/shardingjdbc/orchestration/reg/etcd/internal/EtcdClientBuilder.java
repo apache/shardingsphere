@@ -5,7 +5,6 @@ import io.grpc.netty.NettyChannelBuilder;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -17,13 +16,10 @@ public class EtcdClientBuilder {
     private static AtomicReference<EtcdClient> etcdClientRef = new AtomicReference<>(null);
 
     private List<String> endpoints;
-    private long keepAliveTime = 200;
-    private long keepAliveTimeout = 300;
-    private boolean keepAlive = false;
-    private boolean idle = false;
-    private long idleTimeout = 1000 * 60L;
-    private long timeout;
-    private int maxRetry;
+    private long ttl = 200L;
+    private long timeout = 200L;
+    private long span = 100L;
+    private int maxRetry = 2;
 
     public static EtcdClientBuilder newBuilder() {
         return new EtcdClientBuilder();
@@ -39,28 +35,23 @@ public class EtcdClientBuilder {
         return this;
     }
 
-    public EtcdClientBuilder keepAlive(boolean keepAlive) {
-        this.keepAlive = keepAlive;
+    public EtcdClientBuilder ttl(long ttl) {
+        this.ttl = ttl;
         return this;
     }
 
-    public EtcdClientBuilder keepAliveTime(long keepAliveTime) {
-        this.keepAliveTime = keepAliveTime;
+    public EtcdClientBuilder span(long span) {
+        this.span = span;
         return this;
     }
 
-    public EtcdClientBuilder keepAliveTimeout(long keepAliveTimeout) {
-        this.keepAliveTimeout = keepAliveTimeout;
+    public EtcdClientBuilder maxRetry(int maxRetry) {
+        this.maxRetry = maxRetry;
         return this;
     }
 
-    public EtcdClientBuilder idle(boolean idle) {
-        this.idle = idle;
-        return this;
-    }
-
-    public EtcdClientBuilder idelTimeout(long idleTimeout) {
-        this.idleTimeout = idleTimeout;
+    public EtcdClientBuilder timeout(long span) {
+        this.timeout = span;
         return this;
     }
 
@@ -70,17 +61,11 @@ public class EtcdClientBuilder {
             final String target = "etcd";
             final NettyChannelBuilder channelBuilder = NettyChannelBuilder.forTarget(target)
                     .usePlaintext(true)
-                    .idleTimeout(idleTimeout, TimeUnit.MICROSECONDS)
                     .nameResolverFactory(DirectNameSolverFactory.newFactory(target, endpoints));
-            if (keepAlive) {
-                channelBuilder.keepAliveTimeout(keepAliveTimeout, TimeUnit.MILLISECONDS)
-                        .keepAliveTime(keepAliveTime, TimeUnit.MILLISECONDS);
-            }
-            if (idle) {
-                channelBuilder.idleTimeout(idleTimeout, TimeUnit.MILLISECONDS);
-            }
+//            final NettyChannelBuilder channelBuilder = NettyChannelBuilder.forAddress("localhost", 2379)
+//                    .usePlaintext(true);
             final Channel channel = channelBuilder.build();
-            final EtcdClient newEtcdClient = new EtcdClientImpl(channel);
+            final EtcdClient newEtcdClient = new EtcdClientImpl(channel, timeout, span, maxRetry);
             if (etcdClientRef.compareAndSet(null, newEtcdClient)) {
                 return newEtcdClient;
             } else {

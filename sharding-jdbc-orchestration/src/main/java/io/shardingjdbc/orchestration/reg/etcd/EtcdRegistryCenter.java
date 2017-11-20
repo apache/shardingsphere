@@ -10,7 +10,6 @@ import io.shardingjdbc.orchestration.reg.base.RegistryChangeType;
 import io.shardingjdbc.orchestration.reg.etcd.internal.*;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import lombok.NonNull;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -21,22 +20,21 @@ import java.util.List;
  * @author junxiong
  */
 public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
-    private String namespace;
     private long timeToLive;
     private EtcdClient etcdClient;
     private RegistryPath root = RegistryPath.from("");
 
     public EtcdRegistryCenter(EtcdConfiguration etcdConfiguration) {
-        this.namespace = etcdConfiguration.getNamespace();
         this.timeToLive = etcdConfiguration.getTimeToLive();
         this.etcdClient = EtcdClientBuilder.newBuilder()
                 .endpoints(etcdConfiguration.getServerLists())
+                .timeout(etcdConfiguration.getTimeout())
+                .maxRetry(etcdConfiguration.getMaxRetries())
                 .build();
         this.root = this.root.join(etcdConfiguration.getNamespace());
     }
 
     public EtcdRegistryCenter(String namespace, long timetoLive, EtcdClient etcdClient) {
-        this.namespace = namespace;
         this.timeToLive = timetoLive;
         this.etcdClient = etcdClient;
         this.root = this.root.join(namespace);
@@ -69,12 +67,8 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
 
     @Override
     public List<String> getChildrenKeys(String path) {
-        List<EtcdClient.KeyValue> children = etcdClient.list(namespace(path));
-        List<String> keys = Lists.newArrayList();
-        for (EtcdClient.KeyValue keyValue : children) {
-            keys.add(keyValue.getKey());
-        }
-        return keys;
+        Optional<List<String>> children = etcdClient.list(namespace(path));
+        return children.isPresent() ? children.get() : Lists.<String>newArrayList();
     }
 
     @Override
