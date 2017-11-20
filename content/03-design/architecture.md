@@ -8,7 +8,7 @@ next = "/03-design/module/"
 
 +++
 
-![整体架构图](/img/architecture.png)
+![整体架构图](/img/architecture_v2.png)
 
 ![SQL解析](/img/parse.png)
 

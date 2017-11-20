@@ -54,7 +54,7 @@ Sharding-JDBC配置多样：
 
 # 整体架构图
 
-![整体架构图](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture.png)
+![整体架构图](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_v2.png)
 
 ![柔性事务-最大努力送达型]( /img/architecture-soft-transaction-bed.png)
 
