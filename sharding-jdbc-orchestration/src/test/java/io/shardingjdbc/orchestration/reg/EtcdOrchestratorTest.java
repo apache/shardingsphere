@@ -127,19 +127,20 @@ public class EtcdOrchestratorTest {
         verify(masterSlaveDataSource, times(3)).renew(isA(MasterSlaveRule.class));
     }
 
-//    @Test
-//    public void testOrchestrateMasterSlaveDatasourceThenDisableInstance() throws Exception {
-//        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = createMasterSlaveRuleConfiguration();
-//        MasterSlaveDataSource masterSlaveDataSource = mock(MasterSlaveDataSource.class);
-//
-//        Orchestrator orchestrator = createOrchestrator();
-//        Map<String, DataSource> dataSourceMap = createDataSourceMap();
-//        orchestrator.orchestrateMasterSlaveDatasource(dataSourceMap, masterSlaveRuleConfiguration, masterSlaveDataSource);
-//
-//        etcdClient.put(format("/test/pms/state/instances/%s", getID()), StateNodeStatus.DISABLED.name());
-//
-//        verify(masterSlaveDataSource, times(1)).renew(isA(MasterSlaveRule.class));
-//    }
+    @Test
+    public void testOrchestrateMasterSlaveDatasourceThenDisableInstance() throws Exception {
+        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = createMasterSlaveRuleConfiguration();
+        MasterSlaveDataSource masterSlaveDataSource = mock(MasterSlaveDataSource.class);
+
+        Orchestrator orchestrator = createOrchestrator();
+        Map<String, DataSource> dataSourceMap = createDataSourceMap();
+        orchestrator.orchestrateMasterSlaveDatasource(dataSourceMap, masterSlaveRuleConfiguration, masterSlaveDataSource);
+
+        etcdClient.put(format("/test/pms/state/instances/%s", getID()), StateNodeStatus.DISABLED.name());
+
+        // orchestrator explicitly invoke the renew method when orchestrate master slave data source, so plus the event trigger, it will be two times.
+        verify(masterSlaveDataSource, times(2)).renew(isA(MasterSlaveRule.class));
+    }
 
     @Test
     public void testOrchestrateMasterSlaveDatasource() throws Exception {
