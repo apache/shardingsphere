@@ -1,0 +1,5 @@
+{
+  "name": "demo_master_slave",
+  "masterDataSourceName": "demo_ds_master",
+  "slaveDataSourceNames": ["demo_ds_slave_0", "demo_ds_slave_1"]
+}

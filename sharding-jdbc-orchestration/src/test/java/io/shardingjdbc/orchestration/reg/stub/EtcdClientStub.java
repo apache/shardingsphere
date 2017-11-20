@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import io.shardingjdbc.orchestration.reg.etcd.internal.*;
 import lombok.Value;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,11 @@ public class EtcdClientStub implements EtcdClient {
     @Override
     public Optional<String> get(String key) {
         Element element = elements.get(key);
-        return Optional.fromNullable(element.getValue());
+        return Optional.fromNullable(element).transform(new Function<Element, String>() {
+            @Override
+            public String apply(Element element) { return element.getValue();
+            }
+        });
     }
 
     @Override
@@ -65,17 +70,15 @@ public class EtcdClientStub implements EtcdClient {
 
     private void fireEvent(Element element, WatchEvent.WatchEventType type) {
         for (String keyOrPath : watchers.keySet()) {
-            for (String key : elements.keySet()) {
-                if (key.startsWith(keyOrPath)) {
-                    WatcherImpl watcher = (WatcherImpl) watchers.get(keyOrPath);
-                    for (WatcherListener listener : watcher.getListeners()) {
-                        listener.onWatch(WatchEvent.builder()
-                                .watchEventType(type)
-                                .key(element.getKey())
-                                .value(element.getValue())
-                                .id(watcher.getId())
-                                .build());
-                    }
+            if (element.getKey().startsWith(keyOrPath)) {
+                WatcherImpl watcher = (WatcherImpl) watchers.get(keyOrPath);
+                for (WatcherListener listener : watcher.getListeners()) {
+                    listener.onWatch(WatchEvent.builder()
+                            .watchEventType(type)
+                            .key(element.getKey())
+                            .value(element.getValue())
+                            .id(watcher.getId())
+                            .build());
                 }
             }
         }

@@ -19,7 +19,7 @@
   "defaultTableShardingStrategyConfig": {
     "type": "STANDARD",
     "shardingColumn": "order_id",
-    "preciseAlgorithmClassName": "io.shardingjdbc.example.orchestration.algorithm.ModuloTableShardingAlgorithm"
+    "preciseAlgorithmClassName": "io.shardingjdbc.orchestration.reg.stub.ModuloTableShardingAlgorithm"
   },
   "masterSlaveRuleConfigs": []
 }

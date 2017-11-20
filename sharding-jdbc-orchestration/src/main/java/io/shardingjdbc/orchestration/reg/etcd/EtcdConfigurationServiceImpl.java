@@ -11,6 +11,7 @@ import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
 import io.shardingjdbc.orchestration.reg.base.*;
 import io.shardingjdbc.orchestration.reg.etcd.internal.RegistryPath;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Properties;
 /**
  * @author junxiong
  */
+@Slf4j
 public class EtcdConfigurationServiceImpl implements ConfigurationService {
     private String name;
     private boolean overwrite;
@@ -41,12 +43,12 @@ public class EtcdConfigurationServiceImpl implements ConfigurationService {
                                              final ShardingRuleConfiguration shardingRuleConfig,
                                              final Properties props,
                                              final ShardingDataSource shardingDataSource) {
-        addShardingConfigurationChangeListener(shardingDataSource);
         if (overwrite) {
             persistDataSourceMap(dataSourceMap);
             persistShardingRuleConfiguration(shardingRuleConfig);
             persistShardingProperties(props);
         }
+        addShardingConfigurationChangeListener(shardingDataSource);
     }
 
     private void addShardingConfigurationChangeListener(final ShardingDataSource shardingDataSource) {
@@ -55,7 +57,12 @@ public class EtcdConfigurationServiceImpl implements ConfigurationService {
             @Override
             public void onRegistryChange(RegistryChangeEvent registryChangeEvent) throws Exception {
                 if (RegistryChangeType.UPDATED == registryChangeEvent.getType() && registryChangeEvent.getPayload().isPresent()) {
-                    shardingDataSource.renew(loadShardingRuleConfiguration().build(loadDataSourceMap()), loadShardingProperties());
+                    ShardingRuleConfiguration shardingRuleConfiguration =  loadShardingRuleConfiguration();
+                    if (shardingRuleConfiguration != null) {
+                        shardingDataSource.renew(shardingRuleConfiguration.build(loadDataSourceMap()), loadShardingProperties());
+                    } else {
+                        log.warn("sharding rule is not refreshed due to sharding rule config is missing");
+                    }
                 }
             }
         });
@@ -63,11 +70,11 @@ public class EtcdConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public void persistMasterSlaveConfiguration(Map<String, DataSource> dataSourceMap, MasterSlaveRuleConfiguration masterSlaveRuleConfig, MasterSlaveDataSource masterSlaveDataSource) {
-        addMasterSlaveConfigurationChangeListener(masterSlaveDataSource);
         if (overwrite) {
             persistDataSourceMap(dataSourceMap);
             persistMasterSlaveRuleConfiguration(masterSlaveRuleConfig);
         }
+        addMasterSlaveConfigurationChangeListener(masterSlaveDataSource);
     }
 
     private void addMasterSlaveConfigurationChangeListener(final MasterSlaveDataSource masterSlaveDataSource) {

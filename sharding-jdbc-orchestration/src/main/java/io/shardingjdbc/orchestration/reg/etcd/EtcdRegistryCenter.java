@@ -80,24 +80,30 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     @Override
     public void addRegistryChangeListener(final String path, final RegistryChangeListener registryChangeListener) {
         Optional<Watcher> watcherOptional = etcdClient.watch(namespace(path));
-        WatcherListener listener = new WatcherListener() {
+        watcherOptional.transform(new Function<Watcher, Object>() {
             @Override
-            public void onWatch(WatchEvent watchEvent) {
-                final Optional<RegistryChangeEvent> registryChangeEventOptional = fromWatchEvent(watchEvent);
-                registryChangeEventOptional.transform(new Function<RegistryChangeEvent, Object>() {
-                    @Nullable
+            public Object apply(Watcher watcher) {
+                watcher.addWatcherListener(new WatcherListener() {
                     @Override
-                    public Object apply(@Nullable RegistryChangeEvent input) {
-                        try {
-                            registryChangeListener.onRegistryChange(input);
-                        } catch (Exception e) {
-                            RegExceptionHandler.handleException(e);
-                        }
-                        return input;
+                    public void onWatch(WatchEvent watchEvent) {
+                        final Optional<RegistryChangeEvent> registryChangeEventOptional = fromWatchEvent(watchEvent);
+                        registryChangeEventOptional.transform(new Function<RegistryChangeEvent, Object>() {
+                            @Nullable
+                            @Override
+                            public Object apply(@Nullable RegistryChangeEvent input) {
+                                try {
+                                    registryChangeListener.onRegistryChange(input);
+                                } catch (Exception e) {
+                                    RegExceptionHandler.handleException(e);
+                                }
+                                return input;
+                            }
+                        });
                     }
                 });
+                return watcher;
             }
-        };
+        });
     }
 
     private Optional<RegistryChangeEvent> fromWatchEvent(WatchEvent watchEvent) {

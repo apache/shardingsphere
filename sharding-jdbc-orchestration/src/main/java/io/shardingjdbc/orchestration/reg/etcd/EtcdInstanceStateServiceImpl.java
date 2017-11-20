@@ -22,14 +22,13 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import static io.shardingjdbc.orchestration.reg.etcd.internal.LocalInstance.getID;
+
 /**
  * @author junxiong
  */
 @Slf4j
 public class EtcdInstanceStateServiceImpl implements InstanceStateService {
-    private static final String DELIMITER = "@-@";
-    private static final String PID_FLAG = "@";
-
     private ConfigurationService configurationService;
     private CoordinatorRegistryCenter registryCenter;
     private RegistryPath instanceStatePath;
@@ -40,13 +39,9 @@ public class EtcdInstanceStateServiceImpl implements InstanceStateService {
         this.instanceStatePath = RegistryPath.from(name, "state", "instances");
     }
 
-    private String localInstanceID() {
-        return IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split(PID_FLAG)[0];
-    }
-
     @Override
     public void persistShardingInstanceOnline(final ShardingDataSource shardingDataSource) {
-        String key = instanceStatePath.join(localInstanceID()).asNodeKey();
+        String key = instanceStatePath.join(getID()).asNodeKey();
         registryCenter.persistEphemeral(key, StateNodeStatus.ENABLED.name());
         addInstancesStateChangeListener(new Function<Map<String, DataSource>, Void>() {
             @Override
@@ -66,7 +61,7 @@ public class EtcdInstanceStateServiceImpl implements InstanceStateService {
 
     @Override
     public void persistMasterSlaveInstanceOnline(final MasterSlaveDataSource masterSlaveDataSource) {
-        String key = instanceStatePath.join(localInstanceID()).asNodeKey();
+        String key = instanceStatePath.join(getID()).asNodeKey();
         registryCenter.persistEphemeral(key, StateNodeStatus.ENABLED.name());
         addInstancesStateChangeListener(new Function<Map<String, DataSource>, Void> () {
             @Override
@@ -78,7 +73,7 @@ public class EtcdInstanceStateServiceImpl implements InstanceStateService {
     }
 
     private void addInstancesStateChangeListener(final Function<Map<String, DataSource>, Void> callback) {
-        registryCenter.addRegistryChangeListener(instanceStatePath.join(localInstanceID()).asNodeKey(), new RegistryChangeListener() {
+        registryCenter.addRegistryChangeListener(instanceStatePath.join(getID()).asNodeKey(), new RegistryChangeListener() {
             @Override
             public void onRegistryChange(RegistryChangeEvent registryChangeEvent) throws Exception {
                 if (RegistryChangeType.UPDATED == registryChangeEvent.getType() && registryChangeEvent.getPayload().isPresent()) {
