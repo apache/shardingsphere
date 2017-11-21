@@ -87,7 +87,7 @@ public class EtcdClientStub implements EtcdClient {
                                     .id(watcher.getId())
                                     .build());
                         }
-                    }, 300, TimeUnit.MILLISECONDS);
+                    }, 50, TimeUnit.MILLISECONDS);
 
                 }
             }

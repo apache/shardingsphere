@@ -41,6 +41,10 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
 public class EtcdOrchestratorTest {
+    // it takes some time for etcd server to fire the change event, this will prevent the test case to exist
+    // the etcd stub use a scheduler thread to simulate it.
+    // you may need to increase this value to test against real etcd server
+    private static final long WATCHER_WAIT = 5;
 
     EtcdClient etcdClient;
 
@@ -50,7 +54,7 @@ public class EtcdOrchestratorTest {
         // uncomment below line to test on real etcd sever.
 //        etcdClient = EtcdClientBuilder.newBuilder()
 //                .endpoints("http://localhost:2379")
-//                .maxRetry(5)
+//                .maxRetry(5) // retry 5 times
 //                .timeout(5000)
 //                .span(500)
 //                .build();
@@ -104,7 +108,7 @@ public class EtcdOrchestratorTest {
         etcdClient.put("/test/pms/config/props", GsonFactory.getGson().toJson(new Properties()));
 
         // wait for change event to fire
-        TimeUnit.SECONDS.sleep(1);
+        waitForWatcherEvent();
 
         verify(shardingDataSource, times(3)).renew(isA(ShardingRule.class), isA(Properties.class));
     }
@@ -123,7 +127,7 @@ public class EtcdOrchestratorTest {
         etcdClient.put(format("/test/pms/state/instances/%s", getID()), StateNodeStatus.DISABLED.name());
 
         // wait for change event to fire
-        TimeUnit.SECONDS.sleep(1);
+        waitForWatcherEvent();
 
         verify(shardingDataSource, times(1)).renew(isA(ShardingRule.class), isA(Properties.class));
     }
@@ -141,9 +145,13 @@ public class EtcdOrchestratorTest {
         etcdClient.put("/test/pms/config/masterslave", GsonFactory.getGson().toJson(masterSlaveRuleConfiguration));
 
         // wait for change event to fire
-        TimeUnit.SECONDS.sleep(1);
+        waitForWatcherEvent();
 
         verify(masterSlaveDataSource, times(3)).renew(isA(MasterSlaveRule.class));
+    }
+
+    private void waitForWatcherEvent() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(WATCHER_WAIT);
     }
 
     @Test
@@ -158,7 +166,7 @@ public class EtcdOrchestratorTest {
         etcdClient.put(format("/test/pms/state/instances/%s", getID()), StateNodeStatus.DISABLED.name());
 
         // wait for change event to fire.
-        TimeUnit.SECONDS.sleep(1);
+        waitForWatcherEvent();
 
         // orchestrator explicitly invoke the renew method when orchestrate master slave data source, so plus the event trigger, it will be two times.
         verify(masterSlaveDataSource, times(2)).renew(isA(MasterSlaveRule.class));

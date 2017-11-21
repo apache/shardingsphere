@@ -45,7 +45,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
      *
      * @param channel Channel
      */
-    EtcdClientImpl(Channel channel, long timeout, long span, int retryTimes) {
+    EtcdClientImpl(@NonNull final Channel channel, final long timeout, final long span, final int retryTimes) {
         this.timeout = timeout;
         this.span = span;
         this.retryTimes = retryTimes;
@@ -56,7 +56,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
 
     @Override
-    public Optional<String> get(String key) {
+    public Optional<String> get(@NonNull final String key) {
         final RangeRequest request = RangeRequest.newBuilder()
                 .setKey(ByteString.copyFromUtf8(key))
                 .build();
@@ -71,7 +71,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
 
     @Override
-    public Optional<List<String>> list(String dir) {
+    public Optional<List<String>> list(@NonNull final String dir) {
         final RangeRequest request = RangeRequest.newBuilder()
                 .setKey(ByteString.copyFromUtf8(dir))
                 .setRangeEnd(prefix(dir))
@@ -90,7 +90,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
 
     @Override
-    public Optional<String> put(String key, String value) {
+    public Optional<String> put(@NonNull final String key, @NonNull final String value) {
         final PutRequest request = PutRequest.newBuilder()
                 .setPrevKv(true)
                 .setKey(ByteString.copyFromUtf8(key))
@@ -106,7 +106,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
 
     @Override
-    public Optional<String> put(@NonNull String key, @NonNull String value, long ttl) {
+    public Optional<String> put(@NonNull String key, @NonNull String value, final long ttl) {
         final Optional<Long> leaseId = lease(ttl);
         if (!leaseId.isPresent()) {
             throw new RegException("Unable to set up heat beat for key %s", key);
@@ -127,7 +127,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
 
     @Override
-    public Optional<List<String>> delete(String key) {
+    public Optional<List<String>> delete(@NonNull final String key) {
         final DeleteRangeRequest request = DeleteRangeRequest.newBuilder()
                 .build();
         return retry(new Callable<List<String>>() {
@@ -144,7 +144,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
 
     @Override
-    public Optional<Long> lease(long ttl) {
+    public Optional<Long> lease(final long ttl) {
         final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(ttl).build();
         final ListenableFuture<LeaseGrantResponse> response = leaseStub.leaseGrant(request);
         return retry(new Callable<Long>() {
@@ -157,9 +157,10 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
 
     @Override
-    public Optional<Watcher> watch(final @NonNull String key) {
+    public Optional<Watcher> watch(@NonNull final String key) {
         final WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder()
                 .setKey(ByteString.copyFromUtf8(key))
+                .setRangeEnd(prefix(key))
                 .build();
         final WatchRequest request = WatchRequest.newBuilder()
                 .setCreateRequest(createWatchRequest)
