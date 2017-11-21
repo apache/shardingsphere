@@ -292,13 +292,16 @@ orchestration: 编排配置
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding" 
+    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
+    xmlns:reg="http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg"
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding 
+                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg 
+                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg/reg.xsd
                         ">
     <context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true" />
     
