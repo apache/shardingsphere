@@ -8,7 +8,7 @@ next = "/03-design/module/"
 
 +++
 
-![整体架构图](/img/architecture_v2.png)
+![整体架构图](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_v2.png)
 
 ![SQL解析](/img/parse.png)
 
@@ -17,4 +17,3 @@ next = "/03-design/module/"
 ![SQL执行](/img/execute.png)
 
 ![结果归并](/img/merge.png)
-

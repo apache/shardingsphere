@@ -34,7 +34,7 @@ sharding-jdbc-example                                               使用示例
     ├──sharding-jdbc-orchestration-example                          数据库服务编排治理的使用示例
     ├      ├──sharding-jdbc-orchestration-java-example              基于Java配置的数据库服务编排治理的使用示例
     ├      ├──sharding-jdbc-orchestration-yaml-example              基于Yaml配置的数据库服务编排治理的使用示例
-    ├──sharding-jdbc-orchestration-example                          数据库服务编排治理的Spring使用示例
+    ├──sharding-jdbc-orchestration-spring-example                          数据库服务编排治理的Spring使用示例
     ├      ├──sharding-jdbc-orchestration-spring-boot-example       基于Spring Boot配置的数据库服务编排治理的使用示例
     ├      ├──sharding-jdbc-orchestration-spring-namespace-example  基于Spring Namespace配置的数据库服务编排治理的使用示例
     ├──sharding-jdbc-transaction-example                            柔性事务的使用示例
