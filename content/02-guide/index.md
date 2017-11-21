@@ -14,6 +14,7 @@ chapter = true
  - 想一览基本的概念，请阅读[基本概念](/02-guide/concepts/)。
  - 想通过一个完整的例子使用Sharding-JDBC进行分库分表，请阅读[如何分库分表](/02-guide/sharding/)章节。
  - 分库分表后，要进一步提高性能，可以使用[读写分离](/02-guide/master-slave/)功能。
+ - Sharding-JDBC的配置灵活而复杂，[域模型配置](/02-guide/config_domain/)清晰的展现了各个配置类间的关系。
  - [配置手册](/02-guide/configuration/)介绍了如何通过JAVA,YAML,Spring和Spring Boot四种方式配置。
  - 客户端的数据库治理，需要[编排治理](/02-guide/orchestration/)功能来实现。
  - 一般情况Sharding-JDBC是通过SQL解析来获取数据路由数据的，但也可以使用[强制路由](/02-guide/hint-sharding-value/)方式来设置分片数据。该模式非常适合存量系统扩容。
