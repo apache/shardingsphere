@@ -222,7 +222,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return Kv.internal_static_mvccpb_Event_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            Event.class, Event.Builder.class);
+            Event.class, Builder.class);
   }
 
   /**
@@ -247,9 +247,9 @@ private static final long serialVersionUID = 0L;
    *
    * <code>.mvccpb.Event.EventType type = 1;</code>
    */
-  public Event.EventType getType() {
-    Event.EventType result = Event.EventType.valueOf(type_);
-    return result == null ? Event.EventType.UNRECOGNIZED : result;
+  public EventType getType() {
+    EventType result = EventType.valueOf(type_);
+    return result == null ? EventType.UNRECOGNIZED : result;
   }
 
   /**
@@ -341,7 +341,7 @@ private static final long serialVersionUID = 0L;
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (type_ != Event.EventType.PUT.getNumber()) {
+    if (type_ != EventType.PUT.getNumber()) {
       output.writeEnum(1, type_);
     }
     if (kv_ != null) {
@@ -358,7 +358,7 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (type_ != Event.EventType.PUT.getNumber()) {
+    if (type_ != EventType.PUT.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(1, type_);
     }
@@ -577,7 +577,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return Kv.internal_static_mvccpb_Event_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              Event.class, Event.Builder.class);
+              Event.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {
@@ -755,9 +755,9 @@ private static final long serialVersionUID = 0L;
      *
      * <code>.mvccpb.Event.EventType type = 1;</code>
      */
-    public Event.EventType getType() {
-      Event.EventType result = Event.EventType.valueOf(type_);
-      return result == null ? Event.EventType.UNRECOGNIZED : result;
+    public EventType getType() {
+      EventType result = EventType.valueOf(type_);
+      return result == null ? EventType.UNRECOGNIZED : result;
     }
 
     /**
@@ -769,7 +769,7 @@ private static final long serialVersionUID = 0L;
      *
      * <code>.mvccpb.Event.EventType type = 1;</code>
      */
-    public Builder setType(Event.EventType value) {
+    public Builder setType(EventType value) {
       if (value == null) {
         throw new NullPointerException();
       }

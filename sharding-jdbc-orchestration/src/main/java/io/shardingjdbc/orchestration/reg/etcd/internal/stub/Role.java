@@ -211,7 +211,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return Auth.internal_static_authpb_Role_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            Role.class, Role.Builder.class);
+            Role.class, Builder.class);
   }
 
   /**
@@ -392,7 +392,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return Auth.internal_static_authpb_Role_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              Role.class, Role.Builder.class);
+              Role.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {

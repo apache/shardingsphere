@@ -201,7 +201,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_AuthUserChangePasswordRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            AuthUserChangePasswordRequest.class, AuthUserChangePasswordRequest.Builder.class);
+            AuthUserChangePasswordRequest.class, Builder.class);
   }
 
   /**
@@ -410,7 +410,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_AuthUserChangePasswordRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              AuthUserChangePasswordRequest.class, AuthUserChangePasswordRequest.Builder.class);
+              AuthUserChangePasswordRequest.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {

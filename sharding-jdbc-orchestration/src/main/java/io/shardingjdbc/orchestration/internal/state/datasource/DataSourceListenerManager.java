@@ -23,6 +23,8 @@ import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
+import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -54,16 +56,13 @@ public final class DataSourceListenerManager implements ListenerManager {
     
     @Override
     public void start(final ShardingDataSource shardingDataSource) {
-        TreeCache cache = (TreeCache) registryCenter.getRawCache(stateNode.getDataSourcesNodeFullPath());
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
+        registryCenter.watch(stateNode.getDataSourcesNodeFullPath(), new ChangeListener() {
             @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || null == childData.getData() || childData.getPath().isEmpty()) {
-                    return;
-                }
-                if (TreeCacheEvent.Type.NODE_UPDATED == event.getType() || TreeCacheEvent.Type.NODE_REMOVED == event.getType()) {
+            public void onChange(ChangeEvent event) throws Exception {
+                // only handle updated and deleted event
+                if (ChangeEvent.ChangeType.UPDATED == event.getChangeType()
+                        || ChangeEvent.ChangeType.DELETED == event.getChangeType()
+                        && event.getChangeData().isPresent()) {
                     shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
                 }
             }
@@ -72,16 +71,13 @@ public final class DataSourceListenerManager implements ListenerManager {
     
     @Override
     public void start(final MasterSlaveDataSource masterSlaveDataSource) {
-        TreeCache cache = (TreeCache) registryCenter.getRawCache(stateNode.getDataSourcesNodeFullPath());
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
+        registryCenter.watch(stateNode.getDataSourcesNodeFullPath(), new ChangeListener() {
             @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || null == childData.getData() || childData.getPath().isEmpty()) {
-                    return;
-                }
-                if (TreeCacheEvent.Type.NODE_UPDATED == event.getType() || TreeCacheEvent.Type.NODE_REMOVED == event.getType()) {
+            public void onChange(ChangeEvent event) throws Exception {
+                // only handle updated and deleted event
+                if (ChangeEvent.ChangeType.UPDATED == event.getChangeType()
+                        || ChangeEvent.ChangeType.DELETED == event.getChangeType()
+                        && event.getChangeData().isPresent()) {
                     masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
                 }
             }

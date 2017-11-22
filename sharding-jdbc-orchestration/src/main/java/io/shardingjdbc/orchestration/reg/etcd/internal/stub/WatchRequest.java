@@ -216,7 +216,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_WatchRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            WatchRequest.class, WatchRequest.Builder.class);
+            WatchRequest.class, Builder.class);
   }
 
     public RequestUnionCase
@@ -456,7 +456,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_WatchRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              WatchRequest.class, WatchRequest.Builder.class);
+              WatchRequest.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {

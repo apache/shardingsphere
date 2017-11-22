@@ -22,7 +22,10 @@ import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
+import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import javafx.scene.control.TextFormatter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
@@ -60,17 +63,13 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     private void start(final String node, final ShardingDataSource shardingDataSource) {
         String cachePath = configNode.getFullPath(node);
-        regCenter.addCacheData(cachePath);
-        TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
+        regCenter.watch(cachePath, new ChangeListener() {
             @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
-                    return;
+            public void onChange(ChangeEvent event) throws Exception {
+                // only handle updated event
+                if (ChangeEvent.ChangeType.UPDATED == event.getChangeType() && event.getChangeData().isPresent()) {
+                    shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
                 }
-                shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
             }
         });
     }
@@ -83,17 +82,13 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     private void start(final String node, final MasterSlaveDataSource masterSlaveDataSource) {
         String cachePath = configNode.getFullPath(node);
-        regCenter.addCacheData(cachePath);
-        TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
+        regCenter.watch(cachePath, new ChangeListener() {
             @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
-                    return;
+            public void onChange(ChangeEvent event) throws Exception {
+                // only handle updated event
+                if (ChangeEvent.ChangeType.UPDATED == event.getChangeType() && event.getChangeData().isPresent()) {
+                    masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
                 }
-                masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
             }
         });
     }

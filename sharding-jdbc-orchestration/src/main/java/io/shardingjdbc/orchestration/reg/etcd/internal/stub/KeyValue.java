@@ -231,7 +231,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return Kv.internal_static_mvccpb_KeyValue_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            KeyValue.class, KeyValue.Builder.class);
+            KeyValue.class, Builder.class);
   }
 
   /**
@@ -482,7 +482,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return Kv.internal_static_mvccpb_KeyValue_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              KeyValue.class, KeyValue.Builder.class);
+              KeyValue.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {

@@ -243,7 +243,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_Compare_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            Compare.class, Compare.Builder.class);
+            Compare.class, Builder.class);
   }
 
     public TargetUnionCase
@@ -270,9 +270,9 @@ private static final long serialVersionUID = 0L;
    *
    * <code>.etcdserverpb.Compare.CompareResult result = 1;</code>
    */
-  public Compare.CompareResult getResult() {
-    Compare.CompareResult result = Compare.CompareResult.valueOf(result_);
-    return result == null ? Compare.CompareResult.UNRECOGNIZED : result;
+  public CompareResult getResult() {
+    CompareResult result = CompareResult.valueOf(result_);
+    return result == null ? CompareResult.UNRECOGNIZED : result;
   }
 
   /**
@@ -293,9 +293,9 @@ private static final long serialVersionUID = 0L;
    *
    * <code>.etcdserverpb.Compare.CompareTarget target = 2;</code>
    */
-  public Compare.CompareTarget getTarget() {
-    Compare.CompareTarget result = Compare.CompareTarget.valueOf(target_);
-    return result == null ? Compare.CompareTarget.UNRECOGNIZED : result;
+  public CompareTarget getTarget() {
+    CompareTarget result = CompareTarget.valueOf(target_);
+    return result == null ? CompareTarget.UNRECOGNIZED : result;
   }
 
   /**
@@ -388,10 +388,10 @@ private static final long serialVersionUID = 0L;
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (result_ != Compare.CompareResult.EQUAL.getNumber()) {
+    if (result_ != CompareResult.EQUAL.getNumber()) {
       output.writeEnum(1, result_);
     }
-    if (target_ != Compare.CompareTarget.VERSION.getNumber()) {
+    if (target_ != CompareTarget.VERSION.getNumber()) {
       output.writeEnum(2, target_);
     }
     if (!key_.isEmpty()) {
@@ -424,11 +424,11 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (result_ != Compare.CompareResult.EQUAL.getNumber()) {
+    if (result_ != CompareResult.EQUAL.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(1, result_);
     }
-    if (target_ != Compare.CompareTarget.VERSION.getNumber()) {
+    if (target_ != CompareTarget.VERSION.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(2, target_);
     }
@@ -873,7 +873,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_Compare_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              Compare.class, Compare.Builder.class);
+              Compare.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {
@@ -1084,9 +1084,9 @@ private static final long serialVersionUID = 0L;
      *
      * <code>.etcdserverpb.Compare.CompareResult result = 1;</code>
      */
-    public Compare.CompareResult getResult() {
-      Compare.CompareResult result = Compare.CompareResult.valueOf(result_);
-      return result == null ? Compare.CompareResult.UNRECOGNIZED : result;
+    public CompareResult getResult() {
+      CompareResult result = CompareResult.valueOf(result_);
+      return result == null ? CompareResult.UNRECOGNIZED : result;
     }
 
     /**
@@ -1096,7 +1096,7 @@ private static final long serialVersionUID = 0L;
      *
      * <code>.etcdserverpb.Compare.CompareResult result = 1;</code>
      */
-    public Builder setResult(Compare.CompareResult value) {
+    public Builder setResult(CompareResult value) {
       if (value == null) {
         throw new NullPointerException();
       }
@@ -1151,9 +1151,9 @@ private static final long serialVersionUID = 0L;
      *
      * <code>.etcdserverpb.Compare.CompareTarget target = 2;</code>
      */
-    public Compare.CompareTarget getTarget() {
-      Compare.CompareTarget result = Compare.CompareTarget.valueOf(target_);
-      return result == null ? Compare.CompareTarget.UNRECOGNIZED : result;
+    public CompareTarget getTarget() {
+      CompareTarget result = CompareTarget.valueOf(target_);
+      return result == null ? CompareTarget.UNRECOGNIZED : result;
     }
 
     /**
@@ -1163,7 +1163,7 @@ private static final long serialVersionUID = 0L;
      *
      * <code>.etcdserverpb.Compare.CompareTarget target = 2;</code>
      */
-    public Builder setTarget(Compare.CompareTarget value) {
+    public Builder setTarget(CompareTarget value) {
       if (value == null) {
         throw new NullPointerException();
       }

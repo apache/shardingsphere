@@ -80,7 +80,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_AuthRoleDeleteResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            AuthRoleDeleteResponse.class, AuthRoleDeleteResponse.Builder.class);
+            AuthRoleDeleteResponse.class, Builder.class);
   }
 
   public static final int HEADER_FIELD_NUMBER = 1;
@@ -276,7 +276,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_AuthRoleDeleteResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              AuthRoleDeleteResponse.class, AuthRoleDeleteResponse.Builder.class);
+              AuthRoleDeleteResponse.class, Builder.class);
     }
 
     // Construct using io.shardingjdbc.orchestration.reg.etcd.internal.stub.AuthRoleDeleteResponse.newBuilder()

@@ -289,7 +289,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_RangeRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            RangeRequest.class, RangeRequest.Builder.class);
+            RangeRequest.class, Builder.class);
   }
 
   /**
@@ -361,9 +361,9 @@ private static final long serialVersionUID = 0L;
    *
    * <code>.etcdserverpb.RangeRequest.SortOrder sort_order = 5;</code>
    */
-  public RangeRequest.SortOrder getSortOrder() {
-    RangeRequest.SortOrder result = RangeRequest.SortOrder.valueOf(sortOrder_);
-    return result == null ? RangeRequest.SortOrder.UNRECOGNIZED : result;
+  public SortOrder getSortOrder() {
+    SortOrder result = SortOrder.valueOf(sortOrder_);
+    return result == null ? SortOrder.UNRECOGNIZED : result;
   }
 
   /**
@@ -384,9 +384,9 @@ private static final long serialVersionUID = 0L;
    *
    * <code>.etcdserverpb.RangeRequest.SortTarget sort_target = 6;</code>
    */
-  public RangeRequest.SortTarget getSortTarget() {
-    RangeRequest.SortTarget result = RangeRequest.SortTarget.valueOf(sortTarget_);
-    return result == null ? RangeRequest.SortTarget.UNRECOGNIZED : result;
+  public SortTarget getSortTarget() {
+    SortTarget result = SortTarget.valueOf(sortTarget_);
+    return result == null ? SortTarget.UNRECOGNIZED : result;
   }
 
   /**
@@ -498,10 +498,10 @@ private static final long serialVersionUID = 0L;
     if (revision_ != 0L) {
       output.writeInt64(4, revision_);
     }
-    if (sortOrder_ != RangeRequest.SortOrder.NONE.getNumber()) {
+    if (sortOrder_ != SortOrder.NONE.getNumber()) {
       output.writeEnum(5, sortOrder_);
     }
-    if (sortTarget_ != RangeRequest.SortTarget.KEY.getNumber()) {
+    if (sortTarget_ != SortTarget.KEY.getNumber()) {
       output.writeEnum(6, sortTarget_);
     }
     if (serializable_ != false) {
@@ -549,11 +549,11 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeInt64Size(4, revision_);
     }
-    if (sortOrder_ != RangeRequest.SortOrder.NONE.getNumber()) {
+    if (sortOrder_ != SortOrder.NONE.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(5, sortOrder_);
     }
-    if (sortTarget_ != RangeRequest.SortTarget.KEY.getNumber()) {
+    if (sortTarget_ != SortTarget.KEY.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(6, sortTarget_);
     }
@@ -992,7 +992,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_RangeRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              RangeRequest.class, RangeRequest.Builder.class);
+              RangeRequest.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {
@@ -1391,9 +1391,9 @@ private static final long serialVersionUID = 0L;
      *
      * <code>.etcdserverpb.RangeRequest.SortOrder sort_order = 5;</code>
      */
-    public RangeRequest.SortOrder getSortOrder() {
-      RangeRequest.SortOrder result = RangeRequest.SortOrder.valueOf(sortOrder_);
-      return result == null ? RangeRequest.SortOrder.UNRECOGNIZED : result;
+    public SortOrder getSortOrder() {
+      SortOrder result = SortOrder.valueOf(sortOrder_);
+      return result == null ? SortOrder.UNRECOGNIZED : result;
     }
 
     /**
@@ -1403,7 +1403,7 @@ private static final long serialVersionUID = 0L;
      *
      * <code>.etcdserverpb.RangeRequest.SortOrder sort_order = 5;</code>
      */
-    public Builder setSortOrder(RangeRequest.SortOrder value) {
+    public Builder setSortOrder(SortOrder value) {
       if (value == null) {
         throw new NullPointerException();
       }
@@ -1458,9 +1458,9 @@ private static final long serialVersionUID = 0L;
      *
      * <code>.etcdserverpb.RangeRequest.SortTarget sort_target = 6;</code>
      */
-    public RangeRequest.SortTarget getSortTarget() {
-      RangeRequest.SortTarget result = RangeRequest.SortTarget.valueOf(sortTarget_);
-      return result == null ? RangeRequest.SortTarget.UNRECOGNIZED : result;
+    public SortTarget getSortTarget() {
+      SortTarget result = SortTarget.valueOf(sortTarget_);
+      return result == null ? SortTarget.UNRECOGNIZED : result;
     }
 
     /**
@@ -1470,7 +1470,7 @@ private static final long serialVersionUID = 0L;
      *
      * <code>.etcdserverpb.RangeRequest.SortTarget sort_target = 6;</code>
      */
-    public Builder setSortTarget(RangeRequest.SortTarget value) {
+    public Builder setSortTarget(SortTarget value) {
       if (value == null) {
         throw new NullPointerException();
       }

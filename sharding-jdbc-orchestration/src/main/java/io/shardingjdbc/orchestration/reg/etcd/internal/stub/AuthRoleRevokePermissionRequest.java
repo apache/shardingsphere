@@ -88,7 +88,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_AuthRoleRevokePermissionRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            AuthRoleRevokePermissionRequest.class, AuthRoleRevokePermissionRequest.Builder.class);
+            AuthRoleRevokePermissionRequest.class, Builder.class);
   }
 
   public static final int ROLE_FIELD_NUMBER = 1;
@@ -379,7 +379,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_AuthRoleRevokePermissionRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              AuthRoleRevokePermissionRequest.class, AuthRoleRevokePermissionRequest.Builder.class);
+              AuthRoleRevokePermissionRequest.class, Builder.class);
     }
 
     // Construct using io.shardingjdbc.orchestration.reg.etcd.internal.stub.AuthRoleRevokePermissionRequest.newBuilder()

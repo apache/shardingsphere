@@ -84,7 +84,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_CompactionRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            CompactionRequest.class, CompactionRequest.Builder.class);
+            CompactionRequest.class, Builder.class);
   }
 
   public static final int REVISION_FIELD_NUMBER = 1;
@@ -300,7 +300,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_CompactionRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              CompactionRequest.class, CompactionRequest.Builder.class);
+              CompactionRequest.class, Builder.class);
     }
 
     // Construct using io.shardingjdbc.orchestration.reg.etcd.internal.stub.CompactionRequest.newBuilder()

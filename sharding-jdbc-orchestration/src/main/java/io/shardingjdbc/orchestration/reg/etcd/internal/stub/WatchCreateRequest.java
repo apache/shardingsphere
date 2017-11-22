@@ -124,7 +124,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_WatchCreateRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            WatchCreateRequest.class, WatchCreateRequest.Builder.class);
+            WatchCreateRequest.class, Builder.class);
   }
 
   /**
@@ -307,9 +307,9 @@ private static final long serialVersionUID = 0L;
       Integer, FilterType> filters_converter_ =
           new com.google.protobuf.Internal.ListAdapter.Converter<
               Integer, FilterType>() {
-            public WatchCreateRequest.FilterType convert(Integer from) {
-              WatchCreateRequest.FilterType result = WatchCreateRequest.FilterType.valueOf(from);
-              return result == null ? WatchCreateRequest.FilterType.UNRECOGNIZED : result;
+            public FilterType convert(Integer from) {
+              FilterType result = FilterType.valueOf(from);
+              return result == null ? FilterType.UNRECOGNIZED : result;
             }
           };
   /**
@@ -340,7 +340,7 @@ private static final long serialVersionUID = 0L;
    *
    * <code>repeated .etcdserverpb.WatchCreateRequest.FilterType filters = 5;</code>
    */
-  public WatchCreateRequest.FilterType getFilters(int index) {
+  public FilterType getFilters(int index) {
     return filters_converter_.convert(filters_.get(index));
   }
   /**
@@ -619,7 +619,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_WatchCreateRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              WatchCreateRequest.class, WatchCreateRequest.Builder.class);
+              WatchCreateRequest.class, Builder.class);
     }
 
     // Construct using io.shardingjdbc.orchestration.reg.etcd.internal.stub.WatchCreateRequest.newBuilder()
@@ -995,7 +995,7 @@ private static final long serialVersionUID = 0L;
      *
      * <code>repeated .etcdserverpb.WatchCreateRequest.FilterType filters = 5;</code>
      */
-    public WatchCreateRequest.FilterType getFilters(int index) {
+    public FilterType getFilters(int index) {
       return filters_converter_.convert(filters_.get(index));
     }
     /**
@@ -1006,7 +1006,7 @@ private static final long serialVersionUID = 0L;
      * <code>repeated .etcdserverpb.WatchCreateRequest.FilterType filters = 5;</code>
      */
     public Builder setFilters(
-        int index, WatchCreateRequest.FilterType value) {
+        int index, FilterType value) {
       if (value == null) {
         throw new NullPointerException();
       }
@@ -1022,7 +1022,7 @@ private static final long serialVersionUID = 0L;
      *
      * <code>repeated .etcdserverpb.WatchCreateRequest.FilterType filters = 5;</code>
      */
-    public Builder addFilters(WatchCreateRequest.FilterType value) {
+    public Builder addFilters(FilterType value) {
       if (value == null) {
         throw new NullPointerException();
       }
@@ -1041,7 +1041,7 @@ private static final long serialVersionUID = 0L;
     public Builder addAllFilters(
         Iterable<? extends FilterType> values) {
       ensureFiltersIsMutable();
-      for (WatchCreateRequest.FilterType value : values) {
+      for (FilterType value : values) {
         filters_.add(value.getNumber());
       }
       onChanged();

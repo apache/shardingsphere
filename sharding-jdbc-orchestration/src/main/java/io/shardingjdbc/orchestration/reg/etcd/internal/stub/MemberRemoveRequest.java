@@ -191,7 +191,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_MemberRemoveRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            MemberRemoveRequest.class, MemberRemoveRequest.Builder.class);
+            MemberRemoveRequest.class, Builder.class);
   }
 
   /**
@@ -320,7 +320,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_MemberRemoveRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              MemberRemoveRequest.class, MemberRemoveRequest.Builder.class);
+              MemberRemoveRequest.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {

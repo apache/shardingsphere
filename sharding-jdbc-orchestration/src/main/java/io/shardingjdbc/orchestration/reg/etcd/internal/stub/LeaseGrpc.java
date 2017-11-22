@@ -372,10 +372,10 @@ public final class LeaseGrpc {
   }
 
   private static final class MethodHandlers<Req, Resp> implements
-      io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
-      io.grpc.stub.ServerCalls.ServerStreamingMethod<Req, Resp>,
-      io.grpc.stub.ServerCalls.ClientStreamingMethod<Req, Resp>,
-      io.grpc.stub.ServerCalls.BidiStreamingMethod<Req, Resp> {
+      UnaryMethod<Req, Resp>,
+      ServerStreamingMethod<Req, Resp>,
+      ClientStreamingMethod<Req, Resp>,
+      BidiStreamingMethod<Req, Resp> {
     private final LeaseImplBase serviceImpl;
     private final int methodId;
 
@@ -425,7 +425,7 @@ public final class LeaseGrpc {
 
     @Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
-      return io.shardingjdbc.orchestration.reg.etcd.internal.stub.EtcdProto.getDescriptor();
+      return EtcdProto.getDescriptor();
     }
 
     @Override

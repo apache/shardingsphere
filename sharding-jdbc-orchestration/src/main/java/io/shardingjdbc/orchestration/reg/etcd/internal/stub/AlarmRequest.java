@@ -209,7 +209,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_AlarmRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            AlarmRequest.class, AlarmRequest.Builder.class);
+            AlarmRequest.class, Builder.class);
   }
 
   /**
@@ -234,9 +234,9 @@ private static final long serialVersionUID = 0L;
    *
    * <code>.etcdserverpb.AlarmRequest.AlarmAction action = 1;</code>
    */
-  public AlarmRequest.AlarmAction getAction() {
-    AlarmRequest.AlarmAction result = AlarmRequest.AlarmAction.valueOf(action_);
-    return result == null ? AlarmRequest.AlarmAction.UNRECOGNIZED : result;
+  public AlarmAction getAction() {
+    AlarmAction result = AlarmAction.valueOf(action_);
+    return result == null ? AlarmAction.UNRECOGNIZED : result;
   }
 
   /**
@@ -285,7 +285,7 @@ private static final long serialVersionUID = 0L;
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (action_ != AlarmRequest.AlarmAction.GET.getNumber()) {
+    if (action_ != AlarmAction.GET.getNumber()) {
       output.writeEnum(1, action_);
     }
     if (memberID_ != 0L) {
@@ -302,7 +302,7 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (action_ != AlarmRequest.AlarmAction.GET.getNumber()) {
+    if (action_ != AlarmAction.GET.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(1, action_);
     }
@@ -516,7 +516,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_AlarmRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              AlarmRequest.class, AlarmRequest.Builder.class);
+              AlarmRequest.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {
@@ -678,9 +678,9 @@ private static final long serialVersionUID = 0L;
      *
      * <code>.etcdserverpb.AlarmRequest.AlarmAction action = 1;</code>
      */
-    public AlarmRequest.AlarmAction getAction() {
-      AlarmRequest.AlarmAction result = AlarmRequest.AlarmAction.valueOf(action_);
-      return result == null ? AlarmRequest.AlarmAction.UNRECOGNIZED : result;
+    public AlarmAction getAction() {
+      AlarmAction result = AlarmAction.valueOf(action_);
+      return result == null ? AlarmAction.UNRECOGNIZED : result;
     }
 
     /**
@@ -692,7 +692,7 @@ private static final long serialVersionUID = 0L;
      *
      * <code>.etcdserverpb.AlarmRequest.AlarmAction action = 1;</code>
      */
-    public Builder setAction(AlarmRequest.AlarmAction value) {
+    public Builder setAction(AlarmAction value) {
       if (value == null) {
         throw new NullPointerException();
       }

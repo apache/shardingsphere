@@ -245,7 +245,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_TxnRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            TxnRequest.class, TxnRequest.Builder.class);
+            TxnRequest.class, Builder.class);
   }
 
   /**
@@ -611,7 +611,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_TxnRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              TxnRequest.class, TxnRequest.Builder.class);
+              TxnRequest.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {

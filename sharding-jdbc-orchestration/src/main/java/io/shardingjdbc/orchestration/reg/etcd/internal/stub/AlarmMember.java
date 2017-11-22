@@ -80,7 +80,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_AlarmMember_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            AlarmMember.class, AlarmMember.Builder.class);
+            AlarmMember.class, Builder.class);
   }
 
   public static final int MEMBERID_FIELD_NUMBER = 1;
@@ -298,7 +298,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_AlarmMember_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              AlarmMember.class, AlarmMember.Builder.class);
+              AlarmMember.class, Builder.class);
     }
 
     // Construct using io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmMember.newBuilder()

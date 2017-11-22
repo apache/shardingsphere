@@ -18,29 +18,29 @@ public final class MaintenanceGrpc {
   public static final String SERVICE_NAME = "etcdserverpb.Maintenance";
   // Static method descriptors that strictly reflect the proto.
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static final io.grpc.MethodDescriptor<io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmRequest,
-      io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmResponse> METHOD_ALARM =
-      io.grpc.MethodDescriptor.<io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmRequest, io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmResponse>newBuilder()
+  public static final io.grpc.MethodDescriptor<AlarmRequest,
+      AlarmResponse> METHOD_ALARM =
+      io.grpc.MethodDescriptor.<AlarmRequest, AlarmResponse>newBuilder()
           .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
           .setFullMethodName(generateFullMethodName(
               "etcdserverpb.Maintenance", "Alarm"))
           .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmRequest.getDefaultInstance()))
+              AlarmRequest.getDefaultInstance()))
           .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmResponse.getDefaultInstance()))
+              AlarmResponse.getDefaultInstance()))
           .setSchemaDescriptor(new MaintenanceMethodDescriptorSupplier("Alarm"))
           .build();
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static final io.grpc.MethodDescriptor<io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusRequest,
-      io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusResponse> METHOD_STATUS =
-      io.grpc.MethodDescriptor.<io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusRequest, io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusResponse>newBuilder()
+  public static final io.grpc.MethodDescriptor<StatusRequest,
+      StatusResponse> METHOD_STATUS =
+      io.grpc.MethodDescriptor.<StatusRequest, StatusResponse>newBuilder()
           .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
           .setFullMethodName(generateFullMethodName(
               "etcdserverpb.Maintenance", "Status"))
           .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusRequest.getDefaultInstance()))
+              StatusRequest.getDefaultInstance()))
           .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusResponse.getDefaultInstance()))
+              StatusResponse.getDefaultInstance()))
           .setSchemaDescriptor(new MaintenanceMethodDescriptorSupplier("Status"))
           .build();
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
@@ -57,16 +57,16 @@ public final class MaintenanceGrpc {
           .setSchemaDescriptor(new MaintenanceMethodDescriptorSupplier("Defragment"))
           .build();
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static final io.grpc.MethodDescriptor<io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashRequest,
-      io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashResponse> METHOD_HASH =
-      io.grpc.MethodDescriptor.<io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashRequest, io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashResponse>newBuilder()
+  public static final io.grpc.MethodDescriptor<HashRequest,
+      HashResponse> METHOD_HASH =
+      io.grpc.MethodDescriptor.<HashRequest, HashResponse>newBuilder()
           .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
           .setFullMethodName(generateFullMethodName(
               "etcdserverpb.Maintenance", "Hash"))
           .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashRequest.getDefaultInstance()))
+              HashRequest.getDefaultInstance()))
           .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashResponse.getDefaultInstance()))
+              HashResponse.getDefaultInstance()))
           .setSchemaDescriptor(new MaintenanceMethodDescriptorSupplier("Hash"))
           .build();
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
@@ -143,8 +143,8 @@ public final class MaintenanceGrpc {
      * Alarm activates, deactivates, and queries alarms regarding cluster health.
      * </pre>
      */
-    public void alarm(io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmRequest request,
-                      io.grpc.stub.StreamObserver<io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmResponse> responseObserver) {
+    public void alarm(AlarmRequest request,
+                      io.grpc.stub.StreamObserver<AlarmResponse> responseObserver) {
       asyncUnimplementedUnaryCall(METHOD_ALARM, responseObserver);
     }
 
@@ -153,8 +153,8 @@ public final class MaintenanceGrpc {
      * Status gets the status of the member.
      * </pre>
      */
-    public void status(io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusRequest request,
-                       io.grpc.stub.StreamObserver<io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusResponse> responseObserver) {
+    public void status(StatusRequest request,
+                       io.grpc.stub.StreamObserver<StatusResponse> responseObserver) {
       asyncUnimplementedUnaryCall(METHOD_STATUS, responseObserver);
     }
 
@@ -175,8 +175,8 @@ public final class MaintenanceGrpc {
      * are ongoing transactions.
      * </pre>
      */
-    public void hash(io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashRequest request,
-                     io.grpc.stub.StreamObserver<io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashResponse> responseObserver) {
+    public void hash(HashRequest request,
+                     io.grpc.stub.StreamObserver<HashResponse> responseObserver) {
       asyncUnimplementedUnaryCall(METHOD_HASH, responseObserver);
     }
 
@@ -196,15 +196,15 @@ public final class MaintenanceGrpc {
             METHOD_ALARM,
             asyncUnaryCall(
               new MethodHandlers<
-                io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmRequest,
-                io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmResponse>(
+                AlarmRequest,
+                AlarmResponse>(
                   this, METHODID_ALARM)))
           .addMethod(
             METHOD_STATUS,
             asyncUnaryCall(
               new MethodHandlers<
-                io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusRequest,
-                io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusResponse>(
+                StatusRequest,
+                StatusResponse>(
                   this, METHODID_STATUS)))
           .addMethod(
             METHOD_DEFRAGMENT,
@@ -217,8 +217,8 @@ public final class MaintenanceGrpc {
             METHOD_HASH,
             asyncUnaryCall(
               new MethodHandlers<
-                io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashRequest,
-                io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashResponse>(
+                HashRequest,
+                HashResponse>(
                   this, METHODID_HASH)))
           .addMethod(
             METHOD_SNAPSHOT,
@@ -254,8 +254,8 @@ public final class MaintenanceGrpc {
      * Alarm activates, deactivates, and queries alarms regarding cluster health.
      * </pre>
      */
-    public void alarm(io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmRequest request,
-                      io.grpc.stub.StreamObserver<io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmResponse> responseObserver) {
+    public void alarm(AlarmRequest request,
+                      io.grpc.stub.StreamObserver<AlarmResponse> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_ALARM, getCallOptions()), request, responseObserver);
     }
@@ -265,8 +265,8 @@ public final class MaintenanceGrpc {
      * Status gets the status of the member.
      * </pre>
      */
-    public void status(io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusRequest request,
-                       io.grpc.stub.StreamObserver<io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusResponse> responseObserver) {
+    public void status(StatusRequest request,
+                       io.grpc.stub.StreamObserver<StatusResponse> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_STATUS, getCallOptions()), request, responseObserver);
     }
@@ -289,8 +289,8 @@ public final class MaintenanceGrpc {
      * are ongoing transactions.
      * </pre>
      */
-    public void hash(io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashRequest request,
-                     io.grpc.stub.StreamObserver<io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashResponse> responseObserver) {
+    public void hash(HashRequest request,
+                     io.grpc.stub.StreamObserver<HashResponse> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_HASH, getCallOptions()), request, responseObserver);
     }
@@ -330,7 +330,7 @@ public final class MaintenanceGrpc {
      * Alarm activates, deactivates, and queries alarms regarding cluster health.
      * </pre>
      */
-    public io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmResponse alarm(io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmRequest request) {
+    public AlarmResponse alarm(AlarmRequest request) {
       return blockingUnaryCall(
           getChannel(), METHOD_ALARM, getCallOptions(), request);
     }
@@ -340,7 +340,7 @@ public final class MaintenanceGrpc {
      * Status gets the status of the member.
      * </pre>
      */
-    public io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusResponse status(io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusRequest request) {
+    public StatusResponse status(StatusRequest request) {
       return blockingUnaryCall(
           getChannel(), METHOD_STATUS, getCallOptions(), request);
     }
@@ -362,7 +362,7 @@ public final class MaintenanceGrpc {
      * are ongoing transactions.
      * </pre>
      */
-    public io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashResponse hash(io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashRequest request) {
+    public HashResponse hash(HashRequest request) {
       return blockingUnaryCall(
           getChannel(), METHOD_HASH, getCallOptions(), request);
     }
@@ -402,8 +402,8 @@ public final class MaintenanceGrpc {
      * Alarm activates, deactivates, and queries alarms regarding cluster health.
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmResponse> alarm(
-        io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<AlarmResponse> alarm(
+        AlarmRequest request) {
       return futureUnaryCall(
           getChannel().newCall(METHOD_ALARM, getCallOptions()), request);
     }
@@ -413,8 +413,8 @@ public final class MaintenanceGrpc {
      * Status gets the status of the member.
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusResponse> status(
-        io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<StatusResponse> status(
+        StatusRequest request) {
       return futureUnaryCall(
           getChannel().newCall(METHOD_STATUS, getCallOptions()), request);
     }
@@ -437,18 +437,18 @@ public final class MaintenanceGrpc {
      * are ongoing transactions.
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashResponse> hash(
-        io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<HashResponse> hash(
+        HashRequest request) {
       return futureUnaryCall(
           getChannel().newCall(METHOD_HASH, getCallOptions()), request);
     }
   }
 
   private static final class MethodHandlers<Req, Resp> implements
-      io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
-      io.grpc.stub.ServerCalls.ServerStreamingMethod<Req, Resp>,
-      io.grpc.stub.ServerCalls.ClientStreamingMethod<Req, Resp>,
-      io.grpc.stub.ServerCalls.BidiStreamingMethod<Req, Resp> {
+      UnaryMethod<Req, Resp>,
+      ServerStreamingMethod<Req, Resp>,
+      ClientStreamingMethod<Req, Resp>,
+      BidiStreamingMethod<Req, Resp> {
     private final MaintenanceImplBase serviceImpl;
     private final int methodId;
 
@@ -462,20 +462,20 @@ public final class MaintenanceGrpc {
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_ALARM:
-          serviceImpl.alarm((io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmRequest) request,
-              (io.grpc.stub.StreamObserver<io.shardingjdbc.orchestration.reg.etcd.internal.stub.AlarmResponse>) responseObserver);
+          serviceImpl.alarm((AlarmRequest) request,
+              (io.grpc.stub.StreamObserver<AlarmResponse>) responseObserver);
           break;
         case METHODID_STATUS:
-          serviceImpl.status((io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusRequest) request,
-              (io.grpc.stub.StreamObserver<io.shardingjdbc.orchestration.reg.etcd.internal.stub.StatusResponse>) responseObserver);
+          serviceImpl.status((StatusRequest) request,
+              (io.grpc.stub.StreamObserver<StatusResponse>) responseObserver);
           break;
         case METHODID_DEFRAGMENT:
           serviceImpl.defragment((io.shardingjdbc.orchestration.reg.etcd.internal.stub.DefragmentRequest) request,
               (io.grpc.stub.StreamObserver<io.shardingjdbc.orchestration.reg.etcd.internal.stub.DefragmentResponse>) responseObserver);
           break;
         case METHODID_HASH:
-          serviceImpl.hash((io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashRequest) request,
-              (io.grpc.stub.StreamObserver<io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashResponse>) responseObserver);
+          serviceImpl.hash((HashRequest) request,
+              (io.grpc.stub.StreamObserver<HashResponse>) responseObserver);
           break;
         case METHODID_SNAPSHOT:
           serviceImpl.snapshot((io.shardingjdbc.orchestration.reg.etcd.internal.stub.SnapshotRequest) request,
@@ -503,7 +503,7 @@ public final class MaintenanceGrpc {
 
     @Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
-      return io.shardingjdbc.orchestration.reg.etcd.internal.stub.EtcdProto.getDescriptor();
+      return EtcdProto.getDescriptor();
     }
 
     @Override

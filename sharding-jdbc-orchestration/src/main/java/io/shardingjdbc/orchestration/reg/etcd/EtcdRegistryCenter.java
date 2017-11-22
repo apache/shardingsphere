@@ -1,17 +1,15 @@
 package io.shardingjdbc.orchestration.reg.etcd;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import groovy.util.logging.Slf4j;
+import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import io.shardingjdbc.orchestration.reg.base.RegistryChangeEvent;
-import io.shardingjdbc.orchestration.reg.base.RegistryChangeListener;
-import io.shardingjdbc.orchestration.reg.base.RegistryChangeType;
 import io.shardingjdbc.orchestration.reg.etcd.internal.*;
-import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
+import io.shardingjdbc.orchestration.reg.exception.RegException;
 import lombok.NonNull;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -19,10 +17,11 @@ import java.util.List;
  *
  * @author junxiong
  */
+@Slf4j
 public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     private long timeToLive;
     private EtcdClient etcdClient;
-    private RegistryPath root = RegistryPath.from("");
+    private String namespace;
 
     public EtcdRegistryCenter(EtcdConfiguration etcdConfiguration) {
         this.timeToLive = etcdConfiguration.getTimeToLive();
@@ -31,17 +30,16 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
                 .timeout(etcdConfiguration.getTimeout())
                 .maxRetry(etcdConfiguration.getMaxRetries())
                 .build();
-        this.root = this.root.join(etcdConfiguration.getNamespace());
     }
 
-    public EtcdRegistryCenter(String namespace, long timetoLive, EtcdClient etcdClient) {
-        this.timeToLive = timetoLive;
+    public EtcdRegistryCenter(String namespace, long timeToLive, EtcdClient etcdClient) {
+        this.timeToLive = timeToLive;
         this.etcdClient = etcdClient;
-        this.root = this.root.join(namespace);
+        this.namespace = namespace;
     }
 
     private String namespace(String path) {
-        return root.join(path).asNodeKey();
+        return "/" + namespace + "/" + path;
     }
 
     @Override
@@ -60,55 +58,48 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
         etcdClient.put(namespace(key), value, timeToLive);
     }
 
-    @Override
+    //@Override
     public void addCacheData(String cachePath) {
         // no op for etcd
     }
 
     @Override
-    public List<String> getChildrenKeys(String path) {
+    public List<String> getChildrenKeys(@NonNull String path) {
         Optional<List<String>> children = etcdClient.list(namespace(path));
         return children.isPresent() ? children.get() : Lists.<String>newArrayList();
     }
 
     @Override
-    public void addRegistryChangeListener(final String path, final RegistryChangeListener registryChangeListener) {
-        Optional<Watcher> watcherOptional = etcdClient.watch(namespace(path));
-        watcherOptional.transform(new Function<Watcher, Object>() {
-            @Override
-            public Object apply(Watcher watcher) {
-                watcher.addWatcherListener(new WatcherListener() {
-                    @Override
-                    public void onWatch(WatchEvent watchEvent) {
-                        final Optional<RegistryChangeEvent> registryChangeEventOptional = fromWatchEvent(watchEvent);
-                        registryChangeEventOptional.transform(new Function<RegistryChangeEvent, Object>() {
-                            @Nullable
-                            @Override
-                            public Object apply(@Nullable RegistryChangeEvent input) {
-                                try {
-                                    registryChangeListener.onRegistryChange(input);
-                                } catch (Exception e) {
-                                    RegExceptionHandler.handleException(e);
-                                }
-                                return input;
-                            }
-                        });
-                    }
-                });
-                return watcher;
-            }
-        });
+    public Object getRawCache(String cachePath) {
+        return etcdClient;
     }
 
-    private Optional<RegistryChangeEvent> fromWatchEvent(WatchEvent watchEvent) {
-        if (WatchEvent.WatchEventType.UPDATE == watchEvent.getWatchEventType()) {
-            return Optional.of(new RegistryChangeEvent(RegistryChangeType.UPDATED,
-                    Optional.of(new RegistryChangeEvent.Payload(watchEvent.getKey(), watchEvent.getValue()))));
-        } else if (WatchEvent.WatchEventType.DELETE == watchEvent.getWatchEventType()) {
-            return Optional.of(new RegistryChangeEvent(RegistryChangeType.DELETED,
-                    Optional.of(new RegistryChangeEvent.Payload(watchEvent.getKey(), watchEvent.getValue()))));
-        } else {
-            return Optional.absent();
+    @Override
+    public void watch(@NonNull final String path, @NonNull final ChangeListener changeListener) {
+        Optional<Watcher> watcher = etcdClient.watch(namespace(path));
+        if (watcher.isPresent()) {
+            watcher.get().addWatcherListener(new WatcherListener() {
+                @Override
+                public void onWatch(WatchEvent watchEvent) {
+                    try {
+                        changeListener.onChange(fromWatchEvent(watchEvent));
+                    } catch (Exception e) {
+                        throw new RegException(e);
+                    }
+                }
+            });
+        }
+    }
+
+    private ChangeEvent fromWatchEvent(@NonNull final WatchEvent watchEvent) {
+        final ChangeEvent.ChangeData changeData = new ChangeEvent.ChangeData(watchEvent.getKey(), watchEvent.getValue());
+        switch (watchEvent.getWatchEventType()) {
+            case DELETE:
+                return new ChangeEvent(ChangeEvent.ChangeType.DELETED, changeData);
+            case UPDATE:
+                return new ChangeEvent(ChangeEvent.ChangeType.UPDATED, changeData);
+            case UNKNOWN:
+            default: return new ChangeEvent(ChangeEvent.ChangeType.UNKNOWN, changeData);
         }
     }
 

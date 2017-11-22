@@ -436,7 +436,7 @@ public final class ClusterGrpc {
 
     @Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
-      return io.shardingjdbc.orchestration.reg.etcd.internal.stub.EtcdProto.getDescriptor();
+      return EtcdProto.getDescriptor();
     }
 
     @Override

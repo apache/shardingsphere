@@ -66,7 +66,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_HashRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            HashRequest.class, HashRequest.Builder.class);
+            HashRequest.class, Builder.class);
   }
 
   private byte memoizedIsInitialized = -1;
@@ -225,7 +225,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_HashRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              HashRequest.class, HashRequest.Builder.class);
+              HashRequest.class, Builder.class);
     }
 
     // Construct using io.shardingjdbc.orchestration.reg.etcd.internal.stub.HashRequest.newBuilder()

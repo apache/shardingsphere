@@ -223,7 +223,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_LeaseGrantResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            LeaseGrantResponse.class, LeaseGrantResponse.Builder.class);
+            LeaseGrantResponse.class, Builder.class);
   }
 
   /**
@@ -459,7 +459,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_LeaseGrantResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              LeaseGrantResponse.class, LeaseGrantResponse.Builder.class);
+              LeaseGrantResponse.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {

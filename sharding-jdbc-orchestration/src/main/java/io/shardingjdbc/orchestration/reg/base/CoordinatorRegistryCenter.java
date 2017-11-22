@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.orchestration.reg.base;
 
+import lombok.NonNull;
+
 import java.util.List;
 
 /**
@@ -47,6 +49,7 @@ public interface CoordinatorRegistryCenter extends RegistryCenter {
      * 
      * @param cachePath cache path
      */
+    @Deprecated
     void addCacheData(String cachePath);
     
     /**
@@ -63,5 +66,14 @@ public interface CoordinatorRegistryCenter extends RegistryCenter {
      * @param cachePath cache path
      * @return cache's raw object
      */
+    @Deprecated
     Object getRawCache(String cachePath);
+
+    /**
+     * Watch key or path of the registry
+     *
+     * @param path key or path
+     * @param changeListener change listener
+     */
+    void watch(String path, ChangeListener changeListener);
 }

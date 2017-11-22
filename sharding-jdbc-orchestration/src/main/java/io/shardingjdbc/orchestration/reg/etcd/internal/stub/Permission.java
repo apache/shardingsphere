@@ -212,7 +212,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return Auth.internal_static_authpb_Permission_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            Permission.class, Permission.Builder.class);
+            Permission.class, Builder.class);
   }
 
   /**
@@ -225,9 +225,9 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.authpb.Permission.Type permType = 1;</code>
    */
-  public Permission.Type getPermType() {
-    Permission.Type result = Permission.Type.valueOf(permType_);
-    return result == null ? Permission.Type.UNRECOGNIZED : result;
+  public Type getPermType() {
+    Type result = Type.valueOf(permType_);
+    return result == null ? Type.UNRECOGNIZED : result;
   }
 
   /**
@@ -255,7 +255,7 @@ private static final long serialVersionUID = 0L;
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (permType_ != Permission.Type.READ.getNumber()) {
+    if (permType_ != Type.READ.getNumber()) {
       output.writeEnum(1, permType_);
     }
     if (!key_.isEmpty()) {
@@ -272,7 +272,7 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (permType_ != Permission.Type.READ.getNumber()) {
+    if (permType_ != Type.READ.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(1, permType_);
     }
@@ -490,7 +490,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return Auth.internal_static_authpb_Permission_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              Permission.class, Permission.Builder.class);
+              Permission.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {
@@ -634,15 +634,15 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.authpb.Permission.Type permType = 1;</code>
      */
-    public Permission.Type getPermType() {
-      Permission.Type result = Permission.Type.valueOf(permType_);
-      return result == null ? Permission.Type.UNRECOGNIZED : result;
+    public Type getPermType() {
+      Type result = Type.valueOf(permType_);
+      return result == null ? Type.UNRECOGNIZED : result;
     }
 
     /**
      * <code>.authpb.Permission.Type permType = 1;</code>
      */
-    public Builder setPermType(Permission.Type value) {
+    public Builder setPermType(Type value) {
       if (value == null) {
         throw new NullPointerException();
       }

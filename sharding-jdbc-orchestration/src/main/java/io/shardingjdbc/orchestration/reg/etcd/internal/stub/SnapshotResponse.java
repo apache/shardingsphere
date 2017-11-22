@@ -214,7 +214,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return EtcdProto.internal_static_etcdserverpb_SnapshotResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            SnapshotResponse.class, SnapshotResponse.Builder.class);
+            SnapshotResponse.class, Builder.class);
   }
 
   /**
@@ -419,7 +419,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return EtcdProto.internal_static_etcdserverpb_SnapshotResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              SnapshotResponse.class, SnapshotResponse.Builder.class);
+              SnapshotResponse.class, Builder.class);
     }
 
     private void maybeForceBuilderInitialization() {
