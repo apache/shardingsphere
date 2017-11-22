@@ -51,3 +51,5 @@ shardingRule:
         - db1_slave
   props:
     sql.show: true
+  configMap:
+    key1: value1

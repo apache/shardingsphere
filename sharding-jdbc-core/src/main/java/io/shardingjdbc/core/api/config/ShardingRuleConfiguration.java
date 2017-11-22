@@ -32,6 +32,7 @@ import lombok.Setter;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -81,7 +82,7 @@ public class ShardingRuleConfiguration {
     
     private void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap) throws SQLException {
         for (MasterSlaveRuleConfiguration each : masterSlaveRuleConfigs) {
-            dataSourceMap.put(each.getName(), MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, each));
+            dataSourceMap.put(each.getName(), MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, each, Collections.<String, Object>emptyMap()));
             dataSourceMap.remove(each.getMasterDataSourceName());
             for (String slaveDataSourceName : each.getSlaveDataSourceNames()) {
                 dataSourceMap.remove(slaveDataSourceName);

@@ -65,7 +65,7 @@ public class DirectNameSolverFactory extends NameResolver.Factory {
                             try {
                                 final URI uri = new URI(endpoint);
                                 if (SCHEMAS.matcher(uri.getScheme()).matches()
-                                        && !Strings.isNullOrEmpty(uri.getPath())) {
+                                        && !Strings.isNullOrEmpty(uri.getAuthority())) {
                                     val group = new EquivalentAddressGroup(new InetSocketAddress(uri.getHost(), uri.getPort()));
                                     listener.onAddresses(Collections.singletonList(group), Attributes.EMPTY);
                                 }

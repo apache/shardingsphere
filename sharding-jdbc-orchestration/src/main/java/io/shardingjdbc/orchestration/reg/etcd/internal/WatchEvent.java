@@ -16,8 +16,29 @@ public class WatchEvent {
     private String key;
     private String value;
 
-    public static WatchEvent of(Event event) {
-        return null;
+    public static WatchEvent of(long id, Event event) {
+        if (Event.EventType.DELETE == event.getType()) {
+            return WatchEvent.builder()
+                    .id(id)
+                    .watchEventType(WatchEventType.DELETE)
+                    .key(event.getKv().getKey().toStringUtf8())
+                    .value(event.getKv().getValue().toStringUtf8())
+                    .build();
+        } else if (Event.EventType.PUT == event.getType()) {
+            return WatchEvent.builder()
+                    .id(id)
+                    .watchEventType(WatchEventType.UPDATE)
+                    .key(event.getKv().getKey().toStringUtf8())
+                    .value(event.getKv().getValue().toStringUtf8())
+                    .build();
+        } else {
+            return WatchEvent.builder()
+                    .id(id)
+                    .watchEventType(WatchEventType.UNKNOWN)
+                    .key(event.getKv().getKey().toStringUtf8())
+                    .value(event.getKv().getValue().toStringUtf8())
+                    .build();
+        }
     }
 
     public enum WatchEventType {
@@ -29,7 +50,12 @@ public class WatchEvent {
         /**
          * DELETE
          */
-        DELETE
+        DELETE,
+
+        /**
+         * UNKNOWN
+         */
+        UNKNOWN
     }
 
 }

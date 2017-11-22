@@ -18,39 +18,32 @@
 package io.shardingjdbc.orchestration.internal.state.instance;
 
 import io.shardingjdbc.orchestration.internal.util.IpUtils;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.lang.management.ManagementFactory;
 
 /**
- * Instance state node.
+ * Orchestration instance.
  * 
- * @author caohao
+ * @author zhangliang
  */
-public final class InstanceStateNode {
-    
-    public static final String ROOT = "state";
-    
-    public static final String INSTANCES_NODE_PATH = ROOT + "/instances";
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+public final class OrchestrationInstance {
     
     private static final String DELIMITER = "@-@";
     
     private static final String PID_FLAG = "@";
     
-    private final String name;
-    
+    /**
+     * Orchestration instance id.
+     */
     private final String instanceId;
     
-    public InstanceStateNode(final String name) {
-        this.name = name;
+    public OrchestrationInstance() {
         instanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split(PID_FLAG)[0];
-    }
-    
-    /**
-     * Get node full path.
-     *
-     * @return node full path
-     */
-    public String getFullPath() {
-        return String.format("/%s/%s/%s", name, INSTANCES_NODE_PATH, instanceId);
     }
 }

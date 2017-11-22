@@ -1,10 +1,10 @@
 # Sharding-JDBC - 为分库分表而生的数据库访问层微服务框架 
 
-[![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
+[![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
 [![Coverage Status](https://coveralls.io/repos/shardingjdbc/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/shardingjdbc/sharding-jdbc?branch=master)
 [![GitHub release](https://img.shields.io/github/release/shardingjdbc/sharding-jdbc.svg)](https://github.com/shardingjdbc/sharding-jdbc/releases)
-[![Hex.pm](http://shardingjdbc.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 
 # [中文主页](http://shardingjdbc.io/index_zh.html)
@@ -51,7 +51,7 @@ Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以
 
 # Architecture
 
-![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture.png)
+![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_v2.png)
 
 # [Release Notes](https://github.com/shardingjdbc/sharding-jdbc/releases)
 
@@ -80,7 +80,7 @@ Sharding-JDBC的分库分表通过规则配置描述，请简单浏览配置全�
     
     // 配置第一个数据源
     BasicDataSource dataSource1 = new BasicDataSource();
-    dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
+    dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource1.setUrl("jdbc:mysql://localhost:3306/ds_0");
     dataSource1.setUsername("root");
     dataSource1.setPassword("");

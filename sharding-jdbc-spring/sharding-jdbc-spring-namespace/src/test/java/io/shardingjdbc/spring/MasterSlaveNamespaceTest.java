@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.spring;
 
+import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import io.shardingjdbc.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import io.shardingjdbc.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
@@ -30,8 +31,14 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/masterSlaveNamespace.xml")
 public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -83,5 +90,14 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
         MasterSlaveDataSource masterSlaveDataSource = this.applicationContext.getBean(masterSlaveDataSourceName, MasterSlaveDataSource.class);
         return (MasterSlaveRule) FieldValueUtil.getFieldValue(masterSlaveDataSource, "masterSlaveRule", true);
+    }
+    
+    @Test
+    public void assertConfigMapDataSource() {
+        Object masterSlaveDataSource = this.applicationContext.getBean("configMapDataSource");
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put("key1", "value1");
+        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
+        assertThat(masterSlaveDataSource, instanceOf(MasterSlaveDataSource.class));
     }
 }

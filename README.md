@@ -5,10 +5,10 @@
 # [中文主页](http://shardingjdbc.io/index_zh.html)
 
 [![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
 [![Coverage Status](https://coveralls.io/repos/shardingjdbc/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/shardingjdbc/sharding-jdbc?branch=master)
 [![GitHub release](https://img.shields.io/github/release/shardingjdbc/sharding-jdbc.svg)](https://github.com/shardingjdbc/sharding-jdbc/releases)
-[![Hex.pm](http://shardingjdbc.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 # Overview
 
@@ -52,7 +52,7 @@ Sharding-JDBC is a JDBC extension, provides distributed features such as shardin
 
 # Architecture
 
-![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_en.png)
+![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_en_v2.png)
 
 # [Release Notes](https://github.com/shardingjdbc/sharding-jdbc/releases)
 
@@ -79,7 +79,7 @@ Sharding-JDBC is a JDBC extension, provides distributed features such as shardin
     Map<String, DataSource> dataSourceMap = new HashMap<>();
     
     BasicDataSource dataSource1 = new BasicDataSource();
-    dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
+    dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource1.setUrl("jdbc:mysql://localhost:3306/ds_0");
     dataSource1.setUsername("root");
     dataSource1.setPassword("");

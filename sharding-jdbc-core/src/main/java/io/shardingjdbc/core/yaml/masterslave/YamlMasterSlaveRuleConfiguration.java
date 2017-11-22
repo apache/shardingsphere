@@ -25,6 +25,8 @@ import lombok.Setter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Master-slave rule configuration for yaml.
@@ -44,6 +46,8 @@ public class YamlMasterSlaveRuleConfiguration {
     private MasterSlaveLoadBalanceAlgorithmType loadBalanceAlgorithmType;
     
     private String loadBalanceAlgorithmClassName;
+    
+    private Map<String, Object> configMap = new ConcurrentHashMap<>();
     
     /**
      * Get master-slave rule configuration from yaml.

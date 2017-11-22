@@ -25,6 +25,7 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -33,7 +34,11 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 public abstract class AbstractMasterSlaveOnlyTest extends AbstractSQLAssertTest {
@@ -64,18 +69,6 @@ public abstract class AbstractMasterSlaveOnlyTest extends AbstractSQLAssertTest 
         return ShardingTestStrategy.masterslaveonly;
     }
     
-    @AfterClass
-    public static void clear() throws SQLException {
-        if (!masterSlaveDataSources.isEmpty()) {
-            for (MasterSlaveDataSource each : masterSlaveDataSources.values()) {
-                for (DataSource innerEach : each.getAllDataSources().values()) {
-                    ((BasicDataSource) innerEach).close();
-                }
-            }
-            masterSlaveDataSources.clear();
-        }
-    }
-    
     @Override
     protected List<String> getInitDataSetFiles() {
         return AbstractMasterSlaveOnlyTest.getInitFiles();
@@ -93,17 +86,29 @@ public abstract class AbstractMasterSlaveOnlyTest extends AbstractSQLAssertTest 
         return masterSlaveDataSources;
     }
     
+    private MasterSlaveDataSource getMasterSlaveDataSource(final Map<String, DataSource> masterSlaveDataSourceMap) throws SQLException {
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
+        masterSlaveRuleConfig.setName("ds_ms");
+        masterSlaveRuleConfig.setMasterDataSourceName("dataSource_master_only");
+        masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("dataSource_slave_only"));
+        return (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap());
+    }
+    
     @After
     public final void clearFlag() {
         HintManagerHolder.clear();
         MasterSlaveDataSource.resetDMLFlag();
     }
     
-    private MasterSlaveDataSource getMasterSlaveDataSource(final Map<String, DataSource> masterSlaveDataSourceMap) throws SQLException {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-        masterSlaveRuleConfig.setName("ds_ms");
-        masterSlaveRuleConfig.setMasterDataSourceName("dataSource_master_only");
-        masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("dataSource_slave_only"));
-        return (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig);
+    @AfterClass
+    public static void clear() throws SQLException {
+        if (!masterSlaveDataSources.isEmpty()) {
+            for (MasterSlaveDataSource each : masterSlaveDataSources.values()) {
+                for (DataSource innerEach : each.getAllDataSources().values()) {
+                    ((BasicDataSource) innerEach).close();
+                }
+            }
+            masterSlaveDataSources.clear();
+        }
     }
 }

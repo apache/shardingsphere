@@ -26,9 +26,19 @@ public class EtcdConfiguration {
     private final String namespace;
 
     /**
-     * maximal retries.
+     * time to live of ephemeral keys
+     */
+    private long timeToLive;
+
+    /**
+     * maximal retries when calling a etcd method.
      */
     private int maxRetries = 3;
+
+    /**
+     * timeout when calling a etcd method in milliseconds.
+     */
+    private long timeout;
 
     /**
      * username of etcd cluster

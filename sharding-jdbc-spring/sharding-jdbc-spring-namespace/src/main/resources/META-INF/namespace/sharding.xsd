@@ -10,6 +10,7 @@
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="sharding-rule" minOccurs="1" maxOccurs="1" />
+                <xsd:element ref="config-map" minOccurs="0" maxOccurs="1" />
                 <xsd:element ref="props" minOccurs="0" maxOccurs="1" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
@@ -88,6 +89,13 @@
     <xsd:element name="none-strategy">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="config-map">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:mapType" />
+            </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="props">

@@ -24,14 +24,17 @@ import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.spring.datasource.SpringMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
+import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -76,6 +79,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         factory.addConstructorArgReference(regCenter);
         factory.addConstructorArgValue(parseDataSources(element, parserContext));
         factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element, parserContext));
+        factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         factory.setInitMethodName("init");
         return factory.getBeanDefinition();
     }
@@ -140,5 +144,10 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     private MasterSlaveLoadBalanceAlgorithmType parseStrategyType(final Element element) {
         String result = element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.STRATEGY_TYPE_ATTRIBUTE);
         return Strings.isNullOrEmpty(result) ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType() : MasterSlaveLoadBalanceAlgorithmType.valueOf(result);
+    }
+    
+    private Map parseConfigMap(final Element element, final ParserContext parserContext, final BeanDefinition beanDefinition) {
+        Element dataElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.CONFIG_MAP_TAG);
+        return null == dataElement ? Collections.<String, Class<?>>emptyMap() : parserContext.getDelegate().parseMapElement(dataElement, beanDefinition);
     }
 }

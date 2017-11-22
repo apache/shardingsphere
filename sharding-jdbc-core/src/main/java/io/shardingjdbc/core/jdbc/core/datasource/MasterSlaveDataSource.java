@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
@@ -48,8 +49,11 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private MasterSlaveRule masterSlaveRule;
     
-    public MasterSlaveDataSource(final MasterSlaveRule masterSlaveRule) throws SQLException {
+    public MasterSlaveDataSource(final MasterSlaveRule masterSlaveRule, final Map<String, Object> configMap) throws SQLException {
         super(getAllDataSources(masterSlaveRule.getMasterDataSource(), masterSlaveRule.getSlaveDataSourceMap().values()));
+        if (!configMap.isEmpty()) {
+            ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
+        }
         this.masterSlaveRule = masterSlaveRule;
     }
     

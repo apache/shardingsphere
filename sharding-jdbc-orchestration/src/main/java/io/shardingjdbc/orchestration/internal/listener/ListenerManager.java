@@ -15,31 +15,30 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal.state.datasource;
+package io.shardingjdbc.orchestration.internal.listener;
+
+import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 
 /**
- * Data source state node.
- * 
+ * Registry center's listener manager.
+ *
  * @author caohao
  */
-public final class DataSourceStateNode {
-    
-    public static final String ROOT = "state";
-    
-    public static final String INSTANCES_NODE_PATH = ROOT + "/datasources";
-    
-    private final String name;
-    
-    public DataSourceStateNode(final String name) {
-        this.name = name;
-    }
+public interface ListenerManager {
     
     /**
-     * Get node full path.
+     * Start sharding datasource change listener.
      *
-     * @return node full path
+     * @param shardingDataSource sharding datasource
      */
-    public String getFullPath() {
-        return String.format("/%s/%s", name, INSTANCES_NODE_PATH);
-    }
+    void start(ShardingDataSource shardingDataSource);
+    
+    
+    /**
+     * Start master-slave datasource change listener.
+     *
+     * @param masterSlaveDataSource master-slave datasource
+     */
+    void start(MasterSlaveDataSource masterSlaveDataSource);
 }

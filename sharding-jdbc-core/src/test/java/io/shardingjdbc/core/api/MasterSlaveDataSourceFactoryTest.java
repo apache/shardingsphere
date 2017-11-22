@@ -20,6 +20,7 @@ package io.shardingjdbc.core.api;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.fixture.TestDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -28,7 +29,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 
@@ -43,7 +46,10 @@ public final class MasterSlaveDataSourceFactoryTest {
         masterSlaveRuleConfig.setName("logic_ds");
         masterSlaveRuleConfig.setMasterDataSourceName("master_ds");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slave_ds"));
-        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig), instanceOf(MasterSlaveDataSource.class));
+        Map<String, Object> configMap = new ConcurrentHashMap<>();
+        configMap.put("key1", "value1");
+        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap), instanceOf(MasterSlaveDataSource.class));
+        MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
     }
     
     @Test
@@ -56,6 +62,9 @@ public final class MasterSlaveDataSourceFactoryTest {
         masterSlaveRuleConfig.setName("logic_ds");
         masterSlaveRuleConfig.setMasterDataSourceName("master_ds");
         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("slave_ds_0", "slave_ds_1"));
-        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig), instanceOf(MasterSlaveDataSource.class));
+        Map<String, Object> configMap = new ConcurrentHashMap<>();
+        configMap.put("key1", "value1");
+        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap), instanceOf(MasterSlaveDataSource.class));
+        MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
     }
 }

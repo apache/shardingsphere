@@ -25,7 +25,7 @@ package io.shardingjdbc.orchestration.internal.state;
 public enum StateNodeStatus {
     
     /**
-     * Disabled state node.
+     * Disabled state.
      */
     DISABLED
 }

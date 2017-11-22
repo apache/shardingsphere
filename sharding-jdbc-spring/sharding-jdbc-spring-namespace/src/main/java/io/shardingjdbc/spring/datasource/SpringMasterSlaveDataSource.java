@@ -34,17 +34,19 @@ import java.util.Map;
 public class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
     
     public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
-                                       final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap) throws SQLException {
-        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap));
+                                       final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, final Map<String, Object> configMap) throws SQLException {
+        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap), configMap);
     }
     
     public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
-                                       final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithm strategy) throws SQLException {
-        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategy));
+                                       final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, 
+                                       final MasterSlaveLoadBalanceAlgorithm strategy, final Map<String, Object> configMap) throws SQLException {
+        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategy), configMap);
     }
     
     public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource, 
-                                       final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithmType strategyType) throws SQLException {
-        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategyType.getAlgorithm()));
+                                       final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithmType strategyType, 
+                                       final Map<String, Object> configMap) throws SQLException {
+        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategyType.getAlgorithm()), configMap);
     }
 }
