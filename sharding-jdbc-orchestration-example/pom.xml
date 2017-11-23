@@ -10,8 +10,8 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-jdbc-orchestration-java-example</module>
-        <module>sharding-jdbc-orchestration-yaml-example</module>
+        <module>sharding-jdbc-orchestration-zookeeper-java-example</module>
+        <module>sharding-jdbc-orchestration-zookeeper-yaml-example</module>
     </modules>
     
     <dependencies>

@@ -8,5 +8,5 @@
         <artifactId>sharding-jdbc-orchestration-example</artifactId>
         <version>2.0.0.M4-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-jdbc-orchestration-yaml-example</artifactId>
+    <artifactId>sharding-jdbc-orchestration-zookeeper-yaml-example</artifactId>
 </project>
