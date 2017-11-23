@@ -1,19 +1,19 @@
 package io.shardingjdbc.orchestration.reg.etcd.internal;
 
+import com.github.rholder.retry.RetryException;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.ByteString;
 import etcdserverpb.KVGrpc;
 import etcdserverpb.LeaseGrpc;
+import etcdserverpb.LeaseGrpc.LeaseFutureStub;
 import etcdserverpb.Rpc.DeleteRangeRequest;
 import etcdserverpb.Rpc.DeleteRangeResponse;
 import etcdserverpb.Rpc.LeaseGrantRequest;
-import etcdserverpb.Rpc.LeaseGrantResponse;
 import etcdserverpb.Rpc.PutRequest;
 import etcdserverpb.Rpc.PutResponse;
 import etcdserverpb.Rpc.RangeRequest;
@@ -45,13 +45,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     
-    private long timeout = 500;
+    private long timeoutMills = 500L;
     
-    private long span = 200;
+    private long retryMills = 200L;
     
     private int retryTimes = 2;
     
-    private LeaseGrpc.LeaseFutureStub leaseStub;
+    private LeaseFutureStub leaseStub;
     
     private KVGrpc.KVFutureStub kvStub;
     
@@ -66,9 +66,9 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
      *
      * @param channel Channel
      */
-    EtcdClientImpl(final Channel channel, final long timeout, final long span, final int retryTimes) {
-        this.timeout = timeout;
-        this.span = span;
+    EtcdClientImpl(final Channel channel, final long timeoutMills, final long retryMills, final int retryTimes) {
+        this.timeoutMills = timeoutMills;
+        this.retryMills = retryMills;
         this.retryTimes = retryTimes;
         leaseStub = LeaseGrpc.newFutureStub(channel);
         kvStub = KVGrpc.newFutureStub(channel);
@@ -77,13 +77,12 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     
     @Override
     public Optional<String> get(final String key) {
-        final RangeRequest request = RangeRequest.newBuilder()
-                .setKey(ByteString.copyFromUtf8(key))
-                .build();
+        final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(key)).build();
         return retry(new Callable<String>() {
+            
             @Override
             public String call() throws Exception {
-                final RangeResponse rangeResponse = kvStub.range(request).get(timeout, TimeUnit.MILLISECONDS);
+                final RangeResponse rangeResponse = kvStub.range(request).get(timeoutMills, TimeUnit.MILLISECONDS);
                 return rangeResponse.getKvsCount() > 0
                         ? rangeResponse.getKvs(0).getValue().toStringUtf8() : null;
             }
@@ -99,7 +98,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
         return retry(new Callable<List<String>>() {
             @Override
             public List<String> call() throws Exception {
-                RangeResponse rangeResponse = kvStub.range(request).get(timeout, TimeUnit.MILLISECONDS);
+                RangeResponse rangeResponse = kvStub.range(request).get(timeoutMills, TimeUnit.MILLISECONDS);
                 final List<String> keys = Lists.newArrayList();
                 for (KeyValue keyValue : rangeResponse.getKvsList()) {
                     keys.add(keyValue.getKey().toStringUtf8());
@@ -119,7 +118,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
         return retry(new Callable<String>() {
             @Override
             public String call() throws Exception {
-                PutResponse putResponse = kvStub.put(request).get(timeout, TimeUnit.MILLISECONDS);
+                PutResponse putResponse = kvStub.put(request).get(timeoutMills, TimeUnit.MILLISECONDS);
                 return putResponse.getPrevKv().getValue().toStringUtf8();
             }
         });
@@ -141,38 +140,37 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
             
             @Override
             public String call() throws Exception {
-                PutResponse putResponse = kvStub.put(request).get(timeout, TimeUnit.MILLISECONDS);
+                PutResponse putResponse = kvStub.put(request).get(timeoutMills, TimeUnit.MILLISECONDS);
                 return putResponse.getPrevKv().getValue().toStringUtf8();
+            }
+        });
+    }
+    
+    private Optional<Long> lease(final long ttl) {
+        final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(ttl).build();
+        leaseStub.leaseGrant(request);
+        return retry(new Callable<Long>() {
+            
+            @Override
+            public Long call() throws Exception {
+                return leaseStub.leaseGrant(request).get(timeoutMills, TimeUnit.MILLISECONDS).getID();
             }
         });
     }
     
     @Override
     public Optional<List<String>> delete(final String key) {
-        final DeleteRangeRequest request = DeleteRangeRequest.newBuilder()
-                .build();
+        final DeleteRangeRequest request = DeleteRangeRequest.newBuilder().build();
         return retry(new Callable<List<String>>() {
+            
             @Override
             public List<String> call() throws Exception {
-                DeleteRangeResponse deleteRangeResponse = kvStub.deleteRange(request).get(timeout, TimeUnit.MILLISECONDS);
+                DeleteRangeResponse deleteRangeResponse = kvStub.deleteRange(request).get(timeoutMills, TimeUnit.MILLISECONDS);
                 List<String> deletedKeys = Lists.newArrayList();
                 for (KeyValue keyValue : deleteRangeResponse.getPrevKvsList()) {
                     deletedKeys.add(keyValue.getKey().toStringUtf8());
                 }
                 return deletedKeys;
-            }
-        });
-    }
-    
-    @Override
-    public Optional<Long> lease(final long ttl) {
-        final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(ttl).build();
-        final ListenableFuture<LeaseGrantResponse> response = leaseStub.leaseGrant(request);
-        return retry(new Callable<Long>() {
-            @Override
-            public Long call() throws Exception {
-                LeaseGrantResponse leaseGrantResponse = leaseStub.leaseGrant(request).get(timeout, TimeUnit.MILLISECONDS);
-                return leaseGrantResponse.getID();
             }
         });
     }
@@ -236,13 +234,10 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                     .retryIfExceptionOfType(TimeoutException.class)
                     .retryIfExceptionOfType(ExecutionException.class)
                     .retryIfExceptionOfType(InterruptedException.class)
-                    .withWaitStrategy(WaitStrategies.fixedWait(span, TimeUnit.MILLISECONDS))
+                    .withWaitStrategy(WaitStrategies.fixedWait(retryMills, TimeUnit.MILLISECONDS))
                     .withStopStrategy(StopStrategies.stopAfterAttempt(retryTimes))
-                    .build()
-                    .call(command));
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+                    .build().call(command));
+        } catch (final ExecutionException | RetryException ex) {
             RegExceptionHandler.handleException(ex);
             return Optional.absent();
         }
