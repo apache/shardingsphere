@@ -29,7 +29,7 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     private EtcdClient etcdClient;
     
     private String namespace;
-
+    
     public EtcdRegistryCenter(final EtcdConfiguration etcdConfiguration) {
         this.timeToLive = etcdConfiguration.getTimeToLive();
         this.etcdClient = EtcdClientBuilder.newBuilder()
@@ -38,22 +38,22 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
                 .maxRetry(etcdConfiguration.getMaxRetries())
                 .build();
     }
-
+    
     public EtcdRegistryCenter(final String namespace, final long timeToLive, final EtcdClient etcdClient) {
         this.timeToLive = timeToLive;
         this.etcdClient = etcdClient;
         this.namespace = namespace;
     }
-
+    
     private String namespace(final String path) {
         return "/" + namespace + "/" + path;
     }
-
+    
     @Override
     public String getDirectly(@NonNull final String key) {
         return get(namespace(key));
     }
-
+    
     /**
      * use default time to live.
      *
@@ -64,23 +64,18 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     public void persistEphemeral(@NonNull final String key, @NonNull final String value) {
         etcdClient.put(namespace(key), value, timeToLive);
     }
-
+    
     //@Override
     public void addCacheData(final String cachePath) {
         // no op for etcd
     }
-
+    
     @Override
     public List<String> getChildrenKeys(@NonNull final String path) {
         Optional<List<String>> children = etcdClient.list(namespace(path));
         return children.isPresent() ? children.get() : Lists.<String>newArrayList();
     }
-
-    @Override
-    public Object getRawCache(final String cachePath) {
-        return etcdClient;
-    }
-
+    
     @Override
     public void watch(@NonNull final String path, @NonNull final ChangeListener changeListener) {
         Optional<Watcher> watcher = etcdClient.watch(namespace(path));
@@ -97,7 +92,7 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
             });
         }
     }
-
+    
     private ChangeEvent fromWatchEvent(@NonNull final WatchEvent watchEvent) {
         final ChangeEvent.ChangeData changeData = new ChangeEvent.ChangeData(watchEvent.getKey(), watchEvent.getValue());
         switch (watchEvent.getWatchEventType()) {
@@ -110,33 +105,31 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
                 return new ChangeEvent(ChangeEvent.ChangeType.UNKNOWN, changeData);
         }
     }
-
+    
     @Override
     public void init() {
-        // no op
     }
-
+    
     @Override
     public void close() {
-        // no op
     }
-
+    
     @Override
     public String get(@NonNull final String key) {
         Optional<String> value = etcdClient.get(namespace(key));
         return value.orNull();
     }
-
+    
     @Override
     public boolean isExisted(@NonNull final String key) {
         return get(namespace(key)) != null;
     }
-
+    
     @Override
     public void persist(final String key, final String value) {
         etcdClient.put(namespace(key), value);
     }
-
+    
     @Override
     public void update(final String key, final String value) {
         etcdClient.put(namespace(key), value);

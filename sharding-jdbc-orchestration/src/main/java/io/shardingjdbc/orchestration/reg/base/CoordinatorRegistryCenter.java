@@ -57,15 +57,6 @@ public interface CoordinatorRegistryCenter extends RegistryCenter {
      * @return sub-nodes name list
      */
     List<String> getChildrenKeys(String path);
-    
-    /**
-     * Get cache's raw object.
-     * 
-     * @param cachePath cache path
-     * @return cache's raw object
-     */
-    @Deprecated
-    Object getRawCache(String cachePath);
 
     /**
      * Watch key or path of the registry.

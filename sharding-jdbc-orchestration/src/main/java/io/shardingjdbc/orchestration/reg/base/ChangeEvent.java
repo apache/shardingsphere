@@ -1,38 +1,43 @@
 package io.shardingjdbc.orchestration.reg.base;
 
 import com.google.common.base.Optional;
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.Value;
-import lombok.experimental.Wither;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Change data
+ * Data changed event.
  *
- * @author  junxiong
+ * @author junxiong
  */
-@Value
+@Getter
 public class ChangeEvent {
-    private ChangeType changeType;
-    private Optional<ChangeData> changeData;
-
-    public ChangeEvent(@NonNull final ChangeType changeType, final ChangeData changeData) {
+    
+    private final ChangeType changeType;
+    
+    private final Optional<ChangeData> changeData;
+    
+    public ChangeEvent(final ChangeType changeType, final ChangeData changeData) {
         this.changeType = changeType;
         this.changeData = Optional.fromNullable(changeData);
     }
-
+    
     /**
-     * change type
+     * Data changed type.
      */
     public enum ChangeType {
+        
         UPDATED, DELETED, UNKNOWN
     }
-
+    
     /**
-     * change data
+     * Changed data.
      */
-    @Value @Wither @AllArgsConstructor
+    @RequiredArgsConstructor
+    @Getter
     public static class ChangeData {
-        String key, value;
+        
+        private final String key;
+        
+        private final String value;
     }
 }

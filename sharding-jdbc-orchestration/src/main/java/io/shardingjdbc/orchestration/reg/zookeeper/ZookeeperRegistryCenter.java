@@ -250,11 +250,6 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
         }
         caches.put(cachePath + "/", cache);
     }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        return caches.get(cachePath + "/");
-    }
 
     @Override
     public void watch(final String cachePath, final ChangeListener changeListener) {
