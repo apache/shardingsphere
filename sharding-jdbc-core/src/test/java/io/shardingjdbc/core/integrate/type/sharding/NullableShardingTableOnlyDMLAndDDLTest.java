@@ -17,10 +17,9 @@
 
 package io.shardingjdbc.core.integrate.type.sharding;
 
-import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
-
+import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

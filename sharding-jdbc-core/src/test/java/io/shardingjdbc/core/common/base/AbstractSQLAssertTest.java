@@ -17,21 +17,20 @@
 
 package io.shardingjdbc.core.common.base;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import io.shardingjdbc.core.common.env.DatabaseEnvironment;
 import io.shardingjdbc.core.common.env.ShardingJdbcDatabaseTester;
 import io.shardingjdbc.core.common.env.ShardingTestStrategy;
 import io.shardingjdbc.core.common.util.SQLAssertHelper;
-import io.shardingjdbc.core.integrate.jaxb.SQLAssertData;
-import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
+import io.shardingjdbc.core.integrate.jaxb.SQLAssertData;
+import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.Getter;
-
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.IDataSet;

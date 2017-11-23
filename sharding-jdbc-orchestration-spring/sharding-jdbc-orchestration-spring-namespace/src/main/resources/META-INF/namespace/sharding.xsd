@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
-            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
+            xmlns="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
             targetNamespace="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">

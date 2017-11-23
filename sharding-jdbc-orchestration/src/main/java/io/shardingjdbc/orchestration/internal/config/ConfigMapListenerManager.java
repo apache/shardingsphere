@@ -22,12 +22,9 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
+import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 /**
  * Config map listener manager.
@@ -51,18 +48,15 @@ public final class ConfigMapListenerManager implements ListenerManager {
     @Override
     public void start(final ShardingDataSource shardingDataSource) {
         String cachePath = configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH);
-        regCenter.addCacheData(cachePath);
-        TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
-        cache.getListenable().addListener(new TreeCacheListener() {
-        
+        regCenter.watch(cachePath, new ChangeListener() {
+            
             @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
-                    return;
+            public void onChange(final ChangeEvent changeEvent) throws Exception {
+                // only handles the reg center updated event
+                if (ChangeEvent.ChangeType.UPDATED == changeEvent.getChangeType() && changeEvent.getChangeData().isPresent()) {
+                    ConfigMapContext.getInstance().getShardingConfig().clear();
+                    ConfigMapContext.getInstance().getShardingConfig().putAll(configurationService.loadShardingConfigMap());
                 }
-                ConfigMapContext.getInstance().getShardingConfig().clear();
-                ConfigMapContext.getInstance().getShardingConfig().putAll(configurationService.loadShardingConfigMap());
             }
         });
     }
@@ -70,18 +64,15 @@ public final class ConfigMapListenerManager implements ListenerManager {
     @Override
     public void start(final MasterSlaveDataSource masterSlaveDataSource) {
         String cachePath = configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH);
-        regCenter.addCacheData(cachePath);
-        TreeCache cache = (TreeCache) regCenter.getRawCache(cachePath);
-        cache.getListenable().addListener(new TreeCacheListener() {
-        
+        regCenter.watch(cachePath, new ChangeListener() {
+            
             @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
-                ChildData childData = event.getData();
-                if (null == childData || childData.getPath().isEmpty() || null == childData.getData() || TreeCacheEvent.Type.NODE_UPDATED != event.getType()) {
-                    return;
+            public void onChange(final ChangeEvent event) throws Exception {
+                // only handles the reg center update event
+                if (ChangeEvent.ChangeType.UPDATED == event.getChangeType() && event.getChangeData().isPresent()) {
+                    ConfigMapContext.getInstance().getMasterSlaveConfig().clear();
+                    ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configurationService.loadMasterSlaveConfigMap());
                 }
-                ConfigMapContext.getInstance().getMasterSlaveConfig().clear();
-                ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configurationService.loadMasterSlaveConfigMap());
             }
         });
     }

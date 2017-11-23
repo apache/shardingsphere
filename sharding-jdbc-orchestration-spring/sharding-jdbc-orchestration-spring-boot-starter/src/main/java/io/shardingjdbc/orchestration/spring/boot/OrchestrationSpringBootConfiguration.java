@@ -50,18 +50,14 @@ import java.util.Properties;
 @EnableConfigurationProperties({OrchestrationSpringBootConfigurationProperties.class, SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class})
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
+    private final Map<String, DataSource> dataSourceMap = new HashMap<>();
+    private final Properties props = new Properties();
     @Autowired
     private SpringBootShardingRuleConfigurationProperties shardingProperties;
-    
     @Autowired
     private SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
-    
     @Autowired
     private OrchestrationSpringBootConfigurationProperties orchestrationProperties;
-    
-    private final Map<String, DataSource> dataSourceMap = new HashMap<>();
-    
-    private final Properties props = new Properties();
     
     @Bean
     public DataSource dataSource() throws SQLException {

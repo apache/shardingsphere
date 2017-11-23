@@ -17,15 +17,15 @@
 
 package io.shardingjdbc.core.integrate.type.sharding;
 
-import io.shardingjdbc.core.common.base.AbstractSQLAssertTest;
-import io.shardingjdbc.core.common.env.ShardingTestStrategy;
-import io.shardingjdbc.core.integrate.fixture.ComplexKeysModuloDatabaseShardingAlgorithm;
-import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
+import io.shardingjdbc.core.common.base.AbstractSQLAssertTest;
+import io.shardingjdbc.core.common.env.ShardingTestStrategy;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.integrate.fixture.ComplexKeysModuloDatabaseShardingAlgorithm;
+import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
 

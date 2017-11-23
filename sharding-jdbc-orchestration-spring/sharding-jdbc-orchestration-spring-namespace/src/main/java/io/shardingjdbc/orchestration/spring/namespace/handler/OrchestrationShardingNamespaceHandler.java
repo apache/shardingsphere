@@ -17,10 +17,10 @@
 
 package io.shardingjdbc.orchestration.spring.namespace.handler;
 
+import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingStrategyBeanDefinitionParserTag;
 import io.shardingjdbc.orchestration.spring.namespace.parser.OrchestrationShardingDataSourceBeanDefinitionParser;
 import io.shardingjdbc.orchestration.spring.namespace.parser.ShardingStrategyBeanDefinitionParser;
-import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**

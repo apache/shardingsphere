@@ -18,24 +18,21 @@
 package io.shardingjdbc.core.integrate.type.sharding;
 
 import com.google.common.base.Joiner;
-
-import io.shardingjdbc.core.common.base.AbstractSQLAssertTest;
-import io.shardingjdbc.core.common.env.ShardingTestStrategy;
-import io.shardingjdbc.core.integrate.fixture.PreciseModuloTableShardingAlgorithm;
-import io.shardingjdbc.core.integrate.fixture.RangeModuloTableShardingAlgorithm;
-import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingjdbc.core.common.base.AbstractSQLAssertTest;
+import io.shardingjdbc.core.common.env.ShardingTestStrategy;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.integrate.fixture.PreciseModuloTableShardingAlgorithm;
+import io.shardingjdbc.core.integrate.fixture.RangeModuloTableShardingAlgorithm;
+import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-
 import org.junit.After;
 import org.junit.Before;
 
 import javax.sql.DataSource;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;

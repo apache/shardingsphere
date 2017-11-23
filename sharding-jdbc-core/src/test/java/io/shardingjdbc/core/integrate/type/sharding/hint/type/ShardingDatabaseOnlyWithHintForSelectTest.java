@@ -17,13 +17,13 @@
 
 package io.shardingjdbc.core.integrate.type.sharding.hint.type;
 
+import com.google.common.collect.Lists;
+import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.integrate.sql.DatabaseTestSQL;
 import io.shardingjdbc.core.integrate.type.sharding.hint.base.AbstractShardingDatabaseOnlyWithHintTest;
 import io.shardingjdbc.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
-import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import com.google.common.collect.Lists;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;

@@ -41,17 +41,13 @@ public final class InstanceStateService {
      * Persist sharding instance online.
      */
     public void persistShardingInstanceOnline() {
-        String instanceNodePath = stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId());
-        regCenter.persistEphemeral(instanceNodePath, "");
-        regCenter.addCacheData(instanceNodePath);
+        regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), "");
     }
     
     /**
      * Persist master-salve instance online.
      */
     public void persistMasterSlaveInstanceOnline() {
-        String instanceNodePath = stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId());
-        regCenter.persistEphemeral(instanceNodePath, "");
-        regCenter.addCacheData(instanceNodePath);
+        regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), "");
     }
 }

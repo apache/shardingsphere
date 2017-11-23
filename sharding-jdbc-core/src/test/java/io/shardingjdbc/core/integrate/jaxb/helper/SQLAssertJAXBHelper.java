@@ -1,10 +1,10 @@
 package io.shardingjdbc.core.integrate.jaxb.helper;
 
 import io.shardingjdbc.core.common.jaxb.helper.SQLStatementHelper;
-import io.shardingjdbc.core.integrate.jaxb.SQLAssert;
-import io.shardingjdbc.core.integrate.jaxb.SQLAsserts;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
+import io.shardingjdbc.core.integrate.jaxb.SQLAssert;
+import io.shardingjdbc.core.integrate.jaxb.SQLAsserts;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

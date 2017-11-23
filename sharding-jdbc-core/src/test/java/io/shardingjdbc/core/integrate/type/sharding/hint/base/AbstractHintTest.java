@@ -20,15 +20,14 @@ package io.shardingjdbc.core.integrate.type.sharding.hint.base;
 import io.shardingjdbc.core.common.base.AbstractSQLTest;
 import io.shardingjdbc.core.common.env.DatabaseEnvironment;
 import io.shardingjdbc.core.common.util.DBUnitUtil;
-import io.shardingjdbc.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.rule.ShardingRule;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.junit.AfterClass;
 import org.junit.Before;
 
 import javax.sql.DataSource;
@@ -37,7 +36,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

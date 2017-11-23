@@ -43,25 +43,18 @@ public interface CoordinatorRegistryCenter extends RegistryCenter {
     void persistEphemeral(String key, String value);
     
     /**
-     * Add cache data.
-     * 
-     * @param cachePath cache path
-     */
-    void addCacheData(String cachePath);
-    
-    /**
      * Get node's sub-nodes list.
      *
      * @param path key
      * @return sub-nodes name list
      */
     List<String> getChildrenKeys(String path);
-    
+
     /**
-     * Get cache's raw object.
-     * 
-     * @param cachePath cache path
-     * @return cache's raw object
+     * Watch key or path of the registry.
+     *
+     * @param path key or path
+     * @param changeListener change listener
      */
-    Object getRawCache(String cachePath);
+    void watch(String path, ChangeListener changeListener);
 }

@@ -57,9 +57,7 @@ public final class DataSourceService {
      * Persist master-salve data sources node.
      */
     public void persistDataSourcesNode() {
-        String dataSourceNodePath = stateNode.getDataSourcesNodeFullPath();
-        regCenter.persist(dataSourceNodePath, "");
-        regCenter.addCacheData(dataSourceNodePath);
+        regCenter.persist(stateNode.getDataSourcesNodeFullPath(), "");
     }
     
     

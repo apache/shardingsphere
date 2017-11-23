@@ -19,6 +19,8 @@ package io.shardingjdbc.orchestration.reg.zookeeper;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import lombok.AccessLevel;
@@ -29,6 +31,8 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
+import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
+import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.zookeeper.CreateMode;
@@ -235,20 +239,41 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     }
     
     @Override
-    public void addCacheData(final String cachePath) {
+    public void watch(final String cachePath, final ChangeListener changeListener) {
+        final String path = cachePath + "/";
+        if (!caches.containsKey(path)) {
+            addCacheData(cachePath);
+        }
+        TreeCache cache = caches.get(path);
+        cache.getListenable().addListener(new TreeCacheListener() {
+            
+            @Override
+            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
+                ChildData data = event.getData();
+                ChangeEvent.ChangeData changeData = data == null ? null : new ChangeEvent.ChangeData(data.getPath(),  new String(data.getData(), "UTF-8"));
+                switch (event.getType()) {
+                    case NODE_UPDATED:
+                        changeListener.onChange(new ChangeEvent(ChangeEvent.ChangeType.UPDATED, changeData));
+                        break;
+                    case NODE_REMOVED:
+                        changeListener.onChange(new ChangeEvent(ChangeEvent.ChangeType.DELETED, changeData));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+    
+    private void addCacheData(final String cachePath) {
         TreeCache cache = new TreeCache(client, cachePath);
         try {
             cache.start();
-        //CHECKSTYLE:OFF
+            //CHECKSTYLE:OFF
         } catch (final Exception ex) {
-        //CHECKSTYLE:ON
+            //CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
         }
         caches.put(cachePath + "/", cache);
-    }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        return caches.get(cachePath + "/");
     }
 }
