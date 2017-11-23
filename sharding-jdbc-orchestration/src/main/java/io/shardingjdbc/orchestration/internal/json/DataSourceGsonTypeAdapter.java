@@ -54,9 +54,9 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
         in.beginObject();
         while (in.hasNext()) {
             String jsonName = in.nextName();
-            if ("name".equals(jsonName)) {
+            if (DataSourceGsonTypeConstants.DATASOURCE_NAME.equals(jsonName)) {
                 name = in.nextString();
-            } else if ("clazz".equals(jsonName)) {
+            } else if (DataSourceGsonTypeConstants.CLAZZ_NAME.equals(jsonName)) {
                 clazz = in.nextString();
             } else {
                 properties.put(jsonName, in.nextString());
@@ -73,8 +73,8 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
     @Override
     public void write(final JsonWriter out, final NamedDataSource value) throws IOException {
         out.beginObject();
-        out.name("name").value(value.getName());
-        out.name("clazz").value(value.getDataSource().getClass().getName());
+        out.name(DataSourceGsonTypeConstants.DATASOURCE_NAME).value(value.getName());
+        out.name(DataSourceGsonTypeConstants.CLAZZ_NAME).value(value.getDataSource().getClass().getName());
         Method[] methods = value.getDataSource().getClass().getMethods();
         Map<String, Method> getterMethods = new TreeMap<>();
         Map<String, Method> setterMethods = new TreeMap<>();
