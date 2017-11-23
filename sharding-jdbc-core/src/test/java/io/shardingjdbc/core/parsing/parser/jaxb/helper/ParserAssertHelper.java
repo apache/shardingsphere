@@ -11,7 +11,14 @@ import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLPlaceholderExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingjdbc.core.parsing.parser.jaxb.Value;
-import io.shardingjdbc.core.parsing.parser.token.*;
+import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
+import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
+import io.shardingjdbc.core.parsing.parser.token.MultipleInsertValuesToken;
+import io.shardingjdbc.core.parsing.parser.token.OffsetToken;
+import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
+import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
+import io.shardingjdbc.core.parsing.parser.token.SQLToken;
+import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.ArrayList;
@@ -19,7 +26,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ParserAssertHelper {
     

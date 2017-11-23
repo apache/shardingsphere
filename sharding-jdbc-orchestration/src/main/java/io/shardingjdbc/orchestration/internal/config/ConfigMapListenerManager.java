@@ -25,11 +25,6 @@ import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
 import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 /**
  * Config map listener manager.
@@ -54,8 +49,9 @@ public final class ConfigMapListenerManager implements ListenerManager {
     public void start(final ShardingDataSource shardingDataSource) {
         String cachePath = configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH);
         regCenter.watch(cachePath, new ChangeListener() {
+            
             @Override
-            public void onChange(ChangeEvent changeEvent) throws Exception {
+            public void onChange(final ChangeEvent changeEvent) throws Exception {
                 // only handles the reg center updated event
                 if (ChangeEvent.ChangeType.UPDATED == changeEvent.getChangeType() && changeEvent.getChangeData().isPresent()) {
                     ConfigMapContext.getInstance().getShardingConfig().clear();
@@ -69,8 +65,9 @@ public final class ConfigMapListenerManager implements ListenerManager {
     public void start(final MasterSlaveDataSource masterSlaveDataSource) {
         String cachePath = configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH);
         regCenter.watch(cachePath, new ChangeListener() {
+            
             @Override
-            public void onChange(ChangeEvent event) throws Exception {
+            public void onChange(final ChangeEvent event) throws Exception {
                 // only handles the reg center update event
                 if (ChangeEvent.ChangeType.UPDATED == event.getChangeType() && event.getChangeData().isPresent()) {
                     ConfigMapContext.getInstance().getMasterSlaveConfig().clear();

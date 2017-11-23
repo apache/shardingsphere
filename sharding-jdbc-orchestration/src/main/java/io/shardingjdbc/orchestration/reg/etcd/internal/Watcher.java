@@ -1,32 +1,34 @@
 package io.shardingjdbc.orchestration.reg.etcd.internal;
 
 /**
+ * Watcher.
+ * 
  * @author junxiong
  */
 public interface Watcher {
     /**
-     * get watch id
+     * get watch id.
      *
      * @return long
      */
     long getId();
 
     /**
-     * get watch key
+     * get watch key.
      *
      * @return String
      */
     String getKey();
 
     /**
-     * add watcher listener
+     * add watcher listener.
      *
      * @param watcherListener WatcherListener
      */
     void addWatcherListener(WatcherListener watcherListener);
 
     /**
-     * cancel watcher
+     * cancel watcher.
      */
     void cancel();
 }

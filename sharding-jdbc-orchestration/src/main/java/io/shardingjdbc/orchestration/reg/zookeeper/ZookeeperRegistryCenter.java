@@ -40,7 +40,11 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
@@ -253,7 +257,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     }
 
     @Override
-    public void watch(String cachePath, final ChangeListener changeListener) {
+    public void watch(final String cachePath, final ChangeListener changeListener) {
         final String path = cachePath + "/";
         if (!caches.containsKey(path)) {
             addCacheData(cachePath);
@@ -261,7 +265,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
         TreeCache cache = caches.get(path);
         cache.getListenable().addListener(new TreeCacheListener() {
             @Override
-            public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception {
+            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
                 ChildData data = event.getData();
                 ChangeEvent.ChangeData changeData = data == null ? null
                         : new ChangeEvent.ChangeData(data.getPath(),  new String(data.getData(), "UTF-8"));

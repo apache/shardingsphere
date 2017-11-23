@@ -33,7 +33,11 @@ import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(Parameterized.class)
 public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {

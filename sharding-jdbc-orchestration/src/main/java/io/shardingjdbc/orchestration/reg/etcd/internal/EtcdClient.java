@@ -8,14 +8,14 @@ import lombok.experimental.Wither;
 import java.util.List;
 
 /**
- * Etcd client
+ * Etcd client.
  *
  * @author junxiong
  */
 public interface EtcdClient {
 
     /**
-     * get value of a specific key
+     * get value of a specific key.
      *
      * @param key key
      * @return value
@@ -23,7 +23,7 @@ public interface EtcdClient {
     Optional<String> get(String key);
 
     /**
-     * list all child key/value for a directory
+     * list all child key/value for a directory.
      * directory should be end with "/"
      *
      * @param directory directory
@@ -32,7 +32,7 @@ public interface EtcdClient {
     Optional<List<String>> list(String directory);
 
     /**
-     * put value to a specific key, if result is not absent, it is an update
+     * put value to a specific key, if result is not absent, it is an update.
      *
      * @param key   key
      * @param value value
@@ -41,7 +41,7 @@ public interface EtcdClient {
     Optional<String> put(String key, String value);
 
     /**
-     * put value to a specific key, if result is not absent, it is an update
+     * put value to a specific key, if result is not absent, it is an update.
      *
      * @param key   key
      * @param value value
@@ -51,7 +51,7 @@ public interface EtcdClient {
     Optional<String> put(String key, String value, long ttl);
 
     /**
-     * delete a key or a directory
+     * delete a key or a directory.
      * directory should be end with "/"
      *
      * @param keyOrDirectory key or directory
@@ -60,7 +60,7 @@ public interface EtcdClient {
     Optional<List<String>> delete(String keyOrDirectory);
 
     /**
-     * create a lease with a specific ttl in milliseconds
+     * create a lease with a specific ttl in milliseconds.
      *
      * @param ttl time to live
      * @return lease id
@@ -68,7 +68,7 @@ public interface EtcdClient {
     Optional<Long> lease(long ttl);
 
     /**
-     * watch a keys
+     * watch a keys.
      *
      * @param key String
      * @return list of watcher
@@ -79,7 +79,9 @@ public interface EtcdClient {
     @Wither
     @Builder
     class KeyedValue {
-        String key, value;
+        
+        String key;
+        
+        String value;
     }
-
 }

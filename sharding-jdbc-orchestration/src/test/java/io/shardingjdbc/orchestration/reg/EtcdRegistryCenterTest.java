@@ -4,8 +4,6 @@ import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
 import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.etcd.EtcdRegistryCenter;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClient;
-import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClientBuilder;
-import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClientImpl;
 import io.shardingjdbc.orchestration.reg.stub.EtcdClientStub;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,14 +37,12 @@ public class EtcdRegistryCenterTest {
         EtcdRegistryCenter registryCenter = new EtcdRegistryCenter("test", 2000, etcdClient);
         ChangeListener changeListener = mock(ChangeListener.class);
         registryCenter.watch("pms/abc", changeListener);
-
         registryCenter.persist("pms/abc/d", "100");
-
         TimeUnit.SECONDS.sleep(5);
-
         verify(changeListener, times(1)).onChange(ArgumentMatchers.argThat(new ArgumentMatcher<ChangeEvent>() {
+            
             @Override
-            public boolean matches(ChangeEvent event) {
+            public boolean matches(final ChangeEvent event) {
                 return ChangeEvent.ChangeType.UPDATED == event.getChangeType()
                         && event.getChangeData().isPresent()
                         && event.getChangeData().get().getKey().equals("/test/pms/abc/d")

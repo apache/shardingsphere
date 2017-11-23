@@ -6,24 +6,31 @@ import groovy.util.logging.Slf4j;
 import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
 import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import io.shardingjdbc.orchestration.reg.etcd.internal.*;
+import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClient;
+import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClientBuilder;
+import io.shardingjdbc.orchestration.reg.etcd.internal.WatchEvent;
+import io.shardingjdbc.orchestration.reg.etcd.internal.Watcher;
+import io.shardingjdbc.orchestration.reg.etcd.internal.WatcherListener;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import lombok.NonNull;
 
 import java.util.List;
 
 /**
- * ETCD based registry center
+ * ETCD based registry center.
  *
  * @author junxiong
  */
 @Slf4j
 public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
+    
     private long timeToLive;
+    
     private EtcdClient etcdClient;
+    
     private String namespace;
 
-    public EtcdRegistryCenter(EtcdConfiguration etcdConfiguration) {
+    public EtcdRegistryCenter(final EtcdConfiguration etcdConfiguration) {
         this.timeToLive = etcdConfiguration.getTimeToLive();
         this.etcdClient = EtcdClientBuilder.newBuilder()
                 .endpoints(etcdConfiguration.getServerLists())
@@ -32,13 +39,13 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
                 .build();
     }
 
-    public EtcdRegistryCenter(String namespace, long timeToLive, EtcdClient etcdClient) {
+    public EtcdRegistryCenter(final String namespace, final long timeToLive, final EtcdClient etcdClient) {
         this.timeToLive = timeToLive;
         this.etcdClient = etcdClient;
         this.namespace = namespace;
     }
 
-    private String namespace(String path) {
+    private String namespace(final String path) {
         return "/" + namespace + "/" + path;
     }
 
@@ -48,7 +55,7 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     }
 
     /**
-     * use default time to live
+     * use default time to live.
      *
      * @param key   key of data
      * @param value value of data
@@ -59,18 +66,18 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     }
 
     //@Override
-    public void addCacheData(String cachePath) {
+    public void addCacheData(final String cachePath) {
         // no op for etcd
     }
 
     @Override
-    public List<String> getChildrenKeys(@NonNull String path) {
+    public List<String> getChildrenKeys(@NonNull final String path) {
         Optional<List<String>> children = etcdClient.list(namespace(path));
         return children.isPresent() ? children.get() : Lists.<String>newArrayList();
     }
 
     @Override
-    public Object getRawCache(String cachePath) {
+    public Object getRawCache(final String cachePath) {
         return etcdClient;
     }
 
@@ -80,11 +87,11 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
         if (watcher.isPresent()) {
             watcher.get().addWatcherListener(new WatcherListener() {
                 @Override
-                public void onWatch(WatchEvent watchEvent) {
+                public void onWatch(final WatchEvent watchEvent) {
                     try {
                         changeListener.onChange(fromWatchEvent(watchEvent));
-                    } catch (Exception e) {
-                        throw new RegException(e);
+                    } catch (final Exception ex) {
+                        throw new RegException(ex);
                     }
                 }
             });
@@ -99,7 +106,8 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
             case UPDATE:
                 return new ChangeEvent(ChangeEvent.ChangeType.UPDATED, changeData);
             case UNKNOWN:
-            default: return new ChangeEvent(ChangeEvent.ChangeType.UNKNOWN, changeData);
+            default: 
+                return new ChangeEvent(ChangeEvent.ChangeType.UNKNOWN, changeData);
         }
     }
 
@@ -125,12 +133,12 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     }
 
     @Override
-    public void persist(String key, String value) {
+    public void persist(final String key, final String value) {
         etcdClient.put(namespace(key), value);
     }
 
     @Override
-    public void update(String key, String value) {
+    public void update(final String key, final String value) {
         etcdClient.put(namespace(key), value);
     }
 }

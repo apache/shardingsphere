@@ -25,12 +25,6 @@ import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService
 import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
 import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import javafx.scene.control.TextFormatter;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 /**
  * Configuration listener manager.
@@ -64,8 +58,9 @@ public final class ConfigurationListenerManager implements ListenerManager {
     private void start(final String node, final ShardingDataSource shardingDataSource) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new ChangeListener() {
+            
             @Override
-            public void onChange(ChangeEvent event) throws Exception {
+            public void onChange(final ChangeEvent event) throws Exception {
                 // only handle updated event
                 if (ChangeEvent.ChangeType.UPDATED == event.getChangeType() && event.getChangeData().isPresent()) {
                     shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
@@ -83,8 +78,9 @@ public final class ConfigurationListenerManager implements ListenerManager {
     private void start(final String node, final MasterSlaveDataSource masterSlaveDataSource) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new ChangeListener() {
+            
             @Override
-            public void onChange(ChangeEvent event) throws Exception {
+            public void onChange(final ChangeEvent event) throws Exception {
                 // only handle updated event
                 if (ChangeEvent.ChangeType.UPDATED == event.getChangeType() && event.getChangeData().isPresent()) {
                     masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());

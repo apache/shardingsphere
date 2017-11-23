@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Value;
 
 /**
- * etcd configuration
+ * etcd configuration.
  *
  * @author junxiong
  */
@@ -15,7 +15,7 @@ import lombok.Value;
 public class EtcdConfiguration {
     /**
      * etcd server list.
-     * <p>
+     * 
      * <p>Include ip address and port, multiple servers split by comma. Etc: {@code http://host1:2379,http://host2:2379}</p>
      */
     private final String serverLists;
@@ -26,7 +26,7 @@ public class EtcdConfiguration {
     private final String namespace;
 
     /**
-     * time to live of ephemeral keys
+     * time to live of ephemeral keys.
      */
     private long timeToLive;
 
@@ -41,14 +41,14 @@ public class EtcdConfiguration {
     private long timeout;
 
     /**
-     * username of etcd cluster
-     * <p>
+     * username of etcd cluster.
+     * 
      * <p>Default is not need digest</p>
      */
     private String username;
 
     /**
-     * password of etcd cluster
+     * password of etcd cluster.
      */
     private String password;
 }

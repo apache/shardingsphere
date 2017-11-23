@@ -26,11 +26,6 @@ import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
 import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 /**
  * Data source listener manager.
@@ -57,8 +52,9 @@ public final class DataSourceListenerManager implements ListenerManager {
     @Override
     public void start(final ShardingDataSource shardingDataSource) {
         registryCenter.watch(stateNode.getDataSourcesNodeFullPath(), new ChangeListener() {
+            
             @Override
-            public void onChange(ChangeEvent event) throws Exception {
+            public void onChange(final ChangeEvent event) throws Exception {
                 // only handle updated and deleted event
                 if (ChangeEvent.ChangeType.UPDATED == event.getChangeType()
                         || ChangeEvent.ChangeType.DELETED == event.getChangeType()
@@ -72,8 +68,9 @@ public final class DataSourceListenerManager implements ListenerManager {
     @Override
     public void start(final MasterSlaveDataSource masterSlaveDataSource) {
         registryCenter.watch(stateNode.getDataSourcesNodeFullPath(), new ChangeListener() {
+            
             @Override
-            public void onChange(ChangeEvent event) throws Exception {
+            public void onChange(final ChangeEvent event) throws Exception {
                 // only handle updated and deleted event
                 if (ChangeEvent.ChangeType.UPDATED == event.getChangeType()
                         || ChangeEvent.ChangeType.DELETED == event.getChangeType()

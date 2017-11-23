@@ -27,11 +27,6 @@ import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
 import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
 import io.shardingjdbc.orchestration.reg.base.ChangeListener;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -58,8 +53,9 @@ public final class InstanceListenerManager implements ListenerManager {
     @Override
     public void start(final ShardingDataSource shardingDataSource) {
         config.getRegistryCenter().watch(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), new ChangeListener() {
+            
             @Override
-            public void onChange(ChangeEvent event) throws Exception {
+            public void onChange(final ChangeEvent event) throws Exception {
                 // only handle updated event
                 if (ChangeEvent.ChangeType.UPDATED == event.getChangeType() && event.getChangeData().isPresent()) {
                     Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
@@ -77,8 +73,9 @@ public final class InstanceListenerManager implements ListenerManager {
     @Override
     public void start(final MasterSlaveDataSource masterSlaveDataSource) {
         config.getRegistryCenter().watch(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), new ChangeListener() {
+            
             @Override
-            public void onChange(ChangeEvent event) throws Exception {
+            public void onChange(final ChangeEvent event) throws Exception {
                 // only handle updated event
                 if (ChangeEvent.ChangeType.UPDATED == event.getChangeType() && event.getChangeData().isPresent()) {
                     Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();

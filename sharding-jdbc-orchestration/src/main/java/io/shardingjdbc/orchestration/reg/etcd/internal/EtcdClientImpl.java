@@ -10,7 +10,22 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.ByteString;
 import io.grpc.Channel;
 import io.grpc.stub.StreamObserver;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.*;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.DeleteRangeRequest;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.DeleteRangeResponse;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.Event;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.KVGrpc;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.KeyValue;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.LeaseGrantRequest;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.LeaseGrantResponse;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.LeaseGrpc;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.PutRequest;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.PutResponse;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.RangeRequest;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.RangeResponse;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.WatchCreateRequest;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.WatchGrpc;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.WatchRequest;
+import io.shardingjdbc.orchestration.reg.etcd.internal.stub.WatchResponse;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import lombok.NonNull;
@@ -18,30 +33,39 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * EtcdClientImpl client
- * <p>
+ * EtcdClientImpl client.
  *
  * @author junxiong
  */
 @Slf4j
 public class EtcdClientImpl implements EtcdClient, AutoCloseable {
+    
     private long timeout = 500;
+    
     private long span = 200;
+    
     private int retryTimes = 2;
-
+    
     private LeaseGrpc.LeaseFutureStub leaseStub;
+    
     private KVGrpc.KVFutureStub kvStub;
+    
     private WatchGrpc.WatchStub watchStub;
-
+    
     private AtomicBoolean closed = new AtomicBoolean(false);
+    
     private ConcurrentMap<Long, Watcher> watchers = Maps.newConcurrentMap();
-
+    
     /**
-     * construct a etcd client from grpc channel
+     * construct a etcd client from grpc channel.
      *
      * @param channel Channel
      */
@@ -54,7 +78,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
         kvStub = KVGrpc.newFutureStub(channel);
         watchStub = WatchGrpc.newStub(channel);
     }
-
+    
     @Override
     public Optional<String> get(@NonNull final String key) {
         final RangeRequest request = RangeRequest.newBuilder()
@@ -69,7 +93,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
             }
         });
     }
-
+    
     @Override
     public Optional<List<String>> list(@NonNull final String dir) {
         final RangeRequest request = RangeRequest.newBuilder()
@@ -88,7 +112,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
             }
         });
     }
-
+    
     @Override
     public Optional<String> put(@NonNull final String key, @NonNull final String value) {
         final PutRequest request = PutRequest.newBuilder()
@@ -104,9 +128,9 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
             }
         });
     }
-
+    
     @Override
-    public Optional<String> put(@NonNull String key, @NonNull String value, final long ttl) {
+    public Optional<String> put(@NonNull final String key, @NonNull final String value, final long ttl) {
         final Optional<Long> leaseId = lease(ttl);
         if (!leaseId.isPresent()) {
             throw new RegException("Unable to set up heat beat for key %s", key);
@@ -125,7 +149,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
             }
         });
     }
-
+    
     @Override
     public Optional<List<String>> delete(@NonNull final String key) {
         final DeleteRangeRequest request = DeleteRangeRequest.newBuilder()
@@ -142,7 +166,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
             }
         });
     }
-
+    
     @Override
     public Optional<Long> lease(final long ttl) {
         final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(ttl).build();
@@ -155,7 +179,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
             }
         });
     }
-
+    
     @Override
     public Optional<Watcher> watch(@NonNull final String key) {
         final WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder()
@@ -170,8 +194,9 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
             public Watcher call() throws Exception {
                 final WatcherImpl watcher = new WatcherImpl(key);
                 final StreamObserver<WatchResponse> responseStream = new StreamObserver<WatchResponse>() {
+                    
                     @Override
-                    public void onNext(WatchResponse response) {
+                    public void onNext(final WatchResponse response) {
                         if (response.getCanceled()) {
                             watchers.remove(response.getWatchId());
                         } else if (response.getCreated()) {
@@ -187,7 +212,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                     }
 
                     @Override
-                    public void onError(Throwable t) {
+                    public void onError(final Throwable t) {
                         // TODO retry watch later
                         throw new RegException(new Exception(t));
                     }
@@ -203,12 +228,12 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
             }
         });
     }
-
+    
     @Override
     public void close() throws Exception {
         closed.compareAndSet(true, false);
     }
-
+    
     private <T> Optional<T> retry(final Callable<T> command) {
         try {
             return Optional.fromNullable(RetryerBuilder.<T>newBuilder()
@@ -219,13 +244,13 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                     .withStopStrategy(StopStrategies.stopAfterAttempt(retryTimes))
                     .build()
                     .call(command));
-        } catch (Exception e) {
-            RegExceptionHandler.handleException(e);
+        } catch (final Exception ex) {
+            RegExceptionHandler.handleException(ex);
             return Optional.absent();
         }
     }
-
-    private ByteString prefix(String key) {
+    
+    private ByteString prefix(final String key) {
         final byte[] noPrefix = {0};
         byte[] endKey = key.getBytes().clone();
         for (int i = endKey.length - 1; i >= 0; i--) {
@@ -234,8 +259,6 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                 return ByteString.copyFrom(Arrays.copyOf(endKey, i + 1));
             }
         }
-
         return ByteString.copyFrom(noPrefix);
     }
-
 }
