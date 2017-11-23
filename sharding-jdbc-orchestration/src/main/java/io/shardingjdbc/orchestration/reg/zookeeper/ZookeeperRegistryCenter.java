@@ -237,19 +237,6 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
             RegExceptionHandler.handleException(ex);
         }
     }
-    
-    @Override
-    public void addCacheData(final String cachePath) {
-        TreeCache cache = new TreeCache(client, cachePath);
-        try {
-            cache.start();
-        //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-        //CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
-        }
-        caches.put(cachePath + "/", cache);
-    }
 
     @Override
     public void watch(final String cachePath, final ChangeListener changeListener) {
@@ -275,5 +262,17 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
                 }
             }
         });
+    }
+    
+    private void addCacheData(final String cachePath) {
+        TreeCache cache = new TreeCache(client, cachePath);
+        try {
+            cache.start();
+            //CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            //CHECKSTYLE:ON
+            RegExceptionHandler.handleException(ex);
+        }
+        caches.put(cachePath + "/", cache);
     }
 }

@@ -43,14 +43,6 @@ public interface CoordinatorRegistryCenter extends RegistryCenter {
     void persistEphemeral(String key, String value);
     
     /**
-     * Add cache data.
-     * 
-     * @param cachePath cache path
-     */
-    @Deprecated
-    void addCacheData(String cachePath);
-    
-    /**
      * Get node's sub-nodes list.
      *
      * @param path key

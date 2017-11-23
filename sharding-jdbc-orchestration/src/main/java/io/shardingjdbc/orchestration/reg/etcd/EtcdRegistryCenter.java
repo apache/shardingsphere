@@ -65,11 +65,6 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
         etcdClient.put(namespace(key), value, timeToLive);
     }
     
-    //@Override
-    public void addCacheData(final String cachePath) {
-        // no op for etcd
-    }
-    
     @Override
     public List<String> getChildrenKeys(@NonNull final String path) {
         Optional<List<String>> children = etcdClient.list(namespace(path));
