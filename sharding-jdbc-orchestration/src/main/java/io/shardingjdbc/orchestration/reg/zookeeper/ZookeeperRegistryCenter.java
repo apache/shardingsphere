@@ -237,7 +237,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
             RegExceptionHandler.handleException(ex);
         }
     }
-
+    
     @Override
     public void watch(final String cachePath, final ChangeListener changeListener) {
         final String path = cachePath + "/";
@@ -246,11 +246,11 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
         }
         TreeCache cache = caches.get(path);
         cache.getListenable().addListener(new TreeCacheListener() {
+            
             @Override
             public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
                 ChildData data = event.getData();
-                ChangeEvent.ChangeData changeData = data == null ? null
-                        : new ChangeEvent.ChangeData(data.getPath(),  new String(data.getData(), "UTF-8"));
+                ChangeEvent.ChangeData changeData = data == null ? null : new ChangeEvent.ChangeData(data.getPath(),  new String(data.getData(), "UTF-8"));
                 switch (event.getType()) {
                     case NODE_UPDATED:
                         changeListener.onChange(new ChangeEvent(ChangeEvent.ChangeType.UPDATED, changeData));
@@ -259,6 +259,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
                         changeListener.onChange(new ChangeEvent(ChangeEvent.ChangeType.DELETED, changeData));
                         break;
                     default:
+                        break;
                 }
             }
         });
