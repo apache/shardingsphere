@@ -18,22 +18,22 @@ public class WatcherImpl implements Watcher {
     private String key;
     
     private List<WatcherListener> listeners = Lists.newArrayList();
-
+    
     public WatcherImpl(final String key) {
         this.key = key;
     }
-
+    
     @Override
     public void addWatcherListener(final WatcherListener watcherListener) {
         this.listeners.add(watcherListener);
     }
-
+    
     public void notify(final WatchEvent watchEvent) {
         for (final WatcherListener listener : listeners) {
             listener.onWatch(watchEvent);
         }
     }
-
+    
     @Override
     public void cancel() {
         // TODO cancel watcher

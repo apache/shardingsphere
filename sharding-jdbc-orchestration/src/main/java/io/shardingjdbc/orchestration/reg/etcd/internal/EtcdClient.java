@@ -1,9 +1,6 @@
 package io.shardingjdbc.orchestration.reg.etcd.internal;
 
 import com.google.common.base.Optional;
-import lombok.Builder;
-import lombok.Value;
-import lombok.experimental.Wither;
 
 import java.util.List;
 
@@ -74,14 +71,4 @@ public interface EtcdClient {
      * @return list of watcher
      */
     Optional<Watcher> watch(String key);
-
-    @Value
-    @Wither
-    @Builder
-    class KeyedValue {
-        
-        String key;
-        
-        String value;
-    }
 }

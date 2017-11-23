@@ -26,8 +26,6 @@ import io.grpc.Channel;
 import io.grpc.stub.StreamObserver;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import mvccpb.Kv.Event;
 import mvccpb.Kv.KeyValue;
 
@@ -41,11 +39,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * EtcdClientImpl client.
+ * Etcd client implementation client.
  *
  * @author junxiong
  */
-@Slf4j
 public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     
     private long timeout = 500;
@@ -69,18 +66,17 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
      *
      * @param channel Channel
      */
-    EtcdClientImpl(@NonNull final Channel channel, final long timeout, final long span, final int retryTimes) {
+    EtcdClientImpl(final Channel channel, final long timeout, final long span, final int retryTimes) {
         this.timeout = timeout;
         this.span = span;
         this.retryTimes = retryTimes;
-
         leaseStub = LeaseGrpc.newFutureStub(channel);
         kvStub = KVGrpc.newFutureStub(channel);
         watchStub = WatchGrpc.newStub(channel);
     }
     
     @Override
-    public Optional<String> get(@NonNull final String key) {
+    public Optional<String> get(final String key) {
         final RangeRequest request = RangeRequest.newBuilder()
                 .setKey(ByteString.copyFromUtf8(key))
                 .build();
@@ -95,7 +91,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
     
     @Override
-    public Optional<List<String>> list(@NonNull final String dir) {
+    public Optional<List<String>> list(final String dir) {
         final RangeRequest request = RangeRequest.newBuilder()
                 .setKey(ByteString.copyFromUtf8(dir))
                 .setRangeEnd(prefix(dir))
@@ -114,7 +110,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
     
     @Override
-    public Optional<String> put(@NonNull final String key, @NonNull final String value) {
+    public Optional<String> put(final String key, final String value) {
         final PutRequest request = PutRequest.newBuilder()
                 .setPrevKv(true)
                 .setKey(ByteString.copyFromUtf8(key))
@@ -130,7 +126,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
     
     @Override
-    public Optional<String> put(@NonNull final String key, @NonNull final String value, final long ttl) {
+    public Optional<String> put(final String key, final String value, final long ttl) {
         final Optional<Long> leaseId = lease(ttl);
         if (!leaseId.isPresent()) {
             throw new RegException("Unable to set up heat beat for key %s", key);
@@ -152,7 +148,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
     
     @Override
-    public Optional<List<String>> delete(@NonNull final String key) {
+    public Optional<List<String>> delete(final String key) {
         final DeleteRangeRequest request = DeleteRangeRequest.newBuilder()
                 .build();
         return retry(new Callable<List<String>>() {
@@ -182,7 +178,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     }
     
     @Override
-    public Optional<Watcher> watch(@NonNull final String key) {
+    public Optional<Watcher> watch(final String key) {
         final WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder()
                 .setKey(ByteString.copyFromUtf8(key))
                 .setRangeEnd(prefix(key))
@@ -211,16 +207,15 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                             }
                         }
                     }
-
+                    
                     @Override
                     public void onError(final Throwable t) {
                         // TODO retry watch later
                         throw new RegException(new Exception(t));
                     }
-
+                    
                     @Override
                     public void onCompleted() {
-                        log.info("etcd watch complemented");
                     }
                 };
                 final StreamObserver<WatchRequest> requestStream = watchStub.watch(responseStream);
@@ -245,7 +240,9 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                     .withStopStrategy(StopStrategies.stopAfterAttempt(retryTimes))
                     .build()
                     .call(command));
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
             return Optional.absent();
         }

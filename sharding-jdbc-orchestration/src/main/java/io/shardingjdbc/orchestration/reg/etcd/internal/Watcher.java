@@ -6,6 +6,7 @@ package io.shardingjdbc.orchestration.reg.etcd.internal;
  * @author junxiong
  */
 public interface Watcher {
+    
     /**
      * get watch id.
      *
