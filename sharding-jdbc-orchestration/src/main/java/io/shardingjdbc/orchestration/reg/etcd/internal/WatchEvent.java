@@ -1,9 +1,8 @@
 package io.shardingjdbc.orchestration.reg.etcd.internal;
 
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.Event;
 import lombok.Builder;
 import lombok.Value;
-
+import mvccpb.Kv.Event;
 
 /**
  * @author junxiong
@@ -11,12 +10,16 @@ import lombok.Value;
 @Builder
 @Value
 public class WatchEvent {
+    
     private WatchEventType watchEventType;
+    
     private long id;
+    
     private String key;
+    
     private String value;
 
-    public static WatchEvent of(long id, Event event) {
+    public static WatchEvent of(final long id, final Event event) {
         if (Event.EventType.DELETE == event.getType()) {
             return WatchEvent.builder()
                     .id(id)
@@ -40,22 +43,12 @@ public class WatchEvent {
                     .build();
         }
     }
-
+    
+    /**
+     * Watch event type.
+     */
     public enum WatchEventType {
-        /**
-         * UPDATE
-         */
-        UPDATE,
-
-        /**
-         * DELETE
-         */
-        DELETE,
-
-        /**
-         * UNKNOWN
-         */
-        UNKNOWN
+        
+        UPDATE, DELETE, UNKNOWN
     }
-
 }

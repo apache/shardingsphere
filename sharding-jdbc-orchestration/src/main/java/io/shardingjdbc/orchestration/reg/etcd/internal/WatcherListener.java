@@ -6,6 +6,7 @@ package io.shardingjdbc.orchestration.reg.etcd.internal;
  * @author junxiong
  */
 public interface WatcherListener {
+    
     /**
      * fires when watched key changed.
      *

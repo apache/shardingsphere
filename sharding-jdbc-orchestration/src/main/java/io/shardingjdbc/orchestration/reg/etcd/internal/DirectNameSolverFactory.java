@@ -19,37 +19,45 @@ import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 
 /**
+ * Direct name solver factory.
+ * 
  * @author junxiong
  */
 public class DirectNameSolverFactory extends NameResolver.Factory {
+    
     private static final Pattern SCHEMAS = Pattern.compile("^(http|https)");
 
     private NameResolver.Listener listener;
+    
     private ExecutorService executor;
+    
     private boolean shutdown;
+    
     private boolean resolving;
+    
     private List<String> endpoints;
+    
     private String scheme;
 
-    private DirectNameSolverFactory(String scheme, List<String> endpoints) {
+    private DirectNameSolverFactory(final String scheme, final List<String> endpoints) {
         this.endpoints = endpoints;
         this.scheme = scheme;
     }
-
+    
     /**
-     * new direct name solver factory
+     * new direct name solver factory.
      *
-     * @param scheme    scheme
+     * @param scheme scheme
      * @param endpoints endpoints
      * @return name solver factory
      */
-    static DirectNameSolverFactory newFactory(String scheme, List<String> endpoints) {
+    static DirectNameSolverFactory newFactory(final String scheme, final List<String> endpoints) {
         return new DirectNameSolverFactory(scheme, endpoints);
     }
-
+    
     @Nullable
     @Override
-    public NameResolver newNameResolver(URI targetUri, Attributes params) {
+    public NameResolver newNameResolver(final URI targetUri, final Attributes params) {
         if (scheme.equals(targetUri.getPath())) {
             return new NameResolver() {
                 @Override
@@ -58,7 +66,7 @@ public class DirectNameSolverFactory extends NameResolver.Factory {
                 }
 
                 @Override
-                public void start(Listener listener) {
+                public void start(final Listener listener) {
                     if (!shutdown) {
                         resolving = true;
                         for (String endpoint : endpoints) {
@@ -69,14 +77,14 @@ public class DirectNameSolverFactory extends NameResolver.Factory {
                                     val group = new EquivalentAddressGroup(new InetSocketAddress(uri.getHost(), uri.getPort()));
                                     listener.onAddresses(Collections.singletonList(group), Attributes.EMPTY);
                                 }
-                            } catch (URISyntaxException e) {
-                                throw new RegException("Illegal endpoint, %s", e.getMessage());
+                            } catch (final URISyntaxException ex) {
+                                throw new RegException("Illegal endpoint, %s", ex.getMessage());
                             }
 
                         }
                     }
                 }
-
+                
                 @Override
                 public void shutdown() {
                     if (shutdown) {
@@ -90,7 +98,7 @@ public class DirectNameSolverFactory extends NameResolver.Factory {
             return null;
         }
     }
-
+    
     @Override
     public String getDefaultScheme() {
         return scheme;

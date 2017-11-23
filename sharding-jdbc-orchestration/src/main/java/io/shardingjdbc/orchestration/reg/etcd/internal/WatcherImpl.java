@@ -6,26 +6,29 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * WatcherImpl
+ * Watcher implementation.
  *
  * @author junxiong
  */
 @Data
 public class WatcherImpl implements Watcher {
+    
     private long id;
+    
     private String key;
+    
     private List<WatcherListener> listeners = Lists.newArrayList();
 
-    public WatcherImpl(String key) {
+    public WatcherImpl(final String key) {
         this.key = key;
     }
 
     @Override
-    public void addWatcherListener(WatcherListener watcherListener) {
+    public void addWatcherListener(final WatcherListener watcherListener) {
         this.listeners.add(watcherListener);
     }
 
-    public void notify(WatchEvent watchEvent) {
+    public void notify(final WatchEvent watchEvent) {
         for (final WatcherListener listener : listeners) {
             listener.onWatch(watchEvent);
         }

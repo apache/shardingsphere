@@ -8,28 +8,28 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.ByteString;
+import etcdserverpb.KVGrpc;
+import etcdserverpb.LeaseGrpc;
+import etcdserverpb.Rpc.DeleteRangeRequest;
+import etcdserverpb.Rpc.DeleteRangeResponse;
+import etcdserverpb.Rpc.LeaseGrantRequest;
+import etcdserverpb.Rpc.LeaseGrantResponse;
+import etcdserverpb.Rpc.PutRequest;
+import etcdserverpb.Rpc.PutResponse;
+import etcdserverpb.Rpc.RangeRequest;
+import etcdserverpb.Rpc.RangeResponse;
+import etcdserverpb.Rpc.WatchCreateRequest;
+import etcdserverpb.Rpc.WatchRequest;
+import etcdserverpb.Rpc.WatchResponse;
+import etcdserverpb.WatchGrpc;
 import io.grpc.Channel;
 import io.grpc.stub.StreamObserver;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.DeleteRangeRequest;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.DeleteRangeResponse;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.Event;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.KVGrpc;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.KeyValue;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.LeaseGrantRequest;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.LeaseGrantResponse;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.LeaseGrpc;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.PutRequest;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.PutResponse;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.RangeRequest;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.RangeResponse;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.WatchCreateRequest;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.WatchGrpc;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.WatchRequest;
-import io.shardingjdbc.orchestration.reg.etcd.internal.stub.WatchResponse;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import mvccpb.Kv.Event;
+import mvccpb.Kv.KeyValue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -142,6 +142,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                 .setValue(ByteString.copyFromUtf8(value))
                 .build();
         return retry(new Callable<String>() {
+            
             @Override
             public String call() throws Exception {
                 PutResponse putResponse = kvStub.put(request).get(timeout, TimeUnit.MILLISECONDS);
