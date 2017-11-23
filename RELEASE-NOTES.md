@@ -1,3 +1,9 @@
+## 2.0.0.M4
+
+### 缺陷修正
+
+1. [ISSUE #453](https://github.com/shardingjdbc/sharding-jdbc/issues/453) 编排治理数据源配置name与Druid数据源name冲突
+
 ## 2.0.0.M3
 
 ### 里程碑
