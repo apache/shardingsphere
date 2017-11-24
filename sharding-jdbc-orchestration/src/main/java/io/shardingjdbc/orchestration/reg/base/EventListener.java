@@ -1,7 +1,7 @@
 package io.shardingjdbc.orchestration.reg.base;
 
 /**
- * Coordinator registry change event.
+ * Coordinator registry event change listener.
  *
  * @author junxiong
  */

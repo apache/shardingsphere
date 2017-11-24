@@ -5,9 +5,9 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
+import io.shardingjdbc.orchestration.reg.base.EventListener;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClient;
 import io.shardingjdbc.orchestration.reg.etcd.internal.Watcher;
-import io.shardingjdbc.orchestration.reg.etcd.internal.WatcherListener;
 import lombok.Value;
 
 import java.util.List;
@@ -83,12 +83,12 @@ public class EtcdClientStub implements EtcdClient {
         for (String keyOrPath : watchers.keySet()) {
             if (element.getKey().startsWith(keyOrPath)) {
                 final Watcher watcher = watchers.get(keyOrPath);
-                for (final WatcherListener listener : watcher.getListeners()) {
+                for (final EventListener listener : watcher.getListeners()) {
                     scheduler.schedule(new Runnable() {
                         
                         @Override
                         public void run() {
-                            listener.onWatch(new DataChangedEvent(type, element.getKey(), element.getValue()));
+                            listener.onChange(new DataChangedEvent(type, element.getKey(), element.getValue()));
                         }
                     }, 50L, TimeUnit.MILLISECONDS);
                 }

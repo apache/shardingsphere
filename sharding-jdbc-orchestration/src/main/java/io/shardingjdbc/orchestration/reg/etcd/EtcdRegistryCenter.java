@@ -1,14 +1,12 @@
 package io.shardingjdbc.orchestration.reg.etcd;
 
 import com.google.common.base.Optional;
+import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.base.EventListener;
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClient;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClientBuilder;
 import io.shardingjdbc.orchestration.reg.etcd.internal.Watcher;
-import io.shardingjdbc.orchestration.reg.etcd.internal.WatcherListener;
-import io.shardingjdbc.orchestration.reg.exception.RegException;
 
 import java.util.Collections;
 import java.util.List;
@@ -92,17 +90,11 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
         if (!watcher.isPresent()) {
             return;
         }
-        watcher.get().addWatcherListener(new WatcherListener() {
+        watcher.get().addEventListener(new EventListener() {
             
             @Override
-            public void onWatch(final DataChangedEvent event) {
-                try {
-                    eventListener.onChange(event);
-                    // CHECKSTYLE:OFF
-                } catch (final Exception ex) {
-                    // CHECKSTYLE:ON
-                    throw new RegException(ex);
-                }
+            public void onChange(final DataChangedEvent event) {
+                eventListener.onChange(event);
             }
         });
     }
