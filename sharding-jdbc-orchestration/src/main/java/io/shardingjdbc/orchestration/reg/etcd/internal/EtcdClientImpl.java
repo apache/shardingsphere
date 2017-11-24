@@ -189,21 +189,21 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                             return;
                         }
                         for (Event event : response.getEventsList()) {
-                            ChangeEvent.ChangeType changeEventType; 
-                            switch (event.getType()) {
-                                case DELETE:
-                                    changeEventType = ChangeEvent.ChangeType.DELETED;
-                                    break;
-                                case PUT:
-                                    changeEventType = ChangeEvent.ChangeType.UPDATED;
-                                    break;
-                                default:
-                                    changeEventType = ChangeEvent.ChangeType.UNKNOWN;
-                            }
-                            watcher.notify(new ChangeEvent(changeEventType, new ChangeEvent.ChangeData(event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8())));
+                            watcher.notify(new ChangeEvent(getEventType(event), event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8()));
                         }
                     }
-                    
+    
+                    private ChangeEvent.Type getEventType(final Event event) {
+                        switch (event.getType()) {
+                            case PUT:
+                                return ChangeEvent.Type.UPDATED;
+                            case DELETE:
+                                return ChangeEvent.Type.DELETED;
+                            default:
+                                return ChangeEvent.Type.IGNORED;
+                        }
+                    }
+    
                     @Override
                     public void onError(final Throwable throwable) {
                         // TODO retry watch later

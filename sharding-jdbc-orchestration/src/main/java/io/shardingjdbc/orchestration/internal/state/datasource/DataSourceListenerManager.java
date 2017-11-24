@@ -55,10 +55,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             
             @Override
             public void onChange(final ChangeEvent event) throws Exception {
-                // only handle updated and deleted event
-                if (ChangeEvent.ChangeType.UPDATED == event.getChangeType()
-                        || ChangeEvent.ChangeType.DELETED == event.getChangeType()
-                        && event.getChangeData().isPresent()) {
+                if (ChangeEvent.Type.UPDATED == event.getEventType() || ChangeEvent.Type.DELETED == event.getEventType()) {
                     shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
                 }
             }
@@ -71,10 +68,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             
             @Override
             public void onChange(final ChangeEvent event) throws Exception {
-                // only handle updated and deleted event
-                if (ChangeEvent.ChangeType.UPDATED == event.getChangeType()
-                        || ChangeEvent.ChangeType.DELETED == event.getChangeType()
-                        && event.getChangeData().isPresent()) {
+                if (ChangeEvent.Type.UPDATED == event.getEventType() || ChangeEvent.Type.DELETED == event.getEventType()) {
                     masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
                 }
             }

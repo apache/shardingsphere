@@ -250,16 +250,20 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
             @Override
             public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
                 ChildData data = event.getData();
-                ChangeEvent.ChangeData changeData = data == null ? null : new ChangeEvent.ChangeData(data.getPath(),  new String(data.getData(), "UTF-8"));
+                if (null == data.getPath()) {
+                    return;
+                }
+                changeListener.onChange(new ChangeEvent(getEventType(event), data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8")));
+            }
+            
+            private ChangeEvent.Type getEventType(final TreeCacheEvent event) {
                 switch (event.getType()) {
                     case NODE_UPDATED:
-                        changeListener.onChange(new ChangeEvent(ChangeEvent.ChangeType.UPDATED, changeData));
-                        break;
+                        return ChangeEvent.Type.UPDATED;
                     case NODE_REMOVED:
-                        changeListener.onChange(new ChangeEvent(ChangeEvent.ChangeType.DELETED, changeData));
-                        break;
+                        return ChangeEvent.Type.DELETED;
                     default:
-                        break;
+                        return ChangeEvent.Type.IGNORED;
                 }
             }
         });

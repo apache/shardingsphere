@@ -56,10 +56,9 @@ public final class InstanceListenerManager implements ListenerManager {
             
             @Override
             public void onChange(final ChangeEvent event) throws Exception {
-                // only handle updated event
-                if (ChangeEvent.ChangeType.UPDATED == event.getChangeType() && event.getChangeData().isPresent()) {
+                if (ChangeEvent.Type.UPDATED == event.getEventType()) {
                     Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
-                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(config.getRegistryCenter().get(event.getChangeData().get().getKey()))) {
+                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(config.getRegistryCenter().get(event.getKey()))) {
                         for (String each : dataSourceMap.keySet()) {
                             dataSourceMap.put(each, new CircuitBreakerDataSource());
                         }
@@ -76,10 +75,9 @@ public final class InstanceListenerManager implements ListenerManager {
             
             @Override
             public void onChange(final ChangeEvent event) throws Exception {
-                // only handle updated event
-                if (ChangeEvent.ChangeType.UPDATED == event.getChangeType() && event.getChangeData().isPresent()) {
+                if (ChangeEvent.Type.UPDATED == event.getEventType()) {
                     Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
-                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(config.getRegistryCenter().get(event.getChangeData().get().getKey()))) {
+                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(config.getRegistryCenter().get(event.getKey()))) {
                         for (String each : dataSourceMap.keySet()) {
                             dataSourceMap.put(each, new CircuitBreakerDataSource());
                         }

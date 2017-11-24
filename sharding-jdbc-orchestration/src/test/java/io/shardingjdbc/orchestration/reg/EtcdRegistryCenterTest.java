@@ -43,10 +43,9 @@ public class EtcdRegistryCenterTest {
             
             @Override
             public boolean matches(final ChangeEvent event) {
-                return ChangeEvent.ChangeType.UPDATED == event.getChangeType()
-                        && event.getChangeData().isPresent()
-                        && event.getChangeData().get().getKey().equals("/test/pms/abc/d")
-                        && event.getChangeData().get().getValue().equals("100");
+                return ChangeEvent.Type.UPDATED == event.getEventType()
+                        && event.getKey().equals("/test/pms/abc/d")
+                        && event.getValue().equals("100");
             }
         }));
     }

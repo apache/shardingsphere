@@ -52,8 +52,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
             
             @Override
             public void onChange(final ChangeEvent changeEvent) throws Exception {
-                // only handles the reg center updated event
-                if (ChangeEvent.ChangeType.UPDATED == changeEvent.getChangeType() && changeEvent.getChangeData().isPresent()) {
+                if (ChangeEvent.Type.UPDATED == changeEvent.getEventType()) {
                     ConfigMapContext.getInstance().getShardingConfig().clear();
                     ConfigMapContext.getInstance().getShardingConfig().putAll(configurationService.loadShardingConfigMap());
                 }
@@ -68,8 +67,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
             
             @Override
             public void onChange(final ChangeEvent event) throws Exception {
-                // only handles the reg center update event
-                if (ChangeEvent.ChangeType.UPDATED == event.getChangeType() && event.getChangeData().isPresent()) {
+                if (ChangeEvent.Type.UPDATED == event.getEventType()) {
                     ConfigMapContext.getInstance().getMasterSlaveConfig().clear();
                     ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configurationService.loadMasterSlaveConfigMap());
                 }

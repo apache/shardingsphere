@@ -79,7 +79,7 @@ public class EtcdClientStub implements EtcdClient {
         return Optional.of(keys);
     }
     
-    private void fireEvent(final Element element, final ChangeEvent.ChangeType type) {
+    private void fireEvent(final Element element, final ChangeEvent.Type type) {
         for (String keyOrPath : watchers.keySet()) {
             if (element.getKey().startsWith(keyOrPath)) {
                 final Watcher watcher = watchers.get(keyOrPath);
@@ -88,20 +88,20 @@ public class EtcdClientStub implements EtcdClient {
                         
                         @Override
                         public void run() {
-                            listener.onWatch(new ChangeEvent(type, new ChangeEvent.ChangeData(element.getKey(), element.getValue())));
+                            listener.onWatch(new ChangeEvent(type, element.getKey(), element.getValue()));
                         }
-                    }, 50, TimeUnit.MILLISECONDS);
+                    }, 50L, TimeUnit.MILLISECONDS);
                 }
             }
         }
     }
     
-    private void fireDeleteEvent(final Element element) {
-        fireEvent(element, ChangeEvent.ChangeType.DELETED);
+    private void fireUpdateEvent(final Element element) {
+        fireEvent(element, ChangeEvent.Type.UPDATED);
     }
     
-    private void fireUpdateEvent(final Element element) {
-        fireEvent(element, ChangeEvent.ChangeType.UPDATED);
+    private void fireDeleteEvent(final Element element) {
+        fireEvent(element, ChangeEvent.Type.DELETED);
     }
     
     @Override
