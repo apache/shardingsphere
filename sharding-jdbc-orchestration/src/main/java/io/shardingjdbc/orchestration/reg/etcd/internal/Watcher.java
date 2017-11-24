@@ -1,5 +1,6 @@
 package io.shardingjdbc.orchestration.reg.etcd.internal;
 
+import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,9 +29,9 @@ public final class Watcher {
         this.listeners.add(watcherListener);
     }
     
-    public void notify(final WatchEvent watchEvent) {
+    public void notify(final ChangeEvent changeEvent) {
         for (WatcherListener listener : listeners) {
-            listener.onWatch(watchEvent);
+            listener.onWatch(changeEvent);
         }
     }
 }

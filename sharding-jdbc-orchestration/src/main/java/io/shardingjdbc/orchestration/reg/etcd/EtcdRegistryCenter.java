@@ -6,7 +6,6 @@ import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClient;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClientBuilder;
-import io.shardingjdbc.orchestration.reg.etcd.internal.WatchEvent;
 import io.shardingjdbc.orchestration.reg.etcd.internal.Watcher;
 import io.shardingjdbc.orchestration.reg.etcd.internal.WatcherListener;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
@@ -96,9 +95,9 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
         watcher.get().addWatcherListener(new WatcherListener() {
             
             @Override
-            public void onWatch(final WatchEvent watchEvent) {
+            public void onWatch(final ChangeEvent changeEvent) {
                 try {
-                    changeListener.onChange(createWatchEvent(watchEvent));
+                    changeListener.onChange(changeEvent);
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON
@@ -106,19 +105,6 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
                 }
             }
         });
-    }
-    
-    private ChangeEvent createWatchEvent(final WatchEvent watchEvent) {
-        ChangeEvent.ChangeData changeData = new ChangeEvent.ChangeData(watchEvent.getKey(), watchEvent.getValue());
-        switch (watchEvent.getWatchEventType()) {
-            case DELETED:
-                return new ChangeEvent(ChangeEvent.ChangeType.DELETED, changeData);
-            case UPDATED:
-                return new ChangeEvent(ChangeEvent.ChangeType.UPDATED, changeData);
-            case UNKNOWN:
-            default: 
-                return new ChangeEvent(ChangeEvent.ChangeType.UNKNOWN, changeData);
-        }
     }
     
     private String getFullPathWithNamespace(final String path) {

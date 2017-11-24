@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClient;
-import io.shardingjdbc.orchestration.reg.etcd.internal.WatchEvent;
 import io.shardingjdbc.orchestration.reg.etcd.internal.Watcher;
 import io.shardingjdbc.orchestration.reg.etcd.internal.WatcherListener;
 import lombok.Value;
@@ -86,16 +85,12 @@ public class EtcdClientStub implements EtcdClient {
                 final Watcher watcher = watchers.get(keyOrPath);
                 for (final WatcherListener listener : watcher.getListeners()) {
                     scheduler.schedule(new Runnable() {
+                        
                         @Override
                         public void run() {
-                            listener.onWatch(WatchEvent.builder()
-                                    .watchEventType(type)
-                                    .key(element.getKey())
-                                    .value(element.getValue())
-                                    .build());
+                            listener.onWatch(new ChangeEvent(type, new ChangeEvent.ChangeData(element.getKey(), element.getValue())));
                         }
                     }, 50, TimeUnit.MILLISECONDS);
-
                 }
             }
         }

@@ -1,5 +1,7 @@
 package io.shardingjdbc.orchestration.reg.etcd.internal;
 
+import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
+
 /**
  * Watcher listener.
  * 
@@ -10,7 +12,7 @@ public interface WatcherListener {
     /**
      * fires when watched key changed.
      *
-     * @param watchEvent watch event
+     * @param changeEvent change event
      */
-    void onWatch(WatchEvent watchEvent);
+    void onWatch(ChangeEvent changeEvent);
 }
