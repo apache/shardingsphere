@@ -17,14 +17,11 @@ import etcdserverpb.Rpc.RangeRequest;
 import etcdserverpb.Rpc.RangeResponse;
 import etcdserverpb.Rpc.WatchCreateRequest;
 import etcdserverpb.Rpc.WatchRequest;
-import etcdserverpb.Rpc.WatchResponse;
 import etcdserverpb.WatchGrpc;
 import io.grpc.Channel;
 import io.grpc.stub.StreamObserver;
-import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
-import mvccpb.Kv.Event;
 import mvccpb.Kv.KeyValue;
 
 import java.util.Arrays;
@@ -161,41 +158,8 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
             
             @Override
             public Watcher call() throws Exception {
-                final Watcher watcher = new Watcher();
-                StreamObserver<WatchResponse> responseStream = new StreamObserver<WatchResponse>() {
-                    
-                    @Override
-                    public void onNext(final WatchResponse response) {
-                        if (response.getCanceled() || response.getCreated()) {
-                            return;
-                        }
-                        for (Event event : response.getEventsList()) {
-                            watcher.notify(new DataChangedEvent(getEventType(event), event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8()));
-                        }
-                    }
-                    
-                    private DataChangedEvent.Type getEventType(final Event event) {
-                        switch (event.getType()) {
-                            case PUT:
-                                return DataChangedEvent.Type.UPDATED;
-                            case DELETE:
-                                return DataChangedEvent.Type.DELETED;
-                            default:
-                                return DataChangedEvent.Type.IGNORED;
-                        }
-                    }
-                    
-                    @Override
-                    public void onError(final Throwable throwable) {
-                        // TODO retry watch later
-                        throw new RegException(new Exception(throwable));
-                    }
-                    
-                    @Override
-                    public void onCompleted() {
-                    }
-                };
-                StreamObserver<WatchRequest> requestStream = watchStub.watch(responseStream);
+                Watcher watcher = new Watcher();
+                StreamObserver<WatchRequest> requestStream = watchStub.watch(new WatchStreamObserver(watcher));
                 requestStream.onNext(watchRequest);
                 return watcher;
             }
