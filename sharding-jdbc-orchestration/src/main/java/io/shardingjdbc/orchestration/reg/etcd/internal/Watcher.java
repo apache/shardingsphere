@@ -17,8 +17,6 @@ import java.util.List;
 @Getter
 public final class Watcher {
     
-    private final String key;
-    
     private final List<EventListener> listeners = new ArrayList<>();
     
     /**

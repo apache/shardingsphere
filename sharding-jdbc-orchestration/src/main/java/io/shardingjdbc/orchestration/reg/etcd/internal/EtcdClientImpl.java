@@ -180,7 +180,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
             
             @Override
             public Watcher call() throws Exception {
-                final Watcher watcher = new Watcher(key);
+                final Watcher watcher = new Watcher();
                 StreamObserver<WatchResponse> responseStream = new StreamObserver<WatchResponse>() {
                     
                     @Override
@@ -192,7 +192,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                             watcher.notify(new DataChangedEvent(getEventType(event), event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8()));
                         }
                     }
-    
+                    
                     private DataChangedEvent.Type getEventType(final Event event) {
                         switch (event.getType()) {
                             case PUT:
@@ -203,7 +203,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                                 return DataChangedEvent.Type.IGNORED;
                         }
                     }
-    
+                    
                     @Override
                     public void onError(final Throwable throwable) {
                         // TODO retry watch later

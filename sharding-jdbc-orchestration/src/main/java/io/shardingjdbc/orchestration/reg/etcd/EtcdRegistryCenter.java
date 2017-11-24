@@ -2,7 +2,6 @@ package io.shardingjdbc.orchestration.reg.etcd;
 
 import com.google.common.base.Optional;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
-import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.base.EventListener;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClient;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClientBuilder;
@@ -87,16 +86,9 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     @Override
     public void watch(final String path, final EventListener eventListener) {
         Optional<Watcher> watcher = etcdClient.watch(getFullPathWithNamespace(path));
-        if (!watcher.isPresent()) {
-            return;
+        if (watcher.isPresent()) {
+            watcher.get().addEventListener(eventListener);
         }
-        watcher.get().addEventListener(new EventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent event) {
-                eventListener.onChange(event);
-            }
-        });
     }
     
     private String getFullPathWithNamespace(final String path) {

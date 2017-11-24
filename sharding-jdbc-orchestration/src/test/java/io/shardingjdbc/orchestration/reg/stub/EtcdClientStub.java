@@ -106,7 +106,7 @@ public class EtcdClientStub implements EtcdClient {
     
     @Override
     public Optional<Watcher> watch(final String keyOrDirectory) {
-        Watcher watcher = new Watcher(keyOrDirectory);
+        Watcher watcher = new Watcher();
         watchers.put(keyOrDirectory, watcher);
         return Optional.of(watcher);
     }
