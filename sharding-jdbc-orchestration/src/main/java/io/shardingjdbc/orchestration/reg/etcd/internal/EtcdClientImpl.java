@@ -23,7 +23,7 @@ import etcdserverpb.Rpc.WatchResponse;
 import etcdserverpb.WatchGrpc;
 import io.grpc.Channel;
 import io.grpc.stub.StreamObserver;
-import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import mvccpb.Kv.Event;
@@ -189,18 +189,18 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                             return;
                         }
                         for (Event event : response.getEventsList()) {
-                            watcher.notify(new ChangeEvent(getEventType(event), event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8()));
+                            watcher.notify(new DataChangedEvent(getEventType(event), event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8()));
                         }
                     }
     
-                    private ChangeEvent.Type getEventType(final Event event) {
+                    private DataChangedEvent.Type getEventType(final Event event) {
                         switch (event.getType()) {
                             case PUT:
-                                return ChangeEvent.Type.UPDATED;
+                                return DataChangedEvent.Type.UPDATED;
                             case DELETE:
-                                return ChangeEvent.Type.DELETED;
+                                return DataChangedEvent.Type.DELETED;
                             default:
-                                return ChangeEvent.Type.IGNORED;
+                                return DataChangedEvent.Type.IGNORED;
                         }
                     }
     

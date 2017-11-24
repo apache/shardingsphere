@@ -22,7 +22,7 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
-import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 
@@ -51,8 +51,8 @@ public final class ConfigMapListenerManager implements ListenerManager {
         regCenter.watch(cachePath, new ChangeListener() {
             
             @Override
-            public void onChange(final ChangeEvent changeEvent) throws Exception {
-                if (ChangeEvent.Type.UPDATED == changeEvent.getEventType()) {
+            public void onChange(final DataChangedEvent event) throws Exception {
+                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     ConfigMapContext.getInstance().getShardingConfig().clear();
                     ConfigMapContext.getInstance().getShardingConfig().putAll(configurationService.loadShardingConfigMap());
                 }
@@ -66,8 +66,8 @@ public final class ConfigMapListenerManager implements ListenerManager {
         regCenter.watch(cachePath, new ChangeListener() {
             
             @Override
-            public void onChange(final ChangeEvent event) throws Exception {
-                if (ChangeEvent.Type.UPDATED == event.getEventType()) {
+            public void onChange(final DataChangedEvent event) throws Exception {
+                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     ConfigMapContext.getInstance().getMasterSlaveConfig().clear();
                     ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configurationService.loadMasterSlaveConfigMap());
                 }

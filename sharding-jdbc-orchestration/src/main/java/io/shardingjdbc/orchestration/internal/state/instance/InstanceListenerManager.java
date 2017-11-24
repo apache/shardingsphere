@@ -25,7 +25,7 @@ import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerData
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
-import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 
 import javax.sql.DataSource;
@@ -55,8 +55,8 @@ public final class InstanceListenerManager implements ListenerManager {
         config.getRegistryCenter().watch(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), new ChangeListener() {
             
             @Override
-            public void onChange(final ChangeEvent event) throws Exception {
-                if (ChangeEvent.Type.UPDATED == event.getEventType()) {
+            public void onChange(final DataChangedEvent event) throws Exception {
+                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(config.getRegistryCenter().get(event.getKey()))) {
                         for (String each : dataSourceMap.keySet()) {
@@ -74,8 +74,8 @@ public final class InstanceListenerManager implements ListenerManager {
         config.getRegistryCenter().watch(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), new ChangeListener() {
             
             @Override
-            public void onChange(final ChangeEvent event) throws Exception {
-                if (ChangeEvent.Type.UPDATED == event.getEventType()) {
+            public void onChange(final DataChangedEvent event) throws Exception {
+                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(config.getRegistryCenter().get(event.getKey()))) {
                         for (String each : dataSourceMap.keySet()) {

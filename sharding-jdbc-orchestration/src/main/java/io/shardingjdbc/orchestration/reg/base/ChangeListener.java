@@ -10,8 +10,8 @@ public interface ChangeListener {
     /**
      * Fire when event changed.
      * 
-     * @param changeEvent change event
+     * @param event data changed event
      * @throws Exception
      */
-    void onChange(ChangeEvent changeEvent) throws Exception;
+    void onChange(DataChangedEvent event) throws Exception;
 }

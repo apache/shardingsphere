@@ -4,7 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClient;
 import io.shardingjdbc.orchestration.reg.etcd.internal.Watcher;
 import io.shardingjdbc.orchestration.reg.etcd.internal.WatcherListener;
@@ -79,7 +79,7 @@ public class EtcdClientStub implements EtcdClient {
         return Optional.of(keys);
     }
     
-    private void fireEvent(final Element element, final ChangeEvent.Type type) {
+    private void fireEvent(final Element element, final DataChangedEvent.Type type) {
         for (String keyOrPath : watchers.keySet()) {
             if (element.getKey().startsWith(keyOrPath)) {
                 final Watcher watcher = watchers.get(keyOrPath);
@@ -88,7 +88,7 @@ public class EtcdClientStub implements EtcdClient {
                         
                         @Override
                         public void run() {
-                            listener.onWatch(new ChangeEvent(type, element.getKey(), element.getValue()));
+                            listener.onWatch(new DataChangedEvent(type, element.getKey(), element.getValue()));
                         }
                     }, 50L, TimeUnit.MILLISECONDS);
                 }
@@ -97,11 +97,11 @@ public class EtcdClientStub implements EtcdClient {
     }
     
     private void fireUpdateEvent(final Element element) {
-        fireEvent(element, ChangeEvent.Type.UPDATED);
+        fireEvent(element, DataChangedEvent.Type.UPDATED);
     }
     
     private void fireDeleteEvent(final Element element) {
-        fireEvent(element, ChangeEvent.Type.DELETED);
+        fireEvent(element, DataChangedEvent.Type.DELETED);
     }
     
     @Override

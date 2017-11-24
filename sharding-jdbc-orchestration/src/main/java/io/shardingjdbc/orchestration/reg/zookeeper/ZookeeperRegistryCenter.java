@@ -19,7 +19,7 @@ package io.shardingjdbc.orchestration.reg.zookeeper;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
+import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.base.ChangeListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
@@ -250,20 +250,20 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
             @Override
             public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
                 ChildData data = event.getData();
-                if (null == data.getPath()) {
+                if (null == data || null == data.getPath()) {
                     return;
                 }
-                changeListener.onChange(new ChangeEvent(getEventType(event), data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8")));
+                changeListener.onChange(new DataChangedEvent(getEventType(event), data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8")));
             }
             
-            private ChangeEvent.Type getEventType(final TreeCacheEvent event) {
+            private DataChangedEvent.Type getEventType(final TreeCacheEvent event) {
                 switch (event.getType()) {
                     case NODE_UPDATED:
-                        return ChangeEvent.Type.UPDATED;
+                        return DataChangedEvent.Type.UPDATED;
                     case NODE_REMOVED:
-                        return ChangeEvent.Type.DELETED;
+                        return DataChangedEvent.Type.DELETED;
                     default:
-                        return ChangeEvent.Type.IGNORED;
+                        return DataChangedEvent.Type.IGNORED;
                 }
             }
         });

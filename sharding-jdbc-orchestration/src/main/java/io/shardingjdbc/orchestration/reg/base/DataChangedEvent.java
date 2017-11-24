@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class ChangeEvent {
+public class DataChangedEvent {
     
     private final Type eventType;
     
