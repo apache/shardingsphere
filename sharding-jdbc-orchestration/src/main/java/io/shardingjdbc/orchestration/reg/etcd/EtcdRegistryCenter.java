@@ -111,9 +111,9 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     private ChangeEvent createWatchEvent(final WatchEvent watchEvent) {
         ChangeEvent.ChangeData changeData = new ChangeEvent.ChangeData(watchEvent.getKey(), watchEvent.getValue());
         switch (watchEvent.getWatchEventType()) {
-            case DELETE:
+            case DELETED:
                 return new ChangeEvent(ChangeEvent.ChangeType.DELETED, changeData);
-            case UPDATE:
+            case UPDATED:
                 return new ChangeEvent(ChangeEvent.ChangeType.UPDATED, changeData);
             case UNKNOWN:
             default: 

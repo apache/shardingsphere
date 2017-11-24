@@ -1,5 +1,6 @@
 package io.shardingjdbc.orchestration.reg.etcd.internal;
 
+import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
 import lombok.Builder;
 import lombok.Value;
 import mvccpb.Kv.Event;
@@ -11,44 +12,31 @@ import mvccpb.Kv.Event;
 @Value
 public class WatchEvent {
     
-    private WatchEventType watchEventType;
-    
-    private long id;
+    private ChangeEvent.ChangeType watchEventType;
     
     private String key;
     
     private String value;
-
-    public static WatchEvent of(final long id, final Event event) {
+    
+    public static WatchEvent of(final Event event) {
         if (Event.EventType.DELETE == event.getType()) {
             return WatchEvent.builder()
-                    .id(id)
-                    .watchEventType(WatchEventType.DELETE)
+                    .watchEventType(ChangeEvent.ChangeType.DELETED)
                     .key(event.getKv().getKey().toStringUtf8())
                     .value(event.getKv().getValue().toStringUtf8())
                     .build();
         } else if (Event.EventType.PUT == event.getType()) {
             return WatchEvent.builder()
-                    .id(id)
-                    .watchEventType(WatchEventType.UPDATE)
+                    .watchEventType(ChangeEvent.ChangeType.UPDATED)
                     .key(event.getKv().getKey().toStringUtf8())
                     .value(event.getKv().getValue().toStringUtf8())
                     .build();
         } else {
             return WatchEvent.builder()
-                    .id(id)
-                    .watchEventType(WatchEventType.UNKNOWN)
+                    .watchEventType(ChangeEvent.ChangeType.UNKNOWN)
                     .key(event.getKv().getKey().toStringUtf8())
                     .value(event.getKv().getValue().toStringUtf8())
                     .build();
         }
-    }
-    
-    /**
-     * Watch event type.
-     */
-    public enum WatchEventType {
-        
-        UPDATE, DELETE, UNKNOWN
     }
 }

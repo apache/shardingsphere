@@ -4,10 +4,10 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.shardingjdbc.orchestration.reg.base.ChangeEvent;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClient;
 import io.shardingjdbc.orchestration.reg.etcd.internal.WatchEvent;
 import io.shardingjdbc.orchestration.reg.etcd.internal.Watcher;
-import io.shardingjdbc.orchestration.reg.etcd.internal.WatcherImpl;
 import io.shardingjdbc.orchestration.reg.etcd.internal.WatcherListener;
 import lombok.Value;
 
@@ -31,7 +31,8 @@ public class EtcdClientStub implements EtcdClient {
         return Optional.fromNullable(element).transform(new Function<Element, String>() {
             
             @Override
-            public String apply(final Element element) { return element.getValue();
+            public String apply(final Element element) {
+                return element.getValue();
             }
         });
     }
@@ -56,10 +57,11 @@ public class EtcdClientStub implements EtcdClient {
     public Optional<String> put(final String key, final String value, final long ttl) {
         Element element = new Element(key, value, 0L);
         elements.put(key, element);
-        fireUpdatEvent(element);
+        fireUpdateEvent(element);
         return Optional.fromNullable(elements.get(key)).transform(new Function<Element, String>() {
+            
             @Override
-            public String apply(Element input) {
+            public String apply(final Element input) {
                 return input.getValue();
             }
         });
@@ -78,10 +80,10 @@ public class EtcdClientStub implements EtcdClient {
         return Optional.of(keys);
     }
     
-    private void fireEvent(final Element element, final WatchEvent.WatchEventType type) {
+    private void fireEvent(final Element element, final ChangeEvent.ChangeType type) {
         for (String keyOrPath : watchers.keySet()) {
             if (element.getKey().startsWith(keyOrPath)) {
-                final WatcherImpl watcher = (WatcherImpl) watchers.get(keyOrPath);
+                final Watcher watcher = watchers.get(keyOrPath);
                 for (final WatcherListener listener : watcher.getListeners()) {
                     scheduler.schedule(new Runnable() {
                         @Override
@@ -90,7 +92,6 @@ public class EtcdClientStub implements EtcdClient {
                                     .watchEventType(type)
                                     .key(element.getKey())
                                     .value(element.getValue())
-                                    .id(watcher.getId())
                                     .build());
                         }
                     }, 50, TimeUnit.MILLISECONDS);
@@ -101,23 +102,27 @@ public class EtcdClientStub implements EtcdClient {
     }
     
     private void fireDeleteEvent(final Element element) {
-        fireEvent(element, WatchEvent.WatchEventType.DELETE);
+        fireEvent(element, ChangeEvent.ChangeType.DELETED);
     }
     
-    private void fireUpdatEvent(final Element element) {
-        fireEvent(element, WatchEvent.WatchEventType.UPDATE);
+    private void fireUpdateEvent(final Element element) {
+        fireEvent(element, ChangeEvent.ChangeType.UPDATED);
     }
     
     @Override
     public Optional<Watcher> watch(final String keyOrDirectory) {
-        Watcher watcher = new WatcherImpl(keyOrDirectory);
+        Watcher watcher = new Watcher(keyOrDirectory);
         watchers.put(keyOrDirectory, watcher);
         return Optional.of(watcher);
     }
     
     @Value
     final class Element {
-        String key, value;
-        long ttl;
+        
+        private String key;
+    
+        private String value;
+        
+        private long ttl;
     }
 }

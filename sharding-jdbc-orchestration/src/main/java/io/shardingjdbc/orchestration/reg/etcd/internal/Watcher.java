@@ -1,35 +1,36 @@
 package io.shardingjdbc.orchestration.reg.etcd.internal;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Watcher.
  * 
  * @author junxiong
  */
-public interface Watcher {
+@RequiredArgsConstructor
+@Getter
+public final class Watcher {
+    
+    private final String key;
+    
+    private final List<WatcherListener> listeners = new ArrayList<>();
     
     /**
-     * get watch id.
-     *
-     * @return long
-     */
-    long getId();
-
-    /**
-     * get watch key.
-     *
-     * @return String
-     */
-    String getKey();
-
-    /**
-     * add watcher listener.
+     * Add watcher listener.
      *
      * @param watcherListener WatcherListener
      */
-    void addWatcherListener(WatcherListener watcherListener);
-
-    /**
-     * cancel watcher.
-     */
-    void cancel();
+    public void addWatcherListener(final WatcherListener watcherListener) {
+        this.listeners.add(watcherListener);
+    }
+    
+    public void notify(final WatchEvent watchEvent) {
+        for (WatcherListener listener : listeners) {
+            listener.onWatch(watchEvent);
+        }
+    }
 }

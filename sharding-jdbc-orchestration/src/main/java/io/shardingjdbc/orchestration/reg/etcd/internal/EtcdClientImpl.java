@@ -6,7 +6,6 @@ import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
 import etcdserverpb.KVGrpc;
 import etcdserverpb.LeaseGrpc;
@@ -32,7 +31,6 @@ import mvccpb.Kv.KeyValue;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -58,8 +56,6 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     private WatchGrpc.WatchStub watchStub;
     
     private AtomicBoolean closed = new AtomicBoolean(false);
-    
-    private ConcurrentMap<Long, Watcher> watchers = Maps.newConcurrentMap();
     
     /**
      * construct a etcd client from grpc channel.
@@ -93,7 +89,7 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     public Optional<List<String>> list(final String dir) {
         final RangeRequest request = RangeRequest.newBuilder()
                 .setKey(ByteString.copyFromUtf8(dir))
-                .setRangeEnd(prefix(dir))
+                .setRangeEnd(getRangeEnd(dir))
                 .build();
         return retry(new Callable<List<String>>() {
             @Override
@@ -177,47 +173,37 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     
     @Override
     public Optional<Watcher> watch(final String key) {
-        final WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder()
-                .setKey(ByteString.copyFromUtf8(key))
-                .setRangeEnd(prefix(key))
-                .build();
-        final WatchRequest request = WatchRequest.newBuilder()
-                .setCreateRequest(createWatchRequest)
-                .build();
+        WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder().setKey(ByteString.copyFromUtf8(key)).setRangeEnd(getRangeEnd(key)).build();
+        final WatchRequest watchRequest = WatchRequest.newBuilder().setCreateRequest(createWatchRequest).build();
         return retry(new Callable<Watcher>() {
+            
             @Override
             public Watcher call() throws Exception {
-                final WatcherImpl watcher = new WatcherImpl(key);
-                final StreamObserver<WatchResponse> responseStream = new StreamObserver<WatchResponse>() {
+                final Watcher watcher = new Watcher(key);
+                StreamObserver<WatchResponse> responseStream = new StreamObserver<WatchResponse>() {
                     
                     @Override
                     public void onNext(final WatchResponse response) {
-                        if (response.getCanceled()) {
-                            watchers.remove(response.getWatchId());
-                        } else if (response.getCreated()) {
-                            final long id = response.getWatchId();
-                            watcher.setId(id);
-                            watchers.put(id, watcher);
-                        } else {
-                            for (final Event event : response.getEventsList()) {
-                                final WatchEvent watchEvent = WatchEvent.of(watcher.getId(), event);
-                                watcher.notify(watchEvent);
-                            }
+                        if (response.getCanceled() || response.getCreated()) {
+                            return;
+                        }
+                        for (Event event : response.getEventsList()) {
+                            watcher.notify(WatchEvent.of(event));
                         }
                     }
                     
                     @Override
-                    public void onError(final Throwable t) {
+                    public void onError(final Throwable throwable) {
                         // TODO retry watch later
-                        throw new RegException(new Exception(t));
+                        throw new RegException(new Exception(throwable));
                     }
                     
                     @Override
                     public void onCompleted() {
                     }
                 };
-                final StreamObserver<WatchRequest> requestStream = watchStub.watch(responseStream);
-                requestStream.onNext(request);
+                StreamObserver<WatchRequest> requestStream = watchStub.watch(responseStream);
+                requestStream.onNext(watchRequest);
                 return watcher;
             }
         });
@@ -243,8 +229,8 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
         }
     }
     
-    private ByteString prefix(final String key) {
-        final byte[] noPrefix = {0};
+    private ByteString getRangeEnd(final String key) {
+        byte[] noPrefix = {0};
         byte[] endKey = key.getBytes().clone();
         for (int i = endKey.length - 1; i >= 0; i--) {
             if (endKey[i] < 0xff) {
