@@ -1,7 +1,7 @@
 package io.shardingjdbc.orchestration.reg;
 
 import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
-import io.shardingjdbc.orchestration.reg.base.ChangeListener;
+import io.shardingjdbc.orchestration.reg.base.EventListener;
 import io.shardingjdbc.orchestration.reg.etcd.EtcdRegistryCenter;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClient;
 import io.shardingjdbc.orchestration.reg.stub.EtcdClientStub;
@@ -35,11 +35,11 @@ public class EtcdRegistryCenterTest {
     @Test
     public void testChangeListener() throws Exception {
         EtcdRegistryCenter registryCenter = new EtcdRegistryCenter("test", 2000, etcdClient);
-        ChangeListener changeListener = mock(ChangeListener.class);
-        registryCenter.watch("pms/abc", changeListener);
+        EventListener eventListener = mock(EventListener.class);
+        registryCenter.watch("pms/abc", eventListener);
         registryCenter.persist("pms/abc/d", "100");
         TimeUnit.SECONDS.sleep(5);
-        verify(changeListener, times(1)).onChange(ArgumentMatchers.argThat(new ArgumentMatcher<DataChangedEvent>() {
+        verify(eventListener, times(1)).onChange(ArgumentMatchers.argThat(new ArgumentMatcher<DataChangedEvent>() {
             
             @Override
             public boolean matches(final DataChangedEvent event) {

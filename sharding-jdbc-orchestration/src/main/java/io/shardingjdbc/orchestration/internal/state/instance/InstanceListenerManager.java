@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.orchestration.internal.state.instance;
 
+import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
@@ -26,9 +27,10 @@ import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
 import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
-import io.shardingjdbc.orchestration.reg.base.ChangeListener;
+import io.shardingjdbc.orchestration.reg.base.EventListener;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -52,10 +54,10 @@ public final class InstanceListenerManager implements ListenerManager {
     
     @Override
     public void start(final ShardingDataSource shardingDataSource) {
-        config.getRegistryCenter().watch(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), new ChangeListener() {
+        config.getRegistryCenter().watch(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), new EventListener() {
             
             @Override
-            public void onChange(final DataChangedEvent event) throws Exception {
+            public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(config.getRegistryCenter().get(event.getKey()))) {
@@ -63,7 +65,11 @@ public final class InstanceListenerManager implements ListenerManager {
                             dataSourceMap.put(each, new CircuitBreakerDataSource());
                         }
                     }
-                    shardingDataSource.renew(configurationService.loadShardingRuleConfiguration().build(dataSourceMap), configurationService.loadShardingProperties());
+                    try {
+                        shardingDataSource.renew(configurationService.loadShardingRuleConfiguration().build(dataSourceMap), configurationService.loadShardingProperties());
+                    } catch (final SQLException ex) {
+                        throw new ShardingJdbcException(ex);
+                    }
                 }
             }
         });
@@ -71,10 +77,10 @@ public final class InstanceListenerManager implements ListenerManager {
     
     @Override
     public void start(final MasterSlaveDataSource masterSlaveDataSource) {
-        config.getRegistryCenter().watch(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), new ChangeListener() {
+        config.getRegistryCenter().watch(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), new EventListener() {
             
             @Override
-            public void onChange(final DataChangedEvent event) throws Exception {
+            public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(config.getRegistryCenter().get(event.getKey()))) {

@@ -5,13 +5,12 @@ package io.shardingjdbc.orchestration.reg.base;
  *
  * @author junxiong
  */
-public interface ChangeListener {
+public interface EventListener {
     
     /**
      * Fire when event changed.
      * 
      * @param event data changed event
-     * @throws Exception
      */
-    void onChange(DataChangedEvent event) throws Exception;
+    void onChange(DataChangedEvent event);
 }

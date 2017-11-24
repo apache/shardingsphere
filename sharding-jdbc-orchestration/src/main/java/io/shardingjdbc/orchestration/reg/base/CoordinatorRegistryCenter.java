@@ -54,7 +54,7 @@ public interface CoordinatorRegistryCenter extends RegistryCenter {
      * Watch key or path of the registry.
      *
      * @param path key or path
-     * @param changeListener change listener
+     * @param eventListener change listener
      */
-    void watch(String path, ChangeListener changeListener);
+    void watch(String path, EventListener eventListener);
 }

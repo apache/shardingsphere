@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.orchestration.internal.state.datasource;
 
+import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
@@ -24,8 +25,10 @@ import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
-import io.shardingjdbc.orchestration.reg.base.ChangeListener;
+import io.shardingjdbc.orchestration.reg.base.EventListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+
+import java.sql.SQLException;
 
 /**
  * Data source listener manager.
@@ -51,12 +54,16 @@ public final class DataSourceListenerManager implements ListenerManager {
     
     @Override
     public void start(final ShardingDataSource shardingDataSource) {
-        registryCenter.watch(stateNode.getDataSourcesNodeFullPath(), new ChangeListener() {
+        registryCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
-            public void onChange(final DataChangedEvent event) throws Exception {
+            public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
+                    try {
+                        shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
+                    } catch (final SQLException ex) {
+                        throw new ShardingJdbcException(ex);
+                    }
                 }
             }
         });
@@ -64,10 +71,10 @@ public final class DataSourceListenerManager implements ListenerManager {
     
     @Override
     public void start(final MasterSlaveDataSource masterSlaveDataSource) {
-        registryCenter.watch(stateNode.getDataSourcesNodeFullPath(), new ChangeListener() {
+        registryCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
-            public void onChange(final DataChangedEvent event) throws Exception {
+            public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
                     masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
                 }

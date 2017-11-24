@@ -20,7 +20,7 @@ package io.shardingjdbc.orchestration.reg.zookeeper;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
-import io.shardingjdbc.orchestration.reg.base.ChangeListener;
+import io.shardingjdbc.orchestration.reg.base.EventListener;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import lombok.AccessLevel;
@@ -239,7 +239,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     }
     
     @Override
-    public void watch(final String cachePath, final ChangeListener changeListener) {
+    public void watch(final String cachePath, final EventListener eventListener) {
         final String path = cachePath + "/";
         if (!caches.containsKey(path)) {
             addCacheData(cachePath);
@@ -253,7 +253,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
                 if (null == data || null == data.getPath()) {
                     return;
                 }
-                changeListener.onChange(new DataChangedEvent(getEventType(event), data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8")));
+                eventListener.onChange(new DataChangedEvent(getEventType(event), data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8")));
             }
             
             private DataChangedEvent.Type getEventType(final TreeCacheEvent event) {
