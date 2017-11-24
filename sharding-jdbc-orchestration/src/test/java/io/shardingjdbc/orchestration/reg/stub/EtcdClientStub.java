@@ -56,7 +56,7 @@ public class EtcdClientStub implements EtcdClient {
     public Optional<String> put(final String key, final String value, final long ttl) {
         Element element = new Element(key, value, 0L);
         elements.put(key, element);
-        fireUpdateEvent(element);
+        fireEvent(element, DataChangedEvent.Type.UPDATED);
         return Optional.fromNullable(elements.get(key)).transform(new Function<Element, String>() {
             
             @Override
@@ -64,19 +64,6 @@ public class EtcdClientStub implements EtcdClient {
                 return input.getValue();
             }
         });
-    }
-    
-    @Override
-    public Optional<List<String>> delete(final String keyOrDirectory) {
-        List<String> keys = Lists.newArrayList();
-        for (String key : elements.keySet()) {
-            if (key.startsWith(keyOrDirectory)) {
-                keys.add(key);
-                fireDeleteEvent(elements.get(key));
-                elements.remove(key);
-            }
-        }
-        return Optional.of(keys);
     }
     
     private void fireEvent(final Element element, final DataChangedEvent.Type type) {
@@ -94,14 +81,6 @@ public class EtcdClientStub implements EtcdClient {
                 }
             }
         }
-    }
-    
-    private void fireUpdateEvent(final Element element) {
-        fireEvent(element, DataChangedEvent.Type.UPDATED);
-    }
-    
-    private void fireDeleteEvent(final Element element) {
-        fireEvent(element, DataChangedEvent.Type.DELETED);
     }
     
     @Override

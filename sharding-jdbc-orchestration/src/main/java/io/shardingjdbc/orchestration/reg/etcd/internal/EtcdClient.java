@@ -48,15 +48,6 @@ public interface EtcdClient {
     Optional<String> put(String key, String value, long ttl);
     
     /**
-     * delete a key or a directory.
-     * directory should be end with "/"
-     *
-     * @param keyOrDirectory key or directory
-     * @return deleted keys
-     */
-    Optional<List<String>> delete(String keyOrDirectory);
-    
-    /**
      * watch a keys.
      *
      * @param key String

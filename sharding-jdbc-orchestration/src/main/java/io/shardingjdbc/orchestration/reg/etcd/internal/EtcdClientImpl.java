@@ -10,8 +10,6 @@ import com.google.protobuf.ByteString;
 import etcdserverpb.KVGrpc;
 import etcdserverpb.LeaseGrpc;
 import etcdserverpb.LeaseGrpc.LeaseFutureStub;
-import etcdserverpb.Rpc.DeleteRangeRequest;
-import etcdserverpb.Rpc.DeleteRangeResponse;
 import etcdserverpb.Rpc.LeaseGrantRequest;
 import etcdserverpb.Rpc.PutRequest;
 import etcdserverpb.Rpc.PutResponse;
@@ -151,23 +149,6 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
             @Override
             public Long call() throws Exception {
                 return leaseStub.leaseGrant(request).get(timeoutMills, TimeUnit.MILLISECONDS).getID();
-            }
-        });
-    }
-    
-    @Override
-    public Optional<List<String>> delete(final String key) {
-        final DeleteRangeRequest request = DeleteRangeRequest.newBuilder().build();
-        return retry(new Callable<List<String>>() {
-            
-            @Override
-            public List<String> call() throws Exception {
-                DeleteRangeResponse deleteRangeResponse = kvStub.deleteRange(request).get(timeoutMills, TimeUnit.MILLISECONDS);
-                List<String> deletedKeys = Lists.newArrayList();
-                for (KeyValue keyValue : deleteRangeResponse.getPrevKvsList()) {
-                    deletedKeys.add(keyValue.getKey().toStringUtf8());
-                }
-                return deletedKeys;
             }
         });
     }
