@@ -3,10 +3,11 @@ package io.shardingjdbc.orchestration.reg.etcd;
 import com.google.common.base.Optional;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.base.EventListener;
+import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdChannelFactory;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClient;
-import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdClientBuilder;
 import io.shardingjdbc.orchestration.reg.etcd.internal.Watcher;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,9 +24,8 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     
     public EtcdRegistryCenter(final EtcdConfiguration etcdConfiguration) {
         this.etcdConfiguration = etcdConfiguration;
-        etcdClient = EtcdClientBuilder.newBuilder()
-                .endpoints(etcdConfiguration.getServerLists()).timeoutMilliseconds(etcdConfiguration.getTimeoutMilliseconds())
-                .maxRetryTimes(etcdConfiguration.getMaxRetries()).retryIntervalMilliseconds(etcdConfiguration.getRetryIntervalMilliseconds()).build();
+        etcdClient = new EtcdClient(EtcdChannelFactory.getInstance(Arrays.asList(etcdConfiguration.getServerLists().split(","))), 
+                etcdConfiguration.getTimeoutMilliseconds(), etcdConfiguration.getMaxRetries(), etcdConfiguration.getRetryIntervalMilliseconds());
     }
     
     @Override

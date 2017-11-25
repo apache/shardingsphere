@@ -50,7 +50,7 @@ public final class EtcdClient {
     
     private WatchGrpc.WatchStub watchStub;
     
-    EtcdClient(final Channel channel, final int timeoutMilliseconds, final int maxRetries, final int retryIntervalMilliseconds) {
+    public EtcdClient(final Channel channel, final int timeoutMilliseconds, final int maxRetries, final int retryIntervalMilliseconds) {
         this.timeoutMilliseconds = timeoutMilliseconds;
         this.maxRetries = maxRetries;
         this.retryIntervalMilliseconds = retryIntervalMilliseconds;
