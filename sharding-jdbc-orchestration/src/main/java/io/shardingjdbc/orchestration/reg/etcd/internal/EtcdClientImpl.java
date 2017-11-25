@@ -30,14 +30,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Etcd client implementation client.
  *
  * @author junxiong
  */
-public class EtcdClientImpl implements EtcdClient, AutoCloseable {
+public class EtcdClientImpl implements EtcdClient {
     
     private long timeoutMills = 500L;
     
@@ -50,8 +49,6 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
     private KVGrpc.KVFutureStub kvStub;
     
     private WatchGrpc.WatchStub watchStub;
-    
-    private AtomicBoolean closed = new AtomicBoolean(false);
     
     /**
      * construct a etcd client from grpc channel.
@@ -164,11 +161,6 @@ public class EtcdClientImpl implements EtcdClient, AutoCloseable {
                 return watcher;
             }
         });
-    }
-    
-    @Override
-    public void close() throws Exception {
-        closed.compareAndSet(true, false);
     }
     
     private <T> Optional<T> retry(final Callable<T> command) {
