@@ -25,11 +25,6 @@ package io.shardingjdbc.orchestration.reg.api;
 public interface RegistryCenter extends AutoCloseable {
     
     /**
-     * Initialize registry center.
-     */
-    void init();
-    
-    /**
      * Get data from registry center.
      * 
      * @param key key of data

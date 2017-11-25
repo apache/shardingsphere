@@ -73,7 +73,6 @@ public final class OrchestrationFacade {
     public void initShardingOrchestration(
             final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, 
             final Properties props, final ShardingDataSource shardingDataSource) throws SQLException {
-        config.getRegistryCenter().init();
         if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
             reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
         }
@@ -128,7 +127,6 @@ public final class OrchestrationFacade {
     public void initMasterSlaveOrchestration(
             final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
             final MasterSlaveDataSource masterSlaveDataSource, final Map<String, Object> configMap) {
-        config.getRegistryCenter().init();
         configurationService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, configMap);
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();

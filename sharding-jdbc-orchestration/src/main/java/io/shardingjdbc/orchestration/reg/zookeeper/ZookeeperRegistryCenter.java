@@ -33,7 +33,7 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
@@ -52,18 +52,16 @@ import java.util.concurrent.TimeUnit;
  */
 public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter {
     
-    private final ZookeeperConfiguration zkConfig;
+    private final CuratorFramework client;
     
     private final Map<String, TreeCache> caches = new HashMap<>();
     
-    private CuratorFramework client;
-    
     public ZookeeperRegistryCenter(final ZookeeperConfiguration zkConfig) {
-        this.zkConfig = zkConfig;
+        client = buildCuratorClient(zkConfig);
+        initCuratorClient(zkConfig);
     }
     
-    @Override
-    public void init() {
+    private CuratorFramework buildCuratorClient(final ZookeeperConfiguration zkConfig) {
         CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
                 .connectString(zkConfig.getServerLists())
                 .retryPolicy(new ExponentialBackoffRetry(zkConfig.getBaseSleepTimeMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getMaxSleepTimeMilliseconds()))
@@ -89,16 +87,17 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
                         }
                     });
         }
-        client = builder.build();
+        return builder.build();
+    }
+    
+    private void initCuratorClient(final ZookeeperConfiguration zkConfig) {
         client.start();
         try {
             if (!client.blockUntilConnected(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS)) {
                 client.close();
-                throw new KeeperException.OperationTimeoutException();
+                throw new OperationTimeoutException();
             }
-            //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            //CHECKSTYLE:ON
+        } catch (final InterruptedException | OperationTimeoutException ex) {
             RegExceptionHandler.handleException(ex);
         }
     }
