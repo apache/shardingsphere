@@ -19,9 +19,9 @@ package io.shardingjdbc.orchestration.reg.zookeeper;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
-import io.shardingjdbc.orchestration.reg.base.EventListener;
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
+import io.shardingjdbc.orchestration.reg.listener.EventListener;
+import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import lombok.AccessLevel;
 import lombok.Getter;

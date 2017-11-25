@@ -1,6 +1,6 @@
 package io.shardingjdbc.orchestration.reg.etcd;
 
-import io.shardingjdbc.orchestration.reg.base.RegistryCenterConfiguration;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 

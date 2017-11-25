@@ -26,8 +26,8 @@ import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerData
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
-import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
-import io.shardingjdbc.orchestration.reg.base.EventListener;
+import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
+import io.shardingjdbc.orchestration.reg.listener.EventListener;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

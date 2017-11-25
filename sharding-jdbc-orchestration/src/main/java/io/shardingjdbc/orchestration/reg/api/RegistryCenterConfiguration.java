@@ -1,4 +1,4 @@
-package io.shardingjdbc.orchestration.reg.base;
+package io.shardingjdbc.orchestration.reg.api;
 
 /**
  * Registry center registry center configuration.

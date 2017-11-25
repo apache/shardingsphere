@@ -1,4 +1,4 @@
-package io.shardingjdbc.orchestration.reg.base;
+package io.shardingjdbc.orchestration.reg.listener;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

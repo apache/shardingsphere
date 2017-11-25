@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.orchestration.api.config;
 
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

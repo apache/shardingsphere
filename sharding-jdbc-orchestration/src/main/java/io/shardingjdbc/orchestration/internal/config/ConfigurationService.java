@@ -24,7 +24,7 @@ import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
 
 import javax.sql.DataSource;
 import java.util.Map;

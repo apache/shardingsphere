@@ -22,9 +22,9 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
-import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
-import io.shardingjdbc.orchestration.reg.base.EventListener;
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
+import io.shardingjdbc.orchestration.reg.listener.EventListener;
+import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
 
 /**
  * Config map listener manager.

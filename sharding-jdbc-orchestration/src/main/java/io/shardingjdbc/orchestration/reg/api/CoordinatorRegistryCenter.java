@@ -15,54 +15,48 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.reg.base;
+package io.shardingjdbc.orchestration.reg.api;
+
+import io.shardingjdbc.orchestration.reg.listener.EventListener;
+
+import java.util.List;
 
 /**
- * Registry center.
+ * Coordinator based registry center.
  * 
  * @author zhangliang
  */
-public interface RegistryCenter {
+public interface CoordinatorRegistryCenter extends RegistryCenter {
     
     /**
-     * Initialize registry center.
-     */
-    void init();
-    
-    /**
-     * Close registry center.
-     */
-    void close();
-    
-    /**
-     * Get data from registry center.
-     * 
+     * Get data from registry center directly.
+     *
      * @param key key of data
      * @return value of data
      */
-    String get(String key);
+    String getDirectly(String key);
     
     /**
-     * Adjust data is existed or not.
-     * 
-     * @param key key of data
-     * @return data is existed or not
-     */
-    boolean isExisted(String key);
-    
-    /**
-     * Persist data.
-     * 
-     * @param key key of data
-     * @param value value of data
-     */
-    void persist(String key, String value);
-    
-    /**
-     * Update data.
+     * Persist ephemeral data.
      *
      * @param key key of data
      * @param value value of data
      */
-    void update(String key, String value);
+    void persistEphemeral(String key, String value);
+    
+    /**
+     * Get node's sub-nodes list.
+     *
+     * @param key key of data
+     * @return sub-nodes name list
+     */
+    List<String> getChildrenKeys(String key);
+
+    /**
+     * Watch key or path of the registry.
+     *
+     * @param key key of data
+     * @param eventListener change listener
+     */
+    void watch(String key, EventListener eventListener);
 }

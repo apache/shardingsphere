@@ -1,4 +1,4 @@
-package io.shardingjdbc.orchestration.reg.base;
+package io.shardingjdbc.orchestration.reg.listener;
 
 /**
  * Coordinator registry event change listener.
