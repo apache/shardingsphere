@@ -19,13 +19,10 @@ package io.shardingjdbc.orchestration.reg.zookeeper;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
-import io.shardingjdbc.orchestration.reg.listener.EventListener;
 import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
+import io.shardingjdbc.orchestration.reg.listener.EventListener;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
@@ -53,15 +50,12 @@ import java.util.concurrent.TimeUnit;
  * 
  * @author zhangliang
  */
-@Slf4j
 public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter {
     
-    @Getter(AccessLevel.PROTECTED)
-    private ZookeeperConfiguration zkConfig;
+    private final ZookeeperConfiguration zkConfig;
     
     private final Map<String, TreeCache> caches = new HashMap<>();
     
-    @Getter
     private CuratorFramework client;
     
     public ZookeeperRegistryCenter(final ZookeeperConfiguration zkConfig) {
@@ -70,7 +64,6 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     
     @Override
     public void init() {
-        log.debug("Elastic job: zookeeper registry center initShardingOrchestration, server lists is: {}.", zkConfig.getServerLists());
         CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
                 .connectString(zkConfig.getServerLists())
                 .retryPolicy(new ExponentialBackoffRetry(zkConfig.getBaseSleepTimeMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getMaxSleepTimeMilliseconds()))
@@ -84,12 +77,12 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
         if (!Strings.isNullOrEmpty(zkConfig.getDigest())) {
             builder.authorization("digest", zkConfig.getDigest().getBytes(Charsets.UTF_8))
                     .aclProvider(new ACLProvider() {
-                    
+                        
                         @Override
                         public List<ACL> getDefaultAcl() {
                             return ZooDefs.Ids.CREATOR_ALL_ACL;
                         }
-                    
+                        
                         @Override
                         public List<ACL> getAclForPath(final String path) {
                             return ZooDefs.Ids.CREATOR_ALL_ACL;
