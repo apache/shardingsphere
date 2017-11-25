@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.orchestration.reg.zookeeper;
 
+import io.shardingjdbc.orchestration.reg.base.RegistryCenterConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,7 +28,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public final class ZookeeperConfiguration {
+public final class ZookeeperConfiguration implements RegistryCenterConfiguration {
     
     /**
      * Zookeeper server list.

@@ -1,5 +1,6 @@
 package io.shardingjdbc.orchestration.reg.etcd;
 
+import io.shardingjdbc.orchestration.reg.base.RegistryCenterConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +11,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public final class EtcdConfiguration {
+public final class EtcdConfiguration implements RegistryCenterConfiguration {
     
     /**
      * Etcd server list.
