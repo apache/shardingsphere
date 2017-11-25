@@ -4,9 +4,10 @@ import etcdserverpb.Rpc;
 import etcdserverpb.Rpc.WatchResponse;
 import io.grpc.stub.StreamObserver;
 import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
+import io.shardingjdbc.orchestration.reg.base.EventListener;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import lombok.RequiredArgsConstructor;
-import mvccpb.Kv;
+import mvccpb.Kv.Event;
 
 /**
  * Watch stream observer.
@@ -16,19 +17,19 @@ import mvccpb.Kv;
 @RequiredArgsConstructor
 public final class EtcdWatchStreamObserver implements StreamObserver<WatchResponse> {
     
-    private final EtcdWatcher etcdWatcher;
+    private final EventListener eventListener;
     
     @Override
     public void onNext(final Rpc.WatchResponse response) {
         if (response.getCanceled() || response.getCreated()) {
             return;
         }
-        for (Kv.Event event : response.getEventsList()) {
-            etcdWatcher.notify(new DataChangedEvent(getEventType(event), event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8()));
+        for (Event event : response.getEventsList()) {
+            eventListener.onChange(new DataChangedEvent(getEventType(event), event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8()));
         }
     }
     
-    private DataChangedEvent.Type getEventType(final Kv.Event event) {
+    private DataChangedEvent.Type getEventType(final Event event) {
         switch (event.getType()) {
             case PUT:
                 return DataChangedEvent.Type.UPDATED;

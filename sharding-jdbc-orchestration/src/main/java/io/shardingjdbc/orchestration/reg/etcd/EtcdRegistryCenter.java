@@ -15,13 +15,11 @@ import etcdserverpb.Rpc.WatchRequest;
 import etcdserverpb.WatchGrpc;
 import etcdserverpb.WatchGrpc.WatchStub;
 import io.grpc.Channel;
-import io.grpc.stub.StreamObserver;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.base.EventListener;
 import io.shardingjdbc.orchestration.reg.etcd.internal.channel.EtcdChannelFactory;
 import io.shardingjdbc.orchestration.reg.etcd.internal.retry.EtcdRetryEngine;
 import io.shardingjdbc.orchestration.reg.etcd.internal.watcher.EtcdWatchStreamObserver;
-import io.shardingjdbc.orchestration.reg.etcd.internal.watcher.EtcdWatcher;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import mvccpb.Kv.KeyValue;
 
@@ -157,20 +155,15 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     public void watch(final String key, final EventListener eventListener) {
         String fullPath = getFullPathWithNamespace(key);
         WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder().setKey(ByteString.copyFromUtf8(fullPath)).setRangeEnd(getRangeEnd(fullPath)).build();
-        final WatchRequest watchRequest = WatchRequest.newBuilder().setCreateRequest(createWatchRequest).build();
-        Optional<EtcdWatcher> watcher = etcdRetryEngine.execute(new Callable<EtcdWatcher>() {
+        final WatchRequest request = WatchRequest.newBuilder().setCreateRequest(createWatchRequest).build();
+        etcdRetryEngine.execute(new Callable<Void>() {
             
             @Override
-            public EtcdWatcher call() throws Exception {
-                EtcdWatcher etcdWatcher = new EtcdWatcher();
-                StreamObserver<WatchRequest> requestStream = watchStub.watch(new EtcdWatchStreamObserver(etcdWatcher));
-                requestStream.onNext(watchRequest);
-                return etcdWatcher;
+            public Void call() throws Exception {
+                watchStub.watch(new EtcdWatchStreamObserver(eventListener)).onNext(request);
+                return null;
             }
         });
-        if (watcher.isPresent()) {
-            watcher.get().addEventListener(eventListener);
-        }
     }
     
     private String getFullPathWithNamespace(final String path) {
