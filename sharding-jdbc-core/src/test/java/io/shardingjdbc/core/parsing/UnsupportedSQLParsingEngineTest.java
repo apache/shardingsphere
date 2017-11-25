@@ -17,12 +17,13 @@
 
 package io.shardingjdbc.core.parsing;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import io.shardingjdbc.core.api.fixture.ShardingRuleMockBuilder;
 import io.shardingjdbc.core.common.jaxb.SQLStatement;
 import io.shardingjdbc.core.common.jaxb.helper.SQLStatementHelper;
-import io.shardingjdbc.core.api.fixture.ShardingRuleMockBuilder;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,8 +33,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 public final class UnsupportedSQLParsingEngineTest {
@@ -66,7 +67,7 @@ public final class UnsupportedSQLParsingEngineTest {
     }
     
     private static Set<DatabaseType> getTypes(final String types) {
-        if (types == null || types.isEmpty()) {
+        if (Strings.isNullOrEmpty(types)) {
             return Sets.newHashSet(DatabaseType.values());
         }
         Set<DatabaseType> result = new HashSet<>();

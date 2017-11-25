@@ -84,26 +84,26 @@ public final class Assert {
     private Limit limit;
     
     public List<SQLToken> getSqlTokens() {
-        List<SQLToken> result = new ArrayList<SQLToken>(7);
-        if (tableTokens != null) {
+        List<SQLToken> result = new ArrayList<>(7);
+        if (null != tableTokens) {
             result.addAll(tableTokens);
         }
-        if (offsetToken != null) {
+        if (null != offsetToken) {
             result.add(offsetToken);
         }
-        if (rowCountToken != null) {
+        if (null != rowCountToken) {
             result.add(rowCountToken);
         }
-        if (itemsToken != null) {
+        if (null != itemsToken) {
             result.add(itemsToken);
         }
-        if (generatedKeyToken != null) {
+        if (null != generatedKeyToken) {
             result.add(generatedKeyToken);
         }
-        if (multipleInsertValuesToken != null) {
+        if (null != multipleInsertValuesToken) {
             result.add(multipleInsertValuesToken);
         }
-        if (orderByToken != null) {
+        if (null != orderByToken) {
             result.add(orderByToken);
         }
         return result;

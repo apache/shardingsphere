@@ -33,7 +33,7 @@ public final class SQLStatementHelper {
     private static Map<String, SQLStatement> loadSqlStatements(final String directory) {
         Map<String, SQLStatement> result = new HashMap<>();
         URL url = SQLAssertJAXBHelper.class.getClassLoader().getResource(directory);
-        if (url == null) {
+        if (null == url) {
             return result;
         }
         File filePath = new File(url.getPath());

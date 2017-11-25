@@ -57,7 +57,7 @@ public class ParserAssertHelper {
                     if (valueWithType instanceof Number) {
                         sqlExpressions.add(new SQLNumberExpression((Number) valueWithType));
                     } else {
-                        sqlExpressions.add(new SQLTextExpression(valueWithType == null ? "" : valueWithType.toString()));
+                        sqlExpressions.add(new SQLTextExpression(null == valueWithType ? "" : valueWithType.toString()));
                     }
                 }
             }

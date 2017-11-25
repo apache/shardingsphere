@@ -61,10 +61,6 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     }
     
     @Override
-    public void close() {
-    }
-    
-    @Override
     public String get(final String key) {
         final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(getFullPathWithNamespace(key))).build();
         return etcdRetryEngine.execute(new Callable<String>() {
@@ -166,6 +162,10 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
                 return null;
             }
         });
+    }
+    
+    @Override
+    public void close() {
     }
     
     private String getFullPathWithNamespace(final String path) {

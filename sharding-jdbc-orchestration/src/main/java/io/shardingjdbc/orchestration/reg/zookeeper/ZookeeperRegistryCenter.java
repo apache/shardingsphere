@@ -111,28 +111,6 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     }
     
     @Override
-    public void close() {
-        for (Entry<String, TreeCache> each : caches.entrySet()) {
-            each.getValue().close();
-        }
-        waitForCacheClose();
-        CloseableUtils.closeQuietly(client);
-    }
-    
-    /* TODO 等待500ms, cache先关闭再关闭client, 否则会抛异常
-     * 因为异步处理, 可能会导致client先关闭而cache还未关闭结束.
-     * 等待Curator新版本解决这个bug.
-     * BUG地址：https://issues.apache.org/jira/browse/CURATOR-157
-     */
-    private void waitForCacheClose() {
-        try {
-            Thread.sleep(500L);
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-    }
-    
-    @Override
     public String get(final String key) {
         TreeCache cache = findTreeCache(key);
         if (null == cache) {
@@ -279,5 +257,27 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
             RegExceptionHandler.handleException(ex);
         }
         caches.put(cachePath + "/", cache);
+    }
+    
+    @Override
+    public void close() {
+        for (Entry<String, TreeCache> each : caches.entrySet()) {
+            each.getValue().close();
+        }
+        waitForCacheClose();
+        CloseableUtils.closeQuietly(client);
+    }
+    
+    /* TODO 等待500ms, cache先关闭再关闭client, 否则会抛异常
+     * 因为异步处理, 可能会导致client先关闭而cache还未关闭结束.
+     * 等待Curator新版本解决这个bug.
+     * BUG地址：https://issues.apache.org/jira/browse/CURATOR-157
+     */
+    private void waitForCacheClose() {
+        try {
+            Thread.sleep(500L);
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

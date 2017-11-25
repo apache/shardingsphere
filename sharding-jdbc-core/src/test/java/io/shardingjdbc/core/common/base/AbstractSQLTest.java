@@ -73,7 +73,7 @@ public abstract class AbstractSQLTest {
         try {
             Properties prop = new Properties();
             prop.load(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
-            boolean initialized = prop.getProperty("initialized") == null ? false : Boolean.valueOf(prop.getProperty("initialized"));
+            boolean initialized = null == prop.getProperty("initialized") ? false : Boolean.valueOf(prop.getProperty("initialized"));
             String databases = prop.getProperty("databases");
             if (!Strings.isNullOrEmpty(databases)) {
                 for (String each : databases.split(",")) {

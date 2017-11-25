@@ -70,7 +70,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         sqlAssertHelper = new SQLAssertHelper(sql);
     }
     
-    protected static final void importAllDataSet(final List<String> dataSetFiles) throws Exception {
+    protected static void importAllDataSet(final List<String> dataSetFiles) throws Exception {
         for (DatabaseType databaseType : getDatabaseTypes()) {
             DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType);
             for (String each : dataSetFiles) {
