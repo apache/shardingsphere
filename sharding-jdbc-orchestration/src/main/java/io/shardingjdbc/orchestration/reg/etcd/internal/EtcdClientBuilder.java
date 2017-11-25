@@ -58,7 +58,7 @@ public final class EtcdClientBuilder {
                 .usePlaintext(true)
                 .nameResolverFactory(DirectNameSolverFactory.newFactory(target, endpoints));
         Channel channel = channelBuilder.build();
-        EtcdClient newEtcdClient = new EtcdClientImpl(channel, timeout, span, maxRetry);
+        EtcdClient newEtcdClient = new EtcdClient(channel, timeout, span, maxRetry);
         if (etcdClientRef.compareAndSet(null, newEtcdClient)) {
             return newEtcdClient;
         }
