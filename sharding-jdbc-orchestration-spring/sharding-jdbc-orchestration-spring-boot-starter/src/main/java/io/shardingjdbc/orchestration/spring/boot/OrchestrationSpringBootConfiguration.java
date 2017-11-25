@@ -51,11 +51,15 @@ import java.util.Properties;
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
+    
     private final Properties props = new Properties();
+    
     @Autowired
     private SpringBootShardingRuleConfigurationProperties shardingProperties;
+    
     @Autowired
     private SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
+    
     @Autowired
     private OrchestrationSpringBootConfigurationProperties orchestrationProperties;
     
