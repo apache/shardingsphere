@@ -16,7 +16,7 @@ import mvccpb.Kv;
 @RequiredArgsConstructor
 public final class EtcdWatchStreamObserver implements StreamObserver<WatchResponse> {
     
-    private final EtcdWatcher watcher;
+    private final EtcdWatcher etcdWatcher;
     
     @Override
     public void onNext(final Rpc.WatchResponse response) {
@@ -24,7 +24,7 @@ public final class EtcdWatchStreamObserver implements StreamObserver<WatchRespon
             return;
         }
         for (Kv.Event event : response.getEventsList()) {
-            watcher.notify(new DataChangedEvent(getEventType(event), event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8()));
+            etcdWatcher.notify(new DataChangedEvent(getEventType(event), event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8()));
         }
     }
     

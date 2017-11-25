@@ -1,9 +1,5 @@
 package io.shardingjdbc.orchestration.reg.etcd;
 
-import com.github.rholder.retry.RetryException;
-import com.github.rholder.retry.RetryerBuilder;
-import com.github.rholder.retry.StopStrategies;
-import com.github.rholder.retry.WaitStrategies;
 import com.google.common.base.Optional;
 import com.google.protobuf.ByteString;
 import etcdserverpb.KVGrpc;
@@ -23,10 +19,10 @@ import io.grpc.stub.StreamObserver;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.base.EventListener;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdChannelFactory;
+import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdRetryEngine;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdWatchStreamObserver;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdWatcher;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
-import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import mvccpb.Kv.KeyValue;
 
 import java.util.ArrayList;
@@ -34,9 +30,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Etcd based registry center.
@@ -45,7 +39,9 @@ import java.util.concurrent.TimeoutException;
  */
 public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     
-    private final EtcdConfiguration etcdConfiguration;
+    private final EtcdConfiguration etcdConfig;
+    
+    private final EtcdRetryEngine etcdRetryEngine;
     
     private final KVFutureStub kvStub;
     
@@ -53,9 +49,10 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     
     private final WatchStub watchStub;
     
-    public EtcdRegistryCenter(final EtcdConfiguration etcdConfiguration) {
-        this.etcdConfiguration = etcdConfiguration;
-        Channel channel = EtcdChannelFactory.getInstance(Arrays.asList(etcdConfiguration.getServerLists().split(",")));
+    public EtcdRegistryCenter(final EtcdConfiguration etcdConfig) {
+        this.etcdConfig = etcdConfig;
+        etcdRetryEngine = new EtcdRetryEngine(etcdConfig);
+        Channel channel = EtcdChannelFactory.getInstance(Arrays.asList(etcdConfig.getServerLists().split(",")));
         kvStub = KVGrpc.newFutureStub(channel);
         leaseStub = LeaseGrpc.newFutureStub(channel);
         watchStub = WatchGrpc.newStub(channel);
@@ -72,11 +69,11 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     @Override
     public String get(final String key) {
         final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(getFullPathWithNamespace(key))).build();
-        return retry(new Callable<String>() {
+        return etcdRetryEngine.call(new Callable<String>() {
             
             @Override
             public String call() throws Exception {
-                RangeResponse response = kvStub.range(request).get(etcdConfiguration.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
+                RangeResponse response = kvStub.range(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
                 return response.getKvsCount() > 0 ? response.getKvs(0).getValue().toStringUtf8() : null;
             }
         }).orNull();
@@ -90,11 +87,11 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     @Override
     public void persist(final String key, final String value) {
         final PutRequest request = PutRequest.newBuilder().setPrevKv(true).setKey(ByteString.copyFromUtf8(getFullPathWithNamespace(key))).setValue(ByteString.copyFromUtf8(value)).build();
-        retry(new Callable<String>() {
+        etcdRetryEngine.call(new Callable<String>() {
             
             @Override
             public String call() throws Exception {
-                return kvStub.put(request).get(etcdConfiguration.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getPrevKv().getValue().toStringUtf8();
+                return kvStub.put(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getPrevKv().getValue().toStringUtf8();
             }
         });
     }
@@ -117,22 +114,22 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
             throw new RegException("Unable to set up heat beat for key %s", fullPath);
         }
         final PutRequest request = PutRequest.newBuilder().setPrevKv(true).setLease(leaseId.get()).setKey(ByteString.copyFromUtf8(fullPath)).setValue(ByteString.copyFromUtf8(value)).build();
-        retry(new Callable<String>() {
+        etcdRetryEngine.call(new Callable<String>() {
             
             @Override
             public String call() throws Exception {
-                return kvStub.put(request).get(etcdConfiguration.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getPrevKv().getValue().toStringUtf8();
+                return kvStub.put(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getPrevKv().getValue().toStringUtf8();
             }
         });
     }
     
     private Optional<Long> lease() {
-        final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(etcdConfiguration.getTimeToLiveMilliseconds()).build();
-        return retry(new Callable<Long>() {
+        final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(etcdConfig.getTimeToLiveMilliseconds()).build();
+        return etcdRetryEngine.call(new Callable<Long>() {
             
             @Override
             public Long call() throws Exception {
-                return leaseStub.leaseGrant(request).get(etcdConfiguration.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();
+                return leaseStub.leaseGrant(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();
             }
         });
     }
@@ -141,11 +138,11 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     public List<String> getChildrenKeys(final String key) {
         String fullPath = getFullPathWithNamespace(key);
         final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(fullPath)).setRangeEnd(getRangeEnd(fullPath)).build();
-        Optional<List<String>> result = retry(new Callable<List<String>>() {
+        Optional<List<String>> result = etcdRetryEngine.call(new Callable<List<String>>() {
             
             @Override
             public List<String> call() throws Exception {
-                RangeResponse response = kvStub.range(request).get(etcdConfiguration.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
+                RangeResponse response = kvStub.range(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
                 List<String> result = new ArrayList<>();
                 for (KeyValue each : response.getKvsList()) {
                     result.add(each.getKey().toStringUtf8());
@@ -161,14 +158,14 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
         String fullPath = getFullPathWithNamespace(key);
         WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder().setKey(ByteString.copyFromUtf8(fullPath)).setRangeEnd(getRangeEnd(fullPath)).build();
         final WatchRequest watchRequest = WatchRequest.newBuilder().setCreateRequest(createWatchRequest).build();
-        Optional<EtcdWatcher> watcher = retry(new Callable<EtcdWatcher>() {
+        Optional<EtcdWatcher> watcher = etcdRetryEngine.call(new Callable<EtcdWatcher>() {
             
             @Override
             public EtcdWatcher call() throws Exception {
-                EtcdWatcher watcher = new EtcdWatcher();
-                StreamObserver<WatchRequest> requestStream = watchStub.watch(new EtcdWatchStreamObserver(watcher));
+                EtcdWatcher etcdWatcher = new EtcdWatcher();
+                StreamObserver<WatchRequest> requestStream = watchStub.watch(new EtcdWatchStreamObserver(etcdWatcher));
                 requestStream.onNext(watchRequest);
-                return watcher;
+                return etcdWatcher;
             }
         });
         if (watcher.isPresent()) {
@@ -177,7 +174,7 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     }
     
     private String getFullPathWithNamespace(final String path) {
-        return String.format("/%s/%s", etcdConfiguration.getNamespace(), path);
+        return String.format("/%s/%s", etcdConfig.getNamespace(), path);
     }
     
     private ByteString getRangeEnd(final String key) {
@@ -190,20 +187,5 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
             }
         }
         return ByteString.copyFrom(noPrefix);
-    }
-    
-    private <T> Optional<T> retry(final Callable<T> command) {
-        try {
-            return Optional.fromNullable(RetryerBuilder.<T>newBuilder()
-                    .retryIfExceptionOfType(TimeoutException.class)
-                    .retryIfExceptionOfType(ExecutionException.class)
-                    .retryIfExceptionOfType(InterruptedException.class)
-                    .withWaitStrategy(WaitStrategies.fixedWait(etcdConfiguration.getRetryIntervalMilliseconds(), TimeUnit.MILLISECONDS))
-                    .withStopStrategy(StopStrategies.stopAfterAttempt(etcdConfiguration.getMaxRetries()))
-                    .build().call(command));
-        } catch (final ExecutionException | RetryException ex) {
-            RegExceptionHandler.handleException(ex);
-            return Optional.absent();
-        }
     }
 }
