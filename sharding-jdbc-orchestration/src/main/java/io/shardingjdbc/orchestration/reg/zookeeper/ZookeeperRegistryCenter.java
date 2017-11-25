@@ -239,10 +239,10 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     }
     
     @Override
-    public void watch(final String cachePath, final EventListener eventListener) {
-        final String path = cachePath + "/";
+    public void watch(final String key, final EventListener eventListener) {
+        final String path = key + "/";
         if (!caches.containsKey(path)) {
-            addCacheData(cachePath);
+            addCacheData(key);
         }
         TreeCache cache = caches.get(path);
         cache.getListenable().addListener(new TreeCacheListener() {

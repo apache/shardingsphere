@@ -45,16 +45,16 @@ public interface CoordinatorRegistryCenter extends RegistryCenter {
     /**
      * Get node's sub-nodes list.
      *
-     * @param path key
+     * @param key key of data
      * @return sub-nodes name list
      */
-    List<String> getChildrenKeys(String path);
+    List<String> getChildrenKeys(String key);
 
     /**
      * Watch key or path of the registry.
      *
-     * @param path key or path
+     * @param key key of data
      * @param eventListener change listener
      */
-    void watch(String path, EventListener eventListener);
+    void watch(String key, EventListener eventListener);
 }
