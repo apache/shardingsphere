@@ -69,7 +69,7 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     @Override
     public String get(final String key) {
         final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(getFullPathWithNamespace(key))).build();
-        return etcdRetryEngine.call(new Callable<String>() {
+        return etcdRetryEngine.execute(new Callable<String>() {
             
             @Override
             public String call() throws Exception {
@@ -87,7 +87,7 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     @Override
     public void persist(final String key, final String value) {
         final PutRequest request = PutRequest.newBuilder().setPrevKv(true).setKey(ByteString.copyFromUtf8(getFullPathWithNamespace(key))).setValue(ByteString.copyFromUtf8(value)).build();
-        etcdRetryEngine.call(new Callable<String>() {
+        etcdRetryEngine.execute(new Callable<String>() {
             
             @Override
             public String call() throws Exception {
@@ -114,7 +114,7 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
             throw new RegException("Unable to set up heat beat for key %s", fullPath);
         }
         final PutRequest request = PutRequest.newBuilder().setPrevKv(true).setLease(leaseId.get()).setKey(ByteString.copyFromUtf8(fullPath)).setValue(ByteString.copyFromUtf8(value)).build();
-        etcdRetryEngine.call(new Callable<String>() {
+        etcdRetryEngine.execute(new Callable<String>() {
             
             @Override
             public String call() throws Exception {
@@ -125,7 +125,7 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     
     private Optional<Long> lease() {
         final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(etcdConfig.getTimeToLiveMilliseconds()).build();
-        return etcdRetryEngine.call(new Callable<Long>() {
+        return etcdRetryEngine.execute(new Callable<Long>() {
             
             @Override
             public Long call() throws Exception {
@@ -138,7 +138,7 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     public List<String> getChildrenKeys(final String key) {
         String fullPath = getFullPathWithNamespace(key);
         final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(fullPath)).setRangeEnd(getRangeEnd(fullPath)).build();
-        Optional<List<String>> result = etcdRetryEngine.call(new Callable<List<String>>() {
+        Optional<List<String>> result = etcdRetryEngine.execute(new Callable<List<String>>() {
             
             @Override
             public List<String> call() throws Exception {
@@ -158,7 +158,7 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
         String fullPath = getFullPathWithNamespace(key);
         WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder().setKey(ByteString.copyFromUtf8(fullPath)).setRangeEnd(getRangeEnd(fullPath)).build();
         final WatchRequest watchRequest = WatchRequest.newBuilder().setCreateRequest(createWatchRequest).build();
-        Optional<EtcdWatcher> watcher = etcdRetryEngine.call(new Callable<EtcdWatcher>() {
+        Optional<EtcdWatcher> watcher = etcdRetryEngine.execute(new Callable<EtcdWatcher>() {
             
             @Override
             public EtcdWatcher call() throws Exception {

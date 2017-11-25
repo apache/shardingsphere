@@ -32,7 +32,7 @@ public final class EtcdRetryEngine {
      * @param <T> return type
      * @return execute result
      */
-    public <T> Optional<T> call(final Callable<T> callable) {
+    public <T> Optional<T> execute(final Callable<T> callable) {
         Retryer<T> retryer = RetryerBuilder.<T>newBuilder()
                 .retryIfExceptionOfType(TimeoutException.class)
                 .retryIfExceptionOfType(ExecutionException.class)
