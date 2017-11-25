@@ -18,7 +18,6 @@
 package io.shardingjdbc.orchestration;
 
 import io.shardingjdbc.orchestration.internal.AllInternalTests;
-import io.shardingjdbc.orchestration.reg.EtcdRegistryCenterTest;
 import io.shardingjdbc.orchestration.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -27,8 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllYamlTests.class,
-        AllInternalTests.class,
-        EtcdRegistryCenterTest.class
+        AllInternalTests.class
     })
 public class AllTests {
 }
