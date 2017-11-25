@@ -85,11 +85,12 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     @Override
     public void persist(final String key, final String value) {
         final PutRequest request = PutRequest.newBuilder().setPrevKv(true).setKey(ByteString.copyFromUtf8(getFullPathWithNamespace(key))).setValue(ByteString.copyFromUtf8(value)).build();
-        etcdRetryEngine.execute(new Callable<String>() {
+        etcdRetryEngine.execute(new Callable<Void>() {
             
             @Override
-            public String call() throws Exception {
-                return kvStub.put(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getPrevKv().getValue().toStringUtf8();
+            public Void call() throws Exception {
+                kvStub.put(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
+                return null;
             }
         });
     }
@@ -112,11 +113,12 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
             throw new RegException("Unable to set up heat beat for key %s", fullPath);
         }
         final PutRequest request = PutRequest.newBuilder().setPrevKv(true).setLease(leaseId.get()).setKey(ByteString.copyFromUtf8(fullPath)).setValue(ByteString.copyFromUtf8(value)).build();
-        etcdRetryEngine.execute(new Callable<String>() {
+        etcdRetryEngine.execute(new Callable<Void>() {
             
             @Override
-            public String call() throws Exception {
-                return kvStub.put(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getPrevKv().getValue().toStringUtf8();
+            public Void call() throws Exception {
+                kvStub.put(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
+                return null;
             }
         });
     }
