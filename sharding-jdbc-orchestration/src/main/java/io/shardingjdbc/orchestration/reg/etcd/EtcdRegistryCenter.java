@@ -15,28 +15,17 @@ import java.util.List;
  *
  * @author junxiong
  */
-public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
+public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     
-    private String namespace;
-    
-    private long timeToLive;
+    private final EtcdConfiguration etcdConfiguration;
     
     private EtcdClient etcdClient;
     
     public EtcdRegistryCenter(final EtcdConfiguration etcdConfiguration) {
-        namespace = etcdConfiguration.getNamespace();
-        timeToLive = etcdConfiguration.getTimeToLive();
+        this.etcdConfiguration = etcdConfiguration;
         etcdClient = EtcdClientBuilder.newBuilder()
-                .endpoints(etcdConfiguration.getServerLists())
-                .timeout(etcdConfiguration.getTimeout())
-                .maxRetry(etcdConfiguration.getMaxRetries())
-                .build();
-    }
-    
-    public EtcdRegistryCenter(final String namespace, final long timeToLive, final EtcdClient etcdClient) {
-        this.namespace = namespace;
-        this.timeToLive = timeToLive;
-        this.etcdClient = etcdClient;
+                .endpoints(etcdConfiguration.getServerLists()).timeoutMilliseconds(etcdConfiguration.getTimeoutMilliseconds())
+                .maxRetryTimes(etcdConfiguration.getMaxRetries()).retryIntervalMilliseconds(etcdConfiguration.getRetryIntervalMilliseconds()).build();
     }
     
     @Override
@@ -74,7 +63,7 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     
     @Override
     public void persistEphemeral(final String key, final String value) {
-        etcdClient.put(getFullPathWithNamespace(key), value, timeToLive);
+        etcdClient.put(getFullPathWithNamespace(key), value, etcdConfiguration.getTimeToLiveMilliseconds());
     }
     
     @Override
@@ -92,6 +81,6 @@ public class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     }
     
     private String getFullPathWithNamespace(final String path) {
-        return String.format("/%s/%s", namespace, path);
+        return String.format("/%s/%s", etcdConfiguration.getNamespace(), path);
     }
 }

@@ -38,11 +38,11 @@ import java.util.concurrent.TimeoutException;
  */
 public final class EtcdClient {
     
-    private long timeoutMills = 500L;
+    private final int timeoutMilliseconds;
     
-    private long retryMills = 200L;
+    private final int maxRetries;
     
-    private int retryTimes = 2;
+    private final int retryIntervalMilliseconds;
     
     private LeaseFutureStub leaseStub;
     
@@ -50,10 +50,10 @@ public final class EtcdClient {
     
     private WatchGrpc.WatchStub watchStub;
     
-    EtcdClient(final Channel channel, final long timeoutMills, final long retryMills, final int retryTimes) {
-        this.timeoutMills = timeoutMills;
-        this.retryMills = retryMills;
-        this.retryTimes = retryTimes;
+    EtcdClient(final Channel channel, final int timeoutMilliseconds, final int maxRetries, final int retryIntervalMilliseconds) {
+        this.timeoutMilliseconds = timeoutMilliseconds;
+        this.maxRetries = maxRetries;
+        this.retryIntervalMilliseconds = retryIntervalMilliseconds;
         leaseStub = LeaseGrpc.newFutureStub(channel);
         kvStub = KVGrpc.newFutureStub(channel);
         watchStub = WatchGrpc.newStub(channel);
@@ -71,7 +71,7 @@ public final class EtcdClient {
             
             @Override
             public String call() throws Exception {
-                final RangeResponse rangeResponse = kvStub.range(request).get(timeoutMills, TimeUnit.MILLISECONDS);
+                final RangeResponse rangeResponse = kvStub.range(request).get(timeoutMilliseconds, TimeUnit.MILLISECONDS);
                 return rangeResponse.getKvsCount() > 0
                         ? rangeResponse.getKvs(0).getValue().toStringUtf8() : null;
             }
@@ -93,7 +93,7 @@ public final class EtcdClient {
         return retry(new Callable<List<String>>() {
             @Override
             public List<String> call() throws Exception {
-                RangeResponse rangeResponse = kvStub.range(request).get(timeoutMills, TimeUnit.MILLISECONDS);
+                RangeResponse rangeResponse = kvStub.range(request).get(timeoutMilliseconds, TimeUnit.MILLISECONDS);
                 final List<String> keys = Lists.newArrayList();
                 for (KeyValue keyValue : rangeResponse.getKvsList()) {
                     keys.add(keyValue.getKey().toStringUtf8());
@@ -119,7 +119,7 @@ public final class EtcdClient {
         return retry(new Callable<String>() {
             @Override
             public String call() throws Exception {
-                PutResponse putResponse = kvStub.put(request).get(timeoutMills, TimeUnit.MILLISECONDS);
+                PutResponse putResponse = kvStub.put(request).get(timeoutMilliseconds, TimeUnit.MILLISECONDS);
                 return putResponse.getPrevKv().getValue().toStringUtf8();
             }
         });
@@ -148,7 +148,7 @@ public final class EtcdClient {
             
             @Override
             public String call() throws Exception {
-                PutResponse putResponse = kvStub.put(request).get(timeoutMills, TimeUnit.MILLISECONDS);
+                PutResponse putResponse = kvStub.put(request).get(timeoutMilliseconds, TimeUnit.MILLISECONDS);
                 return putResponse.getPrevKv().getValue().toStringUtf8();
             }
         });
@@ -161,7 +161,7 @@ public final class EtcdClient {
             
             @Override
             public Long call() throws Exception {
-                return leaseStub.leaseGrant(request).get(timeoutMills, TimeUnit.MILLISECONDS).getID();
+                return leaseStub.leaseGrant(request).get(timeoutMilliseconds, TimeUnit.MILLISECONDS).getID();
             }
         });
     }
@@ -193,8 +193,8 @@ public final class EtcdClient {
                     .retryIfExceptionOfType(TimeoutException.class)
                     .retryIfExceptionOfType(ExecutionException.class)
                     .retryIfExceptionOfType(InterruptedException.class)
-                    .withWaitStrategy(WaitStrategies.fixedWait(retryMills, TimeUnit.MILLISECONDS))
-                    .withStopStrategy(StopStrategies.stopAfterAttempt(retryTimes))
+                    .withWaitStrategy(WaitStrategies.fixedWait(retryIntervalMilliseconds, TimeUnit.MILLISECONDS))
+                    .withStopStrategy(StopStrategies.stopAfterAttempt(maxRetries))
                     .build().call(command));
         } catch (final ExecutionException | RetryException ex) {
             RegExceptionHandler.handleException(ex);
