@@ -43,16 +43,4 @@ public final class EtcdConfiguration {
      * Maximal retries when calling a etcd method.
      */
     private int maxRetries = 3;
-    
-    /**
-     * Username of etcd cluster.
-     * 
-     * <p>Default is not need digest</p>
-     */
-    private String username;
-    
-    /**
-     * Password of etcd cluster.
-     */
-    private String password;
 }
