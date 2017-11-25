@@ -22,7 +22,7 @@ import io.shardingjdbc.core.api.HintManager;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.commons.dbcp.BasicDataSource;

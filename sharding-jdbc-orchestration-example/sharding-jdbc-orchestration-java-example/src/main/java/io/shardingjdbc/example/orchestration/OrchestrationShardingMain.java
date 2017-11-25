@@ -25,7 +25,7 @@ import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfigur
 import io.shardingjdbc.example.orchestration.algorithm.ModuloTableShardingAlgorithm;
 import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.commons.dbcp.BasicDataSource;
