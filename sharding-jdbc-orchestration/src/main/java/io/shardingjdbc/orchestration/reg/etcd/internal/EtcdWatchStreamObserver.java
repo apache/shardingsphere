@@ -16,7 +16,7 @@ import mvccpb.Kv;
 @RequiredArgsConstructor
 public final class EtcdWatchStreamObserver implements StreamObserver<WatchResponse> {
     
-    private final Watcher watcher;
+    private final EtcdWatcher watcher;
     
     @Override
     public void onNext(final Rpc.WatchResponse response) {

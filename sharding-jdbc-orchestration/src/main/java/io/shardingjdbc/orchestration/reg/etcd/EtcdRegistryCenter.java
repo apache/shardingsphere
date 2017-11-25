@@ -24,7 +24,7 @@ import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.base.EventListener;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdChannelFactory;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdWatchStreamObserver;
-import io.shardingjdbc.orchestration.reg.etcd.internal.Watcher;
+import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdWatcher;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import mvccpb.Kv.KeyValue;
@@ -161,11 +161,11 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
         String fullPath = getFullPathWithNamespace(key);
         WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder().setKey(ByteString.copyFromUtf8(fullPath)).setRangeEnd(getRangeEnd(fullPath)).build();
         final WatchRequest watchRequest = WatchRequest.newBuilder().setCreateRequest(createWatchRequest).build();
-        Optional<Watcher> watcher = retry(new Callable<Watcher>() {
+        Optional<EtcdWatcher> watcher = retry(new Callable<EtcdWatcher>() {
             
             @Override
-            public Watcher call() throws Exception {
-                Watcher watcher = new Watcher();
+            public EtcdWatcher call() throws Exception {
+                EtcdWatcher watcher = new EtcdWatcher();
                 StreamObserver<WatchRequest> requestStream = watchStub.watch(new EtcdWatchStreamObserver(watcher));
                 requestStream.onNext(watchRequest);
                 return watcher;

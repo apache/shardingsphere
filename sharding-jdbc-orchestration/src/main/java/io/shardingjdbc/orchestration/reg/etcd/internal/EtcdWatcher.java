@@ -2,20 +2,16 @@ package io.shardingjdbc.orchestration.reg.etcd.internal;
 
 import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.base.EventListener;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Watcher.
+ * Etcd event watcher.
  * 
  * @author junxiong
  */
-@RequiredArgsConstructor
-@Getter
-public final class Watcher {
+public final class EtcdWatcher {
     
     private final List<EventListener> listeners = new ArrayList<>();
     
@@ -28,6 +24,11 @@ public final class Watcher {
         listeners.add(eventListener);
     }
     
+    /**
+     * Notify listener when event received.
+     * 
+     * @param event event
+     */
     public void notify(final DataChangedEvent event) {
         for (EventListener listener : listeners) {
             listener.onChange(event);
