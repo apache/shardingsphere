@@ -1,4 +1,4 @@
-package io.shardingjdbc.orchestration.reg.etcd.internal;
+package io.shardingjdbc.orchestration.reg.etcd.internal.watcher;
 
 import io.shardingjdbc.orchestration.reg.base.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.base.EventListener;

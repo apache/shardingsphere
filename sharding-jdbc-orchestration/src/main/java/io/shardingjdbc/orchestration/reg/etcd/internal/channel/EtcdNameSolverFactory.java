@@ -1,4 +1,4 @@
-package io.shardingjdbc.orchestration.reg.etcd.internal;
+package io.shardingjdbc.orchestration.reg.etcd.internal.channel;
 
 import com.google.common.base.Strings;
 import io.grpc.Attributes;

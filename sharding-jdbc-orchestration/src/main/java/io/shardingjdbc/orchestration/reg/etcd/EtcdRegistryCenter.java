@@ -18,10 +18,10 @@ import io.grpc.Channel;
 import io.grpc.stub.StreamObserver;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.base.EventListener;
-import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdChannelFactory;
-import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdRetryEngine;
-import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdWatchStreamObserver;
-import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdWatcher;
+import io.shardingjdbc.orchestration.reg.etcd.internal.channel.EtcdChannelFactory;
+import io.shardingjdbc.orchestration.reg.etcd.internal.retry.EtcdRetryEngine;
+import io.shardingjdbc.orchestration.reg.etcd.internal.watcher.EtcdWatchStreamObserver;
+import io.shardingjdbc.orchestration.reg.etcd.internal.watcher.EtcdWatcher;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import mvccpb.Kv.KeyValue;
 

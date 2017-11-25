@@ -1,4 +1,4 @@
-package io.shardingjdbc.orchestration.reg.etcd.internal;
+package io.shardingjdbc.orchestration.reg.etcd.internal.channel;
 
 import io.grpc.Channel;
 import io.grpc.netty.NettyChannelBuilder;

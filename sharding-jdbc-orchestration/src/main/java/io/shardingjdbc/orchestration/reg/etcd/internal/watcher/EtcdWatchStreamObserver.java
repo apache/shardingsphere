@@ -1,4 +1,4 @@
-package io.shardingjdbc.orchestration.reg.etcd.internal;
+package io.shardingjdbc.orchestration.reg.etcd.internal.watcher;
 
 import etcdserverpb.Rpc;
 import etcdserverpb.Rpc.WatchResponse;

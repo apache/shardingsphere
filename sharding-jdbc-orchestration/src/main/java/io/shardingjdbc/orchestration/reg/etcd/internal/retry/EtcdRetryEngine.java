@@ -1,4 +1,4 @@
-package io.shardingjdbc.orchestration.reg.etcd.internal;
+package io.shardingjdbc.orchestration.reg.etcd.internal.retry;
 
 import com.github.rholder.retry.RetryException;
 import com.github.rholder.retry.Retryer;
