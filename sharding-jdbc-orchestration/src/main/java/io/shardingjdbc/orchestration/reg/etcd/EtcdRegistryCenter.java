@@ -25,7 +25,7 @@ import io.grpc.stub.StreamObserver;
 import io.shardingjdbc.orchestration.reg.base.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.base.EventListener;
 import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdChannelFactory;
-import io.shardingjdbc.orchestration.reg.etcd.internal.WatchStreamObserver;
+import io.shardingjdbc.orchestration.reg.etcd.internal.EtcdWatchStreamObserver;
 import io.shardingjdbc.orchestration.reg.etcd.internal.Watcher;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
@@ -174,7 +174,7 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
             @Override
             public Watcher call() throws Exception {
                 Watcher watcher = new Watcher();
-                StreamObserver<WatchRequest> requestStream = watchStub.watch(new WatchStreamObserver(watcher));
+                StreamObserver<WatchRequest> requestStream = watchStub.watch(new EtcdWatchStreamObserver(watcher));
                 requestStream.onNext(watchRequest);
                 return watcher;
             }

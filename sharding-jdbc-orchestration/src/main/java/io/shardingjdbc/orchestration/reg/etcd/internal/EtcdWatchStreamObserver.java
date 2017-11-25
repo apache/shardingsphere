@@ -14,7 +14,7 @@ import mvccpb.Kv;
  * @author junxiong
  */
 @RequiredArgsConstructor
-public final class WatchStreamObserver implements StreamObserver<WatchResponse> {
+public final class EtcdWatchStreamObserver implements StreamObserver<WatchResponse> {
     
     private final Watcher watcher;
     
