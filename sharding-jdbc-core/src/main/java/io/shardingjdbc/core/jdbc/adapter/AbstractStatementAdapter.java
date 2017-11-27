@@ -71,10 +71,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setPoolable(final boolean poolable) throws SQLException {
         this.poolable = poolable;
-        if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(targetClass, "setPoolable", new Class[] {boolean.class}, new Object[] {poolable});
-            return;
-        }
+        recordMethodInvocation(targetClass, "setPoolable", new Class[] {boolean.class}, new Object[] {poolable});
         for (Statement each : getRoutedStatements()) {
             each.setPoolable(poolable);
         }
@@ -88,10 +85,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setFetchSize(final int rows) throws SQLException {
         this.fetchSize = rows;
-        if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(targetClass, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
-            return;
-        }
+        recordMethodInvocation(targetClass, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
         for (Statement each : getRoutedStatements()) {
             each.setFetchSize(rows);
         }
@@ -99,10 +93,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void setEscapeProcessing(final boolean enable) throws SQLException {
-        if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(targetClass, "setEscapeProcessing", new Class[] {boolean.class}, new Object[] {enable});
-            return;
-        }
+        recordMethodInvocation(targetClass, "setEscapeProcessing", new Class[] {boolean.class}, new Object[] {enable});
         for (Statement each : getRoutedStatements()) {
             each.setEscapeProcessing(enable);
         }
@@ -157,10 +148,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void setMaxFieldSize(final int max) throws SQLException {
-        if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(targetClass, "setMaxFieldSize", new Class[] {int.class}, new Object[] {max});
-            return;
-        }
+        recordMethodInvocation(targetClass, "setMaxFieldSize", new Class[] {int.class}, new Object[] {max});
         for (Statement each : getRoutedStatements()) {
             each.setMaxFieldSize(max);
         }
@@ -174,10 +162,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void setMaxRows(final int max) throws SQLException {
-        if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(targetClass, "setMaxRows", new Class[] {int.class}, new Object[] {max});
-            return;
-        }
+        recordMethodInvocation(targetClass, "setMaxRows", new Class[] {int.class}, new Object[] {max});
         for (Statement each : getRoutedStatements()) {
             each.setMaxRows(max);
         }
@@ -190,10 +175,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void setQueryTimeout(final int seconds) throws SQLException {
-        if (getRoutedStatements().isEmpty()) {
-            recordMethodInvocation(targetClass, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});
-            return;
-        }
+        recordMethodInvocation(targetClass, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});
         for (Statement each : getRoutedStatements()) {
             each.setQueryTimeout(seconds);
         }

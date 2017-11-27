@@ -25,6 +25,7 @@
 1. [ISSUE #436](https://github.com/shardingjdbc/sharding-jdbc/issues/436) 读写分离多从库配置RoundRobin算法并使用MyBatis时，只能路由到同一从库
 1. [ISSUE #452](https://github.com/shardingjdbc/sharding-jdbc/issues/452) DDL语句分片至多个表会造成连接泄漏的问题
 1. [ISSUE #453](https://github.com/shardingjdbc/sharding-jdbc/issues/453) 编排治理数据源配置name与Druid数据源name冲突
+1. [ISSUE #472](https://github.com/shardingjdbc/sharding-jdbc/issues/472) Connection执行createStatement之前, 先调用getMetaData再setAutoCommit无法对之后创建的数据库真实连接生效
 
 ## 1.5.4.1
 
