@@ -47,10 +47,10 @@ public final class DataSourceService {
     
     private final ConfigurationService configurationService;
     
-    public DataSourceService(final OrchestrationConfiguration config) {
+    public DataSourceService(final OrchestrationConfiguration config, final CoordinatorRegistryCenter regCenter) {
         stateNode = new StateNode(config.getName());
-        regCenter = config.getRegistryCenter();
-        configurationService = new ConfigurationService(config);
+        this.regCenter = regCenter;
+        configurationService = new ConfigurationService(config, regCenter);
     }
     
     /**

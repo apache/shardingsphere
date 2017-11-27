@@ -39,22 +39,22 @@ public final class DataSourceListenerManager implements ListenerManager {
     
     private final StateNode stateNode;
     
-    private final CoordinatorRegistryCenter registryCenter;
+    private final CoordinatorRegistryCenter regCenter;
     
     private final ConfigurationService configurationService;
     
     private final DataSourceService dataSourceService;
     
-    public DataSourceListenerManager(final OrchestrationConfiguration config) {
+    public DataSourceListenerManager(final OrchestrationConfiguration config, final CoordinatorRegistryCenter regCenter) {
         stateNode = new StateNode(config.getName());
-        registryCenter = config.getRegistryCenter();
-        configurationService = new ConfigurationService(config);
-        dataSourceService = new DataSourceService(config);
+        this.regCenter = regCenter;
+        configurationService = new ConfigurationService(config, regCenter);
+        dataSourceService = new DataSourceService(config, regCenter);
     }
     
     @Override
     public void start(final ShardingDataSource shardingDataSource) {
-        registryCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
+        regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
@@ -71,7 +71,7 @@ public final class DataSourceListenerManager implements ListenerManager {
     
     @Override
     public void start(final MasterSlaveDataSource masterSlaveDataSource) {
-        registryCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
+        regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {

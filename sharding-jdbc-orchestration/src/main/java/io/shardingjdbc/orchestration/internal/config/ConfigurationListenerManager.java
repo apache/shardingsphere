@@ -44,11 +44,11 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     private final DataSourceService dataSourceService;
     
-    public ConfigurationListenerManager(final OrchestrationConfiguration config) {
+    public ConfigurationListenerManager(final OrchestrationConfiguration config, final CoordinatorRegistryCenter regCenter) {
         configNode = new ConfigurationNode(config.getName());
-        regCenter = config.getRegistryCenter();
-        configurationService = new ConfigurationService(config);
-        dataSourceService = new DataSourceService(config);
+        this.regCenter = regCenter;
+        configurationService = new ConfigurationService(config, regCenter);
+        dataSourceService = new DataSourceService(config, regCenter);
     }
     
     @Override

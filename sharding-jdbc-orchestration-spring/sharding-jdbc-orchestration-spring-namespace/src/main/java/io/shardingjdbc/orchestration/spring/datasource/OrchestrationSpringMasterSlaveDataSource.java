@@ -21,7 +21,7 @@ import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
-import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -42,14 +42,14 @@ public class OrchestrationSpringMasterSlaveDataSource extends MasterSlaveDataSou
     
     private final Map<String, Object> configMap;
     
-    public OrchestrationSpringMasterSlaveDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter registryCenter, 
+    public OrchestrationSpringMasterSlaveDataSource(final String name, final boolean overwrite, final RegistryCenterConfiguration regCenterConfig, 
                                                     final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                                     final Map<String, Object> configMap) throws SQLException {
         super(masterSlaveRuleConfig.build(dataSourceMap), configMap);
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRuleConfig = masterSlaveRuleConfig;
         this.configMap = configMap;
-        config = new OrchestrationConfiguration(name, registryCenter, overwrite);
+        config = new OrchestrationConfiguration(name, regCenterConfig, overwrite);
     }
     
     /**

@@ -43,9 +43,9 @@ public final class ConfigurationService {
     
     private final boolean isOverwrite;
     
-    public ConfigurationService(final OrchestrationConfiguration config) {
+    public ConfigurationService(final OrchestrationConfiguration config, final CoordinatorRegistryCenter regCenter) {
         configNode = new ConfigurationNode(config.getName());
-        regCenter = config.getRegistryCenter();
+        this.regCenter = regCenter;
         isOverwrite = config.isOverwrite();
     }
     

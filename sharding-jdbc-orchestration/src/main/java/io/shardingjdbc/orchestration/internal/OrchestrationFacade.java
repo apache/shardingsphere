@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.orchestration.internal;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
@@ -26,6 +27,12 @@ import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.listener.ListenerFactory;
 import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingjdbc.orchestration.internal.state.instance.InstanceStateService;
+import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingjdbc.orchestration.reg.etcd.EtcdConfiguration;
+import io.shardingjdbc.orchestration.reg.etcd.EtcdRegistryCenter;
+import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -42,8 +49,6 @@ import java.util.Properties;
  */
 public final class OrchestrationFacade {
     
-    private final OrchestrationConfiguration config;
-    
     private final ConfigurationService configurationService;
     
     private final InstanceStateService instanceStateService;
@@ -53,11 +58,22 @@ public final class OrchestrationFacade {
     private final ListenerFactory listenerManager;
     
     public OrchestrationFacade(final OrchestrationConfiguration config) {
-        this.config = config;
-        configurationService = new ConfigurationService(config);
-        instanceStateService = new InstanceStateService(config);
-        dataSourceService = new DataSourceService(config);
-        listenerManager = new ListenerFactory(config);
+        CoordinatorRegistryCenter regCenter = createCoordinatorRegistryCenter(config.getRegCenterConfig());
+        configurationService = new ConfigurationService(config, regCenter);
+        instanceStateService = new InstanceStateService(config, regCenter);
+        dataSourceService = new DataSourceService(config, regCenter);
+        listenerManager = new ListenerFactory(config, regCenter);
+    }
+    
+    private CoordinatorRegistryCenter createCoordinatorRegistryCenter(final RegistryCenterConfiguration regCenterConfig) {
+        Preconditions.checkNotNull(regCenterConfig, "Registry center configuration cannot be null.");
+        if (regCenterConfig instanceof ZookeeperConfiguration) {
+            return new ZookeeperRegistryCenter((ZookeeperConfiguration) regCenterConfig);
+        }
+        if (regCenterConfig instanceof EtcdConfiguration) {
+            return new EtcdRegistryCenter((EtcdConfiguration) regCenterConfig);
+        }
+        throw new UnsupportedOperationException(regCenterConfig.getClass().getName());
     }
     
     /**

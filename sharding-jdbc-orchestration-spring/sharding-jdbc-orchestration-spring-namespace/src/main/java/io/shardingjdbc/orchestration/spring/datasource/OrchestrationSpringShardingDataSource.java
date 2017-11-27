@@ -21,7 +21,7 @@ import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
-import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -45,14 +45,14 @@ public class OrchestrationSpringShardingDataSource extends ShardingDataSource {
     
     private final Properties props;
     
-    public OrchestrationSpringShardingDataSource(final String name, final boolean overwrite, final CoordinatorRegistryCenter regCenter, final Map<String, DataSource> dataSourceMap, 
+    public OrchestrationSpringShardingDataSource(final String name, final boolean overwrite, final RegistryCenterConfiguration regCenterConfig, final Map<String, DataSource> dataSourceMap,
                                                  final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(shardingRuleConfig.build(dataSourceMap), configMap, props);
         this.dataSourceMap = dataSourceMap;
         this.shardingRuleConfig = shardingRuleConfig;
         this.configMap = configMap;
         this.props = props;
-        config = new OrchestrationConfiguration(name, regCenter, overwrite);
+        config = new OrchestrationConfiguration(name, regCenterConfig, overwrite);
     }
     
     /**

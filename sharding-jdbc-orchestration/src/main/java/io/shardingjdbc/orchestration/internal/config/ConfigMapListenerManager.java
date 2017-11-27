@@ -39,10 +39,10 @@ public final class ConfigMapListenerManager implements ListenerManager {
     
     private final ConfigurationService configurationService;
     
-    public ConfigMapListenerManager(final OrchestrationConfiguration config) {
+    public ConfigMapListenerManager(final OrchestrationConfiguration config, final CoordinatorRegistryCenter regCenter) {
         configNode = new ConfigurationNode(config.getName());
-        regCenter = config.getRegistryCenter();
-        configurationService = new ConfigurationService(config);
+        this.regCenter = regCenter;
+        configurationService = new ConfigurationService(config, regCenter);
     }
     
     @Override

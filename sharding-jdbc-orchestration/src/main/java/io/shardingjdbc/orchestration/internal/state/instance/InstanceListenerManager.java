@@ -26,6 +26,7 @@ import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerData
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
+import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.listener.EventListener;
 
@@ -40,27 +41,27 @@ import java.util.Map;
  */
 public final class InstanceListenerManager implements ListenerManager {
     
-    private final OrchestrationConfiguration config;
-    
     private final StateNode stateNode;
+    
+    private final CoordinatorRegistryCenter regCenter;
     
     private final ConfigurationService configurationService;
     
-    public InstanceListenerManager(final OrchestrationConfiguration config) {
-        this.config = config;
+    public InstanceListenerManager(final OrchestrationConfiguration config, final CoordinatorRegistryCenter regCenter) {
         stateNode = new StateNode(config.getName());
-        configurationService = new ConfigurationService(config);
+        this.regCenter = regCenter;
+        configurationService = new ConfigurationService(config, regCenter);
     }
     
     @Override
     public void start(final ShardingDataSource shardingDataSource) {
-        config.getRegistryCenter().watch(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), new EventListener() {
+        regCenter.watch(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
-                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(config.getRegistryCenter().get(event.getKey()))) {
+                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
                         for (String each : dataSourceMap.keySet()) {
                             dataSourceMap.put(each, new CircuitBreakerDataSource());
                         }
@@ -77,13 +78,13 @@ public final class InstanceListenerManager implements ListenerManager {
     
     @Override
     public void start(final MasterSlaveDataSource masterSlaveDataSource) {
-        config.getRegistryCenter().watch(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), new EventListener() {
+        regCenter.watch(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
-                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(config.getRegistryCenter().get(event.getKey()))) {
+                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
                         for (String each : dataSourceMap.keySet()) {
                             dataSourceMap.put(each, new CircuitBreakerDataSource());
                         }

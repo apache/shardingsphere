@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.orchestration.api.config;
 
-import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +32,7 @@ public final class OrchestrationConfiguration {
     
     private final String name;
     
-    private final CoordinatorRegistryCenter registryCenter;
+    private final RegistryCenterConfiguration regCenterConfig;
     
     private final boolean overwrite;
 }

@@ -32,9 +32,9 @@ public final class InstanceStateService {
     
     private final CoordinatorRegistryCenter regCenter;
     
-    public InstanceStateService(final OrchestrationConfiguration config) {
+    public InstanceStateService(final OrchestrationConfiguration config, final CoordinatorRegistryCenter regCenter) {
         stateNode = new StateNode(config.getName());
-        regCenter = config.getRegistryCenter();
+        this.regCenter = regCenter;
     }
     
     /**
