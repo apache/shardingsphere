@@ -18,7 +18,7 @@
 package io.shardingjdbc.orchestration.yaml;
 
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,8 +33,7 @@ public class YamlOrchestrationConfiguration {
     
     private String name;
     
-    // TODO
-    private ZookeeperConfiguration registryCenter;
+    private RegistryCenterConfiguration registryCenter;
     
     private boolean overwrite;
     

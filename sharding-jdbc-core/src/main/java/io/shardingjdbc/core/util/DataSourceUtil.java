@@ -30,8 +30,8 @@ public final class DataSourceUtil {
     /**
      * Get data source.
      * 
-     * @param dataSourceClassName Data source class name
-     * @param dataSourceProperties Data source properties
+     * @param dataSourceClassName data source class name
+     * @param dataSourceProperties data source properties
      * @return data source instance
      * @throws ReflectiveOperationException reflective operation exception
      */
