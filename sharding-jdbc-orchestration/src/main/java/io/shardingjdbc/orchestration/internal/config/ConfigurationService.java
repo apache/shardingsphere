@@ -24,7 +24,7 @@ import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
-import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -39,11 +39,11 @@ public final class ConfigurationService {
     
     private final ConfigurationNode configNode;
     
-    private final CoordinatorRegistryCenter regCenter;
+    private final RegistryCenter regCenter;
     
     private final boolean isOverwrite;
     
-    public ConfigurationService(final OrchestrationConfiguration config, final CoordinatorRegistryCenter regCenter) {
+    public ConfigurationService(final OrchestrationConfiguration config, final RegistryCenter regCenter) {
         configNode = new ConfigurationNode(config.getName());
         this.regCenter = regCenter;
         isOverwrite = config.isOverwrite();

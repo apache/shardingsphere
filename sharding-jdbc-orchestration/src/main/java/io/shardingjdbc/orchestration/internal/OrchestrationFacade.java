@@ -27,7 +27,7 @@ import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.listener.ListenerFactory;
 import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingjdbc.orchestration.internal.state.instance.InstanceStateService;
-import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingjdbc.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingjdbc.orchestration.reg.etcd.EtcdRegistryCenter;
@@ -49,7 +49,7 @@ import java.util.Properties;
  */
 public final class OrchestrationFacade {
     
-    private final ConfigurationService configurationService;
+    private final ConfigurationService configService;
     
     private final InstanceStateService instanceStateService;
     
@@ -58,14 +58,14 @@ public final class OrchestrationFacade {
     private final ListenerFactory listenerManager;
     
     public OrchestrationFacade(final OrchestrationConfiguration config) {
-        CoordinatorRegistryCenter regCenter = createCoordinatorRegistryCenter(config.getRegCenterConfig());
-        configurationService = new ConfigurationService(config, regCenter);
+        RegistryCenter regCenter = createRegistryCenter(config.getRegCenterConfig());
+        configService = new ConfigurationService(config, regCenter);
         instanceStateService = new InstanceStateService(config, regCenter);
         dataSourceService = new DataSourceService(config, regCenter);
         listenerManager = new ListenerFactory(config, regCenter);
     }
     
-    private CoordinatorRegistryCenter createCoordinatorRegistryCenter(final RegistryCenterConfiguration regCenterConfig) {
+    private RegistryCenter createRegistryCenter(final RegistryCenterConfiguration regCenterConfig) {
         Preconditions.checkNotNull(regCenterConfig, "Registry center configuration cannot be null.");
         if (regCenterConfig instanceof ZookeeperConfiguration) {
             return new ZookeeperRegistryCenter((ZookeeperConfiguration) regCenterConfig);
@@ -92,7 +92,7 @@ public final class OrchestrationFacade {
         if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
             reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
         }
-        configurationService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, configMap, props);
+        configService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, configMap, props);
         instanceStateService.persistShardingInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initShardingListeners(shardingDataSource);
@@ -143,7 +143,7 @@ public final class OrchestrationFacade {
     public void initMasterSlaveOrchestration(
             final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
             final MasterSlaveDataSource masterSlaveDataSource, final Map<String, Object> configMap) {
-        configurationService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, configMap);
+        configService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, configMap);
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initMasterSlaveListeners(masterSlaveDataSource);

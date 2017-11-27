@@ -32,12 +32,12 @@ import etcdserverpb.Rpc.WatchRequest;
 import etcdserverpb.WatchGrpc;
 import etcdserverpb.WatchGrpc.WatchStub;
 import io.grpc.Channel;
-import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
-import io.shardingjdbc.orchestration.reg.listener.EventListener;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingjdbc.orchestration.reg.etcd.internal.channel.EtcdChannelFactory;
 import io.shardingjdbc.orchestration.reg.etcd.internal.retry.EtcdRetryEngine;
 import io.shardingjdbc.orchestration.reg.etcd.internal.watcher.EtcdWatchStreamObserver;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
+import io.shardingjdbc.orchestration.reg.listener.EventListener;
 import mvccpb.Kv.KeyValue;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author junxiong
  */
-public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
+public final class EtcdRegistryCenter implements RegistryCenter {
     
     private final EtcdConfiguration etcdConfig;
     
@@ -87,8 +87,32 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     }
     
     @Override
+    public String getDirectly(final String key) {
+        return get(key);
+    }
+    
+    @Override
     public boolean isExisted(final String key) {
         return null != get(key);
+    }
+    
+    @Override
+    public List<String> getChildrenKeys(final String key) {
+        String fullPath = getFullPathWithNamespace(key);
+        final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(fullPath)).setRangeEnd(getRangeEnd(fullPath)).build();
+        Optional<List<String>> result = etcdRetryEngine.execute(new Callable<List<String>>() {
+            
+            @Override
+            public List<String> call() throws Exception {
+                RangeResponse response = kvStub.range(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
+                List<String> result = new ArrayList<>();
+                for (KeyValue each : response.getKvsList()) {
+                    result.add(each.getKey().toStringUtf8());
+                }
+                return result;
+            }
+        });
+        return result.isPresent() ? result.get() : Collections.<String>emptyList();
     }
     
     @Override
@@ -107,11 +131,6 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
     @Override
     public void update(final String key, final String value) {
         persist(key, value);
-    }
-    
-    @Override
-    public String getDirectly(final String key) {
-        return get(key);
     }
     
     @Override
@@ -141,25 +160,6 @@ public final class EtcdRegistryCenter implements CoordinatorRegistryCenter {
                 return leaseStub.leaseGrant(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();
             }
         });
-    }
-    
-    @Override
-    public List<String> getChildrenKeys(final String key) {
-        String fullPath = getFullPathWithNamespace(key);
-        final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(fullPath)).setRangeEnd(getRangeEnd(fullPath)).build();
-        Optional<List<String>> result = etcdRetryEngine.execute(new Callable<List<String>>() {
-            
-            @Override
-            public List<String> call() throws Exception {
-                RangeResponse response = kvStub.range(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
-                List<String> result = new ArrayList<>();
-                for (KeyValue each : response.getKvsList()) {
-                    result.add(each.getKey().toStringUtf8());
-                }
-                return result;
-            }
-        });
-        return result.isPresent() ? result.get() : Collections.<String>emptyList();
     }
     
     @Override

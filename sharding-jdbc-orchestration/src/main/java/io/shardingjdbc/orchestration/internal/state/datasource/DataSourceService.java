@@ -25,7 +25,7 @@ import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
-import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -43,14 +43,14 @@ public final class DataSourceService {
     
     private final StateNode stateNode;
     
-    private final CoordinatorRegistryCenter regCenter;
+    private final RegistryCenter regCenter;
     
-    private final ConfigurationService configurationService;
+    private final ConfigurationService configService;
     
-    public DataSourceService(final OrchestrationConfiguration config, final CoordinatorRegistryCenter regCenter) {
+    public DataSourceService(final OrchestrationConfiguration config, final RegistryCenter regCenter) {
         stateNode = new StateNode(config.getName());
         this.regCenter = regCenter;
-        configurationService = new ConfigurationService(config, regCenter);
+        configService = new ConfigurationService(config, regCenter);
     }
     
     /**
@@ -87,10 +87,10 @@ public final class DataSourceService {
      * @throws SQLException SQL exception
      */
     public ShardingRule getAvailableShardingRule() throws SQLException {
-        Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
+        Map<String, DataSource> dataSourceMap = configService.loadDataSourceMap();
         String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
         List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
-        ShardingRuleConfiguration ruleConfig = configurationService.loadShardingRuleConfiguration();
+        ShardingRuleConfiguration ruleConfig = configService.loadShardingRuleConfiguration();
         for (String each : dataSources) {
             String dataSourceName = each.substring(each.lastIndexOf("/") + 1);
             String path = dataSourcesNodePath + "/" + each;
@@ -110,10 +110,10 @@ public final class DataSourceService {
      * @return available master-slave rule
      */
     public MasterSlaveRule getAvailableMasterSlaveRule() {
-        Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
+        Map<String, DataSource> dataSourceMap = configService.loadDataSourceMap();
         String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
         List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
-        MasterSlaveRuleConfiguration ruleConfig = configurationService.loadMasterSlaveRuleConfiguration();
+        MasterSlaveRuleConfiguration ruleConfig = configService.loadMasterSlaveRuleConfiguration();
         for (String each : dataSources) {
             String dataSourceName = each.substring(each.lastIndexOf("/") + 1);
             String path = dataSourcesNodePath + "/" + each;

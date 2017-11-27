@@ -17,6 +17,10 @@
 
 package io.shardingjdbc.orchestration.reg.api;
 
+import io.shardingjdbc.orchestration.reg.listener.EventListener;
+
+import java.util.List;
+
 /**
  * Registry center.
  * 
@@ -27,10 +31,22 @@ public interface RegistryCenter extends AutoCloseable {
     /**
      * Get data from registry center.
      * 
+     * <p>Maybe use cache if existed.</p>
+     * 
      * @param key key of data
      * @return value of data
      */
     String get(String key);
+    
+    /**
+     * Get data from registry center directly.
+     * 
+     * <p>Cannot use cache.</p>
+     *
+     * @param key key of data
+     * @return value of data
+     */
+    String getDirectly(String key);
     
     /**
      * Adjust data is existed or not.
@@ -39,6 +55,14 @@ public interface RegistryCenter extends AutoCloseable {
      * @return data is existed or not
      */
     boolean isExisted(String key);
+    
+    /**
+     * Get node's sub-nodes list.
+     *
+     * @param key key of data
+     * @return sub-nodes name list
+     */
+    List<String> getChildrenKeys(String key);
     
     /**
      * Persist data.
@@ -55,4 +79,20 @@ public interface RegistryCenter extends AutoCloseable {
      * @param value value of data
      */
     void update(String key, String value);
+    
+    /**
+     * Persist ephemeral data.
+     *
+     * @param key key of data
+     * @param value value of data
+     */
+    void persistEphemeral(String key, String value);
+    
+    /**
+     * Watch key or path of the registry.
+     *
+     * @param key key of data
+     * @param eventListener change listener
+     */
+    void watch(String key, EventListener eventListener);
 }

@@ -23,9 +23,9 @@ import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.listener.EventListener;
-import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
 
 import java.sql.SQLException;
 
@@ -38,16 +38,16 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     private final ConfigurationNode configNode;
     
-    private final CoordinatorRegistryCenter regCenter;
+    private final RegistryCenter regCenter;
     
-    private final ConfigurationService configurationService;
+    private final ConfigurationService configService;
     
     private final DataSourceService dataSourceService;
     
-    public ConfigurationListenerManager(final OrchestrationConfiguration config, final CoordinatorRegistryCenter regCenter) {
+    public ConfigurationListenerManager(final OrchestrationConfiguration config, final RegistryCenter regCenter) {
         configNode = new ConfigurationNode(config.getName());
         this.regCenter = regCenter;
-        configurationService = new ConfigurationService(config, regCenter);
+        configService = new ConfigurationService(config, regCenter);
         dataSourceService = new DataSourceService(config, regCenter);
     }
     
@@ -66,7 +66,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     try {
-                        shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configurationService.loadShardingProperties());
+                        shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configService.loadShardingProperties());
                     } catch (final SQLException ex) {
                         throw new ShardingJdbcException(ex);
                     }

@@ -19,7 +19,7 @@ package io.shardingjdbc.orchestration.reg.zookeeper;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingjdbc.orchestration.reg.exception.RegExceptionHandler;
 import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.listener.EventListener;
@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit;
  * 
  * @author zhangliang
  */
-public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter {
+public final class ZookeeperRegistryCenter implements RegistryCenter {
     
     private final CuratorFramework client;
     
@@ -137,6 +137,18 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     }
     
     @Override
+    public boolean isExisted(final String key) {
+        try {
+            return null != client.checkExists().forPath(key);
+        //CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+        //CHECKSTYLE:ON
+            RegExceptionHandler.handleException(ex);
+            return false;
+        }
+    }
+    
+    @Override
     public List<String> getChildrenKeys(final String key) {
         try {
             List<String> result = client.getChildren().forPath(key);
@@ -153,18 +165,6 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
             //CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
             return Collections.emptyList();
-        }
-    }
-    
-    @Override
-    public boolean isExisted(final String key) {
-        try {
-            return null != client.checkExists().forPath(key);
-        //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-        //CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
-            return false;
         }
     }
     

@@ -26,7 +26,7 @@ import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerData
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
-import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.listener.EventListener;
 
@@ -43,14 +43,14 @@ public final class InstanceListenerManager implements ListenerManager {
     
     private final StateNode stateNode;
     
-    private final CoordinatorRegistryCenter regCenter;
+    private final RegistryCenter regCenter;
     
-    private final ConfigurationService configurationService;
+    private final ConfigurationService configService;
     
-    public InstanceListenerManager(final OrchestrationConfiguration config, final CoordinatorRegistryCenter regCenter) {
+    public InstanceListenerManager(final OrchestrationConfiguration config, final RegistryCenter regCenter) {
         stateNode = new StateNode(config.getName());
         this.regCenter = regCenter;
-        configurationService = new ConfigurationService(config, regCenter);
+        configService = new ConfigurationService(config, regCenter);
     }
     
     @Override
@@ -60,14 +60,14 @@ public final class InstanceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
+                    Map<String, DataSource> dataSourceMap = configService.loadDataSourceMap();
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
                         for (String each : dataSourceMap.keySet()) {
                             dataSourceMap.put(each, new CircuitBreakerDataSource());
                         }
                     }
                     try {
-                        shardingDataSource.renew(configurationService.loadShardingRuleConfiguration().build(dataSourceMap), configurationService.loadShardingProperties());
+                        shardingDataSource.renew(configService.loadShardingRuleConfiguration().build(dataSourceMap), configService.loadShardingProperties());
                     } catch (final SQLException ex) {
                         throw new ShardingJdbcException(ex);
                     }
@@ -83,13 +83,13 @@ public final class InstanceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSource> dataSourceMap = configurationService.loadDataSourceMap();
+                    Map<String, DataSource> dataSourceMap = configService.loadDataSourceMap();
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
                         for (String each : dataSourceMap.keySet()) {
                             dataSourceMap.put(each, new CircuitBreakerDataSource());
                         }
                     }
-                    masterSlaveDataSource.renew(configurationService.loadMasterSlaveRuleConfiguration().build(dataSourceMap));
+                    masterSlaveDataSource.renew(configService.loadMasterSlaveRuleConfiguration().build(dataSourceMap));
                 }
             }
         });

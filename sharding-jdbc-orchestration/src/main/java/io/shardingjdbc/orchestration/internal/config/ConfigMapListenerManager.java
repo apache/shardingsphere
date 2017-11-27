@@ -22,9 +22,9 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.listener.EventListener;
-import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
 
 /**
  * Config map listener manager.
@@ -35,14 +35,14 @@ public final class ConfigMapListenerManager implements ListenerManager {
     
     private final ConfigurationNode configNode;
     
-    private final CoordinatorRegistryCenter regCenter;
+    private final RegistryCenter regCenter;
     
-    private final ConfigurationService configurationService;
+    private final ConfigurationService configService;
     
-    public ConfigMapListenerManager(final OrchestrationConfiguration config, final CoordinatorRegistryCenter regCenter) {
+    public ConfigMapListenerManager(final OrchestrationConfiguration config, final RegistryCenter regCenter) {
         configNode = new ConfigurationNode(config.getName());
         this.regCenter = regCenter;
-        configurationService = new ConfigurationService(config, regCenter);
+        configService = new ConfigurationService(config, regCenter);
     }
     
     @Override
@@ -54,7 +54,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     ConfigMapContext.getInstance().getShardingConfig().clear();
-                    ConfigMapContext.getInstance().getShardingConfig().putAll(configurationService.loadShardingConfigMap());
+                    ConfigMapContext.getInstance().getShardingConfig().putAll(configService.loadShardingConfigMap());
                 }
             }
         });
@@ -69,7 +69,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     ConfigMapContext.getInstance().getMasterSlaveConfig().clear();
-                    ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configurationService.loadMasterSlaveConfigMap());
+                    ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configService.loadMasterSlaveConfigMap());
                 }
             }
         });
