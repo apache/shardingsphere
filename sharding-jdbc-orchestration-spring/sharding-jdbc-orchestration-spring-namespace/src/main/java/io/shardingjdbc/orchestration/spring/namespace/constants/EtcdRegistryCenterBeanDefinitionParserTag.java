@@ -17,28 +17,28 @@
 
 package io.shardingjdbc.orchestration.spring.namespace.constants;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
- * Registry center parser tag constants.
+ * Etcd registry center parser tag constants.
  *
- * @author caohao
+ * @author zhangliang
  */
-public class RegistryCenterBeanDefinitionParserTag {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class EtcdRegistryCenterBeanDefinitionParserTag {
     
-    public static final String ROOT_TAG = "zookeeper";
+    public static final String ROOT_TAG = "etcd";
     
     public static final String SERVER_LISTS_TAG = "server-lists";
     
     public static final String NAMESPACE_TAG = "namespace";
     
-    public static final String BASE_SLEEP_TIME_MILLISECONDS_TAG = "base-sleep-time-milliseconds";
+    public static final String TIME_TO_LIVE_MILLISECONDS_TAG = "time-to-live-milliseconds";
     
-    public static final String MAX_SLEEP_TIME_MILLISECONDS_TAG = "max-sleep-time-milliseconds";
+    public static final String TIMEOUT_MILLISECONDS_TAG = "timeout-milliseconds";
+    
+    public static final String RETRY_INTERVAL_MILLISECONDS_TAG = "retry-interval-milliseconds";
     
     public static final String MAX_RETRIES_TAG = "max-retries";
-    
-    public static final String SESSION_TIMEOUT_MILLISECONDS_TAG = "session-timeout-milliseconds";
-    
-    public static final String CONNECTION_TIMEOUT_MILLISECONDS_TAG = "connection-timeout-milliseconds";
-    
-    public static final String DIGEST_TAG = "digest";
 }

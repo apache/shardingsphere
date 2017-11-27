@@ -19,7 +19,7 @@ package io.shardingjdbc.orchestration.spring.namespace.parser;
 
 import com.google.common.base.Strings;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
-import io.shardingjdbc.orchestration.spring.namespace.constants.ZookeeperRegistryCenterBeanDefinitionParserTag;
+import io.shardingjdbc.orchestration.spring.namespace.constants.EtcdRegistryCenterBeanDefinitionParserTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -27,23 +27,21 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 /**
- * Zookeeper namespace parser for spring namespace.
+ * Etcd namespace parser for spring namespace.
  * 
- * @author caohao
+ * @author zhangliang
  */
-public final class ZookeeperBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class EtcdBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder result = BeanDefinitionBuilder.rootBeanDefinition(ZookeeperConfiguration.class);
-        addPropertyValueIfNotEmpty(ZookeeperRegistryCenterBeanDefinitionParserTag.SERVER_LISTS_TAG, "serverLists", element, result);
-        addPropertyValueIfNotEmpty(ZookeeperRegistryCenterBeanDefinitionParserTag.NAMESPACE_TAG, "namespace", element, result);
-        addPropertyValueIfNotEmpty(ZookeeperRegistryCenterBeanDefinitionParserTag.BASE_SLEEP_TIME_MILLISECONDS_TAG, "baseSleepTimeMilliseconds", element, result);
-        addPropertyValueIfNotEmpty(ZookeeperRegistryCenterBeanDefinitionParserTag.MAX_SLEEP_TIME_MILLISECONDS_TAG, "maxSleepTimeMilliseconds", element, result);
-        addPropertyValueIfNotEmpty(ZookeeperRegistryCenterBeanDefinitionParserTag.MAX_RETRIES_TAG, "maxRetries", element, result);
-        addPropertyValueIfNotEmpty(ZookeeperRegistryCenterBeanDefinitionParserTag.SESSION_TIMEOUT_MILLISECONDS_TAG, "sessionTimeoutMilliseconds", element, result);
-        addPropertyValueIfNotEmpty(ZookeeperRegistryCenterBeanDefinitionParserTag.CONNECTION_TIMEOUT_MILLISECONDS_TAG, "connectionTimeoutMilliseconds", element, result);
-        addPropertyValueIfNotEmpty(ZookeeperRegistryCenterBeanDefinitionParserTag.DIGEST_TAG, "digest", element, result);
+        addPropertyValueIfNotEmpty(EtcdRegistryCenterBeanDefinitionParserTag.SERVER_LISTS_TAG, "serverLists", element, result);
+        addPropertyValueIfNotEmpty(EtcdRegistryCenterBeanDefinitionParserTag.NAMESPACE_TAG, "namespace", element, result);
+        addPropertyValueIfNotEmpty(EtcdRegistryCenterBeanDefinitionParserTag.TIME_TO_LIVE_MILLISECONDS_TAG, "timeToLiveMilliseconds", element, result);
+        addPropertyValueIfNotEmpty(EtcdRegistryCenterBeanDefinitionParserTag.TIMEOUT_MILLISECONDS_TAG, "timeoutMilliseconds", element, result);
+        addPropertyValueIfNotEmpty(EtcdRegistryCenterBeanDefinitionParserTag.RETRY_INTERVAL_MILLISECONDS_TAG, "retryIntervalMilliseconds", element, result);
+        addPropertyValueIfNotEmpty(EtcdRegistryCenterBeanDefinitionParserTag.MAX_RETRIES_TAG, "maxRetries", element, result);
         return result.getBeanDefinition();
     }
     

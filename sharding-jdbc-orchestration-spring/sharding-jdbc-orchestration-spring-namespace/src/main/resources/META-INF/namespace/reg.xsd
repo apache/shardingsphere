@@ -23,4 +23,19 @@
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
+    
+    <xsd:element name="etcd">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType">
+                    <xsd:attribute name="server-lists" type="xsd:string" use="required" />
+                    <xsd:attribute name="namespace" type="xsd:string" use="required" />
+                    <xsd:attribute name="time-to-live-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="timeout-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="retry-interval-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="max-retries" type="xsd:string" />
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
 </xsd:schema>
