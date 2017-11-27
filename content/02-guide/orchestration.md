@@ -147,14 +147,13 @@ Zookeeper命令如下：
 ### 配置示例
 
 ```java
-     CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
      DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                     dataSourceMap, masterSlaveRuleConfig, new OrchestrationConfiguration("orchestration-master-slave-data-source", regCenter, false));
+                     dataSourceMap, masterSlaveRuleConfig, new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false));
      
-    private CoordinatorRegistryCenter setUpRegistryCenter() {
-        ZookeeperConfiguration zkConfig = new ZookeeperConfiguration("localhost:2181", "orchestration-namespace");
-        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(zkConfig);
-        result.init();
+    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
+        ZookeeperConfiguration result = new ZookeeperConfiguration();
+        result.setServerLists("localhost:2181");
+        result.setNamespace("orchestration-namespace");
         return result;
     }
 ```
