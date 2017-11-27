@@ -25,6 +25,6 @@ masterSlaveRule:
 orchestration:
   name: demo_yaml_ds_ms
   overwrite: true
-  registryCenter:
+  registryCenter: !!io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration
     namespace: orchestration-yaml-demo
     serverLists: localhost:2181
