@@ -41,6 +41,8 @@ chapter = true
 
 ## [你我金融](https://www.niiwoo.com/)
 
+## [oppo](http://www.oppo.com/)
+
 ## [PP停车](https://660pp.com)
 
 ## [Q堡直播](http://www.qbaotv.com/)
@@ -60,6 +62,8 @@ chapter = true
 ## [TCL](http://www.tcl.com/)
 
 ## [特微智能](http://www.trawe.cn/)
+
+## [天涯社区](http://www.tianya.cn/)
 
 ## [唯品会](http://www.vip.com/)
 
