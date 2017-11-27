@@ -22,9 +22,7 @@ import io.shardingjdbc.core.api.HintManager;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.reg.api.CoordinatorRegistryCenter;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
-import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -46,9 +44,9 @@ public final class OrchestrationMasterSlaveMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException, SQLException {
     // CHECKSTYLE:ON
-        CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
         DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                createDataSourceMap(), crateMasterSlaveRuleConfig(), new ConcurrentHashMap<String, Object>(), new OrchestrationConfiguration("orchestration-master-slave-data-source", regCenter, false));
+                createDataSourceMap(), crateMasterSlaveRuleConfig(), new ConcurrentHashMap<String, Object>(), 
+                new OrchestrationConfiguration("orchestration-master-slave-data-source", getZookeeperConfiguration(), false));
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);
@@ -59,12 +57,10 @@ public final class OrchestrationMasterSlaveMain {
         dropTable(dataSource);
     }
     
-    private static CoordinatorRegistryCenter setUpRegistryCenter() {
-        ZookeeperConfiguration zkConfig = new ZookeeperConfiguration();
-        zkConfig.setServerLists(ZOOKEEPER_CONNECTION_STRING);
-        zkConfig.setNamespace(NAMESPACE);
-        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(zkConfig);
-        result.init();
+    private static ZookeeperConfiguration getZookeeperConfiguration() {
+        ZookeeperConfiguration result = new ZookeeperConfiguration();
+        result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
+        result.setNamespace(NAMESPACE);
         return result;
     }
     
