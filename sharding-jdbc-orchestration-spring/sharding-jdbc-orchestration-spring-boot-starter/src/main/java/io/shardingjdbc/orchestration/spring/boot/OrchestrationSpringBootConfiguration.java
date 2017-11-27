@@ -78,7 +78,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     public void setEnvironment(final Environment environment) {
         setDataSourceMap(environment);
         setShardingProperties(environment);
-        setRegistryCenterConfiguration(environment);
+        setOrchestrationConfiguration(environment);
     }
     
     private void setDataSourceMap(final Environment environment) {
@@ -108,70 +108,71 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         }
     }
     
-    private void setRegistryCenterConfiguration(final Environment environment) {
-        RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "sharding.jdbc.config.orchestration.");
-        String type = propertyResolver.getProperty("regcenter.type");
+    private void setOrchestrationConfiguration(final Environment environment) {
+        RelaxedPropertyResolver regCenterPropertyResolver = new RelaxedPropertyResolver(environment, "sharding.jdbc.config.orchestration.regcenter.");
+        String type = regCenterPropertyResolver.getProperty("type");
         RegistryCenterConfiguration regCenterConfig;
         if ("zookeeper".equalsIgnoreCase(type)) {
-            regCenterConfig = getZookeeperConfiguration(propertyResolver);
+            regCenterConfig = getZookeeperConfiguration(regCenterPropertyResolver);
         } else if ("etcd".equalsIgnoreCase(type)) {
-            regCenterConfig = getEtcdConfiguration(propertyResolver);
+            regCenterConfig = getEtcdConfiguration(regCenterPropertyResolver);
         } else {
             throw new ShardingJdbcException("Can't find registry center type: %s!", type);
         }
-        String name = propertyResolver.containsProperty("name") ? propertyResolver.getProperty("name") : null;
-        boolean overwrite = propertyResolver.containsProperty("overwrite") ? Boolean.valueOf(propertyResolver.getProperty("overwrite")) : false;
+        RelaxedPropertyResolver orchestrationPropertyResolver = new RelaxedPropertyResolver(environment, "sharding.jdbc.config.orchestration.");
+        String name = orchestrationPropertyResolver.containsProperty("name") ? orchestrationPropertyResolver.getProperty("name") : null;
+        boolean overwrite = orchestrationPropertyResolver.containsProperty("overwrite") ? Boolean.valueOf(orchestrationPropertyResolver.getProperty("overwrite")) : false;
         orchestrationConfig = new OrchestrationConfiguration(name, regCenterConfig, overwrite);
     }
     
     private ZookeeperConfiguration getZookeeperConfiguration(final RelaxedPropertyResolver propertyResolver) {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
-        if (propertyResolver.containsProperty("regcenter.serverLists")) {
-            result.setServerLists(propertyResolver.getProperty("regcenter.serverLists"));
+        if (propertyResolver.containsProperty("serverLists")) {
+            result.setServerLists(propertyResolver.getProperty("serverLists"));
         }
-        if (propertyResolver.containsProperty("regcenter.namespace")) {
-            result.setNamespace(propertyResolver.getProperty("regcenter.namespace"));
+        if (propertyResolver.containsProperty("namespace")) {
+            result.setNamespace(propertyResolver.getProperty("namespace"));
         }
-        if (propertyResolver.containsProperty("regcenter.baseSleepTimeMilliseconds")) {
-            result.setBaseSleepTimeMilliseconds(Integer.parseInt(propertyResolver.getProperty("regcenter.baseSleepTimeMilliseconds")));
+        if (propertyResolver.containsProperty("baseSleepTimeMilliseconds")) {
+            result.setBaseSleepTimeMilliseconds(Integer.parseInt(propertyResolver.getProperty("baseSleepTimeMilliseconds")));
         }
-        if (propertyResolver.containsProperty("regcenter.maxSleepTimeMilliseconds")) {
-            result.setMaxSleepTimeMilliseconds(Integer.parseInt(propertyResolver.getProperty("regcenter.maxSleepTimeMilliseconds")));
+        if (propertyResolver.containsProperty("maxSleepTimeMilliseconds")) {
+            result.setMaxSleepTimeMilliseconds(Integer.parseInt(propertyResolver.getProperty("maxSleepTimeMilliseconds")));
         }
-        if (propertyResolver.containsProperty("regcenter.maxRetries")) {
-            result.setMaxRetries(Integer.parseInt(propertyResolver.getProperty("regcenter.maxRetries")));
+        if (propertyResolver.containsProperty("maxRetries")) {
+            result.setMaxRetries(Integer.parseInt(propertyResolver.getProperty("maxRetries")));
         }
-        if (propertyResolver.containsProperty("regcenter.sessionTimeoutMilliseconds")) {
-            result.setSessionTimeoutMilliseconds(Integer.parseInt(propertyResolver.getProperty("regcenter.sessionTimeoutMilliseconds")));
+        if (propertyResolver.containsProperty("sessionTimeoutMilliseconds")) {
+            result.setSessionTimeoutMilliseconds(Integer.parseInt(propertyResolver.getProperty("sessionTimeoutMilliseconds")));
         }
-        if (propertyResolver.containsProperty("regcenter.connectionTimeoutMilliseconds")) {
-            result.setConnectionTimeoutMilliseconds(Integer.parseInt(propertyResolver.getProperty("regcenter.connectionTimeoutMilliseconds")));
+        if (propertyResolver.containsProperty("connectionTimeoutMilliseconds")) {
+            result.setConnectionTimeoutMilliseconds(Integer.parseInt(propertyResolver.getProperty("connectionTimeoutMilliseconds")));
         }
-        if (propertyResolver.containsProperty("regcenter.digest")) {
-            result.setDigest(propertyResolver.getProperty("regcenter.digest"));
+        if (propertyResolver.containsProperty("digest")) {
+            result.setDigest(propertyResolver.getProperty("digest"));
         }
         return result;
     }
     
     private EtcdConfiguration getEtcdConfiguration(final RelaxedPropertyResolver propertyResolver) {
         EtcdConfiguration result = new EtcdConfiguration();
-        if (propertyResolver.containsProperty("regcenter.serverLists")) {
-            result.setServerLists(propertyResolver.getProperty("regcenter.serverLists"));
+        if (propertyResolver.containsProperty("serverLists")) {
+            result.setServerLists(propertyResolver.getProperty("serverLists"));
         }
-        if (propertyResolver.containsProperty("regcenter.namespace")) {
-            result.setNamespace(propertyResolver.getProperty("regcenter.namespace"));
+        if (propertyResolver.containsProperty("namespace")) {
+            result.setNamespace(propertyResolver.getProperty("namespace"));
         }
-        if (propertyResolver.containsProperty("regcenter.timeToLiveMilliseconds")) {
-            result.setTimeToLiveMilliseconds(Integer.parseInt(propertyResolver.getProperty("regcenter.timeToLiveMilliseconds")));
+        if (propertyResolver.containsProperty("timeToLiveMilliseconds")) {
+            result.setTimeToLiveMilliseconds(Integer.parseInt(propertyResolver.getProperty("timeToLiveMilliseconds")));
         }
-        if (propertyResolver.containsProperty("regcenter.timeoutMilliseconds")) {
-            result.setTimeoutMilliseconds(Integer.parseInt(propertyResolver.getProperty("regcenter.timeoutMilliseconds")));
+        if (propertyResolver.containsProperty("timeoutMilliseconds")) {
+            result.setTimeoutMilliseconds(Integer.parseInt(propertyResolver.getProperty("timeoutMilliseconds")));
         }
-        if (propertyResolver.containsProperty("regcenter.retryIntervalMilliseconds")) {
-            result.setRetryIntervalMilliseconds(Integer.parseInt(propertyResolver.getProperty("regcenter.retryIntervalMilliseconds")));
+        if (propertyResolver.containsProperty("retryIntervalMilliseconds")) {
+            result.setRetryIntervalMilliseconds(Integer.parseInt(propertyResolver.getProperty("retryIntervalMilliseconds")));
         }
-        if (propertyResolver.containsProperty("regcenter.maxRetries")) {
-            result.setMaxRetries(Integer.parseInt(propertyResolver.getProperty("regcenter.maxRetries")));
+        if (propertyResolver.containsProperty("maxRetries")) {
+            result.setMaxRetries(Integer.parseInt(propertyResolver.getProperty("maxRetries")));
         }
         return result;
     }
