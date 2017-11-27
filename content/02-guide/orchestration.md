@@ -230,7 +230,7 @@ shardingRule:
 orchestration:
   name: demo_yaml_ds_sharding_ms
   overwrite: true
-  registryCenter:
+  registryCenter: !!io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration
     namespace: orchestration-yaml-demo
     serverLists: localhost:2181
 ```
@@ -245,7 +245,7 @@ shardingRule: 分片规则配置
 orchestration: 编排配置
   name: 编排服务节点名称
   overwrite: 本地配置是否可覆盖注册中心配置<br />如果可覆盖，每次启动都以本地配置为准
-  registryCenter: 注册中心配置
+  registryCenter: 注册中心配置，通过配置实现类的具体类型确定使用的注册中心,目前支持io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration和io.shardingjdbc.orchestration.reg.etcd.EtcdConfiguration
     namespace: Zookeeper的命名空间
     serverLists: 连接Zookeeper服务器的列表<br />包括IP地址和端口号<br />多个地址用逗号分隔<br />如: host1:2181,host2:2181
     baseSleepTimeMilliseconds: 等待重试的间隔时间的初始值<br />单位：毫秒
@@ -404,8 +404,9 @@ sharding.jdbc.config.sharding.tables.t_order_item.keyGeneratorColumnName=order_i
 
 sharding.jdbc.config.orchestration.name=demo_spring_boot_ds_sharding
 sharding.jdbc.config.orchestration.overwrite=true
-sharding.jdbc.config.orchestration.registryCenter.namespace=orchestration-spring-boot-sharding-test
-sharding.jdbc.config.orchestration.registryCenter.server-lists=localhost:3181
+sharding.jdbc.config.orchestration.regcenter.type=zookeeper
+sharding.jdbc.config.orchestration.regcenter.namespace=orchestration-spring-boot-sharding-test
+sharding.jdbc.config.orchestration.regcenter.server-lists=localhost:3181
 ```
 
 #### 编排分库分表Spring Boot配置项说明
