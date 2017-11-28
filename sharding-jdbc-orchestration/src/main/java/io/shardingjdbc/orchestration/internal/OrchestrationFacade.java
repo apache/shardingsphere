@@ -18,6 +18,8 @@
 package io.shardingjdbc.orchestration.internal;
 
 import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
+import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
@@ -80,27 +82,30 @@ public final class OrchestrationFacade {
     }
     
     /**
-     * Initial all orchestration actions for sharding data source.
+     * Get sharding datasource and Initialize for orchestration.
      * 
      * @param dataSourceMap data source map
      * @param shardingRuleConfig sharding rule configuration
      * @param configMap config map
      * @param props sharding properties
-     * @param shardingDataSource sharding datasource
      * @throws SQLException SQL exception
+     * @return sharding datasource for orchestration
      */
-    public void initShardingOrchestration(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
-                                          final Map<String, Object> configMap, final Properties props, final ShardingDataSource shardingDataSource) throws SQLException {
+    public ShardingDataSource getOrchestrationShardingDataSource(
+            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) throws SQLException {
         if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
             reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
         }
         configService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, configMap, props, isOverwrite);
         instanceStateService.persistShardingInstanceOnline();
         dataSourceService.persistDataSourcesNode();
-        listenerManager.initShardingListeners(shardingDataSource);
+        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(
+                configService.loadDataSourceMap(), configService.loadShardingRuleConfiguration(), configService.loadShardingConfigMap(), configService.loadShardingProperties());
+        listenerManager.initShardingListeners(result);
         if (dataSourceService.hasDisabledDataSource()) {
-            shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), props);
+            result.renew(dataSourceService.getAvailableShardingRule(), props);
         }
+        return result;
     }
     
     private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
@@ -135,21 +140,102 @@ public final class OrchestrationFacade {
     }
     
     /**
-     * Initial all orchestration actions for master-slave data source.
+     * Get master-slave datasource and Initialize for orchestration.
      * 
      * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig sharding rule configuration
-     * @param masterSlaveDataSource master-slave datasource
+     * @param masterSlaveRuleConfig master-slave rule configuration
      * @param configMap config map
+     * @throws SQLException SQL exception
+     * @return master-slave datasource for orchestration
      */
-    public void initMasterSlaveOrchestration(final Map<String, DataSource> dataSourceMap, 
-                                             final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final MasterSlaveDataSource masterSlaveDataSource, final Map<String, Object> configMap) {
+    public MasterSlaveDataSource getOrchestrationMasterSlaveDataSource(
+            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap) throws SQLException {
         configService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, configMap, isOverwrite);
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
-        listenerManager.initMasterSlaveListeners(masterSlaveDataSource);
+        MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(
+                configService.loadDataSourceMap(), configService.loadMasterSlaveRuleConfiguration(), configService.loadMasterSlaveConfigMap());
+        listenerManager.initMasterSlaveListeners(result);
         if (dataSourceService.hasDisabledDataSource()) {
-            masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
+            result.renew(dataSourceService.getAvailableMasterSlaveRule());
         }
+        return result;
+    }
+    
+    /**
+     * Load data source configuration.
+     *
+     * @param originalDataSourceMap original data source map
+     * @return data source configuration map
+     */
+    public Map<String, DataSource> loadDataSourceMap(final Map<String, DataSource> originalDataSourceMap) {
+        if (isOverwrite || !configService.hasDataSourceConfiguration()) {
+            return originalDataSourceMap;
+        }
+        return configService.loadDataSourceMap();
+    }
+    
+    /**
+     * Load sharding rule configuration.
+     *
+     * @param originalShardingRuleConfig original sharding rule configuration
+     * @return sharding rule configuration
+     */
+    public ShardingRuleConfiguration loadShardingRuleConfiguration(final ShardingRuleConfiguration originalShardingRuleConfig) {
+        if (isOverwrite || !configService.hasShardingRuleConfiguration()) {
+            return originalShardingRuleConfig;
+        }
+        return configService.loadShardingRuleConfiguration();
+    }
+    
+    /**
+     * Load sharding config map.
+     *
+     * @param originalShardingConfigMap original sharding config map.
+     * @return sharding config map
+     */
+    public Map<String, Object> loadShardingConfigMap(final Map<String, Object> originalShardingConfigMap) {
+        if (isOverwrite || !configService.hasShardingConfigMap()) {
+            return originalShardingConfigMap;
+        }
+        return configService.loadShardingConfigMap();
+    }
+    
+    /**
+     * Load sharding properties configuration.
+     *
+     * @param originalShardingProperties original sharding properties 
+     * @return sharding properties
+     */
+    public Properties loadShardingProperties(final Properties originalShardingProperties) {
+        if (isOverwrite || !configService.hasShardingProperties()) {
+            return originalShardingProperties;
+        }
+        return configService.loadShardingProperties();
+    }
+    
+    /**
+     * Load master-slave rule configuration.
+     * 
+     * @param originalMasterSlaveRuleConfig original master-slave rule configuration
+     * @return master-slave rule configuration
+     */
+    public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration originalMasterSlaveRuleConfig) {
+        if (isOverwrite || !configService.hasMasterSlaveRuleConfiguration()) {
+            return originalMasterSlaveRuleConfig;
+        }
+        return configService.loadMasterSlaveRuleConfiguration();
+    }
+    
+    /**
+     * Load master-slave config map.
+     *
+     * @return master-slave config map
+     */
+    public Map<String, Object> loadMasterSlaveConfigMap(final Map<String, Object> originalMasterSlaveConfigMap) {
+        if (isOverwrite || !configService.hasMasterSlaveConfigMap()) {
+            return originalMasterSlaveConfigMap;
+        }
+        return configService.loadMasterSlaveConfigMap();
     }
 }

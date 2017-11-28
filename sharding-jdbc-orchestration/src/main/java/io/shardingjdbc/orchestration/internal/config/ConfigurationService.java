@@ -33,6 +33,7 @@ import java.util.Properties;
  * Configuration service.
  * 
  * @author caohao
+ * @author zhangliang
  */
 public final class ConfigurationService {
     
@@ -62,26 +63,62 @@ public final class ConfigurationService {
         persistShardingProperties(props, isOverwrite);
     }
     
+    /**
+     * Adjust has data source configuration or not in registry center.
+     *
+     * @return has data source configuration or not
+     */
+    public boolean hasDataSourceConfiguration() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH));
+    }
+    
+    /**
+     * Adjust has sharding rule configuration or not in registry center.
+     *
+     * @return has sharding rule configuration or not
+     */
+    public boolean hasShardingRuleConfiguration() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH));
+    }
+    
+    /**
+     * Adjust has sharding config map or not in registry center.
+     *
+     * @return has sharding config map or not
+     */
+    public boolean hasShardingConfigMap() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH));
+    }
+    
+    /**
+     * Adjust has sharding properties or not in registry center.
+     *
+     * @return has sharding properties or not
+     */
+    public boolean hasShardingProperties() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH));
+    }
+    
     private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
-        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH))) {
+        if (isOverwrite || !hasDataSourceConfiguration()) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceJsonConverter.toJson(dataSourceMap));
         }
     }
     
     private void persistShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig, final boolean isOverwrite) {
-        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH))) {
+        if (isOverwrite || !hasShardingRuleConfiguration()) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH), ShardingRuleConfigurationConverter.toJson(shardingRuleConfig));
         }
     }
     
     private void persistShardingConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
-        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH))) {
+        if (isOverwrite || !hasShardingConfigMap()) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH), GsonFactory.getGson().toJson(configMap));
         }
     }
     
     private void persistShardingProperties(final Properties props, final boolean isOverwrite) {
-        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH))) {
+        if (isOverwrite || !hasShardingProperties()) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH), GsonFactory.getGson().toJson(props));
         }
     }
@@ -101,14 +138,32 @@ public final class ConfigurationService {
         persistMasterSlaveConfigMap(configMap, isOverwrite);
     }
     
+    /**
+     * Adjust has master-slave rule configuration or not in registry center.
+     *
+     * @return has master-slave rule configuration or not
+     */
+    public boolean hasMasterSlaveRuleConfiguration() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH));
+    }
+    
+    /**
+     * Adjust has master-slave config map or not in registry center.
+     *
+     * @return has master-slave config map or not
+     */
+    public boolean hasMasterSlaveConfigMap() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH));
+    }
+    
     private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isOverwrite) {
-        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH))) {
+        if (isOverwrite || !hasMasterSlaveRuleConfiguration()) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH), GsonFactory.getGson().toJson(masterSlaveRuleConfig));
         }
     }
     
     private void persistMasterSlaveConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
-        if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH))) {
+        if (isOverwrite || !hasMasterSlaveConfigMap()) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH), GsonFactory.getGson().toJson(configMap));
         }
     }
@@ -119,7 +174,7 @@ public final class ConfigurationService {
      * @return data source configuration map
      */
     public Map<String, DataSource> loadDataSourceMap() {
-        return DataSourceJsonConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+        return DataSourceJsonConverter.fromJson(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
     }
     
     /**
@@ -128,7 +183,7 @@ public final class ConfigurationService {
      * @return sharding rule configuration
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration() {
-        return ShardingRuleConfigurationConverter.fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH)));
+        return ShardingRuleConfigurationConverter.fromJson(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH)));
     }
     
     /**
@@ -138,7 +193,7 @@ public final class ConfigurationService {
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> loadShardingConfigMap() {
-        return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH)), Map.class);
+        return GsonFactory.getGson().fromJson(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH)), Map.class);
     }
     
     /**
@@ -147,7 +202,7 @@ public final class ConfigurationService {
      * @return sharding properties
      */
     public Properties loadShardingProperties() {
-        String data = regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH));
+        String data = regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH));
         return Strings.isNullOrEmpty(data) ? new Properties() : GsonFactory.getGson().fromJson(data, Properties.class);
     }
     
@@ -157,7 +212,7 @@ public final class ConfigurationService {
      * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
-        return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)), MasterSlaveRuleConfiguration.class);
+        return GsonFactory.getGson().fromJson(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)), MasterSlaveRuleConfiguration.class);
     }
     
     /**
@@ -167,7 +222,6 @@ public final class ConfigurationService {
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> loadMasterSlaveConfigMap() {
-        return GsonFactory.getGson().fromJson(regCenter.get(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH)), Map.class);
-        
+        return GsonFactory.getGson().fromJson(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH)), Map.class);
     }
 }

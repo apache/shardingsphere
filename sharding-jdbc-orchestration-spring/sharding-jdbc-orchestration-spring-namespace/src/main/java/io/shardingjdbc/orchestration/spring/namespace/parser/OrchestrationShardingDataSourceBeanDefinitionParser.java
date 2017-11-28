@@ -43,6 +43,7 @@ import java.util.Properties;
  * Orchestration sharding data source parser for spring namespace.
  * 
  * @author caohao
+ * @author zhangliang
  */
 public class OrchestrationShardingDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
@@ -58,7 +59,6 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
         factory.addConstructorArgValue(parseShardingRuleConfig(element));
         factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
-        factory.setInitMethodName("init");
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
     }

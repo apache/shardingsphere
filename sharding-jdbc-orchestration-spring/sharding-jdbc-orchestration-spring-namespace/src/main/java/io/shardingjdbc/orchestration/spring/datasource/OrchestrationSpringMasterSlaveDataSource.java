@@ -31,31 +31,20 @@ import java.util.Map;
  * Orchestration master-slave datasource for spring namespace.
  *
  * @author caohao
+ * @author zhangliang
  */
 public class OrchestrationSpringMasterSlaveDataSource extends MasterSlaveDataSource {
-    
-    private final OrchestrationConfiguration config;
-    
-    private final Map<String, DataSource> dataSourceMap;
-    
-    private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
-    
-    private final Map<String, Object> configMap;
     
     public OrchestrationSpringMasterSlaveDataSource(final String name, final boolean overwrite, final RegistryCenterConfiguration regCenterConfig, 
                                                     final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                                     final Map<String, Object> configMap) throws SQLException {
-        super(masterSlaveRuleConfig.build(dataSourceMap), configMap);
-        this.dataSourceMap = dataSourceMap;
-        this.masterSlaveRuleConfig = masterSlaveRuleConfig;
-        this.configMap = configMap;
-        config = new OrchestrationConfiguration(name, regCenterConfig, overwrite);
+        super(getOrchestrationFacade(name, overwrite, regCenterConfig).loadMasterSlaveRuleConfiguration(masterSlaveRuleConfig).build(
+                getOrchestrationFacade(name, overwrite, regCenterConfig).loadDataSourceMap(dataSourceMap)),
+                getOrchestrationFacade(name, overwrite, regCenterConfig).loadMasterSlaveConfigMap(configMap));
+        getOrchestrationFacade(name, overwrite, regCenterConfig).getOrchestrationMasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap);
     }
     
-    /**
-     * Initial all orchestration actions for master-slave data source.
-     */
-    public void init() {
-        new OrchestrationFacade(config).initMasterSlaveOrchestration(dataSourceMap, masterSlaveRuleConfig, this, configMap);
+    private static OrchestrationFacade getOrchestrationFacade(final String name, final boolean overwrite, final RegistryCenterConfiguration regCenterConfig) {
+        return new OrchestrationFacade(new OrchestrationConfiguration(name, regCenterConfig, overwrite));
     }
 }

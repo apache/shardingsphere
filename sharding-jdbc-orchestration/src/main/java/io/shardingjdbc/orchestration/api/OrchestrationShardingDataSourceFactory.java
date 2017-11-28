@@ -17,9 +17,7 @@
 
 package io.shardingjdbc.orchestration.api;
 
-import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
-import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
@@ -56,16 +54,13 @@ public final class OrchestrationShardingDataSourceFactory {
      * @param orchestrationConfig orchestration master-slave configuration
      * @param configMap config map
      * @param props properties for data source
-     *
      * @return sharding data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(
             final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
             final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, configMap, props);
-        new OrchestrationFacade(orchestrationConfig).initShardingOrchestration(dataSourceMap, shardingRuleConfig, configMap, props, result);
-        return result;
+        return new OrchestrationFacade(orchestrationConfig).getOrchestrationShardingDataSource(dataSourceMap, shardingRuleConfig, configMap, props);
     }
     
     /**

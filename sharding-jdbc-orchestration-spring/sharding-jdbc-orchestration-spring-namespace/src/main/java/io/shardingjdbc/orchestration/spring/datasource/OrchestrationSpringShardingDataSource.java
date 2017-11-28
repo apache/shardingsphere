@@ -32,35 +32,20 @@ import java.util.Properties;
  * Orchestration sharding datasource for spring namespace.
  *
  * @author caohao
+ * @author zhangliang
  */
 public class OrchestrationSpringShardingDataSource extends ShardingDataSource {
     
-    private final OrchestrationConfiguration config;
-    
-    private final Map<String, DataSource> dataSourceMap;
-    
-    private final ShardingRuleConfiguration shardingRuleConfig;
-    
-    private final Map<String, Object> configMap;
-    
-    private final Properties props;
-    
     public OrchestrationSpringShardingDataSource(final String name, final boolean overwrite, final RegistryCenterConfiguration regCenterConfig, final Map<String, DataSource> dataSourceMap,
                                                  final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) throws SQLException {
-        super(shardingRuleConfig.build(dataSourceMap), configMap, props);
-        this.dataSourceMap = dataSourceMap;
-        this.shardingRuleConfig = shardingRuleConfig;
-        this.configMap = configMap;
-        this.props = props;
-        config = new OrchestrationConfiguration(name, regCenterConfig, overwrite);
+        super(getOrchestrationFacade(name, overwrite, regCenterConfig).loadShardingRuleConfiguration(shardingRuleConfig).build(
+                getOrchestrationFacade(name, overwrite, regCenterConfig).loadDataSourceMap(dataSourceMap)),
+                getOrchestrationFacade(name, overwrite, regCenterConfig).loadShardingConfigMap(configMap), 
+                getOrchestrationFacade(name, overwrite, regCenterConfig).loadShardingProperties(props));
+        getOrchestrationFacade(name, overwrite, regCenterConfig).getOrchestrationShardingDataSource(dataSourceMap, shardingRuleConfig, configMap, props);
     }
     
-    /**
-     * Initial all orchestration actions for sharding data source.
-     * 
-     * @throws SQLException SQL exception
-     */
-    public void init() throws SQLException {
-        new OrchestrationFacade(config).initShardingOrchestration(dataSourceMap, shardingRuleConfig, configMap, props, this);
+    private static OrchestrationFacade getOrchestrationFacade(final String name, final boolean overwrite, final RegistryCenterConfiguration regCenterConfig) {
+        return new OrchestrationFacade(new OrchestrationConfiguration(name, regCenterConfig, overwrite));
     }
 }

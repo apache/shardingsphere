@@ -42,6 +42,7 @@ import java.util.Map;
  * Orchestration master-slave data source parser for spring namespace.
  *
  * @author caohao
+ * @author zhangliang
  */
 public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
@@ -80,7 +81,6 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         factory.addConstructorArgValue(parseDataSources(element, parserContext));
         factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element, parserContext));
         factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
-        factory.setInitMethodName("init");
         return factory.getBeanDefinition();
     }
     
