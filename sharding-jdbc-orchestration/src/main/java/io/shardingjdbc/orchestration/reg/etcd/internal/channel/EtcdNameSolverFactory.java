@@ -18,19 +18,20 @@
 package io.shardingjdbc.orchestration.reg.etcd.internal.channel;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import io.grpc.Attributes;
 import io.grpc.EquivalentAddressGroup;
 import io.grpc.NameResolver;
+import io.grpc.Status;
 import io.grpc.internal.GrpcUtil;
 import io.grpc.internal.SharedResourceHolder;
-import io.shardingjdbc.orchestration.reg.exception.RegException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
@@ -41,6 +42,7 @@ import java.util.regex.Pattern;
  * @author junxiong
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class EtcdNameSolverFactory extends NameResolver.Factory {
     
     private static final Pattern SCHEMAS = Pattern.compile("^(http|https)");
@@ -71,16 +73,20 @@ public final class EtcdNameSolverFactory extends NameResolver.Factory {
                 if (shutdown) {
                     return;
                 }
+                List<EquivalentAddressGroup> equivalentAddressGroups = Lists.newArrayList();
                 for (String each : endpoints) {
                     try {
-                        URI uri = new URI(each);
+                        URI uri = new URI(each.trim());
                         if (!Strings.isNullOrEmpty(uri.getAuthority()) && SCHEMAS.matcher(uri.getScheme()).matches()) {
-                            listener.onAddresses(Collections.singletonList(new EquivalentAddressGroup(new InetSocketAddress(uri.getHost(), uri.getPort()))), Attributes.EMPTY);
+                            InetSocketAddress inetSocketAddress = new InetSocketAddress(uri.getHost(), uri.getPort());
+                            equivalentAddressGroups.add(new EquivalentAddressGroup(inetSocketAddress));
                         }
                     } catch (final URISyntaxException ex) {
-                        throw new RegException("Illegal endpoint, %s", ex.getMessage());
+                        listener.onError(Status.INVALID_ARGUMENT);
+                        log.warn("Ignored illegal endpoint, %s", ex.getMessage());
                     }
                 }
+                listener.onAddresses(equivalentAddressGroups, Attributes.EMPTY);
             }
             
             @Override

@@ -19,6 +19,7 @@ package io.shardingjdbc.orchestration.reg.etcd.internal.channel;
 
 import io.grpc.Channel;
 import io.grpc.netty.NettyChannelBuilder;
+import io.grpc.util.RoundRobinLoadBalancerFactory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -47,7 +48,11 @@ public final class EtcdChannelFactory {
         if (etcdChannels.containsKey(endpoints)) {
             return etcdChannels.get(endpoints);
         }
-        Channel channel = NettyChannelBuilder.forTarget(TARGET).usePlaintext(true).nameResolverFactory(new EtcdNameSolverFactory(TARGET, endpoints)).build();
+        Channel channel = NettyChannelBuilder.forTarget(TARGET)
+                .usePlaintext(true)
+                .nameResolverFactory(new EtcdNameSolverFactory(TARGET, endpoints))
+                .loadBalancerFactory(RoundRobinLoadBalancerFactory.getInstance())
+                .build();
         Channel result =  etcdChannels.putIfAbsent(endpoints, channel);
         return null == result ? channel : result;
     }
