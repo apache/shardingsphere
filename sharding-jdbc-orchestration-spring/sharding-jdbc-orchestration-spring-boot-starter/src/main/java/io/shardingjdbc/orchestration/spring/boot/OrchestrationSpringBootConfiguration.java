@@ -18,8 +18,6 @@
 package io.shardingjdbc.orchestration.spring.boot;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.util.DataSourceUtil;
 import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
@@ -42,7 +40,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Orchestration spring boot sharding and master-slave configuration.
@@ -54,8 +51,6 @@ import java.util.Properties;
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
-    
-    private final Properties props = new Properties();
     
     @Autowired
     private SpringBootShardingRuleConfigurationProperties shardingProperties;
@@ -77,7 +72,6 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Override
     public void setEnvironment(final Environment environment) {
         setDataSourceMap(environment);
-        setShardingProperties(environment);
         setOrchestrationConfiguration(environment);
     }
     
@@ -93,18 +87,6 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
             } catch (final ReflectiveOperationException ex) {
                 throw new ShardingJdbcException("Can't find datasource type!", ex);
             }
-        }
-    }
-    
-    private void setShardingProperties(final Environment environment) {
-        RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "sharding.jdbc.config.sharding.props.");
-        String showSQL = propertyResolver.getProperty(ShardingPropertiesConstant.SQL_SHOW.getKey());
-        if (!Strings.isNullOrEmpty(showSQL)) {
-            props.setProperty(ShardingPropertiesConstant.SQL_SHOW.getKey(), showSQL);
-        }
-        String executorSize = propertyResolver.getProperty(ShardingPropertiesConstant.EXECUTOR_SIZE.getKey());
-        if (!Strings.isNullOrEmpty(executorSize)) {
-            props.setProperty(ShardingPropertiesConstant.EXECUTOR_SIZE.getKey(), executorSize);
         }
     }
     

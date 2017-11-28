@@ -18,6 +18,8 @@
 package io.shardingjdbc.spring.boot.type;
 
 import io.shardingjdbc.core.api.ConfigMapContext;
+import io.shardingjdbc.core.constant.ShardingProperties;
+import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -60,5 +62,11 @@ public class SpringBootShardingTest {
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
         assertThat(ConfigMapContext.getInstance().getShardingConfig(), is(configMap));
+    
+        Field propertiesField = ShardingDataSource.class.getDeclaredField("shardingProperties");
+        propertiesField.setAccessible(true);
+        ShardingProperties shardingProperties = (ShardingProperties) propertiesField.get(dataSource);
+        assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
+        assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
     }
 }
