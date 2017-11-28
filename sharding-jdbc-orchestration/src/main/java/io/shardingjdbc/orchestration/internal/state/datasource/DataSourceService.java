@@ -19,16 +19,14 @@ package io.shardingjdbc.orchestration.internal.state.datasource;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
-import io.shardingjdbc.core.rule.MasterSlaveRule;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
 import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
-import lombok.Getter;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +34,8 @@ import java.util.Map;
  * Data source service.
  * 
  * @author caohao
+ * @author zhangliang
  */
-@Getter
 public final class DataSourceService {
     
     private final StateNode stateNode;
@@ -59,68 +57,59 @@ public final class DataSourceService {
         regCenter.persist(stateNode.getDataSourcesNodeFullPath(), "");
     }
     
+    /**
+     * Get available data sources.
+     *
+     * @return available data sources
+     */
+    public Map<String, DataSource> getAvailableDataSources() {
+        Map<String, DataSource> result = configService.loadDataSourceMap();
+        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
+        for (String each : disabledDataSourceNames) {
+            result.remove(each);
+        }
+        return result;
+    }
     
     /**
-     * Justify if has disabled data source.
+     * Get available sharding rule configuration.
      *
-     * @return if has disabled data souce
+     * @return available sharding rule configuration
      */
-    public boolean hasDisabledDataSource() {
-        boolean result = false;
-        String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
-        List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
-        for (String each : dataSources) {
-            String path = dataSourcesNodePath + "/" + each;
-            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(path))) {
-                result = true;
+    public ShardingRuleConfiguration getAvailableShardingRuleConfiguration() {
+        ShardingRuleConfiguration result = configService.loadShardingRuleConfiguration();
+        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
+        for (String each : disabledDataSourceNames) {
+            for (MasterSlaveRuleConfiguration masterSlaveRuleConfig : result.getMasterSlaveRuleConfigs()) {
+                masterSlaveRuleConfig.getSlaveDataSourceNames().remove(each);
             }
         }
         return result;
     }
     
-    
     /**
-     * Get available sharding rule.
+     * Get available master-slave rule configuration.
      *
-     * @return available sharding rule
-     * @throws SQLException SQL exception
+     * @return available master-slave rule configuration
      */
-    public ShardingRule getAvailableShardingRule() throws SQLException {
-        Map<String, DataSource> dataSourceMap = configService.loadDataSourceMap();
-        String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
-        List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
-        ShardingRuleConfiguration ruleConfig = configService.loadShardingRuleConfiguration();
-        for (String each : dataSources) {
-            String dataSourceName = each.substring(each.lastIndexOf("/") + 1);
-            String path = dataSourcesNodePath + "/" + each;
-            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(path)) && dataSourceMap.containsKey(dataSourceName)) {
-                dataSourceMap.remove(dataSourceName);
-                for (MasterSlaveRuleConfiguration msRuleConfig : ruleConfig.getMasterSlaveRuleConfigs()) {
-                    msRuleConfig.getSlaveDataSourceNames().remove(dataSourceName);
-                }
-            }
+    public MasterSlaveRuleConfiguration getAvailableMasterSlaveRuleConfiguration() {
+        MasterSlaveRuleConfiguration result = configService.loadMasterSlaveRuleConfiguration();
+        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
+        for (String each : disabledDataSourceNames) {
+            result.getSlaveDataSourceNames().remove(each);
         }
-        return ruleConfig.build(dataSourceMap);
+        return result;
     }
     
-    /**
-     * Get available master-slave rule.
-     * 
-     * @return available master-slave rule
-     */
-    public MasterSlaveRule getAvailableMasterSlaveRule() {
-        Map<String, DataSource> dataSourceMap = configService.loadDataSourceMap();
+    private Collection<String> getDisabledDataSourceNames() {
+        Collection<String> result = new HashSet<>();
         String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
         List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
-        MasterSlaveRuleConfiguration ruleConfig = configService.loadMasterSlaveRuleConfiguration();
         for (String each : dataSources) {
-            String dataSourceName = each.substring(each.lastIndexOf("/") + 1);
-            String path = dataSourcesNodePath + "/" + each;
-            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(path)) && dataSourceMap.containsKey(dataSourceName)) {
-                dataSourceMap.remove(dataSourceName);
-                ruleConfig.getSlaveDataSourceNames().remove(dataSourceName);
+            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(dataSourcesNodePath + "/" + each))) {
+                result.add(each.substring(each.lastIndexOf("/") + 1));
             }
         }
-        return ruleConfig.build(dataSourceMap);
+        return result;
     }
 }

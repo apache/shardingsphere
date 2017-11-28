@@ -100,11 +100,8 @@ public final class OrchestrationFacade {
         instanceStateService.persistShardingInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         ShardingDataSource result = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(
-                configService.loadDataSourceMap(), configService.loadShardingRuleConfiguration(), configService.loadShardingConfigMap(), configService.loadShardingProperties());
+                dataSourceService.getAvailableDataSources(), dataSourceService.getAvailableShardingRuleConfiguration(), configService.loadShardingConfigMap(), configService.loadShardingProperties());
         listenerManager.initShardingListeners(result);
-        if (dataSourceService.hasDisabledDataSource()) {
-            result.renew(dataSourceService.getAvailableShardingRule(), props);
-        }
         return result;
     }
     
@@ -154,11 +151,8 @@ public final class OrchestrationFacade {
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         MasterSlaveDataSource result = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(
-                configService.loadDataSourceMap(), configService.loadMasterSlaveRuleConfiguration(), configService.loadMasterSlaveConfigMap());
+                dataSourceService.getAvailableDataSources(), dataSourceService.getAvailableMasterSlaveRuleConfiguration(), configService.loadMasterSlaveConfigMap());
         listenerManager.initMasterSlaveListeners(result);
-        if (dataSourceService.hasDisabledDataSource()) {
-            result.renew(dataSourceService.getAvailableMasterSlaveRule());
-        }
         return result;
     }
     
@@ -172,7 +166,7 @@ public final class OrchestrationFacade {
         if (isOverwrite || !configService.hasDataSourceConfiguration()) {
             return originalDataSourceMap;
         }
-        return configService.loadDataSourceMap();
+        return dataSourceService.getAvailableDataSources();
     }
     
     /**
@@ -185,7 +179,7 @@ public final class OrchestrationFacade {
         if (isOverwrite || !configService.hasShardingRuleConfiguration()) {
             return originalShardingRuleConfig;
         }
-        return configService.loadShardingRuleConfiguration();
+        return dataSourceService.getAvailableShardingRuleConfiguration();
     }
     
     /**
@@ -224,7 +218,7 @@ public final class OrchestrationFacade {
         if (isOverwrite || !configService.hasMasterSlaveRuleConfiguration()) {
             return originalMasterSlaveRuleConfig;
         }
-        return configService.loadMasterSlaveRuleConfiguration();
+        return dataSourceService.getAvailableMasterSlaveRuleConfiguration();
     }
     
     /**

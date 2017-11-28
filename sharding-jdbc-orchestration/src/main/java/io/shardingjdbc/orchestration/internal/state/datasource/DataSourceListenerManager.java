@@ -59,7 +59,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
                     try {
-                        shardingDataSource.renew(dataSourceService.getAvailableShardingRule(), configService.loadShardingProperties());
+                        shardingDataSource.renew(dataSourceService.getAvailableShardingRuleConfiguration().build(dataSourceService.getAvailableDataSources()), configService.loadShardingProperties());
                     } catch (final SQLException ex) {
                         throw new ShardingJdbcException(ex);
                     }
@@ -75,7 +75,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRule());
+                    masterSlaveDataSource.renew(dataSourceService.getAvailableMasterSlaveRuleConfiguration().build(dataSourceService.getAvailableDataSources()));
                 }
             }
         });
