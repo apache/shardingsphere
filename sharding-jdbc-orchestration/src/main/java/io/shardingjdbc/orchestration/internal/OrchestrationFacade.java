@@ -49,6 +49,8 @@ import java.util.Properties;
  */
 public final class OrchestrationFacade {
     
+    private final boolean isOverwrite;
+    
     private final ConfigurationService configService;
     
     private final InstanceStateService instanceStateService;
@@ -59,10 +61,11 @@ public final class OrchestrationFacade {
     
     public OrchestrationFacade(final OrchestrationConfiguration config) {
         RegistryCenter regCenter = createRegistryCenter(config.getRegCenterConfig());
-        configService = new ConfigurationService(config, regCenter);
-        instanceStateService = new InstanceStateService(config, regCenter);
-        dataSourceService = new DataSourceService(config, regCenter);
-        listenerManager = new ListenerFactory(config, regCenter);
+        isOverwrite = config.isOverwrite();
+        configService = new ConfigurationService(config.getName(), regCenter);
+        instanceStateService = new InstanceStateService(config.getName(), regCenter);
+        dataSourceService = new DataSourceService(config.getName(), regCenter);
+        listenerManager = new ListenerFactory(config.getName(), regCenter);
     }
     
     private RegistryCenter createRegistryCenter(final RegistryCenterConfiguration regCenterConfig) {
@@ -86,13 +89,12 @@ public final class OrchestrationFacade {
      * @param shardingDataSource sharding datasource
      * @throws SQLException SQL exception
      */
-    public void initShardingOrchestration(
-            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, 
-            final Properties props, final ShardingDataSource shardingDataSource) throws SQLException {
+    public void initShardingOrchestration(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
+                                          final Map<String, Object> configMap, final Properties props, final ShardingDataSource shardingDataSource) throws SQLException {
         if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
             reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
         }
-        configService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, configMap, props);
+        configService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, configMap, props, isOverwrite);
         instanceStateService.persistShardingInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initShardingListeners(shardingDataSource);
@@ -140,10 +142,9 @@ public final class OrchestrationFacade {
      * @param masterSlaveDataSource master-slave datasource
      * @param configMap config map
      */
-    public void initMasterSlaveOrchestration(
-            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
-            final MasterSlaveDataSource masterSlaveDataSource, final Map<String, Object> configMap) {
-        configService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, configMap);
+    public void initMasterSlaveOrchestration(final Map<String, DataSource> dataSourceMap, 
+                                             final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final MasterSlaveDataSource masterSlaveDataSource, final Map<String, Object> configMap) {
+        configService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, configMap, isOverwrite);
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initMasterSlaveListeners(masterSlaveDataSource);

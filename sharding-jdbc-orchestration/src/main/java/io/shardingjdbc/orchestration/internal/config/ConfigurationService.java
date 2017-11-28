@@ -20,7 +20,6 @@ package io.shardingjdbc.orchestration.internal.config;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
@@ -41,12 +40,9 @@ public final class ConfigurationService {
     
     private final RegistryCenter regCenter;
     
-    private final boolean isOverwrite;
-    
-    public ConfigurationService(final OrchestrationConfiguration config, final RegistryCenter regCenter) {
-        configNode = new ConfigurationNode(config.getName());
+    public ConfigurationService(final String name, final RegistryCenter regCenter) {
+        configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
-        isOverwrite = config.isOverwrite();
     }
     
     /**
@@ -56,34 +52,35 @@ public final class ConfigurationService {
      * @param shardingRuleConfig sharding rule configuration
      * @param configMap config map
      * @param props sharding properties
+     * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistShardingConfiguration(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
-                                             final Map<String, Object> configMap, final Properties props) {
-        persistDataSourceConfiguration(dataSourceMap);
-        persistShardingRuleConfiguration(shardingRuleConfig);
-        persistShardingConfigMap(configMap);
-        persistShardingProperties(props);
+    public void persistShardingConfiguration(
+            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
+        persistDataSourceConfiguration(dataSourceMap, isOverwrite);
+        persistShardingRuleConfiguration(shardingRuleConfig, isOverwrite);
+        persistShardingConfigMap(configMap, isOverwrite);
+        persistShardingProperties(props, isOverwrite);
     }
     
-    private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap) {
+    private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
         if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH))) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceJsonConverter.toJson(dataSourceMap));
         }
     }
     
-    private void persistShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig) {
+    private void persistShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH))) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH), ShardingRuleConfigurationConverter.toJson(shardingRuleConfig));
         }
     }
     
-    private void persistShardingConfigMap(final Map<String, Object> configMap) {
+    private void persistShardingConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
         if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH))) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH), GsonFactory.getGson().toJson(configMap));
         }
     }
     
-    private void persistShardingProperties(final Properties props) {
+    private void persistShardingProperties(final Properties props, final boolean isOverwrite) {
         if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH))) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH), GsonFactory.getGson().toJson(props));
         }
@@ -95,20 +92,22 @@ public final class ConfigurationService {
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
      * @param configMap config map
+     * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistMasterSlaveConfiguration(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap) {
-        persistDataSourceConfiguration(dataSourceMap);
-        persistMasterSlaveRuleConfiguration(masterSlaveRuleConfig);
-        persistMasterSlaveConfigMap(configMap);
+    public void persistMasterSlaveConfiguration(
+            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final boolean isOverwrite) {
+        persistDataSourceConfiguration(dataSourceMap, isOverwrite);
+        persistMasterSlaveRuleConfiguration(masterSlaveRuleConfig, isOverwrite);
+        persistMasterSlaveConfigMap(configMap, isOverwrite);
     }
     
-    private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+    private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH))) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH), GsonFactory.getGson().toJson(masterSlaveRuleConfig));
         }
     }
     
-    private void persistMasterSlaveConfigMap(final Map<String, Object> configMap) {
+    private void persistMasterSlaveConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
         if (isOverwrite || !regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH))) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH), GsonFactory.getGson().toJson(configMap));
         }

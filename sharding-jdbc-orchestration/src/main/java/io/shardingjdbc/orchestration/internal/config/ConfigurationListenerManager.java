@@ -20,7 +20,6 @@ package io.shardingjdbc.orchestration.internal.config;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
@@ -44,11 +43,11 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     private final DataSourceService dataSourceService;
     
-    public ConfigurationListenerManager(final OrchestrationConfiguration config, final RegistryCenter regCenter) {
-        configNode = new ConfigurationNode(config.getName());
+    public ConfigurationListenerManager(final String name, final RegistryCenter regCenter) {
+        configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
-        configService = new ConfigurationService(config, regCenter);
-        dataSourceService = new DataSourceService(config, regCenter);
+        configService = new ConfigurationService(name, regCenter);
+        dataSourceService = new DataSourceService(name, regCenter);
     }
     
     @Override

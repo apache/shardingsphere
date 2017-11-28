@@ -21,7 +21,6 @@ import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
 import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.internal.state.StateNodeStatus;
@@ -47,10 +46,10 @@ public final class DataSourceService {
     
     private final ConfigurationService configService;
     
-    public DataSourceService(final OrchestrationConfiguration config, final RegistryCenter regCenter) {
-        stateNode = new StateNode(config.getName());
+    public DataSourceService(final String name, final RegistryCenter regCenter) {
+        stateNode = new StateNode(name);
         this.regCenter = regCenter;
-        configService = new ConfigurationService(config, regCenter);
+        configService = new ConfigurationService(name, regCenter);
     }
     
     /**
@@ -62,9 +61,9 @@ public final class DataSourceService {
     
     
     /**
-     * Justify if has disabled datasource.
+     * Justify if has disabled data source.
      *
-     * @return if has disabled datasouce
+     * @return if has disabled data souce
      */
     public boolean hasDisabledDataSource() {
         boolean result = false;

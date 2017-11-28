@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.orchestration.internal.state.instance;
 
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
 import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 
@@ -32,8 +31,8 @@ public final class InstanceStateService {
     
     private final RegistryCenter regCenter;
     
-    public InstanceStateService(final OrchestrationConfiguration config, final RegistryCenter regCenter) {
-        stateNode = new StateNode(config.getName());
+    public InstanceStateService(final String name, final RegistryCenter regCenter) {
+        stateNode = new StateNode(name);
         this.regCenter = regCenter;
     }
     
