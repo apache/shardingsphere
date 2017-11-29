@@ -22,11 +22,8 @@ import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.util.DataSourceUtil;
 import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingjdbc.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingjdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
+import io.shardingjdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
 import io.shardingjdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -47,7 +44,7 @@ import java.util.Map;
  * @author caohao
  */
 @Configuration
-@EnableConfigurationProperties({SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class})
+@EnableConfigurationProperties({SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class, SpringBootOrchestrationConfigurationProperties.class})
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
@@ -58,21 +55,21 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Autowired
     private SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
     
-    private OrchestrationConfiguration orchestrationConfig;
+    @Autowired
+    private SpringBootOrchestrationConfigurationProperties orchestrationProperties;
     
     @Bean
     public DataSource dataSource() throws SQLException {
         return null == masterSlaveProperties.getMasterDataSourceName() 
                 ? OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, 
-                        shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(), shardingProperties.getProps(), orchestrationConfig)
+                        shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(), shardingProperties.getProps(), orchestrationProperties.getOrchestrationConfiguration())
                 : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
-                        masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), orchestrationConfig);
+                        masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), orchestrationProperties.getOrchestrationConfiguration());
     }
     
     @Override
     public void setEnvironment(final Environment environment) {
         setDataSourceMap(environment);
-        setOrchestrationConfiguration(environment);
     }
     
     private void setDataSourceMap(final Environment environment) {
@@ -88,74 +85,5 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
                 throw new ShardingJdbcException("Can't find datasource type!", ex);
             }
         }
-    }
-    
-    private void setOrchestrationConfiguration(final Environment environment) {
-        RelaxedPropertyResolver regCenterPropertyResolver = new RelaxedPropertyResolver(environment, "sharding.jdbc.config.orchestration.regcenter.");
-        String type = regCenterPropertyResolver.getProperty("type");
-        RegistryCenterConfiguration regCenterConfig;
-        if ("zookeeper".equalsIgnoreCase(type)) {
-            regCenterConfig = getZookeeperConfiguration(regCenterPropertyResolver);
-        } else if ("etcd".equalsIgnoreCase(type)) {
-            regCenterConfig = getEtcdConfiguration(regCenterPropertyResolver);
-        } else {
-            throw new ShardingJdbcException("Can't find registry center type: %s!", type);
-        }
-        RelaxedPropertyResolver orchestrationPropertyResolver = new RelaxedPropertyResolver(environment, "sharding.jdbc.config.orchestration.");
-        String name = orchestrationPropertyResolver.containsProperty("name") ? orchestrationPropertyResolver.getProperty("name") : null;
-        boolean overwrite = orchestrationPropertyResolver.containsProperty("overwrite") ? Boolean.valueOf(orchestrationPropertyResolver.getProperty("overwrite")) : false;
-        orchestrationConfig = new OrchestrationConfiguration(name, regCenterConfig, overwrite);
-    }
-    
-    private ZookeeperConfiguration getZookeeperConfiguration(final RelaxedPropertyResolver propertyResolver) {
-        ZookeeperConfiguration result = new ZookeeperConfiguration();
-        if (propertyResolver.containsProperty("serverLists")) {
-            result.setServerLists(propertyResolver.getProperty("serverLists"));
-        }
-        if (propertyResolver.containsProperty("namespace")) {
-            result.setNamespace(propertyResolver.getProperty("namespace"));
-        }
-        if (propertyResolver.containsProperty("baseSleepTimeMilliseconds")) {
-            result.setBaseSleepTimeMilliseconds(Integer.parseInt(propertyResolver.getProperty("baseSleepTimeMilliseconds")));
-        }
-        if (propertyResolver.containsProperty("maxSleepTimeMilliseconds")) {
-            result.setMaxSleepTimeMilliseconds(Integer.parseInt(propertyResolver.getProperty("maxSleepTimeMilliseconds")));
-        }
-        if (propertyResolver.containsProperty("maxRetries")) {
-            result.setMaxRetries(Integer.parseInt(propertyResolver.getProperty("maxRetries")));
-        }
-        if (propertyResolver.containsProperty("sessionTimeoutMilliseconds")) {
-            result.setSessionTimeoutMilliseconds(Integer.parseInt(propertyResolver.getProperty("sessionTimeoutMilliseconds")));
-        }
-        if (propertyResolver.containsProperty("connectionTimeoutMilliseconds")) {
-            result.setConnectionTimeoutMilliseconds(Integer.parseInt(propertyResolver.getProperty("connectionTimeoutMilliseconds")));
-        }
-        if (propertyResolver.containsProperty("digest")) {
-            result.setDigest(propertyResolver.getProperty("digest"));
-        }
-        return result;
-    }
-    
-    private EtcdConfiguration getEtcdConfiguration(final RelaxedPropertyResolver propertyResolver) {
-        EtcdConfiguration result = new EtcdConfiguration();
-        if (propertyResolver.containsProperty("serverLists")) {
-            result.setServerLists(propertyResolver.getProperty("serverLists"));
-        }
-        if (propertyResolver.containsProperty("namespace")) {
-            result.setNamespace(propertyResolver.getProperty("namespace"));
-        }
-        if (propertyResolver.containsProperty("timeToLiveMilliseconds")) {
-            result.setTimeToLiveMilliseconds(Integer.parseInt(propertyResolver.getProperty("timeToLiveMilliseconds")));
-        }
-        if (propertyResolver.containsProperty("timeoutMilliseconds")) {
-            result.setTimeoutMilliseconds(Integer.parseInt(propertyResolver.getProperty("timeoutMilliseconds")));
-        }
-        if (propertyResolver.containsProperty("retryIntervalMilliseconds")) {
-            result.setRetryIntervalMilliseconds(Integer.parseInt(propertyResolver.getProperty("retryIntervalMilliseconds")));
-        }
-        if (propertyResolver.containsProperty("maxRetries")) {
-            result.setMaxRetries(Integer.parseInt(propertyResolver.getProperty("maxRetries")));
-        }
-        return result;
     }
 }
