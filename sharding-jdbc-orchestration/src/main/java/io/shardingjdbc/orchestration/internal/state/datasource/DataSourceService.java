@@ -107,7 +107,7 @@ public final class DataSourceService {
         List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
         for (String each : dataSources) {
             if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(dataSourcesNodePath + "/" + each))) {
-                result.add(each.substring(each.lastIndexOf("/") + 1));
+                result.add(each);
             }
         }
         return result;
