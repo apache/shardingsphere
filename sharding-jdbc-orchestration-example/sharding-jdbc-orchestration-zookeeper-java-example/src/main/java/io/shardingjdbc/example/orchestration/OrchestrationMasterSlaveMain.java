@@ -39,7 +39,7 @@ public final class OrchestrationMasterSlaveMain {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
-    private static final String NAMESPACE = "orchestration-demo";
+    private static final String NAMESPACE = "orchestration-java-demo";
     
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException, SQLException {
