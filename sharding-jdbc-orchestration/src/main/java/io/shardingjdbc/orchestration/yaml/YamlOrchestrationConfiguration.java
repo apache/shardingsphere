@@ -18,7 +18,8 @@
 package io.shardingjdbc.orchestration.yaml;
 
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingjdbc.orchestration.reg.etcd.EtcdConfiguration;
+import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,7 +34,9 @@ public class YamlOrchestrationConfiguration {
     
     private String name;
     
-    private RegistryCenterConfiguration registryCenter;
+    private EtcdConfiguration etcd;
+    
+    private ZookeeperConfiguration zookeeper;
     
     private boolean overwrite;
     
@@ -43,6 +46,6 @@ public class YamlOrchestrationConfiguration {
      * @return orchestration master-slave rule configuration from yaml
      */
     public OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration(getName(), registryCenter, overwrite);
+        return new OrchestrationConfiguration(getName(), null != etcd ? etcd : zookeeper, overwrite);
     }
 }

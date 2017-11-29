@@ -54,6 +54,6 @@ shardingRule:
 orchestration:
   name: demo_ds_ms
   overwrite: true
-  registryCenter: !!io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration
+  zookeeper:
     namespace: orchestration-yaml-test
     serverLists: localhost:3181
