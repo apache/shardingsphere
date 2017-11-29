@@ -182,7 +182,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     }
     
     private String getFullPathWithNamespace(final String path) {
-        return String.format("/%s/%s", etcdConfig.getNamespace(), path);
+        return String.format("/%s%s", etcdConfig.getNamespace(), path);
     }
     
     private ByteString getRangeEnd(final String key) {
