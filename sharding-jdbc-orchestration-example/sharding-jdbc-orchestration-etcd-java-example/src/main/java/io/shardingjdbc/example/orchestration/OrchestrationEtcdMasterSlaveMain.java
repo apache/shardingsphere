@@ -40,7 +40,7 @@ public final class OrchestrationEtcdMasterSlaveMain {
     
     private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
     
-    private static final String NAMESPACE = "orchestration-demo";
+    private static final String NAMESPACE = "orchestration-java-demo";
     
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException, SQLException {

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
+       xmlns:master-slave="http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd 
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding 
+                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd 
+                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave  
+                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave/master-slave.xsd">
+    <import resource="classpath*:META-INF/regCenter.xml" />
+    <context:component-scan base-package="io.shardingjdbc.example.orchestration.spring.namespace.mybatis" />
+    
+    <bean id="demo_ds_master_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_0"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+    
+    <bean id="demo_ds_master_0_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+    
+    <bean id="demo_ds_master_0_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_1"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+
+    <bean id="demo_ds_master_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_1"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+
+    <bean id="demo_ds_master_1_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+
+    <bean id="demo_ds_master_1_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_1"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+
+    <bean id="randomStrategy" class="io.shardingjdbc.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    
+    <master-slave:data-source id="demo_ds_ms_0" master-data-source-name="demo_ds_master_0" slave-data-source-names="demo_ds_master_0_slave_0, demo_ds_master_0_slave_1" strategy-ref="randomStrategy" />
+    <master-slave:data-source id="demo_ds_ms_1" master-data-source-name="demo_ds_master_1" slave-data-source-names="demo_ds_master_1_slave_0, demo_ds_master_1_slave_1" strategy-ref="randomStrategy" />
+    
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="demo_ds_ms_${user_id % 2}" />
+    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 2}" />
+    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_item_id" algorithm-expression="t_order_item_${order_item_id % 2}" />
+    
+    <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter">
+        <sharding:sharding-rule data-source-names="demo_ds_ms_0,demo_ds_ms_1">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_ms_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_ms_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+    
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="shardingMasterSlaveDataSource" />
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="shardingMasterSlaveDataSource"/>
+        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
+    </bean>
+    
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="io.shardingjdbc.example..orchestration.spring.namespace.mybatis"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+</beans>

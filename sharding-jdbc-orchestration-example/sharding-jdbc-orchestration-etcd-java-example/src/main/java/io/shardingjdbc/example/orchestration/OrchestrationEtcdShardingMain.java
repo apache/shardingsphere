@@ -44,7 +44,7 @@ public final class OrchestrationEtcdShardingMain {
     
     private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
     
-    private static final String NAMESPACE = "orchestration-demo";
+    private static final String NAMESPACE = "orchestration-java-demo";
     
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException, SQLException {
@@ -65,6 +65,7 @@ public final class OrchestrationEtcdShardingMain {
         EtcdConfiguration result = new EtcdConfiguration();
         result.setNamespace(NAMESPACE);
         result.setServerLists(ETCD_CONNECTION_STRING);
+        result.setTimeToLiveMilliseconds(10000);
         result.setTimeoutMilliseconds(5000);
         return result;
     }
