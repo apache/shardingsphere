@@ -13,6 +13,7 @@
         <module>sharding-jdbc-orchestration-zookeeper-java-example</module>
         <module>sharding-jdbc-orchestration-zookeeper-yaml-example</module>
         <module>sharding-jdbc-orchestration-etcd-java-example</module>
+        <module>sharding-jdbc-orchestration-etcd-yaml-example</module>
     </modules>
     
     <dependencies>
