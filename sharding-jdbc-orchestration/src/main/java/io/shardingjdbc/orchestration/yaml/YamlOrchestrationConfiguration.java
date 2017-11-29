@@ -46,6 +46,9 @@ public class YamlOrchestrationConfiguration {
      * @return orchestration master-slave rule configuration from yaml
      */
     public OrchestrationConfiguration getOrchestrationConfiguration() {
+        if (null != etcd && null != zookeeper) {
+            throw new RuntimeException("Can't config both zookeeper and etcd as registry center!");
+        }
         return new OrchestrationConfiguration(getName(), null != etcd ? etcd : zookeeper, overwrite);
     }
 }
