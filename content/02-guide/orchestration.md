@@ -41,7 +41,7 @@ config
     ├      ├──props                              Properties配置
     ├──masterslave                               读写分离独立使用配置
     ├      ├──rule                               读写分离规则
-    ├      ├──configmap                          读写分离ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}                               
+    ├      ├──configmap                          读写分离ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}
 ```
 
 ### datasource子节点
