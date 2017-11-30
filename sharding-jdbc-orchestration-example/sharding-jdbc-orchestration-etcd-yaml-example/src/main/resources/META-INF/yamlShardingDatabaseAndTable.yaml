@@ -48,5 +48,4 @@ orchestration:
   name: demo_yaml_ds_sharding
   overwrite: true
   etcd:
-    namespace: orchestration-yaml-demo
     serverLists: http://localhost:2379
