@@ -7,7 +7,7 @@
 1. 配置动态化. 可以通过zookeeper和etcd作为注册中心动态修改数据源以及分片配置
 1. 数据治理. 熔断数据库访问程序对数据库的访问和禁用从库的访问
 1. ConfigMap支持. 可以在分片和读写分离策略中获取预定义的元数据
-1. Opentracing支持. 可以通过sky-walking等基于Opentracing协议的APM系统中查看sharding-jdbc的调用链
+1. 跟踪系统支持. 可以通过sky-walking等基于Opentracing协议的APM系统中查看sharding-jdbc的调用链
 
 ### 功能提升
 
