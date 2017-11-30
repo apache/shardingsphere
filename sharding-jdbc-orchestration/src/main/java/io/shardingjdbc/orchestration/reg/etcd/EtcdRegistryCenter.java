@@ -98,7 +98,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        String fullPath = getFullPathWithNamespace(key);
+        String fullPath = getFullPathWithNamespace(key) + "/";
         final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(fullPath)).setRangeEnd(getRangeEnd(fullPath)).build();
         Optional<List<String>> result = etcdRetryEngine.execute(new Callable<List<String>>() {
             
@@ -107,7 +107,8 @@ public final class EtcdRegistryCenter implements RegistryCenter {
                 RangeResponse response = kvStub.range(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
                 List<String> result = new ArrayList<>();
                 for (KeyValue each : response.getKvsList()) {
-                    result.add(each.getKey().toStringUtf8());
+                    String childFullPath = each.getKey().toStringUtf8();
+                    result.add(childFullPath.substring(childFullPath.lastIndexOf("/") + 1));
                 }
                 return result;
             }
