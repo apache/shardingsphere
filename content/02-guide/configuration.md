@@ -255,7 +255,7 @@ slaveDataSourceNames：slave数据源名称，用数组表示多个
 ```xml
 <dependency>
     <groupId>io.shardingjdbc</groupId>
-    <artifactId>sharding-jdbc-spring-namespace</artifactId>
+    <artifactId>sharding-jdbc-core-spring-namespace</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```
@@ -451,7 +451,7 @@ data_source_${id % 2 + 1}
 ```xml
 <dependency>
     <groupId>io.shardingjdbc</groupId>
-    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <artifactId>sharding-jdbc-core-spring-boot-starter</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```

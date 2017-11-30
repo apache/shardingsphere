@@ -11,9 +11,9 @@ next = "/03-design/roadmap/"
 ```
 sharding-jdbc
     ├──sharding-jdbc-core                                    分库分表、读写分离核心模块，可直接使用
-    ├──sharding-jdbc-spring                                  Spring配置父模块，不应直接使用
-    ├      ├──sharding-jdbc-spring-namespace                 Spring命名空间支持模块，可直接使用
-    ├      ├──sharding-jdbc-spring-boot                      SpringBoot支持模块，可直接使用
+    ├──sharding-jdbc-core-spring                             Spring配置父模块，不应直接使用
+    ├      ├──sharding-jdbc-core-spring-namespace            Spring命名空间支持模块，可直接使用
+    ├      ├──sharding-jdbc-core-spring-boot                 SpringBoot支持模块，可直接使用
     ├──sharding-jdbc-orchestration                           数据库服务编排治理模块，可接使用
     ├──sharding-jdbc-transaction-parent                      柔性事务父模块，不应直接使用
     ├      ├──sharding-jdbc-transaction                      柔性事务核心模块，可直接使用

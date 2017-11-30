@@ -143,7 +143,7 @@ try (
 <!-- 引入sharding-jdbc核心模块 -->
 <dependency>
     <groupId>io.shardingjdbc</groupId>
-    <artifactId>sharding-jdbc-spring-namespace</artifactId>
+    <artifactId>sharding-jdbc-core-spring-namespace</artifactId>
     <version>${sharding-jdbc.version}</version>
 </dependency>
 ```
