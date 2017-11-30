@@ -23,17 +23,13 @@ import etcdserverpb.KVGrpc;
 import etcdserverpb.KVGrpc.KVFutureStub;
 import etcdserverpb.LeaseGrpc;
 import etcdserverpb.LeaseGrpc.LeaseFutureStub;
-import etcdserverpb.Rpc.LeaseGrantRequest;
-import etcdserverpb.Rpc.PutRequest;
-import etcdserverpb.Rpc.RangeRequest;
-import etcdserverpb.Rpc.RangeResponse;
-import etcdserverpb.Rpc.WatchCreateRequest;
-import etcdserverpb.Rpc.WatchRequest;
+import etcdserverpb.Rpc.*;
 import etcdserverpb.WatchGrpc;
 import etcdserverpb.WatchGrpc.WatchStub;
 import io.grpc.Channel;
 import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingjdbc.orchestration.reg.etcd.internal.channel.EtcdChannelFactory;
+import io.shardingjdbc.orchestration.reg.etcd.internal.keepalive.KeepAlive;
 import io.shardingjdbc.orchestration.reg.etcd.internal.retry.EtcdRetryEngine;
 import io.shardingjdbc.orchestration.reg.etcd.internal.watcher.EtcdWatchStreamObserver;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
@@ -53,16 +49,16 @@ import java.util.concurrent.TimeUnit;
  * @author junxiong
  */
 public final class EtcdRegistryCenter implements RegistryCenter {
+
+    private static final char PATH_SEP = '/';
     
     private final EtcdConfiguration etcdConfig;
     
     private final EtcdRetryEngine etcdRetryEngine;
-    
     private final KVFutureStub kvStub;
-    
     private final LeaseFutureStub leaseStub;
-    
     private final WatchStub watchStub;
+    private final KeepAlive keepAlive;
     
     public EtcdRegistryCenter(final EtcdConfiguration etcdConfig) {
         this.etcdConfig = etcdConfig;
@@ -71,6 +67,10 @@ public final class EtcdRegistryCenter implements RegistryCenter {
         kvStub = KVGrpc.newFutureStub(channel);
         leaseStub = LeaseGrpc.newFutureStub(channel);
         watchStub = WatchGrpc.newStub(channel);
+        keepAlive = new KeepAlive(channel, etcdConfig.getKeepAlive());
+
+        // start to keep alive
+        keepAlive.start();
     }
     
     @Override
@@ -98,7 +98,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        String fullPath = getFullPathWithNamespace(key) + "/";
+        String fullPath = getFullPathWithNamespace(key) + PATH_SEP;
         final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(fullPath)).setRangeEnd(getRangeEnd(fullPath)).build();
         Optional<List<String>> result = etcdRetryEngine.execute(new Callable<List<String>>() {
             
@@ -108,7 +108,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
                 List<String> result = new ArrayList<>();
                 for (KeyValue each : response.getKvsList()) {
                     String childFullPath = each.getKey().toStringUtf8();
-                    result.add(childFullPath.substring(childFullPath.lastIndexOf("/") + 1));
+                    result.add(childFullPath.substring(childFullPath.lastIndexOf(PATH_SEP) + 1));
                 }
                 return result;
             }
@@ -155,14 +155,17 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     private Optional<Long> lease() {
         final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(etcdConfig.getTimeToLiveSeconds()).build();
         return etcdRetryEngine.execute(new Callable<Long>() {
-            
+
             @Override
             public Long call() throws Exception {
-                return leaseStub.leaseGrant(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();
+                long id = leaseStub.leaseGrant(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();
+                keepAlive.heartbeat(id);
+                return id;
             }
         });
     }
-    
+
+
     @Override
     public void watch(final String key, final EventListener eventListener) {
         String fullPath = getFullPathWithNamespace(key);
@@ -180,6 +183,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     
     @Override
     public void close() {
+        keepAlive.close();
     }
     
     private String getFullPathWithNamespace(final String path) {

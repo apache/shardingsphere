@@ -61,4 +61,9 @@ public final class EtcdConfiguration implements RegistryCenterConfiguration {
      * Maximal retries when calling a etcd method.
      */
     private int maxRetries = 3;
+
+    /**
+     * Keep alive span in milliseconds.
+     */
+    private int keepAlive = 1000;
 }
