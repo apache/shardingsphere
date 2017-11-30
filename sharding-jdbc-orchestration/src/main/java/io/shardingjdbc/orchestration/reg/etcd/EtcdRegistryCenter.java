@@ -153,7 +153,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     }
     
     private Optional<Long> lease() {
-        final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(etcdConfig.getTimeToLiveMilliseconds()).build();
+        final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(etcdConfig.getTimeToLiveSeconds()).build();
         return etcdRetryEngine.execute(new Callable<Long>() {
             
             @Override

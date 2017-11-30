@@ -43,9 +43,9 @@ public final class EtcdConfiguration implements RegistryCenterConfiguration {
     private String namespace;
     
     /**
-     * Time to live milliseconds of ephemeral keys.
+     * Time to live seconds of ephemeral keys.
      */
-    private int timeToLiveMilliseconds;
+    private int timeToLiveSeconds = 60;
     
     /**
      * Timeout when calling a etcd method in milliseconds.
