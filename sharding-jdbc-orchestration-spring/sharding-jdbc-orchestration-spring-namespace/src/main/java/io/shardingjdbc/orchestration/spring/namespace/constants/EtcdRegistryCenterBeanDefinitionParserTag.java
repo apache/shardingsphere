@@ -32,8 +32,6 @@ public final class EtcdRegistryCenterBeanDefinitionParserTag {
     
     public static final String SERVER_LISTS_TAG = "server-lists";
     
-    public static final String NAMESPACE_TAG = "namespace";
-    
     public static final String TIME_TO_LIVE_SECONDS_TAG = "time-to-live-seconds";
     
     public static final String TIMEOUT_MILLISECONDS_TAG = "timeout-milliseconds";

@@ -38,11 +38,6 @@ public final class EtcdConfiguration implements RegistryCenterConfiguration {
     private String serverLists;
     
     /**
-     * Root namespace of etcd cluster.
-     */
-    private String namespace;
-    
-    /**
      * Time to live seconds of ephemeral keys.
      */
     private int timeToLiveSeconds = 60;
