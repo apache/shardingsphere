@@ -67,7 +67,6 @@ public final class OrchestrationEtcdShardingMasterSlaveMain {
     
     private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
         EtcdConfiguration result = new EtcdConfiguration();
-        result.setNamespace(NAMESPACE);
         result.setServerLists(ETCD_CONNECTION_STRING);
         return result;
     }

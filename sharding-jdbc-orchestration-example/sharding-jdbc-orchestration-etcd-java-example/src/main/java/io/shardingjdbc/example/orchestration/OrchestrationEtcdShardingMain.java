@@ -63,10 +63,7 @@ public final class OrchestrationEtcdShardingMain {
     
     private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
         EtcdConfiguration result = new EtcdConfiguration();
-        result.setNamespace(NAMESPACE);
         result.setServerLists(ETCD_CONNECTION_STRING);
-        result.setTimeToLiveMilliseconds(10000);
-        result.setTimeoutMilliseconds(5000);
         return result;
     }
     

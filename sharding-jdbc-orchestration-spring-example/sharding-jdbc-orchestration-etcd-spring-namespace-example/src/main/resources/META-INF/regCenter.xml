@@ -7,5 +7,5 @@
                            http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg 
                            http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg/reg.xsd
                         ">
-    <reg:etcd id="regCenter" server-lists="http://localhost:2379" namespace="orchestration-spring-namespace-demo" timeout-milliseconds="3000" max-retries="3" />
+    <reg:etcd id="regCenter" server-lists="http://localhost:2379" timeout-milliseconds="3000" max-retries="3" />
 </beans>
