@@ -100,6 +100,10 @@ public class KeepAlive {
     @Synchronized
     public void close() {
         if (!closed.get()) {
+            for (KeepAliveTask keepAliveTask: keepAliveTasks.values()) {
+                keepAliveTask.cancel();
+            }
+            keepAliveTasks.clear();
             scheduledFuture.cancel(false);
             closed.compareAndSet(false, true);
         }
@@ -111,6 +115,10 @@ public class KeepAlive {
         long id;
         long tick;
         StreamObserver<Rpc.LeaseKeepAliveRequest> observer;
+
+        public void cancel() {
+            observer.onCompleted();
+        }
 
         @Override
         public void run() {
