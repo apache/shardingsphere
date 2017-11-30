@@ -23,13 +23,17 @@ import etcdserverpb.KVGrpc;
 import etcdserverpb.KVGrpc.KVFutureStub;
 import etcdserverpb.LeaseGrpc;
 import etcdserverpb.LeaseGrpc.LeaseFutureStub;
-import etcdserverpb.Rpc.*;
+import etcdserverpb.Rpc.LeaseGrantRequest;
+import etcdserverpb.Rpc.PutRequest;
+import etcdserverpb.Rpc.RangeRequest;
+import etcdserverpb.Rpc.RangeResponse;
+import etcdserverpb.Rpc.WatchCreateRequest;
+import etcdserverpb.Rpc.WatchRequest;
 import etcdserverpb.WatchGrpc;
 import etcdserverpb.WatchGrpc.WatchStub;
 import io.grpc.Channel;
 import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingjdbc.orchestration.reg.etcd.internal.channel.EtcdChannelFactory;
-import io.shardingjdbc.orchestration.reg.etcd.internal.keepalive.KeepAlive;
 import io.shardingjdbc.orchestration.reg.etcd.internal.retry.EtcdRetryEngine;
 import io.shardingjdbc.orchestration.reg.etcd.internal.watcher.EtcdWatchStreamObserver;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
@@ -49,16 +53,16 @@ import java.util.concurrent.TimeUnit;
  * @author junxiong
  */
 public final class EtcdRegistryCenter implements RegistryCenter {
-
-    private static final char PATH_SEP = '/';
     
     private final EtcdConfiguration etcdConfig;
     
     private final EtcdRetryEngine etcdRetryEngine;
+    
     private final KVFutureStub kvStub;
+    
     private final LeaseFutureStub leaseStub;
+    
     private final WatchStub watchStub;
-    private final KeepAlive keepAlive;
     
     public EtcdRegistryCenter(final EtcdConfiguration etcdConfig) {
         this.etcdConfig = etcdConfig;
@@ -67,15 +71,11 @@ public final class EtcdRegistryCenter implements RegistryCenter {
         kvStub = KVGrpc.newFutureStub(channel);
         leaseStub = LeaseGrpc.newFutureStub(channel);
         watchStub = WatchGrpc.newStub(channel);
-        keepAlive = new KeepAlive(channel, etcdConfig.getKeepAlive());
-
-        // start to keep alive
-        keepAlive.start();
     }
     
     @Override
     public String get(final String key) {
-        final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(getFullPathWithNamespace(key))).build();
+        final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(key)).build();
         return etcdRetryEngine.execute(new Callable<String>() {
             
             @Override
@@ -98,8 +98,8 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        String fullPath = getFullPathWithNamespace(key) + PATH_SEP;
-        final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(fullPath)).setRangeEnd(getRangeEnd(fullPath)).build();
+        String path = key + "/";
+        final RangeRequest request = RangeRequest.newBuilder().setKey(ByteString.copyFromUtf8(path)).setRangeEnd(getRangeEnd(path)).build();
         Optional<List<String>> result = etcdRetryEngine.execute(new Callable<List<String>>() {
             
             @Override
@@ -108,7 +108,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
                 List<String> result = new ArrayList<>();
                 for (KeyValue each : response.getKvsList()) {
                     String childFullPath = each.getKey().toStringUtf8();
-                    result.add(childFullPath.substring(childFullPath.lastIndexOf(PATH_SEP) + 1));
+                    result.add(childFullPath.substring(childFullPath.lastIndexOf("/") + 1));
                 }
                 return result;
             }
@@ -118,7 +118,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     
     @Override
     public void persist(final String key, final String value) {
-        final PutRequest request = PutRequest.newBuilder().setPrevKv(true).setKey(ByteString.copyFromUtf8(getFullPathWithNamespace(key))).setValue(ByteString.copyFromUtf8(value)).build();
+        final PutRequest request = PutRequest.newBuilder().setPrevKv(true).setKey(ByteString.copyFromUtf8(key)).setValue(ByteString.copyFromUtf8(value)).build();
         etcdRetryEngine.execute(new Callable<Void>() {
             
             @Override
@@ -136,12 +136,11 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     
     @Override
     public void persistEphemeral(final String key, final String value) {
-        String fullPath = getFullPathWithNamespace(key);
         final Optional<Long> leaseId = lease();
         if (!leaseId.isPresent()) {
-            throw new RegException("Unable to set up heat beat for key %s", fullPath);
+            throw new RegException("Unable to set up heat beat for key %s", key);
         }
-        final PutRequest request = PutRequest.newBuilder().setPrevKv(true).setLease(leaseId.get()).setKey(ByteString.copyFromUtf8(fullPath)).setValue(ByteString.copyFromUtf8(value)).build();
+        final PutRequest request = PutRequest.newBuilder().setPrevKv(true).setLease(leaseId.get()).setKey(ByteString.copyFromUtf8(key)).setValue(ByteString.copyFromUtf8(value)).build();
         etcdRetryEngine.execute(new Callable<Void>() {
             
             @Override
@@ -155,21 +154,17 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     private Optional<Long> lease() {
         final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(etcdConfig.getTimeToLiveSeconds()).build();
         return etcdRetryEngine.execute(new Callable<Long>() {
-
+            
             @Override
             public Long call() throws Exception {
-                long id = leaseStub.leaseGrant(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();
-                keepAlive.heartbeat(id);
-                return id;
+                return leaseStub.leaseGrant(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();
             }
         });
     }
-
-
+    
     @Override
     public void watch(final String key, final EventListener eventListener) {
-        String fullPath = getFullPathWithNamespace(key);
-        WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder().setKey(ByteString.copyFromUtf8(fullPath)).setRangeEnd(getRangeEnd(fullPath)).build();
+        WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder().setKey(ByteString.copyFromUtf8(key)).setRangeEnd(getRangeEnd(key)).build();
         final WatchRequest request = WatchRequest.newBuilder().setCreateRequest(createWatchRequest).build();
         etcdRetryEngine.execute(new Callable<Void>() {
             
@@ -183,11 +178,6 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     
     @Override
     public void close() {
-        keepAlive.close();
-    }
-    
-    private String getFullPathWithNamespace(final String path) {
-        return String.format("/%s%s", etcdConfig.getNamespace(), path);
     }
     
     private ByteString getRangeEnd(final String key) {

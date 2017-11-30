@@ -29,7 +29,6 @@
             <xsd:complexContent>
                 <xsd:extension base="beans:identifiedType">
                     <xsd:attribute name="server-lists" type="xsd:string" use="required" />
-                    <xsd:attribute name="namespace" type="xsd:string" use="required" />
                     <xsd:attribute name="time-to-live-seconds" type="xsd:string" />
                     <xsd:attribute name="timeout-milliseconds" type="xsd:string" />
                     <xsd:attribute name="retry-interval-milliseconds" type="xsd:string" />

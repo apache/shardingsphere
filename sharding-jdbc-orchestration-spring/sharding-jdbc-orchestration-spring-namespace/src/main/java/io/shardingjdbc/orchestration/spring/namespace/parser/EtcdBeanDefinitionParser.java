@@ -18,7 +18,7 @@
 package io.shardingjdbc.orchestration.spring.namespace.parser;
 
 import com.google.common.base.Strings;
-import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import io.shardingjdbc.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingjdbc.orchestration.spring.namespace.constants.EtcdRegistryCenterBeanDefinitionParserTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -35,9 +35,8 @@ public final class EtcdBeanDefinitionParser extends AbstractBeanDefinitionParser
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder result = BeanDefinitionBuilder.rootBeanDefinition(ZookeeperConfiguration.class);
+        BeanDefinitionBuilder result = BeanDefinitionBuilder.rootBeanDefinition(EtcdConfiguration.class);
         addPropertyValueIfNotEmpty(EtcdRegistryCenterBeanDefinitionParserTag.SERVER_LISTS_TAG, "serverLists", element, result);
-        addPropertyValueIfNotEmpty(EtcdRegistryCenterBeanDefinitionParserTag.NAMESPACE_TAG, "namespace", element, result);
         addPropertyValueIfNotEmpty(EtcdRegistryCenterBeanDefinitionParserTag.TIME_TO_LIVE_SECONDS_TAG, "timeToLiveSeconds", element, result);
         addPropertyValueIfNotEmpty(EtcdRegistryCenterBeanDefinitionParserTag.TIMEOUT_MILLISECONDS_TAG, "timeoutMilliseconds", element, result);
         addPropertyValueIfNotEmpty(EtcdRegistryCenterBeanDefinitionParserTag.RETRY_INTERVAL_MILLISECONDS_TAG, "retryIntervalMilliseconds", element, result);

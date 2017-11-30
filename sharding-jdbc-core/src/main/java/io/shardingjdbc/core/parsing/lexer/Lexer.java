@@ -22,6 +22,7 @@ import io.shardingjdbc.core.parsing.lexer.analyzer.Dictionary;
 import io.shardingjdbc.core.parsing.lexer.analyzer.Tokenizer;
 import io.shardingjdbc.core.parsing.lexer.token.Assist;
 import io.shardingjdbc.core.parsing.lexer.token.Token;
+import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -65,7 +66,7 @@ public class Lexer {
         } else if (isEnd()) {
             currentToken = new Token(Assist.END, "", offset);
         } else {
-            currentToken = new Token(Assist.ERROR, "", offset);
+            throw new SQLParsingException(this, Assist.ERROR);
         }
         offset = currentToken.getEndPosition();
     }
