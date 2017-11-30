@@ -123,17 +123,17 @@ public final class OrchestrationEtcdShardingMasterSlaveMain {
     
     private static void createTable(final DataSource dataSource) throws SQLException {
         executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
-        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order_item (item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (item_id))");
+        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order_item (item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (item_id))");
     }
     
     private static void insertData(final DataSource dataSource) throws SQLException {
         for (int orderId = 1000; orderId < 1010; orderId++) {
             executeUpdate(dataSource, String.format("INSERT INTO t_order (order_id, user_id, status) VALUES (%s, 10, 'INIT')", orderId));
-            executeUpdate(dataSource, String.format("INSERT INTO t_order_item (item_id, order_id, user_id) VALUES (%s01, %s, 10)", orderId, orderId));
+            executeUpdate(dataSource, String.format("INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (%s01, %s, 10, 'INIT')", orderId, orderId));
         }
         for (int orderId = 1100; orderId < 1110; orderId++) {
             executeUpdate(dataSource, String.format("INSERT INTO t_order (order_id, user_id, status) VALUES (%s, 11, 'INIT')", orderId));
-            executeUpdate(dataSource, String.format("INSERT INTO t_order_item (item_id, order_id, user_id) VALUES (%s01, %s, 11)", orderId, orderId));
+            executeUpdate(dataSource, String.format("INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (%s01, %s, 11, 'INIT')", orderId, orderId));
         }
     }
     
