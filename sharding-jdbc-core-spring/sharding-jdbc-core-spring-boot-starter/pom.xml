@@ -2,10 +2,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.shardingjdbc</groupId>
-        <artifactId>sharding-jdbc-spring</artifactId>
+        <artifactId>sharding-jdbc-core-spring</artifactId>
         <version>2.0.0.M4-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <artifactId>sharding-jdbc-core-spring-boot-starter</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
