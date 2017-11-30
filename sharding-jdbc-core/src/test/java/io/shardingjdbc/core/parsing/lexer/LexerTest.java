@@ -23,6 +23,7 @@ import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Literals;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
+import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import org.junit.Test;
 
 public final class LexerTest {
@@ -167,5 +168,22 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "N");
         LexerAssert.assertNextToken(lexer, Literals.CHARS, "xx");
+    }
+    
+    @Test(expected = SQLParsingException.class)
+    public void assertSyntaxErrorForUnclosedChar() {
+        Lexer lexer = new Lexer("UPDATE product p SET p.title='Title's',s.description='中文' WHERE p.product_id=?", dictionary);
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.UPDATE, "UPDATE");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "product");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "p");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.SET, "SET");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "p");
+        LexerAssert.assertNextToken(lexer, Symbol.DOT, ".");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "title");
+        LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "Title");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "s");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, ",s.description=");
+        lexer.nextToken();
     }
 }
