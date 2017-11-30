@@ -18,11 +18,10 @@
 package io.shardingjdbc.spring.cases;
 
 import io.shardingjdbc.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Arrays;
 import java.util.List;
-
-import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceForMasterSlaveWithDefaultStrategy.xml")
 public final class WithNamespaceForMasterSlaveWithDefaultStrategyTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {

@@ -17,10 +17,10 @@
 
 package io.shardingjdbc.spring.algorithm;
 
-import java.util.Collection;
-
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+
+import java.util.Collection;
 
 public class DefaultComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm {
 

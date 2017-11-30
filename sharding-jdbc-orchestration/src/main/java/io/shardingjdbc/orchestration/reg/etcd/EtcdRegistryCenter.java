@@ -23,17 +23,13 @@ import etcdserverpb.KVGrpc;
 import etcdserverpb.KVGrpc.KVFutureStub;
 import etcdserverpb.LeaseGrpc;
 import etcdserverpb.LeaseGrpc.LeaseFutureStub;
-import etcdserverpb.Rpc.LeaseGrantRequest;
-import etcdserverpb.Rpc.PutRequest;
-import etcdserverpb.Rpc.RangeRequest;
-import etcdserverpb.Rpc.RangeResponse;
-import etcdserverpb.Rpc.WatchCreateRequest;
-import etcdserverpb.Rpc.WatchRequest;
+import etcdserverpb.Rpc.*;
 import etcdserverpb.WatchGrpc;
 import etcdserverpb.WatchGrpc.WatchStub;
 import io.grpc.Channel;
 import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingjdbc.orchestration.reg.etcd.internal.channel.EtcdChannelFactory;
+import io.shardingjdbc.orchestration.reg.etcd.internal.keepalive.KeepAlive;
 import io.shardingjdbc.orchestration.reg.etcd.internal.retry.EtcdRetryEngine;
 import io.shardingjdbc.orchestration.reg.etcd.internal.watcher.EtcdWatchStreamObserver;
 import io.shardingjdbc.orchestration.reg.exception.RegException;
@@ -57,12 +53,14 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     private final EtcdConfiguration etcdConfig;
     
     private final EtcdRetryEngine etcdRetryEngine;
-    
+
     private final KVFutureStub kvStub;
-    
+
     private final LeaseFutureStub leaseStub;
-    
+
     private final WatchStub watchStub;
+
+    private final KeepAlive keepAlive;
     
     public EtcdRegistryCenter(final EtcdConfiguration etcdConfig) {
         this.etcdConfig = etcdConfig;
@@ -71,6 +69,9 @@ public final class EtcdRegistryCenter implements RegistryCenter {
         kvStub = KVGrpc.newFutureStub(channel);
         leaseStub = LeaseGrpc.newFutureStub(channel);
         watchStub = WatchGrpc.newStub(channel);
+        keepAlive = new KeepAlive(channel, etcdConfig.getKeepAlive());
+
+        keepAlive.start();
     }
     
     @Override
@@ -154,14 +155,16 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     private Optional<Long> lease() {
         final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(etcdConfig.getTimeToLiveSeconds()).build();
         return etcdRetryEngine.execute(new Callable<Long>() {
-            
+
             @Override
             public Long call() throws Exception {
-                return leaseStub.leaseGrant(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();
+                long leaseId = leaseStub.leaseGrant(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();
+                keepAlive.heartbeat(leaseId);
+                return leaseId;
             }
         });
     }
-    
+
     @Override
     public void watch(final String key, final EventListener eventListener) {
         WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder().setKey(ByteString.copyFromUtf8(key)).setRangeEnd(getRangeEnd(key)).build();
@@ -178,6 +181,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     
     @Override
     public void close() {
+        keepAlive.close();
     }
     
     private ByteString getRangeEnd(final String key) {

@@ -6,7 +6,7 @@ import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import org.junit.Test;
 
 public final class OracleLexerTest {
-    
+
     @Test(expected = SQLParsingException.class)
     public void assertNextTokenForVariable() {
         OracleLexer lexer = new OracleLexer("SELECT @x1:=1 FROM TABLE_XXX");

@@ -18,11 +18,7 @@
 package io.shardingjdbc.spring;
 
 import io.shardingjdbc.core.api.ConfigMapContext;
-import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
-import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguration;
-import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingjdbc.core.api.config.strategy.*;
 import io.shardingjdbc.core.constant.ShardingProperties;
 import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
@@ -42,10 +38,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/shardingNamespace.xml")
 public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
