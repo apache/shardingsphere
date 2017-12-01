@@ -22,6 +22,7 @@ import io.shardingjdbc.core.api.HintManager;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.commons.dbcp.BasicDataSource;
 
@@ -57,7 +58,7 @@ public final class OrchestrationMasterSlaveMain {
         dropTable(dataSource);
     }
     
-    private static ZookeeperConfiguration getZookeeperConfiguration() {
+    private static RegistryCenterConfiguration getZookeeperConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
         result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         result.setNamespace(NAMESPACE);
