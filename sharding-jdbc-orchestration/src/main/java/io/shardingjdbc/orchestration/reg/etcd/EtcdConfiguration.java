@@ -43,6 +43,11 @@ public final class EtcdConfiguration implements RegistryCenterConfiguration {
     private int timeToLiveSeconds = 60;
     
     /**
+     * Keep alive span in milliseconds.
+     */
+    private int keepAliveMilliseconds = 60 * 1000;
+    
+    /**
      * Timeout when calling a etcd method in milliseconds.
      */
     private int timeoutMilliseconds = 500;
@@ -56,9 +61,4 @@ public final class EtcdConfiguration implements RegistryCenterConfiguration {
      * Maximal retries when calling a etcd method.
      */
     private int maxRetries = 3;
-
-    /**
-     * Keep alive span in milliseconds.
-     */
-    private int keepAlive = 1000;
 }

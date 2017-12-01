@@ -23,7 +23,12 @@ import etcdserverpb.KVGrpc;
 import etcdserverpb.KVGrpc.KVFutureStub;
 import etcdserverpb.LeaseGrpc;
 import etcdserverpb.LeaseGrpc.LeaseFutureStub;
-import etcdserverpb.Rpc.*;
+import etcdserverpb.Rpc.RangeRequest;
+import etcdserverpb.Rpc.RangeResponse;
+import etcdserverpb.Rpc.PutRequest;
+import etcdserverpb.Rpc.LeaseGrantRequest;
+import etcdserverpb.Rpc.WatchCreateRequest;
+import etcdserverpb.Rpc.WatchRequest;
 import etcdserverpb.WatchGrpc;
 import etcdserverpb.WatchGrpc.WatchStub;
 import io.grpc.Channel;
@@ -69,8 +74,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
         kvStub = KVGrpc.newFutureStub(channel);
         leaseStub = LeaseGrpc.newFutureStub(channel);
         watchStub = WatchGrpc.newStub(channel);
-        keepAlive = new KeepAlive(channel, etcdConfig.getKeepAlive());
-
+        keepAlive = new KeepAlive(channel, etcdConfig.getKeepAliveMilliseconds());
         keepAlive.start();
     }
     
