@@ -10,9 +10,7 @@ import etcdserverpb.Rpc.LeaseKeepAliveRequest;
 import etcdserverpb.Rpc.LeaseKeepAliveResponse;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
-import lombok.Synchronized;
-import lombok.Value;
-import lombok.experimental.Wither;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
@@ -36,8 +34,8 @@ public class KeepAlive {
 
     private AtomicBoolean closed = new AtomicBoolean(true);
 
-    public KeepAlive(io.grpc.Channel channel, long span) {
-        this.span = span;
+    public KeepAlive(io.grpc.Channel channel, long timeToLiveSeconds) {
+        this.span = timeToLiveSeconds * 1000 / 3;
         this.leaseStub = LeaseGrpc.newStub(channel);
     }
 
@@ -51,7 +49,7 @@ public class KeepAlive {
                         keepAliveTask.run();
                     }
                 }
-            }, INITIAL_DELAY, span, TimeUnit.MILLISECONDS);
+            }, INITIAL_DELAY, span / 3000, TimeUnit.MILLISECONDS);
             closed.compareAndSet(true, false);
         }
     }
@@ -76,11 +74,11 @@ public class KeepAlive {
                 long id = response.getID();
                 long ttl = response.getTTL() * 1000;
 
-                long tickTime = System.currentTimeMillis() + ttl / 2;
+                long tickTime = System.currentTimeMillis() + ttl / 3;
                 log.debug("Reschedule heartbeat time for lease {} to {}", id, tickTime);
                 final KeepAliveTask keepAliveTask = keepAliveTasks.get(id);
                 if (keepAliveTask != null) {
-                    keepAliveTasks.put(id, keepAliveTask.withTick(tickTime));
+                    keepAliveTasks.put(id, keepAliveTask.newTick(tickTime));
                 }
             }
 
@@ -109,23 +107,34 @@ public class KeepAlive {
         }
     }
 
-    @Value
-    @Wither
+
     private class KeepAliveTask implements Runnable {
         long id;
         long tick;
         StreamObserver<Rpc.LeaseKeepAliveRequest> observer;
+        boolean fired = false;
+
+        public KeepAliveTask(long id, long tick, StreamObserver<Rpc.LeaseKeepAliveRequest> observer) {
+            this.id = id;
+            this.tick = tick;
+            this.observer = observer;
+        }
 
         public void cancel() {
             observer.onCompleted();
         }
 
+        public KeepAliveTask newTick(long tick) {
+            return new KeepAliveTask(id, tick, observer);
+        }
+
         @Override
         public void run() {
-            if (tick < System.currentTimeMillis()) {
+            if (fired == false && tick <= System.currentTimeMillis()) {
                 log.debug("heart beat lease {} at time {}", id, tick);
                 LeaseKeepAliveRequest request = LeaseKeepAliveRequest.newBuilder().setID(id).build();
                 observer.onNext(request);
+                fired = true;
             }
         }
 
