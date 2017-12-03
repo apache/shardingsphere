@@ -17,7 +17,14 @@
 
 package io.shardingjdbc.spring;
 
-import io.shardingjdbc.spring.cases.*;
+import io.shardingjdbc.spring.cases.WithNamespaceAlgorithmClassTest;
+import io.shardingjdbc.spring.cases.WithNamespaceAlgorithmExpressionTest;
+import io.shardingjdbc.spring.cases.WithNamespaceBindingTablesTest;
+import io.shardingjdbc.spring.cases.WithNamespaceDefaultStrategyTest;
+import io.shardingjdbc.spring.cases.WithNamespaceDifferentTablesTest;
+import io.shardingjdbc.spring.cases.WithNamespaceForMasterSlaveWithDefaultStrategyTest;
+import io.shardingjdbc.spring.cases.WithNamespaceForMasterSlaveWithStrategyRefTest;
+import io.shardingjdbc.spring.cases.WithNamespaceForMasterSlaveWithStrategyTypeTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

@@ -150,9 +150,9 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     public void assertMultiTableRulesDataSource() {
         ShardingRule shardingRule = getShardingRule("multiTableRulesDataSource");
         assertThat(shardingRule.getTableRules().size(), is(2));
-        Iterator<TableRule> iter = shardingRule.getTableRules().iterator();
-        assertThat(iter.next().getLogicTable(), is("t_order"));
-        assertThat(iter.next().getLogicTable(), is("t_order_item"));
+        Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
+        assertThat(tableRules.next().getLogicTable(), is("t_order"));
+        assertThat(tableRules.next().getLogicTable(), is("t_order_item"));
     }
     
     @Test

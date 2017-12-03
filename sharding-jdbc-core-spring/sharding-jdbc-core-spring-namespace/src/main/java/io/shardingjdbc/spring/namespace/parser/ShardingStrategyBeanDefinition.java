@@ -17,7 +17,11 @@
 
 package io.shardingjdbc.spring.namespace.parser;
 
-import io.shardingjdbc.core.api.config.strategy.*;
+import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
+import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguration;
+import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
+import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.spring.namespace.constants.ShardingStrategyBeanDefinitionParserTag;
 import lombok.AccessLevel;

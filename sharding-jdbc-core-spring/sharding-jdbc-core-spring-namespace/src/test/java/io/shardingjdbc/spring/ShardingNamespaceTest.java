@@ -18,7 +18,11 @@
 package io.shardingjdbc.spring;
 
 import io.shardingjdbc.core.api.ConfigMapContext;
-import io.shardingjdbc.core.api.config.strategy.*;
+import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
+import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguration;
+import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
+import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.core.constant.ShardingProperties;
 import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
@@ -38,7 +42,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/shardingNamespace.xml")
 public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -149,11 +156,11 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertMultiBindingTableRulesDatasource() {
         ShardingRule shardingRule = getShardingRule("multiBindingTableRulesDatasource");
         assertThat(shardingRule.getBindingTableRules().size(), is(2));
-        Iterator<BindingTableRule> iter = shardingRule.getBindingTableRules().iterator();
-        BindingTableRule orderRule = iter.next();
+        Iterator<BindingTableRule> bindingTableRules = shardingRule.getBindingTableRules().iterator();
+        BindingTableRule orderRule = bindingTableRules.next();
         assertThat(orderRule.getBindingActualTable("dbtbl_0", "t_order", "t_order_item"), is("t_order"));
         assertThat(orderRule.getBindingActualTable("dbtbl_1", "t_order", "t_order_item"), is("t_order"));
-        BindingTableRule userRule = iter.next();
+        BindingTableRule userRule = bindingTableRules.next();
         assertThat(userRule.getBindingActualTable("dbtbl_0", "t_user", "t_user_detail"), is("t_user"));
         assertThat(userRule.getBindingActualTable("dbtbl_1", "t_user", "t_user_detail"), is("t_user"));
     }
