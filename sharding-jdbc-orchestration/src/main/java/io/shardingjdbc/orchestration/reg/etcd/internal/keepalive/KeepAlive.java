@@ -25,6 +25,7 @@ import io.grpc.Channel;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +52,7 @@ public final class KeepAlive implements AutoCloseable {
     
     public KeepAlive(final Channel channel, final long timeToLiveSeconds) {
         leaseStub = LeaseGrpc.newStub(channel);
-        heartbeatIntervalMilliseconds = timeToLiveSeconds * 1000 / 3;
+        heartbeatIntervalMilliseconds = timeToLiveSeconds * 1000L / 3L;
         keepAliveTasks = new ConcurrentHashMap<>();
         scheduledFuture = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() * 2).scheduleAtFixedRate(new Runnable() {
             
@@ -79,8 +80,7 @@ public final class KeepAlive implements AutoCloseable {
             @Override
             public void onNext(final LeaseKeepAliveResponse response) {
                 long leaseId = response.getID();
-                long ttlMilliseconds = response.getTTL() * 1000L;
-                long nextHeartbeatTimestamp = System.currentTimeMillis() + ttlMilliseconds / 3L;
+                long nextHeartbeatTimestamp = System.currentTimeMillis() + response.getTTL() * 1000L / 3L;
                 log.debug("Reschedule heartbeat time for lease {} to {}", leaseId, nextHeartbeatTimestamp);
                 KeepAliveTask keepAliveTask = keepAliveTasks.get(leaseId);
                 if (null != keepAliveTask) {
@@ -117,30 +117,22 @@ public final class KeepAlive implements AutoCloseable {
         
         private final StreamObserver<LeaseKeepAliveRequest> observer;
         
+        @Setter
         private long nextHeartbeatTimestamp;
         
         /**
-         * Set next heartbeat timestamp.
-         * 
-         * @param nextHeartbeatTimestamp Next heartbeat timestamp.
-         */
-        public void setNextHeartbeatTimestamp(final long nextHeartbeatTimestamp) {
-            this.nextHeartbeatTimestamp = nextHeartbeatTimestamp;
-        }
-        
-        @Override
-        public void close() {
-            observer.onCompleted();
-        }
-    
-        /**
-         * keep heartbeat.  
+         * keep heartbeat.
          */
         public void heartbeat() {
             if (nextHeartbeatTimestamp <= System.currentTimeMillis()) {
                 log.debug("Heartbeat lease {} at time {}", leaseId, nextHeartbeatTimestamp);
                 observer.onNext(LeaseKeepAliveRequest.newBuilder().setID(leaseId).build());
             }
+        }
+    
+        @Override
+        public void close() {
+            observer.onCompleted();
         }
     }
 }
