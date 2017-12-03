@@ -75,7 +75,6 @@ public final class EtcdRegistryCenter implements RegistryCenter {
         leaseStub = LeaseGrpc.newFutureStub(channel);
         watchStub = WatchGrpc.newStub(channel);
         keepAlive = new KeepAlive(channel, etcdConfig.getTimeToLiveSeconds());
-        keepAlive.start();
     }
     
     @Override
