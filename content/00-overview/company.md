@@ -33,6 +33,8 @@ chapter = true
 
 ## [欢聚时代YY](http://www.yy.com/)
 
+## [货车帮](http://www.huochebang.com/)
+
 ## [家视天下](http://www.hiveview.com/)
 
 ## [客如云](http://www.keruyun.com/)
