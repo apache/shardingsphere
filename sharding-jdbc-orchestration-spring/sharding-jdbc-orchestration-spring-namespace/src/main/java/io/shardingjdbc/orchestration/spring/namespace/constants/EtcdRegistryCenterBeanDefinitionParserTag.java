@@ -34,8 +34,6 @@ public final class EtcdRegistryCenterBeanDefinitionParserTag {
     
     public static final String TIME_TO_LIVE_SECONDS_TAG = "time-to-live-seconds";
     
-    public static final String KEEP_ALIVE_MILLISECONDS_TAG = "keep-alive-milliseconds";
-    
     public static final String TIMEOUT_MILLISECONDS_TAG = "timeout-milliseconds";
     
     public static final String RETRY_INTERVAL_MILLISECONDS_TAG = "retry-interval-milliseconds";
