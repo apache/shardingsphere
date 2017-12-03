@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
  * @author junxiong
  */
 @Slf4j
-public final class KeepAlive {
+public final class KeepAlive implements AutoCloseable {
     
     private final LeaseStub leaseStub;
     
@@ -104,7 +104,8 @@ public final class KeepAlive {
     /**
      * Close keep alive.
      */
-    public synchronized void close() {
+    @Override
+    public void close() {
         for (KeepAliveTask keepAliveTask: keepAliveTasks.values()) {
             keepAliveTask.cancel();
         }
