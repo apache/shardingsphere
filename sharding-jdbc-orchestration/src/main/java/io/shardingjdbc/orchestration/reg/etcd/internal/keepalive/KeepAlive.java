@@ -42,6 +42,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class KeepAlive implements AutoCloseable {
     
+    private static final long DELAY_MILLISECONDS = 100L;
+    
     private final LeaseStub leaseStub;
     
     private final long heartbeatIntervalMilliseconds;
@@ -54,7 +56,7 @@ public final class KeepAlive implements AutoCloseable {
         leaseStub = LeaseGrpc.newStub(channel);
         heartbeatIntervalMilliseconds = timeToLiveSeconds * 1000L / 3L;
         keepAliveTasks = new ConcurrentHashMap<>();
-        scheduledFuture = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() * 2).scheduleAtFixedRate(new Runnable() {
+        scheduledFuture = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
             
             @Override
             public void run() {
@@ -62,7 +64,7 @@ public final class KeepAlive implements AutoCloseable {
                     keepAliveTask.heartbeat();
                 }
             }
-        }, 100L, heartbeatIntervalMilliseconds, TimeUnit.MILLISECONDS);
+        }, DELAY_MILLISECONDS, heartbeatIntervalMilliseconds, TimeUnit.MILLISECONDS);
     }
     
     /**
@@ -129,7 +131,7 @@ public final class KeepAlive implements AutoCloseable {
                 observer.onNext(LeaseKeepAliveRequest.newBuilder().setID(leaseId).build());
             }
         }
-    
+        
         @Override
         public void close() {
             observer.onCompleted();
