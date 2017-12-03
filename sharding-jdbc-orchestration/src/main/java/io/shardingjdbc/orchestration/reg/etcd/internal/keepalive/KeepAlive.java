@@ -58,7 +58,7 @@ public final class KeepAlive implements AutoCloseable {
             @Override
             public void run() {
                 for (KeepAliveTask keepAliveTask : keepAliveTasks.values()) {
-                    keepAliveTask.run();
+                    keepAliveTask.heartbeat();
                 }
             }
         }, 100L, heartbeatIntervalMilliseconds, TimeUnit.MILLISECONDS);
@@ -101,20 +101,17 @@ public final class KeepAlive implements AutoCloseable {
         };
     }
     
-    /**
-     * Close keep alive.
-     */
     @Override
     public void close() {
         for (KeepAliveTask keepAliveTask: keepAliveTasks.values()) {
-            keepAliveTask.cancel();
+            keepAliveTask.close();
         }
         keepAliveTasks.clear();
         scheduledFuture.cancel(false);
     }
     
     @AllArgsConstructor
-    private class KeepAliveTask implements Runnable {
+    private class KeepAliveTask implements AutoCloseable {
         
         private final long leaseId;
         
@@ -131,15 +128,15 @@ public final class KeepAlive implements AutoCloseable {
             this.nextHeartbeatTimestamp = nextHeartbeatTimestamp;
         }
         
-        /**
-         * Cancel task.
-         */
-        public void cancel() {
+        @Override
+        public void close() {
             observer.onCompleted();
         }
-        
-        @Override
-        public void run() {
+    
+        /**
+         * keep heartbeat.  
+         */
+        public void heartbeat() {
             if (nextHeartbeatTimestamp <= System.currentTimeMillis()) {
                 log.debug("Heartbeat lease {} at time {}", leaseId, nextHeartbeatTimestamp);
                 observer.onNext(LeaseKeepAliveRequest.newBuilder().setID(leaseId).build());
