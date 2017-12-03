@@ -18,7 +18,11 @@
 package io.shardingjdbc.core.parsing.lexer;
 
 import io.shardingjdbc.core.parsing.lexer.analyzer.Dictionary;
-import io.shardingjdbc.core.parsing.lexer.token.*;
+import io.shardingjdbc.core.parsing.lexer.token.Assist;
+import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingjdbc.core.parsing.lexer.token.Literals;
+import io.shardingjdbc.core.parsing.lexer.token.Symbol;
+import io.shardingjdbc.core.parsing.lexer.token.TokenType;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import org.junit.Test;
 
@@ -165,7 +169,7 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "N");
         LexerAssert.assertNextToken(lexer, Literals.CHARS, "xx");
     }
-
+    
     @Test(expected = SQLParsingException.class)
     public void assertSyntaxErrorForUnclosedChar() {
         Lexer lexer = new Lexer("UPDATE product p SET p.title='Title's',s.description='中文' WHERE p.product_id=?", dictionary);

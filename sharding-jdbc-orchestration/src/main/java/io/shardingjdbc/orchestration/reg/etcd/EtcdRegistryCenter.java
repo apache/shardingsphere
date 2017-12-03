@@ -58,13 +58,13 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     private final EtcdConfiguration etcdConfig;
     
     private final EtcdRetryEngine etcdRetryEngine;
-
+    
     private final KVFutureStub kvStub;
-
+    
     private final LeaseFutureStub leaseStub;
-
+    
     private final WatchStub watchStub;
-
+    
     private final KeepAlive keepAlive;
     
     public EtcdRegistryCenter(final EtcdConfiguration etcdConfig) {
@@ -159,7 +159,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     private Optional<Long> lease() {
         final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(etcdConfig.getTimeToLiveSeconds()).build();
         return etcdRetryEngine.execute(new Callable<Long>() {
-
+            
             @Override
             public Long call() throws Exception {
                 long leaseId = leaseStub.leaseGrant(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();

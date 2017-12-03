@@ -6,7 +6,7 @@ import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import org.junit.Test;
 
 public final class PostgreSQLLexerTest {
-
+    
     @Test(expected = SQLParsingException.class)
     public void assertNextTokenForVariable() {
         PostgreSQLLexer lexer = new PostgreSQLLexer("SELECT @@x1 FROM TABLE_XXX");
