@@ -41,6 +41,7 @@ public final class IpUtils {
      * <p>
      * 有限获取外网IP地址.
      * 也有可能是链接着路由器的最终IP地址.
+     * 如果发生异常返回UnknownIP.
      * </p>
      * 
      * @return 本机IP地址
@@ -53,7 +54,7 @@ public final class IpUtils {
         try {
             netInterfaces = NetworkInterface.getNetworkInterfaces();
         } catch (final SocketException ex) {
-            throw new RuntimeException(ex);
+            return "UnknownIP";
         }
         String localIpAddress = null;
         while (netInterfaces.hasMoreElements()) {
