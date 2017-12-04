@@ -9,10 +9,9 @@ next = "/02-guide/hint-sharding-value/"
 +++
 2.0.0.M1版本开始，Sharding-JDBC提供了数据库治理功能，主要包括：
 
-* 配置集中化与动态化，可支持数据源、表与分片及读写分离策略的动态切换(2.0.0.M1)
-* 客户端的数据库治理，运行实例禁用启用(2.0.0.M2)
-* 客户端的数据库治理，读写分离Slave数据源禁用启用及ConfigMap支持(2.0.0.M3)
-* 支持Etcd注册中心(2.0.0.M4)
+* 配置集中化与动态化，可支持数据源、表与分片及读写分离策略的动态切换
+* 数据治理。提供熔断数据库访问程序对数据库的访问和禁用从库的访问的能力
+* 支持Zookeeper和Etcd的注册中心
 
 # 
 
@@ -338,16 +337,16 @@ shardingRule: 分片规则配置
 
 orchestration: Zookeeper编排配置
   name: 编排服务节点名称
-  overwrite: 本地配置是否可覆盖注册中心配置<br />如果可覆盖，每次启动都以本地配置为准
+  overwrite: 本地配置是否可覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
   zookeeper: Zookeeper注册中心配置
     namespace: Zookeeper的命名空间
-    serverLists: 连接Zookeeper服务器的列表<br />包括IP地址和端口号<br />多个地址用逗号分隔<br />如: host1:2181,host2:2181
-    baseSleepTimeMilliseconds: 等待重试的间隔时间的初始值<br />单位：毫秒
-    maxSleepTimeMilliseconds: 等待重试的间隔时间的最大值<br />单位：毫秒
+    serverLists: 连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
+    baseSleepTimeMilliseconds: 等待重试的间隔时间的初始值。单位：毫秒
+    maxSleepTimeMilliseconds: 等待重试的间隔时间的最大值。单位：毫秒
     maxRetries: 最大重试次数
-    sessionTimeoutMilliseconds: 会话超时时间<br />单位：毫秒
-    connectionTimeoutMilliseconds: 连接超时时间<br />单位：毫秒
-    digest: 连接Zookeeper的权限令牌<br />缺省为不需要权限验证
+    sessionTimeoutMilliseconds: 会话超时时间。单位：毫秒
+    connectionTimeoutMilliseconds: 连接超时时间。单位：毫秒
+    digest: 连接Zookeeper的权限令牌。缺省为不需要权限验证
 ```
 
 ##### Etcd分库分表编排配置项说明
@@ -359,13 +358,13 @@ shardingRule: 分片规则配置
 
 orchestration: Etcd编排配置
   name: 编排服务节点名称
-  overwrite: 本地配置是否可覆盖注册中心配置<br />如果可覆盖，每次启动都以本地配置为准
+  overwrite: 本地配置是否可覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
   etcd: Etcd注册中心配置
-    serverLists: 连接Etcd服务器的列表<br />包括IP地址和端口号<br />多个地址用逗号分隔<br />如: http://host1:2379,http://host2:2380
-    timeToLiveSeconds: 临时节点存活时间<br />单位：秒
-    timeoutMilliseconds: 超时时间<br />单位：毫秒
-    maxRetries: 最大重试次数
-    retryIntervalMilliseconds: 重试间隔时间<br />单位：毫秒
+    serverLists: 连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379
+    timeToLiveSeconds: 临时节点存活时间。单位：秒
+    timeoutMilliseconds: 每次请求的超时时间。单位：毫秒
+    maxRetries: 每次请求的最大重试次数
+    retryIntervalMilliseconds: 重试间隔时间。单位：毫秒
 ```
 
 ##### 分库分表编排数据源构建方式
@@ -529,12 +528,13 @@ orchestration: Etcd编排配置
 
 | 属性名                           | 类型   | 是否必填 | 缺省值 | 描述                                                                                               |
 | ------------------------------- |:-------|:-------|:------|:---------------------------------------------------------------------------------------------------|
-| id                              | String | 是     |       | 注册中心在Spring容器中的主键                                                                         |
-| server-lists                    | String | 是     |       | 连接Etcd服务器的列表<br />包括IP地址和端口号<br />多个地址用逗号分隔<br />如: http://host1:2181,http://host2:2181 |
-| time-to-live-seconds            | int    | 否     | 60    | 临时节点存活时间<br />单位：秒                                                                          |
-| timeout-milliseconds            | int    | 否     | 500   | 超时时间<br />单位：毫秒                                                                               |
-| retry-interval-milliseconds     | int    | 否     | 200   | 重试间隔时间<br />单位：毫秒                                                                            |
-| max-retries                     | int    | 否     | 3     | 最大重试次数                                                                                          |
+| id                              | String | 是     |       | 注册中心在Spring容器中的主键                                                                           |
+| server-lists                    | String | 是     |       | 连接Etcd服务器的列表<br />包括IP地址和端口号<br />多个地址用逗号分隔<br />如: http://host1:2379,http://host2:2379 |
+| time-to-live-seconds            | int    | 否     | 60    | 临时节点存活时间<br />单位：秒                                                                         |
+| timeout-milliseconds            | int    | 否     | 500   | 每次请求的超时时间<br />单位：毫秒                                                                      |
+| max-retries                     | int    | 否     | 3     | 每次请求的最大重试次数                                                                                 |
+| retry-interval-milliseconds     | int    | 否     | 200   | 重试间隔时间<br />单位：毫秒                                                                           |
+
 
 ## 4.Spring Boot配置
 
