@@ -18,32 +18,32 @@
 package io.shardingjdbc.orchestration.internal.state.instance;
 
 import io.shardingjdbc.orchestration.internal.util.IpUtils;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.lang.management.ManagementFactory;
+import java.util.UUID;
 
 /**
  * Orchestration instance.
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 public final class OrchestrationInstance {
     
-    private static final String DELIMITER = "@-@";
-    
-    private static final String PID_FLAG = "@";
+    private static final OrchestrationInstance INSTANCE = new OrchestrationInstance();
     
     /**
      * Orchestration instance id.
      */
-    private final String instanceId;
+    private String instanceId;
     
-    public OrchestrationInstance() {
-        instanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split(PID_FLAG)[0];
+    private OrchestrationInstance() {
+        String splitFlag = "@";
+        instanceId = IpUtils.getIp() + splitFlag + ManagementFactory.getRuntimeMXBean().getName().split(splitFlag)[0] + splitFlag + UUID.randomUUID().toString();
+    }
+    
+    public static OrchestrationInstance getInstance() {
+        return INSTANCE;
     }
 }

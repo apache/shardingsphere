@@ -31,6 +31,8 @@ public final class InstanceStateService {
     
     private final RegistryCenter regCenter;
     
+    private final OrchestrationInstance instance = OrchestrationInstance.getInstance();
+    
     public InstanceStateService(final String name, final RegistryCenter regCenter) {
         stateNode = new StateNode(name);
         this.regCenter = regCenter;
@@ -40,13 +42,13 @@ public final class InstanceStateService {
      * Persist sharding instance online.
      */
     public void persistShardingInstanceOnline() {
-        regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), "");
+        regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(instance.getInstanceId()), "");
     }
     
     /**
      * Persist master-salve instance online.
      */
     public void persistMasterSlaveInstanceOnline() {
-        regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(new OrchestrationInstance().getInstanceId()), "");
+        regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(instance.getInstanceId()), "");
     }
 }

@@ -19,15 +19,13 @@ package io.shardingjdbc.orchestration.internal;
 
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverterTest;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverterTest;
-import io.shardingjdbc.orchestration.internal.state.instance.OrchestrationInstanceTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         DataSourceJsonConverterTest.class,
-        ShardingRuleConfigurationConverterTest.class,
-        OrchestrationInstanceTest.class
+        ShardingRuleConfigurationConverterTest.class
     })
 public class AllInternalTests {
 }
