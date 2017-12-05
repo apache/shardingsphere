@@ -29,8 +29,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -51,11 +54,15 @@ public class YamlMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
     
     private final boolean hasDataSource;
     
-    @Parameterized.Parameters(name = "{index}:{0}-{1}")
+    private final boolean isByteArray;
+    
+    @Parameterized.Parameters(name = "{index}:{0}-hasDataSource:{1}-isByteArray:{2}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", false},
+                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true, true},
+                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true, false},
+                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", false, true},
+                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", false, false},
         });
     }
     
@@ -64,14 +71,27 @@ public class YamlMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
         File yamlFile = new File(YamlMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
+            if (isByteArray) {
+                dataSource = MasterSlaveDataSourceFactory.createDataSource(toByteArray(yamlFile.getPath()));
+            } else {
+                dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
+            }
         } else {
-            dataSource =  MasterSlaveDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), new Function<String, DataSource>() {
-                @Override
-                public DataSource apply(final String key) {
-                    return createDataSource(key);
-                }
-            }), yamlFile);
+            if (isByteArray) {
+                dataSource = MasterSlaveDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), new Function<String, DataSource>() {
+                    @Override
+                    public DataSource apply(final String key) {
+                        return createDataSource(key);
+                    }
+                }), toByteArray(yamlFile.getPath()));
+            } else {
+                dataSource = MasterSlaveDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), new Function<String, DataSource>() {
+                    @Override
+                    public DataSource apply(final String key) {
+                        return createDataSource(key);
+                    }
+                }), yamlFile);
+            }
         }
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
@@ -82,5 +102,16 @@ public class YamlMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
             stm.executeQuery("SELECT * FROM t_order_item");
             stm.executeQuery("SELECT * FROM t_config");
         }
+    }
+    
+    private byte[] toByteArray(final String filePath) throws IOException {
+        final InputStream in = new FileInputStream(filePath);
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024 * 4];
+        int index;
+        while ((index = in.read(buffer)) != -1) {
+            result.write(buffer, 0, index);
+        }
+        return result.toByteArray();
     }
 }
