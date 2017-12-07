@@ -96,7 +96,7 @@ public final class ConfigurationService {
      * @return has sharding properties or not
      */
     public boolean hasShardingProperties() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH));
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH));
     }
     
     private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
