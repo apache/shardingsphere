@@ -56,7 +56,7 @@ public class DatabaseTest {
     }
     
     @Test
-    public void assertSQL() {
+    public void assertHintSQL() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setDatabaseShardingValue(1);
             assertTarget("select * from tesT", "ds_1");
@@ -65,7 +65,33 @@ public class DatabaseTest {
             assertTarget("delete from test where id = 2", "ds_1");
             hintManager.setDatabaseShardingValue(2);
             assertTarget("select * from tesT", "ds_0");
+            hintManager.close();
         }
+    }
+    
+    @Test
+    public void assertDatabaseAllRoutingSQL() {
+        String originSql = "select * from tesT";
+        ShardingContext shardingContext = new ShardingContext(shardingRule, DatabaseType.MySQL, null, false);
+        SQLRouteResult actual = new StatementRoutingEngine(shardingContext).route(originSql);
+        assertThat(actual.getExecutionUnits().size(), is(2));
+        Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
+        
+            @Override
+            public String apply(final SQLExecutionUnit input) {
+                return input.getDataSource();
+            }
+        }));
+        assertThat(actualDataSources.size(), is(2));
+        assertThat(actualDataSources, hasItems("ds_1"));
+        Collection<String> actualSQLs = Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
+        
+            @Override
+            public String apply(final SQLExecutionUnit input) {
+                return input.getSql();
+            }
+        });
+        assertThat(originSql, is(actualSQLs.iterator().next()));
     }
     
     private void assertTarget(final String originSql, final String targetDataSource) {
