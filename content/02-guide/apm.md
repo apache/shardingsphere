@@ -22,7 +22,7 @@ next = "/03-design"
 
 ## 使用OpenTracing插件
 
-如果想使用其他的APM系统，且该系统支持[OpenTracing](http://opentracing.io)。可以使用[sharding-jdbc-opentracing](https://github.com/shardingjdbc/sharding-jdbc-opentracing)插件来配合该
+如果想使用其他的APM系统，且该系统支持[OpenTracing](http://opentracing.io)。可以使用[sharding-jdbc-opentracing](https://github.com/shardingjdbc/sharding-jdbc-opentracing/blob/master/README_ZH.md)插件来配合该
 APM系统的使用。
 
 *注意:使用SkyWalking的OpenTracing探针时，应将原ShardingJDBC探针插件禁用，以防止两种插件互相冲突*
