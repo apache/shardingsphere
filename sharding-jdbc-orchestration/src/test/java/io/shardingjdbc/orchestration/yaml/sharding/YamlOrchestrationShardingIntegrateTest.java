@@ -20,6 +20,7 @@ package io.shardingjdbc.orchestration.yaml.sharding;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import io.shardingjdbc.orchestration.api.OrchestrationCloseableDataSourceUtil;
 import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingjdbc.orchestration.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
@@ -76,5 +77,6 @@ public class YamlOrchestrationShardingIntegrateTest extends AbstractYamlDataSour
             stm.executeQuery("SELECT * FROM t_order_item");
             stm.executeQuery("SELECT * FROM config");
         }
+        OrchestrationCloseableDataSourceUtil.closeQuietly(dataSource);
     }
 }
