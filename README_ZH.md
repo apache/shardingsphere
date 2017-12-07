@@ -130,27 +130,28 @@ dataSources:
     username: root
     password: 
 
-tables:
-  t_order: 
-    actualDataNodes: ds_${0..1}.t_order_${0..1}
-    databaseStrategy: 
-      inline:
-        shardingColumn: user_id
-        algorithmExpression: ds_${user_id % 2}
-    tableStrategy: 
-      inline:
-        shardingColumn: order_id
-        algorithmExpression: t_order_${order_id % 2}
-  t_order_item: 
-    actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-    databaseStrategy: 
-      inline:
-        shardingColumn: user_id
-        algorithmExpression: ds_${user_id % 2}
-    tableStrategy: 
-      inline:
-        shardingColumn: order_id
-        algorithmExpression: t_order_item_${order_id % 2}
+shardingRule:
+  tables:
+    t_order: 
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      databaseStrategy: 
+        inline:
+          shardingColumn: user_id
+          algorithmExpression: ds_${user_id % 2}
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_${order_id % 2}
+    t_order_item: 
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      databaseStrategy: 
+        inline:
+          shardingColumn: user_id
+          algorithmExpression: ds_${user_id % 2}
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_item_${order_id % 2}  
 ```
 
 ```java
