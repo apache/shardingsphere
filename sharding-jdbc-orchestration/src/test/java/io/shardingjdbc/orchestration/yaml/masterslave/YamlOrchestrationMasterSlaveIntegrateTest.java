@@ -20,7 +20,7 @@ package io.shardingjdbc.orchestration.yaml.masterslave;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import io.shardingjdbc.orchestration.api.OrchestrationCloseableDataSourceUtil;
+import io.shardingjdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
 import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingjdbc.orchestration.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
@@ -74,6 +74,6 @@ public class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYamlDataS
             stm.executeQuery("SELECT * FROM t_order_item");
             stm.executeQuery("SELECT * FROM t_config");
         }
-        OrchestrationCloseableDataSourceUtil.closeQuietly(dataSource);
+        OrchestrationDataSourceCloseableUtil.closeQuietly(dataSource);
     }
 }

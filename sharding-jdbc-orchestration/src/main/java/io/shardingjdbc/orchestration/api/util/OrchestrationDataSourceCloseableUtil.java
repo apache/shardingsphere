@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.api;
+package io.shardingjdbc.orchestration.api.util;
 
 import io.shardingjdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.internal.OrchestrationShardingDataSource;
@@ -23,11 +23,11 @@ import io.shardingjdbc.orchestration.internal.OrchestrationShardingDataSource;
 import javax.sql.DataSource;
 
 /**
- * Orchestration closeable datasource util.
+ * Orchestration datasource closeable util.
  *
  * @author caohao
  */
-public final class OrchestrationCloseableDataSourceUtil {
+public final class OrchestrationDataSourceCloseableUtil {
     
     public static void closeQuietly(final DataSource dataSource) {
         if (dataSource instanceof OrchestrationShardingDataSource) {
