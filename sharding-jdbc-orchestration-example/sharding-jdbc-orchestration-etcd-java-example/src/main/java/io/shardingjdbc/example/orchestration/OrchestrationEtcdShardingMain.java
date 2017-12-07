@@ -25,6 +25,7 @@ import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfigur
 import io.shardingjdbc.example.orchestration.algorithm.ModuloTableShardingAlgorithm;
 import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingjdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
 import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingjdbc.orchestration.reg.etcd.EtcdConfiguration;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -57,6 +58,7 @@ public final class OrchestrationEtcdShardingMain {
         System.out.println("--------------");
         printHintSimpleSelect(dataSource);
         dropTable(dataSource);
+        OrchestrationDataSourceCloseableUtil.closeQuietly(dataSource);
     }
     
     private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
@@ -99,17 +101,17 @@ public final class OrchestrationEtcdShardingMain {
     
     private static void createTable(final DataSource dataSource) throws SQLException {
         executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
-        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order_item (item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (item_id))");
+        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_item_id))");
     }
     
     private static void insertData(final DataSource dataSource) throws SQLException {
         for (int orderId = 1000; orderId < 1010; orderId++) {
             executeUpdate(dataSource, String.format("INSERT INTO t_order (order_id, user_id, status) VALUES (%s, 10, 'INIT')", orderId));
-            executeUpdate(dataSource, String.format("INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (%s01, %s, 10, 'INIT')", orderId, orderId));
+            executeUpdate(dataSource, String.format("INSERT INTO t_order_item (order_item_id, order_id, user_id, status) VALUES (%s01, %s, 10, 'INIT')", orderId, orderId));
         }
         for (int orderId = 1100; orderId < 1110; orderId++) {
             executeUpdate(dataSource, String.format("INSERT INTO t_order (order_id, user_id, status) VALUES (%s, 11, 'INIT')", orderId));
-            executeUpdate(dataSource, String.format("INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (%s01, %s, 11, 'INIT')", orderId, orderId));
+            executeUpdate(dataSource, String.format("INSERT INTO t_order_item (order_item_id, order_id, user_id, status) VALUES (%s01, %s, 11, 'INIT')", orderId, orderId));
         }
     }
     
