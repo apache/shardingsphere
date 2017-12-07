@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -52,11 +53,14 @@ public final class KeepAlive implements AutoCloseable {
     
     private final ScheduledFuture scheduledFuture;
     
+    private final ScheduledExecutorService scheduledService;
+    
     public KeepAlive(final Channel channel, final long timeToLiveSeconds) {
         leaseStub = LeaseGrpc.newStub(channel);
         heartbeatIntervalMilliseconds = timeToLiveSeconds * 1000L / 3L;
         keepAliveTasks = new ConcurrentHashMap<>();
-        scheduledFuture = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
+        scheduledService = Executors.newScheduledThreadPool(1);
+        scheduledFuture = scheduledService.scheduleAtFixedRate(new Runnable() {
             
             @Override
             public void run() {
@@ -109,6 +113,7 @@ public final class KeepAlive implements AutoCloseable {
             keepAliveTask.close();
         }
         keepAliveTasks.clear();
+        scheduledService.shutdown();
         scheduledFuture.cancel(false);
     }
     

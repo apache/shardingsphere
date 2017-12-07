@@ -23,7 +23,7 @@ import io.shardingjdbc.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalan
 import io.shardingjdbc.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
-import io.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
+import io.shardingjdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import io.shardingjdbc.orchestration.spring.util.FieldValueUtil;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -51,7 +51,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     
     @Test
     public void assertMasterSlaveDataSourceType() {
-        assertTrue(this.applicationContext.getBean("defaultMasterSlaveDataSource", MasterSlaveDataSource.class) instanceof OrchestrationSpringMasterSlaveDataSource);
+        assertTrue(this.applicationContext.getBean("defaultMasterSlaveDataSource", OrchestrationMasterSlaveDataSource.class) instanceof OrchestrationMasterSlaveDataSource);
     }
     
     @Test

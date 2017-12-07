@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
+import io.shardingjdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.spring.datasource.SpringMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
@@ -29,7 +29,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedMap;
-import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -44,7 +43,7 @@ import java.util.Map;
  * @author caohao
  * @author zhangliang
  */
-public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends AbstractOrchestrationBeanDefinitionParser {
     
     @Override
     //CHECKSTYLE:OFF
@@ -54,7 +53,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         if (Strings.isNullOrEmpty(regCenter)) {
             return getSpringMasterSlaveDataSourceBean(element, parserContext);
         }
-        return getOrchestrationSpringMasterSlaveDataSourceBean(element, parserContext, regCenter);
+        return getOrchestrationSpringMasterSlaveDataSourceBean(element, parserContext);
     }
     
     private AbstractBeanDefinition getSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext) {
@@ -73,23 +72,19 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         return factory.getBeanDefinition();
     }
     
-    private AbstractBeanDefinition getOrchestrationSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext, final String regCenter) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringMasterSlaveDataSource.class);
-        factory.addConstructorArgValue(parseId(element));
-        factory.addConstructorArgValue(parseOverwrite(element));
-        factory.addConstructorArgReference(regCenter);
+    private AbstractBeanDefinition getOrchestrationSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationMasterSlaveDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element, parserContext));
         factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element, parserContext));
         factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
+        factory.addConstructorArgValue(parseOrchestrationConfiguration(element));
+        factory.setInitMethodName("init");
+        factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
     }
     
     private String parseId(final Element element) {
         return element.getAttribute(ID_ATTRIBUTE);
-    }
-    
-    private boolean parseOverwrite(final Element element) {
-        return Boolean.parseBoolean(element.getAttribute("overwrite"));
     }
     
     private String parseRegistryCenterRef(final Element element) {

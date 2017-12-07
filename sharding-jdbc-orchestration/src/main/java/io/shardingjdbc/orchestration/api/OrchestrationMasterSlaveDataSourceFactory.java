@@ -19,7 +19,7 @@ package io.shardingjdbc.orchestration.api;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
+import io.shardingjdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.yaml.YamlOrchestrationMasterSlaveRuleConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -57,7 +57,9 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
     public static DataSource createDataSource(
             final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
             final Map<String, Object> configMap, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        return new OrchestrationFacade(orchestrationConfig).getOrchestrationMasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap);
+        OrchestrationMasterSlaveDataSource result = new OrchestrationMasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, orchestrationConfig);
+        result.init();
+        return result;
     }
     
     /**

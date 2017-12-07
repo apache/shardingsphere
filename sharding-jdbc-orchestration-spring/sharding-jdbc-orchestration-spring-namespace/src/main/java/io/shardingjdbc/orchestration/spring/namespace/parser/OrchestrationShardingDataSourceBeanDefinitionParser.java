@@ -21,14 +21,13 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
+import io.shardingjdbc.orchestration.internal.OrchestrationShardingDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
-import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -45,20 +44,19 @@ import java.util.Properties;
  * @author caohao
  * @author zhangliang
  */
-public class OrchestrationShardingDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public class OrchestrationShardingDataSourceBeanDefinitionParser extends AbstractOrchestrationBeanDefinitionParser {
     
     @Override
     //CHECKSTYLE:OFF
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
     //CHECKSTYLE:ON
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringShardingDataSource.class);
-        factory.addConstructorArgValue(element.getAttribute("id"));
-        factory.addConstructorArgValue(Boolean.parseBoolean(element.getAttribute("overwrite")));
-        factory.addConstructorArgReference(element.getAttribute("registry-center-ref"));
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationShardingDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element, parserContext));
         factory.addConstructorArgValue(parseShardingRuleConfig(element));
         factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
+        factory.addConstructorArgValue(parseOrchestrationConfiguration(element));
+        factory.setInitMethodName("init");
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
     }
