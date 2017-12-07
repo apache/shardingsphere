@@ -21,7 +21,6 @@ import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -32,7 +31,6 @@ import java.util.Map;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class DatabaseAllRoutingEngine implements RoutingEngine {
     
     private final Map<String, DataSource> dataSourceMap;
