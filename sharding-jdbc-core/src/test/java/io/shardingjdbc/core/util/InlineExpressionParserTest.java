@@ -58,4 +58,21 @@ public final class InlineExpressionParserTest {
         assertThat(expected.size(), is(4));
         assertThat(expected, hasItems("t_new3_order_1", "t_new3_order_2", "t_old_order_1", "t_old_order_2"));
     }
+    
+    @Test
+    public void assertEvaluateForLong() {
+        StringBuilder expression = new StringBuilder();
+        for (int i = 0; i < 1024; i++) {
+            expression.append("ds_");
+            expression.append(i/64);
+            expression.append(".t_user_");
+            expression.append(i);
+            if (i != 1023) {
+                expression.append(",");
+            }
+        }
+        List<String> expected = new InlineExpressionParser(expression.toString()).evaluate();
+        assertThat(expected.size(), is(1024));
+        assertThat(expected, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
+    }
 }
