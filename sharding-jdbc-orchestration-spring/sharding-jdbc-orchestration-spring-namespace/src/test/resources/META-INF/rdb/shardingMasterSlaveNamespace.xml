@@ -19,8 +19,10 @@
     
     <master-slave:data-source id="refMasterSlaveDataSource" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-ref="randomStrategy" />
     
+    <master-slave:data-source id="defaultMasterSlaveDataSource" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0, dbtbl_1_slave_1" />
+    
     <sharding:data-source id="defaultShardingDataSource" registry-center-ref="regCenter">
-        <sharding:sharding-rule data-source-names="randomMasterSlaveDataSource,refMasterSlaveDataSource" default-data-source-name="randomMasterSlaveDataSource">
+        <sharding:sharding-rule data-source-names="randomMasterSlaveDataSource,refMasterSlaveDataSource,defaultMasterSlaveDataSource" default-data-source-name="defaultMasterSlaveDataSource">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
             </sharding:table-rules>
