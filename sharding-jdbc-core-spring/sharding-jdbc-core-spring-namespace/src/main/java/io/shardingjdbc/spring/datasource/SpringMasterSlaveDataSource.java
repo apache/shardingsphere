@@ -34,11 +34,6 @@ import java.util.Map;
 public class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
     
     public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
-                                       final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, final Map<String, Object> configMap) throws SQLException {
-        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap), configMap);
-    }
-    
-    public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
                                        final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, 
                                        final MasterSlaveLoadBalanceAlgorithm strategy, final Map<String, Object> configMap) throws SQLException {
         super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategy), configMap);
