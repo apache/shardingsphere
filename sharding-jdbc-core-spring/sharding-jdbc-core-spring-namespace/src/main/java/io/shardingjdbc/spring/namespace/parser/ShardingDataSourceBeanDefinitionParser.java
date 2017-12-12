@@ -24,6 +24,7 @@ import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import io.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
@@ -51,7 +52,7 @@ public class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDefiniti
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
     //CHECKSTYLE:ON
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
-        factory.addConstructorArgValue(parseDataSources(element, parserContext));
+        factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseShardingRuleConfig(element));
         factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
@@ -59,12 +60,12 @@ public class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDefiniti
         return factory.getBeanDefinition();
     }
     
-    private Map<String, BeanDefinition> parseDataSources(final Element element, final ParserContext parserContext) {
+    private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
         List<String> dataSources = Splitter.on(",").trimResults().splitToList(shardingRuleElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAMES_TAG));
-        Map<String, BeanDefinition> result = new ManagedMap<>(dataSources.size());
+        Map<String, RuntimeBeanReference> result = new ManagedMap<>(dataSources.size());
         for (String each : dataSources) {
-            result.put(each, parserContext.getRegistry().getBeanDefinition(each));
+            result.put(each, new RuntimeBeanReference(each));
         }
         return result;
     }

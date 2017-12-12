@@ -26,6 +26,7 @@ import io.shardingjdbc.orchestration.spring.datasource.SpringMasterSlaveDataSour
 import io.shardingjdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedMap;
@@ -91,12 +92,12 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         return element.getAttribute("registry-center-ref");
     }
     
-    private Map<String, BeanDefinition> parseDataSources(final Element element, final ParserContext parserContext) {
+    private Map<String, RuntimeBeanReference> parseDataSources(final Element element, final ParserContext parserContext) {
         String masterDataSource = parseMasterDataSourceRef(element);
-        Map<String, BeanDefinition> result = new ManagedMap<>();
-        result.put(masterDataSource, parserContext.getRegistry().getBeanDefinition(masterDataSource));
+        Map<String, RuntimeBeanReference> result = new ManagedMap<>();
+        result.put(masterDataSource, new RuntimeBeanReference(masterDataSource));
         for (String each : parseSlaveDataSources(element)) {
-            result.put(each, parserContext.getRegistry().getBeanDefinition(each));
+            result.put(each, new RuntimeBeanReference(each));
         }
         return result;
     }

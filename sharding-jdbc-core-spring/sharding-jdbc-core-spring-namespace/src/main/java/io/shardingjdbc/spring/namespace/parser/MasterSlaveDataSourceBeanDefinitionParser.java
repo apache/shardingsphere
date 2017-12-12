@@ -24,6 +24,7 @@ import io.shardingjdbc.spring.datasource.SpringMasterSlaveDataSource;
 import io.shardingjdbc.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import io.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedMap;
@@ -52,7 +53,7 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
         String masterDataSourceName = parseMasterDataSourceRef(element);
         factory.addConstructorArgValue(masterDataSourceName);
         factory.addConstructorArgReference(masterDataSourceName);
-        factory.addConstructorArgValue(parseSlaveDataSources(element, parserContext));
+        factory.addConstructorArgValue(parseSlaveDataSources(element));
         String strategyRef = parseStrategyRef(element);
         if (!Strings.isNullOrEmpty(strategyRef)) {
             factory.addConstructorArgReference(strategyRef);
@@ -71,11 +72,11 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
         return element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.MASTER_DATA_SOURCE_NAME_ATTRIBUTE);
     }
     
-    private Map<String, BeanDefinition> parseSlaveDataSources(final Element element, final ParserContext parserContext) {
+    private Map<String, RuntimeBeanReference> parseSlaveDataSources(final Element element) {
         List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE));
-        Map<String, BeanDefinition> result = new ManagedMap<>(slaveDataSources.size());
+        Map<String, RuntimeBeanReference> result = new ManagedMap<>(slaveDataSources.size());
         for (String each : slaveDataSources) {
-            result.put(each, parserContext.getRegistry().getBeanDefinition(each));
+            result.put(each, new RuntimeBeanReference(each));
         }
         return result;
     }
