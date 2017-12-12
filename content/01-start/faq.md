@@ -198,3 +198,11 @@ com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()�
         return var2;
     }
 ```
+
+### 13. 使用Spring命名空间时找不到xsd?
+
+回答：
+
+Spring命名空间使用规范并未强制要求将xsd文件部署至公网地址，但考虑到部分用户的需求，我们也将相关xsd文件部署至Sharding-JDBC官网。
+
+实际上sharding-jdbc-core-config-spring的jar包中META-INF\spring.schemas配置了xsd文件的位置：META-INF\namespace\sharding.xsd和META-INF\namespace\master-slave.xsd，只需确保jar包中该文件存在即可。
