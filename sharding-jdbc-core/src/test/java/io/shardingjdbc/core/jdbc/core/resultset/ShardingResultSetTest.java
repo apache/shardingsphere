@@ -35,6 +35,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -53,11 +54,14 @@ public final class ShardingResultSetTest {
     @Mock
     private ResultSetMerger mergeResultSet;
     
+    @Mock
+    private Statement statement;
+    
     private ShardingResultSet shardingResultSet;
     
     @Before
     public void setUp() {
-        shardingResultSet = new ShardingResultSet(Collections.singletonList(mock(ResultSet.class)), mergeResultSet);
+        shardingResultSet = new ShardingResultSet(Collections.singletonList(mock(ResultSet.class)), mergeResultSet, statement);
     }
     
     @Test

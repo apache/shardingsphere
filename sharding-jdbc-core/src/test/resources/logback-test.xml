@@ -11,8 +11,8 @@
     <logger name="org.dbunit" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="io.shardingjdbc.core.executor.threadlocal.ExecutorExceptionHandler" level="off">
-    </logger>
+    <logger name="io.shardingjdbc.core.executor.threadlocal.ExecutorExceptionHandler" level="off" />
+    <logger name="org.dbunit.database.DatabaseTableMetaData" level="off" />
     
     <root>
         <level value="error" />
