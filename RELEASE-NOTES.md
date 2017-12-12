@@ -1,5 +1,9 @@
 ## 2.0.1
 
+### 缺陷修正
+
+1. [ISSUE #387](https://github.com/shardingjdbc/sharding-jdbc/issues/491) 通过ResultSet.getStatement().getConnection().close()无法释放连接
+
 ## 2.0.0
 
 ### 里程碑
