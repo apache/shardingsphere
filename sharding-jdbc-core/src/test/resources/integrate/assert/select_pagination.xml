@@ -16,6 +16,16 @@
             <data parameter="10,19,1000,1909,2" expected="select/SelectPagingWithRowCountSql.xml" />
         </sharding-rule>
     </sql>
+    <sql id="assertSelectPaginationWithLimit">
+        <sharding-rule>
+            <data parameter="10,19,1000,1909,2,2" expected="select/SelectPagingWithOffsetAndRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectSingleTablePaginationWithLimit">
+        <sharding-rule value="tbl">
+            <data parameter="2,2" expected="select/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
     <sql id="assertSelectPaginationWithTop">
         <sharding-rule>
             <data parameter="2,10,19,1000,1909" expected="select/sqlserver/SelectPagingWithRowCountSql.xml" />
@@ -24,11 +34,6 @@
     <sql id="assertSelectPaginationWithRowNumber">
         <sharding-rule>
             <data parameter="10,19,1000,1909,2" expected="select/oracle/SelectPagingWithRowCountSql.xml" />
-        </sharding-rule>
-    </sql>
-    <sql id="assertSelectPaginationWithLimit">
-        <sharding-rule>
-            <data parameter="10,19,1000,1909,2,2" expected="select/SelectPagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertSelectPaginationWithOffsetAndLimit">
@@ -41,9 +46,19 @@
             <data parameter="4,10,19,1000,1909,2" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
+    <sql id="assertSelectSingleTablePaginationWithTopAndRange">
+        <sharding-rule>
+            <data parameter="4,2" expected="select/sqlserver/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
     <sql id="assertSelectPaginationWithRowNumberAndRange">
         <sharding-rule>
             <data parameter="10,19,1000,1909,4,2" expected="select/oracle/SelectPagingWithOffsetAndRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectSingleTablePaginationWithRowNumberAndRange">
+        <sharding-rule>
+            <data parameter="4,1" expected="select/oracle/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
 </sqls>
