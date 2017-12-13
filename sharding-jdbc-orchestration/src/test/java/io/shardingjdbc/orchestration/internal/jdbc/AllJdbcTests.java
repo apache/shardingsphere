@@ -15,19 +15,19 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.internal;
+package io.shardingjdbc.orchestration.internal.jdbc;
 
-import io.shardingjdbc.orchestration.internal.jdbc.AllJdbcTests;
-import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverterTest;
-import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverterTest;
+import io.shardingjdbc.orchestration.internal.jdbc.connection.CircuitBreakerConnectionTest;
+import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSourceTest;
+import io.shardingjdbc.orchestration.internal.jdbc.metadata.CircuitBreakerDatabaseMetaDataTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        DataSourceJsonConverterTest.class,
-        ShardingRuleConfigurationConverterTest.class,
-        AllJdbcTests.class
+        CircuitBreakerConnectionTest.class,
+        CircuitBreakerDataSourceTest.class,
+        CircuitBreakerDatabaseMetaDataTest.class
     })
-public class AllInternalTests {
+public class AllJdbcTests {
 }

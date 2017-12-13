@@ -27,7 +27,6 @@ masterSlaveRule:
 
 orchestration:
   name: demo_ds_ms
-  overwrite: true
   zookeeper: 
     namespace: orchestration-yaml-test
     serverLists: localhost:3181
