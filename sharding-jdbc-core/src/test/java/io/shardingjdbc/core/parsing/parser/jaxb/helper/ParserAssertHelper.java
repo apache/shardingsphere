@@ -157,7 +157,7 @@ public class ParserAssertHelper {
         if (null == limit) {
             return null;
         }
-        Limit result = new Limit(DatabaseType.MySQL, true);
+        Limit result = new Limit(DatabaseType.MySQL);
         if (isPreparedStatement) {
             if (null != limit.getOffsetParameterIndex()) {
                 result.setOffset(new LimitValue(-1, limit.getOffsetParameterIndex()));

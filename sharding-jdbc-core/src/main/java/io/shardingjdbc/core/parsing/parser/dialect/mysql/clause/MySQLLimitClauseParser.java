@@ -77,7 +77,7 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         if (!isParameterForValue) {
             selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
-        Limit limit = new Limit(DatabaseType.MySQL, true);
+        Limit limit = new Limit(DatabaseType.MySQL);
         limit.setRowCount(new LimitValue(value, valueIndex));
         limit.setIncludeRowCount(false);
         limit.setIncludeOffset(true);
@@ -107,7 +107,7 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         if (!isParameterForRowCount) {
             selectStatement.getSqlTokens().add(new RowCountToken(rowCountBeginPosition, rowCountValue));
         }
-        Limit result = new Limit(DatabaseType.MySQL, true);
+        Limit result = new Limit(DatabaseType.MySQL);
         result.setRowCount(new LimitValue(rowCountValue, rowCountIndex));
         result.setOffset(new LimitValue(value, index));
         result.setIncludeRowCount(false);
@@ -137,7 +137,7 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         if (!isParameterForValue) {
             selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
-        Limit result = new Limit(DatabaseType.MySQL, true);
+        Limit result = new Limit(DatabaseType.MySQL);
         result.setRowCount(new LimitValue(value, index));
         result.setOffset(new LimitValue(offsetValue, offsetIndex));
         result.setIncludeRowCount(false);

@@ -49,7 +49,7 @@ public final class TopAndRowNumberDecoratorResultSetMerger extends AbstractDecor
                 return true;
             }
         }
-        rowNumber = limit.isRowCountRewriteFlag() ? 0 : end + 1;
+        rowNumber = end + 1;
         return false;
     }
     

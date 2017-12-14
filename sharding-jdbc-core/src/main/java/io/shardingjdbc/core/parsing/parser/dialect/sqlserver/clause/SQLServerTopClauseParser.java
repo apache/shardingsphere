@@ -77,7 +77,7 @@ public final class SQLServerTopClauseParser implements SQLClauseParser {
         lexerEngine.unsupportedIfEqual(SQLServerKeyword.PERCENT);
         lexerEngine.skipIfEqual(DefaultKeyword.WITH, SQLServerKeyword.TIES);
         if (null == selectStatement.getLimit()) {
-            Limit limit = new Limit(DatabaseType.SQLServer, false);
+            Limit limit = new Limit(DatabaseType.SQLServer);
             limit.setRowCount(rowCountValue);
             selectStatement.setLimit(limit);
         } else {

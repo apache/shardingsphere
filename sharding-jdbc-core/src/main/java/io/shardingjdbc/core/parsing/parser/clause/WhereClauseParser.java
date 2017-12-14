@@ -178,7 +178,7 @@ public class WhereClauseParser implements SQLClauseParser {
     private void parseRowCountCondition(final SelectStatement selectStatement, final boolean includeRowCount) {
         SQLExpression sqlExpression = expressionClauseParser.parse(selectStatement);
         if (null == selectStatement.getLimit()) {
-            selectStatement.setLimit(new Limit(databaseType, false));
+            selectStatement.setLimit(new Limit(databaseType));
         }
         if (sqlExpression instanceof SQLNumberExpression) {
             int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
@@ -194,7 +194,7 @@ public class WhereClauseParser implements SQLClauseParser {
     private void parseOffsetCondition(final SelectStatement selectStatement, final boolean includeOffset) {
         SQLExpression sqlExpression = expressionClauseParser.parse(selectStatement);
         if (null == selectStatement.getLimit()) {
-            selectStatement.setLimit(new Limit(databaseType, false));
+            selectStatement.setLimit(new Limit(databaseType));
         }
         if (sqlExpression instanceof SQLNumberExpression) {
             int offset = ((SQLNumberExpression) sqlExpression).getNumber().intValue();

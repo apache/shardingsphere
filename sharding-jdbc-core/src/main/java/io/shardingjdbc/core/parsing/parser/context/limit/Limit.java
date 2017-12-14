@@ -41,8 +41,6 @@ public final class Limit {
     
     private final DatabaseType databaseType;
     
-    private final boolean rowCountRewriteFlag;
-    
     private LimitValue offset;
     
     private LimitValue rowCount;
@@ -101,7 +99,7 @@ public final class Limit {
         int rewriteRowCount;
         if (isFetchAll) {
             rewriteRowCount = Integer.MAX_VALUE;
-        } else if (rowCountRewriteFlag) {
+        } else if (isNeedRewriteRowCount()) {
             rewriteRowCount = null == rowCount ? -1 : getOffsetValue() + rowCount.getValue();
         } else {
             rewriteRowCount = rowCount.getValue();
@@ -112,5 +110,14 @@ public final class Limit {
         if (null != rowCount && rowCount.getIndex() > -1) {
             parameters.set(rowCount.getIndex(), rewriteRowCount);
         }
+    }
+    
+    /**
+     * Is need rewrite row count.
+     * 
+     * @return is need rewrite row count or not
+     */
+    public boolean isNeedRewriteRowCount() {
+        return DatabaseType.MySQL == databaseType || DatabaseType.PostgreSQL == databaseType || DatabaseType.H2 == databaseType;
     }
 }

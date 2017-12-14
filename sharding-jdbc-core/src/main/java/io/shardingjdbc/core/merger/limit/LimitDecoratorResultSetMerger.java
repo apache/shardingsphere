@@ -48,7 +48,7 @@ public final class LimitDecoratorResultSetMerger extends AbstractDecoratorResult
                 return true;
             }
         }
-        rowNumber = limit.isRowCountRewriteFlag() ? 0 : limit.getOffsetValue();
+        rowNumber = 0;
         return false;
     }
     

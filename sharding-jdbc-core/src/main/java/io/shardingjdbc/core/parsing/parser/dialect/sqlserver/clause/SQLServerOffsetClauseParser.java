@@ -60,7 +60,7 @@ public final class SQLServerOffsetClauseParser implements SQLClauseParser {
             throw new SQLParsingException(lexerEngine);
         }
         lexerEngine.nextToken();
-        Limit limit = new Limit(DatabaseType.SQLServer, true);
+        Limit limit = new Limit(DatabaseType.SQLServer);
         if (lexerEngine.skipIfEqual(DefaultKeyword.FETCH)) {
             lexerEngine.nextToken();
             int rowCountValue = -1;

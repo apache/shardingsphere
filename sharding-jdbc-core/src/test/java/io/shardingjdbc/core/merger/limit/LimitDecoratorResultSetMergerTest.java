@@ -56,7 +56,7 @@ public final class LimitDecoratorResultSetMergerTest {
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        Limit limit = new Limit(DatabaseType.MySQL, true);
+        Limit limit = new Limit(DatabaseType.MySQL);
         limit.setOffset(new LimitValue(Integer.MAX_VALUE, -1));
         selectStatement.setLimit(limit);
         for (ResultSet each : resultSets) {
@@ -69,7 +69,7 @@ public final class LimitDecoratorResultSetMergerTest {
     
     @Test
     public void assertNextWithoutRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.MySQL, true);
+        Limit limit = new Limit(DatabaseType.MySQL);
         limit.setOffset(new LimitValue(2, -1));
         selectStatement.setLimit(limit);
         for (ResultSet each : resultSets) {
@@ -88,7 +88,7 @@ public final class LimitDecoratorResultSetMergerTest {
     
     @Test
     public void assertNextWithRewriteRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.MySQL, true);
+        Limit limit = new Limit(DatabaseType.MySQL);
         limit.setOffset(new LimitValue(2, -1));
         limit.setRowCount(new LimitValue(2, -1));
         selectStatement.setLimit(limit);
@@ -104,7 +104,7 @@ public final class LimitDecoratorResultSetMergerTest {
     
     @Test
     public void assertNextWithNotRewriteRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.Oracle, false);
+        Limit limit = new Limit(DatabaseType.Oracle);
         limit.setOffset(new LimitValue(2, -1));
         limit.setRowCount(new LimitValue(4, -1));
         limit.setIncludeOffset(true);

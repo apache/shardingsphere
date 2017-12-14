@@ -111,7 +111,7 @@ public final class PostgreSQLLimitClauseParser implements SQLClauseParser {
     }
     
     private void setLimit(final Optional<LimitValue> offset, final Optional<LimitValue> rowCount, final SelectStatement selectStatement) {
-        Limit limit = new Limit(DatabaseType.PostgreSQL, true);
+        Limit limit = new Limit(DatabaseType.PostgreSQL);
         if (offset.isPresent()) {
             limit.setOffset(offset.get());
         }
