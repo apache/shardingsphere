@@ -24,11 +24,11 @@ import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import java.sql.SQLException;
 
 /**
- * Decorator merger for limit pagination.
+ * Decorator merger for rownum pagination.
  *
  * @author zhangliang
  */
-public final class LimitDecoratorResultSetMerger extends AbstractDecoratorResultSetMerger {
+public final class RowNumberDecoratorResultSetMerger extends AbstractDecoratorResultSetMerger {
     
     private final Limit limit;
     
@@ -36,19 +36,20 @@ public final class LimitDecoratorResultSetMerger extends AbstractDecoratorResult
     
     private int rowNumber;
     
-    public LimitDecoratorResultSetMerger(final ResultSetMerger resultSetMerger, final Limit limit) throws SQLException {
+    public RowNumberDecoratorResultSetMerger(final ResultSetMerger resultSetMerger, final Limit limit) throws SQLException {
         super(resultSetMerger);
         this.limit = limit;
         skipAll = skipOffset();
     }
     
     private boolean skipOffset() throws SQLException {
-        for (int i = 0; i < limit.getOffsetValue(); i++) {
+        int end = limit.isIncludeOffset() ? limit.getOffsetValue() - 1 : limit.getOffsetValue();
+        for (int i = 0; i < end; i++) {
             if (!getResultSetMerger().next()) {
                 return true;
             }
         }
-        rowNumber = limit.isRowCountRewriteFlag() ? 0 : limit.getOffsetValue();
+        rowNumber = limit.isRowCountRewriteFlag() ? 0 : end + 1;
         return false;
     }
     
@@ -60,6 +61,9 @@ public final class LimitDecoratorResultSetMerger extends AbstractDecoratorResult
         if (limit.getRowCountValue() < 0) {
             return getResultSetMerger().next();
         }
-        return ++rowNumber <= limit.getRowCountValue() && getResultSetMerger().next();
+        if (limit.isIncludeRowCount()) {
+            return rowNumber++ <= limit.getRowCountValue() && getResultSetMerger().next();
+        }
+        return rowNumber++ < limit.getRowCountValue() && getResultSetMerger().next();
     }
 }

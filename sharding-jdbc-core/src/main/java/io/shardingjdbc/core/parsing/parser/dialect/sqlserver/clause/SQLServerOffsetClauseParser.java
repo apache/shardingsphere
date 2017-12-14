@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.dialect.sqlserver.clause;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
@@ -59,7 +60,7 @@ public final class SQLServerOffsetClauseParser implements SQLClauseParser {
             throw new SQLParsingException(lexerEngine);
         }
         lexerEngine.nextToken();
-        Limit limit = new Limit(true);
+        Limit limit = new Limit(DatabaseType.SQLServer, true);
         if (lexerEngine.skipIfEqual(DefaultKeyword.FETCH)) {
             lexerEngine.nextToken();
             int rowCountValue = -1;

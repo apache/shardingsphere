@@ -1,5 +1,6 @@
 package io.shardingjdbc.core.parsing.parser.clause;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
@@ -36,13 +37,16 @@ import java.util.List;
  */
 public class WhereClauseParser implements SQLClauseParser {
     
+    private final DatabaseType databaseType;
+    
     private final LexerEngine lexerEngine;
     
     private final AliasClauseParser aliasClauseParser;
     
     private final ExpressionClauseParser expressionClauseParser;
     
-    public WhereClauseParser(final LexerEngine lexerEngine) {
+    public WhereClauseParser(final DatabaseType databaseType, final LexerEngine lexerEngine) {
+        this.databaseType = databaseType;
         this.lexerEngine = lexerEngine;
         aliasClauseParser = new AliasClauseParser(lexerEngine);
         expressionClauseParser = new ExpressionClauseParser(lexerEngine);
@@ -88,12 +92,20 @@ public class WhereClauseParser implements SQLClauseParser {
             return;
         }
         if (sqlStatement instanceof SelectStatement && isRowNumberCondition(items, left)) {
-            if (lexerEngine.skipIfEqual(Symbol.LT, Symbol.LT_EQ)) {
-                parseRowCountCondition((SelectStatement) sqlStatement);
+            if (lexerEngine.skipIfEqual(Symbol.LT)) {
+                parseRowCountCondition((SelectStatement) sqlStatement, false);
                 return;
             }
-            if (lexerEngine.skipIfEqual(Symbol.GT, Symbol.GT_EQ)) {
-                parseOffsetCondition((SelectStatement) sqlStatement);
+            if (lexerEngine.skipIfEqual(Symbol.LT_EQ)) {
+                parseRowCountCondition((SelectStatement) sqlStatement, true);
+                return;
+            }
+            if (lexerEngine.skipIfEqual(Symbol.GT)) {
+                parseOffsetCondition((SelectStatement) sqlStatement, false);
+                return;
+            }
+            if (lexerEngine.skipIfEqual(Symbol.GT_EQ)) {
+                parseOffsetCondition((SelectStatement) sqlStatement, true);
                 return;
             }
         }
@@ -163,10 +175,10 @@ public class WhereClauseParser implements SQLClauseParser {
         return false;
     }
     
-    private void parseRowCountCondition(final SelectStatement selectStatement) {
+    private void parseRowCountCondition(final SelectStatement selectStatement, final boolean includeRowCount) {
         SQLExpression sqlExpression = expressionClauseParser.parse(selectStatement);
         if (null == selectStatement.getLimit()) {
-            selectStatement.setLimit(new Limit(false));
+            selectStatement.setLimit(new Limit(databaseType, false));
         }
         if (sqlExpression instanceof SQLNumberExpression) {
             int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
@@ -176,12 +188,13 @@ public class WhereClauseParser implements SQLClauseParser {
         } else if (sqlExpression instanceof SQLPlaceholderExpression) {
             selectStatement.getLimit().setRowCount(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
         }
+        selectStatement.getLimit().setIncludeRowCount(includeRowCount);
     }
     
-    private void parseOffsetCondition(final SelectStatement selectStatement) {
+    private void parseOffsetCondition(final SelectStatement selectStatement, final boolean includeOffset) {
         SQLExpression sqlExpression = expressionClauseParser.parse(selectStatement);
         if (null == selectStatement.getLimit()) {
-            selectStatement.setLimit(new Limit(false));
+            selectStatement.setLimit(new Limit(databaseType, false));
         }
         if (sqlExpression instanceof SQLNumberExpression) {
             int offset = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
@@ -191,6 +204,7 @@ public class WhereClauseParser implements SQLClauseParser {
         } else if (sqlExpression instanceof SQLPlaceholderExpression) {
             selectStatement.getLimit().setOffset(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
         }
+        selectStatement.getLimit().setIncludeOffset(includeOffset);
     }
     
     protected Keyword[] getCustomizedOtherConditionOperators() {

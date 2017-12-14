@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.merger;
 
 import io.shardingjdbc.core.constant.AggregationType;
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.merger.groupby.GroupByMemoryResultSetMerger;
 import io.shardingjdbc.core.merger.groupby.GroupByStreamResultSetMerger;
@@ -71,7 +72,7 @@ public final class MergeEngineTest {
     
     @Test
     public void assertBuildIteratorStreamResultSetMergerWithLimit() throws SQLException {
-        selectStatement.setLimit(new Limit(true));
+        selectStatement.setLimit(new Limit(DatabaseType.MySQL, true));
         mergeEngine = new MergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertThat(actual, instanceOf(LimitDecoratorResultSetMerger.class));
@@ -87,7 +88,7 @@ public final class MergeEngineTest {
     
     @Test
     public void assertBuildOrderByStreamResultSetMergerWithLimit() throws SQLException {
-        selectStatement.setLimit(new Limit(true));
+        selectStatement.setLimit(new Limit(DatabaseType.MySQL, true));
         selectStatement.getOrderByItems().add(new OrderItem(1, OrderType.DESC, OrderType.ASC));
         mergeEngine = new MergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
@@ -105,7 +106,7 @@ public final class MergeEngineTest {
     
     @Test
     public void assertBuildGroupByStreamResultSetMergerWithLimit() throws SQLException {
-        selectStatement.setLimit(new Limit(true));
+        selectStatement.setLimit(new Limit(DatabaseType.MySQL, true));
         selectStatement.getGroupByItems().add(new OrderItem(1, OrderType.DESC, OrderType.ASC));
         selectStatement.getOrderByItems().add(new OrderItem(1, OrderType.DESC, OrderType.ASC));
         mergeEngine = new MergeEngine(resultSets, selectStatement);
@@ -123,7 +124,7 @@ public final class MergeEngineTest {
     
     @Test
     public void assertBuildGroupByMemoryResultSetMergerWithLimit() throws SQLException {
-        selectStatement.setLimit(new Limit(true));
+        selectStatement.setLimit(new Limit(DatabaseType.MySQL, true));
         selectStatement.getGroupByItems().add(new OrderItem(1, OrderType.DESC, OrderType.ASC));
         mergeEngine = new MergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
@@ -140,7 +141,7 @@ public final class MergeEngineTest {
     
     @Test
     public void assertBuildGroupByMemoryResultSetMergerWithAggregationOnlyWithLimit() throws SQLException {
-        selectStatement.setLimit(new Limit(true));
+        selectStatement.setLimit(new Limit(DatabaseType.MySQL, true));
         selectStatement.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent()));
         mergeEngine = new MergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();

@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.context.limit;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import io.shardingjdbc.core.util.NumberUtil;
 import lombok.Getter;
@@ -38,11 +39,17 @@ import java.util.List;
 @ToString
 public final class Limit {
     
+    private final DatabaseType databaseType;
+    
     private final boolean rowCountRewriteFlag;
     
     private LimitValue offset;
     
     private LimitValue rowCount;
+    
+    private boolean includeOffset;
+    
+    private boolean includeRowCount;
     
     /**
      * Get offset value.

@@ -1,5 +1,6 @@
 package io.shardingjdbc.core.parsing.parser.dialect.postgresql.clause.facade;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.clause.DistinctClauseParser;
@@ -21,7 +22,8 @@ public final class PostgreSQLSelectClauseParserFacade extends AbstractSelectClau
     
     public PostgreSQLSelectClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(new DistinctClauseParser(lexerEngine), new SelectListClauseParser(shardingRule, lexerEngine),
-                new PostgreSQLTableReferencesClauseParser(shardingRule, lexerEngine), new WhereClauseParser(lexerEngine), new GroupByClauseParser(lexerEngine), new HavingClauseParser(lexerEngine), 
+                new PostgreSQLTableReferencesClauseParser(shardingRule, lexerEngine), 
+                new WhereClauseParser(DatabaseType.PostgreSQL, lexerEngine), new GroupByClauseParser(lexerEngine), new HavingClauseParser(lexerEngine), 
                 new PostgreSQLOrderByClauseParser(lexerEngine), new PostgreSQLSelectRestClauseParser(lexerEngine));
     }
 }

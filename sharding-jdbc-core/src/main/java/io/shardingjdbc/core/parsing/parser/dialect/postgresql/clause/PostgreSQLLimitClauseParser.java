@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.dialect.postgresql.clause;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
@@ -110,13 +111,15 @@ public final class PostgreSQLLimitClauseParser implements SQLClauseParser {
     }
     
     private void setLimit(final Optional<LimitValue> offset, final Optional<LimitValue> rowCount, final SelectStatement selectStatement) {
-        Limit limit = new Limit(true);
+        Limit limit = new Limit(DatabaseType.PostgreSQL, true);
         if (offset.isPresent()) {
             limit.setOffset(offset.get());
         }
         if (rowCount.isPresent()) {
             limit.setRowCount(rowCount.get());
         }
+        limit.setIncludeRowCount(false);
+        limit.setIncludeOffset(true);
         selectStatement.setLimit(limit);
     }
 }

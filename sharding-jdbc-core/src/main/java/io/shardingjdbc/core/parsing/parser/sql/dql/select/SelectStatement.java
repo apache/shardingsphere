@@ -201,6 +201,8 @@ public final class SelectStatement extends DQLStatement {
             if (null != result.getLimit().getOffset()) {
                 limit.setOffset(result.getLimit().getOffset());
             }
+            limit.setIncludeOffset(result.getLimit().isIncludeOffset());
+            limit.setIncludeRowCount(result.getLimit().isIncludeRowCount());
         }
         resetLimitTokens(result, limitSQLTokens);
         result.setLimit(limit);

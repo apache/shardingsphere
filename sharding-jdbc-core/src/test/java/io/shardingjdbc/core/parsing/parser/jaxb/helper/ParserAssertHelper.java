@@ -1,5 +1,6 @@
 package io.shardingjdbc.core.parsing.parser.jaxb.helper;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
@@ -156,7 +157,7 @@ public class ParserAssertHelper {
         if (null == limit) {
             return null;
         }
-        Limit result = new Limit(true);
+        Limit result = new Limit(DatabaseType.MySQL, true);
         if (isPreparedStatement) {
             if (null != limit.getOffsetParameterIndex()) {
                 result.setOffset(new LimitValue(-1, limit.getOffsetParameterIndex()));

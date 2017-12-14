@@ -1,6 +1,5 @@
 package io.shardingjdbc.core.parsing.parser.dialect.sqlserver.clause.facade;
 
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.clause.DistinctClauseParser;
 import io.shardingjdbc.core.parsing.parser.clause.GroupByClauseParser;
@@ -11,6 +10,7 @@ import io.shardingjdbc.core.parsing.parser.dialect.sqlserver.clause.SQLServerSel
 import io.shardingjdbc.core.parsing.parser.dialect.sqlserver.clause.SQLServerSelectRestClauseParser;
 import io.shardingjdbc.core.parsing.parser.dialect.sqlserver.clause.SQLServerTableReferencesClauseParser;
 import io.shardingjdbc.core.parsing.parser.dialect.sqlserver.clause.SQLServerWhereClauseParser;
+import io.shardingjdbc.core.rule.ShardingRule;
 
 /**
  * Select clause parser facade for SQLServer.

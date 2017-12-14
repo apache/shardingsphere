@@ -17,11 +17,15 @@
 
 package io.shardingjdbc.core.merger;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.merger.groupby.GroupByMemoryResultSetMerger;
 import io.shardingjdbc.core.merger.groupby.GroupByStreamResultSetMerger;
 import io.shardingjdbc.core.merger.iterator.IteratorStreamResultSetMerger;
 import io.shardingjdbc.core.merger.limit.LimitDecoratorResultSetMerger;
+import io.shardingjdbc.core.merger.limit.RowNumberDecoratorResultSetMerger;
+import io.shardingjdbc.core.merger.limit.TopAndRowNumberDecoratorResultSetMerger;
 import io.shardingjdbc.core.merger.orderby.OrderByStreamResultSetMerger;
+import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.util.SQLUtil;
 
@@ -86,10 +90,19 @@ public final class MergeEngine {
     }
     
     private ResultSetMerger decorate(final ResultSetMerger resultSetMerger) throws SQLException {
-        ResultSetMerger result = resultSetMerger;
-        if (null != selectStatement.getLimit()) {
-            result = new LimitDecoratorResultSetMerger(result, selectStatement.getLimit());
+        Limit limit = selectStatement.getLimit();
+        if (null == limit) {
+            return resultSetMerger;
         }
-        return result;
+        if (DatabaseType.MySQL == limit.getDatabaseType() || DatabaseType.PostgreSQL == limit.getDatabaseType() || DatabaseType.H2 == limit.getDatabaseType()) {
+            return new LimitDecoratorResultSetMerger(resultSetMerger, selectStatement.getLimit());
+        }
+        if (DatabaseType.Oracle == limit.getDatabaseType()) {
+            return new RowNumberDecoratorResultSetMerger(resultSetMerger, selectStatement.getLimit());
+        }
+        if (DatabaseType.SQLServer == limit.getDatabaseType()) {
+            return new TopAndRowNumberDecoratorResultSetMerger(resultSetMerger, selectStatement.getLimit());
+        }
+        return resultSetMerger;
     }
 }
