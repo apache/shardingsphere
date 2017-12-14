@@ -146,10 +146,10 @@ public class ParserAssertHelper {
             return;
         }
         if (null != expected.getRowCount()) {
-            assertTrue(EqualsBuilder.reflectionEquals(expected.getRowCount(), actual.getRowCount()));
+            assertTrue(EqualsBuilder.reflectionEquals(expected.getRowCount(), actual.getRowCount(), "boundOpened"));
         }
         if (null != expected.getOffset()) {
-            assertTrue(EqualsBuilder.reflectionEquals(expected.getOffset(), actual.getOffset()));
+            assertTrue(EqualsBuilder.reflectionEquals(expected.getOffset(), actual.getOffset(), "boundOpened"));
         }
     }
     
@@ -160,18 +160,18 @@ public class ParserAssertHelper {
         Limit result = new Limit(DatabaseType.MySQL);
         if (isPreparedStatement) {
             if (null != limit.getOffsetParameterIndex()) {
-                result.setOffset(new LimitValue(-1, limit.getOffsetParameterIndex()));
+                result.setOffset(new LimitValue(-1, limit.getOffsetParameterIndex(), true));
             }
             if (null != limit.getRowCountParameterIndex()) {
-                result.setRowCount(new LimitValue(-1, limit.getRowCountParameterIndex()));
+                result.setRowCount(new LimitValue(-1, limit.getRowCountParameterIndex(), false));
             }
         } else {
             if (null != limit.getOffset()) {
-                result.setOffset(new LimitValue(limit.getOffset(), -1));
+                result.setOffset(new LimitValue(limit.getOffset(), -1, true));
                 
             }
             if (null != limit.getRowCount()) {
-                result.setRowCount(new LimitValue(limit.getRowCount(), -1));
+                result.setRowCount(new LimitValue(limit.getRowCount(), -1, false));
             }
         }
         return result;

@@ -87,7 +87,7 @@ public final class PostgreSQLLimitClauseParser implements SQLClauseParser {
             }
             lexerEngine.nextToken();
         }
-        return Optional.of(new LimitValue(rowCountValue, rowCountIndex));
+        return Optional.of(new LimitValue(rowCountValue, rowCountIndex, false));
     }
     
     private Optional<LimitValue> buildOffset(final SelectStatement selectStatement) {
@@ -107,7 +107,7 @@ public final class PostgreSQLLimitClauseParser implements SQLClauseParser {
         }
         lexerEngine.nextToken();
         lexerEngine.skipIfEqual(DefaultKeyword.ROW, PostgreSQLKeyword.ROWS);
-        return Optional.of(new LimitValue(offsetValue, offsetIndex));
+        return Optional.of(new LimitValue(offsetValue, offsetIndex, true));
     }
     
     private void setLimit(final Optional<LimitValue> offset, final Optional<LimitValue> rowCount, final SelectStatement selectStatement) {
@@ -118,8 +118,6 @@ public final class PostgreSQLLimitClauseParser implements SQLClauseParser {
         if (rowCount.isPresent()) {
             limit.setRowCount(rowCount.get());
         }
-        limit.setIncludeRowCount(false);
-        limit.setIncludeOffset(true);
         selectStatement.setLimit(limit);
     }
 }

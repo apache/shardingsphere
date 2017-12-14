@@ -78,9 +78,7 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
             selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
         Limit limit = new Limit(DatabaseType.MySQL);
-        limit.setRowCount(new LimitValue(value, valueIndex));
-        limit.setIncludeRowCount(false);
-        limit.setIncludeOffset(true);
+        limit.setRowCount(new LimitValue(value, valueIndex, false));
         selectStatement.setLimit(limit);
     }
     
@@ -108,10 +106,8 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
             selectStatement.getSqlTokens().add(new RowCountToken(rowCountBeginPosition, rowCountValue));
         }
         Limit result = new Limit(DatabaseType.MySQL);
-        result.setRowCount(new LimitValue(rowCountValue, rowCountIndex));
-        result.setOffset(new LimitValue(value, index));
-        result.setIncludeRowCount(false);
-        result.setIncludeOffset(true);
+        result.setRowCount(new LimitValue(rowCountValue, rowCountIndex, false));
+        result.setOffset(new LimitValue(value, index, true));
         return result;
     }
     
@@ -138,10 +134,8 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
             selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
         Limit result = new Limit(DatabaseType.MySQL);
-        result.setRowCount(new LimitValue(value, index));
-        result.setOffset(new LimitValue(offsetValue, offsetIndex));
-        result.setIncludeRowCount(false);
-        result.setIncludeOffset(true);
+        result.setRowCount(new LimitValue(value, index, false));
+        result.setOffset(new LimitValue(offsetValue, offsetIndex, true));
         return result;
     }
 }

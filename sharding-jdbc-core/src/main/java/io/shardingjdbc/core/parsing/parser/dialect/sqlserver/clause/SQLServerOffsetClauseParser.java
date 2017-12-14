@@ -76,10 +76,10 @@ public final class SQLServerOffsetClauseParser implements SQLClauseParser {
             }
             lexerEngine.nextToken();
             lexerEngine.nextToken();
-            limit.setRowCount(new LimitValue(rowCountValue, rowCountIndex));
-            limit.setOffset(new LimitValue(offsetValue, offsetIndex));
+            limit.setRowCount(new LimitValue(rowCountValue, rowCountIndex, false));
+            limit.setOffset(new LimitValue(offsetValue, offsetIndex, true));
         } else {
-            limit.setOffset(new LimitValue(offsetValue, offsetIndex));
+            limit.setOffset(new LimitValue(offsetValue, offsetIndex, true));
         }
         selectStatement.setLimit(limit);
     }

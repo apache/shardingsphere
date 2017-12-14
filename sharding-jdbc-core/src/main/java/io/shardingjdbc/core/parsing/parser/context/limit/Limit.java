@@ -45,10 +45,6 @@ public final class Limit {
     
     private LimitValue rowCount;
     
-    private boolean includeOffset;
-    
-    private boolean includeRowCount;
-    
     /**
      * Get offset value.
      * 

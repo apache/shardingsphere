@@ -43,7 +43,7 @@ public final class RowNumberDecoratorResultSetMerger extends AbstractDecoratorRe
     }
     
     private boolean skipOffset() throws SQLException {
-        int end = limit.isIncludeOffset() ? limit.getOffsetValue() - 1 : limit.getOffsetValue();
+        int end = limit.getOffset().isBoundOpened() ? limit.getOffsetValue() - 1 : limit.getOffsetValue();
         for (int i = 0; i < end; i++) {
             if (!getResultSetMerger().next()) {
                 return true;
@@ -61,7 +61,7 @@ public final class RowNumberDecoratorResultSetMerger extends AbstractDecoratorRe
         if (limit.getRowCountValue() < 0) {
             return getResultSetMerger().next();
         }
-        if (limit.isIncludeRowCount()) {
+        if (limit.getRowCount().isBoundOpened()) {
             return rowNumber++ <= limit.getRowCountValue() && getResultSetMerger().next();
         }
         return rowNumber++ < limit.getRowCountValue() && getResultSetMerger().next();
