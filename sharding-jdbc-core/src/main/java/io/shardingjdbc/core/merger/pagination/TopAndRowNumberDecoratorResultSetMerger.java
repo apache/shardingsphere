@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.merger.limit;
+package io.shardingjdbc.core.merger.pagination;
 
 import io.shardingjdbc.core.merger.ResultSetMerger;
 import io.shardingjdbc.core.merger.common.AbstractDecoratorResultSetMerger;
@@ -28,7 +28,7 @@ import java.sql.SQLException;
  *
  * @author zhangliang
  */
-public final class RowNumberDecoratorResultSetMerger extends AbstractDecoratorResultSetMerger {
+public final class TopAndRowNumberDecoratorResultSetMerger extends AbstractDecoratorResultSetMerger {
     
     private final Limit limit;
     
@@ -36,7 +36,7 @@ public final class RowNumberDecoratorResultSetMerger extends AbstractDecoratorRe
     
     private int rowNumber;
     
-    public RowNumberDecoratorResultSetMerger(final ResultSetMerger resultSetMerger, final Limit limit) throws SQLException {
+    public TopAndRowNumberDecoratorResultSetMerger(final ResultSetMerger resultSetMerger, final Limit limit) throws SQLException {
         super(resultSetMerger);
         this.limit = limit;
         skipAll = skipOffset();
@@ -61,9 +61,6 @@ public final class RowNumberDecoratorResultSetMerger extends AbstractDecoratorRe
         if (limit.getRowCountValue() < 0) {
             return getResultSetMerger().next();
         }
-        if (limit.getRowCount().isBoundOpened()) {
-            return rowNumber++ <= limit.getRowCountValue() && getResultSetMerger().next();
-        }
-        return rowNumber++ < limit.getRowCountValue() && getResultSetMerger().next();
+        return rowNumber++ <= limit.getRowCountValue() && getResultSetMerger().next();
     }
 }

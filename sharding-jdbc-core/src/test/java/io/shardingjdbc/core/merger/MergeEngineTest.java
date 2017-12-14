@@ -23,7 +23,7 @@ import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.merger.groupby.GroupByMemoryResultSetMerger;
 import io.shardingjdbc.core.merger.groupby.GroupByStreamResultSetMerger;
 import io.shardingjdbc.core.merger.iterator.IteratorStreamResultSetMerger;
-import io.shardingjdbc.core.merger.limit.LimitDecoratorResultSetMerger;
+import io.shardingjdbc.core.merger.pagination.LimitDecoratorResultSetMerger;
 import io.shardingjdbc.core.merger.orderby.OrderByStreamResultSetMerger;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;

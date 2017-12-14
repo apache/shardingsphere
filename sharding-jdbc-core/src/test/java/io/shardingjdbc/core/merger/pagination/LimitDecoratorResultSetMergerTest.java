@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.merger.limit;
+package io.shardingjdbc.core.merger.pagination;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.merger.MergeEngine;
