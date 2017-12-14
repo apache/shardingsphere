@@ -1,6 +1,7 @@
 ## 2.0.1
 
 1. [ISSUE #489](https://github.com/shardingjdbc/sharding-jdbc/issues/489) SpringName使用RuntimeBeanReference防止创建InnerBean
+1. [ISSUE #490](https://github.com/shardingjdbc/sharding-jdbc/issues/490) Oracle使用rownum大于等于或小于等于分页结果不正确
 1. [ISSUE #491](https://github.com/shardingjdbc/sharding-jdbc/issues/491) 通过ResultSet.getStatement().getConnection().close()无法释放连接
 
 ## 2.0.0
