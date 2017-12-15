@@ -47,17 +47,17 @@
         </sharding-rule>
     </sql>
     <sql id="assertSelectSingleTablePaginationWithTopAndRange">
-        <sharding-rule>
+        <sharding-rule value="tbl">
             <data parameter="7,3" expected="select/sqlserver/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertSelectPaginationWithTopAndRangeWithEqual">
-        <sharding-rule>
+        <sharding-rule value="tbl">
             <data parameter="4,10,19,1000,1909,3" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertSelectSingleTablePaginationWithTopAndRangeWithEqual">
-        <sharding-rule>
+        <sharding-rule value="tbl">
             <data parameter="7,4" expected="select/sqlserver/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
@@ -72,12 +72,12 @@
         </sharding-rule>
     </sql>
     <sql id="assertSelectSingleTablePaginationWithRowNumberAndRange">
-        <sharding-rule>
+        <sharding-rule value="tbl">
             <data parameter="8,3" expected="select/oracle/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqual">
-        <sharding-rule>
+        <sharding-rule value="tbl">
             <data parameter="7,4" expected="select/oracle/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
