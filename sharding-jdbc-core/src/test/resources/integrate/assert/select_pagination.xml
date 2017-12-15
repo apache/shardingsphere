@@ -61,4 +61,25 @@
             <data parameter="4,1" expected="select/oracle/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
+
+    <sql id="assertSelectPaginationWithTopAndRangeWithEqual">
+        <sharding-rule>
+            <data parameter="4,10,19,1000,1909,3" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectSingleTablePaginationWithTopAndRangeWithEqual">
+        <sharding-rule>
+            <data parameter="4,3" expected="select/sqlserver/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectPaginationWithRowNumberAndRangeWithEqual">
+        <sharding-rule>
+            <data parameter="10,19,1000,1909,4,3" expected="select/oracle/SelectPagingWithOffsetAndRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqual">
+        <sharding-rule>
+            <data parameter="4,2" expected="select/oracle/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
 </sqls>
