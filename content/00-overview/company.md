@@ -53,9 +53,13 @@ chapter = true
 
 ## [赛特斯CertusNet](http://www.certusnet.com.cn/)
 
+## [上海南潮信息科技有限公司](https://ruff.io/)
+
 ## [视觉中国](https://500px.me/)
 
 ## [食蚁兽](http://www.41soo.com/)
+
+## [首汽约车](http://www.01zhuanche.com/)
 
 ## [搜好货](http://www.912688.com/)
 
