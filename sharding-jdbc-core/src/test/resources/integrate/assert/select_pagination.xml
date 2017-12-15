@@ -48,12 +48,12 @@
     </sql>
     <sql id="assertSelectSingleTablePaginationWithTopAndRange">
         <sharding-rule>
-            <data parameter="4,2" expected="select/sqlserver/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
+            <data parameter="7,3" expected="select/sqlserver/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertSelectPaginationWithTopAndRangeWithEqual">
         <sharding-rule>
-            <data parameter="7,10,19,1000,1909,3" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />
+            <data parameter="4,10,19,1000,1909,3" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertSelectSingleTablePaginationWithTopAndRangeWithEqual">
