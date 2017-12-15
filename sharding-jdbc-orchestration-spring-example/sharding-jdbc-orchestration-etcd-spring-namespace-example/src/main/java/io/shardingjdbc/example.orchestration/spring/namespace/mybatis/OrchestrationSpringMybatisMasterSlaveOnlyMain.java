@@ -18,6 +18,8 @@
 package io.shardingjdbc.example.orchestration.spring.namespace.mybatis;
 
 import io.shardingjdbc.example.orchestration.spring.namespace.mybatis.service.DemoService;
+import io.shardingjdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
+import io.shardingjdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -29,5 +31,6 @@ public final class OrchestrationSpringMybatisMasterSlaveOnlyMain {
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisMasterSlaveOnlyContext.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
+        OrchestrationDataSourceCloseableUtil.closeQuietly(applicationContext.getBean(OrchestrationMasterSlaveDataSource.class));
     }
 }

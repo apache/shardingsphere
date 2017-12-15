@@ -31,7 +31,7 @@ public class OrchestrationYamlRepository {
     
     public void createTable() throws SQLException {
         execute(dataSource, "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
-        execute(dataSource, "CREATE TABLE IF NOT EXISTS t_order_item (item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (item_id))");
+        execute(dataSource, "CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (order_item_id))");
     }
     
     public void dropTable() throws SQLException {
@@ -83,7 +83,7 @@ public class OrchestrationYamlRepository {
     private void printSimpleSelect(final PreparedStatement preparedStatement) throws SQLException {
         try (ResultSet rs = preparedStatement.executeQuery()) {
             while (rs.next()) {
-                System.out.print("item_id:" + rs.getLong(1) + ", ");
+                System.out.print("order_item_id:" + rs.getLong(1) + ", ");
                 System.out.print("order_id:" + rs.getLong(2) + ", ");
                 System.out.print("user_id:" + rs.getInt(3));
                 System.out.println();

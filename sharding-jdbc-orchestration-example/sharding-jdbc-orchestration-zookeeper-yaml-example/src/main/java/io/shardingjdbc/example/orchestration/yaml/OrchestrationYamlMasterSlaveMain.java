@@ -19,6 +19,7 @@ package io.shardingjdbc.example.orchestration.yaml;
 
 import io.shardingjdbc.example.orchestration.yaml.repository.OrchestrationYamlRepository;
 import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingjdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -31,5 +32,6 @@ public final class OrchestrationYamlMasterSlaveMain {
         DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(new File(
                 OrchestrationYamlMasterSlaveMain.class.getResource("/META-INF/yamlMasterSlave.yaml").getFile()));
         new OrchestrationYamlRepository(dataSource).demo();
+        OrchestrationDataSourceCloseableUtil.closeQuietly(dataSource);
     }
 }
