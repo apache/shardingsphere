@@ -3,6 +3,7 @@
 ### 功能提升
 1. [ISSUE #489](https://github.com/shardingjdbc/sharding-jdbc/issues/489) SpringName使用RuntimeBeanReference防止创建InnerBean
 1. [ISSUE #496](https://github.com/shardingjdbc/sharding-jdbc/issues/496) 分片配置中逻辑表名可以大小写不敏感
+1. [ISSUE #497](https://github.com/shardingjdbc/sharding-jdbc/issues/497) 注册中心优雅关闭
 
 ### 缺陷修正
 1. [ISSUE #490](https://github.com/shardingjdbc/sharding-jdbc/issues/490) Oracle使用rownum大于等于或小于等于分页结果不正确
