@@ -1,0 +1,22 @@
+<dataset>
+    <t_order orders_avg="1000.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="2001" user_id="10" />
+    <t_order orders_avg="1100.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="2201" user_id="11" />
+    <t_order orders_avg="1200.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="2401" user_id="12" />
+    <t_order orders_avg="1300.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="2601" user_id="13" />
+    <t_order orders_avg="1400.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="2801" user_id="14" />
+    <t_order orders_avg="1500.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="3001" user_id="15" />
+    <t_order orders_avg="1600.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="3201" user_id="16" />
+    <t_order orders_avg="1700.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="3401" user_id="17" />
+    <t_order orders_avg="1800.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="3601" user_id="18" />
+    <t_order orders_avg="1900.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="3801" user_id="19" />
+    <t_order orders_avg="2000.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="4001" user_id="20" />
+    <t_order orders_avg="2100.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="4201" user_id="21" />
+    <t_order orders_avg="2200.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="4401" user_id="22" />
+    <t_order orders_avg="2300.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="4601" user_id="23" />
+    <t_order orders_avg="2400.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="4801" user_id="24" />
+    <t_order orders_avg="2500.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="5001" user_id="25" />
+    <t_order orders_avg="2600.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="5201" user_id="26" />
+    <t_order orders_avg="2700.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="5401" user_id="27" />
+    <t_order orders_avg="2800.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="5601" user_id="28" />
+    <t_order orders_avg="2900.5" AVG_DERIVED_COUNT_0="2" AVG_DERIVED_SUM_0="5801" user_id="29" />
+</dataset>

@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.dangdang</groupId>
+        <groupId>io.shardingjdbc</groupId>
         <artifactId>sharding-jdbc</artifactId>
-        <version>1.4.2-SNAPSHOT</version>
+        <version>2.0.0</version>
     </parent>
     <artifactId>sharding-jdbc-transaction-parent</artifactId>
     <packaging>pom</packaging>
@@ -23,22 +23,16 @@
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -72,7 +66,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.dangdang</groupId>
+                <groupId>io.shardingjdbc</groupId>
                 <artifactId>sharding-jdbc-core</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>

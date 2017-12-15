@@ -1,0 +1,3 @@
+http\://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding=io.shardingjdbc.orchestration.spring.namespace.handler.OrchestrationShardingNamespaceHandler
+http\://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave=io.shardingjdbc.orchestration.spring.namespace.handler.OrchestrationMasterSlaveNamespaceHandler
+http\://shardingjdbc.io/schema/shardingjdbc/orchestration/reg=io.shardingjdbc.orchestration.spring.namespace.handler.RegNamespaceHandler

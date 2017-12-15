@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertSelectDistinctWithSingleTable" value="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" />
+    <sql id="assertSelectIntoSQL" value="SELECT * INTO t_order_new FROM t_order" />
+    <sql id="assertSelectWindow" value="SELECT * FROM t_order WINDOW w AS (PARTITION BY order_id)" type="PostgreSQL"/>
+    <sql id="assertSelectFetch" value="SELECT * FROM t_order FETCH NEXT 1 ROW ONLY" type="PostgreSQL"/>
+    <sql id="assertSelectFor" value="SELECT * FROM t_order FOR UPDATE OF t_order" type="PostgreSQL"/>
+    <sql id="assertSelectRowNumberAndPartition" value="SELECT ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY order_id ASC) AS row_, user_id, order_id FROM t_order" type="SQLServer"/>
+    <sql id="assertSelectWithStartWith" value="SELECT * FROM t_order_item START WITH order_id = %s CONNECT BY NOCYCLE PRIOR item_id=item_id-1" type="Oracle"/>
+    <sql id="assertSelectWithModelIn" value="SELECT order_id_value,order_item_id_value FROM (select 1001 as order_id_value, 100001 as order_item_id_value from dual) MODEL RETURN UPDATED ROWS DIMENSION BY(order_item_id_value) MEASURES(order_id_value) RULES(order_id_value[1] = 10001)" type="Oracle"/>
+</sqls>

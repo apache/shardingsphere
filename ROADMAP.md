@@ -1,64 +1,99 @@
 # Roadmap
 
-## SQL
-- [x] CRUD
-    - [x] Simple CRUD
-    - [ ] Batch Insert
-    - [ ] Update Multiple Tables
-- [x] Aggregation Functions
-    - [x] MAX
-    - [x] MIN
-    - [x] COUNT
-    - [x] SUM
-    - [x] AVG
-- [x] Group By
-    - [x] Simple GROUP BY
-    - [ ] Distinct
-    - [ ] Having
-- [x] Order By
-- [x] Limit
-- [x] Join
-    - [x] INNER
-    - [x] OUTER
-    - [x] Binding Table
-    - [x] Cartesian Product
-- [ ] DDL
-- [ ] Complicated SQL
-    - [x] OR
-    - [ ] UNION / UNION ALL
-    - [ ] Subquery
-
 ## Database
 - [x] MySQL
-- [ ] Oracle
-- [ ] SQLServer
-- [ ] PostgreSQL
+- [x] Oracle
+- [x] SQLServer
+- [x] PostgreSQL
 
-## Distributed features
-- [x] Sharding
-- [x] Read/Write Splitting
-- [ ] Distributed PK
-
-## BASE transaction
-- [x] Best Efforts Delivery
-- [ ] Try Confirm Cancel
-
-## API 
-- [x] JDBC API
-- [ ] MySQL Protocol Server
+## SQL
+- [x] DQL
+    - [x] Simple
+    - [x] JOIN
+    - [x] BETWEEN
+    - [x] IN
+    - [x] ORDER BY
+    - [x] GROUP BY
+    - [x] Aggregation
+    - [x] LIMIT, rownum, TOP
+    - [x] Simple Sub Query
+    - [ ] DISTINCT
+    - [ ] HAVING
+    - [ ] OR
+    - [ ] UNION, UNION ALL
+    - [ ] Calculate Expression, eg: SUM(pv) / COUNT(uv)
+    - [ ] Complicated Sub Query
+    - [ ] SQL Hint
+- [x] DML
+    - [x] INSERT INTO
+    - [x] INSERT SET
+    - [x] UPDATE
+    - [x] DELETE
+    - [ ] INSERT INTO VALUES (xxx), (xxx)
+    - [ ] UPDATE Multiple Tables
+    - [ ] DELETE Multiple Tables
+- [x] DDL
+    - [x] CREATE TABLE
+    - [x] ALTER
+    - [x] DROP
+    - [x] TRUNCATE
+    - [ ] CREATE VIEW
+    - [ ] CREATE INDEX
+    - [ ] CREATE OR REPLACE
 
 ## Configuration
 - [x] Java API
-- [x] Spring Namespace
-- [x] Yaml
+- [x] Spring namespace
+- [x] YAML
+- [x] Independent Read Write Split
+- [ ] Improve Binding Table
+- [x] Configuration Center
+- [x] Dynamic Configuration
 
-## Operation Tool
-- [ ] High Availability
-- [ ] Scale Out / Data Migration
-- [ ] Registry Center 
+## SQL Parser
+- [x] Lexer
+- [x] Parser
+- [ ] Multiple SQL Parser
+- [ ] Duplicate Parentheses
 
-## Optimize
-- [ ] Parse Module Without Druid
-- [ ] Hint Skip Parse SQL
-- [ ] Customize SQL Rewrite
-- [ ] Dictionary Table Multicast
+## SQL Rewrite
+- [x] Correct Rewrite
+- [x] Optimize Rewrite
+
+## Route
+- [x] Hint
+- [x] Simple
+- [x] Cartesian
+
+## Merge
+- [x] Streaming
+- [x] Memory
+- [x] Decorator
+
+## Sharding
+- [x] Database
+- [x] Table
+- [x] Default Data Source
+
+## Read Write Split
+- [x] Read Write Split
+- [x] Consistent with Same Thread
+- [x] Force Hint Master Database
+
+## Distribute Primary Key
+- [x] JDBC
+- [x] Strategy API
+- [x] Snowflake
+
+## BASE Transaction
+- [x] BED
+- [ ] TCC
+
+## Orchestration
+- [ ] Health Check
+- [ ] Switch Data Source
+- [ ] Flow Limit
+
+## Operator
+- [ ] Dictionary Broadcast
+- [ ] Dynamic Scale Out

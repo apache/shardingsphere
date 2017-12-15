@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertUpdateWithAlias" value="UPDATE t_order AS o SET o.status = %s WHERE o.order_id = %s AND o.user_id = %s" type="MySQL,H2"/>
+    <sql id="assertUpdateWithoutAlias" value="UPDATE t_order SET status = %s WHERE order_id = %s AND user_id = %s" />
+</sqls>

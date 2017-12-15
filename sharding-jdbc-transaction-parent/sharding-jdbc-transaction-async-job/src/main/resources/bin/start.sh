@@ -18,7 +18,7 @@ fi
 
 CONF_DIR=$DEPLOY_DIR/conf/*
 LIB_DIR=$DEPLOY_DIR/lib/*
-CONTAINER_MAIN=com.dangdang.ddframe.rdb.transaction.soft.bed.BestEffortsDeliveryJobMain
+CONTAINER_MAIN=io.shardingjdbc.transaction.bed.BestEffortsDeliveryJobMain
 nohup java -classpath $CONF_DIR:$LIB_DIR:. $CONTAINER_MAIN >/dev/null 2>&1 &
 
 CONSOLE_TXT="Started the $SERVER_NAME"

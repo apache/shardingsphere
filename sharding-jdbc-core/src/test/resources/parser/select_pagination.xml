@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectPaginationWithOffset" parameters="1,2,9,10,5">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
+        </table-tokens>
+        <items-token begin-position="11">
+            <items>
+                <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
+            </items>
+        </items-token>
+        <offset-token begin-position="188" offset="5" />
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="2" literal="9" type="int" />
+                <value index="3" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+        </order-by-columns>
+        <limit offset="5" offset-index="4" />
+    </assert>
+    <assert id="assertSelectPaginationWithRowCount" parameters="1,2,9,10,5">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
+        </table-tokens>
+        <items-token begin-position="11">
+            <items>
+                <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
+            </items>
+        </items-token>
+        <row-count-token begin-position="187" row-count="5" />
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="2" literal="9" type="int" />
+                <value index="3" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+        </order-by-columns>
+        <limit row-count="5" row-count-index="4" />
+    </assert>
+    <assert id="assertSelectPaginationWithLimit" parameters="1,2,9,10,5,3">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="16" original-literals="`t_order`" />
+            <table-token begin-position="33" original-literals="`t_order_item`" />
+        </table-tokens>
+        <items-token begin-position="11">
+            <items>
+                <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
+            </items>
+        </items-token>
+        <offset-token begin-position="195" offset="5" />
+        <row-count-token begin-position="198" row-count="3" />
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="2" literal="9" type="int" />
+                <value index="3" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+        </order-by-columns>
+        <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
+    </assert>
+    <assert id="assertSelectPaginationWithTop" parameters="3,1,2,9,10">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="167" original-literals="t_order" />
+            <table-token begin-position="182" original-literals="t_order_item" />
+        </table-tokens>
+        <row-count-token begin-position="27" row-count="3" />
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="1" literal="1" type="int" />
+                <value index="2" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="3" literal="9" type="int" />
+                <value index="4" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-by-type="DESC" />
+        </order-by-columns>
+        <limit row-count="3" row-count-index="0" />
+    </assert>
+    <assert id="assertSelectPaginationWithOffsetAndLimit" parameters="1,2,9,10,5,3">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
+        </table-tokens>
+        <items-token begin-position="11">
+            <items>
+                <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
+            </items>
+        </items-token>
+        <offset-token begin-position="188" offset="5" />
+        <row-count-token begin-position="196" row-count="3" />
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="2" literal="9" type="int" />
+                <value index="3" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+        </order-by-columns>
+        <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
+    </assert>
+    <assert id="assertSelectPaginationWithTopAndRange" parameters="3,1,2,9,10,6">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="167" original-literals="t_order" />
+            <table-token begin-position="182" original-literals="t_order_item" />
+        </table-tokens>
+        <offset-token begin-position="338" offset="6" />
+        <row-count-token begin-position="27" row-count="3" />
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="1" literal="1" type="int" />
+                <value index="2" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="3" literal="9" type="int" />
+                <value index="4" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-by-type="DESC" />
+        </order-by-columns>
+        <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
+    </assert>
+    <assert id="assertSelectPaginationWithRowNumber" parameters="1,2,9,10,3">
+        <tables>
+            <table name="t_order" alias="order0_" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="146" original-literals="t_order" />
+            <table-token begin-position="167" original-literals="t_order_item" />
+        </table-tokens>
+        <items-token begin-position="141">
+            <items>
+                <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
+            </items>
+        </items-token>
+        <row-count-token begin-position="363" row-count="3"/>
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="2" literal="9" type="int" />
+                <value index="3" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+        </order-by-columns>
+        <limit row-count="3" row-count-index="4" />
+    </assert>
+    <assert id="assertSelectPaginationWithRowNumberAndRange" parameters="1,2,9,10,5,3">
+        <tables>
+            <table name="t_order" alias="order0_" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="146" original-literals="t_order" />
+            <table-token begin-position="167" original-literals="t_order_item" />
+        </table-tokens>
+        <items-token begin-position="141">
+            <items>
+                <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
+            </items>
+        </items-token>
+        <offset-token begin-position="386" offset="3" />
+        <row-count-token begin-position="363" row-count="5" />
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="2" literal="9" type="int" />
+                <value index="3" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+        </order-by-columns>
+        <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
+    </assert>
+</asserts>
