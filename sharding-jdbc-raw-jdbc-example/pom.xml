@@ -3,10 +3,10 @@
     <parent>
         <groupId>io.shardingjdbc</groupId>
         <artifactId>sharding-jdbc-example</artifactId>
-        <version>2.0.1-SNAPSHOT</version>
+        <version>2.0.1</version>
     </parent>
     <artifactId>sharding-jdbc-raw-jdbc-example</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.1</version>
     <packaging>pom</packaging>
     
     <modules>
