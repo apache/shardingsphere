@@ -190,7 +190,7 @@
     </assert>
     <assert id="assertSelectWithBindingTable" parameters="1,2,9,10">
         <tables>
-            <table name="t_order" alias="o"/>
+            <table name="T_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
         </tables>
         <table-tokens>

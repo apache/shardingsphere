@@ -42,6 +42,6 @@ public final class TableToken implements SQLToken {
      * @return table name
      */
     public String getTableName() {
-        return SQLUtil.getExactlyValue(originalLiterals);
+        return SQLUtil.getExactlyValue(originalLiterals).toLowerCase();
     }
 }

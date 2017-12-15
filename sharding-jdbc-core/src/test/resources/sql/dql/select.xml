@@ -12,7 +12,7 @@
     <sql id="assertSelectIterator" value="SELECT t.* FROM t_order_item t WHERE t.item_id IN (%s, %s)" />
     <sql id="assertSelectNoShardingTable" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id" />
     <sql id="assertSelectLikeWithCount" value="SELECT count(0) as orders_count FROM `t_order` o WHERE o.status LIKE CONCAT('%%', %s, '%%') AND o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s" type="MySQL,H2" />
-    <sql id="assertSelectWithBindingTable" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id" />
+    <sql id="assertSelectWithBindingTable" value="SELECT i.* FROM T_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id" />
     <sql id="assertSelectWithBindingTableAndConfigTable" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_config c ON o.status = c.status WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s AND c.status = %s ORDER BY i.item_id" />
     <sql id="assertSelectCountWithBindingTable" value="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s" />
     <sql id="assertSelectCountWithBindingTableWithJoin" value="SELECT COUNT(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s" />

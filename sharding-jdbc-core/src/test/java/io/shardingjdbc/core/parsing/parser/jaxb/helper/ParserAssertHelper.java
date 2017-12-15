@@ -27,8 +27,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class ParserAssertHelper {
@@ -90,7 +92,10 @@ public class ParserAssertHelper {
         Iterator<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> sqlTokenIterator = filteredSqlTokens.iterator();
         for (SQLToken each : actual) {
             SQLToken sqlToken = buildExpectedSQLToken(sqlTokenIterator.next(), isPreparedStatement);
-            assertTrue(EqualsBuilder.reflectionEquals(sqlToken, each));
+            assertTrue(EqualsBuilder.reflectionEquals(sqlToken, each, "originalLiterals"));
+            if (sqlToken instanceof TableToken) {
+                assertThat(((TableToken) each).getTableName(), is(((TableToken) sqlToken).getTableName()));
+            }
         }
         assertFalse(sqlTokenIterator.hasNext());
     }
