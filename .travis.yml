@@ -6,5 +6,4 @@ jdk:
 before_script:
   - echo "MAVEN_OPTS='-Xmx1024m -XX:MaxPermSize=256m'" > ~/.mavenrc
 after_success:
-  - mvn clean cobertura:cobertura coveralls:report
   - bash <(curl -s https://codecov.io/bash)
