@@ -60,6 +60,7 @@
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
+        <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
         <jacoco.version>0.7.9</jacoco.version>
         <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
         <maven-checkstyle-plugin.version>2.16</maven-checkstyle-plugin.version>
@@ -463,6 +464,33 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>${cobertura-maven-plugin.version}</version>
+                <configuration>
+                    <check>
+                        <branchRate>85</branchRate>
+                        <lineRate>85</lineRate>
+                        <haltOnFailure>true</haltOnFailure>
+                        <totalBranchRate>85</totalBranchRate>
+                        <totalLineRate>85</totalLineRate>
+                        <packageLineRate>85</packageLineRate>
+                        <packageBranchRate>85</packageBranchRate>
+                    </check>
+                    <aggregate>true</aggregate>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <quiet>true</quiet>
+                    <format>xml</format>
+                    <instrumentation>
+                        <ignoreTrivial>true</ignoreTrivial>
+                        <excludes>
+                            <exclude>io/shardingjdbc/**/*Test.class</exclude>
+                            <exclude>io/shardingjdbc/**/Test*.class</exclude>
+                        </excludes>
+                    </instrumentation>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
