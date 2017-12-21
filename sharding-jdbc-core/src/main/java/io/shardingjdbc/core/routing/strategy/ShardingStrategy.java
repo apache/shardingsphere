@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.routing.strategy;
 
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.constant.ConditionRelationType;
 
 import java.util.Collection;
 
@@ -42,5 +43,5 @@ public interface ShardingStrategy {
      * @param shardingValues sharding values
      * @return sharding results for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
+    Collection<String> doSharding(ConditionRelationType conditionRelationType,Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
 }

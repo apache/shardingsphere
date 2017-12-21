@@ -19,6 +19,7 @@ package io.shardingjdbc.core.routing.strategy.hint;
 
 import io.shardingjdbc.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.constant.ConditionRelationType;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import lombok.Getter;
 
@@ -43,7 +44,7 @@ public final class HintShardingStrategy implements ShardingStrategy {
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+    public Collection<String> doSharding(ConditionRelationType conditionRelationType,final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, shardingValues.iterator().next());
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);

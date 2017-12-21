@@ -1,6 +1,8 @@
 package io.shardingjdbc.core.parsing.parser.clause;
 
+import io.shardingjdbc.core.constant.ConditionRelationType;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
@@ -67,10 +69,27 @@ public class WhereClauseParser implements SQLClauseParser {
     }
     
     private void parseConditions(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
-        do {
-            parseComparisonCondition(shardingRule, sqlStatement, items);
-        } while (lexerEngine.skipIfEqual(DefaultKeyword.AND));
-        lexerEngine.unsupportedIfEqual(DefaultKeyword.OR);
+        parseComparisonCondition(shardingRule, sqlStatement, items);
+        if (lexerEngine.skipIfEqual(DefaultKeyword.AND)){
+            sqlStatement.getConditions().setConditionRelationType(ConditionRelationType.AND);
+            do {
+                parseComparisonCondition(shardingRule, sqlStatement, items);
+            } while (lexerEngine.skipIfEqual(DefaultKeyword.AND));
+            lexerEngine.unsupportedIfEqual(DefaultKeyword.OR);
+        }
+
+        if (lexerEngine.skipIfEqual(DefaultKeyword.OR)){
+            sqlStatement.getConditions().setConditionRelationType(ConditionRelationType.OR);
+            do {
+                parseComparisonCondition(shardingRule, sqlStatement, items);
+            } while (lexerEngine.skipIfEqual(DefaultKeyword.OR));
+            lexerEngine.unsupportedIfEqual(DefaultKeyword.AND);
+        }
+
+//        do {
+//            parseComparisonCondition(shardingRule, sqlStatement, items);
+//        } while (lexerEngine.skipIfEqual(DefaultKeyword.AND));
+//        lexerEngine.unsupportedIfEqual(DefaultKeyword.OR);
     }
     
     private void parseComparisonCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {

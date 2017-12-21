@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.routing.type.hint;
 
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.constant.ConditionRelationType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
 import io.shardingjdbc.core.routing.strategy.hint.HintShardingStrategy;
@@ -54,7 +55,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
         Preconditions.checkState(shardingValue.isPresent());
         log.debug("Before database sharding only db:{} sharding values: {}", dataSourceMap.keySet(), shardingValue.get());
         Collection<String> routingDataSources;
-        routingDataSources = databaseShardingStrategy.doSharding(dataSourceMap.keySet(), Collections.singletonList(shardingValue.get()));
+        routingDataSources = databaseShardingStrategy.doSharding(ConditionRelationType.NONE,dataSourceMap.keySet(), Collections.singletonList(shardingValue.get()));
         Preconditions.checkState(!routingDataSources.isEmpty(), "no database route info");
         log.debug("After database sharding only result: {}", routingDataSources);
         RoutingResult result = new RoutingResult();

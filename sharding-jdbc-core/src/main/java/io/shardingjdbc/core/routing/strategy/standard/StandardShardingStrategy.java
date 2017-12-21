@@ -23,6 +23,7 @@ import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.constant.ConditionRelationType;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import com.google.common.base.Optional;
 
@@ -56,7 +57,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+    public Collection<String> doSharding(ConditionRelationType conditionRelationType,final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         ShardingValue shardingValue = shardingValues.iterator().next();
         Collection<String> shardingResult = shardingValue instanceof ListShardingValue
                 ? doSharding(availableTargetNames, (ListShardingValue) shardingValue) : doSharding(availableTargetNames, (RangeShardingValue) shardingValue);
