@@ -43,4 +43,9 @@ public final class OracleCreateParser extends AbstractCreateParser {
     protected Keyword[] getSkippedKeywordsBetweenCreateTableAndTableName() {
         return new Keyword[] {};
     }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword() {
+        return new Keyword[] {DefaultKeyword.UNIQUE, DefaultKeyword.BITMAP};
+    }
 }

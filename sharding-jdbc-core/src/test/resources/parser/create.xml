@@ -48,4 +48,20 @@
             <table-token begin-position="22" original-literals="t_log" />
         </table-tokens>
     </assert>
+`    <assert id="assertCreateIndex">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="30" original-literals="t_log" />
+        </table-tokens>
+    </assert>
+    <assert id="assertCreateUniqueIndex">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="37" original-literals="t_log" />
+        </table-tokens>
+    </assert>
 </asserts>

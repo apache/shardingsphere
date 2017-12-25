@@ -52,7 +52,6 @@ public enum MySQLKeyword implements Keyword {
     IGNORE, 
     CHANGE,
     FIRST,
-    FULLTEXT,
     SPATIAL,
     ALGORITHM,
     CHARACTER,

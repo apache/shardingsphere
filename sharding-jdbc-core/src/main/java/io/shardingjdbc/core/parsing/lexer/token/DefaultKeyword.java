@@ -73,6 +73,7 @@ public enum DefaultKeyword implements Keyword {
     NOSORT,
     REVERSE,
     COMPILE,
+    FULLTEXT,
     
     /*
     Alter

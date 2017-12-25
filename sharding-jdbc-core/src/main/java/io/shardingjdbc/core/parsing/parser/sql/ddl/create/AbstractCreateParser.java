@@ -17,13 +17,13 @@
 
 package io.shardingjdbc.core.parsing.parser.sql.ddl.create;
 
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.parser.clause.TableReferencesClauseParser;
 import io.shardingjdbc.core.parsing.parser.sql.SQLParser;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -50,9 +50,15 @@ public abstract class AbstractCreateParser implements SQLParser {
     @Override
     public DDLStatement parse() {
         lexerEngine.nextToken();
+        lexerEngine.skipAll(getSkippedKeywordsBetweenCreateIndexAndKeyword());
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateAndKeyword());
-        lexerEngine.unsupportedIfNotSkip(DefaultKeyword.TABLE);
-        lexerEngine.skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
+        if (lexerEngine.equalAny(DefaultKeyword.INDEX)) {
+            lexerEngine.skipUntil(DefaultKeyword.ON);
+            lexerEngine.nextToken();
+        } else {
+            lexerEngine.unsupportedIfNotSkip(DefaultKeyword.TABLE);
+            lexerEngine.skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
+        }
         DDLStatement result = new DDLStatement();
         tableReferencesClauseParser.parse(result, true);
         return result;
@@ -61,4 +67,6 @@ public abstract class AbstractCreateParser implements SQLParser {
     protected abstract Keyword[] getSkippedKeywordsBetweenCreateAndKeyword();
     
     protected abstract Keyword[] getSkippedKeywordsBetweenCreateTableAndTableName();
+    
+    protected abstract Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword();
 }

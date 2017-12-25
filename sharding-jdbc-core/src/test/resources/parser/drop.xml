@@ -46,4 +46,12 @@
             <table-token begin-position="11" original-literals="t_log" />
         </table-tokens>
     </assert>
+    <assert id="assertDropIndex">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="26" original-literals="t_log" />
+        </table-tokens>
+    </assert>
 </asserts>

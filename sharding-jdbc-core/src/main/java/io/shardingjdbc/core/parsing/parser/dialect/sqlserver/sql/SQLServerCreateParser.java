@@ -17,10 +17,11 @@
 
 package io.shardingjdbc.core.parsing.parser.dialect.sqlserver.sql;
 
-import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
+import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.create.AbstractCreateParser;
+import io.shardingjdbc.core.rule.ShardingRule;
 
 /**
  * Create parser for SQLServer.
@@ -41,5 +42,10 @@ public final class SQLServerCreateParser extends AbstractCreateParser {
     @Override
     protected Keyword[] getSkippedKeywordsBetweenCreateTableAndTableName() {
         return new Keyword[] {};
+    }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword() {
+        return new Keyword[] {DefaultKeyword.UNIQUE, DefaultKeyword.FULLTEXT};
     }
 }

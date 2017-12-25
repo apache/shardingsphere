@@ -6,4 +6,5 @@
     <sql id="assertDropTableRestrict" value="DROP TABLE t_log RESTRICT" type="MySQL,PostgreSQL" />
     <sql id="assertDropTableCascade" value="DROP TABLE t_log CASCADE" type="MySQL,PostgreSQL" />
     <sql id="assertDropTableCascadeConstraintsAndPurge" value="DROP TABLE t_log CASCADE CONSTRAINTS PURGE" type="Oracle" />
+    <sql id="assertDropIndex" value="DROP INDEX t_log_index ON t_log" />
 </sqls>
