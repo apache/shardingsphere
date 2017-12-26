@@ -50,6 +50,7 @@ public final class MasterSlaveDataSourceFactory {
      *
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
+     * @param configMap configuration map
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
