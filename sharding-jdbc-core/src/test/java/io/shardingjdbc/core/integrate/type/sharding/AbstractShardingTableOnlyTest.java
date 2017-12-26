@@ -97,7 +97,7 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
     
     @Before
     public void initDDLTables() throws SQLException {
-        if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("DROP")) {
+        if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("DROP TABLE")) {
             if (getSql().contains("TEMP")) {
                 executeSql("CREATE TEMPORARY TABLE t_temp_log(id int, status varchar(10))");
             } else {
@@ -108,7 +108,7 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
     
     @After
     public void cleanupDdlTables() throws SQLException {
-        if (getSql().startsWith("CREATE") || getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE")) {
+        if (getSql().startsWith("CREATE TABLE") || getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE")) {
             if (getSql().contains("TEMP")) {
                 executeSql("DROP TABLE t_temp_log");
             } else {

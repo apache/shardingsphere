@@ -13,6 +13,7 @@ import io.shardingjdbc.core.parsing.parser.expression.SQLPlaceholderExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingjdbc.core.parsing.parser.jaxb.Value;
 import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
+import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
 import io.shardingjdbc.core.parsing.parser.token.MultipleInsertValuesToken;
 import io.shardingjdbc.core.parsing.parser.token.OffsetToken;
@@ -27,10 +28,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class ParserAssertHelper {
@@ -88,27 +87,25 @@ public class ParserAssertHelper {
         if (null == expected || expected.size() == 0) {
             return;
         }
-        List<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> filteredSqlTokens = filterSqlToken(expected, isPreparedStatement);
-        Iterator<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> sqlTokenIterator = filteredSqlTokens.iterator();
+        List<SQLToken> expectedSqlTokens = buildExpectedSqlTokens(expected, isPreparedStatement);
         for (SQLToken each : actual) {
-            SQLToken sqlToken = buildExpectedSQLToken(sqlTokenIterator.next(), isPreparedStatement);
-            assertTrue(EqualsBuilder.reflectionEquals(sqlToken, each, "originalLiterals"));
-            if (sqlToken instanceof TableToken) {
-                assertThat(((TableToken) each).getTableName(), is(((TableToken) sqlToken).getTableName()));
+            for (SQLToken sqlToken : expectedSqlTokens) {
+                if (each.getBeginPosition() == sqlToken.getBeginPosition()) {
+                    assertTrue(EqualsBuilder.reflectionEquals(sqlToken, each));
+                }
             }
         }
-        assertFalse(sqlTokenIterator.hasNext());
     }
     
-    private static List<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> filterSqlToken(final List<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> sqlTokens,
+    private static List<SQLToken> buildExpectedSqlTokens(final List<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> sqlTokens,
             final boolean isPreparedStatement) {
-        List<io.shardingjdbc.core.parsing.parser.jaxb.SQLToken> result = new ArrayList<>(sqlTokens.size());
+        List<SQLToken> result = new ArrayList<>(sqlTokens.size());
         for (io.shardingjdbc.core.parsing.parser.jaxb.SQLToken each : sqlTokens) {
             if (isPreparedStatement && (each instanceof io.shardingjdbc.core.parsing.parser.jaxb.OffsetToken 
                     || each instanceof io.shardingjdbc.core.parsing.parser.jaxb.RowCountToken)) {
                 continue;
             }
-            result.add(each);
+            result.add(buildExpectedSQLToken(each, isPreparedStatement));
         }
         return result;
     }
@@ -116,6 +113,8 @@ public class ParserAssertHelper {
     private static SQLToken buildExpectedSQLToken(final io.shardingjdbc.core.parsing.parser.jaxb.SQLToken sqlToken, final boolean isPreparedStatement) {
         if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.TableToken) {
             return new TableToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.core.parsing.parser.jaxb.TableToken) sqlToken).getOriginalLiterals());
+        } if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.IndexToken) {
+            return new IndexToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.core.parsing.parser.jaxb.IndexToken) sqlToken).getOriginalLiterals(), ((io.shardingjdbc.core.parsing.parser.jaxb.IndexToken) sqlToken).getTableName());
         } else if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.ItemsToken) {
             ItemsToken itemsToken = new ItemsToken(sqlToken.getBeginPosition());
             itemsToken.getItems().addAll(((io.shardingjdbc.core.parsing.parser.jaxb.ItemsToken) sqlToken).getItems());

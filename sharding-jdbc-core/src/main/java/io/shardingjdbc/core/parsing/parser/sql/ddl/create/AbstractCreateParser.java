@@ -20,9 +20,12 @@ package io.shardingjdbc.core.parsing.parser.sql.ddl.create;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
+import io.shardingjdbc.core.parsing.lexer.token.Token;
 import io.shardingjdbc.core.parsing.parser.clause.TableReferencesClauseParser;
+import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import io.shardingjdbc.core.parsing.parser.sql.SQLParser;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -52,16 +55,28 @@ public abstract class AbstractCreateParser implements SQLParser {
         lexerEngine.nextToken();
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateIndexAndKeyword());
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateAndKeyword());
-        if (lexerEngine.equalAny(DefaultKeyword.INDEX)) {
-            lexerEngine.skipUntil(DefaultKeyword.ON);
-            lexerEngine.nextToken();
-        } else {
-            lexerEngine.unsupportedIfNotSkip(DefaultKeyword.TABLE);
-            lexerEngine.skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
-        }
         DDLStatement result = new DDLStatement();
+        if (lexerEngine.equalAny(DefaultKeyword.INDEX)) {
+            parseIndex(result);
+        } else if (lexerEngine.equalAny(DefaultKeyword.TABLE)) {
+            lexerEngine.nextToken();
+            lexerEngine.skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
+        } else {
+            throw new SQLParsingException("Can't support other CREATE grammar unless CREATE TABLE, CREATE INDEX.");
+        }
         tableReferencesClauseParser.parse(result, true);
         return result;
+    }
+    
+    private void parseIndex(final DDLStatement ddlStatement) {
+        lexerEngine.nextToken();
+        Token currentToken = lexerEngine.getCurrentToken();
+        int beginPosition = currentToken.getEndPosition() - currentToken.getLiterals().length();
+        String literals = currentToken.getLiterals();
+        lexerEngine.skipUntil(DefaultKeyword.ON);
+        lexerEngine.nextToken();
+        String tableName = lexerEngine.getCurrentToken().getLiterals();
+        ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
     }
     
     protected abstract Keyword[] getSkippedKeywordsBetweenCreateAndKeyword();

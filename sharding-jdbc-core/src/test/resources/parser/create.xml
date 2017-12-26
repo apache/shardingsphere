@@ -52,8 +52,9 @@
         <tables>
             <table name="t_log" />
         </tables>
+        <index-token begin-position="13" original-literals="t_log_index" table-name="t_log" />
         <table-tokens>
-            <table-token begin-position="30" original-literals="t_log" />
+            <table-token begin-position="28" original-literals="t_log" />
         </table-tokens>
     </assert>
     <assert id="assertCreateUniqueIndex">
@@ -61,6 +62,7 @@
             <table name="t_log" />
         </tables>
         <table-tokens>
+            <index-token begin-position="13" original-literals="t_log_index" table-name="t_log" />
             <table-token begin-position="37" original-literals="t_log" />
         </table-tokens>
     </assert>

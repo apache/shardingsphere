@@ -1,17 +1,19 @@
 package io.shardingjdbc.core.parsing.parser.jaxb.helper;
 
-import io.shardingjdbc.core.constant.AggregationType;
-import io.shardingjdbc.core.constant.OrderType;
-import io.shardingjdbc.core.parsing.parser.context.OrderItem;
-import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
-import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
-import io.shardingjdbc.core.parsing.parser.jaxb.GroupByColumn;
-import io.shardingjdbc.core.parsing.parser.jaxb.OrderByColumn;
-import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import io.shardingjdbc.core.constant.AggregationType;
+import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.parsing.parser.context.OrderItem;
+import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
+import io.shardingjdbc.core.parsing.parser.context.table.Table;
+import io.shardingjdbc.core.parsing.parser.context.table.Tables;
+import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
+import io.shardingjdbc.core.parsing.parser.jaxb.GroupByColumn;
+import io.shardingjdbc.core.parsing.parser.jaxb.OrderByColumn;
+import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 
 import java.util.List;
 
@@ -24,13 +26,13 @@ public class ParserJAXBHelper {
         return parameters.split(",");
     }
     
-    public static io.shardingjdbc.core.parsing.parser.context.table.Tables getTables(final io.shardingjdbc.core.parsing.parser.jaxb.Tables tables) {
-        io.shardingjdbc.core.parsing.parser.context.table.Tables result = new io.shardingjdbc.core.parsing.parser.context.table.Tables();
+    public static Tables getTables(final io.shardingjdbc.core.parsing.parser.jaxb.Tables tables) {
+        Tables result = new Tables();
         if (null == tables) {
             return result;
         }
         for (io.shardingjdbc.core.parsing.parser.jaxb.Table each : tables.getTables()) {
-            io.shardingjdbc.core.parsing.parser.context.table.Table table = new io.shardingjdbc.core.parsing.parser.context.table.Table(each.getName(), Optional.fromNullable(each.getAlias()));
+            Table table = new Table(each.getName(), Optional.fromNullable(each.getAlias()));
             result.add(table);
         }
         return result;

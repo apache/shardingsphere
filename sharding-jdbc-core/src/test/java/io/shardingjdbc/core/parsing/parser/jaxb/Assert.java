@@ -50,6 +50,9 @@ public final class Assert {
     @XmlElement(name = "table-token")
     private List<TableToken> tableTokens;
     
+    @XmlElement(name = "index-token")
+    private IndexToken indexToken;
+    
     @XmlElement(name = "items-token")
     private ItemsToken itemsToken;
     
@@ -87,6 +90,9 @@ public final class Assert {
         List<SQLToken> result = new ArrayList<>(7);
         if (null != tableTokens) {
             result.addAll(tableTokens);
+        }
+        if (null != indexToken) {
+            result.add(indexToken);
         }
         if (null != offsetToken) {
             result.add(offsetToken);

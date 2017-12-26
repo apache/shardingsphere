@@ -22,6 +22,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
+import io.shardingjdbc.core.constant.ShardingProperties;
 import io.shardingjdbc.core.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.junit.runners.Parameterized;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -62,7 +64,7 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
     }
     
     @Test
-    public void assertWithDataSource() throws SQLException, URISyntaxException, IOException {
+    public void assertWithDataSource() throws SQLException, URISyntaxException, IOException, NoSuchFieldException, IllegalAccessException {
         File yamlFile = new File(YamlShardingIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
@@ -74,6 +76,14 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
                     return createDataSource(key);
                 }
             }), yamlFile);
+        }
+        if (filePath.contains("WithProps.yaml")) {
+            Field field = dataSource.getClass().getDeclaredField("shardingProperties");
+            if (!field.isAccessible()) {
+                field.setAccessible(true);
+            }
+            ShardingProperties shardingProperties = (ShardingProperties) field.get(dataSource);
+            //assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         }
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
