@@ -126,11 +126,7 @@ public final class SQLRewriteEngine {
     }
     
     private void appendTableToken(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count, final List<SQLToken> sqlTokens) {
-        // TODO simplify
-        String tableName = 
-                SQLUtil.getOriginalValue(sqlStatement.getTables().getTableNames().contains(tableToken.getTableName()) ? tableToken.getTableName() : tableToken.getOriginalLiterals(), databaseType);
-//        String tableName = tableToken.getTableName();
-        sqlBuilder.appendTable(tableName);
+        sqlBuilder.appendTable(tableToken.getTableName());
         int beginPosition = tableToken.getBeginPosition() + tableToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
     }
