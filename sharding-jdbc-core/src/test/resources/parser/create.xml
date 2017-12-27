@@ -61,9 +61,9 @@
         <tables>
             <table name="t_log" />
         </tables>
+        <index-token begin-position="20" original-literals="t_log_index" table-name="t_log" />
         <table-tokens>
-            <index-token begin-position="13" original-literals="t_log_index" table-name="t_log" />
-            <table-token begin-position="37" original-literals="t_log" />
+            <table-token begin-position="35" original-literals="t_log" />
         </table-tokens>
     </assert>
 </asserts>

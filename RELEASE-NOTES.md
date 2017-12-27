@@ -1,3 +1,8 @@
+## 2.0.2
+
+### 功能提升
+1. [ISSUE #475](https://github.com/shardingjdbc/sharding-jdbc/issues/475) 支持create index语句
+
 ## 2.0.1
 
 ### 功能提升

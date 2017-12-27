@@ -30,4 +30,14 @@
             <data expected="create/tbl.xml" />
         </sharding-rule>
     </sql>
+    <sql id="assertCreateIndex">
+        <sharding-rule value="tbl">
+            <data expected="index/tbl.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertCreateUniqueIndex">
+        <sharding-rule value="tbl">
+            <data expected="index/tbl.xml" />
+        </sharding-rule>
+    </sql>
 </sqls>

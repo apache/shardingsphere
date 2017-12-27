@@ -56,10 +56,9 @@ public abstract class AbstractCreateParser implements SQLParser {
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateIndexAndKeyword());
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateAndKeyword());
         DDLStatement result = new DDLStatement();
-        if (lexerEngine.equalAny(DefaultKeyword.INDEX)) {
+        if (lexerEngine.skipIfEqual(DefaultKeyword.INDEX)) {
             parseIndex(result);
-        } else if (lexerEngine.equalAny(DefaultKeyword.TABLE)) {
-            lexerEngine.nextToken();
+        } else if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
             lexerEngine.skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
         } else {
             throw new SQLParsingException("Can't support other CREATE grammar unless CREATE TABLE, CREATE INDEX.");
@@ -69,7 +68,6 @@ public abstract class AbstractCreateParser implements SQLParser {
     }
     
     private void parseIndex(final DDLStatement ddlStatement) {
-        lexerEngine.nextToken();
         Token currentToken = lexerEngine.getCurrentToken();
         int beginPosition = currentToken.getEndPosition() - currentToken.getLiterals().length();
         String literals = currentToken.getLiterals();

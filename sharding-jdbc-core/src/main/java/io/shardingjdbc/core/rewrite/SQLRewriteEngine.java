@@ -17,15 +17,14 @@
 
 package io.shardingjdbc.core.rewrite;
 
-
+import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.rule.BindingTableRule;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
 import io.shardingjdbc.core.parsing.parser.token.OffsetToken;
 import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
@@ -34,7 +33,8 @@ import io.shardingjdbc.core.parsing.parser.token.SQLToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
-import com.google.common.base.Optional;
+import io.shardingjdbc.core.rule.BindingTableRule;
+import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLUtil;
 
 import java.util.Collections;
@@ -99,6 +99,8 @@ public final class SQLRewriteEngine {
             }
             if (each instanceof TableToken) {
                 appendTableToken(result, (TableToken) each, count, sqlTokens);
+            } else if (each instanceof IndexToken) {
+                appendIndexToken(result, (IndexToken) each, count, sqlTokens);
             } else if (each instanceof ItemsToken) {
                 appendItemsToken(result, (ItemsToken) each, count, sqlTokens);
             } else if (each instanceof RowCountToken) {
@@ -124,10 +126,18 @@ public final class SQLRewriteEngine {
     }
     
     private void appendTableToken(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count, final List<SQLToken> sqlTokens) {
+        // TODO simplify
         String tableName = 
                 SQLUtil.getOriginalValue(sqlStatement.getTables().getTableNames().contains(tableToken.getTableName()) ? tableToken.getTableName() : tableToken.getOriginalLiterals(), databaseType);
+//        String tableName = tableToken.getTableName();
         sqlBuilder.appendTable(tableName);
         int beginPosition = tableToken.getBeginPosition() + tableToken.getOriginalLiterals().length();
+        appendRest(sqlBuilder, count, sqlTokens, beginPosition);
+    }
+    
+    private void appendIndexToken(final SQLBuilder sqlBuilder, final IndexToken indexToken, final int count, final List<SQLToken> sqlTokens) {
+        sqlBuilder.appendIndex(indexToken.getIndexName(), indexToken.getTableName());
+        int beginPosition = indexToken.getBeginPosition() + indexToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
     }
     

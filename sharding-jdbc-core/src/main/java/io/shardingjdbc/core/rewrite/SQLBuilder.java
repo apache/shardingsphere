@@ -56,6 +56,18 @@ public final class SQLBuilder {
     }
     
     /**
+     * Append index token.
+     *
+     * @param indexName index name
+     * @param tableName table name
+     */
+    public void appendIndex(final String indexName, final String tableName) {
+        segments.add(new IndexToken(indexName, tableName));
+        currentSegment = new StringBuilder();
+        segments.add(currentSegment);
+    }
+    
+    /**
      * Append table token.
      *
      * @param tableName table name
@@ -77,6 +89,9 @@ public final class SQLBuilder {
         for (Object each : segments) {
             if (each instanceof TableToken && tableTokens.containsKey(((TableToken) each).tableName)) {
                 result.append(tableTokens.get(((TableToken) each).tableName));
+            } else if (each instanceof IndexToken) {
+                IndexToken indexToken = (IndexToken) each;
+                result.append(indexToken.indexName + "_" + tableTokens.get(indexToken.tableName));
             } else {
                 result.append(each);
             }
@@ -92,6 +107,19 @@ public final class SQLBuilder {
         @Override
         public String toString() {
             return tableName;
+        }
+    }
+    
+    @RequiredArgsConstructor
+    private class IndexToken {
+        
+        private final String indexName;
+        
+        private final String tableName;
+        
+        @Override
+        public String toString() {
+            return indexName;
         }
     }
 }

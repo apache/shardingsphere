@@ -88,12 +88,16 @@ public class ParserAssertHelper {
             return;
         }
         List<SQLToken> expectedSqlTokens = buildExpectedSqlTokens(expected, isPreparedStatement);
+        assertTrue(expectedSqlTokens.size() == actual.size());
         for (SQLToken each : actual) {
+            boolean hasData = false;
             for (SQLToken sqlToken : expectedSqlTokens) {
                 if (each.getBeginPosition() == sqlToken.getBeginPosition()) {
+                    hasData = true;
                     assertTrue(EqualsBuilder.reflectionEquals(sqlToken, each));
                 }
             }
+            assertTrue(hasData);
         }
     }
     
