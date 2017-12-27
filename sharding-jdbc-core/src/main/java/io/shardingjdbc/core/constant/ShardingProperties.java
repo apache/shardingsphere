@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.constant;
 
+import com.google.common.base.Strings;
 import io.shardingjdbc.core.util.StringUtil;
 import com.google.common.base.Joiner;
 
@@ -80,7 +81,15 @@ public final class ShardingProperties {
      */
     @SuppressWarnings("unchecked")
     public <T> T getValue(final ShardingPropertiesConstant shardingPropertiesConstant) {
-        String result = props.getProperty(shardingPropertiesConstant.getKey(), shardingPropertiesConstant.getDefaultValue());
+        String result = props.getProperty(shardingPropertiesConstant.getKey());
+        if (Strings.isNullOrEmpty(result)) {
+            Object obj = props.get(shardingPropertiesConstant.getKey());
+            if (null == obj) {
+                result = shardingPropertiesConstant.getDefaultValue(); 
+            } else {
+                result = obj.toString();
+            }
+        }
         if (boolean.class == shardingPropertiesConstant.getType()) {
             return (T) Boolean.valueOf(result);
         }

@@ -23,6 +23,7 @@ import com.google.common.collect.Sets;
 import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.ShardingProperties;
+import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
 import io.shardingjdbc.core.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
@@ -44,6 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -83,7 +85,7 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
                 field.setAccessible(true);
             }
             ShardingProperties shardingProperties = (ShardingProperties) field.get(dataSource);
-            //assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
+            assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         }
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");

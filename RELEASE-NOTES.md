@@ -3,6 +3,9 @@
 ### 功能提升
 1. [ISSUE #475](https://github.com/shardingjdbc/sharding-jdbc/issues/475) 支持create index语句
 
+### 缺陷修正
+1. [ISSUE #521](https://github.com/shardingjdbc/sharding-jdbc/issues/521) YAML文件中ShardingProperties设置无效 
+
 ## 2.0.1
 
 ### 功能提升
