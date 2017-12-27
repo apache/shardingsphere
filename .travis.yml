@@ -8,3 +8,4 @@ before_script:
 after_success:
   - mvn clean cobertura:cobertura
   - bash <(curl -s https://codecov.io/bash)
+install: travis_wait 30 mvn install
