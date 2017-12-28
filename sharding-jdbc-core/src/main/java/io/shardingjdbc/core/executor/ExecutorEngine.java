@@ -76,8 +76,9 @@ public final class ExecutorEngine implements AutoCloseable {
      * @param executeCallback statement execute callback
      * @param <T> class type of return value
      * @return execute result
+     * @throws SQLException SQL exception
      */
-    public <T> List<T> executeStatement(final SQLType sqlType, final Collection<StatementUnit> statementUnits, final ExecuteCallback<T> executeCallback) {
+    public <T> List<T> executeStatement(final SQLType sqlType, final Collection<StatementUnit> statementUnits, final ExecuteCallback<T> executeCallback) throws SQLException {
         return execute(sqlType, statementUnits, Collections.<List<Object>>emptyList(), executeCallback);
     }
     
@@ -90,9 +91,10 @@ public final class ExecutorEngine implements AutoCloseable {
      * @param executeCallback prepared statement execute callback
      * @param <T> class type of return value
      * @return execute result
+     * @throws SQLException SQL exception
      */
     public <T> List<T> executePreparedStatement(
-            final SQLType sqlType, final Collection<PreparedStatementUnit> preparedStatementUnits, final List<Object> parameters, final ExecuteCallback<T> executeCallback) {
+            final SQLType sqlType, final Collection<PreparedStatementUnit> preparedStatementUnits, final List<Object> parameters, final ExecuteCallback<T> executeCallback) throws SQLException {
         return execute(sqlType, preparedStatementUnits, Collections.singletonList(parameters), executeCallback);
     }
     
@@ -104,14 +106,17 @@ public final class ExecutorEngine implements AutoCloseable {
      * @param parameterSets parameters for SQL placeholder
      * @param executeCallback prepared statement execute callback
      * @return execute result
+     * @throws SQLException SQL exception
      */
     public List<int[]> executeBatch(
-            final SQLType sqlType, final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits, final List<List<Object>> parameterSets, final ExecuteCallback<int[]> executeCallback) {
+            final SQLType sqlType, final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits, 
+            final List<List<Object>> parameterSets, final ExecuteCallback<int[]> executeCallback) throws SQLException {
         return execute(sqlType, batchPreparedStatementUnits, parameterSets, executeCallback);
     }
     
     private  <T> List<T> execute(
-            final SQLType sqlType, final Collection<? extends BaseStatementUnit> baseStatementUnits, final List<List<Object>> parameterSets, final ExecuteCallback<T> executeCallback) {
+            final SQLType sqlType, final Collection<? extends BaseStatementUnit> baseStatementUnits, 
+            final List<List<Object>> parameterSets, final ExecuteCallback<T> executeCallback) throws SQLException {
         if (baseStatementUnits.isEmpty()) {
             return Collections.emptyList();
         }

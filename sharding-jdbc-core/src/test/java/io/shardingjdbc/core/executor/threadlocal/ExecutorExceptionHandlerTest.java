@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.core.executor.threadlocal;
 
-import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.executor.fixture.ExecutorTestUtil;
 import org.junit.After;
 import org.junit.Test;
@@ -34,21 +33,21 @@ public class ExecutorExceptionHandlerTest {
         ExecutorTestUtil.clear();
     }
     
-    @Test(expected = ShardingJdbcException.class)
-    public void assertHandleExceptionWithoutSet() {
+    @Test(expected = SQLException.class)
+    public void assertHandleExceptionWithoutSet() throws SQLException {
         assertTrue(ExecutorExceptionHandler.isExceptionThrown());
         ExecutorExceptionHandler.handleException(new SQLException(""));
     }
     
-    @Test(expected = ShardingJdbcException.class)
-    public void assertHandleExceptionWhenExceptionThrownIsTrue() {
+    @Test(expected = SQLException.class)
+    public void assertHandleExceptionWhenExceptionThrownIsTrue() throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(true);
         assertTrue(ExecutorExceptionHandler.isExceptionThrown());
         ExecutorExceptionHandler.handleException(new SQLException(""));
     }
     
     @Test
-    public void assertHandleExceptionWhenExceptionThrownIsFalse() {
+    public void assertHandleExceptionWhenExceptionThrownIsFalse() throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(false);
         assertFalse(ExecutorExceptionHandler.isExceptionThrown());
         ExecutorExceptionHandler.handleException(new SQLException(""));

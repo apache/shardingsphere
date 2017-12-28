@@ -18,7 +18,6 @@
 package io.shardingjdbc.core.executor.type;
 
 import io.shardingjdbc.core.constant.SQLType;
-import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.executor.event.EventExecutionType;
 import io.shardingjdbc.core.executor.threadlocal.ExecutorExceptionHandler;
 import io.shardingjdbc.core.executor.type.statement.StatementExecutor;
@@ -472,7 +471,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         StatementExecutor actual = new StatementExecutor(getExecutorEngine(), SQLType.DML, createStatementUnits(DML_SQL, statement, "ds_0"));
         try {
             assertFalse(actual.execute());
-        } catch (final ShardingJdbcException ignored) {
+        } catch (final SQLException ignored) {
         }
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);

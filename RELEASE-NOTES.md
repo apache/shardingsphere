@@ -4,7 +4,8 @@
 1. [ISSUE #475](https://github.com/shardingjdbc/sharding-jdbc/issues/475) 支持create index语句
 
 ### 缺陷修正
-1. [ISSUE #521](https://github.com/shardingjdbc/sharding-jdbc/issues/521) YAML文件中ShardingProperties设置无效 
+1. [ISSUE #520](https://github.com/shardingjdbc/sharding-jdbc/issues/520) 引入分表后，唯一键冲突时异常类型不再是DuplicateKeyException
+1. [ISSUE #521](https://github.com/shardingjdbc/sharding-jdbc/issues/521) YAML文件中ShardingProperties设置无效
 
 ## 2.0.1
 

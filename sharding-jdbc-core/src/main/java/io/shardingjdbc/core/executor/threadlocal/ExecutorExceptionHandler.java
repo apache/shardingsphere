@@ -22,6 +22,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.sql.SQLException;
+
 /**
  * Executor runtime exception handler.
  * 
@@ -55,9 +57,13 @@ public final class ExecutorExceptionHandler {
      * Handle exception. 
      * 
      * @param exception to be handled exception
+     * @throws SQLException SQL exception
      */
-    public static void handleException(final Exception exception) {
+    public static void handleException(final Exception exception) throws SQLException {
         if (isExceptionThrown()) {
+            if (exception instanceof SQLException) {
+                throw (SQLException) exception;
+            }
             throw new ShardingJdbcException(exception);
         }
         log.error("exception occur: ", exception);
