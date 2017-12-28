@@ -80,6 +80,17 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     /**
+     * Get all master data sources.
+     *
+     * @return map of actual master data source name and actual master data sources
+     */
+    public Map<String, DataSource> getMasterDataSource() {
+        Map<String, DataSource> result = new HashMap<>(1);
+        result.put(masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getMasterDataSource());
+        return result;
+    }
+    
+    /**
      * reset DML flag.
      */
     public static void resetDMLFlag() {

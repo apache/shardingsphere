@@ -51,7 +51,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     /**
      * Get database connections via SQL type.
      *
-     * <p>DDL will return all connections; DQL will return slave connection; DML or updated before in same thread will return master connection.</p>
+     * <p>DDL will return master connection; DQL will return slave connection; DML or updated before in same thread will return master connection.</p>
      * 
      * @param sqlType SQL type
      * @return database connections via SQL type
@@ -59,7 +59,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
      */
     public Collection<Connection> getConnections(final SQLType sqlType) throws SQLException {
         cachedSQLType = sqlType;
-        Map<String, DataSource> dataSources = SQLType.DDL == sqlType ? masterSlaveDataSource.getAllDataSources() : masterSlaveDataSource.getDataSource(sqlType).toMap();
+        Map<String, DataSource> dataSources = SQLType.DDL == sqlType ? masterSlaveDataSource.getMasterDataSource() : masterSlaveDataSource.getDataSource(sqlType).toMap();
         Collection<Connection> result = new LinkedList<>();
         for (Entry<String, DataSource> each : dataSources.entrySet()) {
             String dataSourceName = each.getKey();
