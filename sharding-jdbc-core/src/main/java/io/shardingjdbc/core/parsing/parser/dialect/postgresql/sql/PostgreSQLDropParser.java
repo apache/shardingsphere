@@ -34,6 +34,10 @@ public final class PostgreSQLDropParser extends AbstractDropParser {
         super(shardingRule, lexerEngine);
     }
     
+    protected Keyword[] getSkippedKeywordsBetweenDropIndexAndIndexName() {
+        return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.EXISTS};
+    }
+    
     @Override
     protected Keyword[] getSkippedKeywordsBetweenDropTableAndTableName() {
         return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.EXISTS};

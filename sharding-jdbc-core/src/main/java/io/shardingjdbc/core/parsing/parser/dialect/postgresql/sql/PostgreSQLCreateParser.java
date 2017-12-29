@@ -36,6 +36,11 @@ public final class PostgreSQLCreateParser extends AbstractCreateParser {
     }
     
     @Override
+    protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndIndexName() {
+        return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.NOT, DefaultKeyword.EXISTS};
+    }
+    
+    @Override
     protected Keyword[] getSkippedKeywordsBetweenCreateAndKeyword() {
         return new Keyword[] {DefaultKeyword.GLOBAL, DefaultKeyword.LOCAL, DefaultKeyword.TEMPORARY, DefaultKeyword.TEMP, PostgreSQLKeyword.UNLOGGED};
     }

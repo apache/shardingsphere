@@ -1,5 +1,6 @@
 package io.shardingjdbc.core.parsing.parser.clause;
 
+import com.google.common.base.Strings;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
@@ -63,6 +64,9 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             throw new UnsupportedOperationException("Cannot support SQL for `schema.table`");
         }
         String tableName = SQLUtil.getExactlyValue(literals);
+        if (Strings.isNullOrEmpty(tableName)) {
+            return;
+        }
         Optional<String> alias = aliasClauseParser.parse();
         if (isSingleTableOnly || shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getDataSourceMap().containsKey(shardingRule.getDefaultDataSourceName())) {

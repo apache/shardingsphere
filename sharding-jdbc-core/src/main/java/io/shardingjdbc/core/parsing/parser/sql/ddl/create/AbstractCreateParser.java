@@ -57,6 +57,7 @@ public abstract class AbstractCreateParser implements SQLParser {
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateAndKeyword());
         DDLStatement result = new DDLStatement();
         if (lexerEngine.skipIfEqual(DefaultKeyword.INDEX)) {
+            lexerEngine.skipAll(getSkippedKeywordsBetweenCreateIndexAndIndexName());
             parseIndex(result);
         } else if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
             lexerEngine.skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
@@ -75,6 +76,10 @@ public abstract class AbstractCreateParser implements SQLParser {
         lexerEngine.nextToken();
         String tableName = lexerEngine.getCurrentToken().getLiterals();
         ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
+    }
+    
+    protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndIndexName() {
+        return new Keyword[] {};
     }
     
     protected abstract Keyword[] getSkippedKeywordsBetweenCreateAndKeyword();

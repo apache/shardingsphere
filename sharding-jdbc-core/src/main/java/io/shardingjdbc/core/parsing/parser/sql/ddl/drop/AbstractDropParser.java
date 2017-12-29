@@ -17,13 +17,16 @@
 
 package io.shardingjdbc.core.parsing.parser.sql.ddl.drop;
 
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
+import io.shardingjdbc.core.parsing.lexer.token.Token;
 import io.shardingjdbc.core.parsing.parser.clause.TableReferencesClauseParser;
+import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import io.shardingjdbc.core.parsing.parser.sql.SQLParser;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingjdbc.core.parsing.parser.token.IndexToken;
+import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -50,17 +53,32 @@ public abstract class AbstractDropParser implements SQLParser {
     @Override
     public DDLStatement parse() {
         lexerEngine.nextToken();
-        if (lexerEngine.equalAny(DefaultKeyword.INDEX)) {
-            lexerEngine.skipUntil(DefaultKeyword.ON);
-            lexerEngine.nextToken();
-        } else {
-            lexerEngine.skipAll(getSkippedKeywordsBetweenDropAndTable());
-            lexerEngine.unsupportedIfNotSkip(DefaultKeyword.TABLE);
-            lexerEngine.skipAll(getSkippedKeywordsBetweenDropTableAndTableName());
-        }
+        lexerEngine.skipAll(getSkippedKeywordsBetweenDropAndTable());
         DDLStatement result = new DDLStatement();
+        if (lexerEngine.skipIfEqual(DefaultKeyword.INDEX)) {
+            lexerEngine.skipAll(getSkippedKeywordsBetweenDropIndexAndIndexName());
+            parseIndex(result);
+        } else if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
+            lexerEngine.skipAll(getSkippedKeywordsBetweenDropTableAndTableName());
+        } else {
+            throw new SQLParsingException("Can't support other DROP grammar unless DROP TABLE, DROP INDEX.");
+        }
         tableReferencesClauseParser.parse(result, true);
         return result;
+    }
+    
+    private void parseIndex(final DDLStatement ddlStatement) {
+        Token currentToken = lexerEngine.getCurrentToken();
+        int beginPosition = currentToken.getEndPosition() - currentToken.getLiterals().length();
+        String literals = currentToken.getLiterals();
+        lexerEngine.skipUntil(DefaultKeyword.ON);
+        lexerEngine.nextToken();
+        String tableName = lexerEngine.getCurrentToken().getLiterals();
+        ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
+    }
+    
+    protected Keyword[] getSkippedKeywordsBetweenDropIndexAndIndexName() {
+        return new Keyword[] {};
     }
     
     protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {

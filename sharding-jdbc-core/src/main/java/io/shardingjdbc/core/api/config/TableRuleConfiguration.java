@@ -43,6 +43,8 @@ public class TableRuleConfiguration {
     
     private String logicTable;
     
+    private String logicIndex;
+    
     private String actualDataNodes;
     
     private ShardingStrategyConfiguration databaseShardingStrategyConfig;
@@ -65,6 +67,6 @@ public class TableRuleConfiguration {
         ShardingStrategy databaseShardingStrategy = null == databaseShardingStrategyConfig ? null : databaseShardingStrategyConfig.build();
         ShardingStrategy tableShardingStrategy = null == tableShardingStrategyConfig ? null : tableShardingStrategyConfig.build();
         KeyGenerator keyGenerator = !Strings.isNullOrEmpty(keyGeneratorColumnName) && !Strings.isNullOrEmpty(keyGeneratorClass) ? KeyGeneratorFactory.newInstance(keyGeneratorClass) : null;
-        return new TableRule(logicTable, actualDataNodes, dataSourceMap, databaseShardingStrategy, tableShardingStrategy, keyGeneratorColumnName, keyGenerator);
+        return new TableRule(logicTable, logicIndex, actualDataNodes, dataSourceMap, databaseShardingStrategy, tableShardingStrategy, keyGeneratorColumnName, keyGenerator);
     }
 }
