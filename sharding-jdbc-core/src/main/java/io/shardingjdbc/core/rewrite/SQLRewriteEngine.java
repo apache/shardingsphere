@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.rewrite;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
@@ -132,7 +133,12 @@ public final class SQLRewriteEngine {
     }
     
     private void appendIndexToken(final SQLBuilder sqlBuilder, final IndexToken indexToken, final int count, final List<SQLToken> sqlTokens) {
-        sqlBuilder.appendIndex(indexToken.getIndexName(), indexToken.getTableName());
+        String indexName = indexToken.getIndexName();
+        String logicTableName = indexToken.getTableName();
+        if (Strings.isNullOrEmpty(logicTableName)) {
+            logicTableName = shardingRule.getLogicTableName(indexName);
+        }
+        sqlBuilder.appendIndex(indexName, logicTableName);
         int beginPosition = indexToken.getBeginPosition() + indexToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
     }

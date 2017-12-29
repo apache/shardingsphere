@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.rewrite;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -91,7 +92,12 @@ public final class SQLBuilder {
                 result.append(tableTokens.get(((TableToken) each).tableName));
             } else if (each instanceof IndexToken) {
                 IndexToken indexToken = (IndexToken) each;
-                result.append(indexToken.indexName + "_" + tableTokens.get(indexToken.tableName));
+                result.append(indexToken.indexName);
+                String tableName = tableTokens.get(indexToken.tableName);
+                if (!Strings.isNullOrEmpty(tableName)) {
+                    result.append("_");
+                    result.append(tableName);
+                }
             } else {
                 result.append(each);
             }

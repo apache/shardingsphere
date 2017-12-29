@@ -284,4 +284,23 @@ public final class ShardingRule {
         }
         return defaultKeyGenerator.generateKey();
     }
+    
+    /**
+     * Get logic table name base on logic index name.
+     *
+     * @param logicIndexName logic index name
+     * @return logic table name
+     */
+    public String getLogicTableName(final String logicIndexName) {
+        String result = "";
+        for (TableRule each : tableRules) {
+            if (logicIndexName.equals(each.getLogicIndex())) {
+                result = each.getLogicTable();
+            }
+        }
+        if (Strings.isNullOrEmpty(result)) {
+            throw new ShardingJdbcException("Cannot find logic table name with logic index name: '%s'", logicIndexName);
+        }
+        return result;
+    }
 }
