@@ -50,11 +50,11 @@
     </assert>
 `    <assert id="assertCreateIndex">
         <tables>
-            <table name="t_log" />
+            <table name="t_order" />
         </tables>
-        <index-token begin-position="13" original-literals="t_log_index" table-name="t_log" />
+        <index-token begin-position="13" original-literals="t_order_index" table-name="t_order" />
         <table-tokens>
-            <table-token begin-position="28" original-literals="t_log" />
+            <table-token begin-position="30" original-literals="t_order" />
         </table-tokens>
     </assert>
     <assert id="assertCreateUniqueIndex">

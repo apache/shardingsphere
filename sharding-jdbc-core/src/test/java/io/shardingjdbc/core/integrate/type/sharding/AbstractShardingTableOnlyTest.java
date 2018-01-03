@@ -120,7 +120,12 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
         if (getSql().startsWith("CREATE UNIQUE INDEX")) {
             executeSql("DROP TABLE t_log");
         } else if (getSql().startsWith("CREATE INDEX")) {
-            executeSql("DROP INDEX t_order_index");
+            if (getCurrentDatabaseType() == DatabaseType.PostgreSQL || getCurrentDatabaseType() == DatabaseType.Oracle || getCurrentDatabaseType() == DatabaseType.H2) {
+                executeSql("DROP INDEX t_order_index");
+            } else {
+                executeSql("DROP INDEX t_order_index ON t_order");
+            }
+            
         } else if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("CREATE") || getSql().startsWith("DROP INDEX")) {
             if (getSql().contains("TEMP")) {
                 executeSql("DROP TABLE t_temp_log");

@@ -111,7 +111,7 @@ public final class ParsingSQLRouter implements SQLRouter {
     private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
         RoutingEngine routingEngine;
-        if (sqlStatement instanceof DDLStatement && !sqlStatement.containsTableName() && tableNames.size() == 0) {
+        if (sqlStatement instanceof DDLStatement && !sqlStatement.isContainsTableName()) {
             routingEngine = new NoneTableRoutingEngine(shardingRule, parameters, sqlStatement); 
         } else if (tableNames.isEmpty()) {
             routingEngine = new DatabaseAllRoutingEngine(shardingRule.getDataSourceMap());

@@ -49,15 +49,15 @@ public final class NoneTableRoutingEngine implements RoutingEngine {
     }
     
     private String getLogicTableName() {
-        Preconditions.checkState(sqlStatement.getSqlTokens().size() == 1);
+        Preconditions.checkState(1 == sqlStatement.getSqlTokens().size());
         IndexToken indexToken = (IndexToken) sqlStatement.getSqlTokens().get(0);
         String indexName = indexToken.getIndexName();
-        String logicTableName = "";
+        String result = "";
         for (TableRule each : shardingRule.getTableRules()) {
             if (indexName.equals(each.getLogicIndex())) {
-                logicTableName = each.getLogicTable();
+                result = each.getLogicTable();
             }
         }
-        return logicTableName;
+        return result;
     }
 }

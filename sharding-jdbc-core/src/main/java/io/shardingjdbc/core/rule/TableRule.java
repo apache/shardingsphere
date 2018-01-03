@@ -41,8 +41,6 @@ public final class TableRule {
     
     private final String logicTable;
     
-    private final String logicIndex;
-    
     private final List<DataNode> actualDataNodes;
     
     private final ShardingStrategy databaseShardingStrategy;
@@ -53,15 +51,18 @@ public final class TableRule {
     
     private final KeyGenerator keyGenerator;
     
-    public TableRule(final String logicTable, final String logicIndex, final List<String> actualDataNodes, final Map<String, DataSource> dataSourceMap,
-                     final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy, final String generateKeyColumn, final KeyGenerator keyGenerator) {
+    private final String logicIndex;
+    
+    public TableRule(final String logicTable, final List<String> actualDataNodes, final Map<String, DataSource> dataSourceMap,
+                     final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy, 
+                     final String generateKeyColumn, final KeyGenerator keyGenerator, final String logicIndex) {
         this.logicTable = logicTable;
-        this.logicIndex = logicIndex;
         this.actualDataNodes = null == actualDataNodes || actualDataNodes.isEmpty() ? generateDataNodes(logicTable, dataSourceMap) : generateDataNodes(actualDataNodes, dataSourceMap);
         this.databaseShardingStrategy = databaseShardingStrategy;
         this.tableShardingStrategy = tableShardingStrategy;
         this.generateKeyColumn = generateKeyColumn;
         this.keyGenerator = keyGenerator;
+        this.logicIndex = logicIndex;
     }
     
     private List<DataNode> generateDataNodes(final String logicTable, final Map<String, DataSource> dataSourceMap) {

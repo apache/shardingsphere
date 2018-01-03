@@ -36,7 +36,6 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
 public abstract class AbstractSQLStatement implements SQLStatement {
     
@@ -48,6 +47,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final List<SQLToken> sqlTokens = new LinkedList<>();
     
+    @Setter
     private int parametersIndex;
     
     private boolean containsTableName = true;
@@ -63,12 +63,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     }
     
     @Override
-    public void setContainsTableName(final boolean containsTableName) {
-        this.containsTableName = containsTableName;
-    }
-    
-    @Override
-    public boolean containsTableName() {
-        return this.containsTableName;
+    public void withoutTableName() {
+        containsTableName = false;
     }
 }

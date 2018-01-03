@@ -74,21 +74,21 @@ public interface SQLStatement {
     void setParametersIndex(int parametersIndex);
     
     /**
-     * 增加索引偏移量.
+     * Increase parameters index.
      *
-     * @return 增加后的索引偏移量
+     * @return increased parameters index
      */
     int increaseParametersIndex();
     
     /**
-     * Set contain table name.
+     * Without table name.
      */
-    void setContainsTableName(boolean containsTableName);
+    void withoutTableName();
     
     /**
      * Adjust contains table name is empty or not.
      *
      * @return table name is empty or not
      */
-    boolean containsTableName();
+    boolean isContainsTableName();
 }

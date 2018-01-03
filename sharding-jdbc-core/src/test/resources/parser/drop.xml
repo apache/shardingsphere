@@ -59,6 +59,6 @@
         <index-token begin-position="11" original-literals="t_log_index" table-name="" />
     </assert>
     <assert id="assertDropIndexIfExists">
-        <index-token begin-position="21" original-literals="t_log_index" table-name="" />
+        <index-token begin-position="21" original-literals="t_order_index" table-name="" />
     </assert>
 </asserts>

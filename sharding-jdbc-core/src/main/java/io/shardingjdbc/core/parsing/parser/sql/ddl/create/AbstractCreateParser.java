@@ -68,6 +68,14 @@ public abstract class AbstractCreateParser implements SQLParser {
         return result;
     }
     
+    protected abstract Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword();
+    
+    protected abstract Keyword[] getSkippedKeywordsBetweenCreateAndKeyword();
+    
+    protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndIndexName() {
+        return new Keyword[] {};
+    }
+    
     private void parseIndex(final DDLStatement ddlStatement) {
         Token currentToken = lexerEngine.getCurrentToken();
         int beginPosition = currentToken.getEndPosition() - currentToken.getLiterals().length();
@@ -78,13 +86,5 @@ public abstract class AbstractCreateParser implements SQLParser {
         ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
     }
     
-    protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndIndexName() {
-        return new Keyword[] {};
-    }
-    
-    protected abstract Keyword[] getSkippedKeywordsBetweenCreateAndKeyword();
-    
     protected abstract Keyword[] getSkippedKeywordsBetweenCreateTableAndTableName();
-    
-    protected abstract Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword();
 }

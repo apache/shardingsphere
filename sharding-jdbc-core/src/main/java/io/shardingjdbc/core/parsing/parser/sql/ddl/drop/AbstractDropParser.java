@@ -65,12 +65,16 @@ public abstract class AbstractDropParser implements SQLParser {
             throw new SQLParsingException("Can't support other DROP grammar unless DROP TABLE, DROP INDEX.");
         }
         tableReferencesClauseParser.parse(result, true);
-        for (SQLToken each : result.getSqlTokens()) {
-            if (each instanceof IndexToken && result.getSqlTokens().size() == 1) {
-                result.setContainsTableName(false);
-            }
-        }
+        indexWithoutTable(result);
         return result;
+    }
+    
+    protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {
+        return new Keyword[0];
+    }
+    
+    protected Keyword[] getSkippedKeywordsBetweenDropIndexAndIndexName() {
+        return new Keyword[] {};
     }
     
     private void parseIndex(final DDLStatement ddlStatement) {
@@ -83,13 +87,13 @@ public abstract class AbstractDropParser implements SQLParser {
         ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
     }
     
-    protected Keyword[] getSkippedKeywordsBetweenDropIndexAndIndexName() {
-        return new Keyword[] {};
-    }
-    
-    protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {
-        return new Keyword[0];
-    }
-    
     protected abstract Keyword[] getSkippedKeywordsBetweenDropTableAndTableName();
+    
+    private void indexWithoutTable(final DDLStatement ddlStatement) {
+        for (SQLToken each : ddlStatement.getSqlTokens()) {
+            if (each instanceof IndexToken && 1 == ddlStatement.getSqlTokens().size()) {
+                ddlStatement.withoutTableName();
+            }
+        }
+    }
 }
