@@ -32,7 +32,7 @@
     </sql>
     <sql id="assertCreateIndex">
         <sharding-rule value="tbl">
-            <data expected="index/tbl.xml" />
+            <data expected="index/tbl_sharding.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertCreateUniqueIndex">

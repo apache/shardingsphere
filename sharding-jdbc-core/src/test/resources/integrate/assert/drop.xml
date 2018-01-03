@@ -30,16 +30,14 @@
             <data expected="drop/tbl.xml" />
         </sharding-rule>
     </sql>
-    <!--
     <sql id="assertDropIndexWithoutOn">
         <sharding-rule value="tbl">
             <data expected="drop/tbl.xml" />
         </sharding-rule>
     </sql>
-    -->
-    <!--<sql id="assertDropIndexIfExists">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data expected="drop/tbl.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+    <sql id="assertDropIndexIfExists">
+        <sharding-rule value="tbl">
+            <data expected="drop/tbl.xml" />
+        </sharding-rule>
+    </sql>
 </sqls>

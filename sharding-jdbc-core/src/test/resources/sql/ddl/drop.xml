@@ -8,5 +8,5 @@
     <sql id="assertDropTableCascadeConstraintsAndPurge" value="DROP TABLE t_log CASCADE CONSTRAINTS PURGE" type="Oracle" />
     <sql id="assertDropIndex" value="DROP INDEX t_log_index ON t_log" type="MySQL,SQLServer" />
     <sql id="assertDropIndexWithoutOn" value="DROP INDEX t_log_index" type="PostgreSQL,Oracle" />
-    <sql id="assertDropIndexIfExists" value="DROP INDEX IF EXISTS t_log_index" type="PostgreSQL" />
+    <sql id="assertDropIndexIfExists" value="DROP INDEX IF EXISTS t_order_index" type="PostgreSQL" />
 </sqls>

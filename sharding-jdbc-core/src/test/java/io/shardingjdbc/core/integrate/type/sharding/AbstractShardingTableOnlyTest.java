@@ -71,6 +71,7 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
             final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
             TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
             orderTableRuleConfig.setLogicTable("t_order");
+            orderTableRuleConfig.setLogicIndex("t_order_index");
             List<String> orderActualDataNodes = new LinkedList<>();
             for (String dataSourceName : entry.getValue().keySet()) {
                 orderActualDataNodes.add(dataSourceName + ".t_order_${0..9}");
@@ -78,12 +79,12 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
             orderTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderActualDataNodes));
             shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
             TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
-            orderItemTableRuleConfig.setLogicTable("t_order_item");
             List<String> orderItemActualDataNodes = new LinkedList<>();
             for (String dataSourceName : entry.getValue().keySet()) {
                 orderItemActualDataNodes.add(dataSourceName + ".t_order_item_${0..9}");
             }
             orderItemTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderItemActualDataNodes));
+            orderItemTableRuleConfig.setLogicTable("t_order_item");
             orderItemTableRuleConfig.setKeyGeneratorClass("item_id");
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             TableRuleConfiguration logTableRuleConfig = new TableRuleConfiguration();
@@ -101,7 +102,7 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
     
     @Before
     public void initDDLTables() throws SQLException {
-        if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("DROP TABLE") || getSql().startsWith("CREATE INDEX") || getSql().startsWith("CREATE UNIQUE INDEX")) {
+        if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("DROP TABLE") || getSql().startsWith("CREATE UNIQUE INDEX")) {
             if (getSql().contains("TEMP")) {
                 executeSql("CREATE TEMPORARY TABLE t_temp_log(id int, status varchar(10))");
             } else {
@@ -116,7 +117,11 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
     
     @After
     public void cleanupDdlTables() throws SQLException {
-        if (getSql().startsWith("CREATE") || getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("DROP INDEX")) {
+        if (getSql().startsWith("CREATE UNIQUE INDEX")) {
+            executeSql("DROP TABLE t_log");
+        } else if (getSql().startsWith("CREATE INDEX")) {
+            executeSql("DROP INDEX t_order_index");
+        } else if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("CREATE") || getSql().startsWith("DROP INDEX")) {
             if (getSql().contains("TEMP")) {
                 executeSql("DROP TABLE t_temp_log");
             } else {

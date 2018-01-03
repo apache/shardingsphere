@@ -79,4 +79,16 @@ public interface SQLStatement {
      * @return 增加后的索引偏移量
      */
     int increaseParametersIndex();
+    
+    /**
+     * Set contain table name.
+     */
+    void setContainsTableName(boolean containsTableName);
+    
+    /**
+     * Adjust contains table name is empty or not.
+     *
+     * @return table name is empty or not
+     */
+    boolean containsTableName();
 }

@@ -26,6 +26,7 @@ import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import io.shardingjdbc.core.parsing.parser.sql.SQLParser;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.token.IndexToken;
+import io.shardingjdbc.core.parsing.parser.token.SQLToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -64,6 +65,11 @@ public abstract class AbstractDropParser implements SQLParser {
             throw new SQLParsingException("Can't support other DROP grammar unless DROP TABLE, DROP INDEX.");
         }
         tableReferencesClauseParser.parse(result, true);
+        for (SQLToken each : result.getSqlTokens()) {
+            if (each instanceof IndexToken && result.getSqlTokens().size() == 1) {
+                result.setContainsTableName(false);
+            }
+        }
         return result;
     }
     

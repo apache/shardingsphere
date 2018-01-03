@@ -50,6 +50,8 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private int parametersIndex;
     
+    private boolean containsTableName = true;
+    
     @Override
     public final SQLType getType() {
         return type;
@@ -58,5 +60,15 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     @Override
     public int increaseParametersIndex() {
         return ++parametersIndex;
+    }
+    
+    @Override
+    public void setContainsTableName(final boolean containsTableName) {
+        this.containsTableName = containsTableName;
+    }
+    
+    @Override
+    public boolean containsTableName() {
+        return this.containsTableName;
     }
 }
