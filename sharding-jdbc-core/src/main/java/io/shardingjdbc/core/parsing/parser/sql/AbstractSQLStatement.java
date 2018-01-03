@@ -50,8 +50,6 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     @Setter
     private int parametersIndex;
     
-    private boolean containsTableName = true;
-    
     @Override
     public final SQLType getType() {
         return type;
@@ -60,10 +58,5 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     @Override
     public int increaseParametersIndex() {
         return ++parametersIndex;
-    }
-    
-    @Override
-    public void withoutTableName() {
-        containsTableName = false;
     }
 }

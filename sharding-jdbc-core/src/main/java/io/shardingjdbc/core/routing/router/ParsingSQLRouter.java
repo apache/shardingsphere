@@ -19,7 +19,7 @@ package io.shardingjdbc.core.routing.router;
 
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.routing.type.all.DatabaseAllRoutingEngine;
-import io.shardingjdbc.core.routing.type.none.NoneTableRoutingEngine;
+import io.shardingjdbc.core.routing.type.ddl.DDLRoutingEngine;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
@@ -111,8 +111,8 @@ public final class ParsingSQLRouter implements SQLRouter {
     private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
         RoutingEngine routingEngine;
-        if (sqlStatement instanceof DDLStatement && !sqlStatement.isContainsTableName()) {
-            routingEngine = new NoneTableRoutingEngine(shardingRule, parameters, sqlStatement); 
+        if (sqlStatement instanceof DDLStatement) {
+            routingEngine = new DDLRoutingEngine(shardingRule, parameters, sqlStatement); 
         } else if (tableNames.isEmpty()) {
             routingEngine = new DatabaseAllRoutingEngine(shardingRule.getDataSourceMap());
         } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllInDefaultDataSource(tableNames)) {

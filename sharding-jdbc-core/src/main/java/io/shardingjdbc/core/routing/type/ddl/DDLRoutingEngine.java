@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.type.none;
+package io.shardingjdbc.core.routing.type.ddl;
 
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
@@ -24,18 +24,17 @@ import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.simple.SimpleRoutingEngine;
 import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.rule.TableRule;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 /**
- * None table routing engine.
+ * DDL routing engine.
  * 
  * @author caohao
  */
 @RequiredArgsConstructor
-public final class NoneTableRoutingEngine implements RoutingEngine {
+public final class DDLRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
@@ -49,15 +48,11 @@ public final class NoneTableRoutingEngine implements RoutingEngine {
     }
     
     private String getLogicTableName() {
-        Preconditions.checkState(1 == sqlStatement.getSqlTokens().size());
-        IndexToken indexToken = (IndexToken) sqlStatement.getSqlTokens().get(0);
-        String indexName = indexToken.getIndexName();
-        String result = "";
-        for (TableRule each : shardingRule.getTableRules()) {
-            if (indexName.equals(each.getLogicIndex())) {
-                result = each.getLogicTable();
-            }
+        if (sqlStatement.getTables().isEmpty()) {
+            Preconditions.checkState(1 == sqlStatement.getSqlTokens().size());
+            IndexToken indexToken = (IndexToken) sqlStatement.getSqlTokens().get(0);
+            return shardingRule.getLogicTableName(indexToken.getIndexName());
         }
-        return result;
+        return sqlStatement.getTables().getSingleTableName();
     }
 }

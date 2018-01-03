@@ -79,16 +79,4 @@ public interface SQLStatement {
      * @return increased parameters index
      */
     int increaseParametersIndex();
-    
-    /**
-     * Without table name.
-     */
-    void withoutTableName();
-    
-    /**
-     * Adjust contains table name is empty or not.
-     *
-     * @return table name is empty or not
-     */
-    boolean isContainsTableName();
 }
