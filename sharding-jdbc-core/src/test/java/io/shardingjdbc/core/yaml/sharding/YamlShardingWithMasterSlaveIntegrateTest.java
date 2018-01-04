@@ -20,7 +20,6 @@ package io.shardingjdbc.core.yaml.sharding;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +38,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -81,15 +76,14 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
             }
             dataSource = ShardingDataSourceFactory.createDataSource(result, yamlFile);
         }
-        Map<String, Object> configMap = new ConcurrentHashMap<>();
-        configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {
+            stm.execute("Create INDEX t_order_index ON t_order(user_id)");
             stm.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));
             stm.executeQuery("SELECT * FROM t_order");
             stm.executeQuery("SELECT * FROM t_order_item");
             stm.executeQuery("SELECT * FROM config");
+            stm.execute("DROP INDEX t_order_index");
         }
     }
 }

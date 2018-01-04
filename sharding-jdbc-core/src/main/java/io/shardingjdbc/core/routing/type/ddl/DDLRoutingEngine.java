@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.routing.type.ddl;
 
 import com.google.common.base.Preconditions;
-import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
@@ -40,19 +40,22 @@ public final class DDLRoutingEngine implements RoutingEngine {
     
     private final List<Object> parameters;
     
-    private final SQLStatement sqlStatement;
+    private final DDLStatement ddlStatement;
     
     @Override
     public RoutingResult route() {
-        return new SimpleRoutingEngine(shardingRule, parameters, getLogicTableName(), sqlStatement).route();
+        return new SimpleRoutingEngine(shardingRule, parameters, getLogicTableName(), ddlStatement).route();
     }
     
     private String getLogicTableName() {
-        if (sqlStatement.getTables().isEmpty()) {
-            Preconditions.checkState(1 == sqlStatement.getSqlTokens().size());
-            IndexToken indexToken = (IndexToken) sqlStatement.getSqlTokens().get(0);
-            return shardingRule.getLogicTableName(indexToken.getIndexName());
+        if (ddlStatement.getTables().isEmpty()) {
+            return shardingRule.getLogicTableName(getIndexToken().getIndexName());
         }
-        return sqlStatement.getTables().getSingleTableName();
+        return ddlStatement.getTables().getSingleTableName();
+    }
+    
+    private IndexToken getIndexToken() {
+        Preconditions.checkState(1 == ddlStatement.getSqlTokens().size());
+        return (IndexToken) ddlStatement.getSqlTokens().get(0);
     }
 }

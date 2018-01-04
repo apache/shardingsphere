@@ -15,6 +15,7 @@ shardingRule:
           algorithmExpression: t_order_${order_id % 2}
       keyGeneratorColumnName: order_id
       keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
+      logicIndex: t_order_index
   
     t_order_item:
       actualDataNodes: db_ms_${0..1}.t_order_item_${0..1}

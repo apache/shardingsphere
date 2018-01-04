@@ -292,15 +292,11 @@ public final class ShardingRule {
      * @return logic table name
      */
     public String getLogicTableName(final String logicIndexName) {
-        String result = "";
         for (TableRule each : tableRules) {
             if (logicIndexName.equals(each.getLogicIndex())) {
-                result = each.getLogicTable();
+                return each.getLogicTable();
             }
         }
-        if (Strings.isNullOrEmpty(result)) {
-            throw new ShardingJdbcException("Cannot find logic table name with logic index name: '%s'", logicIndexName);
-        }
-        return result;
+        throw new ShardingJdbcException("Cannot find logic table name with logic index name: '%s'", logicIndexName);
     }
 }

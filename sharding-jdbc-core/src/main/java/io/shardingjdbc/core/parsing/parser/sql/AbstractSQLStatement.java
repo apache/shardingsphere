@@ -36,6 +36,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 @ToString
 public abstract class AbstractSQLStatement implements SQLStatement {
     
@@ -47,7 +48,6 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final List<SQLToken> sqlTokens = new LinkedList<>();
     
-    @Setter
     private int parametersIndex;
     
     @Override
