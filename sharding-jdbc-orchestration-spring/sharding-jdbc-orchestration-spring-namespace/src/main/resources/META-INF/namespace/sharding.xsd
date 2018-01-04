@@ -46,6 +46,7 @@
             <xsd:attribute name="table-strategy-ref" type="xsd:string" use="optional" />
             <xsd:attribute name="generate-key-column" type="xsd:string" use="optional" />
             <xsd:attribute name="column-key-generator-class" type="xsd:string" use="optional"/>
+            <xsd:attribute name="logic-index" type="xsd:string" use="optional" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="binding-table-rules">

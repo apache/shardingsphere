@@ -143,6 +143,10 @@ public class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDefiniti
         if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
             factory.addPropertyValue("keyGeneratorClass", keyGeneratorClass);
         }
+        String logicIndex = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.LOGIC_INDEX);
+        if (!Strings.isNullOrEmpty(logicIndex)) {
+            factory.addPropertyValue("logicIndex", logicIndex);
+        }
         return factory.getBeanDefinition();
     }
     

@@ -1,13 +1,14 @@
 ## 2.0.2
 
 ### 功能提升
-1. [ISSUE #475](https://github.com/shardingjdbc/sharding-jdbc/issues/475) 支持create index语句
+1. [ISSUE #475](https://github.com/shardingjdbc/sharding-jdbc/issues/475) 支持CREATE INDEX
+1. [ISSUE #525](https://github.com/shardingjdbc/sharding-jdbc/issues/525) 支持DROP INDEX
 
 ### 缺陷修正
 1. [ISSUE #520](https://github.com/shardingjdbc/sharding-jdbc/issues/520) 引入分表后，唯一键冲突时异常类型不再是DuplicateKeyException
 1. [ISSUE #521](https://github.com/shardingjdbc/sharding-jdbc/issues/521) YAML文件中ShardingProperties设置无效
 1. [ISSUE #522](https://github.com/shardingjdbc/sharding-jdbc/issues/522) 读写分离Slave库不需要执行DDL语句
-
+ 
 ## 2.0.1
 
 ### 功能提升

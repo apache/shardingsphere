@@ -145,6 +145,10 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
         if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
             factory.addPropertyValue("keyGeneratorClass", keyGeneratorClass);
         }
+        String logicIndex = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.LOGIC_INDEX_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(logicIndex)) {
+            factory.addPropertyValue("logicIndex", logicIndex);
+        }
         return factory.getBeanDefinition();
     }
     
