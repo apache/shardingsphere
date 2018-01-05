@@ -81,6 +81,9 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 | ALTER TABLE tbl_name ADD col1 varchar(10)                     | 是        |                    |
 | DROP TABLE tbl_name                                           | 是        |                    |
 | TRUNCATE TABLE tbl_name                                       | 是        |                    |
+| CREATE INDEX idx_name ON tbl_name                             | 是        |                    |
+| DROP INDEX idx_name ON tbl_name                               | 是        |                    |
+| DROP INDEX idx_name                                           | 是        | tableRule中配置logic-index|
 
 ## 不支持的SQL
 

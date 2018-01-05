@@ -33,3 +33,7 @@ next = "/02-guide/sharding/"
 
 ## Config Map
 通过ConfigMap可以配置分库分表或读写分离数据源的元数据，可通过调用ConfigMapContext.getInstance()获取ConfigMap中的shardingConfig和masterSlaveConfig数据。例：如果机器权重不同则流量可能不同，可通过ConfigMap配置机器权重元数据。
+
+## LogicIndex
+数据分片的逻辑索引名称，DDL语句中水平拆分的表，同一类表的总称。例：订单数据根据主键尾数拆分为10张表,分别是t_order_0到t_order_9，他们的逻辑表名为t_order，对于DROP INDEX t_order_index语句，
+需在TableRule中配置逻辑索引t_order_index。
