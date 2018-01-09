@@ -55,7 +55,7 @@ public final class BindingTableRuleTest {
     
     @Test
     public void assertGetAllLogicTables() {
-        assertThat(createBindingTableRule().getAllLogicTables(), is((Collection<String>) Arrays.asList("logicTable", "subLogicTable")));
+        assertThat(createBindingTableRule().getAllLogicTables(), is((Collection<String>) Arrays.asList("logictable", "sublogictable")));
     }
     
     @Test

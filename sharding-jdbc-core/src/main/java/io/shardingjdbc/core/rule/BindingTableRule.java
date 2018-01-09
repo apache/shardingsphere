@@ -47,7 +47,7 @@ public final class BindingTableRule {
      */
     public boolean hasLogicTable(final String logicTableName) {
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equalsIgnoreCase(logicTableName)) {
+            if (each.getLogicTable().equals(logicTableName.toLowerCase())) {
                 return true;
             }
         }
@@ -72,8 +72,8 @@ public final class BindingTableRule {
         }
         Preconditions.checkState(-1 != index, String.format("Actual table [%s].[%s] is not in table config", dataSource, otherActualTable));
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equalsIgnoreCase(logicTable)) {
-                return each.getActualDataNodes().get(index).getTableName();
+            if (each.getLogicTable().equals(logicTable.toLowerCase())) {
+                return each.getActualDataNodes().get(index).getTableName().toLowerCase();
             }
         }
         throw new IllegalStateException(String.format("Cannot find binding actual table, data source: %s, logic table: %s, other actual table: %s", dataSource, logicTable, otherActualTable));
@@ -84,7 +84,7 @@ public final class BindingTableRule {
             
             @Override
             public String apply(final TableRule input) {
-                return input.getLogicTable();
+                return input.getLogicTable().toLowerCase();
             }
         });
     }

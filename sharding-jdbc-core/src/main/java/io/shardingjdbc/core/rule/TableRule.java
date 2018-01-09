@@ -56,13 +56,13 @@ public final class TableRule {
     public TableRule(final String logicTable, final List<String> actualDataNodes, final Map<String, DataSource> dataSourceMap,
                      final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy, 
                      final String generateKeyColumn, final KeyGenerator keyGenerator, final String logicIndex) {
-        this.logicTable = logicTable;
+        this.logicTable = logicTable.toLowerCase();
         this.actualDataNodes = null == actualDataNodes || actualDataNodes.isEmpty() ? generateDataNodes(logicTable, dataSourceMap) : generateDataNodes(actualDataNodes, dataSourceMap);
         this.databaseShardingStrategy = databaseShardingStrategy;
         this.tableShardingStrategy = tableShardingStrategy;
         this.generateKeyColumn = generateKeyColumn;
         this.keyGenerator = keyGenerator;
-        this.logicIndex = logicIndex;
+        this.logicIndex = null == logicIndex ? logicIndex : logicIndex.toLowerCase();
     }
     
     private List<DataNode> generateDataNodes(final String logicTable, final Map<String, DataSource> dataSourceMap) {

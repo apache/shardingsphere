@@ -23,8 +23,8 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.TreeSet;
 
 /**
  * Tables collection.
@@ -79,7 +79,7 @@ public final class Tables {
      * @return 表名称集合
      */
     public Collection<String> getTableNames() {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Collection<String> result = new HashSet<>(tables.size(), 1);
         for (Table each : tables) {
             result.add(each.getName());
         }
@@ -99,7 +99,7 @@ public final class Tables {
     
     private Optional<Table> findTableFromName(final String name) {
         for (Table each : tables) {
-            if (each.getName().equalsIgnoreCase(name)) {
+            if (each.getName().equals(name)) {
                 return Optional.of(each);
             }
         }
@@ -108,7 +108,7 @@ public final class Tables {
     
     private Optional<Table> findTableFromAlias(final String alias) {
         for (Table each : tables) {
-            if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(alias)) {
+            if (each.getAlias().isPresent() && each.getAlias().get().equals(alias)) {
                 return Optional.of(each);
             }
         }

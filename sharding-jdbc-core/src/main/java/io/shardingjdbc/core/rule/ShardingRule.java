@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.core.rule;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
@@ -25,19 +27,16 @@ import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import io.shardingjdbc.core.routing.strategy.none.NoneShardingStrategy;
 import io.shardingjdbc.core.util.StringUtil;
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Databases and tables sharding rule configuration.
@@ -97,7 +96,7 @@ public final class ShardingRule {
      */
     public Optional<TableRule> tryFindTableRule(final String logicTableName) {
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equalsIgnoreCase(logicTableName)) {
+            if (each.getLogicTable().equals(logicTableName.toLowerCase())) {
                 return Optional.of(each);
             }
         }
@@ -111,12 +110,12 @@ public final class ShardingRule {
      * @return table rule
      */
     public TableRule getTableRule(final String logicTableName) {
-        Optional<TableRule> tableRule = tryFindTableRule(logicTableName);
+        Optional<TableRule> tableRule = tryFindTableRule(logicTableName.toLowerCase());
         if (tableRule.isPresent()) {
             return tableRule.get();
         }
         if (null != defaultDataSourceName) {
-            return createTableRuleWithDefaultDataSource(logicTableName);
+            return createTableRuleWithDefaultDataSource(logicTableName.toLowerCase());
         }
         throw new ShardingJdbcException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
     }
@@ -166,9 +165,18 @@ public final class ShardingRule {
      * @return logic tables is all belong to binding tables or not
      */
     public boolean isAllBindingTables(final Collection<String> logicTables) {
-        Collection<String> bindingTables = filterAllBindingTables(logicTables);
-        return !bindingTables.isEmpty() && bindingTables.containsAll(logicTables);
+        if (logicTables.isEmpty()) {
+            return false;
+        }
+        Optional<BindingTableRule> bindingTableRule = findBindingTableRule(logicTables);
+        if (!bindingTableRule.isPresent()) {
+            return false;
+        }
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.addAll(bindingTableRule.get().getAllLogicTables());
+        return !result.isEmpty() && result.containsAll(logicTables);
     }
+    
     
     /**
      * Adjust logic tables is all belong to default data source.
@@ -183,25 +191,6 @@ public final class ShardingRule {
             }
         }
         return !logicTables.isEmpty();
-    }
-    
-    /**
-     * Filter all binding tables.
-     * 
-     * @param logicTables names of logic tables
-     * @return names for filtered binding tables
-     */
-    public Collection<String> filterAllBindingTables(final Collection<String> logicTables) {
-        if (logicTables.isEmpty()) {
-            return Collections.emptyList();
-        }
-        Optional<BindingTableRule> bindingTableRule = findBindingTableRule(logicTables);
-        if (!bindingTableRule.isPresent()) {
-            return Collections.emptyList();
-        }
-        Collection<String> result = new ArrayList<>(bindingTableRule.get().getAllLogicTables());
-        result.retainAll(logicTables);
-        return result;
     }
     
     private Optional<BindingTableRule> findBindingTableRule(final Collection<String> logicTables) {

@@ -17,12 +17,12 @@
 
 package io.shardingjdbc.core.rule;
 
+import io.shardingjdbc.core.api.algorithm.fixture.TestPreciseShardingAlgorithm;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingjdbc.core.api.algorithm.fixture.TestPreciseShardingAlgorithm;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.routing.strategy.none.NoneShardingStrategy;
 import org.junit.Test;
@@ -30,7 +30,6 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -192,24 +191,6 @@ public final class ShardingRuleTest {
     }
     
     @Test
-    public void assertFilterAllBindingTablesWhenLogicTablesIsEmpty() throws SQLException {
-        assertThat(createShardingRule().filterAllBindingTables(Collections.<String>emptyList()), is((Collection<String>) Collections.<String>emptyList()));
-    }
-    
-    @Test
-    public void assertFilterAllBindingTablesWhenBindingTableRuleIsNotFound() throws SQLException {
-        assertThat(createShardingRule().filterAllBindingTables(Collections.singletonList("newTable")), is((Collection<String>) Collections.<String>emptyList()));
-    }
-    
-    @Test
-    public void assertFilterAllBindingTables() throws SQLException {
-        assertThat(createShardingRule().filterAllBindingTables(Collections.singletonList("logicTable")), is((Collection<String>) Collections.singletonList("logicTable")));
-        assertThat(createShardingRule().filterAllBindingTables(Collections.singletonList("subLogicTable")), is((Collection<String>) Collections.singletonList("subLogicTable")));
-        assertThat(createShardingRule().filterAllBindingTables(Arrays.asList("logicTable", "subLogicTable")), is((Collection<String>) Arrays.asList("logicTable", "subLogicTable")));
-        assertThat(createShardingRule().filterAllBindingTables(Arrays.asList("logicTable", "newTable", "subLogicTable")), is((Collection<String>) Arrays.asList("logicTable", "subLogicTable")));
-    }
-    
-    @Test
     public void assertIsAllBindingTableWhenLogicTablesIsEmpty() throws SQLException {
         assertFalse(createShardingRule().isAllBindingTables(Collections.<String>emptyList()));
     }
@@ -222,9 +203,17 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertIsAllBindingTable() throws SQLException {
+        
         assertTrue(createShardingRule().isAllBindingTables(Collections.singletonList("logicTable")));
+        assertTrue(createShardingRule().isAllBindingTables(Collections.singletonList("logictable")));
         assertTrue(createShardingRule().isAllBindingTables(Collections.singletonList("subLogicTable")));
+        assertTrue(createShardingRule().isAllBindingTables(Collections.singletonList("sublogictable")));
         assertTrue(createShardingRule().isAllBindingTables(Arrays.asList("logicTable", "subLogicTable")));
+        assertTrue(createShardingRule().isAllBindingTables(Arrays.asList("logictable", "sublogicTable")));
+        assertFalse(createShardingRule().isAllBindingTables(Arrays.asList("logictable", "sublogicTable", "newtable")));
+    
+        assertFalse(createShardingRule().isAllBindingTables(Collections.<String>emptyList()));
+        assertFalse(createShardingRule().isAllBindingTables(Collections.singletonList("newTable")));
     }
     
     @Test

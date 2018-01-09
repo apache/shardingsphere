@@ -31,7 +31,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Route table unit collection.
@@ -50,7 +49,7 @@ public final class TableUnits {
      * @return all data source names
      */
     public Collection<String> getDataSourceNames() {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Collection<String> result = new HashSet<>(tableUnits.size(), 1);
         for (TableUnit each : tableUnits) {
             result.add(each.getDataSourceName());
         }
@@ -95,7 +94,7 @@ public final class TableUnits {
     }
     
     private Set<String> getActualTableNames(final String dataSourceName, final String logicTableName) {
-        Set<String> result = new HashSet<>();
+        Set<String> result = new HashSet<>(tableUnits.size(), 1);
         for (TableUnit each : tableUnits) {
             if (each.getDataSourceName().equalsIgnoreCase(dataSourceName) && each.getLogicTableName().equalsIgnoreCase(logicTableName)) {
                 result.add(each.getActualTableName());
@@ -122,7 +121,7 @@ public final class TableUnits {
     }
     
     private Set<String> getLogicTableNames(final String dataSourceName) {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Set<String> result = new HashSet<>(tableUnits.size(), 1);
         for (TableUnit each : tableUnits) {
             if (each.getDataSourceName().equalsIgnoreCase(dataSourceName)) {
                 result.addAll(Lists.transform(tableUnits, new Function<TableUnit, String>() {

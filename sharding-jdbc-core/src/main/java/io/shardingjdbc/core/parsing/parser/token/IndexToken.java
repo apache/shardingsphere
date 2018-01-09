@@ -45,7 +45,7 @@ public final class IndexToken implements SQLToken {
      * @return index name
      */
     public String getIndexName() {
-        return SQLUtil.getExactlyValue(originalLiterals).toLowerCase();
+        return SQLUtil.getExactlyValue(originalLiterals);
     }
     
     /**
@@ -54,6 +54,6 @@ public final class IndexToken implements SQLToken {
      * @return table name
      */
     public String getTableName() {
-        return SQLUtil.getExactlyValue(tableName).toLowerCase();
+        return SQLUtil.getExactlyValue(tableName);
     }
 }
