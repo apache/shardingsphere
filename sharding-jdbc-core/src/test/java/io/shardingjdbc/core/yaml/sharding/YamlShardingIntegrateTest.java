@@ -93,8 +93,7 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {
             stm.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));
-            stm.executeQuery("SELECT * FROM t_order");
-            stm.executeQuery("SELECT * FROM t_order_item");
+            stm.executeQuery("SELECT o.*, i.* FROM T_order o JOIN T_order_item i ON o.order_id = i.order_id");
             stm.executeQuery("SELECT * FROM config");
         }
     }
