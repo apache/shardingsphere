@@ -122,8 +122,11 @@ next = "/02-guide"
 | Sharding-JDBC 1.5.2单库单表查询 | 8                 | 470     |
 
 TPS展示
+
 ![TPS](/img/b-SdbSt-query-tps.png)
+
 RT展示
+
 ![RT](/img/b-SdbSt-query-rt.png)
 
 ### 单库单表更新
@@ -134,8 +137,11 @@ RT展示
 | Sharding-JDBC 1.5.2单库单表更新 | 3                 | 6303    |
 
 TPS展示
+
 ![TPS](/img/b-SdbSt-update-tps.png)
+
 RT展示
+
 ![RT](/img/b-SdbSt-update-rt.png)
 
 ### 单库单表插入
@@ -146,8 +152,11 @@ RT展示
 | Sharding-JDBC 1.5.2单库单表插入 | 2                  | 6375   |
 
 TPS展示
+
 ![TPS](/img/b-SdbSt-insert-tps.png)
+
 RT展示
+
 ![RT](/img/b-SdbSt-insert-rt.png)
 
 ## 极限测试
@@ -161,8 +170,11 @@ RT展示
 | Sharding-JDBC 1.5.2两库各1表查询 | 13                 | 2944   |
 
 TPS展示
+
 ![TPS](/img/l-SdbSt-MdbSt-query-tps.png)
+
 RT展示
+
 ![RT](/img/l-SdbSt-MdbSt-query-rt.png)
 
 ### 单库两表与两库各两表查询
@@ -174,8 +186,11 @@ RT展示
 | Sharding-JDBC 1.5.2两库各两表查询 | 10                 | 3331 |
 
 TPS展示
+
 ![TPS](/img/l-SdbMt-MdbMt-query-tps.png)
+
 RT展示
+
 ![RT](/img/l-SdbMt-MdbMt-query-rt.png)
 
 ### 单库单表更新与两库各一表更新
@@ -187,8 +202,11 @@ RT展示
 | Sharding-JDBC 1.5.2两库各1表更新  | 4                  | 18561   |
 
 TPS展示
+
 ![TPS](/img/l-SdbSt-MdbSt-update-tps.png)
+
 RT展示
+
 ![RT](/img/l-SdbSt-MdbSt-update-rt.png)
 
 ### 单库两表与两库各2表更新
@@ -200,8 +218,11 @@ RT展示
 | Sharding-JDBC 1.5.2两库各两表更新 | 5                 | 17997   |
 
 TPS展示
+
 ![TPS](/img/l-SdbMt-MdbMt-update-tps.png)
+
 RT展示
+
 ![RT](/img/l-SdbMt-MdbMt-update-rt.png)
 
 ### 单库单表插入与两库各一表插入
@@ -213,8 +234,11 @@ RT展示
 | Sharding-JDBC 1.5.2两库各1表插入 | 4                 | 21414   |
 
 TPS展示
+
 ![TPS](/img/l-SdbSt-MdbSt-insert-tps.png)
+
 RT展示
+
 ![RT](/img/l-SdbSt-MdbSt-insert-rt.png)
 
 ### 单库两表与两库各2表插入
@@ -226,8 +250,11 @@ RT展示
 | Sharding-JDBC 1.5.2两库各两表插入 | 4                 | 23043   |
 
 TPS展示
+
 ![TPS](/img/l-SdbMt-MdbMt-insert-tps.png)
+
 RT展示
+
 ![RT](/img/l-SdbMt-MdbMt-insert-rt.png)
 
 ### Sharding-JDBC 1.4.2与1.5.2两库各一表对比
@@ -239,8 +266,11 @@ RT展示
 | 插入    | 21045                      | 21414                                 | 101.75%           |
 
 TPS展示
+
 ![TPS](/img/152vs142tps.png)
+
 RT展示
+
 ![RT](/img/152vs142rt.png)
 
 ## 附录
@@ -325,6 +355,6 @@ select cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,ship
 
 Sharding-JDBC 更新
 
-``````sql
+```sql
 update order SET order_id=?,order_type=0,cust_id=10,cust_type=1,cust_email='dtest002@dangdang.com' where id=?;
 ```
