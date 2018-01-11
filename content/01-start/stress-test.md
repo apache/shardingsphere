@@ -62,10 +62,10 @@ next = "/02-guide"
 | 业务场景&emsp;&emsp;&emsp; | 场景缩写&emsp;&emsp;&emsp;&emsp; |
 |:--------------------------|:--------------------------------|
 | 单库单表查询               | JSdbStSelect                     |
-| 单库单表插入               | JSdbStIsert                      |
+| 单库单表插入               | JSdbStInsert                      |
 | 单库单表更新               | JSdbStUpdate                     |
 | 单库两表查询               | JSdbMtSelect                     |
-| 单库两表插入               | JSdbMtIsert                      |
+| 单库两表插入               | JSdbMtInsert                      |
 | 单库两表更新               | JSdbMtUpdate                     |
 
 ### Sharding-JDBC业务场景
@@ -73,16 +73,16 @@ next = "/02-guide"
 | 业务场景&emsp;&emsp;&emsp; | 场景缩写&emsp;&emsp;&emsp;&emsp; |
 |:--------------------------|:--------------------------------|
 | 单库单表查询                | SJSdbStSelect                   |
-| 单库单表插入                | SJSdbStIsert                    |
+| 单库单表插入                | SJSdbStInsert                    |
 | 单库单表更新                | SJSdbStUpdate                   |
 | 单库两表查询                | SJSdbMtSelect                   |
-| 单库两表插入                | SJSdbMtIsert                    |
+| 单库两表插入                | SJSdbMtInsert                    |
 | 单库两表更新                | SJSdbMtUpdate                   |
 | 两库各一表查询              | SJMdbStSelect                   |
-| 两库各一表插入              | SJMdbStIsert                    |
+| 两库各一表插入              | SJMdbStInsert                    |
 | 两库各一表更新              | SJMdbStUpdate                   |
 | 两库各两表查询              | SJMdbMtSelect                   |
-| 两库各两表插入              | SJMdbMtIsert                    |
+| 两库各两表插入              | SJMdbMtInsert                    |
 | 两库各两表更新              | SJMdbMtUpdate                   |
 
 所有测试场景共分为以下两大类，其中极限测试测试范围是全部场景，基准测试范围是以下场景：
@@ -90,10 +90,10 @@ next = "/02-guide"
 | 业务场景&emsp;&emsp;&emsp; | 场景缩写&emsp;&emsp;&emsp;&emsp; |
 |:--------------------------|:--------------------------------|
 | 单库单表查询                | JSdbStSelect                    |
-| 单库单表插入                | JSdbStIsert                     |
+| 单库单表插入                | JSdbStInsert                     |
 | 单库单表更新                | JSdbStUpdate                    |
 | 单库单表查询                | SJSdbStSelect                   |
-| 单库单表插入                | SJSdbStIsert                    |
+| 单库单表插入                | SJSdbStInsert                    |
 | 单库单表更新                | SJSdbStUpdate                   |
 
 ## 测试方法
