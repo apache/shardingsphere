@@ -14,6 +14,9 @@ next = "/01-start/features/"
 
 Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考[lombok官网](https://projectlombok.org/download.html)。
 
+sharding-jdbc-orchestration模块需要先执行`mvn install`命令，根据protobuf文件生成gRPC相关的java文件。
+
+
 ### 2. Cloud not resolve placeholder ... in string value ...异常的解决方法?
 
 回答：
