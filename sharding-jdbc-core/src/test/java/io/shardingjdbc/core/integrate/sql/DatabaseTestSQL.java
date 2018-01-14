@@ -52,4 +52,8 @@ public class DatabaseTestSQL {
     public static final String SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL = "SELECT item_id from t_order_item where user_id = %d and order_id= %s and status = 'BATCH'";
     
     public static final String SELECT_WITH_ALIAS_SQL = "SELECT user_id AS usr_id FROM t_order WHERE status = 'init'";
+
+    public static final String SELECT_WITH_OR_SQL="SELECT * FROM t_order WHERE user_id= ? OR order_id = ?";
+
+    public static final String SELECT_WITH_OR_SQL_WITH_NO_SHARDING_COLUMN="SELECT * FROM t_order WHERE user_id= ? OR status = ?";
 }

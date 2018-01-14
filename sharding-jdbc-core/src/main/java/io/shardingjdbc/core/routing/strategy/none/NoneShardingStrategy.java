@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.routing.strategy.none;
 
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.constant.ConditionRelationType;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import lombok.Getter;
 
@@ -35,7 +36,7 @@ public final class NoneShardingStrategy implements ShardingStrategy {
     private final Collection<String> shardingColumns = Collections.emptyList();
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+    public Collection<String> doSharding(ConditionRelationType conditionRelationType,final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         return availableTargetNames;
     }
 }

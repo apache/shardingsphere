@@ -17,7 +17,9 @@
 
 package io.shardingjdbc.core.routing.type.simple;
 
+import com.google.common.collect.Lists;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.constant.ConditionRelationType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
@@ -34,10 +36,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Simple routing engine.
@@ -101,6 +100,15 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     }
     
     private List<ShardingValue> getShardingValues(final Collection<String> shardingColumns) {
+        // 若条件对象之间是"或"关系，且条件对象中存在不是分片健的列，则不进行分片，路由到所有片中
+        if (sqlStatement.getConditions().getConditionRelationType()== ConditionRelationType.OR){
+            for (Column column:sqlStatement.getConditions().getConditions().keySet()){
+                if (!shardingColumns.contains(column.getName())){
+                    return Lists.newArrayList();
+                }
+            }
+        }
+
         List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
         for (String each : shardingColumns) {
             Optional<Condition> condition = sqlStatement.getConditions().find(new Column(each, logicTableName));
@@ -116,7 +124,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         if (databaseShardingValues.isEmpty()) {
             return availableTargetDatabases;
         }
-        Collection<String> result = shardingRule.getDatabaseShardingStrategy(tableRule).doSharding(availableTargetDatabases, databaseShardingValues);
+        Collection<String> result = shardingRule.getDatabaseShardingStrategy(tableRule).doSharding(sqlStatement.getConditions().getConditionRelationType(),availableTargetDatabases, databaseShardingValues);
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         return result;
     }
@@ -124,7 +132,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     private Collection<DataNode> routeTables(final TableRule tableRule, final String routedDataSource, final List<ShardingValue> tableShardingValues) {
         Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
         Collection<String> routedTables = tableShardingValues.isEmpty() ? availableTargetTables
-                : shardingRule.getTableShardingStrategy(tableRule).doSharding(availableTargetTables, tableShardingValues);
+                : shardingRule.getTableShardingStrategy(tableRule).doSharding(sqlStatement.getConditions().getConditionRelationType(),availableTargetTables, tableShardingValues);
         Preconditions.checkState(!routedTables.isEmpty(), "no table route info");
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {

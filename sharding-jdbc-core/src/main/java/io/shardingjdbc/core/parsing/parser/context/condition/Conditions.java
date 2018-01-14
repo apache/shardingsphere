@@ -1,9 +1,11 @@
 package io.shardingjdbc.core.parsing.parser.context.condition;
 
+import io.shardingjdbc.core.constant.ConditionRelationType;
 import io.shardingjdbc.core.rule.ShardingRule;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.LinkedHashMap;
@@ -17,11 +19,14 @@ import java.util.Map.Entry;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 @ToString
 public final class Conditions {
-    
+
     private final Map<Column, Condition> conditions = new LinkedHashMap<>();
-    
+
+    private ConditionRelationType conditionRelationType=ConditionRelationType.AND;
+
     public Conditions(final Conditions conditions) {
         for (Entry<Column, Condition> entry : conditions.conditions.entrySet()) {
             this.conditions.put(entry.getKey(), entry.getValue());
@@ -37,8 +42,12 @@ public final class Conditions {
     // TODO adjust before add condition, eg: if condition exist = operator and include same column, should remove condition (tow equal condition should found nothing)
     public void add(final Condition condition, final ShardingRule shardingRule) {
         // TODO self-join has problem, table name maybe use alias
-        if (shardingRule.isShardingColumn(condition.getColumn())) {
+        if (conditionRelationType==ConditionRelationType.OR){
             conditions.put(condition.getColumn(), condition);
+        }else {
+            if (shardingRule.isShardingColumn(condition.getColumn())) {
+                conditions.put(condition.getColumn(), condition);
+            }
         }
     }
     

@@ -166,4 +166,9 @@
             <data parameter="1,9,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_1.xml" />
         </sharding-rule>
     </sql>
+    <sql id="assertSelectOr">
+        <sharding-rule>
+            <data parameter="10,1000" expected="select/SelectOr.xml" />
+        </sharding-rule>
+    </sql>
 </sqls>

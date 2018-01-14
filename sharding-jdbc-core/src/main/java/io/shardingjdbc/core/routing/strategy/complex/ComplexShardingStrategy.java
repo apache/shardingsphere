@@ -17,12 +17,15 @@
 
 package io.shardingjdbc.core.routing.strategy.complex;
 
+import com.google.common.collect.Lists;
 import io.shardingjdbc.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.constant.ConditionRelationType;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import lombok.Getter;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.TreeSet;
 
 /**
@@ -44,10 +47,23 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
-        Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, shardingValues);
+    public Collection<String> doSharding(ConditionRelationType conditionRelationType,final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+        if(shardingValues==null||shardingValues.size()==0){
+            return availableTargetNames;
+        }
+
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(shardingResult);
+
+        if(conditionRelationType==ConditionRelationType.OR) {
+            for (ShardingValue shardingValue : shardingValues) {
+                Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, Lists.newArrayList(shardingValue));
+                result.addAll(shardingResult);
+            }
+        }else{
+            Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, shardingValues);
+            result.addAll(shardingResult);
+        }
+
         return result;
     }
 }

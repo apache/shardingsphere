@@ -40,7 +40,7 @@ public enum ShardingPropertiesConstant {
      * Default: false
      * </p>
      */
-    SQL_SHOW("sql.show", Boolean.FALSE.toString(), boolean.class),
+    SQL_SHOW("sql.show", Boolean.TRUE.toString(), boolean.class),
     
     /**
      * Worker thread max size.
