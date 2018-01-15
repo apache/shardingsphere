@@ -1,10 +1,6 @@
 {
   "groups": [
     {
-      "name": "sharding.jdbc.datasource",
-      "type": "io.shardingjdbc.orchestration.spring.boot.OrchestrationSpringBootConfiguration"
-    },
-    {
       "sourceType": "io.shardingjdbc.orchestration.reg.etcd.EtcdConfiguration",
       "name": "sharding.jdbc.config.orchestration.etcd",
       "type": "io.shardingjdbc.orchestration.reg.etcd.EtcdConfiguration"
@@ -73,8 +69,7 @@
     },
     {
       "name": "sharding.jdbc.datasource",
-      "type": "java.util.Map<java.lang.String,java.util.Map<java.lang.String,java.lang.Object>>",
-      "sourceType": "io.shardingjdbc.core.util.DataSourceUtil"
+      "type": "java.util.Map<java.lang.String,java.util.Map<java.lang.String,java.lang.Object>>"
     },
     {
       "sourceType": "io.shardingjdbc.orchestration.reg.etcd.EtcdConfiguration",

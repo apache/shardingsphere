@@ -1,10 +1,6 @@
 {
   "groups": [
     {
-      "name": "sharding.jdbc.datasource",
-      "type": "io.shardingjdbc.spring.boot.SpringBootConfiguration"
-    },
-    {
       "sourceType": "io.shardingjdbc.core.yaml.sharding.YamlShardingStrategyConfiguration",
       "name": "sharding.jdbc.config.sharding.default-table-strategy",
       "type": "io.shardingjdbc.core.yaml.sharding.YamlShardingStrategyConfiguration"
@@ -63,8 +59,7 @@
     },
     {
       "name": "sharding.jdbc.datasource",
-      "type": "java.util.Map<java.lang.String,java.util.Map<java.lang.String,java.lang.Object>>",
-      "sourceType": "io.shardingjdbc.core.util.DataSourceUtil"
+      "type": "java.util.Map<java.lang.String,java.util.Map<java.lang.String,java.lang.Object>>"
     },
     {
       "sourceType": "io.shardingjdbc.core.yaml.sharding.YamlShardingStrategyConfiguration",
