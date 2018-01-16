@@ -10,10 +10,10 @@ next = "/03-design/module/"
 
 ![整体架构图](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_v2.png)
 
-![SQL解析](/img/parse.png)
+![SQL解析](http://ovfotjrsi.bkt.clouddn.com/docs/img/parse.png)
 
-![SQL路由](/img/route.png)
+![SQL路由](http://ovfotjrsi.bkt.clouddn.com/docs/img/route.png)
 
-![SQL执行](/img/execute.png)
+![SQL执行](http://ovfotjrsi.bkt.clouddn.com/docs/img/execute.png)
 
-![结果归并](/img/merge.png)
+![结果归并](http://ovfotjrsi.bkt.clouddn.com/docs/img/merge.png)

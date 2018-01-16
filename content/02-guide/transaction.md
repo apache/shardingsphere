@@ -28,7 +28,7 @@ Sharding-JDBC由于性能方面的考量，决定不支持强一致性分布式�
 在分布式数据库的场景下，相信对于该数据库的操作最终一定可以成功，所以通过最大努力反复尝试送达操作。
 
 ### 架构图
-![最大努力送达型事务](../../img/architecture-soft-transaction-bed.png)
+![最大努力送达型事务](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture-soft-transaction-bed.png)
 
 ### 适用场景
 
