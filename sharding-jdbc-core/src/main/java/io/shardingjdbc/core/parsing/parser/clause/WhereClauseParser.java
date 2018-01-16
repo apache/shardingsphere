@@ -63,7 +63,7 @@ public class WhereClauseParser implements SQLClauseParser {
      * @param items select items
      */
     public void parse(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
-        aliasExpressionParser.parse();
+        aliasExpressionParser.parseTableAlias();
         if (lexerEngine.skipIfEqual(DefaultKeyword.WHERE)) {
             parseConditions(shardingRule, sqlStatement, items);
         }

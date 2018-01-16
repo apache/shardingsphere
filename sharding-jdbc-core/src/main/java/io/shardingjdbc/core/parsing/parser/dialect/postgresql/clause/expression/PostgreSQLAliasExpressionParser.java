@@ -16,7 +16,12 @@ public final class PostgreSQLAliasExpressionParser extends AliasExpressionParser
     }
     
     @Override
-    protected TokenType[] getCustomizedAvailableKeywordsForAlias() {
+    protected TokenType[] getCustomizedAvailableKeywordsForSelectItemAlias() {
+        return new TokenType[0];
+    }
+    
+    @Override
+    protected TokenType[] getCustomizedAvailableKeywordsForTableAlias() {
         return new TokenType[0];
     }
 }

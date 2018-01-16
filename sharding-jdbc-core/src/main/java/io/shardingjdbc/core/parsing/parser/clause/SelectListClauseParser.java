@@ -66,7 +66,7 @@ public class SelectListClauseParser implements SQLClauseParser {
             result = parseAggregationSelectItem(selectStatement);
             parseRestSelectItem(selectStatement);
         } else {
-            result = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem(selectStatement) + parseRestSelectItem(selectStatement)), aliasExpressionParser.parse());
+            result = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem(selectStatement) + parseRestSelectItem(selectStatement)), aliasExpressionParser.parseSelectItemAlias());
         }
         return result;
     }
@@ -89,7 +89,7 @@ public class SelectListClauseParser implements SQLClauseParser {
     
     private SelectItem parseStarSelectItem() {
         lexerEngine.nextToken();
-        aliasExpressionParser.parse();
+        aliasExpressionParser.parseSelectItemAlias();
         return new StarSelectItem(Optional.<String>absent());
     }
     
@@ -100,7 +100,7 @@ public class SelectListClauseParser implements SQLClauseParser {
     private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
         lexerEngine.nextToken();
-        return new AggregationSelectItem(aggregationType, lexerEngine.skipParentheses(selectStatement), aliasExpressionParser.parse());
+        return new AggregationSelectItem(aggregationType, lexerEngine.skipParentheses(selectStatement), aliasExpressionParser.parseSelectItemAlias());
     }
     
     private String parseCommonSelectItem(final SelectStatement selectStatement) {

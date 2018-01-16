@@ -38,6 +38,6 @@ public final class SQLServerSelectListClauseParser extends SelectListClauseParse
         getLexerEngine().unsupportedIfEqual(SQLServerKeyword.PARTITION);
         orderByClauseParser.parse(selectStatement);
         getLexerEngine().accept(Symbol.RIGHT_PAREN);
-        return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getAliasExpressionParser().parse());
+        return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getAliasExpressionParser().parseSelectItemAlias());
     }
 }
