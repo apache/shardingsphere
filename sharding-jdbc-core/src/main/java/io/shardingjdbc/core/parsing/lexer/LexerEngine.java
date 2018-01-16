@@ -17,6 +17,12 @@
 
 package io.shardingjdbc.core.parsing.lexer;
 
+import com.google.common.collect.Sets;
+import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.parsing.lexer.dialect.mysql.MySQLLexer;
+import io.shardingjdbc.core.parsing.lexer.dialect.oracle.OracleLexer;
+import io.shardingjdbc.core.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
+import io.shardingjdbc.core.parsing.lexer.dialect.sqlserver.SQLServerLexer;
 import io.shardingjdbc.core.parsing.lexer.token.Assist;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import io.shardingjdbc.core.parsing.lexer.token.Token;
@@ -24,7 +30,6 @@ import io.shardingjdbc.core.parsing.lexer.token.TokenType;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
-import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Set;
@@ -183,5 +188,26 @@ public final class LexerEngine {
         if (!skipIfEqual(tokenTypes)) {
             throw new SQLParsingUnsupportedException(lexer.getCurrentToken().getType());
         }
+    }
+    
+    /**
+     * Get database type.
+     * 
+     * @return database type
+     */
+    public DatabaseType getDatabaseType() {
+        if (lexer instanceof MySQLLexer) {
+            return DatabaseType.MySQL;
+        }
+        if (lexer instanceof OracleLexer) {
+            return DatabaseType.Oracle;
+        }
+        if (lexer instanceof SQLServerLexer) {
+            return DatabaseType.SQLServer;
+        }
+        if (lexer instanceof PostgreSQLLexer) {
+            return DatabaseType.PostgreSQL;
+        }
+        throw new UnsupportedOperationException(String.format("Cannot support lexer class: %s", lexer.getClass().getCanonicalName()));
     }
 }

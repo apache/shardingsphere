@@ -1,6 +1,7 @@
 package io.shardingjdbc.core.parsing.parser.clause;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.parsing.parser.dialect.AliasClauseParserFactory;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
@@ -48,7 +49,7 @@ public class WhereClauseParser implements SQLClauseParser {
     public WhereClauseParser(final DatabaseType databaseType, final LexerEngine lexerEngine) {
         this.databaseType = databaseType;
         this.lexerEngine = lexerEngine;
-        aliasClauseParser = new AliasClauseParser(lexerEngine);
+        aliasClauseParser = AliasClauseParserFactory.createInstance(lexerEngine);
         expressionClauseParser = new ExpressionClauseParser(lexerEngine);
     }
     

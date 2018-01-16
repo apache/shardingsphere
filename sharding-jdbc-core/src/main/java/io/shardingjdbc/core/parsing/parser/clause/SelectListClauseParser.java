@@ -1,5 +1,6 @@
 package io.shardingjdbc.core.parsing.parser.clause;
 
+import io.shardingjdbc.core.parsing.parser.dialect.AliasClauseParserFactory;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.AggregationType;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
@@ -35,7 +36,7 @@ public class SelectListClauseParser implements SQLClauseParser {
     public SelectListClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        aliasClauseParser = new AliasClauseParser(lexerEngine);
+        aliasClauseParser = AliasClauseParserFactory.createInstance(lexerEngine);
     }
     
     /**

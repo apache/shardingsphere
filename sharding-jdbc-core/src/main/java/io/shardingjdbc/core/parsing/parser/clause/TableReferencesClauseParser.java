@@ -1,6 +1,7 @@
 package io.shardingjdbc.core.parsing.parser.clause;
 
 import com.google.common.base.Strings;
+import io.shardingjdbc.core.parsing.parser.dialect.AliasClauseParserFactory;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
@@ -36,7 +37,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
     public TableReferencesClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        aliasClauseParser = new AliasClauseParser(lexerEngine);
+        aliasClauseParser = AliasClauseParserFactory.createInstance(lexerEngine);
         expressionClauseParser = new ExpressionClauseParser(lexerEngine);
     }
     
