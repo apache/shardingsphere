@@ -74,6 +74,7 @@ public final class LexerTest {
         assertNextTokenForNumber("0x-1e", Literals.HEX);
         assertNextTokenForNumber("123", Literals.INT);
         assertNextTokenForNumber("-123", Literals.INT);
+        assertNextTokenForNumber("-.123", Literals.FLOAT);
         assertNextTokenForNumber("123.0", Literals.FLOAT);
         assertNextTokenForNumber("123e4", Literals.FLOAT);
         assertNextTokenForNumber("123E4", Literals.FLOAT);
