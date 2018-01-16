@@ -325,18 +325,17 @@
             <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="items_count"/>
         </aggregation-select-items>
     </assert>
-    <!-- TODO fix this -->
-    <!-- 
     <assert id="assertSelectAliasWithKeyword" parameters="1">
         <tables>
-            <table name="t_order_item" />
+            <table name="t_order_item" alias="item" />
         </tables>
         <table-tokens>
-            <table-token begin-position="14" original-literals="t_order_item" />
+            <table-token begin-position="34" original-literals="t_order_item" />
         </table-tokens>
-        <order-by-columns>
-            <order-by-column name="item_id" order-by-type="ASC" />
-        </order-by-columns>
+        <conditions>
+            <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                <value index="0" literal="1" type="int" />
+            </condition>
+        </conditions>
     </assert>
-    -->
 </asserts>
