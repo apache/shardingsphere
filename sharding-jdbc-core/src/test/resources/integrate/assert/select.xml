@@ -166,4 +166,12 @@
             <data parameter="1,9,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_1.xml" />
         </sharding-rule>
     </sql>
+    <!-- TODO fix this -->
+    <!--
+    <sql id="assertSelectAliasWithKeyword">
+        <sharding-rule value="tbl">
+            <data parameter="100000" expected="select/SelectAliasWithKeyword.xml" />
+        </sharding-rule>
+    </sql>
+    -->
 </sqls>
