@@ -327,10 +327,10 @@
     </assert>
     <assert id="assertSelectAliasWithKeyword" parameters="1">
         <tables>
-            <table name="t_order_item" alias="item" />
+            <table name="t_order_item" alias="length" />
         </tables>
         <table-tokens>
-            <table-token begin-position="34" original-literals="t_order_item" />
+            <table-token begin-position="36" original-literals="t_order_item" />
         </table-tokens>
         <conditions>
             <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
