@@ -4,8 +4,9 @@ import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.dialect.oracle.OracleKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
-import io.shardingjdbc.core.parsing.parser.clause.ExpressionClauseParser;
+import io.shardingjdbc.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingjdbc.core.parsing.parser.clause.SQLClauseParser;
+import io.shardingjdbc.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 
 /**
@@ -17,11 +18,11 @@ public final class OracleForClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
-    private final ExpressionClauseParser expressionClauseParser;
+    private final BasicExpressionParser basicExpressionParser;
     
     public OracleForClauseParser(final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
-        expressionClauseParser = new ExpressionClauseParser(lexerEngine);
+        basicExpressionParser = ExpressionParserFactory.createBasicExpressionParser(lexerEngine);
     }
     
     /**
@@ -36,7 +37,7 @@ public final class OracleForClauseParser implements SQLClauseParser {
         lexerEngine.accept(DefaultKeyword.UPDATE);
         if (lexerEngine.skipIfEqual(DefaultKeyword.OF)) {
             do {
-                expressionClauseParser.parse(selectStatement);
+                basicExpressionParser.parse(selectStatement);
             } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         }
         if (lexerEngine.equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {

@@ -1,17 +1,17 @@
-package io.shardingjdbc.core.parsing.parser.dialect.postgresql.clause;
+package io.shardingjdbc.core.parsing.parser.dialect.postgresql.clause.expression;
 
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
-import io.shardingjdbc.core.parsing.parser.clause.AliasClauseParser;
+import io.shardingjdbc.core.parsing.parser.clause.expression.AliasExpressionParser;
 
 /**
  * Alias clause parser for PostgreSQL.
  *
  * @author zhangliang
  */
-public final class PostgreSQLAliasClauseParser extends AliasClauseParser {
+public final class PostgreSQLAliasExpressionParser extends AliasExpressionParser {
     
-    public PostgreSQLAliasClauseParser(final LexerEngine lexerEngine) {
+    public PostgreSQLAliasExpressionParser(final LexerEngine lexerEngine) {
         super(lexerEngine);
     }
     

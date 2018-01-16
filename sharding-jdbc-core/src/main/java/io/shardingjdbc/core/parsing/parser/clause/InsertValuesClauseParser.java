@@ -1,5 +1,7 @@
 package io.shardingjdbc.core.parsing.parser.clause;
 
+import io.shardingjdbc.core.parsing.parser.clause.expression.BasicExpressionParser;
+import io.shardingjdbc.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
@@ -32,12 +34,12 @@ public class InsertValuesClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
-    private final ExpressionClauseParser expressionClauseParser;
+    private final BasicExpressionParser basicExpressionParser;
     
     public InsertValuesClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
-        expressionClauseParser = new ExpressionClauseParser(lexerEngine);
+        basicExpressionParser = ExpressionParserFactory.createBasicExpressionParser(lexerEngine);
     }
     
     /**
@@ -66,7 +68,7 @@ public class InsertValuesClauseParser implements SQLClauseParser {
         lexerEngine.accept(Symbol.LEFT_PAREN);
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         do {
-            sqlExpressions.add(expressionClauseParser.parse(insertStatement));
+            sqlExpressions.add(basicExpressionParser.parse(insertStatement));
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         insertStatement.setValuesListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
         int count = 0;

@@ -4,7 +4,9 @@ import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
+import io.shardingjdbc.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
+import io.shardingjdbc.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import io.shardingjdbc.core.parsing.parser.expression.SQLExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLIdentifierExpression;
@@ -28,11 +30,11 @@ public class OrderByClauseParser implements SQLClauseParser {
     @Getter
     private final LexerEngine lexerEngine;
     
-    private final ExpressionClauseParser expressionClauseParser;
+    private final BasicExpressionParser basicExpressionParser;
     
     public OrderByClauseParser(final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
-        expressionClauseParser = new ExpressionClauseParser(lexerEngine);
+        basicExpressionParser = ExpressionParserFactory.createBasicExpressionParser(lexerEngine);
     }
     
     /**
@@ -55,7 +57,7 @@ public class OrderByClauseParser implements SQLClauseParser {
     }
     
     private OrderItem parseSelectOrderByItem(final SelectStatement selectStatement) {
-        SQLExpression sqlExpression = expressionClauseParser.parse(selectStatement);
+        SQLExpression sqlExpression = basicExpressionParser.parse(selectStatement);
         OrderType orderByType = OrderType.ASC;
         if (lexerEngine.skipIfEqual(DefaultKeyword.ASC)) {
             orderByType = OrderType.ASC;

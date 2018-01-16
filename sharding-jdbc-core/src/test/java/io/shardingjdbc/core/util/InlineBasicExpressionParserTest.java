@@ -8,7 +8,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.assertThat;
 
-public final class InlineExpressionParserTest {
+public final class InlineBasicExpressionParserTest {
     
     @Test
     public void assertEvaluateForSimpleString() {
@@ -64,7 +64,7 @@ public final class InlineExpressionParserTest {
         StringBuilder expression = new StringBuilder();
         for (int i = 0; i < 1024; i++) {
             expression.append("ds_");
-            expression.append(i/64);
+            expression.append(i / 64);
             expression.append(".t_user_");
             expression.append(i);
             if (i != 1023) {

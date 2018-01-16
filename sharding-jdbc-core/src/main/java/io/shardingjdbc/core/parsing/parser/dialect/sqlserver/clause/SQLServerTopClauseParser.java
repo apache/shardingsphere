@@ -22,10 +22,11 @@ import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
-import io.shardingjdbc.core.parsing.parser.clause.ExpressionClauseParser;
+import io.shardingjdbc.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingjdbc.core.parsing.parser.clause.SQLClauseParser;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.limit.LimitValue;
+import io.shardingjdbc.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import io.shardingjdbc.core.parsing.parser.expression.SQLExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
@@ -42,11 +43,11 @@ public final class SQLServerTopClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
-    private final ExpressionClauseParser expressionClauseParser;
+    private final BasicExpressionParser basicExpressionParser;
     
     public SQLServerTopClauseParser(final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
-        expressionClauseParser = new ExpressionClauseParser(lexerEngine);
+        basicExpressionParser = ExpressionParserFactory.createBasicExpressionParser(lexerEngine);
     }
     
     /**
@@ -62,7 +63,7 @@ public final class SQLServerTopClauseParser implements SQLClauseParser {
         if (!lexerEngine.skipIfEqual(Symbol.LEFT_PAREN)) {
             beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         }
-        SQLExpression sqlExpression = expressionClauseParser.parse(selectStatement);
+        SQLExpression sqlExpression = basicExpressionParser.parse(selectStatement);
         lexerEngine.skipIfEqual(Symbol.RIGHT_PAREN);
         LimitValue rowCountValue;
         if (sqlExpression instanceof SQLNumberExpression) {

@@ -1,8 +1,8 @@
-package io.shardingjdbc.core.parsing.parser.clause;
+package io.shardingjdbc.core.parsing.parser.clause.expression;
 
+import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.Literals;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
-import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.expression.SQLExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLIdentifierExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLIgnoreExpression;
@@ -17,12 +17,12 @@ import io.shardingjdbc.core.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Expression clause parser.
+ * Basic expression parser.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ExpressionClauseParser implements SQLClauseParser {
+public final class BasicExpressionParser {
     
     private final LexerEngine lexerEngine;
     
@@ -30,7 +30,7 @@ public final class ExpressionClauseParser implements SQLClauseParser {
      * Parse expression.
      *
      * @param sqlStatement SQL statement
-     * @return 表达式
+     * @return expression
      */
     public SQLExpression parse(final SQLStatement sqlStatement) {
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition();

@@ -1,21 +1,21 @@
-package io.shardingjdbc.core.parsing.parser.clause;
+package io.shardingjdbc.core.parsing.parser.clause.expression;
 
+import com.google.common.base.Optional;
+import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Literals;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
-import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
 import io.shardingjdbc.core.util.SQLUtil;
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Alias clause parser.
+ * Alias expression parser.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public class AliasClauseParser implements SQLClauseParser {
+public class AliasExpressionParser {
     
     private final LexerEngine lexerEngine;
     

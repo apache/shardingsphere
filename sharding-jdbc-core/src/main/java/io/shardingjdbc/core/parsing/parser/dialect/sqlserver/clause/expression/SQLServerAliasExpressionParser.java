@@ -1,17 +1,17 @@
-package io.shardingjdbc.core.parsing.parser.dialect.sqlserver.clause;
+package io.shardingjdbc.core.parsing.parser.dialect.sqlserver.clause.expression;
 
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
-import io.shardingjdbc.core.parsing.parser.clause.AliasClauseParser;
+import io.shardingjdbc.core.parsing.parser.clause.expression.AliasExpressionParser;
 
 /**
  * Alias clause parser for SQLServer.
  *
  * @author zhangliang
  */
-public final class SQLServerAliasClauseParser extends AliasClauseParser {
+public final class SQLServerAliasExpressionParser extends AliasExpressionParser {
     
-    public SQLServerAliasClauseParser(final LexerEngine lexerEngine) {
+    public SQLServerAliasExpressionParser(final LexerEngine lexerEngine) {
         super(lexerEngine);
     }
     
