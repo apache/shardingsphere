@@ -17,12 +17,12 @@
 
 package io.shardingjdbc.core.parsing.parser.context;
 
-import io.shardingjdbc.core.constant.OrderType;
 import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
+import io.shardingjdbc.core.constant.OrderType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Order item.
@@ -31,7 +31,6 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@EqualsAndHashCode
 @ToString
 public final class OrderItem {
     
@@ -91,5 +90,34 @@ public final class OrderItem {
             return Optional.absent();
         }
         return owner.isPresent() ? Optional.of(owner.get() + "." + name.get()) : name;
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+        if (null == obj || !(obj instanceof OrderItem)) {
+            return false;
+        }
+        OrderItem orderItem = (OrderItem) obj;
+        return type == orderItem.getType() && (columnLabelEquals(orderItem) || qualifiedNameEquals(orderItem) || indexEquals(orderItem));
+    }
+    
+    private boolean qualifiedNameEquals(final OrderItem orderItem) {
+        Optional<String> thisQualifiedName = getQualifiedName();
+        Optional<String> thatQualifiedName = orderItem.getQualifiedName();
+        return thisQualifiedName.isPresent() && thatQualifiedName.isPresent() && thisQualifiedName.get().equalsIgnoreCase(thatQualifiedName.get());
+    }
+    
+    private boolean columnLabelEquals(final OrderItem orderItem) {
+        String columnLabel = getColumnLabel();
+        return null != columnLabel && columnLabel.equalsIgnoreCase(orderItem.getColumnLabel());
+    }
+    
+    private boolean indexEquals(final OrderItem orderItem) {
+        return -1 != index && index == orderItem.getIndex();
+    }
+    
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

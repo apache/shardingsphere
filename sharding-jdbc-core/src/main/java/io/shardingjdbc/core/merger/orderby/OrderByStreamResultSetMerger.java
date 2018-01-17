@@ -33,14 +33,14 @@ import java.util.Queue;
  *
  * @author zhangliang
  */
-@Getter(AccessLevel.PROTECTED)
 public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger {
     
-    @Getter(AccessLevel.NONE)
     private final List<OrderItem> orderByItems;
     
+    @Getter(AccessLevel.PROTECTED)
     private final Queue<OrderByValue> orderByValuesQueue;
     
+    @Getter(AccessLevel.PROTECTED)
     private boolean isFirstNext;
     
     public OrderByStreamResultSetMerger(final List<ResultSet> resultSets, final List<OrderItem> orderByItems) throws SQLException {
