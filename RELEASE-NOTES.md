@@ -9,6 +9,7 @@
 1. [ISSUE #521](https://github.com/shardingjdbc/sharding-jdbc/issues/521) YAML文件中ShardingProperties设置无效
 1. [ISSUE #522](https://github.com/shardingjdbc/sharding-jdbc/issues/522) 读写分离Slave库不需要执行DDL语句
 1. [ISSUE #529](https://github.com/shardingjdbc/sharding-jdbc/issues/529) 表名大写无法查询
+1. [ISSUE #557](https://github.com/shardingjdbc/sharding-jdbc/issues/557) GroupBy和OrderBy仅别名不一致问题应使用流式归并
 1. [ISSUE #559](https://github.com/shardingjdbc/sharding-jdbc/issues/559) 支持解析以负号和小数点开头的数字(如:-.12)
 
 ## 2.0.1
