@@ -74,21 +74,21 @@ public final class BindingTableRuleTest {
     private TableRule createTableRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
-        tableRuleConfig.setActualDataNodes("ds1.table_0, ds1.table_1, ds2.table_0, ds2.table_1");
+        tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..1}");
         return tableRuleConfig.build(createDataSourceMap());
     }
     
     private TableRule createSubTableRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("SUB_LOGIC_TABLE");
-        tableRuleConfig.setActualDataNodes("ds1.sub_table_0, ds1.sub_table_1, ds2.sub_table_0, ds2.sub_table_1");
+        tableRuleConfig.setActualDataNodes("ds${0..1}.sub_table_${0..1}");
         return tableRuleConfig.build(createDataSourceMap());
     }
     
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
+        result.put("ds0", null);
         result.put("ds1", null);
-        result.put("ds2", null);
         return result;
     }
 }
