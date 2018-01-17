@@ -101,15 +101,15 @@ public final class OrderItem {
         return type == orderItem.getType() && (columnLabelEquals(orderItem) || qualifiedNameEquals(orderItem) || indexEquals(orderItem));
     }
     
+    private boolean columnLabelEquals(final OrderItem orderItem) {
+        String columnLabel = getColumnLabel();
+        return null != columnLabel && columnLabel.equalsIgnoreCase(orderItem.getColumnLabel());
+    }
+    
     private boolean qualifiedNameEquals(final OrderItem orderItem) {
         Optional<String> thisQualifiedName = getQualifiedName();
         Optional<String> thatQualifiedName = orderItem.getQualifiedName();
         return thisQualifiedName.isPresent() && thatQualifiedName.isPresent() && thisQualifiedName.get().equalsIgnoreCase(thatQualifiedName.get());
-    }
-    
-    private boolean columnLabelEquals(final OrderItem orderItem) {
-        String columnLabel = getColumnLabel();
-        return null != columnLabel && columnLabel.equalsIgnoreCase(orderItem.getColumnLabel());
     }
     
     private boolean indexEquals(final OrderItem orderItem) {
