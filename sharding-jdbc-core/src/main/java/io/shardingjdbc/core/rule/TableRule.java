@@ -76,10 +76,8 @@ public final class TableRule {
     private List<DataNode> generateDataNodes(final List<String> actualDataNodes, final Map<String, DataSource> dataSourceMap) {
         List<DataNode> result = new LinkedList<>();
         for (String each : actualDataNodes) {
-            Preconditions.checkArgument(DataNode.isValidDataNode(each), String.format("Invalid format for actual data nodes: '%s'", each));
             DataNode dataNode = new DataNode(each);
-            Preconditions.checkArgument(dataSourceMap.containsKey(dataNode.getDataSourceName()), 
-                    String.format("Cannot find data source name in sharding rule, invalid actual data node is: '%s'", each));
+            Preconditions.checkArgument(dataSourceMap.containsKey(dataNode.getDataSourceName()), String.format("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each));
             result.add(dataNode);
         }
         return result;

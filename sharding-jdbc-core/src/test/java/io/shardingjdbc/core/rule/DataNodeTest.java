@@ -20,30 +20,24 @@ package io.shardingjdbc.core.rule;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class DataNodeTest {
     
     @Test
-    public void assertIsValidDataNode() {
-        assertTrue(DataNode.isValidDataNode("ds_0.tbl_0"));
+    public void assertNewValidDataNode() {
+        DataNode dataNode = new DataNode("ds_0.tbl_0");
+        assertThat(dataNode.getDataSourceName(), is("ds_0"));
+        assertThat(dataNode.getTableName(), is("tbl_0"));
     }
     
-    @Test
-    public void assertIsInvalidDataNodeWithoutDelimiter() {
-        assertFalse(DataNode.isValidDataNode("ds_0_tbl_0"));
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewInValidDataNodeWithoutDelimiter() {
+        new DataNode("ds_0tbl_0");
     }
     
-    @Test
-    public void assertIsInvalidDataNodeWithTwoDelimiters() {
-        assertFalse(DataNode.isValidDataNode("ds_0.tbl_0.tbl_1"));
-    }
-    
-    @Test
-    public void assertNewDataNode() {
-        assertThat(new DataNode("ds_0.tbl_0").getDataSourceName(), is("ds_0"));
-        assertThat(new DataNode("ds_0.tbl_0").getTableName(), is("tbl_0"));
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewInValidDataNodeWithTwoDelimiters() {
+        new DataNode("ds_0.tbl_0.tbl_1");
     }
 }

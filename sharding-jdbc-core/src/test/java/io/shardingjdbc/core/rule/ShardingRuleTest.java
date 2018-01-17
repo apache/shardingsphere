@@ -203,7 +203,6 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertIsAllBindingTable() throws SQLException {
-        
         assertTrue(createShardingRule().isAllBindingTables(Collections.singletonList("logicTable")));
         assertTrue(createShardingRule().isAllBindingTables(Collections.singletonList("logictable")));
         assertTrue(createShardingRule().isAllBindingTables(Collections.singletonList("subLogicTable")));
@@ -211,7 +210,6 @@ public final class ShardingRuleTest {
         assertTrue(createShardingRule().isAllBindingTables(Arrays.asList("logicTable", "subLogicTable")));
         assertTrue(createShardingRule().isAllBindingTables(Arrays.asList("logictable", "sublogicTable")));
         assertFalse(createShardingRule().isAllBindingTables(Arrays.asList("logictable", "sublogicTable", "newtable")));
-    
         assertFalse(createShardingRule().isAllBindingTables(Collections.<String>emptyList()));
         assertFalse(createShardingRule().isAllBindingTables(Collections.singletonList("newTable")));
     }

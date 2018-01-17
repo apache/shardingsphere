@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.rule;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -48,18 +49,13 @@ public class DataNode {
      * @param dataNode string of data node. use {@code .} to split data source name and table name.
      */
     public DataNode(final String dataNode) {
+        Preconditions.checkArgument(DataNode.isValidDataNode(dataNode), String.format("Invalid format for actual data nodes: '%s'", dataNode));
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
         dataSourceName = segments.get(0);
         tableName = segments.get(1);
     }
     
-    /**
-     * Adjust the format of data node string is valid or not.
-     * 
-     * @param dataNodeStr string to be adjusted
-     * @return format of data node string is valid or not
-     */
-    public static boolean isValidDataNode(final String dataNodeStr) {
+    private static boolean isValidDataNode(final String dataNodeStr) {
         return dataNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).splitToList(dataNodeStr).size();
     }
 }
