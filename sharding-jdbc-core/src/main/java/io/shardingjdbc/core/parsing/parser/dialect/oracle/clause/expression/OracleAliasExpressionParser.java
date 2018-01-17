@@ -1,6 +1,8 @@
 package io.shardingjdbc.core.parsing.parser.dialect.oracle.clause.expression;
 
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
+import io.shardingjdbc.core.parsing.lexer.dialect.oracle.OracleKeyword;
+import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
 import io.shardingjdbc.core.parsing.parser.clause.expression.AliasExpressionParser;
 
@@ -17,7 +19,33 @@ public final class OracleAliasExpressionParser extends AliasExpressionParser {
     
     @Override
     protected TokenType[] getCustomizedAvailableKeywordsForSelectItemAlias() {
-        return new TokenType[0];
+        return new TokenType[]{
+            DefaultKeyword.SCHEMA, DefaultKeyword.DATABASE, DefaultKeyword.PROCEDURE, DefaultKeyword.TABLESPACE, DefaultKeyword.FUNCTION, DefaultKeyword.SEQUENCE, DefaultKeyword.CURSOR, 
+            DefaultKeyword.IF, DefaultKeyword.WHILE, DefaultKeyword.DO, DefaultKeyword.NO, DefaultKeyword.WITHOUT, DefaultKeyword.TRUE, DefaultKeyword.FALSE, DefaultKeyword.TEMPORARY, 
+            DefaultKeyword.TEMP, DefaultKeyword.REPLACE, DefaultKeyword.BEFORE, DefaultKeyword.AFTER, DefaultKeyword.INSTEAD, DefaultKeyword.EACH, DefaultKeyword.STATEMENT, 
+            DefaultKeyword.EXECUTE, DefaultKeyword.FULLTEXT, DefaultKeyword.ENABLE, DefaultKeyword.DISABLE, DefaultKeyword.TRUNCATE, DefaultKeyword.CASCADE, DefaultKeyword.AS, 
+            DefaultKeyword.CASE, DefaultKeyword.WHEN, DefaultKeyword.END, DefaultKeyword.LEFT, DefaultKeyword.RIGHT, DefaultKeyword.FULL, DefaultKeyword.INNER, DefaultKeyword.OUTER, 
+            DefaultKeyword.CROSS, DefaultKeyword.JOIN, DefaultKeyword.USE, DefaultKeyword.USING, DefaultKeyword.NATURAL, DefaultKeyword.DECLARE, DefaultKeyword.FETCH, DefaultKeyword.CLOSE, 
+            DefaultKeyword.CAST, DefaultKeyword.ESCAPE, DefaultKeyword.SOME, DefaultKeyword.LEAVE, DefaultKeyword.ITERATE, DefaultKeyword.REPEAT, DefaultKeyword.UNTIL, DefaultKeyword.OPEN, 
+            DefaultKeyword.OUT, DefaultKeyword.INOUT, DefaultKeyword.OVER, DefaultKeyword.LOOP, DefaultKeyword.EXPLAIN, DefaultKeyword.PASSWORD, DefaultKeyword.LOCAL, DefaultKeyword.GLOBAL, 
+            DefaultKeyword.STORAGE, DefaultKeyword.DATA, DefaultKeyword.COALESCE, DefaultKeyword.CHARACTER, DefaultKeyword.VARYING, DefaultKeyword.INT, DefaultKeyword.DEC, DefaultKeyword.NUMERIC, 
+            DefaultKeyword.REAL, DefaultKeyword.DOUBLE, DefaultKeyword.PRECISION, DefaultKeyword.TIME, DefaultKeyword.INTERVAL, DefaultKeyword.BOOLEAN, DefaultKeyword.BLOB, DefaultKeyword.XOR, 
+            DefaultKeyword.GREATEST, DefaultKeyword.LEAST, DefaultKeyword.POSITION, DefaultKeyword.SUBSTRING, DefaultKeyword.TRIM, DefaultKeyword.BOTH, DefaultKeyword.LEADING, 
+            DefaultKeyword.TRAILING, DefaultKeyword.CONVERT, DefaultKeyword.CONSTRAINT, DefaultKeyword.PRIMARY, DefaultKeyword.FOREIGN, DefaultKeyword.KEY, DefaultKeyword.REFERENCES,
+            OracleKeyword.LOCKED, OracleKeyword.COMMIT, OracleKeyword.CREATION, OracleKeyword.UPDATED, OracleKeyword.UPSERT, OracleKeyword.CONNECT_BY_ROOT, 
+            OracleKeyword.STORE, OracleKeyword.MERGE, OracleKeyword.PURGE, OracleKeyword.GOTO, OracleKeyword.ONLY, OracleKeyword.AUTOMATIC, OracleKeyword.MAIN, 
+            OracleKeyword.PCTINCREASE, OracleKeyword.CHUNK, OracleKeyword.LIMIT, OracleKeyword.GROUPING, OracleKeyword.ROLLUP, OracleKeyword.CUBE, 
+            OracleKeyword.UNLIMITED, OracleKeyword.SIBLINGS, OracleKeyword.INCLUDE, OracleKeyword.EXCLUDE, OracleKeyword.PIVOT, OracleKeyword.UNPIVOT, 
+            OracleKeyword.EXCEPTION, OracleKeyword.EXCEPTIONS, OracleKeyword.ERRORS, OracleKeyword.DEFERRED, OracleKeyword.NAV, OracleKeyword.VERSIONS, 
+            OracleKeyword.WAIT, OracleKeyword.SAMPLE, OracleKeyword.CONTINUE, OracleKeyword.TIMESTAMP, OracleKeyword.SEGMENT, OracleKeyword.PARTITION, 
+            OracleKeyword.SUBPARTITION, OracleKeyword.RETURN, OracleKeyword.RETURNING, OracleKeyword.REJECT, OracleKeyword.MAXTRANS, OracleKeyword.MINEXTENTS, 
+            OracleKeyword.BEGIN, OracleKeyword.SAVEPOINT, OracleKeyword.MATCHED, OracleKeyword.LOB, OracleKeyword.DIMENSION, OracleKeyword.FORCE, OracleKeyword.FIRST, 
+            OracleKeyword.NEXT, OracleKeyword.LAST, OracleKeyword.EXTRACT, OracleKeyword.RULES, OracleKeyword.INITIALLY, OracleKeyword.KEEP, OracleKeyword.KEEP_DUPLICATES, 
+            OracleKeyword.REFERENCE, OracleKeyword.SEED, OracleKeyword.IGNORE, OracleKeyword.MEASURES, OracleKeyword.LOGGING, OracleKeyword.MAXSIZE, OracleKeyword.FLASH_CACHE, 
+            OracleKeyword.CELL_FLASH_CACHE, OracleKeyword.SKIP, OracleKeyword.NONE, OracleKeyword.NULLS, OracleKeyword.SINGLE, OracleKeyword.SCN, OracleKeyword.INITRANS, 
+            OracleKeyword.BLOCK, OracleKeyword.SEQUENTIAL, OracleKeyword.BINARY, OracleKeyword.INSENSITIVE, OracleKeyword.SCROLL, OracleKeyword.XML, OracleKeyword.MINVALUE, 
+            OracleKeyword.MAXVALUE, OracleKeyword.CACHE, OracleKeyword.NOCACHE, OracleKeyword.CYCLE, OracleKeyword.NOCYCLE,
+        };
     }
     
     @Override
