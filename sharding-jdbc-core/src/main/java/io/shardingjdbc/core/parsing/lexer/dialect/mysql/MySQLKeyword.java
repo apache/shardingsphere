@@ -54,7 +54,6 @@ public enum MySQLKeyword implements Keyword {
     FIRST,
     SPATIAL,
     ALGORITHM,
-    CHARACTER,
     COLLATE, 
     DISCARD,
     IMPORT,
@@ -93,6 +92,5 @@ public enum MySQLKeyword implements Keyword {
     ROLLUP,
     RESTRICT,
     STRAIGHT_JOIN, 
-    REGEXP,
-    KEY
+    REGEXP
 }

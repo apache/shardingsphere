@@ -2,6 +2,7 @@ package io.shardingjdbc.core.parsing.parser.clause;
 
 import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
+import io.shardingjdbc.core.parsing.lexer.dialect.oracle.OracleKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import io.shardingjdbc.core.parsing.parser.clause.expression.BasicExpressionParser;
@@ -47,7 +48,7 @@ public class OrderByClauseParser implements SQLClauseParser {
             return;
         }
         List<OrderItem> result = new LinkedList<>();
-        lexerEngine.skipIfEqual(DefaultKeyword.SIBLINGS);
+        lexerEngine.skipIfEqual(OracleKeyword.SIBLINGS);
         lexerEngine.accept(DefaultKeyword.BY);
         do {
             result.add(parseSelectOrderByItem(selectStatement));

@@ -48,5 +48,6 @@ public enum SQLServerKeyword implements Keyword {
     APPLY,
     REDUCE,
     REPLICATE,
+    EXTRACT,
     REDISTRIBUTE
 }

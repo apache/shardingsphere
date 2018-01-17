@@ -34,7 +34,6 @@ public enum PostgreSQLKeyword implements Keyword {
     LAST,
     LIMIT,
     OFFSET,
-    SIBLINGS,
     RESTART,
     RECURSIVE,
     CURRENT,
@@ -65,5 +64,6 @@ public enum PostgreSQLKeyword implements Keyword {
     DEFERRABLE,
     INITIALLY,
     DEFERRED,
-    IMMEDIATE
+    IMMEDIATE,
+    EXTRACT
 }

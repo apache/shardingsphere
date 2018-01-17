@@ -36,7 +36,6 @@ public enum OracleKeyword implements Keyword {
     MERGE,
     PURGE,
     ROWS,
-    IF,
     GOTO,
     ONLY,
     AUTOMATIC,
