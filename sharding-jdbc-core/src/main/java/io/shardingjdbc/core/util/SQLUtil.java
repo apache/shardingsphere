@@ -52,15 +52,23 @@ public class SQLUtil {
      * @return original SQL expression
      */
     public static String getOriginalValue(final String value, final DatabaseType databaseType) {
-        if (DatabaseType.MySQL == databaseType) {
-            try {
-                DefaultKeyword.valueOf(value.toUpperCase());
-                MySQLKeyword.valueOf(value.toUpperCase());
-                return String.format("`%s`", value);
-            } catch (final IllegalArgumentException ex) {
-                return value;
-            }
+        if (DatabaseType.MySQL != databaseType) {
+            return value;
         }
-        return value;
+        try {
+            DefaultKeyword.valueOf(value.toUpperCase());
+            return String.format("`%s`", value);
+        } catch (final IllegalArgumentException ex) {
+            return getOriginalValueForMySQLKeyword(value);
+        }
+    }
+    
+    private static String getOriginalValueForMySQLKeyword(final String value) {
+        try {
+            MySQLKeyword.valueOf(value.toUpperCase());
+            return String.format("`%s`", value);
+        } catch (final IllegalArgumentException ex) {
+            return value;
+        }
     }
 }
