@@ -117,8 +117,10 @@ public class ParserAssertHelper {
     private static SQLToken buildExpectedSQLToken(final io.shardingjdbc.core.parsing.parser.jaxb.SQLToken sqlToken, final boolean isPreparedStatement) {
         if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.TableToken) {
             return new TableToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.core.parsing.parser.jaxb.TableToken) sqlToken).getOriginalLiterals());
-        } if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.IndexToken) {
-            return new IndexToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.core.parsing.parser.jaxb.IndexToken) sqlToken).getOriginalLiterals(), ((io.shardingjdbc.core.parsing.parser.jaxb.IndexToken) sqlToken).getTableName());
+        }
+        if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.IndexToken) {
+            return new IndexToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.core.parsing.parser.jaxb.IndexToken) sqlToken).getOriginalLiterals(), 
+                    ((io.shardingjdbc.core.parsing.parser.jaxb.IndexToken) sqlToken).getTableName());
         } else if (sqlToken instanceof io.shardingjdbc.core.parsing.parser.jaxb.ItemsToken) {
             ItemsToken itemsToken = new ItemsToken(sqlToken.getBeginPosition());
             itemsToken.getItems().addAll(((io.shardingjdbc.core.parsing.parser.jaxb.ItemsToken) sqlToken).getItems());

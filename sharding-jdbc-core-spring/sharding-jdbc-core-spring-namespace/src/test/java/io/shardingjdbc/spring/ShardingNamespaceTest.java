@@ -192,12 +192,12 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         Object shardingContext = FieldValueUtil.getFieldValue(multiTableRulesDataSource, "shardingContext", true);
         ShardingRule shardingRule = (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
         assertThat(shardingRule.getTableRules().size(), is(2));
-        Iterator<TableRule> iter = shardingRule.getTableRules().iterator();
-        TableRule orderRule = iter.next();
+        Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
+        TableRule orderRule = tableRules.next();
         assertThat(orderRule.getActualDataNodes().size(), is(2));
         assertTrue(orderRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order")));
         assertTrue(orderRule.getActualDataNodes().contains(new DataNode("dbtbl_1", "t_order")));
-        TableRule orderItemRule = iter.next();
+        TableRule orderItemRule = tableRules.next();
         assertThat(orderItemRule.getActualDataNodes().size(), is(2));
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order_item")));
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_1", "t_order_item")));

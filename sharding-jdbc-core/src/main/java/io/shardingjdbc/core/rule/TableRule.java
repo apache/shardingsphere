@@ -62,7 +62,7 @@ public final class TableRule {
         this.tableShardingStrategy = tableShardingStrategy;
         this.generateKeyColumn = generateKeyColumn;
         this.keyGenerator = keyGenerator;
-        this.logicIndex = null == logicIndex ? logicIndex : logicIndex.toLowerCase();
+        this.logicIndex = null == logicIndex ? null : logicIndex.toLowerCase();
     }
     
     private List<DataNode> generateDataNodes(final String logicTable, final Map<String, DataSource> dataSourceMap) {

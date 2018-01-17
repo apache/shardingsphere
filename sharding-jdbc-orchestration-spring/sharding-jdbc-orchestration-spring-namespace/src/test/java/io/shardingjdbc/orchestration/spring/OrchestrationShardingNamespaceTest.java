@@ -168,11 +168,11 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     public void assertMultiBindingTableRulesDatasource() {
         ShardingRule shardingRule = getShardingRule("multiBindingTableRulesDatasource");
         assertThat(shardingRule.getBindingTableRules().size(), is(2));
-        Iterator<BindingTableRule> iter = shardingRule.getBindingTableRules().iterator();
-        BindingTableRule orderRule = iter.next();
+        Iterator<BindingTableRule> bindingTableRules = shardingRule.getBindingTableRules().iterator();
+        BindingTableRule orderRule = bindingTableRules.next();
         assertThat(orderRule.getBindingActualTable("dbtbl_0", "t_order", "t_order_item"), is("t_order"));
         assertThat(orderRule.getBindingActualTable("dbtbl_1", "t_order", "t_order_item"), is("t_order"));
-        BindingTableRule userRule = iter.next();
+        BindingTableRule userRule = bindingTableRules.next();
         assertThat(userRule.getBindingActualTable("dbtbl_0", "t_user", "t_user_detail"), is("t_user"));
         assertThat(userRule.getBindingActualTable("dbtbl_1", "t_user", "t_user_detail"), is("t_user"));
     }
@@ -204,12 +204,12 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         Object shardingContext = FieldValueUtil.getFieldValue(multiTableRulesDataSource, "shardingContext", true);
         ShardingRule shardingRule = (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
         assertThat(shardingRule.getTableRules().size(), is(2));
-        Iterator<TableRule> iter = shardingRule.getTableRules().iterator();
-        TableRule orderRule = iter.next();
+        Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
+        TableRule orderRule = tableRules.next();
         assertThat(orderRule.getActualDataNodes().size(), is(2));
         assertTrue(orderRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order")));
         assertTrue(orderRule.getActualDataNodes().contains(new DataNode("dbtbl_1", "t_order")));
-        TableRule orderItemRule = iter.next();
+        TableRule orderItemRule = tableRules.next();
         assertThat(orderItemRule.getActualDataNodes().size(), is(2));
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order_item")));
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_1", "t_order_item")));
