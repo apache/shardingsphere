@@ -46,7 +46,7 @@ public final class Tokenizer {
     
     private final Dictionary dictionary;
     
-    private final int offset;
+    private int offset;
     
     /**
      * skip whitespace.
@@ -58,7 +58,7 @@ public final class Tokenizer {
         while (CharType.isWhitespace(charAt(offset + length))) {
             length++;
         }
-        return offset + length;
+        return forward(length);
     }
     
     /**
@@ -88,7 +88,7 @@ public final class Tokenizer {
         while (!CharType.isEndOfInput(charAt(offset + length)) && '\n' != charAt(offset + length)) {
             length++;
         }
-        return offset + length + 1;
+        return forward(length + 1);
     }
     
     private boolean isMultipleLineCommentBegin(final char ch, final char next) {
@@ -116,7 +116,7 @@ public final class Tokenizer {
             }
             length++;
         }
-        return offset + length + COMMENT_AND_HINT_END_SYMBOL_LENGTH;
+        return forward(length + COMMENT_AND_HINT_END_SYMBOL_LENGTH);
     }
     
     private boolean isMultipleLineCommentEnd(final char ch, final char next) {
@@ -136,7 +136,7 @@ public final class Tokenizer {
         while (isVariableChar(charAt(offset + length))) {
             length++;
         }
-        return new Token(Literals.VARIABLE, input.substring(offset, offset + length), offset + length);
+        return new Token(Literals.VARIABLE, input.substring(offset, offset + length), forward(length));
     }
     
     private boolean isVariableChar(final char ch) {
@@ -151,7 +151,7 @@ public final class Tokenizer {
     public Token scanIdentifier() {
         if ('`' == charAt(offset)) {
             int length = getLengthUntilTerminatedChar('`');
-            return new Token(Literals.IDENTIFIER, input.substring(offset, offset + length), offset + length);
+            return new Token(Literals.IDENTIFIER, input.substring(offset, offset + length), forward(length));
         }
         int length = 0;
         while (isIdentifierChar(charAt(offset + length))) {
@@ -159,9 +159,9 @@ public final class Tokenizer {
         }
         String literals = input.substring(offset, offset + length);
         if (isAmbiguousIdentifier(literals)) {
-            return new Token(processAmbiguousIdentifier(offset + length, literals), literals, offset + length);
+            return new Token(processAmbiguousIdentifier(offset + length, literals), literals, forward(length));
         }
-        return new Token(dictionary.findTokenType(literals, Literals.IDENTIFIER), literals, offset + length);
+        return new Token(dictionary.findTokenType(literals, Literals.IDENTIFIER), literals, forward(length));
     }
     
     private int getLengthUntilTerminatedChar(final char terminatedChar) {
@@ -214,7 +214,7 @@ public final class Tokenizer {
         while (isHex(charAt(offset + length))) {
             length++;
         }
-        return new Token(Literals.HEX, input.substring(offset, offset + length), offset + length);
+        return new Token(Literals.HEX, input.substring(offset, offset + length), forward(length));
     }
     
     private boolean isHex(final char ch) {
@@ -250,7 +250,7 @@ public final class Tokenizer {
             isFloat = true;
             length++;
         }
-        return new Token(isFloat ? Literals.FLOAT : Literals.INT, input.substring(offset, offset + length), offset + length);
+        return new Token(isFloat ? Literals.FLOAT : Literals.INT, input.substring(offset, offset + length), forward(length));
     }
     
     private int getDigitalLength(final int offset) {
@@ -282,7 +282,7 @@ public final class Tokenizer {
     
     private Token scanChars(final char terminatedChar) {
         int length = getLengthUntilTerminatedChar(terminatedChar);
-        return new Token(Literals.CHARS, input.substring(offset + 1, offset + length - 1), offset + length);
+        return new Token(Literals.CHARS, input.substring(offset + 1, offset + length - 1), forward(length));
     }
     
     /**
@@ -300,9 +300,19 @@ public final class Tokenizer {
         while (null == (symbol = Symbol.literalsOf(literals))) {
             literals = input.substring(offset, offset + --length);
         }
-        return new Token(symbol, literals, offset + length);
+        return new Token(symbol, literals, forward(length));
     }
-    
+
+    /**
+     * forward the offset
+     * @param length
+     * @return the new offset
+     */
+    public int forward(int length) {
+        offset += length;
+        return offset;
+    }
+
     private char charAt(final int index) {
         return index >= input.length() ? (char) CharType.EOI : input.charAt(index);
     }

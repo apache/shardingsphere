@@ -38,7 +38,8 @@ public final class TokenizerTest {
     public void assertSkipWhitespace() {
         String sql = "SELECT *\tFROM\rTABLE_XXX\n";
         for (int i = 0; i < sql.length(); i++) {
-            Tokenizer tokenizer = new Tokenizer(sql, dictionary, i);
+            Tokenizer tokenizer = new Tokenizer(sql, dictionary);
+            tokenizer.forward(i);
             int expected = i;
             if (CharType.isWhitespace(sql.charAt(i))) {
                 expected += 1;
@@ -46,70 +47,78 @@ public final class TokenizerTest {
             assertThat(tokenizer.skipWhitespace(), is(expected));
         }
     }
-    
+
     @Test
     public void assertSkipCommentWithoutComment() {
         String sql = "SELECT * FROM XXX_TABLE";
-        Tokenizer tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("_"));
+        Tokenizer tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("_"));
         assertThat(tokenizer.skipComment(), is(sql.indexOf("_")));
     }
-    
+
     @Test
     public void assertSkipSingleLineComment() {
         String singleLineCommentWithHyphen = "--x\"y`z\n";
         String singleLineCommentWithSlash = "//x\\\"y'z\n";
         String sql = "SELECT * FROM XXX_TABLE " + singleLineCommentWithHyphen + "WHERE XX" + singleLineCommentWithSlash + "=1 ";
-        Tokenizer hyphenTokenizer = new Tokenizer(sql, dictionary, sql.indexOf("-"));
+        Tokenizer hyphenTokenizer = new Tokenizer(sql, dictionary);
+        hyphenTokenizer.forward(sql.indexOf("-"));
         int expected = sql.indexOf("-") + singleLineCommentWithHyphen.length();
         assertThat(hyphenTokenizer.skipComment(), is(expected));
-        Tokenizer slashTokenizer = new Tokenizer(sql, dictionary, sql.indexOf("/"));
+        Tokenizer slashTokenizer = new Tokenizer(sql, dictionary);
+        slashTokenizer.forward(sql.indexOf("/"));
         expected = sql.indexOf("/") + singleLineCommentWithSlash.length();
         assertThat(slashTokenizer.skipComment(), is(expected));
     }
-    
+
     @Test
     public void assertSkipSingleLineMySQLComment() {
         String comment = "#x\"y`z\n";
         String sql = "SELECT * FROM XXX_TABLE " + comment + "WHERE XX=1";
-        Tokenizer tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("#"));
+        Tokenizer tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("#"));
         int expected = sql.indexOf("#") + comment.length();
         assertThat(tokenizer.skipComment(), is(expected));
     }
-    
+
     @Test
     public void assertSkipMultipleLineComment() {
         String comment = "/*--xyz \n WHERE XX=1 //xyz*/";
         String sql = "SELECT * FROM XXX_TABLE " + comment + "WHERE YY>2";
-        Tokenizer tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("/"));
+        Tokenizer tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("/"));
         int expected = sql.indexOf("/") + comment.length();
         assertThat(tokenizer.skipComment(), is(expected));
     }
-    
+
     @Test(expected = UnterminatedCharException.class)
     public void assertSkipMultipleLineCommentUnterminatedCharException() {
         String comment = "/*--xyz \n WHERE XX=1 //xyz";
         String sql = "SELECT * FROM XXX_TABLE " + comment;
-        Tokenizer tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("/"));
+        Tokenizer tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("/"));
         tokenizer.skipComment();
     }
-    
+
     @Test
     public void assertSkipHint() {
         String comment = "/*--xyz \n WHERE XX=1 //xyz*/";
         String sql = "SELECT * FROM XXX_TABLE " + comment + "WHERE YY>2";
-        Tokenizer tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("/"));
+        Tokenizer tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("/"));
         int expected = sql.indexOf("/") + comment.length();
         assertThat(tokenizer.skipHint(), is(expected));
     }
-    
+
     @Test(expected = UnterminatedCharException.class)
     public void assertSkipHintUnterminatedCharException() {
         String comment = "/*--xyz \n WHERE XX=1 //xyz";
         String sql = "SELECT * FROM XXX_TABLE " + comment;
-        Tokenizer tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("/"));
+        Tokenizer tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("/"));
         tokenizer.skipHint();
     }
-    
+
     @Test
     public void assertScanVariable() {
         String sql = "SELECT * FROM XXX_TABLE %s WHERE YY>2";
@@ -119,10 +128,11 @@ public final class TokenizerTest {
 
     private void assertScanVariable(final String sql, final String literals) {
         String formatSql = String.format(sql, literals);
-        Tokenizer tokenizer = new Tokenizer(formatSql, dictionary, formatSql.indexOf("@"));
+        Tokenizer tokenizer = new Tokenizer(formatSql, dictionary);
+        tokenizer.forward(formatSql.indexOf("@"));
         assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanVariable(), new Token(Literals.VARIABLE, literals, formatSql.indexOf("WHERE") - 1)));
     }
-    
+
     @Test
     public void assertScanNumber() {
         String sql = "SELECT * FROM XXX_TABLE WHERE XX=%s";
@@ -145,40 +155,49 @@ public final class TokenizerTest {
         assertScanHexDecimal(sql, "0x1e", Literals.HEX);
         assertScanHexDecimal(sql, "0x-1e", Literals.HEX);
     }
-    
+
     private void assertScanNumber(final String sql, final String literals, final TokenType type) {
         String formatSql = String.format(sql, literals);
-        Tokenizer tokenizer = new Tokenizer(formatSql, dictionary, sql.indexOf("=") + 1);
+        Tokenizer tokenizer = new Tokenizer(formatSql, dictionary);
+        tokenizer.forward(sql.indexOf("=") + 1);
         assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanNumber(), new Token(type, literals, formatSql.length())));
     }
-    
+
     private void assertScanHexDecimal(final String sql, final String literals, final TokenType type) {
         String formatSql = String.format(sql, literals);
-        Tokenizer tokenizer = new Tokenizer(formatSql, dictionary, sql.indexOf("=") + 1);
+        Tokenizer tokenizer = new Tokenizer(formatSql, dictionary);
+        tokenizer.forward(sql.indexOf("=") + 1);
         assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanHexDecimal(), new Token(type, literals, formatSql.length())));
     }
-    
+
     @Test
     public void assertScanNChars() {
         String sql = "SELECT * FROM ORDER, XX_TABLE AS `table` WHERE YY=N'xx' And group =-1 GROUP BY YY";
-        Tokenizer tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("ORDER"));
+        Tokenizer tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("ORDER"));
         assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanIdentifier(), new Token(Literals.IDENTIFIER, "ORDER", sql.indexOf(","))));
-        tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("GROUP"));
+        tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("GROUP"));
         assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanIdentifier(), new Token(DefaultKeyword.GROUP, "GROUP", sql.indexOf("BY") - 1)));
-        tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("`"));
+        tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("`"));
         assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanIdentifier(), new Token(Literals.IDENTIFIER, "`table`", sql.indexOf("WHERE") - 1)));
-        tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("YY"));
+        tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("YY"));
         assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanIdentifier(), new Token(Literals.IDENTIFIER, "YY", sql.indexOf("="))));
-        tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("=-"));
+        tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("=-"));
         assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanSymbol(), new Token(Symbol.EQ, "=", sql.indexOf("=-") + 1)));
-        tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("'"));
+        tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("'"));
         assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanChars(), new Token(Literals.CHARS, "xx", sql.indexOf("And") - 1)));
     }
-    
+
     @Test(expected = UnterminatedCharException.class)
     public void assertScanChars() {
         String sql = "SELECT * FROM XXX_TABLE AS `TEST";
-        Tokenizer tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("`"));
+        Tokenizer tokenizer = new Tokenizer(sql, dictionary);
+        tokenizer.forward(sql.indexOf("`"));
         tokenizer.scanChars();
     }
 }

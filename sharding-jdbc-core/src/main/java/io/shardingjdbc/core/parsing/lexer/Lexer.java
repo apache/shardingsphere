@@ -43,26 +43,31 @@ public class Lexer {
     
     @Getter
     private Token currentToken;
+
+    private Tokenizer tokenizer;
     
     /**
      * Analyse next token.
      */
     public final void nextToken() {
+        initTokenizer();
         skipIgnoredToken();
         if (isVariableBegin()) {
-            currentToken = new Tokenizer(input, dictionary, offset).scanVariable();
+            currentToken = tokenizer.scanVariable();
         } else if (isNCharBegin()) {
-            currentToken = new Tokenizer(input, dictionary, ++offset).scanChars();
+            ++offset;
+            tokenizer.forward(1);
+            currentToken = tokenizer.scanChars();
         } else if (isIdentifierBegin()) {
-            currentToken = new Tokenizer(input, dictionary, offset).scanIdentifier();
+            currentToken = tokenizer.scanIdentifier();
         } else if (isHexDecimalBegin()) {
-            currentToken = new Tokenizer(input, dictionary, offset).scanHexDecimal();
+            currentToken = tokenizer.scanHexDecimal();
         } else if (isNumberBegin()) {
-            currentToken = new Tokenizer(input, dictionary, offset).scanNumber();
+            currentToken = tokenizer.scanNumber();
         } else if (isSymbolBegin()) {
-            currentToken = new Tokenizer(input, dictionary, offset).scanSymbol();
+            currentToken = tokenizer.scanSymbol();
         } else if (isCharsBegin()) {
-            currentToken = new Tokenizer(input, dictionary, offset).scanChars();
+            currentToken = tokenizer.scanChars();
         } else if (isEnd()) {
             currentToken = new Token(Assist.END, "", offset);
         } else {
@@ -70,16 +75,22 @@ public class Lexer {
         }
         offset = currentToken.getEndPosition();
     }
-    
+
+    private void initTokenizer() {
+        if (tokenizer == null) {
+            tokenizer = new Tokenizer(input, dictionary);
+        }
+    }
+
     private void skipIgnoredToken() {
-        offset = new Tokenizer(input, dictionary, offset).skipWhitespace();
+        offset = tokenizer.skipWhitespace();
         while (isHintBegin()) {
-            offset = new Tokenizer(input, dictionary, offset).skipHint();
-            offset = new Tokenizer(input, dictionary, offset).skipWhitespace();
+            offset = tokenizer.skipHint();
+            offset = tokenizer.skipWhitespace();
         }
         while (isCommentBegin()) {
-            offset = new Tokenizer(input, dictionary, offset).skipComment();
-            offset = new Tokenizer(input, dictionary, offset).skipWhitespace();
+            offset = tokenizer.skipComment();
+            offset = tokenizer.skipWhitespace();
         }
     }
     
