@@ -21,7 +21,6 @@ import io.shardingjdbc.example.spring.namespace.mybatis.service.DemoService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-
 public final class SpringMybatisShardingDatabaseOnlyMain {
     
     // CHECKSTYLE:OFF
