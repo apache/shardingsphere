@@ -38,6 +38,16 @@ public final class MySQLAliasExpressionParser extends AliasExpressionParser {
     
     @Override
     protected TokenType[] getCustomizedAvailableKeywordsForTableAlias() {
-        return new TokenType[] {DefaultKeyword.LENGTH};
+        return new TokenType[]{
+            DefaultKeyword.VIEW, DefaultKeyword.FUNCTION, DefaultKeyword.OF, DefaultKeyword.DO, DefaultKeyword.COMMENT, DefaultKeyword.ROW, DefaultKeyword.EXECUTE, DefaultKeyword.MODIFY, 
+            DefaultKeyword.VALIDATE, DefaultKeyword.USER, DefaultKeyword.IDENTIFIED, DefaultKeyword.TRUNCATE, DefaultKeyword.END, DefaultKeyword.FULL, DefaultKeyword.CLOSE, DefaultKeyword.CAST, 
+            DefaultKeyword.ESCAPE, DefaultKeyword.SOME, DefaultKeyword.OPEN, DefaultKeyword.OVER, DefaultKeyword.COALESCE, DefaultKeyword.VARCHAR2, DefaultKeyword.DATE, DefaultKeyword.ANY,
+            MySQLKeyword.OFFSET, MySQLKeyword.VALUE, MySQLKeyword.BEGIN, MySQLKeyword.QUICK, MySQLKeyword.CACHE, MySQLKeyword.SQL_CACHE, MySQLKeyword.SQL_NO_CACHE, MySQLKeyword.SQL_BUFFER_RESULT, 
+            MySQLKeyword.FIRST, MySQLKeyword.ALGORITHM, MySQLKeyword.DISCARD, MySQLKeyword.IMPORT, MySQLKeyword.VALIDATION, MySQLKeyword.REORGANIZE, MySQLKeyword.EXCHANGE, MySQLKeyword.REBUILD, 
+            MySQLKeyword.REPAIR, MySQLKeyword.UPGRADE, MySQLKeyword.KEY_BLOCK_SIZE, MySQLKeyword.AUTO_INCREMENT, MySQLKeyword.AVG_ROW_LENGTH, MySQLKeyword.CHECKSUM, 
+            MySQLKeyword.COMPRESSION, MySQLKeyword.CONNECTION, MySQLKeyword.DIRECTORY, MySQLKeyword.DELAY_KEY_WRITE, MySQLKeyword.ENCRYPTION, MySQLKeyword.ENGINE, MySQLKeyword.INSERT_METHOD, 
+            MySQLKeyword.MAX_ROWS, MySQLKeyword.MIN_ROWS, MySQLKeyword.PACK_KEYS, MySQLKeyword.ROW_FORMAT, MySQLKeyword.DYNAMIC, MySQLKeyword.FIXED, MySQLKeyword.COMPRESSED, MySQLKeyword.REDUNDANT, 
+            MySQLKeyword.COMPACT, MySQLKeyword.STATS_AUTO_RECALC, MySQLKeyword.STATS_PERSISTENT, MySQLKeyword.STATS_SAMPLE_PAGES, MySQLKeyword.DISK, MySQLKeyword.MEMORY, MySQLKeyword.ROLLUP,
+        };
     }
 }

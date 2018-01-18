@@ -28,6 +28,21 @@ public final class PostgreSQLAliasExpressionParser extends AliasExpressionParser
     
     @Override
     protected TokenType[] getCustomizedAvailableKeywordsForTableAlias() {
-        return new TokenType[0];
+        return new TokenType[] {
+            DefaultKeyword.SCHEMA, DefaultKeyword.DATABASE, DefaultKeyword.VIEW, DefaultKeyword.INDEX, DefaultKeyword.TRIGGER, DefaultKeyword.PROCEDURE, DefaultKeyword.FUNCTION, 
+            DefaultKeyword.CURSOR, DefaultKeyword.OF, DefaultKeyword.WHILE, DefaultKeyword.BY, DefaultKeyword.COMMENT, DefaultKeyword.REPLACE, DefaultKeyword.BEFORE, DefaultKeyword.EACH, 
+            DefaultKeyword.ROW, DefaultKeyword.EXECUTE, DefaultKeyword.FULLTEXT, DefaultKeyword.ALTER, DefaultKeyword.MODIFY, DefaultKeyword.IDENTIFIED, 
+            DefaultKeyword.TRUNCATE, DefaultKeyword.INSERT, DefaultKeyword.VALUES, DefaultKeyword.UPDATE, DefaultKeyword.DELETE, 
+            DefaultKeyword.USE, DefaultKeyword.DECLARE, DefaultKeyword.REVOKE, DefaultKeyword.CLOSE, DefaultKeyword.ESCAPE, DefaultKeyword.LOCK, DefaultKeyword.LEAVE, DefaultKeyword.ITERATE, 
+            DefaultKeyword.REPEAT, DefaultKeyword.OPEN, DefaultKeyword.OUT, DefaultKeyword.INOUT, DefaultKeyword.OVER, DefaultKeyword.LOOP, DefaultKeyword.EXPLAIN, DefaultKeyword.COALESCE, 
+            DefaultKeyword.CHAR, DefaultKeyword.CHARACTER, DefaultKeyword.VARYING, DefaultKeyword.VARCHAR, DefaultKeyword.VARCHAR2, DefaultKeyword.INTEGER, DefaultKeyword.INT, 
+            DefaultKeyword.SMALLINT, DefaultKeyword.DECIMAL, DefaultKeyword.DEC, DefaultKeyword.NUMERIC, DefaultKeyword.FLOAT, DefaultKeyword.REAL, DefaultKeyword.DOUBLE, DefaultKeyword.PRECISION, 
+            DefaultKeyword.DATE, DefaultKeyword.INTERVAL, DefaultKeyword.BLOB, DefaultKeyword.XOR, DefaultKeyword.BETWEEN, DefaultKeyword.EXISTS, DefaultKeyword.CONVERT, DefaultKeyword.KEY,
+            PostgreSQLKeyword.SHOW, PostgreSQLKeyword.FIRST, PostgreSQLKeyword.NEXT, PostgreSQLKeyword.LAST, PostgreSQLKeyword.RESTART, PostgreSQLKeyword.RECURSIVE, PostgreSQLKeyword.CURRENT, 
+            PostgreSQLKeyword.NOWAIT, PostgreSQLKeyword.TYPE, PostgreSQLKeyword.UNLOGGED, PostgreSQLKeyword.CONTINUE, PostgreSQLKeyword.ROWS, PostgreSQLKeyword.SHARE, 
+            PostgreSQLKeyword.IDENTITY, PostgreSQLKeyword.STATISTICS, PostgreSQLKeyword.PLAIN, PostgreSQLKeyword.EXTERNAL, PostgreSQLKeyword.EXTENDED, PostgreSQLKeyword.MAIN, 
+            PostgreSQLKeyword.VALID, PostgreSQLKeyword.ALWAYS, PostgreSQLKeyword.RULE, PostgreSQLKeyword.OIDS, PostgreSQLKeyword.INHERIT, 
+            PostgreSQLKeyword.OWNER, PostgreSQLKeyword.DEFERRED, PostgreSQLKeyword.IMMEDIATE, PostgreSQLKeyword.EXTRACT,
+        };
     }
 }
