@@ -120,4 +120,16 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             lexerEngine.skipParentheses(sqlStatement);
         }
     }
+    
+    /**
+     * Parse single table without alias.
+     *
+     * @param sqlStatement SQL statement
+     */
+    public final void parseSingleTableWithoutAlias(final SQLStatement sqlStatement) {
+        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+        sqlStatement.getSqlTokens().add(new TableToken(beginPosition, lexerEngine.getCurrentToken().getLiterals()));
+        sqlStatement.getTables().add(new Table(lexerEngine.getCurrentToken().getLiterals(), Optional.<String>absent()));
+        lexerEngine.nextToken();
+    }
 }

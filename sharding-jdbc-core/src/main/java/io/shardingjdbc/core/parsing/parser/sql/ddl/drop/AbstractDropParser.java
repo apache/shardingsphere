@@ -60,10 +60,10 @@ public abstract class AbstractDropParser implements SQLParser {
             parseIndex(result);
         } else if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
             lexerEngine.skipAll(getSkippedKeywordsBetweenDropTableAndTableName());
+            tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         } else {
             throw new SQLParsingException("Can't support other DROP grammar unless DROP TABLE, DROP INDEX.");
         }
-        tableReferencesClauseParser.parse(result, true);
         return result;
     }
     
@@ -80,9 +80,12 @@ public abstract class AbstractDropParser implements SQLParser {
         int beginPosition = currentToken.getEndPosition() - currentToken.getLiterals().length();
         String literals = currentToken.getLiterals();
         lexerEngine.skipUntil(DefaultKeyword.ON);
-        lexerEngine.nextToken();
-        String tableName = lexerEngine.getCurrentToken().getLiterals();
-        ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
+        if (lexerEngine.skipIfEqual(DefaultKeyword.ON)) {
+            tableReferencesClauseParser.parseSingleTableWithoutAlias(ddlStatement);
+            ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, ddlStatement.getTables().getSingleTableName()));
+        } else {
+            ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, ""));
+        }
     }
     
     protected abstract Keyword[] getSkippedKeywordsBetweenDropTableAndTableName();

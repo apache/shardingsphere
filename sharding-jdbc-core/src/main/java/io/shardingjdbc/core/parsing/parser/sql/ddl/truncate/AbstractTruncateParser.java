@@ -53,7 +53,7 @@ public abstract class AbstractTruncateParser implements SQLParser {
         lexerEngine.skipIfEqual(DefaultKeyword.TABLE);
         lexerEngine.skipAll(getSkippedKeywordsBetweenTruncateTableAndTableName());
         DDLStatement result = new DDLStatement();
-        tableReferencesClauseParser.parse(result, true);
+        tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         return result;
     }
     

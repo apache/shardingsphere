@@ -64,7 +64,7 @@ public abstract class AbstractCreateParser implements SQLParser {
         } else {
             throw new SQLParsingException("Can't support other CREATE grammar unless CREATE TABLE, CREATE INDEX.");
         }
-        tableReferencesClauseParser.parse(result, true);
+        tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         return result;
     }
     

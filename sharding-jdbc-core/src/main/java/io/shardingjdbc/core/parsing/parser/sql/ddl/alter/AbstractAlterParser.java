@@ -53,7 +53,7 @@ public abstract class AbstractAlterParser implements SQLParser {
         lexerEngine.unsupportedIfNotSkip(DefaultKeyword.TABLE);
         lexerEngine.skipAll(getSkippedKeywordsBetweenAlterTableAndTableName());
         DDLStatement result = new DDLStatement();
-        tableReferencesClauseParser.parse(result, true);
+        tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         return result;
     }
     
