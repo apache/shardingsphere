@@ -50,6 +50,26 @@ public final class OracleAliasExpressionParser extends AliasExpressionParser {
     
     @Override
     protected TokenType[] getCustomizedAvailableKeywordsForTableAlias() {
-        return new TokenType[0];
+        return new TokenType[] {
+            DefaultKeyword.PROCEDURE, DefaultKeyword.FUNCTION, DefaultKeyword.CURSOR, DefaultKeyword.TRUE, DefaultKeyword.FALSE, DefaultKeyword.REPLACE, DefaultKeyword.BEFORE, 
+            DefaultKeyword.EACH, DefaultKeyword.EXECUTE, DefaultKeyword.FULLTEXT, DefaultKeyword.CASE, DefaultKeyword.WHEN, DefaultKeyword.END, DefaultKeyword.USE,  
+            DefaultKeyword.NATURAL, DefaultKeyword.DECLARE, DefaultKeyword.FETCH, DefaultKeyword.CLOSE, DefaultKeyword.CAST, DefaultKeyword.ESCAPE, 
+            DefaultKeyword.SOME, DefaultKeyword.LEAVE, DefaultKeyword.ITERATE, DefaultKeyword.REPEAT, DefaultKeyword.OPEN, DefaultKeyword.OUT, DefaultKeyword.INOUT, 
+            DefaultKeyword.OVER, DefaultKeyword.LOOP, DefaultKeyword.EXPLAIN, DefaultKeyword.COALESCE, DefaultKeyword.CHARACTER, DefaultKeyword.VARYING, DefaultKeyword.INT, 
+            DefaultKeyword.DEC, DefaultKeyword.NUMERIC, DefaultKeyword.REAL, DefaultKeyword.DOUBLE, DefaultKeyword.PRECISION, DefaultKeyword.INTERVAL, DefaultKeyword.BLOB, 
+            DefaultKeyword.XOR, DefaultKeyword.BOTH, DefaultKeyword.LEADING, DefaultKeyword.TRAILING, DefaultKeyword.CONVERT, DefaultKeyword.CONSTRAINT, DefaultKeyword.PRIMARY, 
+            DefaultKeyword.FOREIGN, DefaultKeyword.KEY, DefaultKeyword.REFERENCES,
+            OracleKeyword.LOCKED, OracleKeyword.COMMIT, OracleKeyword.CREATION, OracleKeyword.UPDATED, OracleKeyword.UPSERT, OracleKeyword.STORE, OracleKeyword.MERGE, 
+            OracleKeyword.PURGE, OracleKeyword.GOTO, OracleKeyword.ONLY, OracleKeyword.AUTOMATIC, OracleKeyword.MAIN, OracleKeyword.PCTINCREASE, OracleKeyword.CHUNK, 
+            OracleKeyword.LIMIT, OracleKeyword.GROUPING, OracleKeyword.ROLLUP, OracleKeyword.CUBE, OracleKeyword.UNLIMITED, OracleKeyword.SIBLINGS, OracleKeyword.INCLUDE, 
+            OracleKeyword.EXCLUDE, OracleKeyword.PIVOT, OracleKeyword.UNPIVOT, OracleKeyword.EXCEPTION, OracleKeyword.EXCEPTIONS, OracleKeyword.ERRORS, OracleKeyword.DEFERRED, 
+            OracleKeyword.NAV, OracleKeyword.VERSIONS, OracleKeyword.WAIT, OracleKeyword.CONTINUE, OracleKeyword.TIMESTAMP, OracleKeyword.SEGMENT, OracleKeyword.RETURN, 
+            OracleKeyword.RETURNING, OracleKeyword.REJECT, OracleKeyword.MAXTRANS, OracleKeyword.MINEXTENTS, OracleKeyword.BEGIN, OracleKeyword.SAVEPOINT, OracleKeyword.MATCHED, 
+            OracleKeyword.LOB, OracleKeyword.DIMENSION, OracleKeyword.FORCE, OracleKeyword.FIRST, OracleKeyword.NEXT, OracleKeyword.LAST, OracleKeyword.EXTRACT, OracleKeyword.RULES, 
+            OracleKeyword.INITIALLY, OracleKeyword.KEEP, OracleKeyword.KEEP_DUPLICATES, OracleKeyword.REFERENCE, OracleKeyword.SEED, OracleKeyword.IGNORE, OracleKeyword.MEASURES, 
+            OracleKeyword.LOGGING, OracleKeyword.MAXSIZE, OracleKeyword.FLASH_CACHE, OracleKeyword.CELL_FLASH_CACHE, OracleKeyword.SKIP, OracleKeyword.NONE, OracleKeyword.NULLS, 
+            OracleKeyword.SINGLE, OracleKeyword.SCN, OracleKeyword.INITRANS, OracleKeyword.BLOCK, OracleKeyword.SEQUENTIAL, OracleKeyword.BINARY, OracleKeyword.INSENSITIVE, 
+            OracleKeyword.SCROLL, OracleKeyword.XML, OracleKeyword.MINVALUE, OracleKeyword.MAXVALUE, OracleKeyword.CACHE, OracleKeyword.NOCACHE, OracleKeyword.CYCLE, OracleKeyword.NOCYCLE,
+        };
     }
 }

@@ -38,13 +38,13 @@ public final class SQLServerAliasExpressionParser extends AliasExpressionParser 
     @Override
     protected TokenType[] getCustomizedAvailableKeywordsForTableAlias() {
         return new TokenType[] {
-            DefaultKeyword.DO, DefaultKeyword.TRUE, DefaultKeyword.FALSE, DefaultKeyword.COMMENT, DefaultKeyword.REPLACE, DefaultKeyword.BEFORE, DefaultKeyword.EACH, DefaultKeyword.ROW, 
+            DefaultKeyword.TRUE, DefaultKeyword.FALSE, DefaultKeyword.COMMENT, DefaultKeyword.REPLACE, DefaultKeyword.BEFORE, DefaultKeyword.EACH, DefaultKeyword.ROW, 
             DefaultKeyword.FULLTEXT, DefaultKeyword.IDENTIFIED, DefaultKeyword.USING, DefaultKeyword.NATURAL, DefaultKeyword.CAST, DefaultKeyword.LOCK, DefaultKeyword.LEAVE, 
             DefaultKeyword.ITERATE, DefaultKeyword.REPEAT, DefaultKeyword.OUT, DefaultKeyword.INOUT, DefaultKeyword.LOOP, DefaultKeyword.EXPLAIN, DefaultKeyword.CHAR, DefaultKeyword.CHARACTER, 
             DefaultKeyword.VARCHAR, DefaultKeyword.VARCHAR2, DefaultKeyword.INTEGER, DefaultKeyword.INT, DefaultKeyword.SMALLINT, DefaultKeyword.DECIMAL, DefaultKeyword.DEC, 
             DefaultKeyword.NUMERIC, DefaultKeyword.FLOAT, DefaultKeyword.REAL, DefaultKeyword.PRECISION, DefaultKeyword.DATE, DefaultKeyword.INTERVAL, DefaultKeyword.BLOB, 
             DefaultKeyword.XOR, DefaultKeyword.BOTH, DefaultKeyword.LEADING, DefaultKeyword.TRAILING,
-            SQLServerKeyword.TIES, SQLServerKeyword.PARTITION, SQLServerKeyword.ONLY, SQLServerKeyword.OUTPUT, SQLServerKeyword.AUTO, SQLServerKeyword.TYPE, SQLServerKeyword.ELEMENTS, 
+            SQLServerKeyword.TIES, SQLServerKeyword.ONLY, SQLServerKeyword.OUTPUT, SQLServerKeyword.AUTO, SQLServerKeyword.TYPE, SQLServerKeyword.ELEMENTS, 
             SQLServerKeyword.XML, SQLServerKeyword.XSINIL, SQLServerKeyword.XMLSCHEMA, SQLServerKeyword.TYP, SQLServerKeyword.APPLY, SQLServerKeyword.REDUCE, SQLServerKeyword.REPLICATE, 
             SQLServerKeyword.EXTRACT, SQLServerKeyword.REDISTRIBUTE,
         };
