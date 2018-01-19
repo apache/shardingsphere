@@ -8,4 +8,4 @@ Please answer these questions before submitting your issue. Thanks!
 
 ### Steps to reproduce the behavior
 
-### Please provide the reproduce example codes (such as github link) if possible.
+### Please provide the reproduce example codes (such as github link), and the code should based on `https://github.com/shardingjdbc/sharding-jdbc-example`
