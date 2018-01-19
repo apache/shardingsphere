@@ -267,4 +267,33 @@
         </order-by-columns>
         <limit offset="1" offset-index="1" row-count-index="0" row-count="4" />
     </assert>
+    <assert id="assertSelectLeftJoinAndLimit" parameters="10,1000,0,20">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="36" original-literals="t_order_item" />
+        </table-tokens>
+        <items-token begin-position="11">
+            <items>
+                <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
+            </items>
+        </items-token>
+        <offset-token begin-position="154" offset="0" />
+        <row-count-token begin-position="157" row-count="20" />
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="10" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                <value index="1" literal="1000" type="int" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="ASC" />
+        </order-by-columns>
+        <limit offset="0" offset-index="2" row-count="20" row-count-index="3" />
+    </assert>
 </asserts>

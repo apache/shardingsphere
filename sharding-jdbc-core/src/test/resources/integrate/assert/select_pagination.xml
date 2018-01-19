@@ -81,4 +81,9 @@
             <data parameter="7,4" expected="select/oracle/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
+    <sql id="assertSelectLeftJoinAndLimit">
+        <sharding-rule value="tbl">
+            <data parameter="10,1000,0,20" expected="select/SelectLeftJoinAndLimit.xml" />
+        </sharding-rule>
+    </sql>
 </sqls>
