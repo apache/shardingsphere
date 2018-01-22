@@ -89,7 +89,7 @@ public final class DataSourceUtilTest {
         property.put("maxIdle", Integer.valueOf(4));
         property.put("minIdle", Integer.valueOf(16));
         property.put("initialSize", 7);
-        property.put("maxOpenPrepareStatements", 128);
+        property.put("maxOpenPreparedStatements", 128);
         property.put("numTestsPerEvictionRun", Integer.valueOf(13));
         BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), property);
         assertThat(actual.getDefaultTransactionIsolation(), is(-13));
@@ -105,8 +105,8 @@ public final class DataSourceUtilTest {
     public void assertDataSourceForLong() throws ReflectiveOperationException {
         Map<String, Object> property = new HashMap<>();
         property.put("maxWait", 1304L);
-        property.put("timeBetweenEvictionRunMillis", Long.valueOf(16L));
-        property.put("minEvictableIdleTimeMills", Long.valueOf(4000L));
+        property.put("timeBetweenEvictionRunsMillis", Long.valueOf(16L));
+        property.put("minEvictableIdleTimeMillis", Long.valueOf(4000L));
         BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), property);
         assertThat(actual.getMaxWait(), is(Long.valueOf(1304)));
         assertThat(actual.getTimeBetweenEvictionRunsMillis(), is(16L));
