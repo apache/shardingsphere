@@ -60,18 +60,26 @@ public final class DataSourceUtilTest {
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("sa"));
     }
+    
+    private Map<String, Object> getDataSourcePoolProperties(final String driverClassName, final String url, final String username) {
+        Map<String, Object> result = new HashMap<>(3, 1);
+        result.put(driverClassName, org.h2.Driver.class.getName());
+        result.put(url, "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        result.put(username, "sa");
+        return result;
+    }
 
     @Test
-    public void assertDataSourceForBoolean() throws ReflectiveOperationException {
-        Map<String, Object> property = new HashMap<>();
-        property.put("defaultAutoCommit", true);
-        property.put("defaultReadOnly", false);
-        property.put("poolPreparedStatements", Boolean.TRUE);
-        property.put("testOnBorrow", Boolean.FALSE);
-        property.put("testOnReturn", true);
-        property.put("testWhileIdle", false);
-        property.put("accessToUnderlyingConnectionAllowed", Boolean.TRUE);
-        BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), property);
+    public void assertDataSourceForBooleanValue() throws ReflectiveOperationException {
+        Map<String, Object> dataSourceProperties = new HashMap<>(7, 1);
+        dataSourceProperties.put("defaultAutoCommit", true);
+        dataSourceProperties.put("defaultReadOnly", false);
+        dataSourceProperties.put("poolPreparedStatements", Boolean.TRUE);
+        dataSourceProperties.put("testOnBorrow", Boolean.FALSE);
+        dataSourceProperties.put("testOnReturn", true);
+        dataSourceProperties.put("testWhileIdle", false);
+        dataSourceProperties.put("accessToUnderlyingConnectionAllowed", Boolean.TRUE);
+        BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
         assertThat(actual.getDefaultAutoCommit(), is(true));
         assertThat(actual.getDefaultReadOnly(), is(false));
         assertThat(actual.isPoolPreparedStatements(), is(Boolean.TRUE));
@@ -82,16 +90,16 @@ public final class DataSourceUtilTest {
     }
 
     @Test
-    public void assertDataSourceForInt() throws ReflectiveOperationException {
-        Map<String, Object> property = new HashMap<>();
-        property.put("defaultTransactionIsolation", -13);
-        property.put("maxActive", 16);
-        property.put("maxIdle", Integer.valueOf(4));
-        property.put("minIdle", Integer.valueOf(16));
-        property.put("initialSize", 7);
-        property.put("maxOpenPreparedStatements", 128);
-        property.put("numTestsPerEvictionRun", Integer.valueOf(13));
-        BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), property);
+    public void assertDataSourceForIntValue() throws ReflectiveOperationException {
+        Map<String, Object> dataSourceProperties = new HashMap<>(7, 1);
+        dataSourceProperties.put("defaultTransactionIsolation", -13);
+        dataSourceProperties.put("maxActive", 16);
+        dataSourceProperties.put("maxIdle", 4);
+        dataSourceProperties.put("minIdle", 16);
+        dataSourceProperties.put("initialSize", 7);
+        dataSourceProperties.put("maxOpenPreparedStatements", 128);
+        dataSourceProperties.put("numTestsPerEvictionRun", 13);
+        BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
         assertThat(actual.getDefaultTransactionIsolation(), is(-13));
         assertThat(actual.getMaxActive(), is(16));
         assertThat(actual.getMaxIdle(), is(4));
@@ -102,22 +110,14 @@ public final class DataSourceUtilTest {
     }
 
     @Test
-    public void assertDataSourceForLong() throws ReflectiveOperationException {
-        Map<String, Object> property = new HashMap<>();
-        property.put("maxWait", 1304L);
-        property.put("timeBetweenEvictionRunsMillis", Long.valueOf(16L));
-        property.put("minEvictableIdleTimeMillis", Long.valueOf(4000L));
-        BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), property);
-        assertThat(actual.getMaxWait(), is(Long.valueOf(1304)));
+    public void assertDataSourceForLongValue() throws ReflectiveOperationException {
+        Map<String, Object> dataSourceProperties = new HashMap<>(3, 1);
+        dataSourceProperties.put("maxWait", 1304L);
+        dataSourceProperties.put("timeBetweenEvictionRunsMillis", 16L);
+        dataSourceProperties.put("minEvictableIdleTimeMillis", 4000L);
+        BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
+        assertThat(actual.getMaxWait(), is(1304L));
         assertThat(actual.getTimeBetweenEvictionRunsMillis(), is(16L));
         assertThat(actual.getMinEvictableIdleTimeMillis(), is(4000L));
-    }
-
-    private Map<String, Object> getDataSourcePoolProperties(final String driverClassName, final String url, final String username) {
-        Map<String, Object> result = new HashMap<>(3, 1);
-        result.put(driverClassName, org.h2.Driver.class.getName());
-        result.put(url, "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        result.put(username, "sa");
-        return result;
     }
 }
