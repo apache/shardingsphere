@@ -17,51 +17,44 @@
 
 package io.shardingjdbc.core.parsing.lexer.analyzer;
 
-import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
-import io.shardingjdbc.core.parsing.lexer.token.Literals;
-import io.shardingjdbc.core.parsing.lexer.token.Symbol;
-import io.shardingjdbc.core.parsing.lexer.token.Token;
-import io.shardingjdbc.core.parsing.lexer.token.TokenType;
 import org.junit.Test;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
 
 public final class CharTypeTest {
-
+    
     @Test
     public void assertIsWhitespace() {
         for (int i = 0; i < 256; i++) {
-            if (Character.isWhitespace((char)i)) {
-                assertThat(CharType.isWhitespace((char)i), is(Character.isWhitespace((char)i)));
+            if (Character.isWhitespace((char) i)) {
+                assertThat(CharType.isWhitespace((char) i), is(Character.isWhitespace((char) i)));
             }
         }
     }
-
+    
     @Test
     public void assertIsEndOfInput() {
-        assertTrue(CharType.isEndOfInput((char)0x1A));
+        assertTrue(CharType.isEndOfInput((char) 0x1A));
     }
-
+    
     @Test
     public void assertIsAlphabet() {
         for (int i = 0; i < 256; i++) {
-            if (CharType.isAlphabet((char)i)) {
-                assertThat(CharType.isAlphabet((char)i), is(Character.isAlphabetic((char)i)));
+            if (CharType.isAlphabet((char) i)) {
+                assertThat(CharType.isAlphabet((char) i), is(Character.isAlphabetic((char) i)));
             }
         }
     }
-
+    
     @Test
     public void assertIsDigit() {
         for (int i = 0; i < 256; i++) {
-            assertThat(CharType.isDigital((char)i), is(Character.isDigit((char)i)));
+            assertThat(CharType.isDigital((char) i), is(Character.isDigit((char) i)));
         }
     }
-
+    
     @Test
     public void assertIsSymbol() {
         assertTrue(CharType.isSymbol('?'));
