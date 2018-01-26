@@ -18,7 +18,6 @@
 package io.shardingjdbc.core.parsing;
 
 import io.shardingjdbc.core.parsing.lexer.AllLexerTests;
-import io.shardingjdbc.core.parsing.lexer.analyzer.TokenizerTest;
 import io.shardingjdbc.core.parsing.parser.context.OrderItemTest;
 import io.shardingjdbc.core.parsing.parser.sql.AllStatementParserTests;
 import org.junit.runner.RunWith;
@@ -26,7 +25,6 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        TokenizerTest.class,
         AllLexerTests.class,
         AllStatementParserTests.class,
         SQLParsingEngineTest.class,
