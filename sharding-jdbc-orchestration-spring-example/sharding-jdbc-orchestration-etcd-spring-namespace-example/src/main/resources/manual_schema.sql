@@ -25,3 +25,8 @@ CREATE SCHEMA IF NOT EXISTS demo_ds;
 CREATE SCHEMA IF NOT EXISTS demo_ds_master;
 CREATE SCHEMA IF NOT EXISTS demo_ds_slave_0;
 CREATE SCHEMA IF NOT EXISTS demo_ds_slave_1;
+
+CREATE TABLE IF NOT EXISTS demo_ds_slave_0.t_order (order_id BIGINT AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS demo_ds_slave_1.t_order (order_id BIGINT AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS demo_ds_slave_0.t_order_item (order_item_id BIGINT AUTO_INCREMENT, order_id BIGINT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_item_id));
+CREATE TABLE IF NOT EXISTS demo_ds_slave_1.t_order_item (order_item_id BIGINT AUTO_INCREMENT, order_id BIGINT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_item_id));
