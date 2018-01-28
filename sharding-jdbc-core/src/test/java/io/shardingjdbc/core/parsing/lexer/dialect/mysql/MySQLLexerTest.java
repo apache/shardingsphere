@@ -79,4 +79,73 @@ public final class MySQLLexerTest {
         LexerAssert.assertNextToken(lexer, Literals.VARIABLE, "@@global.x1");
         LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
+
+    @Test
+    public void assertNextTokenForInsert() {
+        MySQLLexer lexer = new MySQLLexer("insert into t_good_xxx (id, name, price, count, create_time) values (1, 'Sharding-JDBC Cook Book', 23.50, 999, '2018-01-28 08:15:37')");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.INSERT, "insert");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.INTO, "into");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "t_good_xxx");
+        LexerAssert.assertNextToken(lexer, Symbol.LEFT_PAREN, "(");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "id");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "name");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "price");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+
+        // 'COUNT' is in DefaultKeyword.COUNT
+        // is 'count' here a SQL Keyword or a Identifier ?
+        // maybe it's LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "count"); ?
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.COUNT, "count");
+
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "create_time");
+        LexerAssert.assertNextToken(lexer, Symbol.RIGHT_PAREN, ")");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.VALUES, "values");
+        LexerAssert.assertNextToken(lexer, Symbol.LEFT_PAREN, "(");
+        LexerAssert.assertNextToken(lexer, Literals.INT, "1");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "Sharding-JDBC Cook Book");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+        LexerAssert.assertNextToken(lexer, Literals.FLOAT, "23.50");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+        LexerAssert.assertNextToken(lexer, Literals.INT, "999");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "2018-01-28 08:15:37");
+        LexerAssert.assertNextToken(lexer, Symbol.RIGHT_PAREN, ")");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
+    }
+
+    @Test
+    public void assertNextTokenForUpdate() {
+        MySQLLexer lexer = new MySQLLexer("UPDATE t_good_xxx SET name='Sharding-JDBC: The Definitive Guide', price=27.35, count=900, create_time='20180128 19:34:48' where id=1");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.UPDATE, "UPDATE");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "t_good_xxx");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.SET, "SET");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "name");
+        LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "Sharding-JDBC: The Definitive Guide");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "price");
+        LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
+        LexerAssert.assertNextToken(lexer, Literals.FLOAT, "27.35");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+
+        // 'COUNT' is in DefaultKeyword.COUNT
+        // is 'count' here a SQL Keyword or a Identifier ?
+        // maybe it's LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "count"); ?
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.COUNT, "count");
+
+        LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
+        LexerAssert.assertNextToken(lexer, Literals.INT, "900");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "create_time");
+        LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "20180128 19:34:48");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.WHERE, "where");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "id");
+        LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
+        LexerAssert.assertNextToken(lexer, Literals.INT, "1");
+    }
 }
