@@ -79,14 +79,14 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         Preconditions.checkState(!StringUtils.isEmpty(dataSources), "Wrong datasource properties, empty datasource !");
         dataSources = dataSources.trim();
         for (String each : dataSources.split(",")) {
-        	try {
-        		Map<String, Object> dataSourceProps = propertyResolver.getSubProperties(each + ".");
-        		Preconditions.checkState(!dataSourceProps.isEmpty(), String.format("Wrong datasource [%s] properties!", each));
-        		DataSource dataSource = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
-        		dataSourceMap.put(each, dataSource);
-        	} catch (final ReflectiveOperationException ex) {
-        		throw new ShardingJdbcException("Can't find datasource type!", ex);
-        	}
+            try {
+                Map<String, Object> dataSourceProps = propertyResolver.getSubProperties(each + ".");
+                Preconditions.checkState(!dataSourceProps.isEmpty(), String.format("Wrong datasource [%s] properties!", each));
+                DataSource dataSource = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
+                dataSourceMap.put(each, dataSource);
+            } catch (final ReflectiveOperationException ex) {
+                throw new ShardingJdbcException("Can't find datasource type!", ex);
+            }
         }
     }
 }
