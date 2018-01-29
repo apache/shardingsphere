@@ -1,3 +1,8 @@
+## 2.0.3
+
+### 缺陷修正
+1. [ISSUE #577](https://github.com/shardingjdbc/sharding-jdbc/issues/577) 支持YAML配置换行
+
 ## 2.0.2
 
 ### 功能提升
