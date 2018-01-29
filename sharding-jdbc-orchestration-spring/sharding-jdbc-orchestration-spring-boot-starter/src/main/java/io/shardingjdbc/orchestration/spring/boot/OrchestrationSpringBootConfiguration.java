@@ -32,6 +32,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -75,10 +76,12 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     private void setDataSourceMap(final Environment environment) {
         RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "sharding.jdbc.datasource.");
         String dataSources = propertyResolver.getProperty("names");
+        Preconditions.checkState(!StringUtils.isEmpty(dataSources), "Wrong datasource properties, empty datasource !");
+        dataSources = dataSources.trim();
         for (String each : dataSources.split(",")) {
             try {
                 Map<String, Object> dataSourceProps = propertyResolver.getSubProperties(each + ".");
-                Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong datasource properties!");
+                Preconditions.checkState(!dataSourceProps.isEmpty(), String.format("Wrong datasource [%s] properties!", each));
                 DataSource dataSource = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
                 dataSourceMap.put(each, dataSource);
             } catch (final ReflectiveOperationException ex) {
