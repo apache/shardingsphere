@@ -1,6 +1,7 @@
 ## 2.0.3
 
 ### 缺陷修正
+1. [ISSUE #522](https://github.com/shardingjdbc/sharding-jdbc/issues/522) 读写分离Slave库不需要执行DDL语句
 1. [ISSUE #577](https://github.com/shardingjdbc/sharding-jdbc/issues/577) 支持YAML配置换行
 
 ## 2.0.2
@@ -12,7 +13,6 @@
 ### 缺陷修正
 1. [ISSUE #520](https://github.com/shardingjdbc/sharding-jdbc/issues/520) 引入分表后，唯一键冲突时异常类型不再是DuplicateKeyException
 1. [ISSUE #521](https://github.com/shardingjdbc/sharding-jdbc/issues/521) YAML文件中ShardingProperties设置无效
-1. [ISSUE #522](https://github.com/shardingjdbc/sharding-jdbc/issues/522) 读写分离Slave库不需要执行DDL语句
 1. [ISSUE #529](https://github.com/shardingjdbc/sharding-jdbc/issues/529) 表名大写无法查询
 1. [ISSUE #541](https://github.com/shardingjdbc/sharding-jdbc/issues/541) 无法解析IS NOT NULL
 1. [ISSUE #557](https://github.com/shardingjdbc/sharding-jdbc/issues/557) GroupBy和OrderBy仅别名不一致问题应使用流式归并
