@@ -29,13 +29,9 @@ import io.shardingjdbc.core.integrate.fixture.PreciseModuloTableShardingAlgorith
 import io.shardingjdbc.core.integrate.fixture.RangeModuloTableShardingAlgorithm;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import org.junit.After;
-import org.junit.Before;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -90,7 +86,10 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
             TableRuleConfiguration logTableRuleConfig = new TableRuleConfiguration();
             logTableRuleConfig.setLogicIndex("t_log_index");
             logTableRuleConfig.setLogicTable("t_log");
+            TableRuleConfiguration tempLogTableRuleConfig = new TableRuleConfiguration();
+            tempLogTableRuleConfig.setLogicTable("t_temp_log");
             shardingRuleConfig.getTableRuleConfigs().add(logTableRuleConfig);
+            shardingRuleConfig.getTableRuleConfigs().add(tempLogTableRuleConfig);
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
@@ -98,56 +97,5 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
             getShardingDataSources().put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(entry.getValue())));
         }
         return getShardingDataSources();
-    }
-    
-    @Before
-    public void initDDLTables() throws SQLException {
-        if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("DROP TABLE") || getSql().startsWith("CREATE UNIQUE INDEX")) {
-            if (getSql().contains("TEMP")) {
-                executeSql("CREATE TEMPORARY TABLE t_temp_log(id int, status varchar(10))");
-            } else {
-                executeSql("CREATE TABLE t_log(id int, status varchar(10))");
-            }
-        }
-        if (getSql().startsWith("DROP INDEX")) {
-            executeSql("CREATE TABLE t_log(id int, status varchar(10))");
-            executeSql("CREATE INDEX t_log_index ON t_log(status)");
-        }
-    }
-    
-    @After
-    public void cleanupDdlTables() throws SQLException {
-        if (getSql().startsWith("CREATE UNIQUE INDEX")) {
-            executeSql("DROP TABLE t_log");
-        } else if (getSql().startsWith("CREATE INDEX")) {
-            if (getCurrentDatabaseType() == DatabaseType.PostgreSQL || getCurrentDatabaseType() == DatabaseType.Oracle || getCurrentDatabaseType() == DatabaseType.H2) {
-                executeSql("DROP INDEX t_order_index");
-            } else {
-                executeSql("DROP INDEX t_order_index ON t_order");
-            }
-            
-        } else if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("CREATE") || getSql().startsWith("DROP INDEX")) {
-            if (getSql().contains("TEMP")) {
-                executeSql("DROP TABLE t_temp_log");
-            } else {
-                executeSql("DROP TABLE t_log");
-            }
-        }
-    }
-    
-    private void executeSql(final String sql) throws SQLException {
-        for (Map.Entry<DatabaseType, ShardingDataSource> each : getDataSources().entrySet()) {
-            if (getCurrentDatabaseType() == each.getKey()) {
-                try (Connection conn = each.getValue().getConnection();
-                     Statement statement = conn.createStatement()) {
-                    statement.execute(sql);
-                    //CHECKSTYLE:OFF
-                } catch (final Exception ex) {
-                    //CHECKSTYLE:ON
-                    ex.printStackTrace();
-                    throw new RuntimeException(ex);
-                }
-            }
-        }
     }
 }

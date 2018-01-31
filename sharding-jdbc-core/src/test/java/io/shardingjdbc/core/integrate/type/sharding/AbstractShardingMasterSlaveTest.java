@@ -94,6 +94,7 @@ public abstract class AbstractShardingMasterSlaveTest extends AbstractSQLAssertT
             final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
             TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
             orderTableRuleConfig.setLogicTable("t_order");
+            orderTableRuleConfig.setLogicIndex("t_order_index");
             List<String> orderActualDataNodes = new LinkedList<>();
             for (String dataSourceName : masterSlaveDataSourceMap.keySet()) {
                 orderActualDataNodes.add(dataSourceName + ".t_order_${0..9}");
@@ -110,6 +111,13 @@ public abstract class AbstractShardingMasterSlaveTest extends AbstractSQLAssertT
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             TableRuleConfiguration configTableRuleConfig = new TableRuleConfiguration();
             configTableRuleConfig.setLogicTable("t_config");
+            TableRuleConfiguration logTableRuleConfig = new TableRuleConfiguration();
+            logTableRuleConfig.setLogicIndex("t_log_index");
+            logTableRuleConfig.setLogicTable("t_log");
+            TableRuleConfiguration tempLogTableRuleConfig = new TableRuleConfiguration();
+            tempLogTableRuleConfig.setLogicTable("t_temp_log");
+            shardingRuleConfig.getTableRuleConfigs().add(logTableRuleConfig);
+            shardingRuleConfig.getTableRuleConfigs().add(tempLogTableRuleConfig);
             shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("t_order_item", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));

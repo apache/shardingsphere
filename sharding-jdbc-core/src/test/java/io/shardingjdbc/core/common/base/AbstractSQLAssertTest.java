@@ -36,6 +36,8 @@ import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -45,6 +47,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +107,56 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         return type;
     }
     
+    @Before
+    public void initDDLTables() throws SQLException {
+        if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("DROP TABLE") || getSql().startsWith("CREATE UNIQUE INDEX")) {
+            if (getSql().contains("TEMP")) {
+                executeSql("CREATE TEMPORARY TABLE t_temp_log(id int, status varchar(10))");
+            } else {
+                executeSql("CREATE TABLE t_log(id int, status varchar(10))");
+            }
+        }
+        if (getSql().startsWith("DROP INDEX")) {
+            executeSql("CREATE TABLE t_log(id int, status varchar(10))");
+            executeSql("CREATE INDEX t_log_index ON t_log(status)");
+        }
+    }
+    
+    @After
+    public void cleanupDdlTables() throws SQLException {
+        if (getSql().startsWith("CREATE UNIQUE INDEX")) {
+            executeSql("DROP TABLE t_log");
+        } else if (getSql().startsWith("CREATE INDEX")) {
+            if (getCurrentDatabaseType() == DatabaseType.PostgreSQL || getCurrentDatabaseType() == DatabaseType.Oracle || getCurrentDatabaseType() == DatabaseType.H2) {
+                executeSql("DROP INDEX t_order_index");
+            } else {
+                executeSql("DROP INDEX t_order_index ON t_order");
+            }
+            
+        } else if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("CREATE") || getSql().startsWith("DROP INDEX")) {
+            if (getSql().contains("TEMP")) {
+                executeSql("DROP TABLE t_temp_log");
+            } else {
+                executeSql("DROP TABLE t_log");
+            }
+        }
+    }
+    
+    private void executeSql(final String sql) throws SQLException {
+        for (Map.Entry<DatabaseType, ? extends AbstractDataSourceAdapter> each : getDataSources().entrySet()) {
+            if (getCurrentDatabaseType() == each.getKey()) {
+                try (Connection conn = each.getValue().getConnection();
+                     Statement statement = conn.createStatement()) {
+                    statement.execute(sql);
+                    //CHECKSTYLE:OFF
+                } catch (final Exception ex) {
+                    //CHECKSTYLE:ON
+                    ex.printStackTrace();
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+    }
     @Test
     public void assertExecuteWithPreparedStatement() throws SQLException {
         execute(true, false);
