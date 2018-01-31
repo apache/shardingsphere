@@ -49,7 +49,6 @@ public class DemoService {
             OrderItem item = new OrderItem();
             item.setOrderId(orderId);
             item.setUserId(51);
-            item.setStatus("INSERT_TEST");
             orderItemIds.add(orderItemRepository.save(item).getOrderItemId());
         }
         List<OrderItem> orderItems = orderItemRepository.findAll();
