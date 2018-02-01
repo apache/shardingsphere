@@ -30,11 +30,11 @@
             <data expected="create/%s.xml" />
         </sharding-rule>
     </sql>
-    <!--<sql id="assertCreateIndex">-->
-        <!--<sharding-rule>-->
-            <!--<data expected="index/%s.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+    <sql id="assertCreateIndex">
+        <sharding-rule>
+            <data expected="index/%s.xml" />
+        </sharding-rule>
+    </sql>
     <sql id="assertCreateUniqueIndex">
         <sharding-rule>
             <data expected="index/%s.xml" />

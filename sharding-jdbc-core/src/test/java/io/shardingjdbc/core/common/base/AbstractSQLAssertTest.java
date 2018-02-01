@@ -109,7 +109,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     @Before
     public void initDDLTables() throws SQLException {
-        if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("DROP TABLE") || getSql().startsWith("CREATE UNIQUE INDEX")) {
+        if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("DROP TABLE") || getSql().startsWith("CREATE UNIQUE INDEX") || getSql().startsWith("CREATE INDEX")) {
             if (getSql().contains("TEMP")) {
                 executeSql("CREATE TEMPORARY TABLE t_temp_log(id int, status varchar(10))");
             } else {
@@ -124,15 +124,8 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     @After
     public void cleanupDdlTables() throws SQLException {
-        if (getSql().startsWith("CREATE UNIQUE INDEX")) {
+        if (getSql().startsWith("CREATE UNIQUE INDEX") || getSql().startsWith("CREATE INDEX")) {
             executeSql("DROP TABLE t_log");
-        } else if (getSql().startsWith("CREATE INDEX")) {
-            if (getCurrentDatabaseType() == DatabaseType.PostgreSQL || getCurrentDatabaseType() == DatabaseType.Oracle || getCurrentDatabaseType() == DatabaseType.H2) {
-                executeSql("DROP INDEX t_order_index");
-            } else {
-                executeSql("DROP INDEX t_order_index ON t_order");
-            }
-            
         } else if (getSql().startsWith("ALTER") || getSql().startsWith("TRUNCATE") || getSql().startsWith("CREATE") || getSql().startsWith("DROP INDEX")) {
             if (getSql().contains("TEMP")) {
                 executeSql("DROP TABLE t_temp_log");
