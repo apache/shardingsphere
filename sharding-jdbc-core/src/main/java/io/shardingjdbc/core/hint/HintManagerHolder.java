@@ -102,4 +102,12 @@ public final class HintManagerHolder {
     public static void clear() {
         HINT_MANAGER_HOLDER.remove();
     }
+
+    /**
+     * Get hint manager in current thread
+     * @return HintManager
+     */
+    public static HintManager get(){
+        return HINT_MANAGER_HOLDER.get();
+    }
 }

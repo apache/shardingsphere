@@ -62,8 +62,11 @@ public final class HintManager implements AutoCloseable {
      * @return  {@code HintManager} instance
      */
     public static HintManager getInstance() {
-        HintManager result = new HintManager();
-        HintManagerHolder.setHintManager(result);
+        HintManager result = HintManagerHolder.get();
+        if (result == null){
+            result = new HintManager();
+            HintManagerHolder.setHintManager(result);
+        }
         return result;
     }
     
