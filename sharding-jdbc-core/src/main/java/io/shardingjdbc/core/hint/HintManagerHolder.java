@@ -104,10 +104,11 @@ public final class HintManagerHolder {
     }
 
     /**
-     * Get hint manager in current thread
-     * @return HintManager
+     * Get hint manager in current thread.
+     * 
+     * @return hint manager in current thread
      */
-    public static HintManager get(){
+    public static HintManager get() {
         return HINT_MANAGER_HOLDER.get();
     }
 }

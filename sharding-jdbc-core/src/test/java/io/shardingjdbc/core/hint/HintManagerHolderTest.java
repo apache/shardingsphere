@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public final class HintManagerHolderTest {
@@ -88,5 +89,10 @@ public final class HintManagerHolderTest {
         hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", 1);
         hintManager.close();
         assertFalse(HintManagerHolder.getDatabaseShardingValue(new ShardingKey("logicTable", "shardingColumn")).isPresent());
+    }
+    
+    @Test
+    public void assertGet() {
+        assertNotNull(HintManagerHolder.get());
     }
 }
