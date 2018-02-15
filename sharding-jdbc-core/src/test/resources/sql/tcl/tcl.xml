@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="setAutoCommit" value="SET AUTOCOMMIT=1" />
+    <sql id="commit" value="COMMIT" />
+    <sql id="rollback" value="ROLLBACK" />
+    <sql id="savepoint" value="SAVEPOINT" />
+    <sql id="begin" value="BEGIN" />
+</sqls>

@@ -35,7 +35,6 @@ public enum SQLServerKeyword implements Keyword {
     ONLY, 
     OUTPUT, 
     AUTO, 
-    BEGIN, 
     IDENTITY, 
     BROWSE, 
     TYPE, 

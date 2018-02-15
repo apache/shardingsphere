@@ -147,6 +147,14 @@ public enum DefaultKeyword implements Keyword {
     UNION,
     
     /*
+    TCL
+     */
+    COMMIT,
+    ROLLBACK,
+    SAVEPOINT,
+    BEGIN, 
+    
+    /*
     Other Command
      */
     DECLARE,

@@ -15,21 +15,21 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.parser.sql.ddl;
+package io.shardingjdbc.core.parsing.parser.sql.tcl;
 
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.parsing.parser.sql.AbstractSQLStatement;
 import lombok.ToString;
 
 /**
- * DDL statement.
+ * Transaction Control Language statement.
  *
  * @author zhangliang
  */
 @ToString(callSuper = true)
-public final class DDLStatement extends AbstractSQLStatement {
+public final class TCLStatement extends AbstractSQLStatement {
     
-    public DDLStatement() {
-        super(SQLType.DDL);
+    public TCLStatement() {
+        super(SQLType.TCL);
     }
 }

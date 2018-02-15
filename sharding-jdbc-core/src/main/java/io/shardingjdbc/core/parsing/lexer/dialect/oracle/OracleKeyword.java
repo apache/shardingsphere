@@ -27,7 +27,6 @@ import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 public enum OracleKeyword implements Keyword {
     
     LOCKED,
-    COMMIT,
     CREATION,
     UPDATED,
     UPSERT,
@@ -75,8 +74,6 @@ public enum OracleKeyword implements Keyword {
     MAXTRANS,
     MINEXTENTS,
     MAXEXTENTS,
-    BEGIN,
-    SAVEPOINT,
     MATCHED,
     LOB,
     DIMENSION,

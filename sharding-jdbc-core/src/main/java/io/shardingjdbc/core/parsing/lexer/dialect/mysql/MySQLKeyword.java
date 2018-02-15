@@ -31,7 +31,6 @@ public enum MySQLKeyword implements Keyword {
     LIMIT, 
     OFFSET, 
     VALUE, 
-    BEGIN, 
     FORCE, 
     PARTITION, 
     DISTINCTROW, 

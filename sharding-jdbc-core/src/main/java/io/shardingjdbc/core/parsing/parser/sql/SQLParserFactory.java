@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.sql;
 
+import io.shardingjdbc.core.parsing.parser.sql.tcl.TCLParserFactory;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
@@ -72,6 +73,12 @@ public final class SQLParserFactory {
                 return DropParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             case TRUNCATE:
                 return TruncateParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            case SET:
+            case COMMIT:
+            case ROLLBACK:
+            case SAVEPOINT:
+            case BEGIN:
+                return TCLParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             default:
                 throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
         }

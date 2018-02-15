@@ -19,8 +19,6 @@ package io.shardingjdbc.core.parsing.parser.sql.dql;
 
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.parsing.parser.sql.AbstractSQLStatement;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -28,8 +26,6 @@ import lombok.ToString;
  *
  * @author zhangliang
  */
-@Getter
-@Setter
 @ToString(callSuper = true)
 public class DQLStatement extends AbstractSQLStatement {
     
