@@ -3,7 +3,7 @@
     <parent>
         <groupId>io.shardingjdbc</groupId>
         <artifactId>sharding-jdbc-orchestration-example</artifactId>
-        <version>2.0.3-SNAPSHOT</version>
+        <version>2.0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sharding-jdbc-orchestration-etcd-java-example</artifactId>
