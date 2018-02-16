@@ -50,7 +50,7 @@ public class SQLAssertJAXBHelper {
     }
     
     private static Collection<Object[]> dataParameters(final File file) {
-        SQLAsserts asserts = loadSqlAsserts(file);
+        SQLAsserts asserts = loadSQLAsserts(file);
         List<Object[]> result = new ArrayList<>();
         for (int i = 0; i < asserts.getSqlAsserts().size(); i++) {
             SQLAssert assertObj = asserts.getSqlAsserts().get(i);
@@ -61,7 +61,7 @@ public class SQLAssertJAXBHelper {
         return result;
     }
     
-    private static SQLAsserts loadSqlAsserts(final File file) {
+    private static SQLAsserts loadSQLAsserts(final File file) {
         try {
             return (SQLAsserts) JAXBContext.newInstance(SQLAsserts.class).createUnmarshaller().unmarshal(file);
         } catch (final JAXBException ex) {
