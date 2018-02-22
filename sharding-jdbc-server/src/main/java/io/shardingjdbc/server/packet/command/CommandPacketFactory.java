@@ -10,12 +10,13 @@ public final class CommandPacketFactory {
     public static AbstractCommandPacket getCommandPacket(final int commandPacketTypeValue) {
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
+            case COM_QUIT:
+                return new ComQuitPacket();
             case COM_QUERY:
                 return new ComQueryPacket();
             case COM_STMT_EXECUTE:
                 return new ComStatExecutePacket();
             case COM_SLEEP:
-            case COM_QUIT:
             case COM_INIT_DB:
             case COM_FIELD_LIST:
             case COM_CREATE_DB:

@@ -52,6 +52,7 @@ public final class ComQueryPacket extends AbstractCommandPacket {
             statement.execute(sql);
             ResultSet resultSet = statement.getResultSet();
             if (null == resultSet) {
+                result.add(new ComQueryResponsePacket(++currentSequenceId, 0));
                 result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
                 result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
                 return result;
