@@ -273,8 +273,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
         if (routeResult.getSqlStatement() instanceof SelectStatement) {
             currentResultSet = new ShardingResultSet(resultSets, new MergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement()).merge(), this);
-        } else {
-            currentResultSet = resultSets.get(0);
         }
         return currentResultSet;
     }

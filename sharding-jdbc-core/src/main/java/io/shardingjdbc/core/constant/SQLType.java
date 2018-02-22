@@ -50,5 +50,10 @@ public enum SQLType {
      *
      * <p>Such as {@code SET}, {@code COMMIT}, {@code ROLLBACK}, {@code SAVEPOIINT}, {@code BEGIN}.</p>
      */
-    TCL
+    TCL,
+    
+    /**
+     * Other SQL.
+     */
+    OTHER
 }

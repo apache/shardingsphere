@@ -19,15 +19,19 @@ package io.shardingjdbc.core.parsing;
 
 import io.shardingjdbc.core.parsing.lexer.Lexer;
 import io.shardingjdbc.core.parsing.lexer.analyzer.Dictionary;
+import io.shardingjdbc.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Assist;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowType;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingjdbc.core.parsing.parser.sql.tcl.TCLStatement;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -59,6 +63,13 @@ public final class SQLJudgeEngine {
                 }
                 if (DefaultKeyword.CREATE == tokenType || DefaultKeyword.ALTER == tokenType || DefaultKeyword.DROP == tokenType || DefaultKeyword.TRUNCATE == tokenType) {
                     return new DDLStatement();
+                }
+                if (DefaultKeyword.SET == tokenType || DefaultKeyword.COMMIT == tokenType || DefaultKeyword.ROLLBACK == tokenType 
+                        || DefaultKeyword.SAVEPOINT == tokenType || DefaultKeyword.BEGIN == tokenType) {
+                    return new TCLStatement();
+                }
+                if (MySQLKeyword.SHOW == tokenType) {
+                    return new ShowStatement(ShowType.OTHER);
                 }
             }
             if (tokenType instanceof Assist && Assist.END == tokenType) {

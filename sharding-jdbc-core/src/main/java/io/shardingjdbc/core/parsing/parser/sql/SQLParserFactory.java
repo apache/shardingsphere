@@ -17,12 +17,12 @@
 
 package io.shardingjdbc.core.parsing.parser.sql;
 
-import io.shardingjdbc.core.parsing.parser.sql.tcl.TCLParserFactory;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
+import io.shardingjdbc.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.sql.MySQLShowParser;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.alter.AlterParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.create.CreateParserFactory;
@@ -32,6 +32,9 @@ import io.shardingjdbc.core.parsing.parser.sql.dml.delete.DeleteParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.dml.update.UpdateParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectParserFactory;
+import io.shardingjdbc.core.parsing.parser.sql.ignore.IgnoreParser;
+import io.shardingjdbc.core.parsing.parser.sql.tcl.TCLParserFactory;
+import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -53,10 +56,17 @@ public final class SQLParserFactory {
      * @return SQL parser
      */
     public static SQLParser newInstance(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        if (!(tokenType instanceof DefaultKeyword)) {
-            throw new SQLParsingUnsupportedException(tokenType);
+        if (tokenType instanceof DefaultKeyword) {
+            return getGenericParser(dbType, (DefaultKeyword) tokenType, shardingRule, lexerEngine);
         }
-        switch ((DefaultKeyword) tokenType)  {
+        if (DatabaseType.MySQL == dbType && tokenType instanceof MySQLKeyword) {
+            return getMySQLParser((MySQLKeyword) tokenType, lexerEngine);
+        }
+        throw new SQLParsingUnsupportedException(tokenType);
+    }
+    
+    private static SQLParser getGenericParser(final DatabaseType dbType, final DefaultKeyword tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        switch (tokenType) {
             case SELECT:
                 return SelectParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             case INSERT:
@@ -79,6 +89,17 @@ public final class SQLParserFactory {
             case SAVEPOINT:
             case BEGIN:
                 return TCLParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            case USE:
+                return new IgnoreParser();
+            default:
+                throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
+        }
+    }
+    
+    private static SQLParser getMySQLParser(final MySQLKeyword tokenType, final LexerEngine lexerEngine) {
+        switch (tokenType) {
+            case SHOW:
+                return new MySQLShowParser(lexerEngine);
             default:
                 throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
         }
