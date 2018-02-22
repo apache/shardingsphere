@@ -1,7 +1,7 @@
 package io.shardingjdbc.server.packet.command;
 
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
-import io.shardingjdbc.server.packet.MySQLSentPacket;
+import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class TextResultSetRowPacket extends MySQLSentPacket {
+public final class TextResultSetRowPacket extends AbstractMySQLSentPacket {
     
     private final List<Object> data;
     

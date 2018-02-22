@@ -320,7 +320,7 @@ public final class MySQLPacketPayload {
      * @param length length of reserved
      */
     public void writeReserved(final int length) {
-        for (int i = 0; i < length; i ++) {
+        for (int i = 0; i < length; i++) {
             byteBuf.writeByte(0);
         }
     }

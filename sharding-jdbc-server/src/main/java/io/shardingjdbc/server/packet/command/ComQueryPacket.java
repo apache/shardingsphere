@@ -5,7 +5,7 @@ import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.server.constant.ColumnType;
 import io.shardingjdbc.server.constant.StatusFlag;
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
-import io.shardingjdbc.server.packet.MySQLSentPacket;
+import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
 import io.shardingjdbc.server.packet.ok.EofPacket;
 
 import javax.sql.DataSource;
@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class ComQueryPacket extends CommandPacket {
+public final class ComQueryPacket extends AbstractCommandPacket {
     
     private String sql;
     
@@ -36,14 +36,14 @@ public final class ComQueryPacket extends CommandPacket {
     }
     
     @Override
-    public List<MySQLSentPacket> execute() {
-        List<MySQLSentPacket> result = new LinkedList<>();
+    public List<AbstractMySQLSentPacket> execute() {
+        List<AbstractMySQLSentPacket> result = new LinkedList<>();
         int currentSequenceId = getSequenceId();
         // TODO init data source in startup
         DataSource dataSource;
         try {
             dataSource = ShardingDataSourceFactory.createDataSource(new File(ComQueryPacket.class.getResource("/META-INF/sharding-config.yaml").getFile()));
-        } catch (IOException | SQLException ex) {
+        } catch (final IOException | SQLException ex) {
             throw new ShardingJdbcException(ex);
         }
         try (
@@ -73,7 +73,7 @@ public final class ComQueryPacket extends CommandPacket {
                 result.add(new TextResultSetRowPacket(++currentSequenceId, data));
             }
             result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new ShardingJdbcException(ex);
         }
         return result;

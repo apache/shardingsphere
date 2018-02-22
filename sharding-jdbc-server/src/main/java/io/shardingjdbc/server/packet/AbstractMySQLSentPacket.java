@@ -5,7 +5,7 @@ package io.shardingjdbc.server.packet;
  * 
  * @author zhangliang 
  */
-public abstract class MySQLSentPacket extends MySQLPacket {
+public abstract class AbstractMySQLSentPacket extends AbstractMySQLPacket {
     
     /**
      * Write packet to byte buffer.

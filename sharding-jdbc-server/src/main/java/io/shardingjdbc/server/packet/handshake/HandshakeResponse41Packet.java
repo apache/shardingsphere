@@ -2,18 +2,17 @@ package io.shardingjdbc.server.packet.handshake;
 
 import io.shardingjdbc.server.constant.CapabilityFlag;
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
-import io.shardingjdbc.server.packet.MySQLReceivedPacket;
+import io.shardingjdbc.server.packet.AbstractMySQLReceivedPacket;
 import lombok.Getter;
 
 /**
- *
  * Handshake response above MySQL 4.1 packet protocol.
  * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::HandshakeResponse41">HandshakeResponse41</a>
  * 
  * @author zhangliang
  */
 @Getter
-public final class HandshakeResponse41Packet extends MySQLReceivedPacket {
+public final class HandshakeResponse41Packet extends AbstractMySQLReceivedPacket {
     
     private int capabilityFlags;
     

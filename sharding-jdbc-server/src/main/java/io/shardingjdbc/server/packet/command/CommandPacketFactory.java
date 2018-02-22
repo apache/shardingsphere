@@ -7,7 +7,7 @@ package io.shardingjdbc.server.packet.command;
  */
 public final class CommandPacketFactory {
     
-    public static CommandPacket getCommandPacket(final int commandPacketTypeValue) {
+    public static AbstractCommandPacket getCommandPacket(final int commandPacketTypeValue) {
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
             case COM_QUERY:

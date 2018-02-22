@@ -1,7 +1,7 @@
 package io.shardingjdbc.server.packet.command;
 
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
-import io.shardingjdbc.server.packet.MySQLSentPacket;
+import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
 import io.shardingjdbc.server.packet.ok.ErrPacket;
 
 import java.util.Collections;
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class ComStatExecutePacket extends CommandPacket {
+public final class ComStatExecutePacket extends AbstractCommandPacket {
     
     @Override
     public ComStatExecutePacket read(final MySQLPacketPayload mysqlPacketPayload) {
@@ -20,7 +20,7 @@ public final class ComStatExecutePacket extends CommandPacket {
     }
     
     @Override
-    public List<MySQLSentPacket> execute() {
-        return Collections.<MySQLSentPacket>singletonList(new ErrPacket(getSequenceId() + 1, 1, "x", "xxxxx", "xxxxxxx"));
+    public List<AbstractMySQLSentPacket> execute() {
+        return Collections.<AbstractMySQLSentPacket>singletonList(new ErrPacket(getSequenceId() + 1, 1, "x", "xxxxx", "xxxxxxx"));
     }
 }

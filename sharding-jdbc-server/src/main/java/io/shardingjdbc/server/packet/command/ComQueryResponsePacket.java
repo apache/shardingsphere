@@ -1,7 +1,7 @@
 package io.shardingjdbc.server.packet.command;
 
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
-import io.shardingjdbc.server.packet.MySQLSentPacket;
+import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
 
 /**
  * COM_QUERY response packet.
@@ -9,7 +9,7 @@ import io.shardingjdbc.server.packet.MySQLSentPacket;
  *
  * @author zhangliang
  */
-public final class ComQueryResponsePacket extends MySQLSentPacket {
+public final class ComQueryResponsePacket extends AbstractMySQLSentPacket {
     
     private final long columnCount;
     

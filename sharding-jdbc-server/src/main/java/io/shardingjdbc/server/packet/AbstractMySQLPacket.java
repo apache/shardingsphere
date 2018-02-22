@@ -10,7 +10,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public abstract class MySQLPacket {
+public abstract class AbstractMySQLPacket {
     
     public static final int PAYLOAD_LENGTH = 3;
     
