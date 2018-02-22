@@ -25,7 +25,9 @@ public final class MySQLPacketCodec extends ByteToMessageCodec<AbstractMySQLSent
         if (readableBytes < AbstractMySQLPacket.PAYLOAD_LENGTH) {
             return;
         }
-        log.error("Read from client: \n" + ByteBufUtil.prettyHexDump(in));
+        if (log.isDebugEnabled()) {
+            log.debug("Read from client: \n {}", ByteBufUtil.prettyHexDump(in));
+        }
         int payloadLength = in.markReaderIndex().readMediumLE();
         if (readableBytes < payloadLength) {
             in.resetReaderIndex();
@@ -41,6 +43,8 @@ public final class MySQLPacketCodec extends ByteToMessageCodec<AbstractMySQLSent
         out.writeMediumLE(mysqlPacketPayload.getByteBuf().readableBytes());
         out.writeByte(message.getSequenceId());
         out.writeBytes(mysqlPacketPayload.getByteBuf());
-        log.error("Write to client: \n" + ByteBufUtil.prettyHexDump(out));
+        if (log.isDebugEnabled()) {
+            log.debug("Write to client: \n {}", ByteBufUtil.prettyHexDump(out));
+        }
     }
 }
