@@ -1,11 +1,13 @@
 package io.shardingjdbc.server.codec;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import io.shardingjdbc.server.packet.AbstractMySQLPacket;
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
 import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -14,6 +16,7 @@ import java.util.List;
  * 
  * @author zhangliang 
  */
+@Slf4j
 public final class MySQLPacketCodec extends ByteToMessageCodec<AbstractMySQLSentPacket> {
     
     @Override
@@ -22,6 +25,7 @@ public final class MySQLPacketCodec extends ByteToMessageCodec<AbstractMySQLSent
         if (readableBytes < AbstractMySQLPacket.PAYLOAD_LENGTH) {
             return;
         }
+        log.error("Read from client: \n" + ByteBufUtil.prettyHexDump(in));
         int payloadLength = in.markReaderIndex().readMediumLE();
         if (readableBytes < payloadLength) {
             in.resetReaderIndex();
@@ -37,5 +41,6 @@ public final class MySQLPacketCodec extends ByteToMessageCodec<AbstractMySQLSent
         out.writeMediumLE(mysqlPacketPayload.getByteBuf().readableBytes());
         out.writeByte(message.getSequenceId());
         out.writeBytes(mysqlPacketPayload.getByteBuf());
+        log.error("Write to client: \n" + ByteBufUtil.prettyHexDump(out));
     }
 }
