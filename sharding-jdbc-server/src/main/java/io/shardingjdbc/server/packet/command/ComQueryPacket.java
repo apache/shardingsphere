@@ -7,6 +7,7 @@ import io.shardingjdbc.server.constant.StatusFlag;
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
 import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
 import io.shardingjdbc.server.packet.ok.EofPacket;
+import io.shardingjdbc.server.packet.ok.OKPacket;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -52,14 +53,12 @@ public final class ComQueryPacket extends AbstractCommandPacket {
             statement.execute(sql);
             ResultSet resultSet = statement.getResultSet();
             if (null == resultSet) {
-                result.add(new ComQueryResponsePacket(++currentSequenceId, 0));
-                result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-                result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+                result.add(new OKPacket(++currentSequenceId, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
                 return result;
-            } 
+            }
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             int columnCount = resultSetMetaData.getColumnCount();
-            result.add(new ComQueryResponsePacket(++currentSequenceId, columnCount));
+            result.add(new FieldCountPacket(++currentSequenceId, columnCount));
             for (int i = 1; i <= columnCount; i++) {
                 result.add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i), 
                         resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i), 
