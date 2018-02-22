@@ -15,7 +15,7 @@ public interface ServerInfo {
     /**
      * Server version.
      */
-    String SERVER_VERSION = "Sharding-JDBC-Server 2.1.0";
+    String SERVER_VERSION = "5.5.59-Sharding-JDBC-Server 2.1.0";
     
     /**
      * Charset code 0x21 is utf8_general_ci.
