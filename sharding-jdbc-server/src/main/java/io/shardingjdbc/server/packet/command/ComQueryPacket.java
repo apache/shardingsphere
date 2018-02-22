@@ -58,6 +58,10 @@ public final class ComQueryPacket extends AbstractCommandPacket {
             }
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             int columnCount = resultSetMetaData.getColumnCount();
+            if (0 == columnCount) {
+                result.add(new OKPacket(++currentSequenceId, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+                return result;
+            }
             result.add(new FieldCountPacket(++currentSequenceId, columnCount));
             for (int i = 1; i <= columnCount; i++) {
                 result.add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i), 
