@@ -16,13 +16,19 @@ import io.shardingjdbc.server.handler.ServerHandler;
  *
  * @author zhangliang
  */
-public class Bootstrap {
+public class ShardingJDBCServerBootstrap {
     
-    public static void main(String[] args) throws InterruptedException {
-        new Bootstrap().start(3307);
+    public static void main(final String[] args) throws InterruptedException {
+        new ShardingJDBCServerBootstrap().start(3307);
     }
     
-    private void start(final int port) throws InterruptedException {
+    /**
+     * Start Sharding-JDBC Server.
+     * 
+     * @param port port
+     * @throws InterruptedException
+     */
+    public void start(final int port) throws InterruptedException {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
