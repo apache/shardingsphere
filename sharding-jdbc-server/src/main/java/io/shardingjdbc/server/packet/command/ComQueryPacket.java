@@ -1,17 +1,14 @@
 package io.shardingjdbc.server.packet.command;
 
-import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.server.DataSourceManager;
 import io.shardingjdbc.server.constant.ColumnType;
 import io.shardingjdbc.server.constant.StatusFlag;
-import io.shardingjdbc.server.packet.MySQLPacketPayload;
 import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
+import io.shardingjdbc.server.packet.MySQLPacketPayload;
 import io.shardingjdbc.server.packet.ok.EofPacket;
 import io.shardingjdbc.server.packet.ok.OKPacket;
 
-import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -40,15 +37,8 @@ public final class ComQueryPacket extends AbstractCommandPacket {
     public List<AbstractMySQLSentPacket> execute() {
         List<AbstractMySQLSentPacket> result = new LinkedList<>();
         int currentSequenceId = getSequenceId();
-        // TODO init data source in startup
-        DataSource dataSource;
-        try {
-            dataSource = ShardingDataSourceFactory.createDataSource(new File(ComQueryPacket.class.getResource("/META-INF/sharding-config.yaml").getFile()));
-        } catch (final IOException | SQLException ex) {
-            throw new ShardingJdbcException(ex);
-        }
         try (
-                Connection conn = dataSource.getConnection();
+                Connection conn = DataSourceManager.getInstance().getDataSource().getConnection();
                 Statement statement = conn.createStatement()) {
             statement.execute(sql);
             ResultSet resultSet = statement.getResultSet();
