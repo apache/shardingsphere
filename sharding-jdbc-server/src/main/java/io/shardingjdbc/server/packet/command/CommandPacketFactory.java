@@ -14,8 +14,6 @@ public final class CommandPacketFactory {
                 return new ComQuitPacket();
             case COM_QUERY:
                 return new ComQueryPacket();
-            case COM_STMT_EXECUTE:
-                return new ComStatExecutePacket();
             case COM_SLEEP:
             case COM_INIT_DB:
             case COM_FIELD_LIST:
@@ -37,6 +35,7 @@ public final class CommandPacketFactory {
             case COM_CONNECT_OUT:
             case COM_REGISTER_SLAVE:
             case COM_STMT_PREPARE:
+            case COM_STMT_EXECUTE:
             case COM_STMT_SEND_LONG_DATA:
             case COM_STMT_CLOSE:
             case COM_STMT_RESET:
