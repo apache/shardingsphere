@@ -10,6 +10,7 @@ import io.shardingjdbc.server.constant.StatusFlag;
 import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
 import io.shardingjdbc.server.packet.ok.EofPacket;
+import io.shardingjdbc.server.packet.ok.ErrPacket;
 import io.shardingjdbc.server.packet.ok.OKPacket;
 
 import java.sql.Connection;
@@ -80,7 +81,17 @@ public final class ComQueryPacket extends AbstractCommandPacket {
             }
             result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         } catch (final SQLException ex) {
-            throw new ShardingJdbcException(ex);
+            result.add(new ErrPacket(++currentSequenceId, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
+            return result;
+        } catch (final ShardingJdbcException ex) {
+            if (ex.getCause() instanceof SQLException) {
+                SQLException cause = (SQLException) ex.getCause();
+                result.add(new ErrPacket(++currentSequenceId, cause.getErrorCode(), "", cause.getSQLState(), cause.getMessage()));
+            } else {
+                // TODO standard ShardingJdbcException
+                result.add(new ErrPacket(++currentSequenceId, 99, "", "unknown", ex.getMessage()));
+            }
+            return result;
         }
         return result;
     }
