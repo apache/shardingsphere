@@ -17,8 +17,9 @@
 
 package io.shardingjdbc.core.parsing;
 
-import io.shardingjdbc.core.parsing.lexer.Lexer;
-import io.shardingjdbc.core.parsing.lexer.analyzer.Dictionary;
+import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.parsing.lexer.LexerEngine;
+import io.shardingjdbc.core.parsing.lexer.LexerEngineFactory;
 import io.shardingjdbc.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Assist;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
@@ -50,10 +51,10 @@ public final class SQLJudgeEngine {
      * @return SQL statement
      */
     public SQLStatement judge() {
-        Lexer lexer = new Lexer(sql, new Dictionary());
-        lexer.nextToken();
+        LexerEngine lexerEngine = LexerEngineFactory.newInstance(DatabaseType.MySQL, sql);
+        lexerEngine.nextToken();
         while (true) {
-            TokenType tokenType = lexer.getCurrentToken().getType();
+            TokenType tokenType = lexerEngine.getCurrentToken().getType();
             if (tokenType instanceof Keyword) {
                 if (DefaultKeyword.SELECT == tokenType) {
                     return new SelectStatement();
@@ -75,7 +76,7 @@ public final class SQLJudgeEngine {
             if (tokenType instanceof Assist && Assist.END == tokenType) {
                 throw new SQLParsingException("Unsupported SQL statement: [%s]", sql);
             }
-            lexer.nextToken();
+            lexerEngine.nextToken();
         }
     }
 }
