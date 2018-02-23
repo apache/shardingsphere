@@ -27,7 +27,11 @@ chapter = true
 
 ## [凤凰汽车](http://auto.ifeng.com/)
 
+## [高阳捷迅](http://www.19pay.com.cn/)
+
 ## [广西壮族自治区国土资源信息中心](http://z.gxdlr.gov.cn/)
+
+## [海尔消费金融](http://www.haiercash.com/)
 
 ## [华夏信财](https://www.huaxiafinance.com/)
 
@@ -38,6 +42,10 @@ chapter = true
 ## [家视天下](http://www.hiveview.com/)
 
 ## [客如云](http://www.keruyun.com/)
+
+## [丽人丽妆](http://www.lrlz.com/)
+
+## [龙猫直播](http://www.tvlongmao.com)
 
 ## [男衣库](http://www.nanyiku.com/)
 
@@ -72,6 +80,8 @@ chapter = true
 ## [天涯社区](http://www.tianya.cn/)
 
 ## [唯品会](http://www.vip.com/)
+
+## [我爱卡](http://www.51credit.com/)
 
 ## [五谷图像](http://www.5grain.com/)
 
