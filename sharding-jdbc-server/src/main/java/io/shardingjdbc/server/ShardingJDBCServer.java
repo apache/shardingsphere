@@ -12,15 +12,11 @@ import io.shardingjdbc.server.codec.MySQLPacketCodec;
 import io.shardingjdbc.server.handler.ServerHandler;
 
 /**
- * Sharding-JDBC Server Bootstrap.
+ * Sharding-JDBC Server.
  *
  * @author zhangliang
  */
-public class ShardingJDBCServerBootstrap {
-    
-    public static void main(final String[] args) throws InterruptedException {
-        new ShardingJDBCServerBootstrap().start(3307);
-    }
+public final class ShardingJDBCServer {
     
     /**
      * Start Sharding-JDBC Server.
