@@ -32,6 +32,7 @@ import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingjdbc.core.parsing.parser.sql.ignore.IgnoreStatement;
 import io.shardingjdbc.core.parsing.parser.sql.tcl.TCLStatement;
 import lombok.RequiredArgsConstructor;
 
@@ -68,6 +69,9 @@ public final class SQLJudgeEngine {
                 if (DefaultKeyword.SET == tokenType || DefaultKeyword.COMMIT == tokenType || DefaultKeyword.ROLLBACK == tokenType 
                         || DefaultKeyword.SAVEPOINT == tokenType || DefaultKeyword.BEGIN == tokenType) {
                     return new TCLStatement();
+                }
+                if (DefaultKeyword.USE == tokenType) {
+                    return new IgnoreStatement();
                 }
                 if (MySQLKeyword.SHOW == tokenType) {
                     return new ShowStatement(ShowType.OTHER);
