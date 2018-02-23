@@ -5,6 +5,7 @@
 
 ### 功能提升
 1. [ISSUE #608](https://github.com/shardingjdbc/sharding-jdbc/issues/608) 支持MySQL的USE语句
+1. [ISSUE #609](https://github.com/shardingjdbc/sharding-jdbc/issues/609) 支持MySQL的SHOW语句
 
 ## 2.0.3
 
