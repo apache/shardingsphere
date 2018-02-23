@@ -17,11 +17,14 @@
 
 package io.shardingjdbc.core.parsing.parser.sql;
 
+import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.sql.MySQLDescParser;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.sql.MySQLShowParser;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.alter.AlterParserFactory;
@@ -57,51 +60,68 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         if (tokenType instanceof DefaultKeyword) {
-            return getGenericParser(dbType, (DefaultKeyword) tokenType, shardingRule, lexerEngine);
+            Optional<? extends SQLParser> result = getGenericParser(dbType, (DefaultKeyword) tokenType, shardingRule, lexerEngine);
+            if (result.isPresent()) {
+                return result.get();
+            }
         }
-        if (DatabaseType.MySQL == dbType && tokenType instanceof MySQLKeyword) {
-            return getMySQLParser((MySQLKeyword) tokenType, lexerEngine);
+        if (DatabaseType.MySQL == dbType) {
+            Optional<? extends SQLParser> result = getMySQLParser((Keyword) tokenType, shardingRule, lexerEngine);
+            if (result.isPresent()) {
+                return result.get();
+            }
         }
         throw new SQLParsingUnsupportedException(tokenType);
     }
     
-    private static SQLParser getGenericParser(final DatabaseType dbType, final DefaultKeyword tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    private static Optional<? extends SQLParser> getGenericParser(final DatabaseType dbType, final DefaultKeyword tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         switch (tokenType) {
             case SELECT:
-                return SelectParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return Optional.of(SelectParserFactory.newInstance(dbType, shardingRule, lexerEngine));
             case INSERT:
-                return InsertParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return Optional.of(InsertParserFactory.newInstance(dbType, shardingRule, lexerEngine));
             case UPDATE:
-                return UpdateParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return Optional.of(UpdateParserFactory.newInstance(dbType, shardingRule, lexerEngine));
             case DELETE:
-                return DeleteParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return Optional.of(DeleteParserFactory.newInstance(dbType, shardingRule, lexerEngine));
             case CREATE:
-                return CreateParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return Optional.of(CreateParserFactory.newInstance(dbType, shardingRule, lexerEngine));
             case ALTER:
-                return AlterParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return Optional.of(AlterParserFactory.newInstance(dbType, shardingRule, lexerEngine));
             case DROP:
-                return DropParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return Optional.of(DropParserFactory.newInstance(dbType, shardingRule, lexerEngine));
             case TRUNCATE:
-                return TruncateParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return Optional.of(TruncateParserFactory.newInstance(dbType, shardingRule, lexerEngine));
             case SET:
             case COMMIT:
             case ROLLBACK:
             case SAVEPOINT:
             case BEGIN:
-                return TCLParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return Optional.of(TCLParserFactory.newInstance(dbType, shardingRule, lexerEngine));
             case USE:
-                return new IgnoreParser();
+                return Optional.of(new IgnoreParser());
             default:
-                throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
+                return Optional.absent();
         }
     }
     
-    private static SQLParser getMySQLParser(final MySQLKeyword tokenType, final LexerEngine lexerEngine) {
-        switch (tokenType) {
-            case SHOW:
-                return new MySQLShowParser(lexerEngine);
-            default:
-                throw new SQLParsingUnsupportedException(lexerEngine.getCurrentToken().getType());
+    private static  Optional<? extends SQLParser> getMySQLParser(final Keyword tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        if (tokenType instanceof DefaultKeyword) {
+            switch ((DefaultKeyword) tokenType) {
+                case DESC:
+                    return Optional.of(new MySQLDescParser(shardingRule, lexerEngine));
+                default:
+                    return Optional.absent();
+            }
         }
+        if (tokenType instanceof MySQLKeyword) {
+            switch ((MySQLKeyword) tokenType) {
+                case SHOW:
+                    return Optional.of(new MySQLShowParser(lexerEngine));
+                default:
+                    return Optional.absent();
+            }
+        }
+        return Optional.absent();
     }
 }

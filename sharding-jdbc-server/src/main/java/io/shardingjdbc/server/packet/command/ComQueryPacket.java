@@ -1,7 +1,6 @@
 package io.shardingjdbc.server.packet.command;
 
 import io.shardingjdbc.core.constant.SQLType;
-import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.parsing.SQLJudgeEngine;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.server.DataSourceManager;
@@ -12,6 +11,7 @@ import io.shardingjdbc.server.packet.MySQLPacketPayload;
 import io.shardingjdbc.server.packet.ok.EofPacket;
 import io.shardingjdbc.server.packet.ok.ErrPacket;
 import io.shardingjdbc.server.packet.ok.OKPacket;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -27,6 +27,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
+@Slf4j
 public final class ComQueryPacket extends AbstractCommandPacket {
     
     private String sql;
@@ -34,6 +35,7 @@ public final class ComQueryPacket extends AbstractCommandPacket {
     @Override
     public ComQueryPacket read(final MySQLPacketPayload mysqlPacketPayload) {
         sql = mysqlPacketPayload.readStringEOF();
+        log.error("SQL received for Sharding-JDBC-server: {}", sql);
         return this;
     }
     
@@ -83,7 +85,7 @@ public final class ComQueryPacket extends AbstractCommandPacket {
         } catch (final SQLException ex) {
             result.add(new ErrPacket(++currentSequenceId, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
             return result;
-        } catch (final ShardingJdbcException ex) {
+        } catch (final Exception ex) {
             if (ex.getCause() instanceof SQLException) {
                 SQLException cause = (SQLException) ex.getCause();
                 result.add(new ErrPacket(++currentSequenceId, cause.getErrorCode(), "", cause.getSQLState(), cause.getMessage()));

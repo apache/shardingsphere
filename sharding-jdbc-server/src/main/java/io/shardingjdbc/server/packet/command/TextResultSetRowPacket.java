@@ -13,6 +13,8 @@ import java.util.List;
  */
 public final class TextResultSetRowPacket extends AbstractMySQLSentPacket {
     
+    private static final int NULL = 0xfb;
+    
     private final List<Object> data;
     
     public TextResultSetRowPacket(final int sequenceId, final List<Object> data) {
@@ -23,7 +25,11 @@ public final class TextResultSetRowPacket extends AbstractMySQLSentPacket {
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
         for (Object each : data) {
-            mysqlPacketPayload.writeStringLenenc(each.toString());
+            if (null == each) {
+                mysqlPacketPayload.writeInt1(NULL);
+            } else {
+                mysqlPacketPayload.writeStringLenenc(each.toString());
+            }
         }
     }
 }

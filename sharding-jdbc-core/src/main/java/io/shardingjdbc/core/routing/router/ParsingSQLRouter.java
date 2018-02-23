@@ -21,6 +21,7 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.DescStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowStatement;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
@@ -43,6 +44,7 @@ import io.shardingjdbc.core.routing.type.ddl.DDLRoutingEngine;
 import io.shardingjdbc.core.routing.type.ignore.IgnoreRoutingEngine;
 import io.shardingjdbc.core.routing.type.show.ShowRoutingEngine;
 import io.shardingjdbc.core.routing.type.simple.SimpleRoutingEngine;
+import io.shardingjdbc.core.routing.type.unicast.UnicastRoutingEngine;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLLogger;
 
@@ -121,6 +123,8 @@ public final class ParsingSQLRouter implements SQLRouter {
             routingEngine = new DDLRoutingEngine(shardingRule, parameters, (DDLStatement) sqlStatement);
         } else if (sqlStatement instanceof ShowStatement) {
             routingEngine = new ShowRoutingEngine(shardingRule.getDataSourceMap(), (ShowStatement) sqlStatement);
+        } else if (sqlStatement instanceof DescStatement) {
+            routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
         } else if (tableNames.isEmpty()) {
             routingEngine = new DatabaseAllRoutingEngine(shardingRule.getDataSourceMap());
         } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllInDefaultDataSource(tableNames)) {

@@ -25,6 +25,7 @@ import io.shardingjdbc.core.parsing.lexer.token.Assist;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.DescStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowType;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
@@ -72,6 +73,9 @@ public final class SQLJudgeEngine {
                 }
                 if (DefaultKeyword.USE == tokenType) {
                     return new IgnoreStatement();
+                }
+                if (DefaultKeyword.DESC == tokenType) {
+                    return new DescStatement();
                 }
                 if (MySQLKeyword.SHOW == tokenType) {
                     return new ShowStatement(ShowType.OTHER);
