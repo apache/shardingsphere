@@ -25,7 +25,10 @@ import io.shardingjdbc.core.jdbc.core.connection.ShardingConnection;
 import io.shardingjdbc.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingjdbc.core.jdbc.core.resultset.ShardingResultSet;
 import io.shardingjdbc.core.merger.MergeEngine;
+import io.shardingjdbc.core.merger.SelectMergeEngine;
+import io.shardingjdbc.core.merger.ShowMergeEngine;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
@@ -95,8 +98,15 @@ public class ShardingStatement extends AbstractStatementAdapter {
         ResultSet result;
         try {
             List<ResultSet> resultSets = generateExecutor(sql).executeQuery();
-            result = new ShardingResultSet(
-                    resultSets, new MergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement()).merge(), this);
+            MergeEngine mergeEngine;
+            if (routeResult.getSqlStatement() instanceof SelectStatement) {
+                mergeEngine = new SelectMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
+            } else if (routeResult.getSqlStatement() instanceof ShowStatement) {
+                mergeEngine = new ShowMergeEngine(connection.getShardingContext().getShardingRule(), resultSets, (ShowStatement) routeResult.getSqlStatement());
+            } else {
+                throw new UnsupportedOperationException(String.format("Cannot support type '%s'", routeResult.getSqlStatement().getType()));
+            }
+            result = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
         } finally {
             currentResultSet = null;
         }
@@ -247,8 +257,14 @@ public class ShardingStatement extends AbstractStatementAdapter {
         for (Statement each : routedStatements) {
             resultSets.add(each.getResultSet());
         }
+        MergeEngine mergeEngine = null;
         if (routeResult.getSqlStatement() instanceof SelectStatement) {
-            currentResultSet = new ShardingResultSet(resultSets, new MergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement()).merge(), this);
+            mergeEngine = new SelectMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
+        } else if (routeResult.getSqlStatement() instanceof ShowStatement) {
+            mergeEngine = new ShowMergeEngine(connection.getShardingContext().getShardingRule(), resultSets, (ShowStatement) routeResult.getSqlStatement());
+        }
+        if (null != mergeEngine) {
+            currentResultSet = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
         }
         return currentResultSet;
     }

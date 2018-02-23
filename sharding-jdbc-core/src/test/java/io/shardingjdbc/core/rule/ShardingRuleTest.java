@@ -102,8 +102,8 @@ public final class ShardingRuleTest {
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         ShardingRule actual = shardingRuleConfig.build(createDataSourceMap());
-        assertTrue(actual.tryFindTableRule("logic_Table").isPresent());
-        assertFalse(actual.tryFindTableRule("null").isPresent());
+        assertTrue(actual.tryFindTableRuleByLogicTable("logic_Table").isPresent());
+        assertFalse(actual.tryFindTableRuleByLogicTable("null").isPresent());
     }
     
     @Test

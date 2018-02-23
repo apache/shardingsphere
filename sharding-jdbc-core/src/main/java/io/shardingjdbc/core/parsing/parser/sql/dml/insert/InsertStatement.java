@@ -73,7 +73,7 @@ public final class InsertStatement extends DMLStatement {
         if (null != generatedKey) {
             return;
         }
-        Optional<TableRule> tableRule = shardingRule.tryFindTableRule(getTables().getSingleTableName());
+        Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByLogicTable(getTables().getSingleTableName());
         if (!tableRule.isPresent()) {
             return;
         }

@@ -122,4 +122,13 @@ public final class TableRule {
         }
         return -1;
     }
+    
+    boolean isExisted(final String actualTableName) {
+        for (DataNode each : actualDataNodes) {
+            if (each.getTableName().equalsIgnoreCase(actualTableName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

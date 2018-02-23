@@ -94,9 +94,24 @@ public final class ShardingRule {
      * @param logicTableName logic table name
      * @return table rule
      */
-    public Optional<TableRule> tryFindTableRule(final String logicTableName) {
+    public Optional<TableRule> tryFindTableRuleByLogicTable(final String logicTableName) {
         for (TableRule each : tableRules) {
             if (each.getLogicTable().equals(logicTableName.toLowerCase())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    /**
+     * Try to find table rule though actual table name.
+     *
+     * @param actualTableName actual table name
+     * @return table rule
+     */
+    public Optional<TableRule> tryFindTableRuleByActualTable(final String actualTableName) {
+        for (TableRule each : tableRules) {
+            if (each.isExisted(actualTableName)) {
                 return Optional.of(each);
             }
         }
@@ -110,7 +125,7 @@ public final class ShardingRule {
      * @return table rule
      */
     public TableRule getTableRule(final String logicTableName) {
-        Optional<TableRule> tableRule = tryFindTableRule(logicTableName.toLowerCase());
+        Optional<TableRule> tableRule = tryFindTableRuleByLogicTable(logicTableName.toLowerCase());
         if (tableRule.isPresent()) {
             return tableRule.get();
         }
@@ -186,7 +201,7 @@ public final class ShardingRule {
      */
     public boolean isAllInDefaultDataSource(final Collection<String> logicTables) {
         for (String each : logicTables) {
-            if (tryFindTableRule(each).isPresent()) {
+            if (tryFindTableRuleByLogicTable(each).isPresent()) {
                 return false;
             }
         }
@@ -264,7 +279,7 @@ public final class ShardingRule {
      * @return generated key
      */
     public Number generateKey(final String logicTableName) {
-        Optional<TableRule> tableRule = tryFindTableRule(logicTableName);
+        Optional<TableRule> tableRule = tryFindTableRuleByLogicTable(logicTableName);
         if (!tableRule.isPresent()) {
             throw new ShardingJdbcException("Cannot find strategy for generate keys.");
         }

@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.iterator;
 
-import io.shardingjdbc.core.merger.MergeEngine;
+import io.shardingjdbc.core.merger.SelectMergeEngine;
 import io.shardingjdbc.core.merger.ResultSetMerger;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import com.google.common.collect.Lists;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 
 public final class IteratorStreamResultSetMergerTest {
     
-    private MergeEngine mergeEngine;
+    private SelectMergeEngine mergeEngine;
     
     private List<ResultSet> resultSets;
     
@@ -53,7 +53,7 @@ public final class IteratorStreamResultSetMergerTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
@@ -63,7 +63,7 @@ public final class IteratorStreamResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, false);
         }
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -74,7 +74,7 @@ public final class IteratorStreamResultSetMergerTest {
     @Test
     public void assertNextForFirstResultSetsNotEmptyOnly() throws SQLException {
         when(resultSets.get(0).next()).thenReturn(true, false);
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -83,7 +83,7 @@ public final class IteratorStreamResultSetMergerTest {
     @Test
     public void assertNextForMiddleResultSetsNotEmpty() throws SQLException {
         when(resultSets.get(1).next()).thenReturn(true, false);
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -92,7 +92,7 @@ public final class IteratorStreamResultSetMergerTest {
     @Test
     public void assertNextForLastResultSetsNotEmptyOnly() throws SQLException {
         when(resultSets.get(2).next()).thenReturn(true, false);
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -106,7 +106,7 @@ public final class IteratorStreamResultSetMergerTest {
         when(resultSets.get(1).next()).thenReturn(true, false);
         when(resultSets.get(3).next()).thenReturn(true, false);
         when(resultSets.get(5).next()).thenReturn(true, false);
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());

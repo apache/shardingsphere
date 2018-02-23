@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.merger.pagination;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.merger.MergeEngine;
+import io.shardingjdbc.core.merger.SelectMergeEngine;
 import io.shardingjdbc.core.merger.ResultSetMerger;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.limit.LimitValue;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 
 public final class LimitDecoratorResultSetMergerTest {
     
-    private MergeEngine mergeEngine;
+    private SelectMergeEngine mergeEngine;
     
     private List<ResultSet> resultSets;
     
@@ -62,7 +62,7 @@ public final class LimitDecoratorResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, true, false);
         }
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
@@ -75,7 +75,7 @@ public final class LimitDecoratorResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, true, false);
         }
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -95,7 +95,7 @@ public final class LimitDecoratorResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, true, false);
         }
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -111,7 +111,7 @@ public final class LimitDecoratorResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, true, false);
         }
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());

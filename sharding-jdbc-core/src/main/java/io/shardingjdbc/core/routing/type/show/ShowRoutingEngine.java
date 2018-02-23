@@ -42,7 +42,8 @@ public final class ShowRoutingEngine implements RoutingEngine {
     @Override
     public RoutingResult route() {
         RoutingResult result = new RoutingResult();
-        if (ShowType.TABLES == showStatement.getShowType()) {
+        // TODO databases don't need route
+        if (ShowType.DATABASES == showStatement.getShowType() || ShowType.TABLES == showStatement.getShowType()) {
             for (String each : dataSourceMap.keySet()) {
                 result.getTableUnits().getTableUnits().add(new TableUnit(each, "", ""));
             }
