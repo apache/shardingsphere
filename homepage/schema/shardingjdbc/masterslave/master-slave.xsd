@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://shardingjdbc.io/schema/shardingjdbc/masterslave"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://shardingjdbc.io/schema/shardingjdbc/masterslave"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+    <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
+    <xsd:element name="data-source">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="master-data-source-name" type="xsd:string" use="required" />
+            <xsd:attribute name="slave-data-source-names" type="xsd:string" use="required" />
+            <xsd:attribute name="strategy-ref" type="xsd:string" use="optional" />
+            <xsd:attribute name="strategy-type" type="xsd:string" use="optional" />
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
