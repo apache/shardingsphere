@@ -25,7 +25,7 @@ public final class DataSourceManager {
     
     public DataSourceManager() {
         try {
-            dataSource = ShardingDataSourceFactory.createDataSource(new File(ComQueryPacket.class.getResource("/META-INF/sharding-config.yaml").getFile()));
+            dataSource = ShardingDataSourceFactory.createDataSource(new File(ComQueryPacket.class.getResource("/conf/sharding-config.yaml").getFile()));
         } catch (final IOException | SQLException ex) {
             throw new ShardingJdbcException(ex);
         }
