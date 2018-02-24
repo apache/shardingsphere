@@ -116,6 +116,8 @@ public final class SQLParserFactory {
         }
         if (tokenType instanceof MySQLKeyword) {
             switch ((MySQLKeyword) tokenType) {
+                case DESCRIBE:
+                    return Optional.of(new MySQLDescParser(shardingRule, lexerEngine));
                 case SHOW:
                     return Optional.of(new MySQLShowParser(lexerEngine));
                 default:
