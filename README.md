@@ -49,10 +49,10 @@ Sharding-JDBC is a JDBC extension, provides distributed features such as shardin
 * YAML
 * Inline expression
 
-## 7. Orchestration (new feature for 2.0)
-* Configuration center, can support data sources, tables and sharding strategies switch dynamically. (2.0.0.M1)
-* Smart client to orchestrate data access service, can failover automatically (2.0.0.M2)
-* Output apm information based on open tracing protocol (2.0.0.M3)
+## 7. Orchestration
+* Configuration center, can support data sources, tables and sharding strategies switch dynamically.
+* Smart client to orchestrate data access service, can failover automatically.
+* Output apm information based on open tracing protocol.
 
 # Architecture
 

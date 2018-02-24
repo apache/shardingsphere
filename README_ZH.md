@@ -15,6 +15,7 @@
 # 概述
 
 Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。
+Sharding-JDBC-Server在其基础上增加了针对MySQL协议的代理端，对运维以及调试更加友好，可以使用任何兼容MySQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench等)连接Sharding-JDBC-Server以查询和操作数据。
 
 # 功能列表
 
@@ -47,10 +48,15 @@ Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以
 * Spring命名空间
 * Spring boot starter
 
-## 7. 分布式治理能力 (2.0新功能)
-* 配置集中化与动态化，可支持数据源、表与分片策略的动态切换(2.0.0.M1)
-* 客户端的数据库治理，数据源失效自动切换(2.0.0.M2)
-* 基于Open Tracing协议的APM信息输出(2.0.0.M3)
+## 7. 多样化的部署架构
+* Sharding-JDBC-Driver：通过客户端分片的方式由应用程序直连数据库，减少二次转发成本，性能最高，适合线上程序使用
+* Sharding-JDBC-Server：通过代理服务端分片的方式，由代理服务器连接数据库，适合运维以及调试时查询数据，可以结合各种MySQL客户端使用
+* Sharding-JDBC-Sidecar(TBD)：通过sidecar分片的方式，由IPC代替RPC，自动代理SQL分片，适合与Kubernetes配合使用
+
+## 8. 分布式治理能力
+* 配置集中化与动态化，可支持数据源、表与分片策略的动态切换
+* 客户端的数据库治理，数据源失效自动切换
+* 基于Open Tracing协议的APM信息输出
 
 # Architecture
 
