@@ -35,7 +35,7 @@ public final class ComQueryPacket extends AbstractCommandPacket {
     @Override
     public ComQueryPacket read(final MySQLPacketPayload mysqlPacketPayload) {
         sql = mysqlPacketPayload.readStringEOF();
-        log.error("SQL received for Sharding-JDBC-server: {}", sql);
+        log.debug("SQL received for Sharding-JDBC-server: {}", sql);
         return this;
     }
     
