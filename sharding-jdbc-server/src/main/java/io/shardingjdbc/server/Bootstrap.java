@@ -13,7 +13,7 @@ public final class Bootstrap {
      * Main Entrance.
      * 
      * @param args startup arguments.
-     * @throws InterruptedException
+     * @throws InterruptedException interrupted exception
      */
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws InterruptedException {

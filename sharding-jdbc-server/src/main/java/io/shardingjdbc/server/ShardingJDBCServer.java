@@ -22,7 +22,7 @@ public final class ShardingJDBCServer {
      * Start Sharding-JDBC Server.
      * 
      * @param port port
-     * @throws InterruptedException
+     * @throws InterruptedException interrupted exception
      */
     public void start(final int port) throws InterruptedException {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
