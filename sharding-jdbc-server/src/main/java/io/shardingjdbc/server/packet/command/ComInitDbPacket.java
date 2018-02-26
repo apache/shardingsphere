@@ -1,5 +1,6 @@
 package io.shardingjdbc.server.packet.command;
 
+import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.server.constant.StatusFlag;
 import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
@@ -19,8 +20,6 @@ import java.util.List;
 @Slf4j
 public final class ComInitDbPacket extends AbstractCommandPacket {
     
-    private static final String LOGIC_DATABASE_NAME = "sharding_db";
-    
     private String schemaName;
     
     @Override
@@ -32,7 +31,7 @@ public final class ComInitDbPacket extends AbstractCommandPacket {
     
     @Override
     public List<AbstractMySQLSentPacket> execute() {
-        if (LOGIC_DATABASE_NAME.equalsIgnoreCase(schemaName)) {
+        if (ShardingConstant.LOGIC_SCHEMA_NAME.equalsIgnoreCase(schemaName)) {
             return Collections.<AbstractMySQLSentPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
         return Collections.<AbstractMySQLSentPacket>singletonList(new ErrPacket(getSequenceId() + 1, 1049, "", "", String.format("Unknown database '%s'", schemaName)));

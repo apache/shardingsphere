@@ -1,6 +1,7 @@
 package io.shardingjdbc.core.merger.show;
 
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.core.merger.common.AbstractMemoryResultSetMerger;
 import io.shardingjdbc.core.merger.common.MemoryResultSetRow;
 import io.shardingjdbc.core.rule.ShardingRule;
@@ -32,7 +33,7 @@ public final class ShowTablesResultSetMerger extends AbstractMemoryResultSetMerg
     private final Set<String> tableNames = new HashSet<>();
     
     static {
-        LABEL_AND_INDEX_MAP.put("Tables_in_sharding_db", 1); 
+        LABEL_AND_INDEX_MAP.put("Tables_in_" + ShardingConstant.LOGIC_SCHEMA_NAME, 1); 
     }
     
     public ShowTablesResultSetMerger(final ShardingRule shardingRule, final List<ResultSet> resultSets) throws SQLException {

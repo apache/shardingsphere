@@ -1,5 +1,6 @@
 package io.shardingjdbc.server.packet.command;
 
+import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.server.DataSourceManager;
 import io.shardingjdbc.server.constant.ColumnType;
 import io.shardingjdbc.server.constant.StatusFlag;
@@ -40,7 +41,7 @@ public final class ComFieldListPacket extends AbstractCommandPacket {
     
     @Override
     public List<AbstractMySQLSentPacket> execute() {
-        String sql = String.format("SHOW COLUMNS FROM %s FROM sharding_db", table);
+        String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         List<AbstractMySQLSentPacket> result = new LinkedList<>();
         int currentSequenceId = getSequenceId();
         try (
@@ -52,7 +53,7 @@ public final class ComFieldListPacket extends AbstractCommandPacket {
                 String type = resultSet.getString(2);
                 int columnLength = Integer.parseInt(type.substring(type.indexOf('(', type.indexOf(')'))));
                 ColumnType columnType = ColumnType.valueOfDescription(type.substring(0, type.indexOf('(')));
-                result.add(new ColumnDefinition41Packet(++currentSequenceId, "sharding_db", table, table, field, field, columnLength, columnType, 0));
+                result.add(new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, field, field, columnLength, columnType, 0));
             }
             result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
             return result;
