@@ -12,10 +12,11 @@ public final class CommandPacketFactory {
         switch (type) {
             case COM_QUIT:
                 return new ComQuitPacket();
+            case COM_INIT_DB:
+                return new ComInitDbPacket();
             case COM_QUERY:
                 return new ComQueryPacket();
             case COM_SLEEP:
-            case COM_INIT_DB:
             case COM_FIELD_LIST:
             case COM_CREATE_DB:
             case COM_DROP_DB:
