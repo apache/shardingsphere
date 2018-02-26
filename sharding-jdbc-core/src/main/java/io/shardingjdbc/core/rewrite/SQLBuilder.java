@@ -59,36 +59,12 @@ public final class SQLBuilder {
     }
     
     /**
-     * Append table token.
+     * Append sharding placeholder.
      *
-     * @param logicTableName logic table name
+     * @param shardingPlaceholder sharding placeholder
      */
-    public void appendTable(final String logicTableName) {
-        segments.add(new TablePlaceholder(logicTableName));
-        currentSegment = new StringBuilder();
-        segments.add(currentSegment);
-    }
-    
-    /**
-     * Append schema token.
-     *
-     * @param logicSchemaName logic schema name
-     * @param logicTableName logic table name
-     */
-    public void appendSchema(final String logicSchemaName, final String logicTableName) {
-        segments.add(new SchemaPlaceholder(logicSchemaName, logicTableName));
-        currentSegment = new StringBuilder();
-        segments.add(currentSegment);
-    }
-    
-    /**
-     * Append index token.
-     *
-     * @param logicIndexName logic index name
-     * @param logicTableName logic table name
-     */
-    public void appendIndex(final String logicIndexName, final String logicTableName) {
-        segments.add(new IndexPlaceholder(logicIndexName, logicTableName));
+    public void appendPlaceholder(final ShardingPlaceholder shardingPlaceholder) {
+        segments.add(shardingPlaceholder);
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }

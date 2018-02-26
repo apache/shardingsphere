@@ -33,6 +33,9 @@ import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
 import io.shardingjdbc.core.parsing.parser.token.SQLToken;
 import io.shardingjdbc.core.parsing.parser.token.SchemaToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
+import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
+import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
+import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
 import io.shardingjdbc.core.rule.BindingTableRule;
@@ -100,11 +103,11 @@ public final class SQLRewriteEngine {
                 result.appendLiterals(originalSQL.substring(0, each.getBeginPosition()));
             }
             if (each instanceof TableToken) {
-                appendTableToken(result, (TableToken) each, count, sqlTokens);
+                appendTablePlaceholder(result, (TableToken) each, count, sqlTokens);
             } else if (each instanceof SchemaToken) {
-                appendSchemaToken(result, (SchemaToken) each, count, sqlTokens);
+                appendSchemaPlaceholder(result, (SchemaToken) each, count, sqlTokens);
             } else if (each instanceof IndexToken) {
-                appendIndexToken(result, (IndexToken) each, count, sqlTokens);
+                appendIndexPlaceholder(result, (IndexToken) each, count, sqlTokens);
             } else if (each instanceof ItemsToken) {
                 appendItemsToken(result, (ItemsToken) each, count, sqlTokens);
             } else if (each instanceof RowCountToken) {
@@ -129,25 +132,25 @@ public final class SQLRewriteEngine {
         });
     }
     
-    private void appendTableToken(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count, final List<SQLToken> sqlTokens) {
-        sqlBuilder.appendTable(tableToken.getTableName().toLowerCase());
+    private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count, final List<SQLToken> sqlTokens) {
+        sqlBuilder.appendPlaceholder(new TablePlaceholder(tableToken.getTableName().toLowerCase()));
         int beginPosition = tableToken.getBeginPosition() + tableToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
     }
     
-    private void appendSchemaToken(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count, final List<SQLToken> sqlTokens) {
-        sqlBuilder.appendSchema(schemaToken.getSchemaName().toLowerCase(), schemaToken.getTableName());
+    private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count, final List<SQLToken> sqlTokens) {
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaToken.getSchemaName().toLowerCase(), schemaToken.getTableName().toLowerCase()));
         int beginPosition = schemaToken.getBeginPosition() + schemaToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
     }
     
-    private void appendIndexToken(final SQLBuilder sqlBuilder, final IndexToken indexToken, final int count, final List<SQLToken> sqlTokens) {
+    private void appendIndexPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken, final int count, final List<SQLToken> sqlTokens) {
         String indexName = indexToken.getIndexName().toLowerCase();
         String logicTableName = indexToken.getTableName().toLowerCase();
         if (Strings.isNullOrEmpty(logicTableName)) {
             logicTableName = shardingRule.getLogicTableName(indexName);
         }
-        sqlBuilder.appendIndex(indexName, logicTableName);
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexName, logicTableName));
         int beginPosition = indexToken.getBeginPosition() + indexToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
     }
