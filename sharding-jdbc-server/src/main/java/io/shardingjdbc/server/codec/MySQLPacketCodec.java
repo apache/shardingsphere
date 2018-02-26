@@ -33,6 +33,11 @@ public final class MySQLPacketCodec extends ByteToMessageCodec<AbstractMySQLSent
             in.resetReaderIndex();
             return;
         }
+        if (readableBytes > payloadLength) {
+            ByteBuf frame = in.readRetainedSlice(payloadLength);
+            out.add(frame);
+            return;
+        }
         out.add(in);
     }
     
