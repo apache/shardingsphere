@@ -29,12 +29,15 @@ public final class MySQLPacketCodec extends ByteToMessageCodec<AbstractMySQLSent
             log.debug("Read from client: \n {}", ByteBufUtil.prettyHexDump(in));
         }
         int payloadLength = in.markReaderIndex().readMediumLE();
-        if (readableBytes < payloadLength) {
+        //mysql协议包头 内容长度3字节 序号1字节 内容n字节
+        //readableBytes的长度为3+1+payloadLength
+        if (readableBytes - 4 < payloadLength) {
             in.resetReaderIndex();
             return;
         }
-        if (readableBytes > payloadLength) {
-            ByteBuf frame = in.readRetainedSlice(payloadLength);
+        if (readableBytes - 4 > payloadLength) {
+            //frame长度为1+payloadLength
+            ByteBuf frame = in.readRetainedSlice(payloadLength + 1);
             out.add(frame);
             return;
         }
