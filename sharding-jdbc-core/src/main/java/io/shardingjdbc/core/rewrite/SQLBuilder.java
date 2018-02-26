@@ -20,9 +20,12 @@ package io.shardingjdbc.core.rewrite;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
+import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
+import io.shardingjdbc.core.rewrite.placeholder.ShardingPlaceholder;
+import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
-import lombok.RequiredArgsConstructor;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -58,10 +61,10 @@ public final class SQLBuilder {
     /**
      * Append table token.
      *
-     * @param tableName table name
+     * @param logicTableName logic table name
      */
-    public void appendTable(final String tableName) {
-        segments.add(new TableToken(tableName));
+    public void appendTable(final String logicTableName) {
+        segments.add(new TablePlaceholder(logicTableName));
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }
@@ -69,11 +72,11 @@ public final class SQLBuilder {
     /**
      * Append schema token.
      *
-     * @param schemaName schema name
-     * @param tableName table name
+     * @param logicSchemaName logic schema name
+     * @param logicTableName logic table name
      */
-    public void appendSchema(final String schemaName, final String tableName) {
-        segments.add(new SchemaToken(schemaName, tableName));
+    public void appendSchema(final String logicSchemaName, final String logicTableName) {
+        segments.add(new SchemaPlaceholder(logicSchemaName, logicTableName));
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }
@@ -81,11 +84,11 @@ public final class SQLBuilder {
     /**
      * Append index token.
      *
-     * @param indexName index name
-     * @param tableName table name
+     * @param logicIndexName logic index name
+     * @param logicTableName logic table name
      */
-    public void appendIndex(final String indexName, final String tableName) {
-        segments.add(new IndexToken(indexName, tableName));
+    public void appendIndex(final String logicIndexName, final String logicTableName) {
+        segments.add(new IndexPlaceholder(logicIndexName, logicTableName));
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }
@@ -100,23 +103,26 @@ public final class SQLBuilder {
     public String toSQL(final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule) {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
-            if (each instanceof TableToken && logicAndActualTableMap.containsKey(((TableToken) each).tableName)) {
-                result.append(logicAndActualTableMap.get(((TableToken) each).tableName));
-            } else if (each instanceof SchemaToken) {
-                SchemaToken schemaToken = (SchemaToken) each;
-                String actualTableName = logicAndActualTableMap.get(schemaToken.tableName);
+            if (!(each instanceof ShardingPlaceholder)) {
+                result.append(each);
+                continue;
+            }
+            String logicTableName = ((ShardingPlaceholder) each).getLogicTableName();
+            String actualTableName = logicAndActualTableMap.get(logicTableName);
+            if (each instanceof TablePlaceholder) {
+                result.append(null == actualTableName ? logicTableName : actualTableName);
+            } else if (each instanceof SchemaPlaceholder) {
+                SchemaPlaceholder schemaPlaceholder = (SchemaPlaceholder) each;
                 Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(actualTableName);
                 if (!tableRule.isPresent() && Strings.isNullOrEmpty(shardingRule.getDefaultDataSourceName())) {
-                    throw new ShardingJdbcException("Cannot found schema name '%s' in sharding rule.", schemaToken.schemaName);
+                    throw new ShardingJdbcException("Cannot found schema name '%s' in sharding rule.", schemaPlaceholder.getLogicSchemaName());
                 }
-                String actualDataSourceName = tableRule.get().getActualDatasourceNames().iterator().next();
                 // TODO 目前只能找到真实数据源名称. 未来需要在初始化sharding rule时创建connnection,并验证连接是否正确,并获取出真实的schema的名字, 然后在这里替换actualDataSourceName为actualSchemaName
                 // TODO 目前actualDataSourceName必须actualSchemaName一样,才能保证替换schema的场景不出错, 如: show columns xxx
-                result.append(actualDataSourceName);
-            } else if (each instanceof IndexToken) {
-                IndexToken indexToken = (IndexToken) each;
-                result.append(indexToken.indexName);
-                String actualTableName = logicAndActualTableMap.get(indexToken.tableName);
+                result.append(tableRule.get().getActualDatasourceNames().iterator().next());
+            } else if (each instanceof IndexPlaceholder) {
+                IndexPlaceholder indexPlaceholder = (IndexPlaceholder) each;
+                result.append(indexPlaceholder.getLogicIndexName());
                 if (!Strings.isNullOrEmpty(actualTableName)) {
                     result.append("_");
                     result.append(actualTableName);
@@ -126,42 +132,5 @@ public final class SQLBuilder {
             }
         }
         return result.toString();
-    }
-    
-    @RequiredArgsConstructor
-    private class TableToken {
-        
-        private final String tableName;
-        
-        @Override
-        public String toString() {
-            return tableName;
-        }
-    }
-    
-    @RequiredArgsConstructor
-    private class SchemaToken {
-        
-        private final String schemaName;
-    
-        private final String tableName;
-        
-        @Override
-        public String toString() {
-            return schemaName;
-        }
-    }
-    
-    @RequiredArgsConstructor
-    private class IndexToken {
-        
-        private final String indexName;
-        
-        private final String tableName;
-        
-        @Override
-        public String toString() {
-            return indexName;
-        }
     }
 }
