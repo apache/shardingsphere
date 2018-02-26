@@ -7,5 +7,5 @@ package io.shardingjdbc.core.parsing.parser.dialect.mysql.statement;
  */
 public enum ShowType {
     
-    DATABASES, TABLES, OTHER
+    DATABASES, TABLES, COLUMNS, OTHER
 }

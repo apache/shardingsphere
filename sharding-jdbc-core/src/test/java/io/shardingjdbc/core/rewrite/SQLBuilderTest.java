@@ -36,7 +36,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
         sqlBuilder.appendLiterals("table_x");
-        assertThat(sqlBuilder.toSQL(Collections.<String, String>emptyMap()), is("SELECT table_x.id FROM table_x"));
+        assertThat(sqlBuilder.toSQL(Collections.<String, String>emptyMap(), null), is("SELECT table_x.id FROM table_x"));
     }
     
     @Test
@@ -47,7 +47,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
         sqlBuilder.appendTable("table_x");
-        assertThat(sqlBuilder.toSQL(Collections.<String, String>emptyMap()), is("SELECT table_x.id FROM table_x"));
+        assertThat(sqlBuilder.toSQL(Collections.<String, String>emptyMap(), null), is("SELECT table_x.id FROM table_x"));
     }
     
     @Test
@@ -60,6 +60,6 @@ public final class SQLBuilderTest {
         sqlBuilder.appendTable("table_x");
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
-        assertThat(sqlBuilder.toSQL(tableTokens), is("SELECT table_x_1.id FROM table_x_1"));
+        assertThat(sqlBuilder.toSQL(tableTokens, null), is("SELECT table_x_1.id FROM table_x_1"));
     }
 }

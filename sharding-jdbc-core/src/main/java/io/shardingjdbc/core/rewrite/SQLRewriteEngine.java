@@ -31,6 +31,7 @@ import io.shardingjdbc.core.parsing.parser.token.OffsetToken;
 import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
 import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
 import io.shardingjdbc.core.parsing.parser.token.SQLToken;
+import io.shardingjdbc.core.parsing.parser.token.SchemaToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
@@ -100,6 +101,8 @@ public final class SQLRewriteEngine {
             }
             if (each instanceof TableToken) {
                 appendTableToken(result, (TableToken) each, count, sqlTokens);
+            } else if (each instanceof SchemaToken) {
+                appendSchemaToken(result, (SchemaToken) each, count, sqlTokens);
             } else if (each instanceof IndexToken) {
                 appendIndexToken(result, (IndexToken) each, count, sqlTokens);
             } else if (each instanceof ItemsToken) {
@@ -129,6 +132,12 @@ public final class SQLRewriteEngine {
     private void appendTableToken(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count, final List<SQLToken> sqlTokens) {
         sqlBuilder.appendTable(tableToken.getTableName().toLowerCase());
         int beginPosition = tableToken.getBeginPosition() + tableToken.getOriginalLiterals().length();
+        appendRest(sqlBuilder, count, sqlTokens, beginPosition);
+    }
+    
+    private void appendSchemaToken(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count, final List<SQLToken> sqlTokens) {
+        sqlBuilder.appendSchema(schemaToken.getSchemaName().toLowerCase(), schemaToken.getTableName());
+        int beginPosition = schemaToken.getBeginPosition() + schemaToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
     }
     
@@ -205,7 +214,7 @@ public final class SQLRewriteEngine {
      * @return SQL string
      */
     public String generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder) {
-        return sqlBuilder.toSQL(getTableTokens(tableUnit));
+        return sqlBuilder.toSQL(getTableTokens(tableUnit), shardingRule);
     }
     
     /**
@@ -216,7 +225,7 @@ public final class SQLRewriteEngine {
      * @return SQL string
      */
     public String generateSQL(final CartesianTableReference cartesianTableReference, final SQLBuilder sqlBuilder) {
-        return sqlBuilder.toSQL(getTableTokens(cartesianTableReference));
+        return sqlBuilder.toSQL(getTableTokens(cartesianTableReference), shardingRule);
     }
     
     private Map<String, String> getTableTokens(final TableUnit tableUnit) {
@@ -242,6 +251,7 @@ public final class SQLRewriteEngine {
         }
         return tableTokens;
     }
+
     
     private Map<String, String> getBindingTableTokens(final TableUnit tableUnit, final BindingTableRule bindingTableRule) {
         Map<String, String> result = new HashMap<>();

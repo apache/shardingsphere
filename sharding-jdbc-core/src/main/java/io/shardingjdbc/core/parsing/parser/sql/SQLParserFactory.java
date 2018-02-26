@@ -119,7 +119,7 @@ public final class SQLParserFactory {
                 case DESCRIBE:
                     return Optional.of(new MySQLDescParser(shardingRule, lexerEngine));
                 case SHOW:
-                    return Optional.of(new MySQLShowParser(lexerEngine));
+                    return Optional.of(new MySQLShowParser(shardingRule, lexerEngine));
                 default:
                     return Optional.absent();
             }

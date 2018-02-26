@@ -14,10 +14,11 @@ public final class CommandPacketFactory {
                 return new ComQuitPacket();
             case COM_INIT_DB:
                 return new ComInitDbPacket();
+            case COM_FIELD_LIST:
+                return new ComFieldListPacket();
             case COM_QUERY:
                 return new ComQueryPacket();
             case COM_SLEEP:
-            case COM_FIELD_LIST:
             case COM_CREATE_DB:
             case COM_DROP_DB:
             case COM_REFRESH:

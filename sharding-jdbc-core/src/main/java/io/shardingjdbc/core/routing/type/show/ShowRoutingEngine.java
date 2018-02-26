@@ -22,10 +22,9 @@ import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowType;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.TableUnit;
+import io.shardingjdbc.core.routing.type.unicast.UnicastRoutingEngine;
+import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
-
-import javax.sql.DataSource;
-import java.util.Map;
 
 /**
  * Show routing engine.
@@ -35,7 +34,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class ShowRoutingEngine implements RoutingEngine {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final ShardingRule shardingRule;
     
     private final ShowStatement showStatement;
     
@@ -44,11 +43,15 @@ public final class ShowRoutingEngine implements RoutingEngine {
         RoutingResult result = new RoutingResult();
         // TODO databases don't need route
         if (ShowType.DATABASES == showStatement.getShowType() || ShowType.TABLES == showStatement.getShowType()) {
-            for (String each : dataSourceMap.keySet()) {
+            for (String each : shardingRule.getDataSourceMap().keySet()) {
                 result.getTableUnits().getTableUnits().add(new TableUnit(each, "", ""));
             }
+        } else if (ShowType.COLUMNS == showStatement.getShowType()) {
+            // TODO refactor to UnicastRoutingEngine
+            UnicastRoutingEngine engine = new UnicastRoutingEngine(shardingRule, showStatement);
+            return engine.route();
         } else {
-            result.getTableUnits().getTableUnits().add(new TableUnit(dataSourceMap.keySet().iterator().next(), "", ""));
+            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getDataSourceMap().keySet().iterator().next(), "", ""));
         }
         return result;
     }

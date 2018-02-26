@@ -30,6 +30,8 @@ public enum MySQLKeyword implements Keyword {
     DESCRIBE, 
     DATABASES, 
     TABLES, 
+    COLUMNS,
+    FIELDS, 
     DUAL, 
     LIMIT, 
     OFFSET, 
