@@ -1,5 +1,6 @@
 package io.shardingjdbc.core.merger.show;
 
+import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.core.merger.ResultSetMerger;
 
 import java.io.InputStream;
@@ -14,8 +15,6 @@ import java.util.Calendar;
  */
 public final class ShowDatabasesResultSetMerger implements ResultSetMerger {
     
-    private static final String LOGIC_DATABASE_NAME = "sharding_db";
-    
     private boolean firstNext = true;
     
     @Override
@@ -29,12 +28,12 @@ public final class ShowDatabasesResultSetMerger implements ResultSetMerger {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return LOGIC_DATABASE_NAME;
+        return ShardingConstant.LOGIC_SCHEMA_NAME;
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return LOGIC_DATABASE_NAME;
+        return ShardingConstant.LOGIC_SCHEMA_NAME;
     }
     
     @Override

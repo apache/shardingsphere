@@ -14,12 +14,11 @@ import java.sql.Types;
 @RequiredArgsConstructor
 @Getter
 public enum ColumnType {
-    
-    MYSQL_TYPE_DECIMAL(0x00),
-    MYSQL_TYPE_TINY(0x01),
-    MYSQL_TYPE_SHORT(0x02),
-    MYSQL_TYPE_LONG(0x03),
-    MYSQL_TYPE_FLOAT(0x04),
+    MYSQL_TYPE_DECIMAL(0x00), 
+    MYSQL_TYPE_TINY(0x01), 
+    MYSQL_TYPE_SHORT(0x02), 
+    MYSQL_TYPE_LONG(0x03), 
+    MYSQL_TYPE_FLOAT(0x04), 
     MYSQL_TYPE_DOUBLE(0x05),
     MYSQL_TYPE_NULL(0x06),
     MYSQL_TYPE_TIMESTAMP(0x07),
@@ -49,7 +48,7 @@ public enum ColumnType {
     private final int value;
     
     /**
-     * Value JDBC type.
+     * Value of JDBC type.
      *
      * @param jdbcType JDBC type
      * @return column type enum
@@ -101,6 +100,42 @@ public enum ColumnType {
                 return MYSQL_TYPE_BLOB;
             default:
                 throw new IllegalArgumentException(String.format("Cannot find JDBC type '%s' in column type", jdbcType));
+        }
+    }
+    
+    /**
+     * Value of description.
+     *
+     * @param description description
+     * @return column type enum
+     */
+    // TODO need to check
+    public static ColumnType valueOfDescription(final String description) {
+        switch (description) {
+            case "bit":
+                return MYSQL_TYPE_BIT;
+            case "tiny":
+                return MYSQL_TYPE_TINY;
+            case "int":
+                return MYSQL_TYPE_INT24;
+            case "bigint":
+                return MYSQL_TYPE_LONG;
+            case "decimal":
+                return MYSQL_TYPE_DOUBLE;
+            case "char":
+                return MYSQL_TYPE_STRING;
+            case "varchar":
+                return MYSQL_TYPE_VARCHAR;
+            case "date":
+                return MYSQL_TYPE_DATE;
+            case "time":
+                return MYSQL_TYPE_TIME;
+            case "timestamp":
+                return MYSQL_TYPE_TIMESTAMP;
+            case "blob":
+                return MYSQL_TYPE_BLOB;
+            default:
+                throw new IllegalArgumentException(String.format("Cannot find description '%s' in column type", description));
         }
     }
 }

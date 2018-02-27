@@ -65,7 +65,7 @@ public final class SQLRewriteEngineTest {
     @Test
     public void assertRewriteWithoutChange() {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT table_y.id FROM table_y WHERE table_y.id=?", DatabaseType.MySQL, selectStatement);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), is("SELECT table_y.id FROM table_y WHERE table_y.id=?"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), is("SELECT table_y.id FROM table_y WHERE table_y.id=?"));
     }
     
     @Test
@@ -74,7 +74,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new TableToken(31, "table_x"));
         selectStatement.getSqlTokens().add(new TableToken(47, "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?", DatabaseType.MySQL, selectStatement);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), is("SELECT table_1.id, x.name FROM table_1 x WHERE table_1.id=? AND x.name=?"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), is("SELECT table_1.id, x.name FROM table_1 x WHERE table_1.id=? AND x.name=?"));
     }
     
     @Test
@@ -84,7 +84,7 @@ public final class SQLRewriteEngineTest {
         itemsToken.getItems().addAll(Arrays.asList("x.id as ORDER_BY_DERIVED_0", "x.name as GROUP_BY_DERIVED_0"));
         selectStatement.getSqlTokens().add(itemsToken);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.age FROM table_x x GROUP BY x.id ORDER BY x.name", DatabaseType.MySQL, selectStatement);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), is("SELECT x.age, x.id as ORDER_BY_DERIVED_0, x.name as GROUP_BY_DERIVED_0 FROM table_1 x GROUP BY x.id ORDER BY x.name"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), is("SELECT x.age, x.id as ORDER_BY_DERIVED_0, x.name as GROUP_BY_DERIVED_0 FROM table_1 x GROUP BY x.id ORDER BY x.name"));
     }
     
     @Test
@@ -94,7 +94,7 @@ public final class SQLRewriteEngineTest {
         itemsToken.getItems().addAll(Arrays.asList("COUNT(x.age) as AVG_DERIVED_COUNT_0", "SUM(x.age) as AVG_DERIVED_SUM_0"));
         selectStatement.getSqlTokens().add(itemsToken);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT AVG(x.age) FROM table_x x", DatabaseType.MySQL, selectStatement);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), is("SELECT AVG(x.age), COUNT(x.age) as AVG_DERIVED_COUNT_0, SUM(x.age) as AVG_DERIVED_SUM_0 FROM table_1 x"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), is("SELECT AVG(x.age), COUNT(x.age) as AVG_DERIVED_COUNT_0, SUM(x.age) as AVG_DERIVED_SUM_0 FROM table_1 x"));
     }
     
     @Test
@@ -106,7 +106,7 @@ public final class SQLRewriteEngineTest {
         itemsToken2.getItems().add("?");
         selectStatement.getSqlTokens().addAll(Arrays.asList(itemsToken1, itemsToken2));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO table_x (name, age) VALUES (?, ?)", DatabaseType.MySQL, selectStatement);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), is("INSERT INTO table_1 (name, age, id) VALUES (?, ?, ?)"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), is("INSERT INTO table_1 (name, age, id) VALUES (?, ?, ?)"));
     }
     
     @Test
@@ -118,7 +118,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new OffsetToken(33, 2));
         selectStatement.getSqlTokens().add(new RowCountToken(36, 2));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.id FROM table_x x LIMIT 2, 2", DatabaseType.MySQL, selectStatement);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), is("SELECT x.id FROM table_1 x LIMIT 0, 4"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), is("SELECT x.id FROM table_1 x LIMIT 0, 4"));
     }
     
     @Test
@@ -131,7 +131,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new RowCountToken(98, 4));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", DatabaseType.Oracle, selectStatement);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=4) t WHERE t.rownum_>0"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), 
+                is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=4) t WHERE t.rownum_>0"));
     }
     
     @Test
@@ -144,7 +145,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new RowCountToken(26, 4));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", DatabaseType.SQLServer, selectStatement);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), is("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>0"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), 
+                is("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>0"));
     }
     
     @Test
@@ -158,7 +160,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new OffsetToken(33, 2));
         selectStatement.getSqlTokens().add(new RowCountToken(36, 2));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.id FROM table_x x LIMIT 2, 2", DatabaseType.MySQL, selectStatement);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), is("SELECT x.id FROM table_1 x LIMIT 0, 2147483647"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), is("SELECT x.id FROM table_1 x LIMIT 0, 2147483647"));
     }
     
     @Test
@@ -173,7 +175,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderType.DESC, OrderType.ASC, Optional.<String>absent()));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", DatabaseType.Oracle, selectStatement);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), 
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), 
                 is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=2147483647) t WHERE t.rownum_>0"));
     }
     
@@ -189,7 +191,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderType.DESC, OrderType.ASC, Optional.<String>absent()));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", DatabaseType.SQLServer, selectStatement);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), 
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), 
                 is("SELECT * FROM (SELECT TOP(2147483647) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>0"));
     }
     
@@ -202,7 +204,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new OffsetToken(33, 2));
         selectStatement.getSqlTokens().add(new RowCountToken(36, 2));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.id FROM table_x x LIMIT 2, 2", DatabaseType.MySQL, selectStatement);
-        assertThat(rewriteEngine.rewrite(false).toSQL(tableTokens), is("SELECT x.id FROM table_1 x LIMIT 2, 2"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(tableTokens, null), is("SELECT x.id FROM table_1 x LIMIT 2, 2"));
     }
     
     @Test
@@ -215,7 +217,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new RowCountToken(98, 4));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", DatabaseType.Oracle, selectStatement);
-        assertThat(rewriteEngine.rewrite(false).toSQL(tableTokens), is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=4) t WHERE t.rownum_>2"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(tableTokens, null), 
+                is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=4) t WHERE t.rownum_>2"));
     }
     
     @Test
@@ -228,7 +231,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new RowCountToken(26, 4));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", DatabaseType.SQLServer, selectStatement);
-        assertThat(rewriteEngine.rewrite(false).toSQL(tableTokens), 
+        assertThat(rewriteEngine.rewrite(false).toSQL(tableTokens, null), 
                 is("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>2"));
     }
     
@@ -240,7 +243,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new TableToken(25, "table_x"));
         selectStatement.getSqlTokens().add(new OrderByToken(61));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC", DatabaseType.MySQL, selectStatement);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), is("SELECT x.id, x.name FROM table_1 x GROUP BY x.id, x.name DESC ORDER BY id ASC,name DESC "));
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), is("SELECT x.id, x.name FROM table_1 x GROUP BY x.id, x.name DESC ORDER BY id ASC,name DESC "));
     }
     
     @Test

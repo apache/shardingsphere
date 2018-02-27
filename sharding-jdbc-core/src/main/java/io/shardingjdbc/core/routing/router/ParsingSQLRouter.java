@@ -122,7 +122,7 @@ public final class ParsingSQLRouter implements SQLRouter {
         } else if (sqlStatement instanceof DDLStatement) {
             routingEngine = new DDLRoutingEngine(shardingRule, parameters, (DDLStatement) sqlStatement);
         } else if (sqlStatement instanceof ShowStatement) {
-            routingEngine = new ShowRoutingEngine(shardingRule.getDataSourceMap(), (ShowStatement) sqlStatement);
+            routingEngine = new ShowRoutingEngine(shardingRule, (ShowStatement) sqlStatement);
         } else if (sqlStatement instanceof DescStatement) {
             routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
         } else if (tableNames.isEmpty()) {

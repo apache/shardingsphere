@@ -25,6 +25,7 @@ import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.connection.ShardingConnection;
 import io.shardingjdbc.core.rule.ShardingRule;
+import lombok.Getter;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -38,6 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
+    @Getter
     private ShardingProperties shardingProperties;
     
     private ExecutorEngine executorEngine;

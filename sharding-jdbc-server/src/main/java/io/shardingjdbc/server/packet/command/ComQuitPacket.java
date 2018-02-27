@@ -4,7 +4,6 @@ import io.shardingjdbc.server.constant.StatusFlag;
 import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
 import io.shardingjdbc.server.packet.ok.OKPacket;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class ComQuitPacket extends AbstractCommandPacket {
     
     @Override
@@ -25,6 +23,6 @@ public final class ComQuitPacket extends AbstractCommandPacket {
     
     @Override
     public List<AbstractMySQLSentPacket> execute() {
-        return Collections.<AbstractMySQLSentPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, "Quit OK"));
+        return Collections.<AbstractMySQLSentPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
     }
 }
