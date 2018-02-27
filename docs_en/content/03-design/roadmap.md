@@ -1,15 +1,15 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "未来线路规划"
+title = "Roadmap"
 weight = 4
 prev = "/03-design/module"
 next = "/00-overview"
 +++
 
-## 已完成
+## Completed
 
-### 数据库
+### DATABASE
 1. MySQL
 1. Oracle
 1. SQLServer
@@ -38,64 +38,64 @@ next = "/00-overview"
 1. DROP
 1. TRUNCATE
 
-### 配置
+### Configuration
 1. Java API
-1. Spring命名空间
+1. Spring Namespace
 1. Yaml
-1. 读写分离独立化
-1. 配置集中化
-1. 配置动态化
+1. Read/Write Splitting Independent
+1. Configuration Concentrated
+1. Configuration Dynamic
 
-### SQL解析
-1. 词法分析
-1. 语法分析
+### SQL Parser
+1. lexer analysis
+1. Parser analysis
 
-### SQL改写
-1. 正确性改写
-1. 优化改写
+### SQL Rewrite
+1. Correctness rewrite
+1. polish rewriting
 
-### 访问路由
-1. Hint路由
-1. 简单路由
-1. 笛卡尔积路由
+### SQL Router
+1. Hint Router
+1. Simple Router
+1. Cartesian Product Router
 
-### 结果归并
-1. 流式归并
-1. 内存归并
-1. 装饰者归并
+### Result Merger
+1. Stream Merger
+1. Memory Merger
+1. Decorator Merger
 
-### 分库分表
-1. 分库
-1. 分表
-1. 默认数据源
+### Sharding databases and tables
+1. sharding databases
+1. sharding tables
+1. default datasources
 
-### 读写分离
-1. 读写分离
-1. 同一线程且同一数据库连接内一致性保证
-1. Hint强制主库路由
+### Read/Write Splitting
+1. Read/Write Splitting
+1. Consistent guarantees for the same thread and the same database connection
+1. Hint-based forced master routing
 
-### 分布式主键
-1. JDBC集成
-1. 分布式主键策略接口
-1. 基于snowflake的分布式主键算法实现
+### Distributed Primary Key
+1. JDBC integration
+1. Distributed primary key policy interface
+1. The distributed primary key algorithm based on snowflake is implemented
 
-### 柔性事务
-1. 最大努力送达型
+### B.A.S.E Transaction
+1. Best Effort Delivery
 
-## 计划中
+## Planning
 
-### 配置
-1. 读写分离独立化
-1. Binding策略提升
-1. 集中化
-1. 动态化
+### Configuration
+1. Read/Write Splitting to be independent
+1. Binding Strategy improvement
+1. centralized
+1. dynamic
 
-### 治理
-1. 数据源健康检测及发现
-1. 数据源动态切换
-1. 流量控制
+### Governance
+1. HealthCheck and discovery of datasources
+1. dynamic switching of datasources
+1. flow control
 
-## 待定
+## TODO
 
 ### DQL
 1. DISTINCT
@@ -116,14 +116,14 @@ next = "/00-overview"
 1. CREATE INDEX
 1. CREATE OR REPLACE
 
-### SQL解析提升
-1. 批量解析
-1. 冗余括号
-1. 通过SQL注释指定SQL Hint
+### Enhanced SQL Parser
+1. Batch Parser
+1. Redundant Brackets
+1. Specify SQL Hint by SQL comments
 
-### 柔性事务提升
+### Enhanced B.A.S.E Transaction 
 1. TCC
 
-### 运维工具
-1. 字典表复制广播
-1. 动态扩容
+### Devops Tools
+1. Dictionary table replication broadcasting
+1. Dynamic Dilatancy
