@@ -72,6 +72,6 @@ Sharding-JDBC fully implements sharding databases and tables, read/write splitti
  - **Please Join Our QQ group(it’s full now, please join QQ group2)：** 532576663(Only discuss topics related to Sharding-JDBC. We want you to read the document carefully before entering the group. Read the bulletin and modify group business CARDS after entering the group. Thank you for your cooperation)
  - **QQ group2：** 459894627
  - **Source Code Communicate QQ group：** 659205143(Only discuss topics related to Sharding-JDBC source implementation. We welcome you here to communicate with us about Sharding-JDBC architecture design, code implementation, and future line planning. This group needs to have an early understanding of Sharding-JDBC. Membership: please post an article on the source code analysis for Sharding-JDBC and send it to us through official communication.)
- - Report identified bugs, submit enhancements and submit patches, etc.，please read[how do you contribute](/00-overview/contribution)。
+ - Report identified bugs, submit enhancements and submit patches, etc.，please read [how do you contribute](/00-overview/contribution).
  
  **If you use sharding-JDBC, please leave the company and website at your convenience.** https://github.com/shardingjdbc/sharding-jdbc/issues/234
