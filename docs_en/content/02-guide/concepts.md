@@ -20,7 +20,7 @@ The physical table really existed in the sharding database. e.g. t_order_0~t_ord
 The smallest unit of data-sharding. It consists of data source name and table name, e.g. ds_1.t_order_0. By default, the table structure of each sharding is the same, so that you can directly configure the correspondence between logical tables and actual tables. If the table structures in each sharding are different, you can set relationship configuration by using ds.actual_table format.
 
 ## BindingTable
-The parent tables and child tables with the same spliting rules. e.g. The order table splited with Order ID, and the order item table also splited with  ​​Order ID. As a result, order table and order item table are BindingTable of each other. The cascade querie for BindingTables do not use Cartesian product association, therefore the efficiency for cascade query will be greatly improved.
+The relational tables with the same spliting rules. e.g. The order table splited with Order ID, and the order item table also splited with  ​​Order ID. As a result, order table and order item table are BindingTable of each other. The cascade querie for BindingTables do not use Cartesian product association, therefore the efficiency for cascade query will be greatly improved.
 
 ## ShardingColumn
 The spliting field. e.g. To split tables by using modulo operation for the mantissa of the order ID, the ShardingColumn is order ID. Sharding-JDBC supports multiple sharding columns. Notice: If there is no ShardingColumn in query SQL, all tables will be accessed and result in poor performance.
