@@ -16,11 +16,11 @@ chapter = true
 [![GitHub forks](https://img.shields.io/github/forks/shardingjdbc/sharding-jdbc.svg?style=social&label=Fork)](https://github.com/shardingjdbc/sharding-jdbc/fork)&nbsp;
 [![GitHub watchers](https://img.shields.io/github/watchers/shardingjdbc/sharding-jdbc.svg?style=social&label=Watch)](https://github.com/shardingjdbc/sharding-jdbc/watchers)
 
-Sharding-jdbc is an open source and micro-service-oriented distributed database base library,which is always targeted at the cloud-native base development suite.
+Sharding-JDBC is an open source and micro-service-oriented distributed database base access library, which is always targeted at the cloud-native base development suite.
 
-Sharding-jdbc is positioned as a lightweight java framework, using the client to connect to the database, providing services in the form of the jar,no middle layer is used,no additional deployment,no other dependence,DBA also don't need to change the original mode of operations,can be understood as a enhanced version of the JDBC driver,migrate legacy code almost zero costs.
+Sharding-JDBC is a lightweight java framework, using the java-jdbc-client to connect database, providing services all-in-jar, no middle layer is used, no other dependence, DBA also don't need to change the original dev mode, can be understood as a enhanced version of the JDBC driver, migrate legacy code almost zero costs.
 
-Sharding-jdbc fully implements sharding databases and tables, read/write splitting, and distributed sequence features, also initially provides the B.A.S.E transaction.Since open source in 2016,it has accumulated enough inside information after several refinements and stability polishing of the overall architecture, we believe that it can be a reference for developers to choose technology components.
+Sharding-JDBC fully implements sharding databases and tables, read/write splitting, distributed primary key, and B.A.S.E transaction. Since 2016, it has accumulated enough inside information after several refinements and stability polishing of the overall architecture, we believe that it can be a reference for developers to choose technology components.
 
 [![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.svg?branch=master)](https://travis-ci.org/shardingjdbc/sharding-jdbc)
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
@@ -30,9 +30,9 @@ Sharding-jdbc fully implements sharding databases and tables, read/write splitti
 # Feature List
 
 ## 1. Sharding Databases And Tables
-* Perfect SQL parsing，which supports aggregation, grouping, sorting, LIMIT,TOP and other queries,and supports cascading tables and Cartesian product table queries
+* Perfect SQL parsing，which supports aggregation, grouping, sorting, LIMIT, TOP and other queries, and supports cascading tables and Cartesian product table queries
 * Supports Inner Join and Outer Join
-* Flexible sharding strategy, which support =, BETWEEN, IN, multiple swarding-columns and customized sharding strategy
+* Flexible sharding strategy, which support =, BETWEEN, IN, multiple sharding-columns and customized sharding strategy
 * Supports Hint-based sharding
 
 ## 2. Read/Write Splitting
@@ -63,7 +63,7 @@ Sharding-jdbc fully implements sharding databases and tables, read/write splitti
 
 ## 7. Distributed Governance Capability(2.0 New Feature)
 
-* Configuration is centralized and dynamic，support dynamically switching of datasources,tables and sharding policies(2.0.0.M1)
+* Configuration is centralized and dynamic，support dynamically switching of datasources, tables and sharding policies(2.0.0.M1)
 * Client database governance, datasource automatic switching when failure(2.0.0.M2)
 * Information Output based on Open Tracing protocol(2.0.0.M3)
 
@@ -74,4 +74,4 @@ Sharding-jdbc fully implements sharding databases and tables, read/write splitti
  - **Source Code Communicate QQ group：** 659205143(Only discuss topics related to Sharding-JDBC source implementation. We welcome you here to communicate with us about Sharding-JDBC architecture design, code implementation, and future line planning. This group needs to have an early understanding of Sharding-JDBC. Membership: please post an article on the source code analysis for Sharding-JDBC and send it to us through official communication.)
  - Report identified bugs, submit enhancements and submit patches, etc.，please read[how do you contribute](/00-overview/contribution)。
  
- **If you use sharding-jdbc,please leave the company and website at your convenience.** https://github.com/shardingjdbc/sharding-jdbc/issues/234
+ **If you use sharding-JDBC, please leave the company and website at your convenience.** https://github.com/shardingjdbc/sharding-jdbc/issues/234
