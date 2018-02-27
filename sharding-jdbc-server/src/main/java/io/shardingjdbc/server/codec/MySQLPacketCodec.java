@@ -22,23 +22,20 @@ public final class MySQLPacketCodec extends ByteToMessageCodec<AbstractMySQLSent
     @Override
     protected void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) throws Exception {
         int readableBytes = in.readableBytes();
-        if (readableBytes < AbstractMySQLPacket.PAYLOAD_LENGTH) {
+        if (readableBytes < AbstractMySQLPacket.PAYLOAD_LENGTH + AbstractMySQLPacket.SEQUENCE_LENGTH) {
             return;
         }
         if (log.isDebugEnabled()) {
             log.debug("Read from client: \n {}", ByteBufUtil.prettyHexDump(in));
         }
         int payloadLength = in.markReaderIndex().readMediumLE();
-        //mysql协议包头 内容长度3字节 序号1字节 内容n字节
-        //readableBytes的长度为3+1+payloadLength
-        if (readableBytes - 4 < payloadLength) {
+        int realPacketLength = payloadLength + AbstractMySQLPacket.PAYLOAD_LENGTH + AbstractMySQLPacket.SEQUENCE_LENGTH;
+        if (readableBytes < realPacketLength) {
             in.resetReaderIndex();
             return;
         }
-        if (readableBytes - 4 > payloadLength) {
-            //frame长度为1+payloadLength
-            ByteBuf frame = in.readRetainedSlice(payloadLength + 1);
-            out.add(frame);
+        if (readableBytes > realPacketLength) {
+            out.add(in.readRetainedSlice(payloadLength + 1));
             return;
         }
         out.add(in);
