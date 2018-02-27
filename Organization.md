@@ -9,11 +9,11 @@ As a member of PMC, you **must** contribute and maintain the features or modules
 1. Merge right for pull request.
 1. Vote right for promoting contributor to Committer Team and PMC.
 1. Start a vote for promoting contributor to Committer Team and PMC, pull request or feature discussion.
-1. For now, only 吴晟 [@wu-sheng](https://github.com/wu-sheng) has right to remove people from PMC or Committer Team.
+1. For now, only 张亮 [@terrymanu](https://github.com/terrymanu) has right to remove people from PMC or Committer Team.
 
 The current Project Management Committee is as follows (in chronological order):
 * 张亮, Zhang Liang, [@terrymanu](https://github.com/terrymanu) Architect director, Jingdong
-* 高洪涛, Hongtao Gao [@hanahmily](http://githun.com/hanahmily) Senior Architect, Huawei
+* 高洪涛, Hongtao Gao, [@hanahmily](http://githun.com/hanahmily) Senior Architect, Huawei
 * 曹昊, Cao Hao, [@ascrutae](https://github.com/haocao) Senior Architect, Dangdang
 * 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng) APM and tracing expert, Huawei
 
