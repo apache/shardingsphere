@@ -13,9 +13,8 @@ As a member of PMC, you **must** contribute and maintain the features or modules
 
 The current Project Management Committee is as follows (in chronological order):
 * 张亮, Zhang Liang, [@terrymanu](https://github.com/terrymanu) Architect director, Jingdong
-* 高洪涛, Hongtao Gao, [@hanahmily](http://githun.com/hanahmily) Senior Architect, Huawei
 * 曹昊, Cao Hao, [@ascrutae](https://github.com/haocao) Senior Architect, Dangdang
-* 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng) APM and tracing expert, Huawei
+* 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng) APM and tracing expert, Apache SkyWalking incubator creator & PMC member
 
 # Voting
 
