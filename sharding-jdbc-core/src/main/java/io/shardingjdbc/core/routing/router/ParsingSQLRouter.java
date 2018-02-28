@@ -23,6 +23,7 @@ import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.DescStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowType;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -42,7 +43,6 @@ import io.shardingjdbc.core.routing.type.complex.CartesianRoutingResult;
 import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
 import io.shardingjdbc.core.routing.type.complex.ComplexRoutingEngine;
 import io.shardingjdbc.core.routing.type.ignore.IgnoreRoutingEngine;
-import io.shardingjdbc.core.routing.type.show.ShowRoutingEngine;
 import io.shardingjdbc.core.routing.type.standard.StandardRoutingEngine;
 import io.shardingjdbc.core.routing.type.unicast.UnicastRoutingEngine;
 import io.shardingjdbc.core.rule.ShardingRule;
@@ -121,8 +121,14 @@ public final class ParsingSQLRouter implements SQLRouter {
             routingEngine = new IgnoreRoutingEngine();
         } else if (sqlStatement instanceof DDLStatement) {
             routingEngine = new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
-        } else if (sqlStatement instanceof ShowStatement) {
-            routingEngine = new ShowRoutingEngine(shardingRule, (ShowStatement) sqlStatement);
+        } else if (sqlStatement instanceof ShowStatement && ShowType.DATABASES == ((ShowStatement) sqlStatement).getShowType()) {
+            routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
+        } else if (sqlStatement instanceof ShowStatement && ShowType.TABLES == ((ShowStatement) sqlStatement).getShowType()) {
+            routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
+        } else if (sqlStatement instanceof ShowStatement && ShowType.COLUMNS == ((ShowStatement) sqlStatement).getShowType()) {
+            routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
+        } else if (sqlStatement instanceof ShowStatement && ShowType.OTHER == ((ShowStatement) sqlStatement).getShowType()) {
+            routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
         } else if (sqlStatement instanceof DescStatement) {
             routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
         } else if (tableNames.isEmpty()) {

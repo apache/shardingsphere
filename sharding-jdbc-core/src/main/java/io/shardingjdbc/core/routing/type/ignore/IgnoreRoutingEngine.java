@@ -19,14 +19,12 @@ package io.shardingjdbc.core.routing.type.ignore;
 
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Ignore routing engine.
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class IgnoreRoutingEngine implements RoutingEngine {
     
     @Override
