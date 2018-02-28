@@ -2,7 +2,7 @@ package io.shardingjdbc.core.parsing.parser.dialect.mysql.sql;
 
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.clause.TableReferencesClauseParser;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.DescStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
 import io.shardingjdbc.core.parsing.parser.sql.SQLParser;
 import io.shardingjdbc.core.rule.ShardingRule;
 
@@ -23,9 +23,9 @@ public final class MySQLDescParser implements SQLParser {
     }
     
     @Override
-    public DescStatement parse() {
+    public DescribeStatement parse() {
         lexerEngine.nextToken();
-        DescStatement result = new DescStatement();
+        DescribeStatement result = new DescribeStatement();
         tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         return result;
     }

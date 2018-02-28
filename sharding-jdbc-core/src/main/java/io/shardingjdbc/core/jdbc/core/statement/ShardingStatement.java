@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.jdbc.core.statement;
 
+import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.executor.type.statement.StatementExecutor;
 import io.shardingjdbc.core.executor.type.statement.StatementUnit;
@@ -24,17 +25,16 @@ import io.shardingjdbc.core.jdbc.adapter.AbstractStatementAdapter;
 import io.shardingjdbc.core.jdbc.core.connection.ShardingConnection;
 import io.shardingjdbc.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingjdbc.core.jdbc.core.resultset.ShardingResultSet;
+import io.shardingjdbc.core.merger.DALMergeEngine;
 import io.shardingjdbc.core.merger.MergeEngine;
 import io.shardingjdbc.core.merger.SelectMergeEngine;
-import io.shardingjdbc.core.merger.ShowMergeEngine;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowStatement;
+import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
 import io.shardingjdbc.core.routing.SQLRouteResult;
 import io.shardingjdbc.core.routing.StatementRoutingEngine;
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -101,8 +101,8 @@ public class ShardingStatement extends AbstractStatementAdapter {
             MergeEngine mergeEngine;
             if (routeResult.getSqlStatement() instanceof SelectStatement) {
                 mergeEngine = new SelectMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
-            } else if (routeResult.getSqlStatement() instanceof ShowStatement) {
-                mergeEngine = new ShowMergeEngine(connection.getShardingContext().getShardingRule(), resultSets, (ShowStatement) routeResult.getSqlStatement());
+            } else if (routeResult.getSqlStatement() instanceof DALStatement) {
+                mergeEngine = new DALMergeEngine(connection.getShardingContext().getShardingRule(), resultSets, (DALStatement) routeResult.getSqlStatement());
             } else {
                 throw new UnsupportedOperationException(String.format("Cannot support type '%s'", routeResult.getSqlStatement().getType()));
             }
@@ -260,8 +260,8 @@ public class ShardingStatement extends AbstractStatementAdapter {
         MergeEngine mergeEngine = null;
         if (routeResult.getSqlStatement() instanceof SelectStatement) {
             mergeEngine = new SelectMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
-        } else if (routeResult.getSqlStatement() instanceof ShowStatement) {
-            mergeEngine = new ShowMergeEngine(connection.getShardingContext().getShardingRule(), resultSets, (ShowStatement) routeResult.getSqlStatement());
+        } else if (routeResult.getSqlStatement() instanceof DALStatement && !resultSets.isEmpty()) {
+            mergeEngine = new DALMergeEngine(connection.getShardingContext().getShardingRule(), resultSets, (DALStatement) routeResult.getSqlStatement());
         }
         if (null != mergeEngine) {
             currentResultSet = new ShardingResultSet(resultSets, mergeEngine.merge(), this);

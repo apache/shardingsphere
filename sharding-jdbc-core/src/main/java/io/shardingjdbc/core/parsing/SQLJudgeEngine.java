@@ -25,15 +25,17 @@ import io.shardingjdbc.core.parsing.lexer.token.Assist;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.DescStatement;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowStatement;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowType;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingjdbc.core.parsing.parser.sql.ignore.IgnoreStatement;
 import io.shardingjdbc.core.parsing.parser.sql.tcl.TCLStatement;
 import lombok.RequiredArgsConstructor;
 
@@ -72,13 +74,13 @@ public final class SQLJudgeEngine {
                     return new TCLStatement();
                 }
                 if (DefaultKeyword.USE == tokenType) {
-                    return new IgnoreStatement();
+                    return new UseStatement();
                 }
                 if (DefaultKeyword.DESC == tokenType) {
-                    return new DescStatement();
+                    return new DescribeStatement();
                 }
                 if (MySQLKeyword.SHOW == tokenType) {
-                    return new ShowStatement(ShowType.OTHER);
+                    return getShowStatement(lexerEngine);
                 }
             }
             if (tokenType instanceof Assist && Assist.END == tokenType) {
@@ -86,5 +88,19 @@ public final class SQLJudgeEngine {
             }
             lexerEngine.nextToken();
         }
+    }
+    
+    private SQLStatement getShowStatement(final LexerEngine lexerEngine) {
+        lexerEngine.nextToken();
+        if (MySQLKeyword.DATABASES == lexerEngine.getCurrentToken().getType()) {
+            return new ShowDatabasesStatement();
+        }
+        if (MySQLKeyword.TABLES == lexerEngine.getCurrentToken().getType()) {
+            return new ShowTablesStatement();
+        }
+        if (MySQLKeyword.COLUMNS == lexerEngine.getCurrentToken().getType()) {
+            return new ShowColumnsStatement();
+        }
+        return new ShowOtherStatement();
     }
 }

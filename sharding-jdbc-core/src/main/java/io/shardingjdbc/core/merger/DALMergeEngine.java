@@ -20,8 +20,9 @@ package io.shardingjdbc.core.merger;
 import io.shardingjdbc.core.merger.show.ShowDatabasesResultSetMerger;
 import io.shardingjdbc.core.merger.show.ShowOtherResultSetMerger;
 import io.shardingjdbc.core.merger.show.ShowTablesResultSetMerger;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowStatement;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowType;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
+import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
@@ -30,25 +31,25 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Show result set merge engine.
+ * DAL result set merge engine.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShowMergeEngine implements MergeEngine {
+public final class DALMergeEngine implements MergeEngine {
     
     private final ShardingRule shardingRule;
     
     private final List<ResultSet> resultSets;
     
-    private final ShowStatement showStatement;
+    private final DALStatement dalStatement;
     
     @Override
     public ResultSetMerger merge() throws SQLException {
-        if (ShowType.DATABASES == showStatement.getShowType()) {
+        if (dalStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesResultSetMerger();
         }
-        if (ShowType.TABLES == showStatement.getShowType()) {
+        if (dalStatement instanceof ShowTablesStatement) {
             return new ShowTablesResultSetMerger(shardingRule, resultSets);
         }
         return new ShowOtherResultSetMerger(resultSets.get(0));

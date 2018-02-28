@@ -21,14 +21,16 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.DescStatement;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowStatement;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowType;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingjdbc.core.parsing.parser.sql.ignore.IgnoreStatement;
 import io.shardingjdbc.core.rewrite.SQLBuilder;
 import io.shardingjdbc.core.rewrite.SQLRewriteEngine;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
@@ -117,19 +119,13 @@ public final class ParsingSQLRouter implements SQLRouter {
     private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
         RoutingEngine routingEngine;
-        if (sqlStatement instanceof IgnoreStatement) {
+        if (sqlStatement instanceof UseStatement) {
             routingEngine = new IgnoreRoutingEngine();
         } else if (sqlStatement instanceof DDLStatement) {
             routingEngine = new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
-        } else if (sqlStatement instanceof ShowStatement && ShowType.DATABASES == ((ShowStatement) sqlStatement).getShowType()) {
+        } else if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowTablesStatement) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
-        } else if (sqlStatement instanceof ShowStatement && ShowType.TABLES == ((ShowStatement) sqlStatement).getShowType()) {
-            routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
-        } else if (sqlStatement instanceof ShowStatement && ShowType.COLUMNS == ((ShowStatement) sqlStatement).getShowType()) {
-            routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
-        } else if (sqlStatement instanceof ShowStatement && ShowType.OTHER == ((ShowStatement) sqlStatement).getShowType()) {
-            routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
-        } else if (sqlStatement instanceof DescStatement) {
+        } else if (sqlStatement instanceof ShowColumnsStatement || sqlStatement instanceof ShowOtherStatement || sqlStatement instanceof DescribeStatement) {
             routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
         } else if (tableNames.isEmpty()) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);

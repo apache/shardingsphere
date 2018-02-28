@@ -15,21 +15,21 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.parser.sql.ignore;
+package io.shardingjdbc.core.parsing.parser.sql.dal;
 
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.parsing.parser.sql.AbstractSQLStatement;
 import lombok.ToString;
 
 /**
- * Ignore SQL statement.
+ * DAL statement.
  *
  * @author zhangliang
  */
 @ToString(callSuper = true)
-public final class IgnoreStatement extends AbstractSQLStatement {
+public class DALStatement extends AbstractSQLStatement {
     
-    public IgnoreStatement() {
-        super(SQLType.OTHER);
+    public DALStatement() {
+        super(SQLType.DAL);
     }
 }

@@ -26,6 +26,7 @@ import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.sql.MySQLDescParser;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.sql.MySQLShowParser;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.sql.MySQLUseParser;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.alter.AlterParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.create.CreateParserFactory;
@@ -35,7 +36,6 @@ import io.shardingjdbc.core.parsing.parser.sql.dml.delete.DeleteParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.dml.update.UpdateParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectParserFactory;
-import io.shardingjdbc.core.parsing.parser.sql.ignore.IgnoreParser;
 import io.shardingjdbc.core.parsing.parser.sql.tcl.TCLParserFactory;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
@@ -98,8 +98,9 @@ public final class SQLParserFactory {
             case SAVEPOINT:
             case BEGIN:
                 return Optional.of(TCLParserFactory.newInstance(dbType, shardingRule, lexerEngine));
+            // TODO refactor to DALParserFactory
             case USE:
-                return Optional.of(new IgnoreParser());
+                return Optional.of(new MySQLUseParser());
             default:
                 return Optional.absent();
         }

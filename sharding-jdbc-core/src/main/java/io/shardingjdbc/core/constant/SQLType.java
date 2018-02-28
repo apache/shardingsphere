@@ -53,7 +53,7 @@ public enum SQLType {
     TCL,
     
     /**
-     * Other SQL.
+     * Database administrator Language.
      */
-    OTHER
+    DAL
 }
