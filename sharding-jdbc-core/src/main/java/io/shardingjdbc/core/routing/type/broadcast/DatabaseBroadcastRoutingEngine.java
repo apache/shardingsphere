@@ -15,30 +15,28 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.type.all;
+package io.shardingjdbc.core.routing.type.broadcast;
 
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.TableUnit;
+import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
-import java.util.Map;
-
 /**
- * Database all routing engine.
+ * Broadcast routing engine for databases.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DatabaseAllRoutingEngine implements RoutingEngine {
+public final class DatabaseBroadcastRoutingEngine implements RoutingEngine {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final ShardingRule shardingRule;
     
     @Override
     public RoutingResult route() {
         RoutingResult result = new RoutingResult();
-        for (String each : dataSourceMap.keySet()) {
+        for (String each : shardingRule.getDataSourceMap().keySet()) {
             result.getTableUnits().getTableUnits().add(new TableUnit(each, "", ""));
         }
         return result;

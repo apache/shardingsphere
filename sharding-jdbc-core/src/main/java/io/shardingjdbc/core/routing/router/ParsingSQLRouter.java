@@ -35,7 +35,7 @@ import io.shardingjdbc.core.routing.SQLRouteResult;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.TableUnit;
-import io.shardingjdbc.core.routing.type.all.DatabaseAllRoutingEngine;
+import io.shardingjdbc.core.routing.type.broadcast.DatabaseBroadcastRoutingEngine;
 import io.shardingjdbc.core.routing.type.broadcast.TableBroadcastRoutingEngine;
 import io.shardingjdbc.core.routing.type.complex.CartesianDataSource;
 import io.shardingjdbc.core.routing.type.complex.CartesianRoutingResult;
@@ -126,7 +126,7 @@ public final class ParsingSQLRouter implements SQLRouter {
         } else if (sqlStatement instanceof DescStatement) {
             routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
         } else if (tableNames.isEmpty()) {
-            routingEngine = new DatabaseAllRoutingEngine(shardingRule.getDataSourceMap());
+            routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllInDefaultDataSource(tableNames)) {
             routingEngine = new SimpleRoutingEngine(shardingRule, parameters, tableNames.iterator().next(), sqlStatement);
         } else {
