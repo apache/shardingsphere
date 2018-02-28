@@ -34,12 +34,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Broadcast routing engine.
+ * Broadcast routing engine for tables.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class BroadcastRoutingEngine implements RoutingEngine {
+public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
