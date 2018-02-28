@@ -12,8 +12,8 @@ As a member of PMC, you **must** contribute and maintain the features or modules
 1. For now, only 张亮 [@terrymanu](https://github.com/terrymanu) has right to remove people from PMC or Committer Team.
 
 The current Project Management Committee is as follows (in chronological order):
-* 张亮, Zhang Liang, [@terrymanu](https://github.com/terrymanu) Architect director, Jingdong
-* 曹昊, Cao Hao, [@haocao](https://github.com/haocao) Senior Architect, Dangdang
+* 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu) Architect director, Jingdong
+* 曹昊, Hao Cao, [@haocao](https://github.com/haocao) Senior Architect, Dangdang
 * 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng) APM and tracing expert, Apache SkyWalking(incubator) creator & PMC member
 
 # Voting
