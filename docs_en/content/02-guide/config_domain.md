@@ -1,37 +1,34 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "配置域模型"
+title = "Domain Model Configuration"
 weight = 4
 prev = "/02-guide"
 next = "/02-guide/sharding/"
 
 +++
+This section explains configuration domain models in Sharding-JDBC. The following class diagram is about those domain models in Sharding-JDBC.
 
-本文介绍Sharding-JDBC和配置相关的领域模型。以下是Sharding-JDBC与配置相关的领域模型类图。
+![The class diagrams for Domain Model](http://ovfotjrsi.bkt.clouddn.com/docs/img/config_domain.png)
 
-![配置领域模型类图](http://ovfotjrsi.bkt.clouddn.com/docs/img/config_domain.png)
+## The Factory Method Pattern
 
-## 工厂方法API
+The yellow part of the figure represents the Sharding-JDBC entry API, which is provided in the form of factory methods. It includes ShardingDataSourceFactory factory class and MasterSlaveDataSourceFactory factory class. ShardingDataSourceFactory is used to create JDBC driver for Sharding + Read/Write Splitting, but MasterSlaveDataSourceFactory is to create JDBC driver only for Read/Write Splitting.
 
-图中黄色部分表示的是Sharding-JDBC的入口API，采用工厂方法的形式提供。
-目前有ShardingDataSourceFactory和MasterSlaveDataSourceFactory两个工厂类。ShardingDataSourceFactory用于创建分库分表或分库分表+读写分离的JDBC驱动，MasterSlaveDataSourceFactory用于创建独立使用读写分离的JDBC驱动。
+## Configuration Object
 
-## 配置对象
+The blue part of the figure shows the sharding-jdbc configuration objects. ShardingRuleConfiguration is to entrance to configure the Sharding strategy, and it can include multiple TableRuleConfiguration and MasterSlaveRuleConfiguration. A TableRuleConfiguration is configured for a group of tables with the same sharding strategy. If both Sharding and Read/Write Splitting are used, you need to set MasterSlaveRuleConfiguration for each logic database used to do Read/Write Splitting. There is one-to-one correspondence between each TableRuleConfiguration and each ShardingStrategyConfiguration which consists of 5 kinds of strategies to choose from. For details on the use of sharding strategies, please read the [Database Sharding] (/02-guide/sharding/).
 
-图中蓝色部分表示的是Sharding-JDBC的配置对象，提供灵活多变的配置方式。
-ShardingRuleConfiguration是分库分表配置的核心和入口，它可以包含多个TableRuleConfiguration和MasterSlaveRuleConfiguration。每一组相同规则分片的表配置一个TableRuleConfiguration。如果需要分库分表和读写分离共同使用，每一个读写分离的逻辑库配置一个MasterSlaveRuleConfiguration。
-每个TableRuleConfiguration对应一个ShardingStrategyConfiguration，它有5中实现类可供选择。关于分片策略使用的细节，请阅读[分库分表](/02-guide/sharding/)。
+MasterSlaveRuleConfiguration is only used for Read/Write Splitting.
 
-仅读写分离使用MasterSlaveRuleConfiguration即可。
+## Internal Object
 
-## 内部对象
+The red part of the figure represents internal objects, which are used by Sharding-JDBC itself. Therefore users do not look inside those objects. By using ShardingRuleConfiguration and MasterSlaveRuleConfiguration, Sharding-JDBC provides final rules to ShardingDataSource and MasterSlaveDataSource which implement the DataSource interface.
 
-图中红色部分表示的是内部对象，由Sharding-JDBC内部使用，应用开发者无需关注。Sharding-JDBC通过ShardingRuleConfiguration和MasterSlaveRuleConfiguration生成真正供ShardingDataSource和MasterSlaveDataSource使用的规则对象。ShardingDataSource和MasterSlaveDataSource实现了DataSource接口，是JDBC的完整实现方案。
+## Operation Steps
 
-## 初始化流程
+1. Create Configuration object.
+2. The Configuration object is transformed into the Rule object through the Factory object.
+3. The Rule object is bound to the DataSource object through the Factory object.
+4. Sharding-JDBC operates Sharding and Read/Write Splitting on DataSource object.
 
-1. 配置Configuration对象。
-2. 通过Factory对象将Configuration对象转化为Rule对象。
-3. 通过Factory对象将Rule对象与DataSource对象装配。
-4. Sharding-JDBC使用DataSource对象进行分库分表和读写分离。
