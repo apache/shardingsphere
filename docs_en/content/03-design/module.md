@@ -1,7 +1,7 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "模块说明"
+title = "Module Declaration"
 weight = 3
 prev = "/03-design/architecture/"
 next = "/03-design/roadmap/"
@@ -10,38 +10,37 @@ next = "/03-design/roadmap/"
 
 ```
 sharding-jdbc
-    ├──sharding-jdbc-core                                                     分库分表、读写分离核心模块，可直接使用
-    ├──sharding-jdbc-core-spring                                              Spring配置父模块，不应直接使用
-    ├      ├──sharding-jdbc-core-spring-namespace                             Spring命名空间支持模块，可直接使用
-    ├      ├──sharding-jdbc-core-spring-boot                                  SpringBoot支持模块，可直接使用
-    ├──sharding-jdbc-orchestration                                            数据库服务编排治理模块，可接使用
-    ├──sharding-jdbc-transaction-parent                                       柔性事务父模块，不应直接使用
-    ├      ├──sharding-jdbc-transaction                                       柔性事务核心模块，可直接使用
-    ├      ├──sharding-jdbc-transaction-storage                               柔性事务存储模块，不应直接使用
-    ├      ├──sharding-jdbc-transaction-async-job                             柔性事务异步作业，不应直接使用，直接下载tar包配置启动即可
-    ├──sharding-jdbc-plugin                                                   插件模块，目前包含自定义分布式自增主键，可直接使用
+    ├──sharding-jdbc-core                                                     Can be used directly
+    ├──sharding-jdbc-core-spring                                              Can’t be used directly
+    ├      ├──sharding-jdbc-core-spring-namespace                             Can be used directly
+    ├      ├──sharding-jdbc-core-spring-boot                                  Can be used directly
+    ├──sharding-jdbc-orchestration                                            Can be used directly
+    ├──sharding-jdbc-transaction-parent                                       Can’t be used directly
+    ├      ├──sharding-jdbc-transaction                                       Can be used directly
+    ├      ├──sharding-jdbc-transaction-storage                               Can’t be used directly
+    ├      ├──sharding-jdbc-transaction-async-job                             Can’t be used directly,Download tar packages directly, configure & startup
+    ├──sharding-jdbc-plugin                                                   Can be used directly,Currently contains a custom distributed self-increasing primary key
 
-sharding-jdbc-example                                                         使用示例
-    ├──sharding-jdbc-raw-jdbc-example                                         原生JDBC的使用示例
-    ├      ├──sharding-jdbc-raw-jdbc-java-example                             基于Java配置的原生JDBC的使用示例
-    ├      ├──sharding-jdbc-raw-jdbc-yaml-example                             基于Yaml配置的原生JDBC的使用示例
-    ├──sharding-jdbc-spring-example                                           Spring的使用示例
-    ├      ├──sharding-jdbc-spring-namespace-jpa-example                      基于Spring的JPA使用示例
-    ├      ├──sharding-jdbc-spring-namespace-mybatis-example                  基于Spring的Mybatis使用示例
-    ├──sharding-jdbc-spring-boot-example                                      SpringBoot的使用示例
-    ├      ├──sharding-jdbc-spring-boot-data-jpa-example                      基于Spring Boot Data JPA的使用示例
-    ├      ├──sharding-jdbc-spring-boot-data-mybatis-example                  基于Spring Boot Data Mybatis的使用示例
-    ├──sharding-jdbc-orchestration-example                                    数据库服务编排治理的使用示例
-    ├      ├──sharding-jdbc-orchestration-zookeeper-java-example              Zookeeper基于Java配置的数据库服务编排治理的使用示例
-    ├      ├──sharding-jdbc-orchestration-etcd-java-example                   Etcd基于Java配置的数据库服务编排治理的使用示例
-    ├      ├──sharding-jdbc-orchestration-zookeeper-yaml-example              Zookeeper基于Yaml配置的数据库服务编排治理的使用示例
-    ├      ├──sharding-jdbc-orchestration-etcd-yaml-example                   Etcd基于Yaml配置的数据库服务编排治理的使用示例
-    ├──sharding-jdbc-orchestration-spring-example                             数据库服务编排治理的Spring使用示例
-    ├      ├──sharding-jdbc-orchestration-zookeeper-spring-boot-example       Zookeeper基于Spring Boot配置的数据库服务编排治理的使用示例
-    ├      ├──sharding-jdbc-orchestration-etcd-spring-boot-example            Etcd基于Spring Boot配置的数据库服务编排治理的使用示例
-    ├      ├──sharding-jdbc-orchestration-zookeeper-spring-namespace-example  Zookeeper基于Spring Namespace配置的数据库服务编排治理的使用示例
-    ├      ├──sharding-jdbc-orchestration-etcd-spring-namespace-example       Etcd基于Spring Namespace配置的数据库服务编排治理的使用示例
-    ├──sharding-jdbc-transaction-example                                      柔性事务的使用示例
+sharding-jdbc-example                                                         
+    ├──sharding-jdbc-raw-jdbc-example                                         
+    ├      ├──sharding-jdbc-raw-jdbc-java-example                             
+    ├      ├──sharding-jdbc-raw-jdbc-yaml-example                             
+    ├──sharding-jdbc-spring-example                                           
+    ├      ├──sharding-jdbc-spring-namespace-jpa-example                      
+    ├      ├──sharding-jdbc-spring-namespace-mybatis-example                  
+    ├──sharding-jdbc-spring-boot-example                                      
+    ├      ├──sharding-jdbc-spring-boot-data-jpa-example                      
+    ├      ├──sharding-jdbc-spring-boot-data-mybatis-example                  
+    ├──sharding-jdbc-orchestration-example                                    
+    ├      ├──sharding-jdbc-orchestration-etcd-java-example                   
+    ├      ├──sharding-jdbc-orchestration-zookeeper-yaml-example              
+    ├      ├──sharding-jdbc-orchestration-etcd-yaml-example                   
+    ├──sharding-jdbc-orchestration-spring-example                             
+    ├      ├──sharding-jdbc-orchestration-zookeeper-spring-boot-example       
+    ├      ├──sharding-jdbc-orchestration-etcd-spring-boot-example            
+    ├      ├──sharding-jdbc-orchestration-zookeeper-spring-namespace-example  
+    ├      ├──sharding-jdbc-orchestration-etcd-spring-namespace-example       
+    ├──sharding-jdbc-transaction-example                                      
 
-sharding-jdbc-doc                                                             文档md源码模块，不应直接使用，直接阅读官网即可
+sharding-jdbc-doc                                                             Can’t be used directly,please direct read the official website
 ```
