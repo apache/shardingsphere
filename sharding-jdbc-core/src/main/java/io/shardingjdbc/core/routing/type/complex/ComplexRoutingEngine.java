@@ -24,7 +24,7 @@ import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
-import io.shardingjdbc.core.routing.type.simple.SimpleRoutingEngine;
+import io.shardingjdbc.core.routing.type.standard.StandardRoutingEngine;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -62,7 +62,7 @@ public final class ComplexRoutingEngine implements RoutingEngine {
             Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByLogicTable(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    result.add(new SimpleRoutingEngine(shardingRule, parameters, tableRule.get().getLogicTable(), sqlStatement).route());
+                    result.add(new StandardRoutingEngine(shardingRule, parameters, tableRule.get().getLogicTable(), sqlStatement).route());
                 }
                 Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each);
                 if (bindingTableRule.isPresent()) {

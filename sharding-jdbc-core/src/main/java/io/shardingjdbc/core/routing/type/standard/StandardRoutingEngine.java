@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.type.simple;
+package io.shardingjdbc.core.routing.type.standard;
 
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.hint.HintManagerHolder;
@@ -40,12 +40,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Simple routing engine.
+ * Standard routing engine.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class SimpleRoutingEngine implements RoutingEngine {
+public final class StandardRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
