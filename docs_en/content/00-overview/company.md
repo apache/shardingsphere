@@ -73,7 +73,7 @@ These companies are in no particular order，but in alphabetical order by pinyin
 
 ## [搜好货](http://www.912688.com/)
 
-## [搜狐资讯] (http://ss.sohu.com/)
+## [搜狐资讯](http://ss.sohu.com/)
 
 ## [TCL](http://www.tcl.com/)
 
@@ -91,7 +91,7 @@ These companies are in no particular order，but in alphabetical order by pinyin
 
 ## [小牛在线](https://www.xiaoniu88.com/)
 
-## [义乌购] (http://www.yiwugou.com/)
+## [义乌购](http://www.yiwugou.com/)
 
 ## [赢家服饰](http://www.eeka.cn/)
 
