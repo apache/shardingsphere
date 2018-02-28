@@ -303,4 +303,20 @@ public final class ShardingRule {
         }
         throw new ShardingJdbcException("Cannot find logic table name with logic index name: '%s'", logicIndexName);
     }
+    
+    /**
+     * Find data node by logic table.
+     * 
+     * @param logicTableName logic table name
+     * @return data node
+     */
+    public DataNode findDataNodeByLogicTable(final String logicTableName) {
+        TableRule tableRule = getTableRule(logicTableName);
+        for (DataNode each : tableRule.getActualDataNodes()) {
+            if (dataSourceMap.containsKey(each.getDataSourceName())) {
+                return each;
+            }
+        }
+        throw new ShardingJdbcException("Cannot find actual data node for logic table name: '%s'", tableRule.getLogicTable());
+    }
 }
