@@ -36,11 +36,11 @@ import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.all.DatabaseAllRoutingEngine;
+import io.shardingjdbc.core.routing.type.broadcast.BroadcastRoutingEngine;
 import io.shardingjdbc.core.routing.type.complex.CartesianDataSource;
 import io.shardingjdbc.core.routing.type.complex.CartesianRoutingResult;
 import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
 import io.shardingjdbc.core.routing.type.complex.ComplexRoutingEngine;
-import io.shardingjdbc.core.routing.type.ddl.DDLRoutingEngine;
 import io.shardingjdbc.core.routing.type.ignore.IgnoreRoutingEngine;
 import io.shardingjdbc.core.routing.type.show.ShowRoutingEngine;
 import io.shardingjdbc.core.routing.type.simple.SimpleRoutingEngine;
@@ -120,7 +120,7 @@ public final class ParsingSQLRouter implements SQLRouter {
         if (sqlStatement instanceof IgnoreStatement) {
             routingEngine = new IgnoreRoutingEngine();
         } else if (sqlStatement instanceof DDLStatement) {
-            routingEngine = new DDLRoutingEngine(shardingRule, parameters, (DDLStatement) sqlStatement);
+            routingEngine = new BroadcastRoutingEngine(shardingRule, sqlStatement);
         } else if (sqlStatement instanceof ShowStatement) {
             routingEngine = new ShowRoutingEngine(shardingRule, (ShowStatement) sqlStatement);
         } else if (sqlStatement instanceof DescStatement) {
