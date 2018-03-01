@@ -2,7 +2,7 @@
 
 cd %~dp0
 
-set LIB_JARS="..\lib\*"
+set CLASS_PATH="..;..\conf;..\lib\*"
 
 set PORT=%1
 
@@ -12,6 +12,6 @@ set MAIN_CLASS=io.shardingjdbc.server.Bootstrap
 set MAIN_CLASS=io.shardingjdbc.server.Bootstrap %PORT%
 )
 
-java -server -Xmx2g -Xms2g -Xmn256m -XX:PermSize=128m -Xss256k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -classpath ..;%LIB_JARS% %MAIN_CLASS%
+java -server -Xmx2g -Xms2g -Xmn256m -Xss256k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -classpath %CLASS_PATH% %MAIN_CLASS%
 
 pause
