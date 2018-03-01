@@ -44,9 +44,9 @@ Sharding-JDBC fully implements sharding databases and tables, read/write splitti
 * Best Effort Delivery
 * Try Confirm Cancel(TBD)
 
-## 4. Distributed Sequence
-* Built-in distributed sequence generator
-* Customized distributed sequence generator
+## 4. Distributed Primary Key
+* Built-in distributed primary key generator
+* Customized distributed primary key generator
 * Compatibility with JDBC
 
 ## 5. Compatibility
