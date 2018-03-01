@@ -20,7 +20,7 @@ package io.shardingjdbc.core.rewrite;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
-import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholderRefactor;
+import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.ShardingPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
@@ -96,8 +96,8 @@ public final class SQLBuilder {
                 // TODO 目前只能找到真实数据源名称. 未来需要在初始化sharding rule时创建connnection,并验证连接是否正确,并获取出真实的schema的名字, 然后在这里替换actualDataSourceName为actualSchemaName
                 // TODO 目前actualDataSourceName必须actualSchemaName一样,才能保证替换schema的场景不出错, 如: show columns xxx
                 result.append(tableRule.get().getActualDatasourceNames().iterator().next());
-            } else if (each instanceof IndexPlaceholderRefactor) {
-                IndexPlaceholderRefactor indexPlaceholder = (IndexPlaceholderRefactor) each;
+            } else if (each instanceof IndexPlaceholder) {
+                IndexPlaceholder indexPlaceholder = (IndexPlaceholder) each;
                 result.append(indexPlaceholder.getLogicIndexName());
                 if (!Strings.isNullOrEmpty(actualTableName)) {
                     result.append("_");
