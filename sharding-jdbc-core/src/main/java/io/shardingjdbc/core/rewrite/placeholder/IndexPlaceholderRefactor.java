@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class IndexPlaceholder implements ShardingPlaceholder {
+public final class IndexPlaceholderRefactor implements ShardingPlaceholder {
     
     private final String logicIndexName;
     
