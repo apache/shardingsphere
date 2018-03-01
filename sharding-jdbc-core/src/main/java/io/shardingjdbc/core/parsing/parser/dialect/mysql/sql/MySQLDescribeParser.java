@@ -7,17 +7,17 @@ import io.shardingjdbc.core.parsing.parser.sql.SQLParser;
 import io.shardingjdbc.core.rule.ShardingRule;
 
 /**
- * Desc parser for MySQL.
+ * Describe parser for MySQL.
  *
  * @author zhangliang
  */
-public final class MySQLDescParser implements SQLParser {
+public final class MySQLDescribeParser implements SQLParser {
     
     private final LexerEngine lexerEngine;
     
     private final TableReferencesClauseParser tableReferencesClauseParser;
     
-    public MySQLDescParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public MySQLDescribeParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
         tableReferencesClauseParser = new TableReferencesClauseParser(shardingRule, lexerEngine);
     }
