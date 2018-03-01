@@ -1,69 +1,69 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "简介"
+title = "Brief Introduction"
 weight = 1
 prev = "/00-overview"
 next = "/00-overview/news/"
 
 +++
 
-Sharding-JDBC直接封装JDBC API，可以理解为增强版的JDBC驱动，旧代码迁移成本几乎为零：
+Sharding-JDBC directly encapsulates the JDBC API,can be understood as a enhanced version of the JDBC driver, migrate legacy code almost zero costs:
 
-* 可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC。
-* 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等。
-* 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。
+* Suitable for any java ORM frameworks, such as: JPA, Hibernate, Mybatis or JDBC directly.
+* Suitable for any database connection pool, such as: DBCP, C3P0, BoneCP, etc.
+* In theory, any database that implements the JDBC specification can be supported.Support MySQL, Oracle, SQLServer and PostgreSQL.
 
-Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式。采用"半理解"理念的SQL解析引擎，以达到性能与兼容性的最大平衡。
+Sharding-JDBC is a lightweight java framework, using the java-jdbc-client to connect database, providing services all-in-jar, no middle layer is used, no other dependence, DBA also don’t need to change the original dev mode.Use the "semi-understand" concept of SQL parsing engine to achieve maximum performance and compatibility.
 
-Sharding-JDBC功能灵活且全面：
+The function of sharding-jdbc is flexible and comprehensive:
 
-* 分片策略灵活，可支持=，BETWEEN，IN等多维度分片，也可支持多分片键共用。
-* SQL解析功能完善，支持聚合，分组，排序，Limit，TOP等查询，并且支持Binding Table以及笛卡尔积的表查询。
-* 支持柔性事务(目前仅最大努力送达型)。
-* 支持读写分离。
-* 支持分布式生成全局主键。
+* Flexible sharding strategy, which support =, BETWEEN, IN, multiple sharding-columns and customized sharding strategy.
+* Perfect SQL parsing，which supports aggregation, grouping, sorting, LIMIT, TOP and other queries, and supports cascading tables and Cartesian product table queries.
+* Support B.A.S.E Transaction(Now only support Best Effort Delivery).
+* Support Read/Write Splitting.
+* Support Distributed Global Primary Key Generator.
 
-Sharding-JDBC配置多样：
+Flexible And Diverse Configurations:   
 
-* 支持Java编码和YAML的配置方式
-* 支持自定义Spring命名空间与Spring boot starter
-* 灵活多样的inline表达式
+* Support Java and YAML
+* Support user-defined Spring Namespace and Spring boot starter
+* Flexible And Diverse Inline Expression
 
-分布式治理能力突出： (2.0 only)
+Distributed Governance Capability(2.0 New Feature)
 
-* 配置集中化与动态化，可支持数据源、表与分片策略的动态切换 (2.0.0.M1)
-* 客户端的数据库治理，运行实例禁用启用 (2.0.0.M2)
-* 基于Open Tracing协议的APM信息输出，读写分离Slave数据源禁用启用及ConfigMap支持 (2.0.0.M3)
+* Configuration is centralized and dynamic，support dynamically switching of datasources, tables and sharding policies(2.0.0.M1)
+* Client database governance, datasource automatic switching when failure(2.0.0.M2)
+* Information Output based on Open Tracing protocol(2.0.0.M3)
 
 ***
 
-以下是常见的分库分表产品和Sharding-JDBC的对比：
+The following is the comparison of common sharding databases and tables products and Sharding-JDBC:
 
-| 功能          | Cobar         | Cobar-client  | TDDL        | Sharding-JDBC  |
+| Function          | Cobar         | Cobar-client  | TDDL        | Sharding-JDBC  |
 | ------------- |:-------------:| -------------:| -----------:|---------------:|
-| 分库          | 有            | 有             | 未开源      | 有              |
-| 分表          | 无            | 无             | 未开源      | 有              |
-| 中间层        | 是            | 否             | 否          | 否              |
-| ORM支持       | 任意          | 仅MyBatis      | 任意        | 任意            |
-| 数据库支持     | 仅MySQL       | 任意           | 任意        | 任意            |
-| 异构语言       | 可           | 仅Java          | 仅Java     | 仅Java          |
-| 外部依赖       | 无           | 无              | Diamond    | 无              |
+| Sharding Databases          | Y            | Y             | Not Open source      | Y              |
+| Sharding Tables          | N            | N             | Not Open source      | Y              |
+| Middle Layer        | Y            | N             | N          | N              |
+| ORM Support       | Any          | Only MyBatis      | Any        | Any            |
+| Database Support     | Only MySQL       | Any           | Any        | Any            |
+| Database Support       | Y           | Only Java          | Only Java     | Only Java          |
+| External Dependencies       | N           | N              | Diamond    | N              |
 
 ***
 
-# 整体架构图
+# Overall Architecture Diagram
 
 ![整体架构图](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_v2.png)
 
 ![柔性事务-最大努力送达型](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture-soft-transaction-bed.png)
 
-# 快速入门
+# Quick start
 
-## 引入maven依赖
+## Add maven dependency
 
 ```xml
-<!-- 引入sharding-jdbc核心模块 -->
+<!-- add sharding-jdbc core module -->
 <dependency>
     <groupId>io.shardingjdbc</groupId>
     <artifactId>sharding-jdbc-core</artifactId>
@@ -71,16 +71,16 @@ Sharding-JDBC配置多样：
 </dependency>
 ```
 
-## 规则配置
-Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user_id取模分库, 且根据order_id取模分表的两库两表的配置。
+## Rule configuration
+Sharding Databases and tables is described by rule configuration,the following example is based on sharing databases by mod of user_id, and the configuration of the two databases and two tables is based on the mod of order_id.
 
-可以通过Java编码的方式配置：
+You can configure it in Java code:
 
 ```java
-    // 配置真实数据源
+    // Config the real datasource
     Map<String, DataSource> dataSourceMap = new HashMap<>();
     
-    // 配置第一个数据源
+    // Config the first datasource
     BasicDataSource dataSource1 = new BasicDataSource();
     dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource1.setUrl("jdbc:mysql://localhost:3306/ds_0");
@@ -88,7 +88,7 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
     dataSource1.setPassword("");
     dataSourceMap.put("ds_0", dataSource1);
     
-    // 配置第二个数据源
+    // Config the second datasource
     BasicDataSource dataSource2 = new BasicDataSource();
     dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource2.setUrl("jdbc:mysql://localhost:3306/ds_1");
@@ -96,28 +96,28 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
     dataSource2.setPassword("");
     dataSourceMap.put("ds_1", dataSource2);
     
-    // 配置Order表规则
+    // Config Table Rule Of Order
     TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
     orderTableRuleConfig.setLogicTable("t_order");
     orderTableRuleConfig.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
     
-    // 配置分库策略
+    // Config sharding database strategy
     orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
     
-    // 配置分表策略
+    // Config sharding table strategy
     orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
     
-    // 配置分片规则
+    // Config data-swarding rule
     ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
     shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     
-    // 省略配置order_item表规则...
+    // Omit the configuration of order_item table rules...
     
-    // 获取数据源对象
+    // get datasource object
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
 ```
 
-或通过YAML方式配置，与以上配置等价：
+Or configured by YAML, equivalent to the above configuration：
 
 ```yaml
 dataSources:
@@ -159,11 +159,11 @@ tables:
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
-规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：读写分离、多分片键、默认分片规则、分布式主键、级联表绑定等。
+Rule configuration includes datasource configuration, table rule configuration, sharding database strategy, and sharding table strategy.This is just the simplest way of configuring,practical use can be more flexible, for example:Read/Write Splitting,multi sharding key,default sharding rule,distributed primary key,Cascading table bindings, etc.
 
-## 使用原生JDBC接口
-通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
-以JDBC原生实现为例：
+## Use Native JDBC INTERFACES
+Get ShardingDataSource through ShardingDataSourceFactory factory and rule configuration , ShardingDataSource implements the JDBC DataSource standard interface.Then you can choose to use native JDBC to develop with DataSource, or use JPA, MyBatis, and other ORM tools.
+Take the JDBC native implementation as an example：
 
 ```java
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
@@ -182,7 +182,7 @@ try (
 }
 ```
 
-## 使用Spring命名空间配置
+## Use Spring namespace configuration
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
