@@ -210,7 +210,7 @@ public final class MySQLPacketPayload {
             byteBuf.writeByte(0);
             return;
         }
-        writeIntLenenc(value.length());
+        writeIntLenenc(value.getBytes().length);
         byteBuf.writeBytes(value.getBytes());
     }
     
