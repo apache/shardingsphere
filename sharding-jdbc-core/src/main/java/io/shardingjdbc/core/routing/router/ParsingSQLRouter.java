@@ -127,6 +127,8 @@ public final class ParsingSQLRouter implements SQLRouter {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (sqlStatement instanceof ShowColumnsStatement || sqlStatement instanceof ShowOtherStatement || sqlStatement instanceof DescribeStatement) {
             routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
+        } else if (tableNames.isEmpty() && sqlStatement instanceof SelectStatement) {
+            routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
         } else if (tableNames.isEmpty()) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllInDefaultDataSource(tableNames)) {
