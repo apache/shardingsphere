@@ -47,12 +47,12 @@ next = "/00-overview"
 1. Configuration Dynamic
 
 ### SQL Parser
-1. lexer analysis
-1. Parser analysis
+1. Lexer Analysis
+1. Parser Analysis
 
 ### SQL Rewrite
-1. Correctness rewrite
-1. polish rewriting
+1. Correctness Rewrite
+1. Polish Rewriting
 
 ### SQL Router
 1. Hint Router
@@ -64,10 +64,10 @@ next = "/00-overview"
 1. Memory Merger
 1. Decorator Merger
 
-### Sharding databases and tables
-1. sharding databases
-1. sharding tables
-1. default datasources
+### Sharding Databases and Tables
+1. Sharding Databases
+1. Sharding Tables
+1. Default Datasources
 
 ### Read/Write Splitting
 1. Read/Write Splitting
@@ -87,13 +87,13 @@ next = "/00-overview"
 ### Configuration
 1. Read/Write Splitting to be independent
 1. Binding Strategy improvement
-1. centralized
-1. dynamic
+1. Centralized
+1. Dynamic
 
 ### Governance
 1. HealthCheck and discovery of datasources
-1. dynamic switching of datasources
-1. flow control
+1. Dynamic switching of datasources
+1. Flow control
 
 ## TODO
 

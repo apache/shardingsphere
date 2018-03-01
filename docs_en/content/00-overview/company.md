@@ -1,7 +1,7 @@
 +++
 icon = "<b>0. </b>"
 date = "2017-04-12T16:06:17+08:00"
-title = "采用公司"
+title = "Who Uses Sharding-JDBC?"
 weight = 3
 prev = "/00-overview/news/"
 next = "/00-overview/contribution/"
@@ -9,9 +9,9 @@ chapter = true
 
 +++
 
-# 采用公司（统计中）
+# Who Uses Sharding-JDBC?
 
-公司排名不分先后，按拼音顺序排名
+These companies are in no particular order，but in alphabetical order by pinyin
 
 ## [佰昌科技](http://www.sdbaichang.com/)
 
@@ -73,7 +73,7 @@ chapter = true
 
 ## [搜好货](http://www.912688.com/)
 
-## [搜狐资讯] (http://ss.sohu.com/)
+## [搜狐资讯](http://ss.sohu.com/)
 
 ## [TCL](http://www.tcl.com/)
 
@@ -91,7 +91,7 @@ chapter = true
 
 ## [小牛在线](https://www.xiaoniu88.com/)
 
-## [义乌购] (http://www.yiwugou.com/)
+## [义乌购](http://www.yiwugou.com/)
 
 ## [赢家服饰](http://www.eeka.cn/)
 
