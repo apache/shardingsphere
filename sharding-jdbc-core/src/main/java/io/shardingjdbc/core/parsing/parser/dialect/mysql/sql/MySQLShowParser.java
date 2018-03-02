@@ -8,8 +8,8 @@ import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowColumnsSt
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
-import io.shardingjdbc.core.parsing.parser.sql.SQLParser;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
+import io.shardingjdbc.core.parsing.parser.sql.dal.show.AbstractShowParser;
 import io.shardingjdbc.core.parsing.parser.token.SchemaToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class MySQLShowParser implements SQLParser {
+public final class MySQLShowParser extends AbstractShowParser {
     
     private final LexerEngine lexerEngine;
     

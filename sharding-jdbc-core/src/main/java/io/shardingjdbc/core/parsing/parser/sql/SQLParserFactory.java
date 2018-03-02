@@ -23,10 +23,10 @@ import io.shardingjdbc.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.sql.MySQLDescribeParser;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.sql.MySQLShowParser;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.sql.MySQLUseParser;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
+import io.shardingjdbc.core.parsing.parser.sql.dal.describe.DescribeParserFactory;
+import io.shardingjdbc.core.parsing.parser.sql.dal.show.ShowParserFactory;
+import io.shardingjdbc.core.parsing.parser.sql.dal.use.UseParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.alter.AlterParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.create.CreateParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.drop.DropParserFactory;
@@ -71,7 +71,7 @@ public final class SQLParserFactory {
             return getTCLParser(dbType, shardingRule, lexerEngine);
         }
         if (isDAL(tokenType)) {
-            return getDALParser((Keyword) tokenType, shardingRule, lexerEngine);
+            return getDALParser(dbType, (Keyword) tokenType, shardingRule, lexerEngine);
         }
         throw new SQLParsingUnsupportedException(tokenType);
     }
@@ -133,15 +133,15 @@ public final class SQLParserFactory {
         return TCLParserFactory.newInstance(dbType, shardingRule, lexerEngine);
     }
     
-    private static SQLParser getDALParser(final Keyword tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    private static SQLParser getDALParser(final DatabaseType dbType, final Keyword tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         if (DefaultKeyword.USE == tokenType) {
-            return new MySQLUseParser();
+            return UseParserFactory.newInstance(dbType, shardingRule, lexerEngine);
         }
         if (DefaultKeyword.DESC == tokenType || MySQLKeyword.DESCRIBE == tokenType) {
-            return new MySQLDescribeParser(shardingRule, lexerEngine);
+            return DescribeParserFactory.newInstance(dbType, shardingRule, lexerEngine);
         }
         if (MySQLKeyword.SHOW == tokenType) {
-            return new MySQLShowParser(shardingRule, lexerEngine);
+            return ShowParserFactory.newInstance(dbType, shardingRule, lexerEngine);
         }
         throw new SQLParsingUnsupportedException(tokenType);
     }
