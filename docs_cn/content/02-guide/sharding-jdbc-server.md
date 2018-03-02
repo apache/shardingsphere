@@ -18,7 +18,7 @@ Sharding-JDBC-Server是基于Sharding-JDBC基础上增加了针对MySQL协议的
 
 ## 使用方法
 
-1. 下载Sharding-JDBC-Server的最新发行版，地址:https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-jdbc-server-2.1.0-SNAPSHOT-assembly-v2.tar.gz
+1. 下载Sharding-JDBC-Server的最新发行版，地址:https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-jdbc-server-2.1.0-SNAPSHOT-assembly-v3.tar.gz
 2. 解压缩后修改conf/sharding-config.yaml文件，进行分片规则配置. 配置方式同[Sharding-JDBC的YAML配置](/02-guide/configuration/)。
 3. linux操作系统请运行bin/start.sh，windowa操作系统请运行bin/start.bat启动Sharding-JDBC-Server。
 4. 使用任何MySQL的客户端连接。如: mysql -u root -h 127.0.0.1 -P3307
