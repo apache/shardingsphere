@@ -42,7 +42,7 @@ next = "/00-overview"
 1. Java API
 1. Spring Namespace
 1. Yaml
-1. Read/Write Splitting Independent
+1. Read-write splitting Independent
 1. Configuration Concentrated
 1. Configuration Dynamic
 
@@ -69,8 +69,8 @@ next = "/00-overview"
 1. Sharding Tables
 1. Default Datasources
 
-### Read/Write Splitting
-1. Read/Write Splitting
+### Read-write splitting
+1. Read-write splitting
 1. Consistent guarantees for the same thread and the same database connection
 1. Hint-based forced master routing
 
@@ -85,7 +85,7 @@ next = "/00-overview"
 ## Planning
 
 ### Configuration
-1. Read/Write Splitting to be independent
+1. Read-write splitting to be independent
 1. Binding Strategy improvement
 1. Centralized
 1. Dynamic

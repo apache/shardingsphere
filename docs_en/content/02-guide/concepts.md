@@ -32,7 +32,7 @@ Sharding-JDBC splits the data by the sharping algorithm, supporting =, BETWEEN a
 In some cases that ShardingColumn is decided by business conditions, not by certain SQL, then you can use SQL Hint to flexibly achieve injection of ShardingColumn. e.g. If you want to split database according to the employees' ID, but ID column not exists in tables, then you can use SQL Hint to do data sharding. ThreadLocal or SQL annotations(TO DO) method can be used to make SQL Hint.
 
 ## Config Map
-ConfigMap allows you to configure metadata information for data source of sharding or Read/Write Splitting. The information of shardingConfig and masterSlaveConfig in ConfigMap can be obtained by calling ConfigMapContext.getInstance (). e.g. Differet weight for machines, different traffic on machines. The metadata for machines' weight can be configured through the ConfigMap.
+ConfigMap allows you to configure metadata information for data source of Sharding or Read-write splitting. The information of shardingConfig and masterSlaveConfig in ConfigMap can be obtained by calling ConfigMapContext.getInstance (). e.g. Differet weight for machines, different traffic on machines. The metadata for machines' weight can be configured through the ConfigMap.
 
 ## LogicIndex
 The logical index name for LogicTable, not for ActualTable. e.g. The index named t_order_index existed in LogicTable 't_order' in previous example. You need to configure LogicIndex in TableRule to execute 'DROP INDEX t_order_index' SQL.

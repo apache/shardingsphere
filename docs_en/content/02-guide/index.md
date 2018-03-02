@@ -13,7 +13,7 @@ chapter = true
 
  - To take a quick look on basic concepts, please read [Basic Concepts] (/ 02-guide / concepts /).
  - A detailed example is given in section [Database Sharding] (/ 02-guide / sharding /) to introduce how to use Sharding-JDBC to shard database or table.
- - To further improve performance after sharding, you can read [Read/Write Splitting] (/ 02-guide / master-slave /).
+ - To further improve performance after sharding, you can read [Read-write splitting] (/ 02-guide / master-slave /).
  - In consideration of flexible and complex Sharding-JDBC configuration, [Domain Model Configuration] (/ 02-guide / config_domain /) clearly shows you the relationships among the various configuration classes.
  - [Configuration Manual] (/ 02-guide / configuration /) describes how to configure some items with JAVA, YAML, Spring or Spring Boot.
  - To manage the access to databases, please read [DB-Access Management] (/ 02-guide / orchestration /).

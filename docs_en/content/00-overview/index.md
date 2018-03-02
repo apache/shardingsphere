@@ -20,7 +20,7 @@ Sharding-JDBC is an open source and micro-service-oriented distributed database 
 
 Sharding-JDBC is a lightweight java framework, using the java-jdbc-client to connect database, providing services all-in-jar, no middle layer is used, no other dependence, DBA also don't need to change the original dev mode, can be understood as a enhanced version of the JDBC driver, migrate legacy code almost zero costs.
 
-Sharding-JDBC fully implements sharding databases and tables, read/write splitting, distributed primary key, and B.A.S.E transaction. Since 2016, it has accumulated enough inside information after several refinements and stability polishing of the overall architecture, we believe that it can be a reference for developers to choose technology components.
+Sharding-JDBC fully implements sharding databases and tables, read-write splitting, distributed primary key, and B.A.S.E transaction. Since 2016, it has accumulated enough inside information after several refinements and stability polishing of the overall architecture, we believe that it can be a reference for developers to choose technology components.
 
 [![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.svg?branch=master)](https://travis-ci.org/shardingjdbc/sharding-jdbc)
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
@@ -35,7 +35,7 @@ Sharding-JDBC fully implements sharding databases and tables, read/write splitti
 * Flexible sharding strategy, which support =, BETWEEN, IN, multiple sharding-columns and customized sharding strategy
 * Supports Hint-based sharding
 
-## 2. Read/Write Splitting
+## 2. Read-write splitting
 * Independent use of read and write separation support SQL transmission
 * Support one master and multiple slaves for the read and write splitting
 * Hint-based forced master routing

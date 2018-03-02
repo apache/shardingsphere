@@ -1,7 +1,7 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "Read/Write Splitting"
+title = "Read-write splitting"
 weight = 3
 prev = "/02-guide/sharding/"
 next = "/02-guide/configuration/"
@@ -13,8 +13,8 @@ next = "/02-guide/configuration/"
 In order to share reading/writing pressure , we need to classify data sources into different roles. The data source classified as Master is to provide writing operations, and classified as Slaves are to provide reading operations. A single Master can connect with multiple Slaves.
 
 ## Done List
-1. To configure Read/Write Splitting on single master and multiple slaves. You can use this function independently or along with sharding.
-1. Provide SQL passthrough when the Read/Write Splitting is used independently .
+1. To configure Read-write splitting on single master and multiple slaves. You can use this function independently or along with sharding.
+1. Provide SQL passthrough when the Read-write splitting is used independently .
 1. In order to ensure data consistency, if there is a write operation, the later read operations in the same thread and the same connection are executed in the Master.
 1. Sprint Namespace
 1. Mandatory Master rounting strategy based in SQL Hint.
@@ -26,16 +26,16 @@ In order to share reading/writing pressure , we need to classify data sources in
 
 ## Configuration Examples
 
-### Read/Write Splitting
+### Read-write splitting
 
 ```java
-// Create Read/Write Splitting DataSource which implements the DataSource interface and can be used as regular DataSource. masterDataSource, slaveDataSource0, slaveDataSource1 are all actual data sources.
+// Create Read-write splitting DataSource which implements the DataSource interface and can be used as regular DataSource. masterDataSource, slaveDataSource0, slaveDataSource1 are all actual data sources.
 Map<String, DataSource> dataSourceMap = new HashMap<>();
 dataSourceMap.put("masterDataSource", masterDataSource);
 dataSourceMap.put("slaveDataSource0", slaveDataSource0);
 dataSourceMap.put("slaveDataSource1", slaveDataSource1);
 
-// Generate Read/Write Splitting Configuration
+// Generate Read-write splitting Configuration
 MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
 masterSlaveRuleConfig.setName("ms_ds");
 masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
@@ -45,10 +45,10 @@ masterSlaveRuleConfig.getSlaveDataSourceNames().add("slaveDataSource1");
 DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig);
 ```
 
-### Sharding + Read/Write Splitting
+### Sharding + Read-write splitting
 
 ```java
-// Configure Read/Write Splitting DataSource which implements the DataSource interface and can be used as regular DataSource. masterDataSource, slaveDataSource0, slaveDataSource1 are all actual data sources.
+// Configure Read-write splitting DataSource which implements the DataSource interface and can be used as regular DataSource. masterDataSource, slaveDataSource0, slaveDataSource1 are all actual data sources.
 Map<String, DataSource> dataSourceMap = new HashMap<>();
 dataSourceMap.put("masterDataSource0", masterDataSource0);
 dataSourceMap.put("slaveDataSource00", slaveDataSource00);
@@ -58,7 +58,7 @@ dataSourceMap.put("masterDataSource1", masterDataSource1);
 dataSourceMap.put("slaveDataSource10", slaveDataSource10);
 dataSourceMap.put("slaveDataSource11", slaveDataSource11);
 
-// Generate Read/Write Splitting Configuration
+// Generate Read-write splitting Configuration
 MasterSlaveRuleConfiguration masterSlaveRuleConfig0 = new MasterSlaveRuleConfiguration();
 masterSlaveRuleConfig0.setName("ds_0");
 masterSlaveRuleConfig0.setMasterDataSourceName("masterDataSource0");
@@ -140,7 +140,7 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap
         <property name="password" value=""/>
     </bean>
     
-    <!-- Read/Write Splitting DataSource Configuration -->
+    <!-- Read-write splitting DataSource Configuration -->
     <master-slave:data-source id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-type="ROUND_ROBIN" />
     <master-slave:data-source id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-type="ROUND_ROBIN" />
     
