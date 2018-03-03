@@ -243,5 +243,5 @@ Edit `${sharding-jdbc-server}\conf\sharding-config.yaml`. Same format with Shard
 ### Start server
 
 ``` shell
-bin\start.sh ${port}
+${sharding-jdbc-server}\bin\start.sh ${port}
 ```

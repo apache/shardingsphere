@@ -258,5 +258,5 @@ try (
 ### 启动服务
 
 ``` shell
-bin\start.sh ${port}
+${sharding-jdbc-server}\bin\start.sh ${port}
 ```
