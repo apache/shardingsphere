@@ -16,7 +16,7 @@
 
 # Overview
 
-Sharding-JDBC is a JDBC extension, provides distributed features such as sharding, read/write splitting, BASE transaction and database orchestration.
+Sharding-JDBC: A data sharding, read/write splitting, BASE transaction and database orchestration middleware. It provides maximum compatibilities for applications by JDBC and MySQL protocol.
 
 # Features
 
