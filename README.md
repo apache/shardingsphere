@@ -14,7 +14,7 @@
 
 # Overview
 
-Sharding-JDBC: A data sharding, read/write splitting, BASE transaction and database orchestration middleware. It provides maximum compatibilities for applications by JDBC and MySQL protocol.
+Sharding-JDBC: A data sharding, read-write splitting, BASE transaction and database orchestration middleware. It provides maximum compatibilities for applications by JDBC and MySQL protocol.
 
 # Document
 
@@ -34,10 +34,10 @@ Sharding-JDBC: A data sharding, read/write splitting, BASE transaction and datab
 * Route by hint supported.
 * Distributed sequence supported.
 
-## 2. Read/write splitting
+## 2. Read-write splitting
 * Multiple slaves replica supported. 
 * Data consistency guarantee in same thread supported.
-* Mix read/write splitting and data sharding supported.
+* Mix read-write splitting and data sharding supported.
 * Route by hint supported.
 
 ## 3. BASE Transaction
@@ -46,7 +46,7 @@ Sharding-JDBC: A data sharding, read/write splitting, BASE transaction and datab
 
 ## 4. Orchestration
 * Configuration center supported, can refresh dynamically.
-* Circuit breaker and failover supported.
+* Circuit breaker supported.
 * Open tracing supported.
 
 # Architecture
@@ -59,6 +59,8 @@ Use JDBC connect databases without redirect cost for java application, best perf
 * Connection-pool self-adapting. DBCP, C3P0, BoneCP, Druid supported.
 * Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
 
+![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/architecture_en_v3.png)
+
 ## Sharding-JDBC-Server
 
 Use proxy to connect databases(only MySQL protocol for now), for other programing language or MySQL client.
@@ -69,10 +71,6 @@ Use proxy to connect databases(only MySQL protocol for now), for other programin
 ## Sharding-JDBC-Sidecar(TBD)
 
 Use sidecar to connect databases, best for Kubernetes or Mesos together.
-
-# Architecture
-
-![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_en_v2.png)
 
 # Quick Start
 
