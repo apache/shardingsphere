@@ -1,16 +1,16 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "配置手册"
+title = "Configuration"
 weight = 5
 prev = "/02-guide/master-slave/"
 next = "/02-guide/orchestration/"
 
 +++
 
-## 1.JAVA配置
+## 1.JAVA Configuration
 
-### 引入maven依赖
+### Import the dependency of maven
 
 ```xml
 <dependency>
@@ -20,9 +20,9 @@ next = "/02-guide/orchestration/"
 </dependency>
 ```
 
-### 配置示例
+### Configuration Example
 
-#### 分库分表
+#### Sharding Configuration
 ```java
      DataSource getShardingDataSource() throws SQLException {
          ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
@@ -57,7 +57,7 @@ next = "/02-guide/orchestration/"
      }
 ```
 
-#### 读写分离
+#### Read-write splitting Configuration
 ```java
      DataSource getMasterSlaveDataSource() throws SQLException {
          MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
@@ -76,9 +76,9 @@ next = "/02-guide/orchestration/"
      }
 ```
 
-## 2.YAML配置
+## 2.YAML Configuration
 
-### 引入maven依赖
+### Import the dependency of maven
 
 ```xml
 <dependency>
@@ -88,9 +88,9 @@ next = "/02-guide/orchestration/"
 </dependency>
 ```
 
-### 配置示例
+### Configuration Example
 
-#### 分库分表
+#### Sharding Configuration
 ```yaml
 dataSources:
   db0: !!org.apache.commons.dbcp.BasicDataSource
@@ -124,7 +124,6 @@ shardingRule:
       keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
     t_order_item:
       actualDataNodes: db${0..1}.t_order_item_${0..1}
-      #绑定表中其余的表的策略与第一张表的策略相同
       databaseStrategy: 
         standard:
           shardingColumn: user_id
@@ -133,9 +132,10 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmInlineExpression: t_order_item_${order_id % 2}
+  # t_order and t_order are all bindingTables of each other because of their same sharding strategies.
   bindingTables:
-    - t_order,t_order_item
-  #默认数据库分片策略
+    - t_order,t_order
+  # The default sharding strategy
   defaultDatabaseStrategy:
     none:
   defaultTableStrategy:
@@ -146,56 +146,56 @@ shardingRule:
     sql.show: true
 ```
 
-#### 分库分表配置项说明
+#### The config items for Sharding
 
 ```yaml
-dataSources: 数据源配置
-  <data_source_name> 可配置多个: !!数据库连接池实现类
-    driverClassName: 数据库驱动类名
-    url: 数据库url连接
-    username: 数据库用户名
-    password: 数据库密码
-    ... 数据库连接池的其它属性
+dataSources: # Config for data source
+  <data_source_name> # Config for DB connection pool class. One or many configs are ok.
+    driverClassName: # Class name for database driver.
+    url: # The url for database connection.
+    username: # Username used to access DB.
+    password: # Password used to access DB.
+    ... # Other configs for connection pool.
 
-defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默认数据源定位
+defaultDataSourceName: # Default datasource. Notice: Tables without sharding rules are accessed by using the default data source.
 
-tables: 分库分表配置，可配置多个logic_table_name
-    <logic_table_name>: 逻辑表名
-        actualDataNodes: 真实数据节点，由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示将为现有已知的数据源 + 逻辑表名称生成真实数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况。
-        databaseStrategy: 分库策略，以下的分片策略只能任选其一
-            standard: 标准分片策略，用于单分片键的场景
-                shardingColumn: 分片列名
-                preciseAlgorithmClassName: 精确的分片算法类名称，用于=和IN。该类需使用默认的构造器或者提供无参数的构造器
-                rangeAlgorithmClassName: 范围的分片算法类名称，用于BETWEEN，可以不配置。该类需使用默认的构造器或者提供无参数的构造器
-            complex: 复合分片策略，用于多分片键的场景
-                shardingColumns : 分片列名，多个列以逗号分隔
-                algorithmClassName: 分片算法类名称。该类需使用默认的构造器或者提供无参数的构造器
-            inline: inline表达式分片策略
-                shardingColumn : 分片列名
-                algorithmInlineExpression: 分库算法Inline表达式，需要符合groovy动态语法
-            hint: Hint分片策略
-                algorithmClassName: 分片算法类名称。该类需使用默认的构造器或者提供无参数的构造器
-            none: 不分片
-        tableStrategy: 分表策略，同分库策略
-  bindingTables: 绑定表列表
-  - 逻辑表名列表，多个<logic_table_name>以逗号分隔
+tables: # The config for sharding, One or many configs for logic_table_name are ok.
+    <logic_table_name>: # Table name for LogicTables
+        actualDataNodes: # Actual data nodes configured in the format of *datasource_name.table_name*, multiple configs spliced with commas, supporting the inline expression. The default value is composed of configured datasources and logic table. This default config is to generate broadcast table (*The same table existed in every DB for cascade query*) or to split databases without spliting tables.
+        databaseStrategy: # Strategy for sharding databases, only one strategy can be chosen from following strategies:
+            standard: # Standard sharding strategy for single sharding column.
+                shardingColumn: # Sharding Column
+                preciseAlgorithmClassName: # The class name for precise-sharding-algorithm used for = and IN. The default constructor or on-parametric constructor is needed.
+                rangeAlgorithmClassName: # (Optional) The class name for range-sharding-algorithm used for BETWEEN. The default constructor or on-parametric constructor is needed.
+            complex: # Complex sharding strategy for multiple sharding columns.
+                shardingColumns : # Sharding Column, multiple sharding columns spliced with commas. 
+                algorithmClassName: # The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed.
+            inline: inline # Inline sharding strategy.
+                shardingColumn : # Sharding Column
+                algorithmInlineExpression: #  The inline expression conformed to groovy dynamic syntax for sharding. 
+            hint: # Hint sharding strategy
+                algorithmClassName: # The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed.
+            none: # No sharding
+        tableStrategy: # Strategy for sharding tables. The details is same as Strategy for sharding databases.
+  bindingTables: # Config for Blinding tables
+  - A list of logic_table_name, multiple logic_table_names spliced with commas.
   
-defaultDatabaseStrategy: 默认数据库分片策略，同分库策略
+defaultDatabaseStrategy: # Default strategy for sharding databases. The details is same as databaseStrategy.
  
-defaultTableStrategy: 默认数据表分片策略，同分库策略
+defaultTableStrategy: # Default strategy for sharding databases. The details is same as tableStrategy.
 
-props: 属性配置(可选)
-    sql.show: 是否开启SQL显示，默认值: false
-    executor.size: 工作线程数量，默认值: CPU核数
+props: Property Configuration (Optional)
+    sql.show: # To show SQL or not. Default: false
+    executor.size: # The number of running thread. Default: The number of CPU cores.
 ```
 
-#### 分库分表数据源构建方式
+#### The construction method for data source of Sharding
 
 ```java
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
-#### 读写分离
+#### Read-write splitting Configuration
 ```yaml
 dataSources:
   db_master: !!org.apache.commons.dbcp.BasicDataSource
@@ -225,32 +225,32 @@ masterSlaveRule:
   slaveDataSourceNames: [db_slave_0, db_slave_1]
 ```
 
-#### 读写分离配置项说明
+#### The config items for Read-write splitting
 
 ```yaml
-dataSource: 数据源配置，同分库分表
+dataSource: # Config for data sourc same as previous dataSource.
 
-name: 分库分表数据源名称
+name: # Data source name for sharding.
 
-masterDataSourceName: master数据源名称
+masterDataSourceName: Datasource name for Master datasource
 
-slaveDataSourceNames：slave数据源名称，用数组表示多个
+slaveDataSourceNames：Datasource name for Slave datasource, multiple datasource put in an Array.
 ```
 
-#### 读写分离数据源构建方式
+#### The construction method for data source of Read-write splitting
 
 ```java
     DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
 ```
 
-### YAML格式特别说明
-!! 表示实现类
+### More detail on YAML Configuration
+!! :implementation class.
 
-[] 表示多个
+[] :multiple items.
 
-## 3.Spring命名空间配置
+## 3. The Configuration for Spring namespace
 
-### 引入maven依赖
+### Import the dependency of maven
 
 ```xml
 <dependency>
@@ -260,7 +260,7 @@ slaveDataSourceNames：slave数据源名称，用数组表示多个
 </dependency>
 ```
 
-### 配置示例
+### Configuration Example
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -309,145 +309,150 @@ slaveDataSourceNames：slave数据源名称，用数组表示多个
     </sharding:data-source>
 </beans>
 ```
-### 标签说明
+### Introduction for labels
 
 #### \<sharding:data-source/\>
 
-定义sharding-jdbc数据源
+To define the data source for sharding-jdbc 
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*         |
-| ----------------------------- | ------------ |  --------- | ------ | -------------- |
-| id                            | 属性         |  String     |   是   | Spring Bean ID |
-| sharding-rule                 | 标签         |   -         |   是   | 分片规则        |
-| binding-table-rules?          | 标签         |   -         |   否   | 绑定表规则       |
-| props?                        | 标签         |   -         |   否   | 相关属性配置     |
+| *Name*                         | *Type*       | *DataType*  | *required* |    *Info*       |
+| -----------------------------  | ------------ |  ---------  | ---------- | --------------  |
+| id                             | Property     |  String     |   Y        | Spring Bean ID  |
+| sharding-rule                  | Label        |   -         |   Y        | Sharding Rule   |
+| binding-table-rules?           | Label        |   -         |   N        | Blinding Rule   |
+| props?                         | Label        |   -         |   N        | Property Config |
 
 #### \<sharding:sharding-rule/>
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                                                |
-| ----------------------------- | ------------ | ---------- | ------ | --------------------------------------------------------------------- |
-| data-source-names             | 属性         | String      |   是   | 数据源Bean列表，需要配置所有需要被Sharding-JDBC管理的数据源BEAN ID（包括默认数据源），多个Bean以逗号分隔 |
-| default-data-source-name      | 属性         | String      |   否   | 默认数据源名称，未配置分片规则的表将通过默认数据源定位                        |
-| default-database-strategy-ref | 属性         | String      |   否   | 默认分库策略，对应\<sharding:xxx-strategy>中的策略id，不填则使用不分库的策略 |
-| default-table-strategy-ref    | 属性         | String      |   否   | 默认分表策略，对应\<sharding:xxx-strategy>中的策略id，不填则使用不分表的策略 |
-| table-rules                   | 标签         |   -         |   是   | 分片规则列表                                                            |
+| *Name*                        | *Type*      | *DataType*  | *required* | *Info*                                                                |
+| ----------------------------- | ----------- | ----------  | ------     | --------------------------------------------------------------------- |
+| data-source-names             | Property    | String      |   Y        | The bean list of data sources, all the BEAN IDs of data sources (including the default data source) needed to be managed by Sharding-JDBC must be configured. Multiple bean IDs are separated by commas.|
+| default-data-source-name      | Property    | String      |   N        | The default name for data source. Tables without sharding rules will be considered in this data source.                        |
+| default-database-strategy-ref | Property    | String      |   N        | The default strategy for sharding databases, which is also the strategy ID in \<sharding:xxx-strategy>. If this property is not set, the strategy of none sharding will be applied.|
+| default-table-strategy-ref    | Property    | String      |   N        | The default strategy for sharding tables which is also the strategy ID in \<sharding:xxx-strategy>. If this property is not set, the strategy of none sharding will be applied. |
+| table-rules                   | Label       |   -         |   Y        | The list of sharding rules.                                             |
 
 #### \<sharding:table-rules/>
 
-| *名称*                         | *类型*      | *数据类型*  |  *必填* | *说明*  |
-| ----------------------------- | ----------- | ---------- | ------ | ------- |
-| table-rule+                   | 标签         |   -        |   是  | 分片规则 |
+| *Name*                        | *Type*      | *DataType* |  *required* | *Info*  |
+| ----------------------------- | ----------- | ---------- | ----------- | ------- |
+| table-rule+                   | Label       |   -        |   Y         | sharding rules |
 
 #### \<sharding:table-rule/>
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
-| --------------------          | ------------ | ---------- | ------ | ------- |
-| logic-table                   | 属性         |  String     |   是   | 逻辑表名 |
-| actual-data-nodes             | 属性         |  String     |   否   | 真实数据节点，由数据源名（读写分离引用<masterslave:data-source>中的id属性） + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示将为现有已知的数据源 + 逻辑表名称生成真实数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况。|
-| database-strategy-ref         | 属性         |  String     |   否   | 分库策略，对应\<sharding:xxx-strategy>中的策略id，不填则使用\<sharding:sharding-rule/>配置的default-database-strategy-ref   |
-| table-strategy-ref            | 属性         |  String     |   否   | 分表策略，对应\<sharding:xxx-strategy>中的略id，不填则使用\<sharding:sharding-rule/>配置的default-table-strategy-ref        |
-| logic-index                   | 属性         |  String     |   否   | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表        |
+| *Name*                | *Type*       | *DataType* | *required* | *Info*  |
+| --------------------- | ------------ | ---------- | ------     | ------- |
+| logic-table           | Property     |  String    |   Y        | LogicTables |
+| actual-data-nodes     | Property     |  String    |   N        | Actual data nodes configured in the format of *datasource_name.table_name*, multiple configs separated with commas, supporting the inline expression. The default value is composed of configured data sources and logic table. This default config is to generate broadcast table (*The same table existed in every DB for cascade query.*) or to split the database without splitting the table.|
+| database-strategy-ref | Property     |  String    |   N        | The strategy for sharding database.Its strategy ID is in \<sharding:xxx-strategy>. The default is default-database-strategy-ref configured in \<sharding:sharding-rule/>    |
+| table-strategy-ref    | Property     |  String    |   N        | The strategy for sharding table. Its strategy ID is in \<sharding:xxx-strategy>. The default is default-table-strategy-ref in \<sharding:sharding-rule/>       |
+| logic-index           | Property     |  String    |   N        | The Logic index name. If you want to use *DROP INDEX XXX* SQL in Oracle/PostgreSQL，This property needs to be set for finding the actual tables.   |
 
 #### \<sharding:binding-table-rules/>
 
-| *名称*                         | *类型*      | *数据类型*  |  *必填* | *说明*  |
-| ----------------------------- | ----------- |  --------- | ------ | ------- |
-| binding-table-rule            | 标签         |   -         |   是  | 绑定规则 |
+| *Name*                        | *Type*      | *DataType* |  *required* | *Info*  |
+| ----------------------------- | ----------- |  --------- | ------      | ------- |
+| binding-table-rule            | Label       |   -        |   Y         | The rule for binding tables. |
 
 #### \<sharding:binding-table-rule/>
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                   |
-| ----------------------------- | ------------ | ---------- | ------ | ------------------------ |
-| logic-tables                  | 属性         |  String     |   是   | 逻辑表名，多个表名以逗号分隔 |
+| *Name*                        | *Type*       | *DataType* |  *required* | *Info*                   |
+| ----------------------------- | ------------ | ---------- | ------      | ------------------------ |
+| logic-tables                  | Property     |  String    |   Y         | The name of Logic tables, multiple tables are separated by commas.|
 
 #### \<sharding:standard-strategy/>
 
-标准分片策略，用于单分片键的场景
+The standard sharding strategy for single sharding column.
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                                                |
-| ----------------------------- | ------------ | ---------- | ------ | --------------------------------------------------------------------- |
-| sharding-column               | 属性         |  String     |   是   | 分片列名                                                               |
-| precise-algorithm-class       | 属性         |  String     |   是   | 精确的分片算法类名称，用于=和IN。该类需使用默认的构造器或者提供无参数的构造器   |
-| range-algorithm-class         | 属性         |  String     |   否   | 范围的分片算法类名称，用于BETWEEN。该类需使用默认的构造器或者提供无参数的构造器 |
+| *Name*                        | *Type*       | *DataType* |  *required* | *Info*                                                                |
+| ----------------------------- | ------------ | ---------- | ------      | --------------------------------------------------------------------- |
+| sharding-column               | Property     |  String    |   Y         | The name of sharding column.                                                       |
+| precise-algorithm-class       | Property     |  String    |   Y         | The class name for precise-sharding-algorithm used for = and IN. The default constructor or on-parametric constructor is needed.   |
+| range-algorithm-class         | Property     |  String    |   N         | The class name for range-sharding-algorithm used for BETWEEN. The default constructor or on-parametric constructor is needed. |
 
 #### \<sharding:complex-strategy/>
 
-复合分片策略，用于多分片键的场景
+The complex sharding strategy for multiple sharding columns.
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                              |
-| ----------------------------- | ------------ | ---------- | ------ | --------------------------------------------------- |
-| sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔                              |
-| algorithm-class               | 属性         |  String     |   是  | 分片算法全类名，该类需使用默认的构造器或者提供无参数的构造器 |
+| *Name*                        | *Type*       | *DataType*  |  *required* | *Info*                                              |
+| ----------------------------- | ------------ | ----------  | ------      | --------------------------------------------------- |
+| sharding-columns              | Property     |  String     |   Y         | The name of sharding column. Multiple names separated with commas.                              |
+| algorithm-class               | Property     |  String     |   Y         | # The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
 
 #### \<sharding:inline-strategy/>
 
-inline表达式分片策略
+The inline-expression sharding strategy.
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*       |
-| ----------------------------- | ------------ | ---------- | ------ | ------------ |
-| sharding-column               | 属性         |  String     |   是   | 分片列名      |
-| algorithm-expression          | 属性         |  String     |   是   | 分片算法表达式 |
+| *Name*                        | *Type*       | *DataType* |  *required* | *Info*       |
+| ----------------------------- | ------------ | ---------- | ------      | ------------ |
+| sharding-column               | Property     |  String    |   Y         | the  name of sharding column.      |
+| algorithm-expression          | Property     |  String    |   Y         | The expression for sharding algorithm. |
 
 #### \<sharding:hint-database-strategy/>
 
-Hint方式分片策略
+The Hint-method sharding strategy.
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                              |
-| ----------------------------- | ------------ | ---------- | ------ | --------------------------------------------------- |
-| algorithm-class               | 属性         |  String     |   是  | 分片算法全类名，该类需使用默认的构造器或者提供无参数的构造器 |
+| *Name*                        | *Type*       | *DataType* |  *required* | *Info*                                              |
+| ----------------------------- | ------------ | ---------- | ------      | --------------------------------------------------- |
+| algorithm-class               | Property     |  String    |   Y         | The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
 
 #### \<sharding:none-strategy/>
 
-不分片的策略
+The none sharding strategy.
 
 #### \<sharding:props/\>
 
-| *名称*                                | *类型*       | *数据类型*  | *必填* | *说明*                              |
-| ------------------------------------ | ------------ | ---------- | ----- | ----------------------------------- |
-| sql.show                             | 属性         |  boolean   |   是   | 是否开启SQL显示，默认为false不开启     |
-| executor.size                        | 属性         |  int       |   否   | 最大工作线程数量                      |
+| *Name*                               | *Type*       | *DataType* | *required* | *Info*                              |
+| ------------------------------------ | ------------ | ---------- | -----      | ----------------------------------- |
+| sql.show                             | Property     |  boolean   |   Y        | To show SQLS or not, the default is false.     |
+| executor.size                        | Property     |  int       |   N        | The number of running threads.                      |
 
 #### \<master-slave:data-source/\>
 
-定义sharding-jdbc读写分离的数据源
+Define datasorce for Reading-writing spliting.
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                   |
-| ----------------------------- | ------------ |  --------- | ------ | ---------------------------------------- |
-| id                            | 属性         |  String     |   是   | Spring Bean ID                           |
-| master-data-source-name       | 标签         |   -         |   是   | 主库数据源Bean ID                         |
-| slave-data-source-names       | 标签         |   -         |   是   | 从库数据源Bean列表，多个Bean以逗号分隔       |
-| strategy-ref?                 | 标签         |   -         |   否   | 主从库复杂策略Bean ID，可以使用自定义复杂策略 |
-| strategy-type?                | 标签         |  String     |   否   | 主从库复杂策略类型<br />可选值：ROUND_ROBIN, RANDOM<br />默认值：ROUND_ROBIN |
+| *Name*                        | *Type*       | *DataType* |  *required* | *Info*                                   |
+| ----------------------------- | ------------ |  --------- | ------      | ---------------------------------------- |
+| id                            | Property     |  String    |   Y         | The spring Bean ID                           |
+| master-data-source-name       | Label        |   -        |   Y         | The Bean ID of Master database.                         |
+| slave-data-source-names       | Label        |   -        |   Y         | The list of Slave databases, multiple items are separated by commas.  |
+| strategy-ref?                 | Label        |   -        |   N         | The Bean ID for complex strategy of Master-Slaves. User-defined complex strategy is allowed.|
+| strategy-type?                | Label        |  String    |   N         | The complex strategy type of Master-Slaves. <br />The options: ROUND_ROBIN, RANDOM<br />. The default: ROUND_ROBIN |
 
-#### Spring格式特别说明
-如需使用inline表达式，需配置ignore-unresolvable为true，否则placeholder会把inline表达式当成属性key值导致出错. 
+#### More details on Spring Configuration
 
+To use inline expression, please configure *ignore-unresolvable* to be true, otherwise placeholder will treat the inline expression as an attribute key and then errors arises.
 
-## 分片算法表达式语法说明
+## The description of sharding algorithm expression syntax
 
-### inline表达式特别说明
-${begin..end} 表示范围区间
+### The details on inline expression
+${begin..end} # indicate the number range.
 
-${[unit1, unit2, unitX]} 表示枚举值
+${[unit1, unit2, unitX]} # indicate enumeration values
 
-inline表达式中连续多个${...}表达式，整个inline最终的结果将会根据每个子表达式的结果进行笛卡尔组合，例如正式表inline表达式如下：
+consecutive ${...} in inline expression # The Cartesian product among all the ${...} will be the final expression result, for example: 
+
+An inline expression:
+
 ```groovy
 dbtbl_${['online', 'offline']}_${1..3}
 ```
-最终会解析为dbtbl_online_1，dbtbl_online_2，dbtbl_online_3，dbtbl_offline_1，dbtbl_offline_2和dbtbl_offline_3这6张表。
 
-### 字符串内嵌groovy代码
-表达式本质上是一段字符串，字符串中使用${}来嵌入groovy代码。
+The final expression result:
+
+dbtbl_online_1，dbtbl_online_2，dbtbl_online_3，dbtbl_offline_1，dbtbl_offline_2和dbtbl_offline_3.
+
+### The groovy code in strings
+By using ${}, we can embed groovy code in strings to generate the final expression, for example:
 
 ```groovy 
 data_source_${id % 2 + 1}
 ```
+data_source_ is the prefix and id % 2 + 1 is groovy code in this example.
 
-上面的表达式中data_source_是字符串前缀，id % 2 + 1是groovy代码。
+## 4.Spring Boot Configuration
 
-## 4.Spring Boot配置
-
-### 引入maven依赖
+### Import the dependency of maven
 
 ```xml
 <dependency>
@@ -457,9 +462,9 @@ data_source_${id % 2 + 1}
 </dependency>
 ```
 
-### 配置示例
+### Configuration Example
 
-#### 分库分表配置
+#### Sharding Configuration
 ```yaml
 sharding.jdbc.datasource.names=ds,ds_0,ds_1
 sharding.jdbc.datasource.ds.type=org.apache.commons.dbcp.BasicDataSource
@@ -493,10 +498,10 @@ sharding.jdbc.config.sharding.tables.t_order_item.tableStrategy.inline.algorithm
 sharding.jdbc.config.sharding.tables.t_order_item.keyGeneratorColumnName=order_item_id
 ```
 
-#### 分库分表配置项说明
-同[分库分表Yaml配置](#分库分表配置项说明)
+#### The details on some Config options for Sharding 
+Same as [The Yaml Configuration for Sharding](#The config items for Sharding)
 
-#### 读写分离配置
+#### Read-write splitting Configuration
 ```yaml
 sharding.jdbc.datasource.names=ds_master,ds_slave_0,ds_slave_1
 
@@ -525,5 +530,5 @@ sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave_0,ds_slave_1
 
 ```
 
-#### 读写分离配置项说明
-同[读写分离Yaml配置](#读写分离配置项说明)
+#### The details on some Config options for Reading-writing splitting
+Same as [The Yaml configration for Reading-writing spliting](#The config items for Read-write splitting)
