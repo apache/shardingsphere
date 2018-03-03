@@ -22,39 +22,50 @@ Sharding-JDBC: A data sharding, read/write splitting, BASE transaction and datab
 
 # Features
 
-## 1. Sharding
-* Aggregation functions, group by, order by and limit SQL supported in distributed database.
-* Join (inner/outer) query supported.
+## 1. Data sharding
+* Both databases and tables sharding supported.
+* Standard aggregation functions, GROUP BY, ORDER BY, LIMIT and JOIN DQL supported.
+* Standard DML, DDL, TCL and database administrator command supported.
 * Sharding operator `=`, `BETWEEN` and `IN` supported.
-* Sharding algorithm customization supported.
-* Hint supported.
+* Sharding algorithm customization and inline expression supported.
+* Route by hint supported.
+* Distributed sequence supported.
 
-## 2. Read/Write Splitting
-* Same transaction data concurrency guarantee.
-* Hint supported.
+## 2. Read/write splitting
+* Multiple slaves replica supported. 
+* Data consistency guarantee in same thread supported.
+* Mix read/write splitting and data sharding supported.
+* Route by hint supported.
 
 ## 3. BASE Transaction
-* Best efforts delivery transaction.
+* Best efforts delivery transaction supported.
 * Try confirm cancel transaction (TBD).
 
-## 6. Distributed ID Generation
-* Distributed Unique Time-Sequence Generation
+## 4. Orchestration
+* Configuration center supported, can refresh dynamically.
+* Circuit breaker and failover supported.
+* Open tracing supported.
 
-## 5. Compatibility
+# Architecture
+
+## Sharding-JDBC-Driver
+
+Use JDBC connect databases without redirect cost for java application, best performance for production.
+
 * ORM self-adapting. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
 * Connection-pool self-adapting. DBCP, C3P0, BoneCP, Druid supported.
-* Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL.
+* Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
 
-## 6. Configuration
-* Java config
-* Spring namespace
-* YAML
-* Inline expression
+## Sharding-JDBC-Server
 
-## 7. Orchestration
-* Configuration center, can support data sources, tables and sharding strategies switch dynamically.
-* Smart client to orchestrate data access service, can failover automatically.
-* Output apm information based on open tracing protocol.
+Use proxy to connect databases(only MySQL protocol for now), for other programing language or MySQL client.
+
+* Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
+* Any MySQL command line and UI workbench supported.
+
+## Sharding-JDBC-Sidecar(TBD)
+
+Use sidecar to connect databases, best for Kubernetes or Mesos together.
 
 # Architecture
 
