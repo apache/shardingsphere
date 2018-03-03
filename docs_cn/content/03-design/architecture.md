@@ -8,7 +8,7 @@ next = "/03-design/module/"
 
 +++
 
-![整体架构图](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_v2.png)
+![整体架构图](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_cn_v3.png)
 
 ![SQL解析](http://ovfotjrsi.bkt.clouddn.com/docs/img/parse.png)
 
