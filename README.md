@@ -10,13 +10,13 @@
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![GitHub release](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-jdbc-server-2.1.0-SNAPSHOT-assembly.tar.gz)
 
-# [Homepage](http://shardingjdbc.io/)
-
-# [中文主页](http://shardingjdbc.io/index_zh.html)
-
 # Overview
 
 Sharding-JDBC: A data sharding, read/write splitting, BASE transaction and database orchestration middleware. It provides maximum compatibilities for applications by JDBC and MySQL protocol.
+
+# Document
+
+[![EN doc](https://img.shields.io/badge/document-English-blue.svg)](http://shardingjdbc.io/) [![cn doc](https://img.shields.io/badge/文档-中文版-blue.svg)](http://shardingjdbc.io/index_zh.html)
 
 # Features
 

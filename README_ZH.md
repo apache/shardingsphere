@@ -10,8 +10,6 @@
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![GitHub release](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-jdbc-server-2.1.0-SNAPSHOT-assembly.tar.gz)
 
-# [中文主页](http://shardingjdbc.io/index_zh.html)
-
 # 概述
 
 Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在Java的JDBC层以对业务应用零侵入的方式额外提供数据分片，读写分离，柔性事务和分布式治理能力。并在其基础上提供封装了MySQL协议的服务端版本，用于完成对异构语言的支持。
@@ -19,6 +17,10 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 基于JDBC的客户端版本定位为轻量级Java框架，使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为增强版的JDBC驱动，完全兼容JDBC和各种ORM框架。
 
 封装了MySQL协议的服务端版本定位为透明化的MySQL代理端，可以使用任何兼容MySQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench等)操作数据，对DBA更加友好。
+
+# 文档
+
+[![cn doc](https://img.shields.io/badge/文档-中文版-blue.svg)](http://shardingjdbc.io/index_zh.html) [![EN doc](https://img.shields.io/badge/document-English-blue.svg)](http://shardingjdbc.io/)
 
 # 功能列表
 
