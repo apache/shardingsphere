@@ -210,7 +210,7 @@ SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.u
 
 t_order is at the left of FROM, Sharding-JDBC will treat it as driving table for the group of binding tables. All routing calculations will only employ the configured strategy of driving table. Therefore the routing calculation for t_order_item will use the condition of t_order as well. The core of this implementation lies in their same Sharding Column.
 
-## ShardingDataSource Creation
+## Sharding DataSource Creation
 
 We can get ShardingDataSource from the ShardingDataSourceFactory factory after configuring the rules.
 
@@ -219,7 +219,7 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap
 
 ```
 
-## ShardingDataSource Usage
+## Sharding DataSource Usage
 
 Let us take an example to learn how to use this data source.
 

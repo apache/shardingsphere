@@ -315,7 +315,7 @@ slaveDataSourceNames：Datasource name for Slave datasource, multiple datasource
 
 To define the data source for sharding-jdbc 
 
-| *Name*                         | *Type*       | *DataType*  | *required* |    *Info*       |
+| *Name*                         | *Type*       | *DataType*  | *Required* |    *Info*       |
 | -----------------------------  | ------------ |  ---------  | ---------- | --------------  |
 | id                             | Property     |  String     |   Y        | Spring Bean ID  |
 | sharding-rule                  | Label        |   -         |   Y        | Sharding Rule   |
@@ -324,7 +324,7 @@ To define the data source for sharding-jdbc
 
 #### \<sharding:sharding-rule/>
 
-| *Name*                        | *Type*      | *DataType*  | *required* | *Info*                                                                |
+| *Name*                        | *Type*      | *DataType*  | *Required* | *Info*                                                                |
 | ----------------------------- | ----------- | ----------  | ------     | --------------------------------------------------------------------- |
 | data-source-names             | Property    | String      |   Y        | The bean list of data sources, all the BEAN IDs of data sources (including the default data source) needed to be managed by Sharding-JDBC must be configured. Multiple bean IDs are separated by commas.|
 | default-data-source-name      | Property    | String      |   N        | The default name for data source. Tables without sharding rules will be considered in this data source.                        |
@@ -334,13 +334,13 @@ To define the data source for sharding-jdbc
 
 #### \<sharding:table-rules/>
 
-| *Name*                        | *Type*      | *DataType* |  *required* | *Info*  |
+| *Name*                        | *Type*      | *DataType* |  *Required* | *Info*  |
 | ----------------------------- | ----------- | ---------- | ----------- | ------- |
 | table-rule+                   | Label       |   -        |   Y         | sharding rules |
 
 #### \<sharding:table-rule/>
 
-| *Name*                | *Type*       | *DataType* | *required* | *Info*  |
+| *Name*                | *Type*       | *DataType* | *Required* | *Info*  |
 | --------------------- | ------------ | ---------- | ------     | ------- |
 | logic-table           | Property     |  String    |   Y        | LogicTables |
 | actual-data-nodes     | Property     |  String    |   N        | Actual data nodes configured in the format of *datasource_name.table_name*, multiple configs separated with commas, supporting the inline expression. The default value is composed of configured data sources and logic table. This default config is to generate broadcast table (*The same table existed in every DB for cascade query.*) or to split the database without splitting the table.|
@@ -350,13 +350,13 @@ To define the data source for sharding-jdbc
 
 #### \<sharding:binding-table-rules/>
 
-| *Name*                        | *Type*      | *DataType* |  *required* | *Info*  |
+| *Name*                        | *Type*      | *DataType* |  *Required* | *Info*  |
 | ----------------------------- | ----------- |  --------- | ------      | ------- |
 | binding-table-rule            | Label       |   -        |   Y         | The rule for binding tables. |
 
 #### \<sharding:binding-table-rule/>
 
-| *Name*                        | *Type*       | *DataType* |  *required* | *Info*                   |
+| *Name*                        | *Type*       | *DataType* |  *Required* | *Info*                   |
 | ----------------------------- | ------------ | ---------- | ------      | ------------------------ |
 | logic-tables                  | Property     |  String    |   Y         | The name of Logic tables, multiple tables are separated by commas.|
 
@@ -364,7 +364,7 @@ To define the data source for sharding-jdbc
 
 The standard sharding strategy for single sharding column.
 
-| *Name*                        | *Type*       | *DataType* |  *required* | *Info*                                                                |
+| *Name*                        | *Type*       | *DataType* |  *Required* | *Info*                                                                |
 | ----------------------------- | ------------ | ---------- | ------      | --------------------------------------------------------------------- |
 | sharding-column               | Property     |  String    |   Y         | The name of sharding column.                                                       |
 | precise-algorithm-class       | Property     |  String    |   Y         | The class name for precise-sharding-algorithm used for = and IN. The default constructor or on-parametric constructor is needed.   |
@@ -374,7 +374,7 @@ The standard sharding strategy for single sharding column.
 
 The complex sharding strategy for multiple sharding columns.
 
-| *Name*                        | *Type*       | *DataType*  |  *required* | *Info*                                              |
+| *Name*                        | *Type*       | *DataType*  |  *Required* | *Info*                                              |
 | ----------------------------- | ------------ | ----------  | ------      | --------------------------------------------------- |
 | sharding-columns              | Property     |  String     |   Y         | The name of sharding column. Multiple names separated with commas.                              |
 | algorithm-class               | Property     |  String     |   Y         | # The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
@@ -383,7 +383,7 @@ The complex sharding strategy for multiple sharding columns.
 
 The inline-expression sharding strategy.
 
-| *Name*                        | *Type*       | *DataType* |  *required* | *Info*       |
+| *Name*                        | *Type*       | *DataType* |  *Required* | *Info*       |
 | ----------------------------- | ------------ | ---------- | ------      | ------------ |
 | sharding-column               | Property     |  String    |   Y         | the  name of sharding column.      |
 | algorithm-expression          | Property     |  String    |   Y         | The expression for sharding algorithm. |
@@ -392,7 +392,7 @@ The inline-expression sharding strategy.
 
 The Hint-method sharding strategy.
 
-| *Name*                        | *Type*       | *DataType* |  *required* | *Info*                                              |
+| *Name*                        | *Type*       | *DataType* |  *Required* | *Info*                                              |
 | ----------------------------- | ------------ | ---------- | ------      | --------------------------------------------------- |
 | algorithm-class               | Property     |  String    |   Y         | The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
 
@@ -402,7 +402,7 @@ The none sharding strategy.
 
 #### \<sharding:props/\>
 
-| *Name*                               | *Type*       | *DataType* | *required* | *Info*                              |
+| *Name*                               | *Type*       | *DataType* | *Required* | *Info*                              |
 | ------------------------------------ | ------------ | ---------- | -----      | ----------------------------------- |
 | sql.show                             | Property     |  boolean   |   Y        | To show SQLS or not, the default is false.     |
 | executor.size                        | Property     |  int       |   N        | The number of running threads.                      |
@@ -411,7 +411,7 @@ The none sharding strategy.
 
 Define datasorce for Reading-writing spliting.
 
-| *Name*                        | *Type*       | *DataType* |  *required* | *Info*                                   |
+| *Name*                        | *Type*       | *DataType* |  *Required* | *Info*                                   |
 | ----------------------------- | ------------ |  --------- | ------      | ---------------------------------------- |
 | id                            | Property     |  String    |   Y         | The spring Bean ID                           |
 | master-data-source-name       | Label        |   -        |   Y         | The Bean ID of Master database.                         |
@@ -499,7 +499,7 @@ sharding.jdbc.config.sharding.tables.t_order_item.keyGeneratorColumnName=order_i
 ```
 
 #### The details on some Config options for Sharding 
-Same as [The Yaml Configuration for Sharding](#The config items for Sharding)
+Refer to [The Yaml Configuration for Sharding](#The config items for Sharding)
 
 #### Read-write splitting Configuration
 ```yaml
@@ -531,4 +531,4 @@ sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave_0,ds_slave_1
 ```
 
 #### The details on some Config options for Reading-writing splitting
-Same as [The Yaml configration for Reading-writing spliting](#The config items for Read-write splitting)
+Refer to [The Yaml configration for Reading-writing spliting](#The config items for Read-write splitting)
