@@ -1,4 +1,4 @@
-# Sharding-JDBC - 为分库分表而生的数据库访问层微服务框架 
+# Sharding-JDBC - 分布式数据库中间层 
 
 [![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.png?branch=master)](https://travis-ci.org/shardingjdbc/sharding-jdbc)
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
