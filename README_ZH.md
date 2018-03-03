@@ -253,7 +253,7 @@ try (
 
 ### 规则配置
 
-编辑规则配置文件，位置在`${sharding-jdbc-server}\conf\sharding-config.yaml`。配置规则同Sharding-JDBC-Driver的`yaml`格式。 
+编辑`${sharding-jdbc-server}\conf\sharding-config.yaml`。配置规则同Sharding-JDBC-Driver的`yaml`格式。 
 
 ### 启动服务
 

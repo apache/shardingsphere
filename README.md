@@ -238,7 +238,7 @@ try (
 
 ### Rule configuration
 
-Edit sharding rule configuration file, path is `${sharding-jdbc-server}\conf\sharding-config.yaml`. Same format with Sharding-JDBC-Driver's `yaml` configuration. 
+Edit `${sharding-jdbc-server}\conf\sharding-config.yaml`. Same format with Sharding-JDBC-Driver's `yaml` configuration. 
 
 ### Start server
 
