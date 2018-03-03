@@ -61,24 +61,10 @@ Use JDBC connect databases without redirect cost for java application, best perf
 
 ![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_architecture_en.png)
 
-## Sharding-JDBC-Server
 
-Use proxy to connect databases(only MySQL protocol for now), for other programing language or MySQL client.
+## Quick Start
 
-* Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
-* Any MySQL command line and UI workbench supported.
-
-![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_architecture_en.png)
-
-## Sharding-JDBC-Sidecar(TBD)
-
-Use sidecar to connect databases, best for Kubernetes or Mesos together.
-
-![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_architecture_en.png)
-
-# Quick Start
-
-## Add maven dependency
+### Add maven dependency
 
 ```xml
 <!-- import sharding-jdbc core -->
@@ -91,7 +77,7 @@ Use sidecar to connect databases, best for Kubernetes or Mesos together.
 <!-- import other module if need -->
 ```
 
-## Rule configuration
+### Rule configuration
 
 ```java
     Map<String, DataSource> dataSourceMap = new HashMap<>();
@@ -168,7 +154,7 @@ shardingRule:
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
-## Use raw JDBC API
+### Use raw JDBC API
 
 ```java
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
@@ -187,7 +173,7 @@ try (
 }
 ```
 
-## Use spring namespace
+### Use spring namespace
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -231,3 +217,18 @@ try (
     </sharding:data-source>
 </beans>
 ```
+
+## Sharding-JDBC-Server
+
+Use proxy to connect databases(only MySQL protocol for now), for other programing language or MySQL client.
+
+* Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
+* Any MySQL command line and UI workbench supported.
+
+![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_architecture_en.png)
+
+## Sharding-JDBC-Sidecar(TBD)
+
+Use sidecar to connect databases, best for Kubernetes or Mesos together.
+
+![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_architecture_en.png)

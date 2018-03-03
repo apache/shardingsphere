@@ -64,24 +64,9 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 
 ![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_architecture_cn.png)
 
-## Sharding-JDBC-Server
+## 快速入门
 
-通过代理服务器连接数据库(目前仅支持MySQL)，适合其他开发语言或MySQL客户端操作数据。
-
-* 向应用程序完全透明，可直接当做MySQL使用。
-* 可适用于任何兼容MySQL协议的的客户端。
-
-![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_architecture_cn.png)
-
-## Sharding-JDBC-Sidecar(TBD)
-
-通过sidecar分片的方式，由IPC代替RPC，自动代理SQL分片，适合与Kubernetes或Mesos配合使用。
-
-![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_architecture_cn.png)
-
-# 快速入门
-
-## 引入maven依赖
+### 引入maven依赖
 
 ```xml
 <!-- 引入sharding-jdbc核心模块 -->
@@ -92,7 +77,7 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 </dependency>
 ```
 
-## 规则配置
+### 规则配置
 Sharding-JDBC的分库分表通过规则配置描述，请简单浏览配置全貌：
 
 ```java
@@ -181,7 +166,7 @@ shardingRule:
 
 规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。
 
-## 使用原生JDBC接口
+### 使用原生JDBC接口
 通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
 以JDBC原生实现为例：
 
@@ -202,7 +187,7 @@ try (
 }
 ```
 
-## 使用Spring命名空间配置
+### 使用Spring命名空间配置
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -246,3 +231,18 @@ try (
     </sharding:data-source>
 </beans>
 ```
+
+## Sharding-JDBC-Server
+
+通过代理服务器连接数据库(目前仅支持MySQL)，适合其他开发语言或MySQL客户端操作数据。
+
+* 向应用程序完全透明，可直接当做MySQL使用。
+* 可适用于任何兼容MySQL协议的的客户端。
+
+![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_architecture_cn.png)
+
+## Sharding-JDBC-Sidecar(TBD)
+
+通过sidecar分片的方式，由IPC代替RPC，自动代理SQL分片，适合与Kubernetes或Mesos配合使用。
+
+![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_architecture_cn.png)
