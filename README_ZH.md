@@ -14,8 +14,13 @@
 
 # 概述
 
-Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。
-Sharding-JDBC-Server在其基础上增加了针对MySQL协议的代理端，对运维以及调试更加友好，可以使用任何兼容MySQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench等)连接Sharding-JDBC-Server以查询和操作数据。
+Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在Java的JDBC层以对业务应用零侵入的方式额外提供数据分片和分布式治理能力。并在其基础上提供封装了MySQL协议的服务端版本，用于完成对异构语言的支持。
+
+基于JDBC的客户端版本定位为轻量级Java框架，使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为增强版的JDBC驱动，完全兼容JDBC和各种ORM框架。
+
+封装了MySQL协议的服务端版本定位为透明化的MySQL代理端，可以使用任何兼容MySQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench等)操作数据，对DBA更加友好。
+
+在经历了整体架构的数次精炼及稳定性打磨后，如今它已积累了足够的底蕴，相信可以成为开发者技术选型时的一个参考。
 
 # 功能列表
 
