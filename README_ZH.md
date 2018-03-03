@@ -27,44 +27,43 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 
 # 功能列表
 
-## 1. 分库分表
-* SQL解析功能完善，支持聚合，分组，排序，LIMIT，TOP等查询，并且支持级联表以及笛卡尔积的表查询
-* 支持内、外连接查询
-* 分片策略灵活，可支持=，BETWEEN，IN等多维度分片，也可支持多分片键共用，以及自定义分片策略
-* 基于Hint的强制分库分表路由
+## 1. 数据分片
+* 分库 + 分表
+* 支持聚合，分组，排序，分页，关联查询等复杂查询语句
+* 支持常见的DML，DDL，TCL以及数据库管理语句
+* 支持=，BETWEEN，IN的分片操作符
+* 自定义的灵活分片策略，支持多分片键共用，支持inline表达式
+* 基于Hint的强制路由
+* 支持分布式主键
 
 ## 2. 读写分离
-* 一主多从的读写分离配置，可配合分库分表使用
+* 一主多从的读写分离
+* 分库分表 + 读写分离
 * 基于Hint的强制主库路由
 
 ## 3. 柔性事务
 * 最大努力送达型事务
 * TCC型事务(TBD)
 
-## 4. 分布式主键
-* 统一的分布式基于时间序列的ID生成器
-
-## 5. 兼容性
-* 可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC
-* 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等
-* 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL
-
-## 6. 灵活多样的配置
-* Java
-* YAML
-* Inline表达式
-* Spring命名空间
-* Spring boot starter
-
-## 7. 多样化的部署架构
-* Sharding-JDBC-Driver：通过客户端分片的方式由应用程序直连数据库，减少二次转发成本，性能最高，适合线上程序使用
-* Sharding-JDBC-Server：通过代理服务端分片的方式，由代理服务器连接数据库，适合运维以及调试时查询数据，可以结合各种MySQL客户端使用
-* Sharding-JDBC-Sidecar(TBD)：通过sidecar分片的方式，由IPC代替RPC，自动代理SQL分片，适合与Kubernetes配合使用
-
-## 8. 分布式治理能力
-* 配置集中化与动态化，可支持数据源、表与分片策略的动态切换
+## 4. 分布式治理
+* 配置动态化，可支持数据源、表与分片策略的动态切换
 * 客户端的数据库治理，数据源失效自动切换
 * 基于Open Tracing协议的APM信息输出
+
+# 部署架构
+
+## Sharding-JDBC-Driver：通过客户端分片的方式由应用程序直连数据库，减少二次转发成本，性能最高，适合线上程序使用
+
+* 可适用于任何基于Java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC
+* 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等
+* 可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL
+
+## Sharding-JDBC-Server：通过代理服务端分片的方式，由代理服务器连接数据库，适合运维以及调试时查询数据，可以结合各种MySQL客户端使用
+
+* 可适用于任何可以访问MySQL的开发语言
+* 可适用于任何兼容MySQL协议的的客户端
+
+## Sharding-JDBC-Sidecar(TBD)：通过sidecar分片的方式，由IPC代替RPC，自动代理SQL分片，适合与Kubernetes或Mesos配合使用
 
 # Architecture
 
