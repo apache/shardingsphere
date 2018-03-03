@@ -38,8 +38,19 @@
     - [x] DROP
     - [x] TRUNCATE
     - [ ] CREATE VIEW
-    - [ ] CREATE INDEX
+    - [x] CREATE INDEX
     - [ ] CREATE OR REPLACE
+- [x] TCL
+    - [x] SET
+    - [x] COMMIT
+    - [x] ROLLBACK
+    - [x] SAVEPONIT
+    - [x] BEGIN
+- [x] MySQL database administrator command
+    - [x] USE
+    - [x] SHOW DATABASES
+    - [x] SHOW TABLES
+    - [x] DESCRIBE & DESC
 
 ## Configuration
 - [x] Java API
@@ -61,14 +72,17 @@
 - [x] Optimize Rewrite
 
 ## Route
-- [x] Hint
-- [x] Simple
+- [x] Standard
 - [x] Cartesian
+- [x] Hint
+- [x] Unicast
+- [x] Broadcast
 
 ## Merge
 - [x] Streaming
 - [x] Memory
 - [x] Decorator
+- [x] Metadata
 
 ## Sharding
 - [x] Database
@@ -85,14 +99,22 @@
 - [x] Strategy API
 - [x] Snowflake
 
+## Orchestration
+- [x] Registry Center
+- [x] Switch Data Source
+- [x] Circuit breaker
+- [ ] Health Check
+- [ ] Flow Limit
+- [ ] Failover
+
+## Architecture
+- [x] Driver
+- [x] Server
+- [ ] Sidecar
+
 ## BASE Transaction
 - [x] BED
 - [ ] TCC
-
-## Orchestration
-- [ ] Health Check
-- [ ] Switch Data Source
-- [ ] Flow Limit
 
 ## Operator
 - [ ] Dictionary Broadcast
