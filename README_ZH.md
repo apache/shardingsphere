@@ -24,7 +24,7 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 # 文档
 
 [![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](http://shardingjdbc.io/docs_cn/00-overview/)
-[![Roadmap](https://img.shields.io/badge/roadmap-english-blue.svg)](ROADMAP.md)
+[![Roadmap](https://img.shields.io/badge/roadmap-English-blue.svg)](ROADMAP.md)
 
 # 功能列表
 

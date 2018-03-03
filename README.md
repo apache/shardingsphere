@@ -19,7 +19,7 @@ Sharding-JDBC: A data sharding, read/write splitting, BASE transaction and datab
 # Document
 
 [![EN doc](https://img.shields.io/badge/document-English-blue.svg)](http://shardingjdbc.io/docs_en/00-overview/)
-[![Roadmap](https://img.shields.io/badge/roadmap-english-blue.svg)](ROADMAP.md)
+[![Roadmap](https://img.shields.io/badge/roadmap-English-blue.svg)](ROADMAP.md)
 
 [![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](http://shardingjdbc.io/docs_cn/00-overview/)
 
