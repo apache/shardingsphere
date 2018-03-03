@@ -233,3 +233,15 @@ try (
     </sharding:data-source>
 </beans>
 ```
+
+## Sharding-JDBC-Server
+
+### Rule configuration
+
+Edit sharding rule configuration file, path is `${sharding-jdbc-server}\conf\sharding-config.yaml`. Same format with Sharding-JDBC-Driver's `yaml` configuration. 
+
+### Start server
+
+``` shell
+bin\start.sh ${port}
+```
