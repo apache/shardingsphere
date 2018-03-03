@@ -61,8 +61,24 @@ Use JDBC connect databases without redirect cost for java application, best perf
 
 ![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_architecture_en.png)
 
+## Sharding-JDBC-Server
 
-## Quick Start
+Use proxy to connect databases(only MySQL protocol for now), for other programing language or MySQL client.
+
+* Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
+* Any MySQL command line and UI workbench supported.
+
+![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_architecture_en.png)
+
+## Sharding-JDBC-Sidecar(TBD)
+
+Use sidecar to connect databases, best for Kubernetes or Mesos together.
+
+![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_architecture_en.png)
+
+# Quick Start
+
+## Sharding-JDBC-Driver
 
 ### Add maven dependency
 
@@ -217,18 +233,3 @@ try (
     </sharding:data-source>
 </beans>
 ```
-
-## Sharding-JDBC-Server
-
-Use proxy to connect databases(only MySQL protocol for now), for other programing language or MySQL client.
-
-* Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
-* Any MySQL command line and UI workbench supported.
-
-![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_architecture_en.png)
-
-## Sharding-JDBC-Sidecar(TBD)
-
-Use sidecar to connect databases, best for Kubernetes or Mesos together.
-
-![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_architecture_en.png)

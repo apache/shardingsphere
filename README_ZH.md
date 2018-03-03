@@ -64,7 +64,24 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 
 ![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_architecture_cn.png)
 
-## 快速入门
+## Sharding-JDBC-Server
+
+通过代理服务器连接数据库(目前仅支持MySQL)，适合其他开发语言或MySQL客户端操作数据。
+
+* 向应用程序完全透明，可直接当做MySQL使用。
+* 可适用于任何兼容MySQL协议的的客户端。
+
+![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_architecture_cn.png)
+
+## Sharding-JDBC-Sidecar(TBD)
+
+通过sidecar分片的方式，由IPC代替RPC，自动代理SQL分片，适合与Kubernetes或Mesos配合使用。
+
+![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_architecture_cn.png)
+
+# 快速入门
+
+## Sharding-JDBC-Driver
 
 ### 引入maven依赖
 
@@ -231,18 +248,3 @@ try (
     </sharding:data-source>
 </beans>
 ```
-
-## Sharding-JDBC-Server
-
-通过代理服务器连接数据库(目前仅支持MySQL)，适合其他开发语言或MySQL客户端操作数据。
-
-* 向应用程序完全透明，可直接当做MySQL使用。
-* 可适用于任何兼容MySQL协议的的客户端。
-
-![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_architecture_cn.png)
-
-## Sharding-JDBC-Sidecar(TBD)
-
-通过sidecar分片的方式，由IPC代替RPC，自动代理SQL分片，适合与Kubernetes或Mesos配合使用。
-
-![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_architecture_cn.png)
