@@ -18,7 +18,9 @@ Sharding-JDBC: A data sharding, read/write splitting, BASE transaction and datab
 
 # Document
 
-[![EN doc](https://img.shields.io/badge/document-English-blue.svg)](http://shardingjdbc.io/docs_en/00-overview/) [![cn doc](https://img.shields.io/badge/文档-中文版-blue.svg)](http://shardingjdbc.io/docs_cn/00-overview/)
+[![EN doc](https://img.shields.io/badge/document-English-blue.svg)](http://shardingjdbc.io/docs_en/00-overview/)
+[![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](http://shardingjdbc.io/docs_cn/00-overview/)
+[![Roadmap](https://img.shields.io/badge/roadmap-english-blue.svg)](ROADMAP.md)
 
 # Features
 
@@ -70,8 +72,6 @@ Use sidecar to connect databases, best for Kubernetes or Mesos together.
 # Architecture
 
 ![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_en_v2.png)
-
-# [Roadmap](ROADMAP.md)
 
 # Quick Start
 
