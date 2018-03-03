@@ -1,4 +1,4 @@
-# Sharding-JDBC - 分布式数据库中间层
+# [Sharding-JDBC - 分布式数据库中间层](http://shardingjdbc.io/index_zh.html)
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
@@ -74,8 +74,6 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 # Architecture
 
 ![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_v2.png)
-
-# [Release Notes](https://github.com/shardingjdbc/sharding-jdbc/releases)
 
 # [Roadmap](ROADMAP.md)
 

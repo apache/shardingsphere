@@ -1,4 +1,4 @@
-# Sharding-JDBC - Distributed database middleware
+# [Sharding-JDBC - Distributed database middleware](http://shardingjdbc.io/)
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
@@ -59,8 +59,6 @@ Sharding-JDBC: A data sharding, read/write splitting, BASE transaction and datab
 # Architecture
 
 ![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_en_v2.png)
-
-# [Release Notes](https://github.com/shardingjdbc/sharding-jdbc/releases)
 
 # [Roadmap](ROADMAP.md)
 
