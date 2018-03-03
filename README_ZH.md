@@ -77,9 +77,6 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 
 ![Architecture](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_v2.png)
 
-# [Roadmap](ROADMAP.md)
-
-
 # 快速入门
 
 ## 引入maven依赖
