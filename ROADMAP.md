@@ -1,20 +1,67 @@
 # Roadmap
 
-## Database
+## Sharding-JDBC-Driver
+
+### JDBC
+- [x] Data Source
+- [x] Connection
+- [x] Connection Metadata
+- [x] Statement
+- [x] Prepared Statement
+- [x] Result Set
+- [x] Result Set Metadata
+
+### Database
 - [x] MySQL
 - [x] Oracle
 - [x] SQLServer
 - [x] PostgreSQL
 
-## SQL
+### Configuration
+- [x] Java API
+- [x] YAML
+- [x] Spring Namespace
+- [x] Spring Boot Starter
+
+## Sharding-JDBC-Server
+
+### MySQL Protocol
+- [x] Handshake Packet
+- [x] OK Packet
+- [x] ERR Packet
+- [x] EOF Packet
+- [x] COM_QUIT Packet
+- [x] COM_INIT_DB Packet
+- [x] COM_QUERY Packet
+- [x] COM_FIELD_LIST Packet
+- [ ] COM_STMT_PREPARE
+- [ ] COM_STMT_EXECUTE
+- [ ] COM_STMT_CLOSE
+- [ ] COM_STMT_RESET
+
+### Database
+- [x] MySQL
+- [ ] Oracle
+- [ ] SQLServer
+- [ ] PostgreSQL
+
+### Configuration
+- [x] YAML
+
+## Sharding-JDBC-Sidecar
+- [ ] TODO
+
+## Core
+
+### SQL
 - [x] DQL
-    - [x] Simple
+    - [x] Simple DQL
     - [x] JOIN
     - [x] BETWEEN
     - [x] IN
     - [x] ORDER BY
     - [x] GROUP BY
-    - [x] Aggregation
+    - [x] Aggregation Functions
     - [x] LIMIT, rownum, TOP
     - [x] Simple Sub Query
     - [ ] DISTINCT
@@ -52,70 +99,92 @@
     - [x] SHOW TABLES
     - [x] DESCRIBE & DESC
 
-## Configuration
-- [x] Java API
-- [x] Spring namespace
-- [x] YAML
-- [x] Independent Read Write Split
-- [ ] Improve Binding Table
-- [x] Configuration Center
-- [x] Dynamic Configuration
-
-## SQL Parser
+### SQL Parser
 - [x] Lexer
-- [x] Parser
+- [x] Standard Parser
 - [ ] Multiple SQL Parser
 - [ ] Duplicate Parentheses
 
-## SQL Rewrite
-- [x] Correct Rewrite
-- [x] Optimize Rewrite
+### SQL Rewrite
+- [x] LIMIT Offset Rewrite
+- [x] AVG To SUM/COUNT Derived Columns Rewrite
+- [x] ORDER BY Derived Columns Rewrite
+- [x] GROUP BY Derived Columns Rewrite
+- [x] INSERT Derived Primary Key Rewrite
+- [x] GROUP BY Only Optimized Rewrite
 
-## Route
-- [x] Standard
-- [x] Cartesian
-- [x] Hint
-- [x] Unicast
-- [x] Broadcast
+### Route
+- [x] Standard Router
+- [x] Cartesian Router
+- [x] Unicast Router
+- [x] Broadcast Router
+- [x] Hint Router
 
-## Merge
-- [x] Streaming
-- [x] Memory
-- [x] Decorator
-- [x] Metadata
+### Merge
+- [x] Streaming Merger
+- [x] Memory Merger
+- [x] Decorator Merger
+- [x] Metadata Merger
 
-## Sharding
-- [x] Database
-- [x] Table
+### Sharding
+- [x] Databases
+- [x] Tables
 - [x] Default Data Source
+- [x] Broadcast Tables
 
-## Read Write Split
+### Read-Write Split
 - [x] Read Write Split
 - [x] Consistent with Same Thread
 - [x] Force Hint Master Database
+- [x] Multiple Slaves Replica
+- [ ] Multiple Masters Replica
 
-## Distribute Primary Key
-- [x] JDBC
+### Distribute Sequence
 - [x] Strategy API
-- [x] Snowflake
+- [x] Snowflake algorithm
 
 ## Orchestration
-- [x] Registry Center
-- [x] Switch Data Source
+
+### Registry Center
+- [x] Zookeeper
+- [x] Etcd
+
+### Dynamic configuration
+- [x] Dynamic Data Source
+- [x] Dynamic Sharding Strategy
+
+### Government
 - [x] Circuit breaker
+- [x] Enable/Disable Data Source
 - [ ] Health Check
+- [ ] LoadBalance
 - [ ] Flow Limit
 - [ ] Failover
 
-## Architecture
-- [x] Driver
-- [x] Server
-- [ ] Sidecar
+### APM
+- [x] Tracing Collector
+- [x] Open Tracing
 
 ## BASE Transaction
-- [x] BED
-- [ ] TCC
 
-## Operator
-- [ ] Dictionary Broadcast
-- [ ] Dynamic Scale Out
+### Best Efforts Delivery
+- [x] Post DML event
+- [x] Transaction Journal Storage
+- [x] Synchronized Delivery
+- [x] Asynchronized Delivery
+
+### Try Confirm Cancel
+- [x] Post DML event
+- [ ] Transaction Journal Storage
+- [ ] Try
+- [ ] Confirm
+- [ ] Cancel
+
+## Operation Tool
+
+### Administrator Console
+- [ ] Configuration Panel
+- [ ] Runtime Control Panel
+- [ ] Tracing Panel
+- [ ] Metrics Panel
+- [ ] RBAC
