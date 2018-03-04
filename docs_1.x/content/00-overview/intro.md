@@ -29,22 +29,6 @@ Sharding-JDBC配置多样：
 * 可支持YAML和Spring命名空间配置
 * 灵活多样的inline方式
 
-***
-
-以下是常见的分库分表产品和Sharding-JDBC的对比：
-
-| 功能          | Cobar         | Cobar-client  | TDDL        | Sharding-JDBC  |
-| ------------- |:-------------:| -------------:| -----------:|---------------:|
-| 分库          | 有            | 有             | 未开源      | 有              |
-| 分表          | 无            | 无             | 未开源      | 有              |
-| 中间层        | 是            | 否             | 否          | 否              |
-| ORM支持       | 任意          | 仅MyBatis      | 任意        | 任意            |
-| 数据库支持     | 仅MySQL       | 任意           | 任意        | 任意            |
-| 异构语言       | 可           | 仅Java          | 仅Java     | 仅Java          |
-| 外部依赖       | 无           | 无              | Diamond    | 无              |
-
-***
-
 # 整体架构图
 
 ![整体架构图](/img/architecture.png)

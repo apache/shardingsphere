@@ -36,22 +36,6 @@ Distributed Governance Capability(2.0 New Feature)
 * Client database governance, datasource automatic switching when failure(2.0.0.M2)
 * Information Output based on Open Tracing protocol(2.0.0.M3)
 
-***
-
-The following is the comparison of common sharding databases and tables products and Sharding-JDBC:
-
-| Function          | Cobar         | Cobar-client  | TDDL        | Sharding-JDBC  |
-| ------------- |:-------------:| -------------:| -----------:|---------------:|
-| Sharding Databases          | Y            | Y             | Not Open source      | Y              |
-| Sharding Tables          | N            | N             | Not Open source      | Y              |
-| Middle Layer        | Y            | N             | N          | N              |
-| ORM Support       | Any          | Only MyBatis      | Any        | Any            |
-| Database Support     | Only MySQL       | Any           | Any        | Any            |
-| Database Support       | Y           | Only Java          | Only Java     | Only Java          |
-| External Dependencies       | N           | N              | Diamond    | N              |
-
-***
-
 # Overall Architecture Diagram
 
 ![整体架构图](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture_en_v3.png)
