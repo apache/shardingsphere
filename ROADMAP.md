@@ -148,6 +148,7 @@
 ### Registry Center
 - [x] Zookeeper
 - [x] Etcd
+- [ ] Eureka
 
 ### Dynamic configuration
 - [x] Dynamic Data Source
