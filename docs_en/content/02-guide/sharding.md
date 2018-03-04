@@ -1,14 +1,14 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "Database Sharding"
+title = "Sharding"
 weight = 2
 prev = "/02-guide/concepts/"
 next = "/02-guide/master-slave/"
 
 +++
 
-Read this guide before you start with Quick Start. This section will further introduce the usage of Sharding-JDBC's Database-Sharding in more complex cases.
+Please read Quick Start before you start with this guide. This section will further introduce the usage of Sharding-JDBC's Sharding in more complex cases.
 
 ## Database Information
 Two data sources, db0 and db1 are for example to illustrate. Each data source has two sets of tables, t_order_0 and t_order_1, t_order_item_0 and t_order_item_1. The SQLs for creating table:

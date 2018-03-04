@@ -1,40 +1,40 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "强制路由"
+title = "Mandatory Routing"
 weight = 7
 prev = "/02-guide/orchestration"
 next = "/02-guide/key-generator"
 
 +++
 
-> 提示:阅读本文前请详细预读 [分库分表](/02-guide/sharding)
+> Notice: Please read [Sharding](/02-guide/sharding) carefully before reading this chapter. 
 
-## 背景
-对Sharding-JDBC有初步了解的朋友已经发现了：在编写分片算法的时候，传入的分片键值是来自SQL语句中WHERE条件的。
-例如逻辑表t_order如果其数据源分片键为user_id，
-分片算法是奇数值路由到db1偶数值路由到db2；表分片键为order_id，
-分片算法是奇数值路由到t_order_1偶数值路由到t_order_2，如果执行如下sql语句：
+## Background
+
+After reading the previous introduction, you can notice that the sharding columns in the sharding algorithm always come from the WHERE condition in the SQLs.
+For example: for the logical table t_order, if the sharding column of the data source is user_id, the record with the odd number of user_id will be routed to db1, and the one with the even value will be routed to db2. If the sharding column of its table is order_id, the record with the odd number of order_id is routed to t_order_1, and the one with the even value is routed to t_order_2.
+So if you execute the following SQL statement:
 
 ```sql
 select * from t_order where user_id = 1 and order_id = 2
 ```
 
-那么在数据源分片算法的shardingValue参数将会传入1用于分片计算，结果为路由到db1;
-表分片算法的shardingValue参数将会传入2用于分片计算，结果为路由到t_order_2。最终SQL为：
+Then, 1 will be the shardingValue of sharding algorithm of data source, similarly 2 will be the shardingValue parameter of the table sharding algorithm to figure out that the result record is routed to db1.t_order_2.
+The final SQL is:
 
 ```sql
 select * from db1.t_order_2 where user_id = 1 and order_id = 2
 ```
 
-__现有一个假设，如果WHERE中没有user_id和order_id的条件，那么是否可以进行分片计算呢？__
+__Suppose there are no sharding columns like user_id, order_id in WHERE, can the Sharding be proceeded normally?__
 
-答案是肯定的。下面就介绍一下Sharding-JDBC对这个问题的解决方法。
+The answer is No problem. How? Please continue to read.
 
-## 基于暗示(Hint)的分片键值管理器
-要解决上面的问题，我们使用com.dangdang.ddframe.rdb.sharding.api.HintManager。
-该管理器是使用ThreadLocal技术管理分片键值的。
-使用例子：
+## The manager of sharding columns based on Hint
+To solve the above problem, we need to use com.dangdang.ddframe.rdb.sharding.api.HintManager which uses ThreadLocal to manage sharding columns.
+
+For example:
 
 ```java
 String sql = "SELECT * FROM t_order";
@@ -53,22 +53,20 @@ try (
 }
 ```
 
-### 实例化
+### Instantiation
 
 ```java
-// 初始化ThreadLocal中的数据
+// to  initialize the data in ThreadLocal.
 HintManager hintManager = HintManager.getInstance()
 ```
 
+### Add Sharding columns and corresponding data
+- To add Sharding columns and corresponding data of data source by hintManager.addDatabaseShardingValue.
+- To add Sharding columns and corresponding data of table by hintManager.addTableShardingValue.
 
+There are two overload methods of the registration for each kind of sharding, and the shorter method can simplify the sharding injection of the = condition.
 
-### 添加分片键值
-- 使用hintManager.addDatabaseShardingValue来添加数据源分片键值
-- 使用hintManager.addTableShardingValue来添加表分片键值
+### Clean added Sharding columns and corresponding data
+The added Sharding columns and corresponding data are saved in ThreadLocal, so you need to clean the content of the ThreadLocal by calling hintManager.close() after the end of the operations.
 
-每种分片键值注册方法中有两个重载方法，参数较短的方法可以简化相等条件的分片值注入。
-
-### 清除添加的分片键值
-分片键值保存在ThreadLocal中，所以需要在操作结束时调用hintManager.close()来清除ThreadLocal中的内容。
-
-__hintManager实现了AutoCloseable接口，可推荐使用try with resource自动关闭。__
+__hintManager implement AutoCloseable interface, and it is recommended to use the *Try with resource* to clean automatically.__
