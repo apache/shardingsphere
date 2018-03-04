@@ -25,22 +25,20 @@
 
 ## Sharding-JDBC-Server
 
-### MySQL Protocol
-- [x] Handshake Packet
-- [x] OK Packet
-- [x] ERR Packet
-- [x] EOF Packet
-- [x] COM_QUIT Packet
-- [x] COM_INIT_DB Packet
-- [x] COM_QUERY Packet
-- [x] COM_FIELD_LIST Packet
-- [ ] COM_STMT_PREPARE
-- [ ] COM_STMT_EXECUTE
-- [ ] COM_STMT_CLOSE
-- [ ] COM_STMT_RESET
-
 ### Database
 - [x] MySQL
+  - [x] Handshake Packet
+  - [x] OK Packet
+  - [x] ERR Packet
+  - [x] EOF Packet
+  - [x] COM_QUIT Packet
+  - [x] COM_INIT_DB Packet
+  - [x] COM_QUERY Packet
+  - [x] COM_FIELD_LIST Packet
+  - [ ] COM_STMT_PREPARE
+  - [ ] COM_STMT_EXECUTE
+  - [ ] COM_STMT_CLOSE
+  - [ ] COM_STMT_RESET
 - [ ] Oracle
 - [ ] SQLServer
 - [ ] PostgreSQL
