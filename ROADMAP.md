@@ -97,7 +97,7 @@
     - [x] SHOW TABLES
     - [x] DESCRIBE & DESC
 
-### SQL Parser
+### SQL Parse
 - [x] Lexer
 - [x] Standard Parser
 - [ ] Multiple SQL Parser
