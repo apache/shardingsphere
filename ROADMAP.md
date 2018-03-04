@@ -107,7 +107,7 @@
 
 ### SQL Rewrite
 - [x] LIMIT Offset Rewrite
-- [x] AVG To SUM/COUNT Derived Columns Rewrite
+- [x] AVG To SUM/COUNT Rewrite
 - [x] ORDER BY Derived Columns Rewrite
 - [x] GROUP BY Derived Columns Rewrite
 - [x] INSERT Derived Primary Key Rewrite
