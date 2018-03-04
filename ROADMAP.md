@@ -51,7 +51,7 @@
 ## Sharding-JDBC-Sidecar
 - [ ] TODO
 
-## Core
+## Kernel
 
 ### SQL
 - [x] DQL
