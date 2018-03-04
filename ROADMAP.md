@@ -183,6 +183,11 @@
 
 ## Operation Tool
 
+### Auto Scale Out
+- [ ] Bin Log Parse
+- [ ] Redo Log Parse
+- [ ] Data Migration
+
 ### Administrator Console
 - [ ] Configuration Panel
 - [ ] Runtime Control Panel
