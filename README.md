@@ -55,18 +55,18 @@ Sharding-JDBC: A data sharding, read-write splitting, BASE transaction and datab
 
 Use JDBC connect databases without redirect cost for java application, best performance for production.
 
-* ORM self-adapting. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
-* Connection-pool self-adapting. DBCP, C3P0, BoneCP, Druid supported.
-* Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
+* ORM compatible. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
+* Connection-pool compatible. DBCP, C3P0, BoneCP, Druid supported.
+* Multi SQL-based databases compatible. Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
 
 ![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_architecture_en.png)
 
 ## Sharding-JDBC-Server
 
-Use proxy to connect databases(only MySQL protocol for now), for other programing language or MySQL client.
+Database router. Deploy as a stateless server, support MySQL protocol for now.
 
 * Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
-* Any MySQL command line and UI workbench supported.
+* Any MySQL command line and UI workbench supported in theoretically. (TODO: which tools are tested, at least one version of that tool.)
 
 ![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_architecture_en.png)
 
