@@ -1,39 +1,36 @@
 +++
 toc = true
 date = "2017-08-23T22:38:50+08:00"
-title = "测试引擎"
+title = "Test Engine"
 weight = 11
 prev = "/02-guide/subquery/"
 next = "/02-guide/apm/"
 
 +++
 
-Sharding-JDBC提供了完善的测试引擎。它以XML方式定义SQL，每条SQL由SQL解析单元测试引擎和整合测试引擎驱动，每个引擎分别为H2、MySQL、PostgreSQL、SQLServer和Oracle数据库运行测试用例。
+Sharding-JDBC provides a perfect test engine. It defines SQL in the form of XML, and each of SQL is driven by an SQL parsing unit test engine and an integration test engine, each of which provides test cases for H2, MySQL, PostgreSQL, SQL server, and Oracle databases.
+The SQL unit test covers SQL placeholders and literal dimensions, and the integration test consists of strategy and JDBC. The strategy in integration test is made up of Sharding, table Sharding, database Sharding, and a Read-write splitting, and the JDBC is made up of Statement and PreparedStatement.
+Therefore, a SQL will drive 5 kinds of databases * 2 kinds of JDBC operation modes + 5 kinds of strategies * 5 kinds of databases * 2 kinds of JDBC operation modes = 60 test cases, in order to achieve high test standard for Sharding-JDBC.
 
-SQL解析单元测试全面覆盖SQL占位符和字面量维度。整合测试进一步拆分为策略和JDBC两个维度，策略维度包括分库分表、仅分表、仅分库、读写分离等策略，JDBC维度包括Statement、PreparedStatement。
+# Integration test
 
-因此，1条SQL会驱动5种数据库的解析 * 2种参数传递类型 + 5种数据库 * 5种分片策略 * 2种JDBC运行方式 = 60个测试用例，以达到Sharding-JDBC对于高质量的追求。
+## Test environment
 
-# 整合测试
+You need to prepare database environment before performing an integration test:
 
-## 测试环境
+1. Run resources/integrate/schema/manual_schema_create.sql in test database environment to create database (MySQL、PostgreSQL、SQLServer) and Schema（ Only for Oracle）.
 
-整合测试由于涉及到真实数据库环境，需要先完成以下准备工作并测试：
+1. Modify databases in sharding-jdbc-core/src/test/resources/integrate/env.properties to specify the test databases.
 
-1. 在准备测试的数据库上运行resources/integrate/schema/manual_schema_create.sql创建数据库(MySQL、PostgreSQL、SQLServer)及Schema（仅Oracle）。
+1. Run All integration tests to get test results.
 
-1. 修改sharding-jdbc-core/src/test/resources/integrate/env.properties中的databases，指定需要测试的数据库。
+## Notices
 
-1. 运行AllIntegrateTests，检查测试结果。
+1. To test Oracle, please add Oracle driver dependencies to the POM file.
+1. In order to ensure the integrity of the test data, we use 10 splitting-databases and 10 splitting-tables to execute the integration test of Sharding. Therefore it will take a long time to run the test cases.
 
-## 注意事项
+# The engine test of SQL parsing
 
-1. 如需测试Oracle，请在POM文件中增加Oracle驱动依赖。
+## Test environment
 
-1. 为了保证测试数据的完整性，整合测试中的分库分表采用了10库10表的方式，因此运行测试用例的时间会比较长。
-
-# SQL解析引擎测试
-
-## 测试环境
-
-SQL解析引擎测试是基于SQL本身的解析，因此无需连接数据库，直接运行AllParsingTests即可。
+It is based on SQL parsing, so you do not need to connect to the database and run AllParsingTests directly.
