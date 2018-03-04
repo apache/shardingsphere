@@ -66,7 +66,7 @@ Use JDBC connect databases without redirect cost for java application, best perf
 Database router. Deploy as a stateless server, support MySQL protocol for now.
 
 * Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
-* Any MySQL command line and UI workbench supported in theoretically. (TODO: which tools are tested, at least one version of that tool.)
+* Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.
 
 ![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_architecture_en.png)
 
