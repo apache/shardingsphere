@@ -1,7 +1,7 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "orchestration"
+title = "Orchestration"
 weight = 6
 prev = "/02-guide/configuration/"
 next = "/02-guide/hint-sharding-value/"
