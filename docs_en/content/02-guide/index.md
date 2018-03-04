@@ -16,7 +16,7 @@ chapter = true
  - To further improve performance after sharding, you can read [Read-write splitting] (/ 02-guide / master-slave /).
  - In consideration of flexible and complex Sharding-JDBC configuration, [Domain Model Configuration] (/ 02-guide / config_domain /) clearly shows you the relationships among the various configuration classes.
  - [Configuration Manual] (/ 02-guide / configuration /) describes how to configure some items with JAVA, YAML, Spring or Spring Boot.
- - To manage the access to databases, please read [DB-Access Management] (/ 02-guide / orchestration /).
+ - To manage the access to databases, please read [Orchestration] (/ 02-guide / orchestration /).
  - Generally Sharding-JDBC obtains sharded data through SQL parsing, but the data can also be got using the [Mandatory Routing] (/ 02-guide / hint-sharding-value /). You perfer to choose this strategy for the expansion of existing system.
  - How to generate the Distributed primary key? [Distributed Primary key] (/ 02-guide / key-generator /) will give you the answer.
  - How to implement transaction support? [Transaction Support] (/ 02-guide / transaction /) describes how Sharding-JDBC implements distributed transactions by using B.A.S.E Transaction.

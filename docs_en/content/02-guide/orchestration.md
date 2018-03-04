@@ -1,103 +1,104 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "编排治理"
+title = "orchestration"
 weight = 6
 prev = "/02-guide/configuration/"
 next = "/02-guide/hint-sharding-value/"
 
 +++
-2.0.0.M1版本开始，Sharding-JDBC提供了数据库治理功能，主要包括：
 
-* 配置集中化与动态化，可支持数据源、表与分片及读写分离策略的动态切换
-* 数据治理。提供熔断数据库访问程序对数据库的访问和禁用从库的访问的能力
-* 支持Zookeeper和Etcd的注册中心
+Sharding-JDBC provides orchestration for databases in Version 2.0.0.M1, which mainly includes:
+
+* The centralized and dynamic configuration can support the dynamic strategy switching of Sharding and read-write splitting.
+* Provide the circuit-breaker mechanism for database access, and the switch that disables access to Slaves.
+* Support for Zookeeper and Etcd registry.
 
 # 
 
-## Zookeeper注册中心
+## Zookeeper
 
-请使用Zookeeper 3.4.6及其以上版本搭建注册中心。[详情参见](https://zookeeper.apache.org/doc/trunk/zookeeperStarted.html)
+Please use Zookeeper 3.4.6 and above to set up the registration center. [Reference](https://zookeeper.apache.org/doc/trunk/zookeeperStarted.html)
 
-## Etcd注册中心
+## Etcd
 
-请使用Etcd V3及其以上版本搭建注册中心。[详情参见](https://coreos.com/etcd/docs/latest)
+Please use Etcd V3 and above to set up the registration center. [Reference](https://coreos.com/etcd/docs/latest)
 
-## 注册中心数据结构
+## The structure of registry
 
-注册中心在定义的命名空间下，创建数据库访问对象运行节点，用于区分不同数据库访问实例。命名空间中包含2个数据子节点，分别是config, state。
+The registry is defined in the namespace and you can create the object running node to access the database, by which you can distinguish different accessing instances. The namespace contains two child nodes, namely, config and state.
 
-## config节点
+## The config node
 
-数据治理相关配置信息，以JSON格式存储，包括数据源，分库分表，读写分离、ConfigMap及Properties配置，可通过修改节点来实现对于配置的动态管理。
+It mainly includes the data-management related configuration information such as data source, Sharding, Read-write splitting, ConfigMap and configuration of the Properties, stored in a JSON format. You can modify this node to get dynamic configuration management.
 
 ```
 config
-    ├──datasource                                数据源配置
-    ├──sharding                                  分库分表（包括分库分表+读写分离）配置根节点
-    ├      ├──rule                               分库分表（包括分库分表+读写分离）规则
-    ├      ├──configmap                          分库分表ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}
-    ├      ├──props                              Properties配置
-    ├──masterslave                               读写分离独立使用配置
-    ├      ├──rule                               读写分离规则
-    ├      ├──configmap                          读写分离ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}
+    ├──datasource                                # The config of data source 
+    ├──sharding                                  # The root node of Sharding configuration
+    ├      ├──rule                               # The rule of Sharding
+    ├      ├──configmap                          # The ConfigMap config of Sharding, stored in the form of K/V, e.g. {"key1":"value1"}
+    ├      ├──props                              # The config of Properties
+    ├──masterslave                               # The config of Read-write splitting
+    ├      ├──rule                               # The rule of Read-write splitting 
+    ├      ├──configmap                          # The ConfigMap config of Read-write splitting, stored in the form of K/V, e.g. {"key1":"value1"}
 ```
 
-### datasource子节点
+### The child node of data source
 
-多个数据库连接池的集合，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid, HikariCP）
+It is a collection of multiple database connection pools, and the properties of different connection pools should be configured by users, e.g. DBCP，C3P0，Druid, HikariCP.
 
 ```json
 [{"name":"demo_ds","clazz":"org.apache.commons.dbcp.BasicDataSource","defaultAutoCommit":"true","defaultReadOnly":"false","defaultTransactionIsolation":"-1","driverClassName":"com.mysql.jdbc.Driver","initialSize":"0","logAbandoned":"false","maxActive":"8","maxIdle":"8","maxOpenPreparedStatements":"-1","maxWait":"-1","minEvictableIdleTimeMillis":"1800000","minIdle":"0","numTestsPerEvictionRun":"3","password":"","removeAbandoned":"false","removeAbandonedTimeout":"300","testOnBorrow":"false","testOnReturn":"false","testWhileIdle":"false","timeBetweenEvictionRunsMillis":"-1","url":"jdbc:mysql://localhost:3306/demo_ds","username":"root","validationQueryTimeout":"-1"}]
 ```
 
-### sharding子节点
+### The child node of sharding
 
-#### rule子节点
+#### The child node of rule
 
-分库分表配置，包括分库分表+读写分离配置
+The configuration of Sharding, including the configs of  Sharding and Read-write splitting.
 
 ```json
 {"tableRuleConfigs":[{"logicTable":"t_order","actualDataNodes":"demo_ds.t_order_${0..1}","databaseShardingStrategyConfig":{},"tableShardingStrategyConfig":{"type":"STANDARD","shardingColumn":"order_id","preciseAlgorithmClassName":"io.shardingjdbc.example.orchestration.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm","rangeAlgorithmClassName":""},"keyGeneratorColumnName":"order_id"},{"logicTable":"t_order_item","actualDataNodes":"demo_ds.t_order_item_${0..1}","databaseShardingStrategyConfig":{},"tableShardingStrategyConfig":{"type":"STANDARD","shardingColumn":"order_id","preciseAlgorithmClassName":"io.shardingjdbc.example.orchestration.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm","rangeAlgorithmClassName":""},"keyGeneratorColumnName":"order_item_id"}],"bindingTableGroups":["t_order, t_order_item"],"defaultDatabaseShardingStrategyConfig":{},"defaultTableShardingStrategyConfig":{},"masterSlaveRuleConfigs":[]}
 ```
 
-#### configmap子节点
+#### The child node of ConfigMap
 
-分库分表ConfigMap配置，以K/V形式存储
+The ConfigMap config of Sharding, stored in the form of K/V.
 
 ```json
 {"key1":"value1"}
 ```
 
-#### props子节点
+#### The child node of props
 
-相对于sharding-jdbc配置里面的Sharding Properties
+They are the Sharding Properties in sharding-jdbc configuration.
 
 ```json
 {"executor.size":"20","sql.show":"true"}
 ```
 
-### masterslave子节点
+### The child node of Master-Slave
 
-#### rule子节点
+#### The child node of rule
 
-读写分离独立使用时使用该配置
+The configuration for using Read-write splitting alone.
 
 ```json
 {"name":"ds_ms","masterDataSourceName":"ds_master","slaveDataSourceNames":["ds_slave_0","ds_slave_1"],"loadBalanceAlgorithmType":"ROUND_ROBIN"}
 ```
 
-#### configmap子节点
+#### The child of ConfigMap
 
-读写分离ConfigMap配置，以K/V形式存储
+The ConfigMap config of Sharding, stored in the form of K/V.
 
 ```json
 {"key1":"value1"}
 ```
 
-## state节点
+## The state node
 
-state节点包括instances和datasource节点。
+It contains the nodes of instance and data source.
 
 ```
 instances
@@ -106,51 +107,53 @@ instances
     ├──....                                    
 ```
 
-### instances节点
-数据库访问对象运行实例信息，子节点是当前运行实例的标识。运行实例标识由运行服务器的IP地址和PID构成。运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。注册中心监控这些节点的变化来治理运行中实例对数据库的访问等。
+### The instance node 
 
-### datasource节点
-可以治理读写分离从库，可动态添加删除以及禁用，预计2.0.0.M3发布
+It includes the running-instance information of database-accessing object, and its child node is the identity of the current running instance. This identify is composed of IP and PID in the running server and always a temporary node. It is registered when the instance is online, and automatically cleaned when the instance is offline. The registry manages the access to the database by monitoring changes in these nodes.
 
-# 操作指南
+### The data source node
 
-## instances节点 
+It is used to manage Read-write splitting and dynamically add, remove or disable data sources (Expected in 2.0.0.M3 release).
 
-可在IP地址@-@PID节点写入DISABLED（忽略大小写）表示禁用该实例，删除DISABLED表示启用。
+# Operation guide
 
-Zookeeper命令如下：
+## The instance node
+
+You can write DISABLED (case ignored) to the IP address @-@pid node to disable the instance or remove DISABLED to enable.
+
+The commands in Zookeeper:
 
 ```
 [zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED
 ```
 
-Etcd命令如下：
+The commands in Etcd:
 
 ```
 etcdctl set /your_app_name/state/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED
 ```
 
-## datasources节点 
+## The data source node
 
-在读写分离（或分库分表+读写分离）场景下，可在数据源名称子节点中写入DISABLED表示禁用从库数据源，删除DISABLED或节点表示启用。（2.0.0.M3及以上版本支持）。
+In use of Read-write splitting or Sharding + Read-write splitting, you can write DISABLED to the child node in data source to disable slaves or remove DISABLED to enable (Expected in 2.0.0.M3 release).
 
-Zookeeper命令如下：
+The commands in Zookeeper:
 
 ```
 [zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/datasources/your_slave_datasource_name DISABLED
 ```
 
-Etcd命令如下：
+The commands in Etcd:
 
 ```
 etcdctl set /your_app_name/state/datasources/your_slave_datasource_name DISABLED
 ```
 
-# 使用示例
+# Operation examples
 
-## 1.JAVA配置
+## 1. The JAVA configuration
 
-### 引入maven依赖
+### Import the dependency of maven 
 
 ```xml
 <dependency>
@@ -160,7 +163,7 @@ etcdctl set /your_app_name/state/datasources/your_slave_datasource_name DISABLED
 </dependency>
 ```
 
-### Zookeeper配置示例
+### The config example of Zookeeper
 
 ```java
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
@@ -175,7 +178,7 @@ etcdctl set /your_app_name/state/datasources/your_slave_datasource_name DISABLED
     }
 ```
 
-### Etcd配置示例
+### The config example of Etcd
 
 ```java
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
@@ -189,9 +192,9 @@ etcdctl set /your_app_name/state/datasources/your_slave_datasource_name DISABLED
     }
 ```
 
-## 2.YAML配置
+## 2. The YAML configuration
 
-### 引入maven依赖
+### Import the dependency of maven 
 
 ```xml
 <dependency>
@@ -201,9 +204,9 @@ etcdctl set /your_app_name/state/datasources/your_slave_datasource_name DISABLED
 </dependency>
 ```
 
-### 配置示例
+### Th Configuration examples
 
-#### Zookeeper分库分表编排配置项说明
+#### The introduction for orchestration configs of Sharding in Zookeeper
 ```yaml
 dataSources:
   db0: !!org.apache.commons.dbcp.BasicDataSource
@@ -237,7 +240,7 @@ shardingRule:
       keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
     t_order_item:
       actualDataNodes: db${0..1}.t_order_item_${0..1}
-      #绑定表中其余的表的策略与第一张表的策略相同
+      #The strategies in other binding tables are same as the first binding table.
       databaseStrategy: 
         standard:
           shardingColumn: user_id
@@ -266,7 +269,7 @@ orchestration:
     serverLists: localhost:2181
 ```
 
-#### Etcd分库分表编排配置项说明
+#### The introduction for orchestration configs of Sharding in Etcd
 ```yaml
 dataSources:
   db0: !!org.apache.commons.dbcp.BasicDataSource
@@ -300,7 +303,6 @@ shardingRule:
       keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
     t_order_item:
       actualDataNodes: db${0..1}.t_order_item_${0..1}
-      #绑定表中其余的表的策略与第一张表的策略相同
       databaseStrategy: 
         standard:
           shardingColumn: user_id
@@ -311,7 +313,7 @@ shardingRule:
           algorithmInlineExpression: t_order_item_${order_id % 2}
   bindingTables:
     - t_order,t_order_item
-  #默认数据库分片策略
+  # The default strategy of Sharding 
   defaultDatabaseStrategy:
     none:
   defaultTableStrategy:
@@ -328,65 +330,67 @@ orchestration:
     serverLists: http://localhost:2379
 ```
 
-##### Zookeeper分库分表编排配置项说明
+##### The introduction for orchestration configs of Read-write splitting in Zookeeper
 
 ```yaml
-dataSources: 数据源配置
+dataSources: # The config of data source
 
-shardingRule: 分片规则配置
+shardingRule: # The config of Sharding rules
 
-orchestration: Zookeeper编排配置
-  name: 编排服务节点名称
-  overwrite: 本地配置是否可覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
-  zookeeper: Zookeeper注册中心配置
-    namespace: Zookeeper的命名空间
-    serverLists: 连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
-    baseSleepTimeMilliseconds: 等待重试的间隔时间的初始值。单位：毫秒
-    maxSleepTimeMilliseconds: 等待重试的间隔时间的最大值。单位：毫秒
-    maxRetries: 最大重试次数
-    sessionTimeoutMilliseconds: 会话超时时间。单位：毫秒
-    connectionTimeoutMilliseconds: 连接超时时间。单位：毫秒
-    digest: 连接Zookeeper的权限令牌。缺省为不需要权限验证
+orchestration: The orchestration configs in Zookeeper
+  name: # The node name of the orchestration service
+  overwrite: # to decide whether the local configuration can override the registry configuration. If true, the config in each boot is based on the local configuration.
+  zookeeper: # The config of registry in Zookeeper
+    namespace: # The namespace in Zookeeper
+    serverLists: # The server list to connect to Zookeeper, including IP and port, mulitple addresses separated by commas, e.g. host1:2181,host2:2181.
+    baseSleepTimeMilliseconds: # The initial value of the interval for retry, unit: Millisecond.
+    maxSleepTimeMilliseconds: # The max value of the interval for retry, unit: Millisecond.
+    maxRetries: # The number of retry. 
+    sessionTimeoutMilliseconds: # Session timeout, unit: Millisecond.
+    connectionTimeoutMilliseconds: # Connection timeout, unit: Millisecond.
+    digest: # The permission token to connect to Zookeeper, and the default is no permission validation.
 ```
 
-##### Etcd分库分表编排配置项说明
+##### The introduction for orchestration configs of Read-write splitting in Etcd
+
+The configuration items are same as [The introduction for orchestration configs of Read-write splitting in Zookeeper](#The introduction for orchestration configs of Read-write splitting in Zookeeper).
 
 ```yaml
-dataSources: 数据源配置
+dataSources: 
 
-shardingRule: 分片规则配置
+shardingRule:  
 
-orchestration: Etcd编排配置
-  name: 编排服务节点名称
-  overwrite: 本地配置是否可覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
-  etcd: Etcd注册中心配置
-    serverLists: 连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379
-    timeToLiveSeconds: 临时节点存活时间。单位：秒
-    timeoutMilliseconds: 每次请求的超时时间。单位：毫秒
-    maxRetries: 每次请求的最大重试次数
-    retryIntervalMilliseconds: 重试间隔时间。单位：毫秒
+orchestration:  
+  name:  
+  overwrite:  
+  etcd: 
+    serverLists: 
+    timeToLiveSeconds: 
+    timeoutMilliseconds: 
+    maxRetries: 
+    retryIntervalMilliseconds: 
 ```
 
-##### 分库分表编排数据源构建方式
+##### Sharding DataSource Creation
 
 ```java
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
-##### 读写分离数据源构建方式
+##### Read-write splitting DataSource Creation
 
 ```java
     DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(yamlFile);
 ```
 
-### YAML格式特别说明
-!! 表示实现类
+### More detail on YAML Configuration
+!! :implementation class.
 
-[] 表示多个
+[] :multiple items.
 
-## 3.Spring命名空间配置
+## 3. The Spring namespace configuration
 
-### 引入maven依赖
+### Import the dependency of maven 
 
 ```xml
 <dependency>
@@ -396,7 +400,8 @@ orchestration: Etcd编排配置
 </dependency>
 ```
 
-### Zookeeper配置示例
+### The configuration example in Zookeeper
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -451,23 +456,25 @@ orchestration: Etcd编排配置
 </beans>
 ```
 
-### Zookeeper标签说明
+### The introduction for labels in Zookeeper
 
 #### \<reg:zookeeper/>
 
-| 属性名                           | 类型   | 是否必填 | 缺省值 | 描述                                                                                               |
-| ------------------------------- |:-------|:-------|:------|:---------------------------------------------------------------------------------------------------|
-| id                              | String | 是     |       | 注册中心在Spring容器中的主键                                                                         |
-| server-lists                    | String | 是     |       | 连接Zookeeper服务器的列表<br />包括IP地址和端口号<br />多个地址用逗号分隔<br />如: host1:2181,host2:2181 |
-| namespace                       | String | 是     |       | Zookeeper的命名空间                                                                                |
-| base-sleep-time-milliseconds    | int    | 否     | 1000  | 等待重试的间隔时间的初始值<br />单位：毫秒                                                               |
-| max-sleep-time-milliseconds     | int    | 否     | 3000  | 等待重试的间隔时间的最大值<br />单位：毫秒                                                               |
-| max-retries                     | int    | 否     | 3     | 最大重试次数                                                                                          |
-| session-timeout-milliseconds    | int    | 否     | 60000 | 会话超时时间<br />单位：毫秒                                                                           |
-| connection-timeout-milliseconds | int    | 否     | 15000 | 连接超时时间<br />单位：毫秒                                                                           |
-| digest                          | String | 否     |       | 连接Zookeeper的权限令牌<br />缺省为不需要权限验证                                                      |
+| Name                            | Type   | Required | Default | Info                                                                                            |
+| ------------------------------- |:-------|:-------  |:------- |:---------------------------------------------------------------------------------------------------|
+| id                              | String | Y        |         | The primary key of registry in Spring.                                                                         |
+| server-lists                    | String | Y        |         | The server list to connect to Zookeeper<br />Including IP and port<br />multiple servers separated by commas<br />e.g. host1:2181,host2:2181 |
+| namespace                       | String | Y        |         | The namespace inf Zookeeper.                                                                                |
+| base-sleep-time-milliseconds    | int    | N        | 1000    | The initial value of the interval for retry, unit: Millisecond.                                                              |
+| max-sleep-time-milliseconds     | int    | N        | 3000    | The max value of the interval for retry, unit: Millisecond.                                                           |
+| max-retries                     | int    | N        | 3       | The number of retry.                                                                                          |
+| session-timeout-milliseconds    | int    | N        | 60000   | Session timeout, unit: Millisecond.                                                                          |
+| connection-timeout-milliseconds | int    | N        | 15000   | Connection timeout, unit: Millisecond.                                                                           |
+| digest                          | String | N        |         | The permission token to connect to Zookeeper, and the default is no permission validation.                                                     |
 
-### Etcd配置示例
+
+### The config example in Etcd
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -522,23 +529,23 @@ orchestration: Etcd编排配置
 </beans>
 ```
 
-### Etcd标签说明
+### The introduction for labels in Etcd
 
 #### \<reg:etcd/>
 
-| 属性名                           | 类型   | 是否必填 | 缺省值 | 描述                                                                                               |
+| Name                            | Type   | Required | Default | Info                                                                                              |
 | ------------------------------- |:-------|:-------|:------|:---------------------------------------------------------------------------------------------------|
-| id                              | String | 是     |       | 注册中心在Spring容器中的主键                                                                           |
-| server-lists                    | String | 是     |       | 连接Etcd服务器的列表<br />包括IP地址和端口号<br />多个地址用逗号分隔<br />如: http://host1:2379,http://host2:2379 |
-| time-to-live-seconds            | int    | 否     | 60    | 临时节点存活时间<br />单位：秒                                                                         |
-| timeout-milliseconds            | int    | 否     | 500   | 每次请求的超时时间<br />单位：毫秒                                                                      |
-| max-retries                     | int    | 否     | 3     | 每次请求的最大重试次数                                                                                 |
-| retry-interval-milliseconds     | int    | 否     | 200   | 重试间隔时间<br />单位：毫秒                                                                           |
+| id                              | String | Y     |       | The primary key of registry in Spring.                                                                             |
+| server-lists                    | String | Y     |       | The server list to connect to Etcd<br />Including IP and port<br />multiple servers separated by commas<br />e.g. http://host1:2379,http://host2:2379 |
+| time-to-live-seconds            | int    | N     | 60    | The survival time of temporary nodes <br /> Unit: Second.                                                                        |
+| timeout-milliseconds            | int    | N     | 500   | Session timeout, unit: Millisecond.                                                                     |
+| max-retries                     | int    | N     | 3     | The number of retry.                                                                                |
+| retry-interval-milliseconds     | int    | N     | 200   | The interval of retry<br />Unit: Millisecond.                                                                         |
 
 
-## 4.Spring Boot配置
+## 4. The Spring Boot Configuration
 
-### 引入maven依赖
+### Import the dependency of maven
 
 ```xml
 <dependency>
@@ -548,9 +555,9 @@ orchestration: Etcd编排配置
 </dependency>
 ```
 
-### Zookeeper配置示例
+### The configuration example in Zookeeper
 
-#### 编排分库分表Spring Boot配置
+#### The introduction for orchestration configs of Sharding in Spring Boot
 
 ```yaml
 sharding.jdbc.datasource.names=ds,ds_0,ds_1
@@ -590,9 +597,9 @@ sharding.jdbc.config.orchestration.zookeeper.namespace=orchestration-spring-boot
 sharding.jdbc.config.orchestration.zookeeper.server-lists=localhost:2181
 ```
 
-### Etcd配置示例
+### The configuration example in Etcd
 
-#### 编排分库分表Spring Boot配置
+#### The introduction for orchestration configs of Read-write splitting in Spring Boot
 
 ```yaml
 sharding.jdbc.datasource.names=ds,ds_0,ds_1
@@ -631,5 +638,5 @@ sharding.jdbc.config.orchestration.overwrite=true
 sharding.jdbc.config.orchestration.etcd.server-lists=localhost:2379
 ```
 
-#### 编排分库分表Spring Boot配置项说明
-同[分库分表Yaml配置](#分库分表编排配置项说明)
+#### The introduction for orchestration configs of Sharding in Spring Boot
+Refer to The introduction for orchestration configs of Sharding in YAML.
