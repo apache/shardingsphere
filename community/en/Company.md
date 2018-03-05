@@ -1,6 +1,6 @@
 # Using companies (in chronological order)
 
-# E-commerce
+## E-commerce
 
 * [Dangdang](http://www.dangdang.com/)
 * [912688](http://www.912688.com/)
@@ -9,20 +9,21 @@
 * [nanyiku](http://www.nanyiku.com/)
 * [yiwugou](http://www.yiwugou.com/)
 
-# Information
+## Information
 
 * [sohu](http://ss.sohu.com/)
 * [auto ifeng](http://auto.ifeng.com/)
 * [tianya](http://www.tianya.cn/)
 
-# O2O
+## O2O
+
 * [dongfang789](http://www.dongfang789.com/)
 * [zhuanzhuan](http://www.zhuanzhuan.com/)
 * [ChinaRoad](https://660pp.com)
 * [Zhong Ce Auto Space](http://www.zcckj.com/)
 * [Shouqi](http://www.01zhuanche.com/)
 
-# Financial
+## Financial
 
 * [xiaoniu88](https://www.xiaoniu88.com/)
 * [HUAXIA FINANCE](https://www.huaxiafinance.com/)
@@ -30,18 +31,18 @@
 * [haier cash](https://www.haiercash.com/)
 * [51credit](http://www.51credit.com/)
 
-# SNS
+## SNS
 
 * [fotoplace](http://www.fotoplace.cc/)
 
-# Entertainment
+## Entertainment
 
 * [YY](http://www.yy.com/)
 * [Totoro live](http://www.tvlongmao.com)
 * [BBGame](http://www.bbgameonline.com/)
 * [500px](https://500px.me/)
 
-# Smart Device
+## Smart Device
 
 * [hiveview](http://www.hiveview.com/)
 * [41soo](http://www.41soo.com/)
@@ -49,7 +50,8 @@
 * [oppo](http://www.oppo.com/)
 
 
-# Enterprise
+## Enterprise
+
 * [ffzxnet](http://www.ffzxnet.com/)
 * [quandashi](http://www.quandashi.com/)
 * [baichang](http://www.sdbaichang.com/)
@@ -60,11 +62,11 @@
 * [Ruff](https://ruff.io/)
 * [19pay](http://www.19pay.com.cn/)
 
-# Government
+## Government
 
 * [Guangxi province territorial resources information center](http://z.gxdlr.gov.cn/)
 
-# Other
+## Other
 
 * [trawe](http://www.trawe.cn/)
 * [xiachufang](http://www.xiachufang.com/)

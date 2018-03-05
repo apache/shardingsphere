@@ -1,6 +1,6 @@
 # 采用公司 (按登记顺序)
 
-# 电子商务
+## 电子商务
 
 * [当当](http://www.dangdang.com/)
 * [搜好货](http://www.912688.com/)
@@ -9,20 +9,21 @@
 * [男衣库](http://www.nanyiku.com/)
 * [义乌购](http://www.yiwugou.com/)
 
-# 信息资讯
+## 信息资讯
 
 * [搜狐资讯](http://ss.sohu.com/)
 * [凤凰汽车](http://auto.ifeng.com/)
 * [天涯社区](http://www.tianya.cn/)
 
-# O2O
+## O2O
+
 * [东方车联](http://www.dongfang789.com/)
 * [转转](http://www.zhuanzhuan.com/)
 * [PP停车](https://660pp.com)
 * [中策车空间](http://www.zcckj.com/)
 * [首汽约车](http://www.01zhuanche.com/)
 
-# 互联网金融
+## 互联网金融
 
 * [小牛在线](https://www.xiaoniu88.com/)
 * [华夏信财](https://www.huaxiafinance.com/)
@@ -30,18 +31,18 @@
 * [海尔消费金融](https://www.haiercash.com/)
 * [我爱卡](http://www.51credit.com/)
 
-# 社交平台
+## 社交平台
 
 * [足记](http://www.fotoplace.cc/)
 
-# 文化娱乐
+## 文化娱乐
 
 * [欢聚时代YY](http://www.yy.com/)
 * [龙猫直播](http://www.tvlongmao.com)
 * [BBGame](http://www.bbgameonline.com/)
 * [视觉中国](https://500px.me/)
 
-# 智能硬件
+## 智能硬件
 
 * [家视天下](http://www.hiveview.com/)
 * [创安家](http://www.41soo.com/)
@@ -49,7 +50,8 @@
 * [oppo](http://www.oppo.com/)
 
 
-# 企业服务
+## 企业服务
+
 * [非凡之星](http://www.ffzxnet.com/)
 * [权大师](http://www.quandashi.com/)
 * [佰昌科技](http://www.sdbaichang.com/)
@@ -60,11 +62,11 @@
 * [上海南潮信息科技有限公司](https://ruff.io/)
 * [高阳捷迅](http://www.19pay.com.cn/)
 
-# 政府
+## 政府
 
 * [广西壮族自治区国土资源信息中心](http://z.gxdlr.gov.cn/)
 
-# 其他
+## 其他
 
 * [特微智能](http://www.trawe.cn/)
 * [下厨房](http://www.xiachufang.com/)
