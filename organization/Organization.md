@@ -25,9 +25,10 @@ In various situations the Sharding-JDBC shall hold a vote. These votes can happe
 
 # Committer
 
+* 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) Senior engineer, huimai365
+
 TODO
 
-# Discussion
+# IM
 
 * [Gitter](https://gitter.im/Sharding-JDBC/shardingjdbc)
-
