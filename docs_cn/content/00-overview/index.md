@@ -16,60 +16,112 @@ chapter = true
 [![GitHub forks](https://img.shields.io/github/forks/shardingjdbc/sharding-jdbc.svg?style=social&label=Fork)](https://github.com/shardingjdbc/sharding-jdbc/fork)&nbsp;
 [![GitHub watchers](https://img.shields.io/github/watchers/shardingjdbc/sharding-jdbc.svg?style=social&label=Watch)](https://github.com/shardingjdbc/sharding-jdbc/watchers)
 
-Sharding-JDBC是一个开源的适用于微服务的分布式数据访问基础类库，它始终以云原生的基础开发套件为目标。
+Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在Java的JDBC层以对业务应用零侵入的方式额外提供数据分片，读写分离，柔性事务和分布式治理能力。并在其基础上提供封装了MySQL协议的服务端版本，用于完成对异构语言的支持。
 
-Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。
+基于JDBC的客户端版本定位为轻量级Java框架，使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为增强版的JDBC驱动，完全兼容JDBC和各种ORM框架。
 
-Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功能，并初步实现了柔性事务。从2016年开源至今，在经历了整体架构的数次精炼以及稳定性打磨后，如今它已积累了足够的底蕴，相信可以成为开发者选择技术组件时的一个参考。
+封装了MySQL协议的服务端版本定位为透明化的MySQL代理端，可以使用任何兼容MySQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench等)操作数据，对DBA更加友好。
 
-[![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.svg?branch=master)](https://travis-ci.org/shardingjdbc/sharding-jdbc)
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
-[![Coverage Status](https://coveralls.io/repos/shardingjdbc/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/shardingjdbc/sharding-jdbc?branch=master)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
+[![GitHub release](https://img.shields.io/github/release/shardingjdbc/sharding-jdbc.svg)](https://github.com/shardingjdbc/sharding-jdbc/releases)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-jdbc-server-2.1.0-SNAPSHOT-assembly.tar.gz)
+
+[![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.png?branch=master)](https://travis-ci.org/shardingjdbc/sharding-jdbc)
+[![Coverage Status](https://codecov.io/github/shardingjdbc/sharding-jdbc/coverage.svg?branch=master)](https://codecov.io/github/shardingjdbc/sharding-jdbc?branch=master)
+[![Gitter](https://badges.gitter.im/Sharding-JDBC/shardingjdbc.svg)](https://gitter.im/Sharding-JDBC/shardingjdbc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
+[![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
 # 功能列表
 
-## 1. 分库分表
-* SQL解析功能完善，支持聚合，分组，排序，LIMIT，TOP等查询，并且支持级联表以及笛卡尔积的表查询
-* 支持内、外连接查询
-* 分片策略灵活，可支持=，BETWEEN，IN等多维度分片，也可支持多分片键共用，以及自定义分片策略
-* 基于Hint的强制分库分表路由
+## 1. 数据分片
+* 支持分库 + 分表
+* 支持聚合，分组，排序，分页，关联查询等复杂查询语句
+* 支持常见的DML，DDL，TCL以及数据库管理语句
+* 支持=，BETWEEN，IN的分片操作符
+* 自定义的灵活分片策略，支持多分片键共用，支持inline表达式
+* 基于Hint的强制路由
+* 支持分布式主键
 
 ## 2. 读写分离
-* 独立使用读写分离支持SQL透传
-* 一主多从的读写分离配置，可配合分库分表使用
-* 基于Hint的强制主库路由
+* 支持一主多从的读写分离
+* 支持同一线程内的数据一致性
+* 支持分库分表与读写分离共同使用
+* 支持基于Hint的强制主库路由
 
 ## 3. 柔性事务
 * 最大努力送达型事务
 * TCC型事务(TBD)
 
-## 4. 分布式主键
-* 统一的分布式基于时间序列的ID生成器
+## 4. 分布式治理
+* 支持配置中心，可动态修改配置
+* 支持客户端熔断和失效转移
+* 支持Open Tracing协议
 
-## 5. 兼容性
-* 可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC
-* 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等
-* 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL
+# 部署架构
 
-## 6. 灵活多样的配置
-* Java
-* YAML
-* Inline表达式
-* Spring命名空间
-* Spring boot starter
+## Sharding-JDBC-Driver
 
-## 7. 分布式治理能力 (2.0新功能)
+通过客户端分片的方式由应用程序直连数据库，减少二次转发成本，性能最高，适合线上程序使用。
 
-* 配置集中化与动态化，可支持数据源、表与分片策略的动态切换(2.0.0.M1)
-* 客户端的数据库治理，数据源失效自动切换(2.0.0.M2)
-* 基于Open Tracing协议的APM信息输出(2.0.0.M3)
+* 可适用于任何基于Java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC。
+* 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等。
+* 可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。
 
-# 交流与参与
+![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_brief_cn.png)
 
- - **官方群(目前已满，请加官方2群)：** 532576663（仅限于讨论与Sharding-JDBC相关的话题。我们希望您在入群前仔细阅读文档。并在入群后阅读公告以及修改群名片。谢谢合作）
- - **官方2群：** 459894627
- - **源码交流群：** 659205143（仅限于讨论与Sharding-JDBC源码实现相关的话题。我们欢迎您在这里与我们交流Sharding-JDBC的架构设计、代码实现以及未来线路规划。此群需要对Sharding-JDBC有先期了解。入群资格：请发布一篇关于Sharding-JDBC的源码分析的文章并将链接通过官方交流群发送给我们。）
- - 报告确定的bug，提交增强功能建议和提交补丁等，请阅读[如何进行贡献](/00-overview/contribution)。
- 
- **使用Sharding-JDBC的公司如果方便请留下公司+网址** https://github.com/shardingjdbc/sharding-jdbc/issues/234
+## Sharding-JDBC-Server
+
+通过代理服务器连接数据库(目前仅支持MySQL)，适合其他开发语言或MySQL客户端操作数据。
+
+* 向应用程序完全透明，可直接当做MySQL使用。
+* 可适用于任何兼容MySQL协议的的客户端。
+
+![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_brief_cn.png)
+
+## Sharding-JDBC-Sidecar(TBD)
+
+通过sidecar分片的方式，由IPC代替RPC，自动代理SQL分片，适合与Kubernetes或Mesos配合使用。
+
+![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_cn.png)
+
+# 快速入门
+
+## Sharding-JDBC-Driver
+
+### 引入maven依赖
+
+```xml
+<!-- 引入sharding-jdbc核心模块 -->
+<dependency>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-core</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+### 规则配置
+
+Sharding-JDBC可以通过`Java`，`YAML`，`Spring命名空间`和`Spring Boot Starter`四种方式配置，开发者可根据场景选择适合的配置方式。
+
+### 创建DataSource
+
+通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后即可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
+
+```java
+DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
+```
+
+## Sharding-JDBC-Server
+
+### 规则配置
+
+编辑`${sharding-jdbc-server}\conf\sharding-config.yaml`。配置规则同Sharding-JDBC-Driver的`YAML`格式。 
+
+### 启动服务
+
+``` shell
+${sharding-jdbc-server}\bin\start.sh ${port}
+```
