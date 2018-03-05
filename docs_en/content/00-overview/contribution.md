@@ -3,7 +3,7 @@ toc = true
 date = "2017-04-12T16:06:17+08:00"
 title = "Contribute Code"
 weight = 4
-prev = "/00-overview/company/"
+prev = "/00-overview/news/"
 next = "/01-start"
 
 +++
