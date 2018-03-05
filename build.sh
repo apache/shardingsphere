@@ -20,3 +20,17 @@ cd docs_1.x
 hugo
 cd ..
 mv docs_1.x/public target/docs_1.x
+
+mkdir target/community
+
+cd community/cn
+hugo
+cd ..
+cd ..
+mv community/cn/public target/community/cn
+
+cd community/en
+hugo
+cd ..
+cd ..
+mv community/en/public target/community/en
