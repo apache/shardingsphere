@@ -42,11 +42,11 @@
 
 * [男衣库](http://www.nanyiku.com/)
 
-* [义乌购] (http://www.yiwugou.com/)
+* [义乌购](http://www.yiwugou.com/)
 
 * [凤凰汽车](http://auto.ifeng.com/)
 
-* [搜狐资讯] (http://ss.sohu.com/)
+* [搜狐资讯](http://ss.sohu.com/)
 
 * [客如云](http://www.keruyun.com/)
 
