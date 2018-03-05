@@ -16,62 +16,108 @@ chapter = true
 [![GitHub forks](https://img.shields.io/github/forks/shardingjdbc/sharding-jdbc.svg?style=social&label=Fork)](https://github.com/shardingjdbc/sharding-jdbc/fork)&nbsp;
 [![GitHub watchers](https://img.shields.io/github/watchers/shardingjdbc/sharding-jdbc.svg?style=social&label=Watch)](https://github.com/shardingjdbc/sharding-jdbc/watchers)
 
-Sharding-JDBC is an open source and micro-service-oriented distributed database base access library, which is always targeted at the cloud-native base development suite.
+Sharding-JDBC: A data sharding, read-write splitting, BASE transaction and database orchestration middleware. It provides maximum compatibilities for applications by JDBC and MySQL protocol.
 
-Sharding-JDBC is a lightweight java framework, using the java-jdbc-client to connect database, providing services all-in-jar, no middle layer is used, no other dependence, DBA also don't need to change the original dev mode, can be understood as a enhanced version of the JDBC driver, migrate legacy code almost zero costs.
-
-Sharding-JDBC fully implements sharding databases and tables, read-write splitting, distributed primary key, and B.A.S.E transaction. Since 2016, it has accumulated enough inside information after several refinements and stability polishing of the overall architecture, we believe that it can be a reference for developers to choose technology components.
-
-[![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.svg?branch=master)](https://travis-ci.org/shardingjdbc/sharding-jdbc)
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
-[![Coverage Status](https://coveralls.io/repos/shardingjdbc/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/shardingjdbc/sharding-jdbc?branch=master)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-# Feature List
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
+[![GitHub release](https://img.shields.io/github/release/shardingjdbc/sharding-jdbc.svg)](https://github.com/shardingjdbc/sharding-jdbc/releases)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-jdbc-server-2.1.0-SNAPSHOT-assembly.tar.gz)
 
-## 1. Sharding Databases And Tables
-* Perfect SQL parsing，which supports aggregation, grouping, sorting, LIMIT, TOP and other queries, and supports cascading tables and Cartesian product table queries
-* Supports Inner Join and Outer Join
-* Flexible sharding strategy, which support =, BETWEEN, IN, multiple sharding-columns and customized sharding strategy
-* Supports Hint-based sharding
+[![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.png?branch=master)](https://travis-ci.org/shardingjdbc/sharding-jdbc)
+[![Coverage Status](https://codecov.io/github/shardingjdbc/sharding-jdbc/coverage.svg?branch=master)](https://codecov.io/github/shardingjdbc/sharding-jdbc?branch=master)
+[![Gitter](https://badges.gitter.im/Sharding-JDBC/shardingjdbc.svg)](https://gitter.im/Sharding-JDBC/shardingjdbc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
+[![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
+
+# Features
+
+## 1. Data sharding
+* Both databases and tables sharding supported.
+* Standard aggregation functions, GROUP BY, ORDER BY, LIMIT and JOIN DQL supported.
+* Standard DML, DDL, TCL and database administrator command supported.
+* Sharding operator `=`, `BETWEEN` and `IN` supported.
+* Sharding algorithm customization and inline expression supported.
+* Route by hint supported.
+* Distributed sequence supported.
 
 ## 2. Read-write splitting
-* Independent use of read and write separation support SQL transmission
-* Support one master and multiple slaves for the read and write splitting
-* Hint-based forced master routing
+* Multiple slaves replica supported. 
+* Data consistency guarantee in same thread supported.
+* Mix read-write splitting and data sharding supported.
+* Route by hint supported.
 
-## 3. B.A.S.E Transaction
-* Best Effort Delivery
-* Try Confirm Cancel(TBD)
+## 3. BASE Transaction
+* Best efforts delivery transaction supported.
+* Try confirm cancel transaction (TBD).
 
-## 4. Distributed Primary Key
-* Built-in distributed primary key generator
-* Customized distributed primary key generator
-* Compatibility with JDBC
+## 4. Orchestration
+* Configuration center supported, can refresh dynamically.
+* Circuit breaker supported.
+* Open tracing supported.
 
-## 5. Compatibility
-* Suitable for any java ORM frameworks, such as: JPA, Hibernate, Mybatis or JDBC directly
-* Suitable for any database connection pool, such as: DBCP, C3P0, BoneCP, etc
-* In theory, any database that implements the JDBC specification can be supported.Support MySQL, Oracle, SQLServer and PostgreSQL
+# Architecture
 
-## 6. Flexible And Diverse Configurations
-* Java
-* YAML
-* Inline Expression
-* Spring Namespace
-* Spring boot starter
+## Sharding-JDBC-Driver
 
-## 7. Distributed Governance Capability(2.0 New Feature)
+Use JDBC connect databases without redirect cost for java application, best performance for production.
 
-* Configuration is centralized and dynamic，support dynamically switching of datasources, tables and sharding policies(2.0.0.M1)
-* Client database governance, datasource automatic switching when failure(2.0.0.M2)
-* Information Output based on Open Tracing protocol(2.0.0.M3)
+* ORM compatible. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
+* Connection-pool compatible. DBCP, C3P0, BoneCP, Druid supported.
+* Multi SQL-based databases compatible. Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
 
-# Communication And Participation
+![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_brief_en.png)
 
- - **Please Join Our QQ group(it’s full now, please join QQ group2)：** 532576663(Only discuss topics related to Sharding-JDBC. We want you to read the document carefully before entering the group. Read the bulletin and modify group business CARDS after entering the group. Thank you for your cooperation)
- - **QQ group2：** 459894627
- - **Source Code Communicate QQ group：** 659205143(Only discuss topics related to Sharding-JDBC source implementation. We welcome you here to communicate with us about Sharding-JDBC architecture design, code implementation, and future line planning. This group needs to have an early understanding of Sharding-JDBC. Membership: please post an article on the source code analysis for Sharding-JDBC and send it to us through official communication.)
- - Report identified bugs, submit enhancements and submit patches, etc.，please read [how do you contribute](/00-overview/contribution).
- 
- **If you use sharding-JDBC, please leave the company and website at your convenience.** https://github.com/shardingjdbc/sharding-jdbc/issues/234
+## Sharding-JDBC-Server
+
+Database router. Deploy as a stateless server, support MySQL protocol for now.
+
+* Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
+* Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.
+
+![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_brief_en.png)
+
+## Sharding-JDBC-Sidecar(TBD)
+
+Use sidecar to connect databases, best for Kubernetes or Mesos together.
+
+![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_en.png)
+
+# Quick Start
+
+## Sharding-JDBC-Driver
+
+### Add maven dependency
+
+```xml
+<!-- import sharding-jdbc core -->
+<dependency>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-core</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+### Configure sharding rule
+
+Sharding-JDBC support 4 types for sharding rule configuration, they are `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. Developers can choose any one for best suitable situation.
+
+### Create DataSource
+
+Use ShardingDataSourceFactory to create ShardingDataSource, which is a standard JDBC DataSource. Then developers can use it for raw JDBC, JPA, MyBatis or Other JDBC based ORM frameworks.
+
+```java
+DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
+```
+
+## Sharding-JDBC-Server
+
+### Configure sharding rule
+
+Edit `${sharding-jdbc-server}\conf\sharding-config.yaml`. Same format with Sharding-JDBC-Driver's `YAML` configuration. 
+
+### Start server
+
+``` shell
+${sharding-jdbc-server}\bin\start.sh ${port}
+```
