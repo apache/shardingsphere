@@ -8,23 +8,23 @@ next = "/03-design"
 
 +++
 
-## 简介
+## Introduction
 
-Sharding-JDBC-Server是基于Sharding-JDBC基础上增加了针对MySQL协议的代理端，对运维以及调试更加友好，可以使用任何兼容MySQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench等)连接Sharding-JDBC-Server以查询和操作数据。
+Sharding-JDBC-Server is the MySQL protocol agent based on Sharding-JDBC, and more friendly for management and debugging. You can use any clients compatible with MySQL protocol, e.g. MySQL Command Client, MySQL Workbench to connect to Sharding-JDBC-Server to query and modify data.
 
-简单来说，Sharding-JDBC-Server是一个可以分片，读写分离以及数据治理的标准的MySQL(未来也可能推出兼容其他数据库的代理端)。他是星散在后端的繁多的MySQL的门面，它既是控制节点，也是管理节点，还是路由节点。
+In brief, Sharding-JDBC-Server is a standard MySQL (Other databases might be included in future) that also supports Sharding, Read-write-splitting, and orchestration and is also like the management interface for all back-end MySQL Sharding. In fact, it is the control node, the management node, and the routing node.
 
-相对于通过客户端分片的方式的Sharding-JDBC，Sharding-JDBC-Server更加适合运维以及调试时查询数据，可以轻松结合各种MySQL客户端使用。Sharding-JDBC由于减少二次转发成本，性能最高，适合线上程序使用。
+Sharding-JDBC-Server is suitable for uses to manage and debug, and can be connected easily by various MySQL clients, and Sharding-JDBC is more suitable for online programs for it reduces the cost of secondary transmit.
 
-## 使用方法
+## Usage
 
-1. 下载Sharding-JDBC-Server的最新发行版，地址:https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-jdbc-server-2.1.0-SNAPSHOT-assembly-v4.tar.gz
-2. 解压缩后修改conf/sharding-config.yaml文件，进行分片规则配置. 配置方式同[Sharding-JDBC的YAML配置](/02-guide/configuration/)。
-3. linux操作系统请运行bin/start.sh，windowa操作系统请运行bin/start.bat启动Sharding-JDBC-Server。
-4. 使用任何MySQL的客户端连接。如: mysql -u root -h 127.0.0.1 -P3307
+1. Download the latest version of Sharding-JDBC-Server from https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-jdbc-server-2.1.0-SNAPSHOT-assembly-v4.tar.gz
+2. Modify the conf/sharding-config.yaml file after decompression, and configure the sharding rule. Refer to [The YAML configuration in Sharding-JDBC](/02-guide/configuration/)。
+3. Run bin/start.sh in Linux, or bin/start.bat in Windows to start Sharding-JDBC-Server.
+4. Connect to it by means of any client tools, e.g. mysql -u root -h 127.0.0.1 -P3307
 
-## 注意事项
+## Notices
 
-1. Sharding-JDBC-Server默认使用3307端口，可以通过启动脚本追加一个参数作为启动端口号。如: bin/start.sh 3308
-2. Sharding-JDBC-Server目前只有一个逻辑数据源，名称为`sharding-db`。
-3. Sharding-JDBC-Server目前并无授权功能，启动时可用任何用户名和密码登录。
+1. The default port of Sharding-JDBC-Server is 3307, and can be changed by passing the port parameter to the startup script, e.g. bin/start.sh 3308.
+2. There is only one logical data source in Sharding-JDBC-Server, named `sharding-db`.
+3. Currently, Sharding-JDBC-Server does not support authorization, therefore you can login with any username and password at startup.
