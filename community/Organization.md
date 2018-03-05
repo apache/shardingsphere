@@ -1,8 +1,6 @@
 # Sharding-JDBC Organization
 
-## Organization members
-
-# Project Management Committee (PMC)
+## Project Management Committee (PMC)
 As a member of PMC, you **must** contribute and maintain the features or modules, and also take part in project management and building the eco-system. Because of that, you have following rights:
 1. In charged with responsibility and governance for all projects/repositories in Sharding-JDBC organization.
 1. Edit rights for all repositories.
@@ -25,7 +23,15 @@ In various situations the Sharding-JDBC shall hold a vote. These votes can happe
 
 # Committer
 
+* 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java Expert, Antfin
+
+* 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) Technical manager, Kangda
+
+* 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster) Senior engineer, Hangzhou Enniu Network Technology Company Limited
+
 * 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) Senior engineer, huimai365
+
+* 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT Manager, ZeDaYiSheng
 
 TODO
 
