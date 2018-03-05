@@ -89,149 +89,18 @@ Use sidecar to connect databases, best for Kubernetes or Mesos together.
     <artifactId>sharding-jdbc-core</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
-
-<!-- import other module if need -->
 ```
 
 ### Rule configuration
 
-```java
-    Map<String, DataSource> dataSourceMap = new HashMap<>();
-    
-    BasicDataSource dataSource1 = new BasicDataSource();
-    dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
-    dataSource1.setUrl("jdbc:mysql://localhost:3306/ds_0");
-    dataSource1.setUsername("root");
-    dataSource1.setPassword("");
-    dataSourceMap.put("ds_0", dataSource1);
-    
-    BasicDataSource dataSource2 = new BasicDataSource();
-    dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
-    dataSource2.setUrl("jdbc:mysql://localhost:3306/ds_1");
-    dataSource2.setUsername("root");
-    dataSource2.setPassword("");
-    dataSourceMap.put("ds_1", dataSource2);
-    
-    TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-    orderTableRuleConfig.setLogicTable("t_order");
-    orderTableRuleConfig.setActualDataNodes("ds_${0..1}.t_order_${[0, 1]}");
-    
-    orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
-    orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
-    
-    ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-    shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-    
-    // config order_item table rule...
-    
-    DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
-```
+Sharding-JDBC support 4 types for sharding rule configuration, they are Java, YAML, Spring namespace and Spring boot starter. Developers can choose any one for best suitable situation.
 
-Or use yaml to configure:
+### Create DataSource
 
-```yaml
-dataSources:
-  ds_0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_0
-    username: root
-    password: 
-  ds_1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_1
-    username: root
-    password: 
-
-shardingRule:
-  tables:
-    t_order: 
-      actualDataNodes: ds_${0..1}.t_order_${0..1}
-      databaseStrategy: 
-        inline:
-          shardingColumn: user_id
-          algorithmExpression: ds_${user_id % 2}
-      tableStrategy: 
-        inline:
-          shardingColumn: order_id
-          algorithmExpression: t_order_${order_id % 2}
-    t_order_item: 
-      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-      databaseStrategy: 
-        inline:
-          shardingColumn: user_id
-          algorithmExpression: ds_${user_id % 2}
-      tableStrategy: 
-        inline:
-          shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 2}  
-```
-
-```java
-    DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
-```
-
-### Use raw JDBC API
+Use ShardingDataSourceFactory to create ShardingDataSource, which is a standard JDBC DataSource. Then developers can use it for raw JDBC, JPA, MyBatis or Other JDBC based ORM frameworks.
 
 ```java
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
-String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
-try (
-        Connection conn = dataSource.getConnection();
-        PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-    preparedStatement.setInt(1, 10);
-    preparedStatement.setInt(2, 1001);
-    try (ResultSet rs = preparedStatement.executeQuery()) {
-        while(rs.next()) {
-            System.out.println(rs.getInt(1));
-            System.out.println(rs.getInt(2));
-        }
-    }
-}
-```
-
-### Use spring namespace
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding" 
-    xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                        http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://www.springframework.org/schema/context 
-                        http://www.springframework.org/schema/context/spring-context.xsd 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
-                        ">
-    <context:property-placeholder location="classpath:conf/conf.properties" ignore-unresolvable="true" />
-    
-    <bean id="ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_0" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
-    </bean>
-    <bean id="ds_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_1" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
-    </bean>
-    
-    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_${user_id % 2}" />
-    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 2}" />
-    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
-    
-    <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="ds_0,ds_1">
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />
-            </sharding:table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
-</beans>
 ```
 
 ## Sharding-JDBC-Server
