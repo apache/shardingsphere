@@ -29,5 +29,5 @@ TODO
 
 # Discussion
 
-* Gitter(https://gitter.im/Sharding-JDBC/shardingjdbc)
+* [Gitter](https://gitter.im/Sharding-JDBC/shardingjdbc)
 
