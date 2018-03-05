@@ -91,7 +91,7 @@ Use sidecar to connect databases, best for Kubernetes or Mesos together.
 </dependency>
 ```
 
-### Rule configuration
+### Configure sharding rule
 
 Sharding-JDBC support 4 types for sharding rule configuration, they are Java, YAML, Spring namespace and Spring boot starter. Developers can choose any one for best suitable situation.
 
@@ -105,7 +105,7 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap
 
 ## Sharding-JDBC-Server
 
-### Rule configuration
+### Configure sharding rule
 
 Edit `${sharding-jdbc-server}\conf\sharding-config.yaml`. Same format with Sharding-JDBC-Driver's `yaml` configuration. 
 
