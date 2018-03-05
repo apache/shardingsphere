@@ -96,7 +96,7 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 
 ### 规则配置
 
-Sharding-JDBC可以通过Java，YAML，Spring命名空间和Spring Boot Starter四种方式配置，开发者可根据场景选择适合的配置方式。
+Sharding-JDBC可以通过`Java`，`YAML`，`Spring命名空间`和`Spring Boot Starter`四种方式配置，开发者可根据场景选择适合的配置方式。
 
 ### 创建DataSource
 
