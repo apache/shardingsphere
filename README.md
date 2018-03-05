@@ -59,7 +59,7 @@ Use JDBC connect databases without redirect cost for java application, best perf
 * Connection-pool compatible. DBCP, C3P0, BoneCP, Druid supported.
 * Multi SQL-based databases compatible. Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
 
-![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_architecture_en.png)
+![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_brief_en.png)
 
 ## Sharding-JDBC-Server
 
@@ -68,13 +68,13 @@ Database router. Deploy as a stateless server, support MySQL protocol for now.
 * Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
 * Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.
 
-![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_architecture_en.png)
+![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_brief_en.png)
 
 ## Sharding-JDBC-Sidecar(TBD)
 
 Use sidecar to connect databases, best for Kubernetes or Mesos together.
 
-![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_architecture_en.png)
+![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_en.png)
 
 # Quick Start
 

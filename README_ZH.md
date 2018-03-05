@@ -62,7 +62,7 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 * 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等。
 * 可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。
 
-![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_architecture_cn.png)
+![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_brief_cn.png)
 
 ## Sharding-JDBC-Server
 
@@ -71,13 +71,13 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 * 向应用程序完全透明，可直接当做MySQL使用。
 * 可适用于任何兼容MySQL协议的的客户端。
 
-![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_architecture_cn.png)
+![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_brief_cn.png)
 
 ## Sharding-JDBC-Sidecar(TBD)
 
 通过sidecar分片的方式，由IPC代替RPC，自动代理SQL分片，适合与Kubernetes或Mesos配合使用。
 
-![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_architecture_cn.png)
+![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_cn.png)
 
 # 快速入门
 
