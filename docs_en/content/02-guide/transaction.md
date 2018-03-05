@@ -1,112 +1,114 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "事务支持"
+title = "Transaction Support"
 weight = 9
 prev = "/02-guide/key-generator/"
 next = "/02-guide/subquery/"
 
 +++
 
-Sharding-JDBC由于性能方面的考量，决定不支持强一致性分布式事务。我们已明确规划线路图，未来会支持最终一致性的柔性事务。
+Considering the performance, sharding-jdbc decides not to support strong consistency distributed transactions. In the future, it will support the B.A.S.E transaction which makes the final result of all the distributed databases consistent. Currently, in addition to supporting weak XA transactions, we have been able to provide the Best-Effort-Delivery transaction, one of the B.A.S.E transaction.
 
-目前最大努力送达型柔性事务已开发完成。
+Notices:
 
-如果不使用柔性事务，也会自动包含弱XA事务支持，有以下几点说明：
+* Support the none-cross-database transactions, e.g. table sharding without database sharding, or database sharding with the queries routed in the same database.
 
-* 完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。
+* Support the exception handling for the cross-database transactions due to logical exceptions. For example, in the same transaction, you want to update two databases, Sharding-JDBC will rollback all transactions for all two database when a null pointer is thrown after updating.
 
-* 完全支持因逻辑异常导致的跨库事务。例如：同一事务中，跨两个库更新。更新完毕后，抛出空指针，则两个库的内容都能回滚。
+* Do not support the exception handling for the cross-database transactions due to network or hardware exceptions. For example, in the same transaction, you want to update two databases, Sharding-JDBC will only commit the transaction for second database when the first database is dead after updating.
 
-* 不支持因网络、硬件异常导致的跨库事务。例如：同一事务中，跨两个库更新，更新完毕后、未提交之前，第一个库死机，则只有第二个库数据提交。
+# The B.A.S.E transaction
 
-# 柔性事务
+## The Best-Effort-Delivery transaction
 
-## 最大努力送达型
+### The concept
 
-### 概念
-在分布式数据库的场景下，相信对于该数据库的操作最终一定可以成功，所以通过最大努力反复尝试送达操作。
+For the distributed databases, we believe the operations for all the databases will succeed eventually, so the system will keep on trying to send the operations to its corresponding database.
 
-### 架构图
-![最大努力送达型事务](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture-soft-transaction-bed.png)
+### The structure diagram 
+![The Best-Effort-Delivery transaction](http://ovfotjrsi.bkt.clouddn.com/docs/img/architecture-soft-transaction-bed.png)
 
-### 适用场景
+### The usage scenario
 
-* 根据主键删除数据。
-* 更新记录永久状态，如更新通知送达状态。
+* To delete records by the primary key.
+* Permanently update the record's status, e.g. to update notification service status.
 
-### 使用限制
-使用最大努力送达型柔性事务的SQL需要满足幂等性。
+### The usage limit
 
-* INSERT语句要求必须包含主键，且不能是自增主键。
-* UPDATE语句要求幂等，不能是UPDATE xxx SET x=x+1
-* DELETE语句无要求。
+It is necessary to satisfy the idempotent requirement when the B.A.S.E transaction is used.
 
-### 开发指南
-* sharding-jdbc-transaction完全基于java开发，直接提供jar包，可直接使用maven导入坐标即可使用。
-* 为了保证事务不丢失，sharding-jdbc-transaction需要提供数据库存储事务日志，配置方法可参见事务管理器配置项。
-* 由于柔性事务采用异步尝试，需要部署独立的作业和Zookeeper。sharding-jdbc-transaction采用elastic-job实现的sharding-jdbc-transaction-async-job，通过简单配置即可启动高可用作业异步送达柔性事务，启动脚本为start.sh。
-* 为了便于开发，sharding-jdbc-transaction提供了基于内存的事务日志存储器和内嵌异步作业。
+* The INSERT statement must contain the column of primary key which can not be auto_increment.
+* The UPDATE statement must satisfy the idempotent requirement, and UPDATE xxx SET x=x+1 is not supported.
+* All the DELETE statements are supported。
 
-### 开发示例
+### The develop guide
+
+* For the sharding-jdbc-transaction is developed by using JAVA and can be directly used in the form of jar package, so that you can use the Maven to import coordinates to use it.
+* In order to ensure that the transactions are not lost, sharding-jdbc-transaction needs to store the log of all the transactions, which can be configured in the transaction manager configurations.
+* You need to deploy discrete jobs and Zookeeper because of the asynchronous way of the B.A.S.E transactions. To simply those operations, we develop sharding-jdbc-transaction-async-job for sharding-jdbc-transaction, so you can create the high-available jobs to asynchronously deliver the B.A.S.E transactions. The startup script is start.sh.
+* To help users develop easily, sharding-jdb-transaction provides memory-based transaction log storage and embedded asynchronous jobs.
+
+### The develop example
 
 ```java
-    // 1. 配置SoftTransactionConfiguration
+    // 1. To configure SoftTransactionConfiguration
     SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
     transactionConfig.setXXX();
     
-    // 2. 初始化SoftTransactionManager
+    // 2. To initialize SoftTransactionManager
     SoftTransactionManager transactionManager = new SoftTransactionManager(transactionConfig);
     transactionManager.init();
     
-    // 3. 获取BEDSoftTransaction
+    // 3. To get BEDSoftTransaction
     BEDSoftTransaction transaction = (BEDSoftTransaction) transactionManager.getTransaction(SoftTransactionType.BestEffortsDelivery);
     
-    // 4. 开启事务
+    // 4. To start a transaction
     transaction.begin(connection);
     
-    // 5. 执行JDBC
+    // 5. To execute JDBC
     /* 
         codes here
     */
     * 
-    // 6.关闭事务
+    // 6. To close the connection
     transaction.end();
 ```
 
-### 事务管理器配置项
+### The configuration of transaction manager 
 
-### SoftTransactionConfiguration配置
-用于配置事务管理器。
+### SoftTransactionConfiguration Configuration
+For configuring transaction manager.
 
-
-| *名称*                              | *类型*                                     | *必填* | *默认值*   | *说明*                                                                                       |
+| *Name*                              | *Type*                                     | *Required* | *Default*   | *Info*                                                                                       |
 | ---------------------------------- | ------------------------------------------ | ------ | --------- | ------------------------------------------------------------------------------------------- |
-| shardingDataSource                 | ShardingDataSource                         | 是     |           | 事务管理器管理的数据源                                                                         |
-| syncMaxDeliveryTryTimes            | int                                        | 否     | 3         | 同步的事务送达的最大尝试次数                                                                    |
-| storageType                        | enum                                       | 否     | RDB       | 事务日志存储类型。可选值: RDB,MEMORY。使用RDB类型将自动建表                                       |
-| transactionLogDataSource           | DataSource                                 | 否     | null      | 存储事务日志的数据源，如果storageType为RDB则必填                                                 |
-| bestEffortsDeliveryJobConfiguration| NestedBestEffortsDeliveryJobConfiguration  | 否     | null      | 最大努力送达型内嵌异步作业配置对象。如需使用，请参考NestedBestEffortsDeliveryJobConfiguration配置 |
+| shardingDataSource                 | ShardingDataSource                         | Y     |           | The data source of transaction manager                                                                         |
+| syncMaxDeliveryTryTimes            | int                                        | N     | 3         | The maximum number of attempts to send transactions.                                                                 |
+| storageType                        | enum                                       | N     | RDB       | The storage type of transaction logs, The options are RDB(creating tables automatically) or MEMORY.                                       |
+| transactionLogDataSource           | DataSource                                 | N     | null      | The data source to store the transaction log. if storageType is RDB, this item is required.                                              |
+| bestEffortsDeliveryJobConfiguration| NestedBestEffortsDeliveryJobConfiguration  | N     | null      | The config of embedded asynchronous jobs for the Best-Effort-Delivery transaction, please refer to NestedBestEffortsDeliveryJobConfiguration.|
 
-### NestedBestEffortsDeliveryJobConfiguration配置 (仅开发环境)
-用于配置内嵌的异步作业，仅用于开发环境。生产环境应使用独立部署的作业版本。
+### NestedBestEffortsDeliveryJobConfiguration Configuration (Only for developing environment)
 
-| *名称*                              | *类型*                       | *必填* | *默认值*                    | *说明*                                                         |
+It is for configuring embedded asynchronous jobs for development environment only. The production environment should adopt the deployed discrete jobs.
+
+| *Name*                              | *Type*                                     | *Required* | *Default*   | *Info*                                                            |
 | ---------------------------------- | --------------------------- | ------ | ------------------------ | --------------------------------------------------------------- |
-| zookeeperPort                      | int                         | 否     | 4181                     | 内嵌的注册中心端口号                                               |
-| zookeeperDataDir                   | String                      | 否     | target/test_zk_data/nano/| 内嵌的注册中心的数据存放目录                                        |
-| asyncMaxDeliveryTryTimes           | int                         | 否     | 3                        | 异步的事务送达的最大尝试次数                                        |
-| asyncMaxDeliveryTryDelayMillis     | long                        | 否     | 60000                    | 执行异步送达事务的延迟毫秒数，早于此间隔时间的入库事务才会被异步作业执行  |
+| zookeeperPort                      | int                         | N     | 4181                     | The port of the embedded registry.                                               |
+| zookeeperDataDir                   | String                      | N     | target/test_zk_data/nano/| The data directory of the embedded registry.                                      |
+| asyncMaxDeliveryTryTimes           | int                         | N     | 3                        | The maximum number of attempts to send transactions asynchronously.                                       |
+| asyncMaxDeliveryTryDelayMillis     | long                        | N     | 60000                    | The number of delayed milliseconds to execute asynchronous transactions. The transactions whose creating time earlier than this value will be executed by asynchronous jobs.  |
 
-### 独立部署作业指南
-* 部署用于存储事务日志的数据库。
-* 部署用于异步作业使用的Zookeeper。
-* 配置YAML文件,参照示例。
-* 下载并解压文件sharding-jdbc-transaction-async-job-$VERSION.tar，通过start.sh脚本启动异步作业。
+### The operations to deploy the discrete jobs
 
-### 异步作业YAML文件配置
+* Create database to store transactions logs.
+* Deploy Zookeeper for asynchronous jobs.
+* Configure YAML.
+* Download and extract sharding-jdbc-transaction-async-job-$VERSION.tar, and start asynchronous jobs by running start.sh.
+
+### The YAML configuration of asynchronous jobs
 ```yaml
-#目标数据库的数据源.
+# The target data source.
 targetDataSource:
   ds_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
@@ -119,7 +121,7 @@ targetDataSource:
     username: root
     password:
 
-#事务日志的数据源.
+# The data source of transaction logs.
 transactionLogDataSource:
   ds_trans: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
@@ -127,41 +129,41 @@ transactionLogDataSource:
     username: root
     password:
 
-#注册中心配置
+# The registry configuration
 zkConfig:
-  #注册中心的连接地址
+  # The url of the registry
   connectionString: localhost:2181
   
-  #作业的命名空间
+  # The namespace of jobs
   namespace: Best-Efforts-Delivery-Job
   
-  #注册中心的等待重试的间隔时间的初始值
+  # The inital value of the retry interval to connect to the registry.
   baseSleepTimeMilliseconds: 1000
   
-  #注册中心的等待重试的间隔时间的最大值
+  # The max value of the retry interval to connect to the registry.
   maxSleepTimeMilliseconds: 3000
   
-  #注册中心的最大重试次数
+  # The max number of retry to connect to the registry.
   maxRetries: 3
 
-#作业配置
+# The job configuration
 jobConfig:
-  #作业名称
+  # The job name
   name: bestEffortsDeliveryJob
   
-  #触发作业的cron表达式
+  # The cron expression to trigger jobs
   cron: 0/5 * * * * ?
   
-  #每次作业获取的事务日志最大数量
+  # The max number of transaction logs for each assignment.
   transactionLogFetchDataCount: 100
   
-  #事务送达的最大尝试次数.
+  # The max number of retry to send the transactions.
   maxDeliveryTryTimes: 3
   
-  #执行送达事务的延迟毫秒数,早于此间隔时间的入库事务才会被作业执行
+  # The number of delayed milliseconds to execute asynchronous transactions. The transactions whose creating time earlier than this value will be executed by asynchronous jobs.
   maxDeliveryTryDelayMillis: 60000
 ```
 
-## TCC型
-开发中...
+## The TCC transaction
+Waiting...
 
