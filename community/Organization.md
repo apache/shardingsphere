@@ -33,8 +33,6 @@ In various situations the Sharding-JDBC shall hold a vote. These votes can happe
 
 * 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT Manager, ZeDaYiSheng
 
-TODO
-
 # IM
 
 * [Gitter](https://gitter.im/Sharding-JDBC/shardingjdbc)
