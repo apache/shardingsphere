@@ -3,7 +3,7 @@ date = "2018-03-05T16:06:17+08:00"
 title = "How to contribute"
 weight = 0
 prev = "/00-organization/"
-next = "/02-standard/"
+next = "/02-convention/"
 chapter = true
 +++
 
@@ -39,7 +39,7 @@ You can report a bug, submit a new feature enhancement recommendation, or commit
  - Reply a deadline message to pickup this issue. 
  - Find a mentor in [Core developers list](/00-organization/), he will give you feedback for design and implements.
  - Fork to your github repo and begin to work.
- - Please follow Sharding-JDBC's [Development conventions](/02-standard/), and complete check before pull request submit.
+ - Please follow Sharding-JDBC's [Development conventions](/02-convention/), and complete check before pull request submit.
  - Submit a pull request to dev branch when finished, please do not submit pull request to master.
  - Mentor will do code review and discuss some details, include design, implement, performance and code style. Code will be merged until mentor accepted.
  - Finally, congratulations that you have become the official contributor for Sharding-JDBC!

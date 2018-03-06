@@ -2,7 +2,7 @@
 date = "2018-03-05T16:06:17+08:00"
 title = "Using companies"
 weight = 0
-prev = "/01-contribute/"
+prev = "/02-convention/"
 next = "/00-organization/"
 chapter = true
 +++
@@ -11,7 +11,7 @@ chapter = true
 
 Please leave your company's info when using Sharding-JDBC.
 
-Please register by company + homepage + company type [here](https://github.com/shardingjdbc/sharding-jdbc/issues/234).
+Register by `company` + `homepage` + `company type` [here](https://github.com/shardingjdbc/sharding-jdbc/issues/234).
 
 ## E-commerce
 

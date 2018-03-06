@@ -2,7 +2,7 @@
 date = "2018-03-05T16:06:17+08:00"
 title = "采用公司"
 weight = 0
-prev = "/02-standard/"
+prev = "/02-convention/"
 next = "/00-organization/"
 chapter = true
 +++
@@ -11,7 +11,7 @@ chapter = true
 
 欢迎采用了Sharding-JDBC的公司再此登记，您的支持是我们最大的动力。
 
-请按公司名+首页+公司类型的格式在[此处](https://github.com/shardingjdbc/sharding-jdbc/issues/234)登记。
+请按`公司名` + `首页` + `公司类型`的格式在[此处](https://github.com/shardingjdbc/sharding-jdbc/issues/234)登记。
 
 ## 电子商务
 
