@@ -1,7 +1,7 @@
 +++
 icon = "<b>1. </b>"
 date = "2016-12-02T16:06:17+08:00"
-title = "起航"
+title = "Introduction"
 weight = 0
 prev = "/00-overview/contribution/"
 next = "/01-start/quick-start/"
@@ -9,11 +9,11 @@ chapter = true
 
 +++
 
-# 本章导航
+# The Chapter Introduction
 
- - 如果想快速体验Sharding-JDBC的强大功能，请阅读[快速入门](/01-start/quick-start/)。
- - 如何通过代码实现简单的DEMO测试？请阅读[使用示例](/01-start/code-demo/)。
- - 如果在使用中遇到什么问题，请首先在[FAQ](/01-start/faq/)中寻找解决问题的答案。
- - 想要在自己的项目中集成Sharding-JDBC,您一定很关心它[能做什么](/01-start/features)和[不能做什么](/01-start/limitations/)。
- - 数据库中间件一般都不会支持完全的SQL语法,在这里能了解到[支持的SQL语法](/01-start/sql-supported/)。
- - 最后，你会关心中间件的性能情况。这里将展示我们的[性能测试结果](/01-start/stress-test/)。
+ - To quickly learn the powerful features of Sharding-JDBC, please read [Quick Start](/01-start/quick-start/).
+ - How to run some DEMO tests simply? Please read [Usage Example](/01-start/code-demo/)。
+ - If you encounter any problems in use, please try to find the answers in [FAQ](/01-start/faq/).
+ - Want to use Sharding-JDBC in your project? You may be concerned about [what it can do](/01-start/features) and [what it can not do][不能做什么](/01-start/limitations/).
+ - Database middleware generally supports partial SQL syntax, in [The list of available SQL syntax](/01-start/sql-supported/) where you can learn more aobut available SQL syntax.
+ - If you care about the performance of Sharding-JDBC, please view [The performance-test report](/01-start/stress-test/).

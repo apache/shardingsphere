@@ -1,33 +1,33 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "SQL支持详细列表"
+title = "The list of available SQL syntax"
 weight = 6
 prev = "/01-start/limitations"
 next = "/01-start/stress-test"
 
 +++
 
-由于SQL语法灵活复杂，分布式数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的SQL出现。
-本文详细罗列出已明确可支持的SQL种类以及已明确不支持的SQL种类，尽量让使用者避免踩坑。
-其中必然有未涉及到的SQL欢迎补充，未支持的SQL也尽量会在未来的版本中支持。
+Because of the flexibility and complexity of SQL syntax and the different handling for SQL queries for distributed databases and single database, not all of the SQLs can be used in Sharding-JDBC.
 
-## 全局不支持项
+This section lists the supported SQL syntax and the unsupported SQL syntax for user to look up. In the future, more and more SQL syntaxes will be supported in Sharding-JDBC.
 
-### 有限支持子查询
-子查询支持详情请参考[分页及子查询](/02-guide/subquery/)。
+## The global unsupported items
 
-### 不支持包含冗余括号的SQL
+### Support some kinds of subqueries
+Please refer to [The Pagination and subquery](/02-guide/subquery/)。
 
-### 不支持OR
+### Does not support SQL that contains redundant parentheses
 
-### 不支持CASE WHEN
+### Does not support OR
 
-## 支持的SQL
+### Does not support CASE WHEN
+
+## The global supported items
 
 ### DQL
 
-#### SELECT主语句
+#### Basic SELECT
 
 ```sql
 SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference ...]
@@ -53,39 +53,39 @@ tbl_name [AS] alias] [index_hint_list] |
 table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] | 
 ```
 
-#### 示例
+#### The examples
 
 ### DQL
 
-| SQL                                                                                                     | 无条件支持 | 必要条件 |
+| SQL                                                                                                     | Unconditional | Condition |
 | ------------------------------------------------------------------------------------------------------- | --------- | ------- |
-| SELECT * FROM tbl_name                                                                                  | 是        |         |
-| SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit                                 | 是        |         |
-| SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1             | 是        |         |
-| SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit | 是        |         |
+| SELECT * FROM tbl_name                                                                                  | Y        |         |
+| SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit                                 | Y        |         |
+| SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1             | Y        |         |
+| SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit | Y        |         |
 
 ### DML
 
-| SQL                                                           | 无条件支持 | 必要条件            |
+| SQL                                                           | Unconditional | Condition            |
 | ------------------------------------------------------------- | --------- | ------------------ |
-| INSERT INTO tbl_name (col1, col2,...) VALUES (val1, val2,....)| 否        | 插入列需要包含分片键  |
-| INSERT INTO tbl_name VALUES (val1, val2,....)                 | 否        | 通过Hint注入分片键   |
-| UPDATE tbl_name SET col1 = val1 WHERE col2 = val2             | 是        |                    |
-| DELETE FROM tbl_name WHERE col1 = val1                        | 是        |                    |
+| INSERT INTO tbl_name (col1, col2,...) VALUES (val1, val2,....)| N        |  Add Sharding columns into insert columns.  |
+| INSERT INTO tbl_name VALUES (val1, val2,....)                 | N        | Inject Sharding columns by Hint.   |
+| UPDATE tbl_name SET col1 = val1 WHERE col2 = val2             | Y        |                    |
+| DELETE FROM tbl_name WHERE col1 = val1                        | Y       |                    |
 
 ### DDL
 
-| SQL                                                           | 无条件支持 | 必要条件            |
+| SQL                                                           | Unconditional | Condition          |
 | ------------------------------------------------------------- | --------- | ------------------ |
-| CREATE TABLE tbl_name (col1 int,...)                          | 是        |                    |
-| ALTER TABLE tbl_name ADD col1 varchar(10)                     | 是        |                    |
-| DROP TABLE tbl_name                                           | 是        |                    |
-| TRUNCATE TABLE tbl_name                                       | 是        |                    |
-| CREATE INDEX idx_name ON tbl_name                             | 是        |                    |
-| DROP INDEX idx_name ON tbl_name                               | 是        |                    |
-| DROP INDEX idx_name                                           | 是        | tableRule中配置logic-index|
+| CREATE TABLE tbl_name (col1 int,...)                          |Y        |                    |
+| ALTER TABLE tbl_name ADD col1 varchar(10)                     | Y        |                    |
+| DROP TABLE tbl_name                                           | Y        |                    |
+| TRUNCATE TABLE tbl_name                                       | Y        |                    |
+| CREATE INDEX idx_name ON tbl_name                             | Y        |                    |
+| DROP INDEX idx_name ON tbl_name                               | Y        |                    |
+| DROP INDEX idx_name                                           | Y        | Configure logic-index in tableRule.|
 
-## 不支持的SQL
+## The unsupported SQL
 
 | SQL                                                                                           |
 | --------------------------------------------------------------------------------------------- |

@@ -1,19 +1,19 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "快速入门"
+title = "Quick Start"
 weight = 1
 prev = "/01-start"
 next = "/01-start/code-demo"
 
 +++
 
-## 使用API配置
+## To configure by using API
 
-### Maven安装 
+### The Maven Installation
 
 ```xml
-<!-- 引入sharding-jdbc核心模块 -->
+<!-- imoort the core module of sharding-jdbc -->
 <dependency>
     <groupId>io.shardingjdbc</groupId>
     <artifactId>sharding-jdbc-core</artifactId>
@@ -21,16 +21,17 @@ next = "/01-start/code-demo"
 </dependency>
 ```
 
-## 规则配置
-Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user_id取模分库, 且根据order_id取模分表的两库两表的配置。
+## The rule configurtion
 
-可以通过Java编码的方式配置：
+You can implement Sharding by configuring rules for Sharding-JDBC. The following example firstly takes the module of user_id to split databases and then takes the module of order_id to split tables. At last, two tables are in each of two databases.
+
+To configure by JAVA codes:
 
 ```java
-    // 配置真实数据源
+    // To configure the actual data source
     Map<String, DataSource> dataSourceMap = new HashMap<>();
     
-    // 配置第一个数据源
+    // To configure the first data source
     BasicDataSource dataSource1 = new BasicDataSource();
     dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource1.setUrl("jdbc:mysql://localhost:3306/ds_0");
@@ -38,7 +39,7 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
     dataSource1.setPassword("");
     dataSourceMap.put("ds_0", dataSource1);
     
-    // 配置第二个数据源
+    // To configure the second data source
     BasicDataSource dataSource2 = new BasicDataSource();
     dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource2.setUrl("jdbc:mysql://localhost:3306/ds_1");
@@ -46,28 +47,30 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
     dataSource2.setPassword("");
     dataSourceMap.put("ds_1", dataSource2);
     
-    // 配置Order表规则
+    // To configure the table rules for Order
     TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
     orderTableRuleConfig.setLogicTable("t_order");
     orderTableRuleConfig.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
     
-    // 配置分库策略
+    // To configure the strategy for database Sharding. 
     orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
     
-    // 配置分表策略
+    // To configure the strategy for table Sharding.
     orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
     
-    // 配置分片规则
+    // To configure the strategy rule of Sharding
     ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
     shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     
-    // 省略配置order_item表规则...
+    // To configure the table rules for order_item
     
-    // 获取数据源对象
+    ...
+    
+    // To get the data source object
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
 ```
 
-或通过YAML方式配置，与以上配置等价：
+To configure by YAML, similar with the configuration method of JAVA codes:
 
 ```yaml
 dataSources:
@@ -108,15 +111,15 @@ tables:
 ```java
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
 ```
+The rule configuration consists of data source configuration, table rule configuration, database Sharding strategy and table Sharding strategy, etc. Here is a simple configuration example, more flexible configurations can be used in product environment, e.g. multi-Sharding columns, table rules configuration directly bound with Sharding strategy.
 
-规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。
+> To learn the details of the Sharding configuration, please refer to [Sharding](/02-guide/sharding).
 
->详细的规则配置请参考[分库分表](/02-guide/sharding)
+## To use JDBC interface based on ShardingDataSource
 
-## 使用基于ShardingDataSource的JDBC接口
+By using ShardingDataSourceFactory factory class and rule configuration object, we can obtain ShardingDataSource which implements the standard interface of DataSource in JDBC. Thus you can choose to use native JDBC DataSource for development, or using JPA, MyBatis ORM tools, etc.
 
-通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
-以JDBC原生实现为例：
+Take native DataSource in JDBC as an example:
 
 ```java
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule);
@@ -135,19 +138,19 @@ try (
 }
 ```
 
-## 使用Spring
+##  To configure by using Spring
 
-### Maven安装
+### The Maven Installation
 
 ```xml
-<!-- 引入sharding-jdbc核心模块 -->
+<!-- imoort the core module of sharding-jdbc -->
 <dependency>
     <groupId>io.shardingjdbc</groupId>
     <artifactId>sharding-jdbc-core-spring-namespace</artifactId>
     <version>${sharding-jdbc.version}</version>
 </dependency>
 ```
-### Spring命名空间
+### The Spring namespace
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -191,4 +194,5 @@ try (
     </sharding:data-source>
 </beans>
 ```
->详细的规则配置请参考[配置手册](/02-guide/configuration)
+
+> To learn the details of the rule configuration, please refer to [Configuration](/02-guide/configuration).
