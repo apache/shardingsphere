@@ -26,7 +26,7 @@ As a member of PMC, you **must** contribute and maintain the features or modules
 
 The current Project Management Committee is as follows (in chronological order):
 
-* 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu) Architect director, Jingdong
+* 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu) Java and architect expert, Jingdong
 
 * 曹昊, Hao Cao, [@haocao](https://github.com/haocao) Senior Architect, Dangdang
 
