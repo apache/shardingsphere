@@ -9,6 +9,10 @@ chapter = true
 
 # 采用公司 (按登记顺序)
 
+欢迎采用了Sharding-JDBC的公司再此登记，您的支持是我们最大的动力。
+
+请按公司名+首页+公司类型的格式在[此处](https://github.com/shardingjdbc/sharding-jdbc/issues/234)登记。
+
 ## 电子商务
 
 * [当当](http://www.dangdang.com/)

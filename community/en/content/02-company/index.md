@@ -9,6 +9,10 @@ chapter = true
 
 # Using companies (in chronological order)
 
+Please leave your company's info when using Sharding-JDBC.
+
+Please register by company + homepage + company type [here](https://github.com/shardingjdbc/sharding-jdbc/issues/234).
+
 ## E-commerce
 
 * [Dangdang](http://www.dangdang.com/)
