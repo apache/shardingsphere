@@ -219,7 +219,7 @@ public final class ExecutorEngine implements AutoCloseable {
     public void close() {
         executorService.shutdown();
         try {
-            if (!executorService.awaitTermination(5, TimeUnit.MILLISECONDS)) {
+            if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
                 executorService.shutdownNow();
             }
         } catch (final InterruptedException ignored) {
@@ -235,15 +235,16 @@ public final class ExecutorEngine implements AutoCloseable {
             @Override
             public void run() {
                 try {
-                    for (int i = 0; i < 10000; i++) {
+                    //这里是通过interrupt去中断执行任务，如果对interrupt没有响应的任务或catch住InterruptedException的任务将永远无法关闭
+                    while (true) {
                         executorService.shutdownNow();
 
-                        if (executorService.awaitTermination(5, TimeUnit.MILLISECONDS)) {
+                        if (executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
                             break;
                         }
                     }
+                } catch (InterruptedException e) {
                     log.error("ExecutorEngine can not been terminated");
-                } catch (InterruptedException ignored) {
                 }
             }
         });
