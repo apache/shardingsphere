@@ -61,7 +61,7 @@ import java.util.concurrent.TimeUnit;
 public final class ExecutorEngine implements AutoCloseable {
     
     private static final ThreadPoolExecutor shutdownExecutor = new ThreadPoolExecutor(
-            0, 1, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingJDBC-ExecutorEngineCloseTimer%d").build());
+            0, 1, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingJDBC-ExecutorEngineCloseTimer").build());
     
     private final ListeningExecutorService executorService;
     
