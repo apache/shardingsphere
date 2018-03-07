@@ -60,6 +60,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class ExecutorEngine implements AutoCloseable {
     
+    private static final ThreadPoolExecutor shutdownExecutor = new ThreadPoolExecutor(
+            0, 1, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingJDBC-ExecutorEngineCloseTimer%d").build());
+    
     private final ListeningExecutorService executorService;
     
     public ExecutorEngine(final int executorSize) {
@@ -214,13 +217,35 @@ public final class ExecutorEngine implements AutoCloseable {
     
     @Override
     public void close() {
-        executorService.shutdownNow();
+        executorService.shutdown();
         try {
-            executorService.awaitTermination(5, TimeUnit.SECONDS);
+            if (!executorService.awaitTermination(5, TimeUnit.MILLISECONDS)) {
+                executorService.shutdownNow();
+            }
         } catch (final InterruptedException ignored) {
         }
         if (!executorService.isTerminated()) {
-            throw new ShardingJdbcException("ExecutorEngine can not been terminated");
+            newThreadToClose();
         }
+    }
+    
+    private void newThreadToClose() {
+        shutdownExecutor.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    for (int i = 0; i < 10000; i++) {
+                        executorService.shutdownNow();
+
+                        if (executorService.awaitTermination(5, TimeUnit.MILLISECONDS)) {
+                            break;
+                        }
+                    }
+                    log.error("ExecutorEngine can not been terminated");
+                } catch (InterruptedException ignored) {
+                }
+            }
+        });
     }
 }
