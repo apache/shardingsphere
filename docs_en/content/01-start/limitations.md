@@ -1,51 +1,57 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "使用限制"
+title = "Use Limits"
 weight = 5
 prev = "/01-start/features"
 next = "/01-start/sql-supported"
 
 +++
 
-## JDBC未支持列表
+## The list of unsupported items in JDBC
 
-Sharding-JDBC暂时未支持不常用的JDBC方法。
+Sharding-JDBC currently supports common JDBC methods.
 
-### DataSource接口
-- 不支持timeout相关操作
+### The DataSource interface
 
-### Connection接口
-- 不支持存储过程，函数，游标的操作
-- 不支持执行native的SQL
-- 不支持savepoint相关操作
-- 不支持Schema/Catalog的操作
-- 不支持自定义类型映射
+- Do not support methods related to timeout.
 
-### Statement和PreparedStatement接口
-- 不支持返回多结果集的语句（即存储过程，非SELECT多条数据）
-- 不支持国际化字符的操作
+### The Connection interface
 
-### 对于ResultSet接口
-- 不支持对于结果集指针位置判断
-- 不支持通过非next方法改变结果指针位置
-- 不支持修改结果集内容
-- 不支持获取国际化字符
-- 不支持获取Array
+- Does not support stored procedures, functions, cursor operation
+- Does not Native SQL
+- Does not support savepoint related operations
+- Does not support Schema / Catalog operation
+- Does not support Custom type mapping
 
-### JDBC 4.1
-- 不支持JDBC 4.1接口新功能
+### The interface of Statement and PreparedStatement
 
-查询所有未支持方法，请阅读io.shardingjdbc.core.jdbc.unsupported包。
+- Does not support statements that return multiple result sets (That is, stored procedures)
+- Does not support using international characters
 
-## SQL语句限制
+### The ResultSet interface
 
-###  有限支持子查询
-###  不支持HAVING
-###  不支持OR，UNION 和 UNION ALL
-###  不支持特殊INSERT
-每条INSERT语句只能插入一条数据，不支持VALUES后有多行数据的语句
-###  不支持DISTINCT聚合
-###  不支持dual虚拟表
-###  不支持SELECT LAST_INSERT_ID()
-###  不支持CASE WHEN
+- Does not support getting result set pointer position
+- Does not support changing the position of the result pointer by none-next methods
+- Does not support modifying the content of result set 
+- Does not support using international characters
+- Does not support getting Array
+
+
+### The interface of JDBC 4.1
+
+- Does not support new interface features in JDBC 4.1.
+
+Learn more about the unsupported items, please refer to io.shardingjdbc.core.jdbc.unsupported.
+
+## The limits of SQL statement
+
+###  Support some kinds of subqueries
+###  Does not support HAVING
+###  Does not support OR，UNION 和 UNION ALL
+###  Does not support special INSERT
+Each INSERT statement can only contain one row of data. And does not support the statement that multiple rows of data are contained in INSERT...VALUES.
+###  Does not support DISTINCT Aggregation
+###  Does not support dual virtual table
+###  Does not support SELECT LAST_INSERT_ID()
+###  Does not support CASE WHEN

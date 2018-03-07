@@ -1,55 +1,58 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "详细功能列表"
+title = "Feature List"
 weight = 4
 prev = "/01-start/faq/"
 next = "/01-start/limitations/"
 
 +++
 
-## 功能性需求
+## The functional requirement
 
-### 分库分表
-* SQL解析功能完善，支持聚合，分组，排序，LIMIT，TOP等查询，并且支持级联表以及笛卡尔积的表查询
-* 支持内、外连接查询
-* 分片策略灵活，可支持=，BETWEEN，IN等多维度分片，也可支持多分片键共用，以及自定义分片策略
-* 基于Hint的强制分库分表路由
+### Data Sharding 
+* Perfect SQL parsing, Comprehensive SQL queries for aggregation/grouping/sorting/LIMIT/TOP and cascade/Cartesian-product.
+* Support for internal or external join quiries.
+* Flexible Sharding strategy. Support =, BETWEEN, IN, other multi-dimensional Sharding or user-defined Sharding strategy. Support the sharing of Sharding column.
+* Hint-based mandatory Sharding routing.
 
-### 读写分离
-* 独立使用读写分离支持SQL透传
-* 一主多从的读写分离配置，可配合分库分表使用
-* 基于Hint的强制主库路由
+### Read-write splitting
+* Support SQL Passthrough by using independent Read-write splitting
+* Support Read-write splitting configuration for single-master and multi-slaves
+* Hint-based mandatory master-database routing
 
-### 柔性事务
-* 最大努力送达型事务
-* TCC型事务(TBD)
+### B.A.S.E transaction
+* Best efforts delivery transaction.
+* Try confirm cancel transaction (TBD).
 
-### 分布式主键
-* 统一的分布式基于时间序列的ID生成器
+### Distributed primary key
+* unified time-based distributed ID generator.
 
-### 兼容性
-* 可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC
-* 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等
-* 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL
+### The compatibility 
+* Support using any java-based ORM framework, such as: JPA, Hibernate, Mybatis, Spring JDBC Template or directly using JDBC
+* Support using any third party database connection pool, such as: DBCP, C3P0, BoneCP, Druid, etc.
+* Support the database that implements the JDBC interface. Currently supports MySQL, Oracle, SQLServer and PostgreSQL
 
-### 灵活多样的配置
+### The flexible configuration
 * Java
 * YAML
-* Inline表达式
-* Spring命名空间
+* Inline expression
+* Spring namespace
 * Spring boot starter
 
-### 分布式治理能力 (2.0新功能)
-* 配置集中化与动态化，可支持数据源、表与分片策略的动态切换(2.0.0.M1)
-* 客户端的数据库治理，数据源失效自动切换(2.0.0.M2)
-* 基于Open Tracing协议的APM信息输出(2.0.0.M3)
+### The orchestration ability (2.0 new feature)
+* The centralized and dynamic configuration can support the dynamic strategy switching of Sharding and read-write splitting (2.0.0.M1).
+* The orchestration for databases, and the auto switch for unreachable databases (2.0.0.M2).
+* APM information output based on Open Tracing protocol (2.0.0.m3).
 
-## 性能
-1. 半理解"理念的SQL解析引擎
-2. 多线程处理结果归并
-3. 性能损失率约6%
 
-## 稳定性
-1. 完善的疲劳测试，普通查询无Full GC（GROUP BY除外）
-2. 多数据库、分片策略和语句的完整单元测试
+## The performance
+1. The SQL parsing engine bases on "half-understanding".
+2. To merge for Multithreaded processing results.
+3. The performance loss rate is about 6%.
+
+
+## The stability 
+1. The perfect fatigue test, and regular queries without Full GC (except for GROUP BY)
+2. The complete unit testing of multiple databases, Sharding strategies and SQLs.
+

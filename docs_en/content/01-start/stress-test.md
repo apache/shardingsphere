@@ -1,285 +1,285 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "性能测试报告"
+title = "The performance-test report"
 weight = 7
 prev = "/01-start/sql-supported"
 next = "/02-guide"
 
 +++
-# Sharding-JDBC性能测试报告
+# The performance-test report of Sharding-JDBC
 
-## 测试结果概述
+## The summary of test result
 
-1、性能损耗测试：服务器资源充足、并发数相同，比较JDBC和Sharding-JDBC性能损耗，Sharding-JDBC相对JDBC损耗不超过7%<br>
-2、性能对比测试：服务器资源使用到极限，相同的场景JDBC与Sharding-JDBC的吞吐量相当<br>
-3、性能对比测试：服务器资源使用到极限，Sharding-JDBC采用分库分表后，Sharding-JDBC吞吐量较JDBC不分表有接近2倍的提升<br>
-4、性能对比测试：服务器资源使用到极限，Sharding-JDBC V1.5.2与V1.4.2对比，性能比较稳定<br>
+1、The test of performance lose: When the server resources are sufficient and the number of concurrency is the same, we compare the performance loss of JDBC and Sharding-JDBC, the result is that the performance loss of Sharding-JDBC is less than 7%, compared with JDBC.<br>
+2、The test of performance: The server resources are used to the limit, the throughput of Sharding-JDBC and JDBC are on a fairly level.<br>
+3、The test of performance: The server resources are used to the limit, the throughput of Sharding-JDBC with Sharding is improved nearly twice than JDBC without Sharding.<br>
+4、The test of performance: The server resources are used to the limit, The performance of Sharding-JDBC V1.5.2 is more stable V1.4.2.<br>
 
 
-### 基准测试性能对比
+### The baseline performance test
 
-| 业务场景   | JDBC   | Sharding-JDBC1.5.2 | Sharding-JDBC1.5.2/JDBC损耗 |
+| Operation   | JDBC   | Sharding-JDBC1.5.2 |The loss ratio of Sharding-JDBC1.5.2/JDBC |
 |:----------|:-------|:-------------------|:---------------------------|
-|单库单表查询| 493     | 470                | 4.7%                       |
-|单库单表更新| 6682    | 6303               | 5.7%                       |
-|单库单表插入| 6855    | 6375               | 7%                         |
+|The SELECT for single table in single DB| 493     | 470                | 4.7%                       |
+|The UPDATE for single table in single DB| 6682    | 6303               | 5.7%                       |
+|The INSERT for single table in single DB| 6855    | 6375               | 7%                         |
 
-### JDBC单库两库表与Sharding-JDBC两库各两表对比
+### The performance test for different DBs and Tables in JDBC and Sharding-JDBC
 
-| 业务场景 | JDBC单库两表 | Sharding-JDBC两库各两表 | 性能提升至 |
+| Operation | Two tables in single DB for JDBC | Two tables in each of two DBs for Sharding-JDBC | The improved performance percentage  |
 |:--------|:------------|:----------------------|:----------|
-| 查询    | 1736        | 3331                  | 192%       |
-| 更新    | 9170        | 17997                 | 196%       |
-| 插入    | 11574       | 23043                 | 199%       |
+| SELECT    | 1736        | 3331                  | 192%       |
+| UPDATE    | 9170        | 17997                 | 196%       |
+| INSERT    | 11574       | 23043                 | 199%       |
 
-### JDBC单库单表与Sharding-JDBC两库各一表对比
 
-| 业务场景 | JDBC单库单表 | Sharding-JDBC两库各一表 | 性能提升至 |
+| Operation | One table in single DB for JDBC | One table in each of two DBs for Sharding-JDBC | The improved performance percentage |
 |:--------|:------------|:----------------------|:----------|
-| 查询    | 1586        | 2944                  | 185%       |
-| 更新    | 9548        | 18561                 | 194%       |
-| 插入    | 11182       | 21414                 | 192%       |
+| SELECT   | 1586        | 2944                  | 185%       |
+| UPDATE   | 9548        | 18561                 | 194%       |
+| INSERT   | 11182       | 21414                 | 192%       |
 
 ### Sharding-JDBC v1.4.2与v1.5.2版本对
 
-| 业务场景 | Sharding-JDBC 1.4.2&emsp; | Sharding-JDBC 1.5.2&emsp;&emsp;&emsp; | 1.5.2/1.4.2 |
+| Operation | Sharding-JDBC 1.4.2&emsp; | Sharding-JDBC 1.5.2&emsp;&emsp;&emsp; | The improved ratio of 1.5.2/1.4.2 |
 |:--------|:--------------------------|:--------------------------------------|:------------|
-| 查询    | 2934                       | 2944                                  | 100.34%     |
-| 更新    | 18454                      | 18561                                 | 100.58%     |
-| 插入    | 21045                      | 21414                                 | 101.75%     |
+| SELECT   | 2934                       | 2944                                  | 100.34%     |
+| UPDATE   | 18454                      | 18561                                 | 100.58%     |
+| INSERT   | 21045                      | 21414                                 | 101.75%     |
 
-## 测试目的
+## The test purpose
 
-- 对比Sharding-JDBC 1.5.2与JDBC性能是否有较大损耗;
-- Sharding-JDBC 1.52与1.4.2版本对比，性能是否有损耗;
-- Sharding-JDBC 1.5.2是否存在非功能问题，为优化提供依据;
+- To get the performance loss comparison between Sharding-JDBC 1.5.2 and JDBC.
+- To get the performance loss comparison between Sharding-jdbc 1.52 and 1.4.2.
+- To check whether there are performance problems in Sharding-JDBC 1.5.2.
 
-## 测试场景
 
-### JDBC业务场景
+## The test scene
 
-| 业务场景&emsp;&emsp;&emsp; | 场景缩写&emsp;&emsp;&emsp;&emsp; |
+### The business scene for JDBC
+
+| Operation&emsp;&emsp;&emsp; | The operation abbreviation&emsp;&emsp;&emsp;&emsp; |
 |:--------------------------|:--------------------------------|
-| 单库单表查询               | JSdbStSelect                     |
-| 单库单表插入               | JSdbStInsert                      |
-| 单库单表更新               | JSdbStUpdate                     |
-| 单库两表查询               | JSdbMtSelect                     |
-| 单库两表插入               | JSdbMtInsert                      |
-| 单库两表更新               | JSdbMtUpdate                     |
+| The SELECT in one table in one DB    | JSdbStSelect                     |
+| The INSERT in one table in one DB               | JSdbStInsert                      |
+| The UPDATE in one table in one DB               | JSdbStUpdate                     |
+| The SELECT in two tables in one DB               | JSdbMtSelect                     |
+| The INSERT in two tables in one DB                  | JSdbMtInsert                      |
+| The UPDATE in two tables in one DB                  | JSdbMtUpdate                     |
 
-### Sharding-JDBC业务场景
+### The business scene for Sharding-JDBC
 
-| 业务场景&emsp;&emsp;&emsp; | 场景缩写&emsp;&emsp;&emsp;&emsp; |
+| Operation&emsp;&emsp;&emsp; | The operation abbreviation&emsp;&emsp;&emsp;&emsp; |
 |:--------------------------|:--------------------------------|
-| 单库单表查询                | SJSdbStSelect                   |
-| 单库单表插入                | SJSdbStInsert                    |
-| 单库单表更新                | SJSdbStUpdate                   |
-| 单库两表查询                | SJSdbMtSelect                   |
-| 单库两表插入                | SJSdbMtInsert                    |
-| 单库两表更新                | SJSdbMtUpdate                   |
-| 两库各一表查询              | SJMdbStSelect                   |
-| 两库各一表插入              | SJMdbStInsert                    |
-| 两库各一表更新              | SJMdbStUpdate                   |
-| 两库各两表查询              | SJMdbMtSelect                   |
-| 两库各两表插入              | SJMdbMtInsert                    |
-| 两库各两表更新              | SJMdbMtUpdate                   |
+| The SELECT in one table in one DB                | SJSdbStSelect                   |
+| The INSERT in one table in one DB                | SJSdbStInsert                    |
+| The UPDATE in one table in one DB                | SJSdbStUpdate                   |
+| The SELECT in two tables in one DB               | SJSdbMtSelect                   |
+| The INSERT in two tables in one DB               | SJSdbMtInsert                    |
+| The UPDATE in two tables in one DB               | SJSdbMtUpdate                   |
+| The SELECT in one table in each of two DBs               | SJMdbStSelect                   |
+| The INSERT in one table in each of two DBs               | SJMdbStInsert                    |
+| The UPDATE in one table in each of two DBs               | SJMdbStUpdate                   |
+| The SELECT in two tables in each of two DBs               | SJMdbMtSelect                   |
+| The INSERT in two tables in each of two DBs               | SJMdbMtInsert                    |
+| The UPDATE in two tables in each of two DBs             | SJMdbMtUpdate                   |
 
-所有测试场景共分为以下两大类，其中极限测试测试范围是全部场景，基准测试范围是以下场景：
+The limit test scope is the whole operations, and the baseline test scope is the following operations:
 
-| 业务场景&emsp;&emsp;&emsp; | 场景缩写&emsp;&emsp;&emsp;&emsp; |
+| Operation&emsp;&emsp;&emsp; | The operation abbreviation&emsp;&emsp;&emsp;&emsp; |
 |:--------------------------|:--------------------------------|
-| 单库单表查询                | JSdbStSelect                    |
-| 单库单表插入                | JSdbStInsert                     |
-| 单库单表更新                | JSdbStUpdate                    |
-| 单库单表查询                | SJSdbStSelect                   |
-| 单库单表插入                | SJSdbStInsert                    |
-| 单库单表更新                | SJSdbStUpdate                   |
+| The SELECT in one table in one DB                | JSdbStSelect                    |
+| The INSERT in one table in one DB                | JSdbStInsert                     |
+| The UPDATE in one table in one DB                | JSdbStUpdate                    |
+| The SELECT in one table in one DB                | SJSdbStSelect                   |
+| The INSERT in one table in one DB                | SJSdbStInsert                    |
+| The UPDATE in one table in one DB                | SJSdbStUpdate                   |
 
-## 测试方法
+## The test method
 
-基准测试：服务器资源充足，使用同样的并发线程数量，对比同样的业务场景<br>
-极限测试：服务器资源使用达到极限、TPS不再上升，对比JDBC和Sharding-JDBC分库分表
+The baseline test: the server resources are sufficient and the number of concurrency is the same.<br>
+The limit test: The server resources are used to the limit, and TPS is no longer increasing.
 
-## 测试环境配置
+## The test environment
 
-服务器配置
+The Server Configuration:
 
-| 名称 | 硬件配置                                                                                                      | 软件配置      | 混合应用 |
+| DB-Name | Hardware Information                                                                                                      | Software Information      | Hybrid Application |
 |:----|:-------------------------------------------------------------------------------------------------------------|:-------------|:--------|
-| DB0 | OS：CentOS 6.6 64bit<br/>处理器：2C四核<br/>内存：32G<br/>存储：250G\*2\_RAID1+600G\*4\_RAID10<br/>网卡：1000mbps | Mysql 5.7.13 | 否      |
-| DB1 | OS：CentOS 6.6 64bit<br/>处理器：2C四核<br/>内存：32G<br/>存储：250G\*2\_RAID1+600G\*4\_RAID10<br/>网卡：1000mbps | Mysql 5.7.13 | 否      |
+| DB0 | OS：CentOS 6.6 64bit<br/>CPU：2C 4core<br/>Memory：32G<br/>Storage：250G\*2\_RAID1+600G\*4\_RAID10<br/>Network card：1000mbps | Mysql 5.7.13 | N      |
+| DB1 | OS：CentOS 6.6 64bit<br/>CPU：2C 4core<br/>Memory：32G<br/>Storage：250G\*2\_RAID1+600G\*4\_RAID10<br/>Network card：1000mbps | Mysql 5.7.13 | N      |
 
-## 测试过程数据
+## The test procedure
 
-## 基准测试
+## The baseline test
 
-### 单库单表查询
+### The SELECT in one table in one DB 
 
-| 业务场景                       | 业务平均响应时间(ms) | 业务TPS |
+| Operation                       | Average response time(ms) | TPS |
 |:------------------------------|:-------------------|:-------|
-| JDBC单库单表查询                | 7                 | 493     |
-| Sharding-JDBC 1.5.2单库单表查询 | 8                 | 470     |
+| The SELECT in one table in one DB for JDBC                | 7                 | 493     |
+| The SELECT in one table in one DB for Sharding-JDBC 1.5.2 | 8                 | 470     |
 
-TPS展示
+The display of TPS info:
 
 ![TPS](/img/b-SdbSt-query-tps.png)
 
-RT展示
+The display of RT info:
 
 ![RT](/img/b-SdbSt-query-rt.png)
 
-### 单库单表更新
+### The UPDATE in one table in one DB
 
-| 业务场景                       | 业务平均响应时间(ms) | 业务TPS |
+| Operation                       | Average response time(ms) | TPS |
 |:------------------------------|:------------------|:--------|
-| JDBC单库单表更新                | 2                 | 6682    |
-| Sharding-JDBC 1.5.2单库单表更新 | 3                 | 6303    |
+| The UPDATE in one table in one DB for JDBC                 | 2                 | 6682    |
+| The UPDATE in one table in one DB for Sharding-JDBC 1.5.2 | 3                 | 6303    |
 
-TPS展示
+The display of TPS info:
 
 ![TPS](/img/b-SdbSt-update-tps.png)
 
-RT展示
+The display of RT info:
 
 ![RT](/img/b-SdbSt-update-rt.png)
 
-### 单库单表插入
+### The INSERT in one table in one DB
 
-| 业务场景                       | 业务平均响应时间(ms) | 业务TPS |
+| Operation                       | Average response time(ms) | TPS |
 |:------------------------------|:-------------------|:-------|
-| JDBC单库单表插入                | 2                  | 6855   |
-| Sharding-JDBC 1.5.2单库单表插入 | 2                  | 6375   |
+| The INSERT in one table in one DB for JDBC               | 2                  | 6855   |
+| The INSERT in one table in one DB for Sharding-JDBC 1.5.2 | 2                  | 6375   |
 
-TPS展示
+The display of TPS info:
 
 ![TPS](/img/b-SdbSt-insert-tps.png)
 
-RT展示
+The display of RT info:
 
 ![RT](/img/b-SdbSt-insert-rt.png)
 
-## 极限测试
+## The limit test
 
-### 单库单表与两库各一表查询
+### The SELECT in one table in one DB and The SELECT in one table in each of two DBs
 
-| 业务场景                        | 业务平均响应时间(ms) | 业务TPS |
+| Operation                        | Average response time(ms) | TPS |
 |:-------------------------------|:-------------------|:-------|
-| JDBC单库单表查询                 | 7                  | 1586   |
+| The SELECT in one table in one DB for JDBC                  | 7                  | 1586   |
 | Sharding-JDBC 1.5.2单库单表查询  | 7                  | 1600   |
 | Sharding-JDBC 1.5.2两库各1表查询 | 13                 | 2944   |
 
-TPS展示
+The display of TPS info
 
 ![TPS](/img/l-SdbSt-MdbSt-query-tps.png)
 
-RT展示
+The display of RT info:
 
 ![RT](/img/l-SdbSt-MdbSt-query-rt.png)
 
-### 单库两表与两库各两表查询
+### The SELECT in two tables in one DB and The SELECT in two tables in each of two DBs 
 
-| 业务场景                         | 业务平均响应时间(ms) |业务TPS|
+| Operation                        | Average response time(ms) | TPS |
 |:--------------------------------|:-------------------|:-----|
-| JDBC单库两表查询                  | 6                  | 1736 |
-| Sharding-JDBC 1.5.2单库两表查询   | 7                  | 1732 |
-| Sharding-JDBC 1.5.2两库各两表查询 | 10                 | 3331 |
+| The SELECT in two tables in one DB for JDBC                    | 6                  | 1736 |
+| The SELECT in two tables in one DB for Sharding-JDBC 1.5.2   | 7                  | 1732 |
+| The SELECT in two tables in each of two DBs for Sharding-JDBC | 10                 | 3331 |
 
-TPS展示
+The display of TPS info
 
 ![TPS](/img/l-SdbMt-MdbMt-query-tps.png)
 
-RT展示
+The display of RT info:
 
 ![RT](/img/l-SdbMt-MdbMt-query-rt.png)
 
-### 单库单表更新与两库各一表更新
+### The UPDATE in one table in one DB and The UPDATE in one table in each of two DBs
 
-| 业务场景                         | 业务平均响应时间（ms）| 业务TPS |
+| Operation                        | Average response time(ms) | TPS  |
 |:--------------------------------|:-------------------|:--------|
-| JDBC单库单表更新                  | 7                  | 9548    |
-| Sharding-JDBC 1.5.2单库单更新     | 7                  | 9263    |
-| Sharding-JDBC 1.5.2两库各1表更新  | 4                  | 18561   |
+|  The UPDATE in two tables in one DB for JDBC                 | 7                  | 9548    |
+| The UPDATE in one table in one DB for Sharding-JDBC 1.5.2     | 7                  | 9263    |
+| The UPDATE in one table in each of two DBs for Sharding-JDBC 1.5.2  | 4                  | 18561   |
 
-TPS展示
+The display of TPS info
 
 ![TPS](/img/l-SdbSt-MdbSt-update-tps.png)
 
-RT展示
+The display of RT info:
 
 ![RT](/img/l-SdbSt-MdbSt-update-rt.png)
 
-### 单库两表与两库各2表更新
+### The UPDATE in two tables in one DB and The UPDATE in two tables in each of two DBs
 
-| 业务场景                         | 业务平均响应时间(ms) | 业务TPS |
+| Operation                        | Average response time(ms) | TPS |
 |:--------------------------------|:------------------|:--------|
-| JDBC单库两表更新                  | 7                 | 9170    |
-| Sharding-JDBC 1.5.2单库两表更新   | 7                 | 8941    |
-| Sharding-JDBC 1.5.2两库各两表更新 | 5                 | 17997   |
+| The UPDATE in two tables in one DB for JDBC                  | 7                 | 9170    |
+| The UPDATE in two tables in one DB for Sharding-JDBC 1.5.2   | 7                 | 8941    |
+| The UPDATE in two tables in each of two DBs for Sharding-JDBC 1.5.2 | 5                 | 17997   |
 
-TPS展示
+The display of TPS info
 
 ![TPS](/img/l-SdbMt-MdbMt-update-tps.png)
 
-RT展示
+The display of RT info:
 
 ![RT](/img/l-SdbMt-MdbMt-update-rt.png)
 
-### 单库单表插入与两库各一表插入
+### The INSERT in one table in one DB and The INSERT in one table in each of two DBs
 
-| 业务场景                        | 业务平均响应时间(ms) | 业务TPS |
+| Operation                        | Average response time(ms) | TPS  |
 |:-------------------------------|:-------------------|:-------|
-| JDBC单库单表插入                 | 5                 | 11182   |
-| Sharding-JDBC 1.5.2单库单表插入  | 5                 | 10882   |
-| Sharding-JDBC 1.5.2两库各1表插入 | 4                 | 21414   |
+| The INSERT in one table in one DB for JDBC                  | 5                 | 11182   |
+| The INSERT in one table in one DB for Sharding-JDBC 1.5.2   | 5                 | 10882   |
+| The INSERT in one table in each of two DBs for Sharding-JDBC 1.5.2 | 4                 | 21414   |
 
-TPS展示
+The display of TPS info
 
 ![TPS](/img/l-SdbSt-MdbSt-insert-tps.png)
 
-RT展示
+The display of RT info:
 
 ![RT](/img/l-SdbSt-MdbSt-insert-rt.png)
 
-### 单库两表与两库各2表插入
+### The INSERT in two tables in one DB and The INSERT in two tables in each of two DBs
 
-| 业务场景                         | 业务平均响应时间(ms) | 业务TPS |
+| Operation                        | Average response time(ms) | TPS  |
 |:--------------------------------|:------------------|:--------|
-| JDBC单库两表插入                  | 4                 | 11574   |
-| Sharding-JDBC 1.5.2单库两表插入   | 5                 | 10849   |
-| Sharding-JDBC 1.5.2两库各两表插入 | 4                 | 23043   |
+| The INSERT in two tables in one DB for JDBC                 | 4                 | 11574   |
+| The INSERT in two tables in one DB for Sharding-JDBC 1.5.2    | 5                 | 10849   |
+| The INSERT in two tables in each of two DBs Sharding-JDBC 1.5.2  | 4                 | 23043   |
 
-TPS展示
+The display of TPS info
 
 ![TPS](/img/l-SdbMt-MdbMt-insert-tps.png)
 
-RT展示
+The display of RT info:
 
 ![RT](/img/l-SdbMt-MdbMt-insert-rt.png)
 
-### Sharding-JDBC 1.4.2与1.5.2两库各一表对比
+### The operations in one table in each of two DBs for Sharding-JDBC 1.4.2 and 1.5.2
 
-| 业务场景 | Sharding-JDBC 1.4.2&emsp; | Sharding-JDBC 1.5.2&emsp;&emsp;&emsp; | 1.5.2/1.4.2&emsp; |
+| Operation | Sharding-JDBC 1.4.2&emsp; | Sharding-JDBC 1.5.2&emsp;&emsp;&emsp; | 1.5.2/1.4.2&emsp; |
 |:--------|:--------------------------|:--------------------------------------|:------------------|
-| 查询    | 2934                       | 2944                                  | 100.34%           |
-| 更新    | 18454                      | 18561                                 | 100.58%           |
-| 插入    | 21045                      | 21414                                 | 101.75%           |
+| SELECT    | 2934                       | 2944                                  | 100.34%           |
+| UPDATE    | 18454                      | 18561                                 | 100.58%           |
+| INSERT    | 21045                      | 21414                                 | 101.75%           |
 
-TPS展示
+The display of TPS info
 
 ![TPS](/img/152vs142tps.png)
 
-RT展示
+The display of RT info:
 
 ![RT](/img/152vs142rt.png)
 
-## 附录
+## The appendix
 
-本次测试，共使用两台数据库服务器，每台服务器上分别有1库，每个库中分别有2个主表，2个子表
+There are two test servers, and two parent tables and two child tables in single database in each of servers.
 
-### 建表语句说明
+### The SQL of creating tables
 
-主表结构如下：
+The structure of parent table:
 
 ```sql
 order_0 | CREATE TABLE `order_0` (
@@ -307,7 +307,7 @@ order_0 | CREATE TABLE `order_0` (
   KEY `index_id` (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=5189307 DEFAULT CHARSET=gbk 
 ```
-子表结构如下
+The structure of child table:
 
 ```sql
 ordert_0 | CREATE TABLE `ordert_0` (
@@ -320,40 +320,40 @@ ordert_0 | CREATE TABLE `ordert_0` (
 ) ENGINE=InnoDB DEFAULT CHARSET=gbk ROW_FORMAT=DYNAMIC
 ```
 
-### SQL语句说明
+### SQL Statements
 
-JDBC 插入
+JDBC INSERT
 
 ```sql
 insert 
 into order_?(order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message) VALUES (?, 0, 10, 1, 'dtest002@dangdang.com', 1, 6, 1, 0, 3, 'ttt ttt', 'beijingshijinganzhongxin', 9000, 111, 1, '100011', '51236117', ' ', ' ');
 ```
 
-JDBC 查询
+JDBC SELECT
 
 ```sql
 select a.id,order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message from order_? a,ordert_? b where a.id=? and a.id%100=b.idm%100;
 ```
 
-JDBC 更新
+JDBC UPDATE
 
 ```sql
 Update order_? SET order_id=?,order_type=0,cust_id=10,cust_type=1,cust_email='dtest002@dangdang.com' where id=?;
 ```
 
-Sharding-JDBC 插入
+Sharding-JDBC INSERT
 
 ```sql
 INSERT INTO `order`(order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message) VALUES (?, 0, 10, 1, 'dtest002@dangdang.com', 1, 6, 1, 0, 3, 'ttt ttt', 'beijingshijinganzhongxin', 9000, 111, 1, '100011', '51236117', ' ', ' ');
 ```
 
-Sharding-JDBC 查询
+Sharding-JDBC SELECT
 
 ```sql
 select cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message from order a,order_item b where a.id=? and a.id%100=b.idm%100;
 ```
 
-Sharding-JDBC 更新
+Sharding-JDBC UPDATE
 
 ```sql
 update order SET order_id=?,order_type=0,cust_id=10,cust_type=1,cust_email='dtest002@dangdang.com' where id=?;
