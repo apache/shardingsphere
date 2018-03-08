@@ -3,8 +3,8 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "FAQ"
 weight = 1
-prev = "/05-transaction/code-demo/"
-next = "/06-other/stress-test/"
+prev = "/07-other/"
+next = "/07-other/stress-test/"
 +++
 
 ### 1. 阅读源码时为什么会出现编译错误?

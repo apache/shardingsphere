@@ -1,10 +1,9 @@
 +++
 toc = true
-date = "2016-12-06T22:38:50+08:00"
 title = "目录结构"
 weight = 2
-prev = "/01-overview/intro/"
-next = "/03-design/roadmap/"
+prev = "/01-overview/"
+next = "/02-sharding/"
 +++
 
 您可以在Sharding-JDBC的github[官方仓库](https://github.com/shardingjdbc)找到源码。

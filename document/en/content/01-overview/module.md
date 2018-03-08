@@ -3,8 +3,8 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "Module structure"
 weight = 2
-prev = "/01-overview/intro/"
-next = "/03-design/roadmap/"
+prev = "/01-overview/"
+next = "/02-sharding/"
 +++
 
 You can find source code from Sharding-JDBC [official repo](https://github.com/shardingjdbc) on github.
