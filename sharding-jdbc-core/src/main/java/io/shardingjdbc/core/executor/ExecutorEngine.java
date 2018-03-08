@@ -216,16 +216,7 @@ public final class ExecutorEngine implements AutoCloseable {
     
     @Override
     public void close() {
-        executorService.shutdown();
-        try {
-            if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
-                executorService.shutdownNow();
-            }
-        } catch (final InterruptedException ignored) {
-        }
-        if (!executorService.isTerminated()) {
-            newThreadToClose();
-        }
+        newThreadToClose();
     }
     
     private void newThreadToClose() {
@@ -234,7 +225,8 @@ public final class ExecutorEngine implements AutoCloseable {
             @Override
             public void run() {
                 try {
-                    while (!executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
+                    executorService.shutdown();
+                    while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
                         executorService.shutdownNow();
                     }
                 } catch (final InterruptedException ex) {
