@@ -5,6 +5,7 @@ import io.shardingjdbc.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.parser.clause.TableReferencesClauseParser;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
@@ -45,9 +46,15 @@ public final class MySQLShowParser extends AbstractShowParser {
             DALStatement result = new ShowColumnsStatement();
             lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN);
             tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
-            lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN);
-            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            result.getSqlTokens().add(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
+            if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+                int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+                result.getSqlTokens().add(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
+            }
+            return result;
+        }
+        if (lexerEngine.skipIfEqual(DefaultKeyword.CREATE) && lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
+            DALStatement result = new ShowCreateTableStatement();
+            tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
             return result;
         }
         return new ShowOtherStatement();

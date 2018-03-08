@@ -35,6 +35,7 @@ import io.shardingjdbc.core.merger.SelectMergeEngine;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
+import io.shardingjdbc.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.routing.PreparedStatementRoutingEngine;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
@@ -274,7 +275,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == routedStatements.size()) {
+        if (1 == routedStatements.size() && routeResult.getSqlStatement() instanceof DQLStatement) {
             currentResultSet = routedStatements.iterator().next().getResultSet();
             return currentResultSet;
         }

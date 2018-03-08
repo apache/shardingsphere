@@ -17,9 +17,11 @@
 
 package io.shardingjdbc.core.merger;
 
+import io.shardingjdbc.core.merger.show.ShowCreateTableResultSetMerger;
 import io.shardingjdbc.core.merger.show.ShowDatabasesResultSetMerger;
 import io.shardingjdbc.core.merger.show.ShowOtherResultSetMerger;
 import io.shardingjdbc.core.merger.show.ShowTablesResultSetMerger;
+import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
@@ -51,6 +53,9 @@ public final class DALMergeEngine implements MergeEngine {
         }
         if (dalStatement instanceof ShowTablesStatement) {
             return new ShowTablesResultSetMerger(shardingRule, resultSets);
+        }
+        if (dalStatement instanceof ShowCreateTableStatement) {
+            return new ShowCreateTableResultSetMerger(shardingRule, resultSets);
         }
         return new ShowOtherResultSetMerger(resultSets.get(0));
     }

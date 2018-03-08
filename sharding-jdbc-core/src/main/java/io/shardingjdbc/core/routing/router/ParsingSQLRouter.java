@@ -21,13 +21,11 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -125,7 +123,7 @@ public final class ParsingSQLRouter implements SQLRouter {
             routingEngine = new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
         } else if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowTablesStatement) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
-        } else if (sqlStatement instanceof ShowColumnsStatement || sqlStatement instanceof ShowOtherStatement || sqlStatement instanceof DescribeStatement) {
+        } else if (sqlStatement instanceof DALStatement) {
             routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
         } else if (tableNames.isEmpty() && sqlStatement instanceof SelectStatement) {
             routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
