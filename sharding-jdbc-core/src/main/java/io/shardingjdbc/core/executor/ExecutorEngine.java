@@ -234,12 +234,8 @@ public final class ExecutorEngine implements AutoCloseable {
             @Override
             public void run() {
                 try {
-                    // 这里是通过interrupt去中断执行任务，如果对interrupt没有响应的任务或catch住InterruptedException的任务将永远无法关闭
-                    while (true) {
+                    while (!executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
                         executorService.shutdownNow();
-                        if (executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
-                            break;
-                        }
                     }
                 } catch (final InterruptedException ex) {
                     log.error("ExecutorEngine can not been terminated", ex);
