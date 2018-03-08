@@ -24,7 +24,6 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.shardingjdbc.core.constant.SQLType;
-import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.executor.event.AbstractExecutionEvent;
 import io.shardingjdbc.core.executor.event.DMLExecutionEvent;
 import io.shardingjdbc.core.executor.event.DQLExecutionEvent;
@@ -60,7 +59,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class ExecutorEngine implements AutoCloseable {
     
-    private static final ThreadPoolExecutor shutdownExecutor = new ThreadPoolExecutor(
+    private static final ThreadPoolExecutor SHUTDOWN_EXECUTOR = new ThreadPoolExecutor(
             0, 1, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingJDBC-ExecutorEngineCloseTimer").build());
     
     private final ListeningExecutorService executorService;
@@ -230,21 +229,20 @@ public final class ExecutorEngine implements AutoCloseable {
     }
     
     private void newThreadToClose() {
-        shutdownExecutor.execute(new Runnable() {
-
+        SHUTDOWN_EXECUTOR.execute(new Runnable() {
+            
             @Override
             public void run() {
                 try {
-                    //这里是通过interrupt去中断执行任务，如果对interrupt没有响应的任务或catch住InterruptedException的任务将永远无法关闭
+                    // 这里是通过interrupt去中断执行任务，如果对interrupt没有响应的任务或catch住InterruptedException的任务将永远无法关闭
                     while (true) {
                         executorService.shutdownNow();
-
                         if (executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
                             break;
                         }
                     }
-                } catch (InterruptedException e) {
-                    log.error("ExecutorEngine can not been terminated");
+                } catch (final InterruptedException ex) {
+                    log.error("ExecutorEngine can not been terminated", ex);
                 }
             }
         });
