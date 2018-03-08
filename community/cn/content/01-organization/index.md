@@ -1,9 +1,9 @@
 +++
 date = "2018-03-05T16:06:17+08:00"
-title = "Organization"
+title = "组织"
 weight = 0
-prev = "/03-company/"
-next = "/01-contribute/"
+prev = "/04-company/"
+next = "/02-contribute/"
 chapter = true
 +++
 

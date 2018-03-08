@@ -2,8 +2,8 @@
 date = "2018-03-05T16:06:17+08:00"
 title = "Using companies"
 weight = 0
-prev = "/02-convention/"
-next = "/00-organization/"
+prev = "/03-convention/"
+next = "/01-organization/"
 chapter = true
 +++
 
