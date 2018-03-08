@@ -8,7 +8,5 @@ next = "/01-overview/intro/"
 chapter = true
 +++
 
-# Chapter index
-
  - Understanding Sharding-JDBC features quickly, please read [introduction](/00-overview/intro/).
  - Understanding Sharding-JDBC source code folder's structure，please read [folder structure illustration](/00-overview/module/)。
