@@ -8,36 +8,36 @@ next = "/01-start/features/"
 
 +++
 
-### 1. 阅读源码时为什么会出现编译错误?
+### 1. Why do Compilation Errors arise When Reading Sources?
 
-回答：
+The answer is:
 
-Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考[lombok官网](https://projectlombok.org/download.html)。
+Sharding-JDBC uses lombok to implement minimal code. For details, please refer to [lombok] (https://projectlombok.org/download.html).
 
-sharding-jdbc-orchestration模块需要先执行`mvn install`命令，根据protobuf文件生成gRPC相关的java文件。
+Sharding-JDBC-orchestration module needs to perform ` MVN install` command to generate gRPC-related Java file according to the protobuf file.
 
 
-### 2. Cloud not resolve placeholder ... in string value ...异常的解决方法?
+### 2. How to solve the Error of Cloud not resolve placeholder ... in string value ...？
 
-回答：
+The answer is:
 
-在Spring的配置文件中，由于inline表达式使用了Groovy语法，Groovy语法的变量符与Spring默认占位符同为`${}`，因此需要在配置文件中增加：
+For the inline expressions the Spring configuration file use a Groovy syntax, whose variable operator is `${}` same with Spring default placeholder, so it is necessary to increase something in the configuration file:
 
 ```xml
 <context:property-placeholder location="classpath:conf/conf.properties" ignore-unresolvable="true" />
 ```
 
-### 3. inline表达式返回结果为何出现浮点数？
+### 3. Why does the inline expression return a floating point number as a result?
 
-回答：
+The answer is:
 
-Java的整数相除结果是整数，但是对于inline表达式中的Groovy语法则不同，整数相除结果是浮点数。
-想获得除法整数结果需要将A/B改为A.intdiv(B)。
+In Java, the division result of two integers is an integer, but in the inline expression, the division result is a floating point number by using of an integer by using Groovy syntax.
+To return an integer, you need to change A/B to A.intdiv(B).
 
 
-### 4. 使用Proxool时分库结果不正确？
+### 4. Why is the result not correct when using Proxool.
 
-回答：
+The answer is:
 
 使用Proxool配置多个数据源时，应该为每个数据源设置alias，因为Proxool在获取连接时会判断连接池中是否包含已存在的alias，不配置alias会造成每次都只从一个数据源中获取连接。
 
@@ -49,114 +49,116 @@ Java的整数相除结果是整数，但是对于inline表达式中的Groovy语�
     }
 ```
 
-更多关于alias使用方法请参考[Proxool官网](http://proxool.sourceforge.net/configure.html)。
+Read more details on alias, refer to [Proxool](http://proxool.sourceforge.net/configure.html)。
 
-PS:sourceforge网站需要翻墙访问。
+PS: To visit sourceforge web, you need the VPN。
 
-### 5. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？
+### 5. Why is an exception thrown when the aggregate column without an alias is used in SQLSever and PostgreSQL?
 
-回答：
+The answer is:
 
-SQLServer和PostgreSQL获取不加别名的聚合列会改名。例如，如下SQL：
+SQLServer and PostgreSQL will rename the aggregate column without an alias. For example, the following SQL:
 
 ```sql
 SELECT SUM(num), SUM(num2) FROM table_xxx;
 ```
 
-SQLServer获取到的列为空字符串和(2)，PostgreSQL获取到的列为空sum和sum(2)。这将导致Sharding-JDBC在结果归并时无法找到相应的列而出错。
+SQLServer gets the column of empty string and (2), and PostgreSQL gets the columns of empty sum and sum(2), which will cause Sharding-JDBC to fail to find the corresponding column when the result is merged.
 
-正确的SQL写法应为：
+The correct SQL is：
 
 ```sql
 SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;
 ```
 
-### 6. 1.5.x之前支持OR，1.5.x之后不再支持，是什么原因？
+### 6. Why does the version prior to 1.5.x support OR and the version after 1.5.x no longer support?
 
-回答：
-
-1.5.x之前对OR支持并不完善，在复杂场景会有问题。OR的复杂度不仅在于解析，更在于路由。而且非常不适合在分布式数据库中使用，会极大的影响性能。OR是需要将OR和AND的组合拆解成全AND，才可以真正的执行SQL。
-举例说明：
+The answer is:
+OR is not supported perfectly before 1.5.x, there will be some problems in complex cases. Its parsing and routing are bothersome, and is very unsuitable to use in distributed databases, which can greatly affect performance. It is necessary to disassemble the combination of OR and AND into all ANDs to correctly execute the SQL.
+For example:
 
 ```sql
 WHERE (a=? OR b=?) AND c=?
 ```
 
-必须拆解为
+to be disassemble into:
 
 ```sql
 WHERE a=? AND c=?
 WHERE b=? AND c=?
 ```
 
-两条语句才能执行。
+to execute.
 
-再举一个具体的例子：
+Another example:
 
 ```sql
 WHERE id=1 OR status=‘OK’
 ```
+If the ID is a Sharding column, what should you do with the SQL?
 
-这样的SQL，如果id是分片键，应该如何处理呢？
-首先，需要路由到id=1的库或表，单表获取即可。
-其次，因为有OR，需要在所有的数据库和表中全路由，取出所有的status=‘OK’的数据。
-最后，将两种数据归并。
-因此，SQL必须拆为两条，一条为WHERE id=1，另一条为status=‘OK’，而且他们的分片路由方式截然不同。
-
-如果考虑到很多OR和AND的组合就更加复杂，必须组成一个多维递归的树结构。这种性能对于分布式数据库无法接受，也不可控，因此Sharding-JDBC选择不对OR进行支持。
-
-### 7. 如果SQL在Sharding-JDBC中执行不正确，该如何调试？
-
-回答：
-
-Sharding-JDBC 1.5.0版本之后提供了sql.show的配置，可以将Sharding-JDBC从解析上下文，到改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
-sql.show配置默认关闭，如果需要请通过配置开启。详情请参见[配置手册](/02-guide/configuration/)。
-
-### 8. 如果只有部分数据库分库分表，是否需要将不分库分表的表也配置在分片规则中？
-
-回答：
-
-是的。因为Sharding-JDBC是将多个数据源合并为一个统一的逻辑数据源。因此即使不分库分表的部分，不配置分片规则Sharding-JDBC即无法精确的断定应该路由至哪个数据源。
-但是Sharding-JDBC提供了两种变通的方式，有助于简化配置。
-
-方法1：配置default-data-source，凡是在默认数据源中的表可以无需配置在分片规则中，Sharding-JDBC将在找不到分片数据源的情况下将表路由至默认数据源。
-
-方法2：将不参与分库分表的数据源独立于Sharding-JDBC之外，在应用中使用多个数据源分别处理分片和不分片的情况。
-
-### 9. Sharding-JDBC提供的默认分布式自增主键策略为什么是不连续的，且尾数大多为偶数？
-
-回答：
-
-Sharding-JDBC采用snowflake算法作为默认的分布式分布式自增主键策略，用于保证分布式的情况下可以无中心化的生成不重复的自增序列。因此自增主键可以保证递增，但无法保证连续。
-
-而snowflake算法的最后4位是在同一毫秒内的访问递增值。因此，如果毫秒内并发度不高，最后4位为零的几率则很大。因此并发度不高的应用生成偶数主键的几率会更高。
+First, we need to route to the DB or table containing the rows of id=1.
+Second, because of OR, we need to fetch all the rows of status= 'OK' from all the databases and tables.
+Finally, we merge the data sets.
+Therefore, SQL must be split into two SQLs, one for WHERE id=1, and the other for status= 'OK', and their Sharding routing is completely different.
+If you have more OR and AND combinations, you have to create multidimensional recursion trees.. The distributed database cannot accept this low performance, so Sharding-JDBC prefer to not support OR.
 
 
-### 10. 指定了泛型为Long的SingleKeyTableShardingAlgorithm，遇到ClassCastException: Integer can not cast to Long?
+### 7. How to debug SQL if it is not executed correctly in Sharding-JDBC？
 
-回答：
+The answer is:
 
-必须确保数据库表中该字段和分片算法该字段类型一致，如：数据库中该字段类型为int(11)，泛型所对应的分片类型应为Integer，如果需要配置为Long类型，请确保数据库中该字段类型为bigint。
+The version after Sharding-JDBC 1.5.0 supports to configure sql.show which can print the parsing of SQL, rewriting of SQL, and final routing information to the info log.
+The configuration of sql.show is OFF by default. To configure it ON, please refer to the [configuration manual](/02-guide/configuration/) for details.
 
-### 11. Sharding-JDBC除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
+### 8. Do you need to configure tables without Sharding into sharding rules, if you only have partial databases or tables for Sharding?
 
-回答：是的，可以支持。但原生自增主键有使用限制，即不能将原生自增主键同时作为分片键使用。
+The answer is:
 
-由于Sharding-JDBC并不知晓数据库的表结构，而原生自增主键是不包含在原始SQL中内的，因此Sharding-JDBC无法将该字段解析为分片字段。如自增主键非分片键，则无需关注，可正常返回；若自增主键同时作为分片键使用，Sharding-JDBC无法解析其分片值，导致SQL路由至多张表，从而影响应用的正确性。
+Yes. Because Sharding-JDBC combines multiple data sources into a single logical data source. Therefore, Sharding-JDBC can not route those tables not configured in configuration rules.
 
-而原生自增主键返回的前提条件是INSERT SQL必须最终路由至一张表，因此，面对返回多表的INSERT SQL，自增主键则会返回零。
+But Sharding-JDBC provides two other ways to simplify the configuration.
 
-### 12. Oracle数据库使用Timestamp类型的Order By语句抛出异常提示“Order by value must implements Comparable”?
+Method 1: To configure default-data-source, thus if Sharding-JDB does not find correct Sharding data source for tables, it will route the tables to the default data source.
 
-回答：
+Method 2: We can configure the datasources with Sharding and without Sharding in Sharding-JDBC, and to use different data sources in the application to handle the case of Sharding or not.
 
-针对上面问题解决方式有两种：
-1.配置启动JVM参数“-oracle.jdbc.J2EE13Compliant=true”
-2.通过代码在项目初始化时设置System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true");
 
-原因如下:
+### 9. Why does Sharding-JDBC provide the primary key generated by the default distributed auto-increment primary strategy is not continuous, and its mantissa mostly is even?
 
-com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()方法如下:
+The answer is:
+
+Sharding-JDBC uses the snowflake algorithm as the default distributed self-increasing primary key strategy to decentralized compute the unique self-increment primary key. Therefore, self-increment primary key can be increasing but not sequential.
+
+The last four bits of the primary key computed by the snowflake algorithm represent the incremental values in one millisecond. Therefore, if the concurrency of applications is not high in one millisecond, the chance of the last four being zero are high.
+
+
+### 10. Why does a `ClassCastException: Integer can not cast to Long` arise where i specify a SingleKeyTableShardingAlgorithm generic for Long Type ?
+
+The answer is:
+
+To ensure that the type of Sharding column in the database are consistent with the type of columns in the Sharding algorithm. For example, the column type in the database is int(11) and the Sharding column is Integer. If the Sharding column is Long, the column type in the database is bigint.
+
+### 11. Does Sharding-JDBC support native self-incrementing primary keys in addition to supporting distributed self-incrementing primary keys?
+
+The answer is:
+
+Yes. However, there are restrictions on the use of native self-increment primary keys, which means that you cannot use native self-increment primary keys as Sharding columns at the same time.
+
+Because Sharding-JDBC does not know the table structure, and native self-increment primary key is not included in the original SQL, so that Sharding-JDBC cannot parse the key into Sharding column, resulting in SQL being routed to multiple tables.
+When the INSERT SQL is routed to one table, the native self-increment primary key has a value; When the INSERT SQL is routed to more than one table, it will be 0.
+
+### 12. Why does the Oracle throw an exception "Order by value must implements Comparable" when you use the Order By statement including Timestamp column?
+
+The answer is:
+
+Two solutions:
+1. Configure JVM parameters "-oracle.jdbc.J2EE13Compliant=true"
+2. Set System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true") in the project initial step;
+
+The reason is:
+
+com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues():
 
 ```java
     private List<Comparable<?>> getOrderValues() throws SQLException {
@@ -170,8 +172,9 @@ com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()�
     }
 ```
 
-使用了resultSet.getObject(int index)方法，针对TimeStamp oracle会根据oracle.jdbc.J2EE13Compliant属性判断返回java.sql.TimeStamp还是自定义oralce.sql.TIMESTAMP
-详见ojdbc源码oracle.jdbc.driver.TimestampAccessor#getObject(int var1)方法：
+Because of using resultSet.getObject(int index)，TimeStamp oracle will decide to return java.sql.TimeStamp or oralce.sql.TIMESTAMP according to oracle.jdbc.J2EE13Compliant.
+
+More detail, please refer to the ojdb sourcecode of coracle.jdbc.driver.TimestampAccessor#getObject(int var1)：
 
 ```java
     Object getObject(int var1) throws SQLException {
@@ -202,10 +205,9 @@ com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()�
     }
 ```
 
-### 13. 使用Spring命名空间时找不到xsd?
+### 13. Why can not find xsd when using Spring namespace?
 
-回答：
+The answer is:
 
-Spring命名空间使用规范并未强制要求将xsd文件部署至公网地址，但考虑到部分用户的需求，我们也将相关xsd文件部署至Sharding-JDBC官网。
-
-实际上sharding-jdbc-core-config-spring的jar包中META-INF\spring.schemas配置了xsd文件的位置：META-INF\namespace\sharding.xsd和META-INF\namespace\master-slave.xsd，只需确保jar包中该文件存在即可。
+Deploying an XSD file to a public web address is not the requirement of the Spring namespace usage specification, but some users have such requirements, so we deploy the XSD file to the Sharding-JDBC website.
+In fact, META-INF\spring.schemas in the jar package of sharding-jdbc-core-config-spring configures the position of xsd file：META-INF\namespace\sharding.xsd和META-INF\namespace\master-slave.xsd.
