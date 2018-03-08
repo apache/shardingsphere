@@ -60,6 +60,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class ExecutorEngine implements AutoCloseable {
     
+    private static final ThreadPoolExecutor shutdownExecutor = new ThreadPoolExecutor(
+            0, 1, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingJDBC-ExecutorEngineCloseTimer").build());
+    
     private final ListeningExecutorService executorService;
     
     public ExecutorEngine(final int executorSize) {
@@ -214,13 +217,36 @@ public final class ExecutorEngine implements AutoCloseable {
     
     @Override
     public void close() {
-        executorService.shutdownNow();
+        executorService.shutdown();
         try {
-            executorService.awaitTermination(5, TimeUnit.SECONDS);
+            if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
         } catch (final InterruptedException ignored) {
         }
         if (!executorService.isTerminated()) {
-            throw new ShardingJdbcException("ExecutorEngine can not been terminated");
+            newThreadToClose();
         }
+    }
+    
+    private void newThreadToClose() {
+        shutdownExecutor.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    //这里是通过interrupt去中断执行任务，如果对interrupt没有响应的任务或catch住InterruptedException的任务将永远无法关闭
+                    while (true) {
+                        executorService.shutdownNow();
+
+                        if (executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
+                            break;
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    log.error("ExecutorEngine can not been terminated");
+                }
+            }
+        });
     }
 }
