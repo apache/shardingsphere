@@ -1,12 +1,13 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "模块说明"
-weight = 3
-prev = "/03-design/architecture/"
+title = "目录结构"
+weight = 2
+prev = "/01-overview/intro/"
 next = "/03-design/roadmap/"
-
 +++
+
+您可以在Sharding-JDBC的github[官方仓库](https://github.com/shardingjdbc)找到源码。
 
 ```
 sharding-jdbc
@@ -15,6 +16,10 @@ sharding-jdbc
     ├      ├──sharding-jdbc-core-spring-namespace                             Spring命名空间支持模块，可直接使用
     ├      ├──sharding-jdbc-core-spring-boot                                  SpringBoot支持模块，可直接使用
     ├──sharding-jdbc-orchestration                                            数据库服务编排治理模块，可接使用
+    ├──sharding-jdbc-orchestration-spring                                     数据库服务编排治理的Spring父模块，不应接使用
+    ├      ├──sharding-jdbc-orchestration-core-spring-namespace               数据库服务编排治理的Spring命名空间支持模块，可直接使用
+    ├      ├──sharding-jdbc-orchestration-core-spring-boot                    数据库服务编排治理的SpringBoot支持模块，可直接使用
+    ├──sharding-jdbc-server                                                   提供代理服务器连接数据库的模块，可直接使用
     ├──sharding-jdbc-transaction-parent                                       柔性事务父模块，不应直接使用
     ├      ├──sharding-jdbc-transaction                                       柔性事务核心模块，可直接使用
     ├      ├──sharding-jdbc-transaction-storage                               柔性事务存储模块，不应直接使用
@@ -43,5 +48,7 @@ sharding-jdbc-example                                                         �
     ├      ├──sharding-jdbc-orchestration-etcd-spring-namespace-example       Etcd基于Spring Namespace配置的数据库服务编排治理的使用示例
     ├──sharding-jdbc-transaction-example                                      柔性事务的使用示例
 
-sharding-jdbc-doc                                                             文档md源码模块，不应直接使用，直接阅读官网即可
+sharding-jdbc-opentracing                                                     提供与Opentracing适配插件的源码
+
+sharding-jdbc-doc                                                             官方网站和文档的源码，不应直接使用，直接阅读官网即可
 ```

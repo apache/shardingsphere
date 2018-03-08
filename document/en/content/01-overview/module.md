@@ -3,7 +3,7 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "Module structure"
 weight = 2
-prev = "/00-overview/intro/"
+prev = "/01-overview/intro/"
 next = "/03-design/roadmap/"
 +++
 

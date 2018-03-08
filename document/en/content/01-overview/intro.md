@@ -3,8 +3,8 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "Introduction"
 weight = 1
-prev = "/00-overview"
-next = "/00-overview/module/"
+prev = "/01-overview"
+next = "/01-overview/module/"
 +++
 
 [![GitHub release](https://img.shields.io/github/release/shardingjdbc/sharding-jdbc.svg?style=social&label=Release)](https://github.com/shardingjdbc/sharding-jdbc/releases)&nbsp;
