@@ -4,7 +4,7 @@ date = "2017-04-12T16:06:17+08:00"
 title = "其他"
 weight = 0
 prev = "/06-other/stress-test/"
-next = "/01-overview/intro/"
+next = "/01-overview/"
 chapter = true
 +++
 

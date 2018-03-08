@@ -3,7 +3,7 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "performance test report"
 weight = 2
-prev = "/06-other/faq"
+prev = "/06-other/faq/"
 next = "/01-overview/"
 +++
 
