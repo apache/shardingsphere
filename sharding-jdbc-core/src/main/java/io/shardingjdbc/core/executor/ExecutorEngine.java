@@ -216,10 +216,6 @@ public final class ExecutorEngine implements AutoCloseable {
     
     @Override
     public void close() {
-        newThreadToClose();
-    }
-    
-    private void newThreadToClose() {
         SHUTDOWN_EXECUTOR.execute(new Runnable() {
             
             @Override
