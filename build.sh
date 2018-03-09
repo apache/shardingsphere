@@ -21,6 +21,20 @@ hugo
 cd ..
 mv docs_1.x/public target/docs_1.x
 
+mkdir target/document
+
+cd document/cn
+hugo
+cd ..
+cd ..
+mv document/cn/public target/document/cn
+
+cd document/en
+hugo
+cd ..
+cd ..
+mv document/en/public target/document/en
+
 mkdir target/community
 
 cd community/cn
