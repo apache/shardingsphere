@@ -35,6 +35,3 @@ next = "/01-overview/"
 | postgresql                           | BSD             |
 | mssql-jdbc                           | MIT             |
 | HikariCP                             | Apache-2.0      |
-| bytebuddy                            | Apache-2.0      |
-| objenesis                            | Apache-2.0      |
-| commons-collections                  | Apache-2.0      |
