@@ -2,8 +2,8 @@
 toc = true
 title = "目录结构"
 weight = 2
-prev = "/01-overview/"
-next = "/02-sharding/"
+prev = "/07-other/faq/"
+next = "/07-other/stress-test/"
 +++
 
 您可以在Sharding-JDBC的github[官方仓库](https://github.com/shardingjdbc)找到源码。

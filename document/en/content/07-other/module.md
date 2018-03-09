@@ -2,8 +2,8 @@
 toc = true
 title = "Module structure"
 weight = 2
-prev = "/01-overview/"
-next = "/02-sharding/"
+prev = "/07-other/faq/"
+next = "/07-other/stress-test/"
 +++
 
 You can find source code from Sharding-JDBC [official repo](https://github.com/shardingjdbc) on github.

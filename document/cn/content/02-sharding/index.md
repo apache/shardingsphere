@@ -2,7 +2,7 @@
 icon = "<b>2. </b>"
 title = "数据分片"
 weight = 0
-prev = "/01-overview/module/"
+prev = "/01-overview/"
 next = "/02-sharding/concept/"
 chapter = true
 +++

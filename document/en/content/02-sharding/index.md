@@ -2,7 +2,7 @@
 icon = "<b>2. </b>"
 title = "Data sharding"
 weight = 0
-prev = "/01-overview/module/"
+prev = "/01-overview/"
 next = "/02-sharding/concept/"
 chapter = true
 +++
