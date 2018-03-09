@@ -1,10 +1,9 @@
 +++
 toc = true
-date = "2016-12-06T22:38:50+08:00"
-title = "performance test report"
+title = "Performance test"
 weight = 2
 prev = "/07-other/faq/"
-next = "/01-overview/"
+next = "/07-other/test-engine/"
 +++
 
 ## The summary of test result

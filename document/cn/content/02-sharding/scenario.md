@@ -171,7 +171,6 @@ Sharding-JDBC认为对于分片策略存有两种维度。
       inline:
         shardingColumn: user_id
         algorithmExpression: demo_ds_${user_id % 2}
-
 ```
 
 如果分片规则中的所有表或大部分表的分片策略相同，可以使用默认策略来简化配置。
