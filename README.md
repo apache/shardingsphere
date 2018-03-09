@@ -56,7 +56,7 @@ Sharding-JDBC: A data sharding, read-write splitting, BASE transaction and datab
 Use JDBC connect databases without redirect cost for java application, best performance for production.
 
 * ORM compatible. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
-* Connection-pool compatible. DBCP, C3P0, BoneCP, Druid supported.
+* Connection-pool compatible. DBCP, BoneCP, Druid supported.
 * Multi SQL-based databases compatible. Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
 
 ![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_brief_en.png)
