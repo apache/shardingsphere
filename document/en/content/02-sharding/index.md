@@ -9,15 +9,15 @@ chapter = true
 
 ## Background
 
-将全部数据集中存储至单一数据节点的解决方案，在性能和可用性这两方面已经越来越难于满足互联网的海量数据场景。
-关系型数据库大多采用B+树类型的索引。在数据量超过阀值的情况下，索引高度的增加将使得访问磁盘的IO次数增加，进而导致查询性能的下降。高并发访问请求也使得集中式数据库成为了系统的最大瓶颈。
-在传统的关系型数据库无法满足需要的情况下，将数据存储至NoSQL和NewSQL的尝试越来越多。但NoSQL的SQL不友好性和NewSQL的成熟度欠缺，以及生态圈的不完善，使得它们在与关系型数据库的博弈中始终无法完成致命一击，而关系型数据库的地位依然不可撼动。
+The solution to store all the data to a single data node has become more and more difficult to meet the massive data scenarios of the Internet in two aspects of performance and availability.
+Most relational databases use the index of the B+ tree. As the amount of data exceeds the threshold, the increase in index depth will increase the IO of disk access, which leads to a decline in query performance. High concurrency requests also make the centralized database a bottleneck for the system.
+There are more and more attempts to store data to NoSQL and NewSQL when the traditional relational database is unable to meet the needs. But NoSQL's SQL unfriendliness, NewSQL's immaturity and the imperfections of the ecosystem make them fail to achieve a fatal blow in the game with relational database, and the position of relational database is still unshaken.
 
-为了解决关系型数据库在海量数据处理时的性能问题，将数据分片是行之有效的解决方案。将集中于单一节点的数据拆散为多个数据库和表分别存储，称为分库分表。
-分库和分表可以用于解决数据量过大而导致的性能问题。分库还可以有效分散高并发量，分表虽然无法缓解并发量，但仅跨表仍然可以使用原生的ACID事务。而一旦跨库，涉及到事务的问题就无比复杂。
+In order to solve the performance problem of relational database in mass data processing, data sharding is an effective solution. Split single node data and store them into multi-tables and multi-databases, named sharding.
+Sharding can be used to solve performance problems caused by large amount of data. Database sharding can also effectively disperse high concurrency, while table sharding can not ease the amount of concurrency, but it is still possible to use native ACID transactions across the tables. Once across the database, the issues involved in the transaction are very complex.
 
-按照业务拆分的方式称为垂直拆分。例如，将用户库和订单库拆分到不同的数据库中。垂直拆分可以缓解数据量和访问量带来的问题，但无法根治。如果垂直拆分之后的用户和订单数量依然超过单节点所能承载的阀值，则需要水平拆分来进一步处理。
-将一个表中的数据按照一定的规则拆分至不同表和数据库中，称之为水平拆分。例如，原来的订单数据在order_ds.t_order表中，如果按照订单的user_id将订单拆分为2个库，再按照订单的order_id在每个库中分成4个表，那么拆分的结果则是order_ds_0.t_order_0, order_ds_0.t_order_1, order_ds_0.t_order_2, order_ds_0.t_order_3, order_ds_1.t_order_0, order_ds_1.t_order_1, order_ds_1.t_order_2, order_ds_1.t_order_3。
-这只是简单的水平拆分案例，在实际使用中，将库和表拆分的更加分散也是十分常见的。
+According to the way of sharding by business, it is called vertical sharding. For example, the user database and order database are split into different databases. Vertical sharding can alleviate the problems caused by the amount of data and the amount of access, but it can not be solved thoroughly. If the count of users and orders after the vertical sharding still exceeds the threshold, the horizontal sharding is required to be further processed.
+Split data from a single table into different tables and databases in accordance with certain rules, which is called horizontal sharding. For example, the original order data in the order_ds.t_order table, if sharding in accordance with the user_id, orders will split into 2 datebases, and then split into 4 tables in each database according to the order_id. So the result is order_ds_0.t_order_0, order_ds_0.t_order_1, order_ds_0.t_order_2, order_ds_0.t_order_3, order_ds_1.t_order_0, order_ds_1.t_order_1, order_ds_1.t_order_2, order_ds_1.t_order_3.
+This is a simple case of horizontal sharding, and it is also very common to make the sharding of the database and table more dispersed in practical use.
 
-虽然数据分片解决了性能问题，但也额外的引入了其他问题。面对如此散乱的分库分表之后的数据，应用开发和运维人员对数据库的操作变得异常繁重是重要挑战之一。他们需要知道什么样的数据需要从哪个具体的数据库的分表中去获取。**透明化分库分表所带来的影响，让使用方尽量像使用一个数据库一样使用水平拆分之后的数据库，是分库分表中间件的主要功能。**
+While data sharding solves the performance problem, additional problems have been involved. In the face of so scattered sharding data, developers and ops will meet great challenge. They need to know the actual database and table that store the data. **The mission of our middleware is to eliminate the influence caused by sharding, and allow user to use sharding database like a single database.**
