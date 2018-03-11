@@ -7,51 +7,51 @@ next = "/02-contribute/"
 chapter = true
 +++
 
-# Organization
+# 组织
 
-## Project Management Committee (PMC)
-As a member of PMC, you **must** contribute and maintain the features or modules, and also take part in project management and building the eco-system. Because of that, you have following rights:
+## 项目管理委员会 (PMC)
+作为PMC成员，你 **必须** 贡献代码并维护软件特性和功能模块，还要参与项目管理和构建生态系统的工作。根据以上所承担的义务, 你会获得如下一系列权限：
 
-1. In charged with responsibility and governance for all projects/repositories in Sharding-JDBC organization.
+1. 主管Sharding-JDBC组织中所有项目/仓库的责任和治理工作。
 
-1. Edit rights for all repositories.
+1. 所有仓库的编辑权限。
 
-1. Merge right for pull request.
+1. pull request合并权限。
 
-1. Vote right for promoting contributor to Committer Team and PMC.
+1. Contributor晋升为Committer或PMC成员的投票权限。
 
-1. Start a vote for promoting contributor to Committer Team and PMC, pull request or feature discussion.
+1. 为Contributor晋升Committer或PMC成员、pull request和feature讨论发起投票的权限。
 
-1. For now, only 张亮 [@terrymanu](https://github.com/terrymanu) has right to remove people from PMC or Committer Team.
+1. 目前为止，只有 张亮 [@terrymanu](https://github.com/terrymanu) 有权删除PMC和Committer成员。
 
-The current Project Management Committee is as follows (in chronological order):
+当前项目管理委员会名单（按时间先后排序）如下：
 
-* 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu) Java and architect expert, Jingdong
+* 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu) Java技术和架构专家, 京东
 
-* 曹昊, Hao Cao, [@haocao](https://github.com/haocao) Senior Architect, Dangdang
+* 曹昊, Hao Cao, [@haocao](https://github.com/haocao) 高级架构师, 当当
 
-* 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng) APM and tracing expert, Apache SkyWalking(incubator) creator & PMC member
+* 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng) APM和tracing专家, Apache SkyWalking（孵化器）创建者 & PMC成员
 
-* 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily) Database and APM expert, Apache SkyWalking(incubator) PMC member
+* 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily) 数据库和APM专家, Apache SkyWalking（孵化器）PMC成员
 
-# Voting
+# 投票
 
-In various situations the Sharding-JDBC shall hold a vote. These votes can happen on the phone, email, or via a voting service, when appropriate. Voters can either respond "agree, yes, +1", "disagree, no, -1", or "abstain". A vote passes with two-thirds vote of votes cast. An abstain vote equals not voting at all.
+Sharding-JDBC在很多情况下需要投票。选票可以视情况通过手机、电子邮件或某个投票系统产生。投票人可以回复“agree, yes, +1”，“disagree, no, -1”或“弃权”。赞成票占总票数的三分之二即可通过本次投票。弃权票等同于未投票。
 
-张亮 [@terrymanu](https://github.com/terrymanu) has a special veto power: override the voting result, default: not use.
+张亮 [@terrymanu](https://github.com/terrymanu) 拥有特别否决权：推翻投票结果，默认：不使用。
 
 # Committer
 
-* 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java Expert, Antfin
+* 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java技术专家, 蚂蚁金服
 
-* 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) Technical manager, Kangda
+* 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 技术经理, Kangda
 
-* 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster) Senior engineer, Hangzhou Enniu Network Technology Company Limited
+* 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster) 高级工程师, 杭州恩牛网络技术有限公司
 
-* 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) Senior engineer, huimai365
+* 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) 高级工程师, 惠买集团
 
-* 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT Manager, ZeDaYiSheng
+* 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT经理, 泽达易盛
 
-# IM
+# 即时通信
 
 * [Gitter](https://gitter.im/Sharding-JDBC/shardingjdbc)
