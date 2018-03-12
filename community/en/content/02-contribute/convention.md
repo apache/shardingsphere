@@ -6,8 +6,6 @@ next = "/03-company/"
 chapter = true
 +++
 
-# Development conventions
-
 ## Development idea
 
  - Write extremely clean, simplify and graceful code. Fully agree with <Refactoring: Improving the Design of Existing Code> and <Clean Code: A Handbook of Agile Software Craftsma>.
