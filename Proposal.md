@@ -114,7 +114,7 @@ The project consists of five distinct codebases: JDBC driver, Proxy, Opentracing
 
 ## Source and Intellectual Property Submission Plan
 
-The code is currently Apache 2.0 license, and was verified to have no intellectual property or license issues before being released to open source by Dangdang in 2016. Dangdang will provide SGA after the project join to incubator. 
+The code is currently Apache 2.0 license, and was verified to have no intellectual property or license issues before being released to open source by Dangdang in 2016. Dangdang will provide SGA and all committers will sign ICLA after the project join to incubator. 
 
 ## External Dependencies
 
