@@ -6,11 +6,11 @@ next = "/01-organization/"
 chapter = true
 +++
 
-# Using companies (in chronological order)
-
 Please leave your company's info when using Sharding-JDBC.
 
 Register by `company` + `homepage` + `company type` [here](https://github.com/shardingjdbc/sharding-jdbc/issues/234).
+
+Using companies in chronological order.
 
 ## E-commerce
 
