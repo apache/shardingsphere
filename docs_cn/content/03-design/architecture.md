@@ -2,7 +2,7 @@
 toc = true
 title = "架构设计"
 weight = 1
-prev = "/03-design"
+prev = "/03-design/"
 next = "/03-design/module/"
 
 +++

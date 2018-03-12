@@ -2,8 +2,8 @@
 toc = true
 title = "性能测试报告"
 weight = 7
-prev = "/01-start/sql-supported"
-next = "/02-guide"
+prev = "/01-start/sql-supported/"
+next = "/02-guide/"
 
 +++
 # Sharding-JDBC性能测试报告

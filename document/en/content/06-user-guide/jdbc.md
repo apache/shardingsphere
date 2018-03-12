@@ -3,7 +3,7 @@ toc = true
 title = "JDBC"
 weight = 1
 prev = "/06-user-guide/"
-next = "/06-user-guide/proxy"
+next = "/06-user-guide/proxy/"
 +++
 
 ## To configure by using API

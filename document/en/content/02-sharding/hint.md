@@ -2,8 +2,8 @@
 toc = true
 title = "Hint"
 weight = 5
-prev = "/02-sharding/configuration"
-next = "/02-sharding/key-generator"
+prev = "/02-sharding/configuration/"
+next = "/02-sharding/key-generator/"
 +++
 
 ## Background

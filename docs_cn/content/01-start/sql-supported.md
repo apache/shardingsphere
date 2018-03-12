@@ -2,8 +2,8 @@
 toc = true
 title = "SQL支持详细列表"
 weight = 6
-prev = "/01-start/limitations"
-next = "/01-start/stress-test"
+prev = "/01-start/limitations/"
+next = "/01-start/stress-test/"
 
 +++
 

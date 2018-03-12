@@ -2,7 +2,7 @@
 toc = true
 title = "Basic Concepts "
 weight = 1
-prev = "/02-guide"
+prev = "/02-guide/"
 next = "/02-guide/sharding/"
 
 +++

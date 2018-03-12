@@ -2,8 +2,8 @@
 icon = "<b>2. </b>"
 title = "User Manual"
 weight = 0
-prev = "/01-start/stress-test"
-next = "/02-guide/concepts"
+prev = "/01-start/stress-test/"
+next = "/02-guide/concepts/"
 chapter = true
 
 +++

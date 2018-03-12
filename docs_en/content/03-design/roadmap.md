@@ -2,8 +2,8 @@
 toc = true
 title = "Roadmap"
 weight = 4
-prev = "/03-design/module"
-next = "/00-overview"
+prev = "/03-design/module/"
+next = "/00-overview/"
 +++
 
 ## Completed

@@ -1,7 +1,7 @@
 +++
 title = "组织"
 weight = 0
-prev = "/04-company/"
+prev = "/03-company/"
 next = "/02-contribute/"
 chapter = true
 +++

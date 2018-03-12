@@ -2,8 +2,8 @@
 toc = true
 title = "SQL支持详细列表"
 weight = 7
-prev = "/02-sharding/key-generator"
-next = "/02-sharding/subquery"
+prev = "/02-sharding/key-generator/"
+next = "/02-sharding/subquery/"
 +++
 
 由于SQL语法灵活复杂，分布式数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的SQL出现。

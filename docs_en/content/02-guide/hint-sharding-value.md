@@ -2,8 +2,8 @@
 toc = true
 title = "Mandatory Routing"
 weight = 7
-prev = "/02-guide/orchestration"
-next = "/02-guide/key-generator"
+prev = "/02-guide/orchestration/"
+next = "/02-guide/key-generator/"
 
 +++
 

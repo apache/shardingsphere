@@ -3,7 +3,7 @@ toc = true
 title = "Sharding-JDBC-Server"
 weight = 13
 prev = "/02-guide/apm/"
-next = "/03-design"
+next = "/03-design/"
 
 +++
 

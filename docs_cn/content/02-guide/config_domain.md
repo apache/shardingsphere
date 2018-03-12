@@ -2,7 +2,7 @@
 toc = true
 title = "配置域模型"
 weight = 4
-prev = "/02-guide"
+prev = "/02-guide/"
 next = "/02-guide/sharding/"
 
 +++
