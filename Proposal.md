@@ -106,11 +106,11 @@ The project consists of five distinct codebases: JDBC driver, Proxy, Opentracing
 
 * https://github.com/shardingjdbc/sharding-jdbc
 
-* https://github.com/shardingjdbc/sharding-opentracing
+* https://github.com/shardingjdbc/sharding-jdbc-opentracing
 
-* https://github.com/shardingjdbc/sharding-example
+* https://github.com/shardingjdbc/sharding-jdbc-example
 
-* https://github.com/shardingjdbc/sharding-doc
+* https://github.com/shardingjdbc/sharding-jdbc-doc
 
 ## Source and Intellectual Property Submission Plan
 
