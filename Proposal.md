@@ -52,7 +52,7 @@ Right now, we make use of github as code hosting as well as gitter for community
 
 The core developers are a diverse group of experienced open source developers and team leaders.
 
-#### Committer members
+#### PMC members
 
 * 张亮, Liang Zhang, @terrymanu Java and architect expert, Jingdong
 
@@ -62,7 +62,7 @@ The core developers are a diverse group of experienced open source developers an
 
 * 高洪涛, Hongtao Gao, @hanahmily Database and APM expert, Apache SkyWalking(incubator) PMC member
 
-#### PMC members
+#### Committer members
 
 * 李广云, Guangyun Li, @guangyun1013 Java Expert, Antfin
 
@@ -204,7 +204,7 @@ gitter: https://gitter.im/Sharding-JDBC/shardingjdbc
 
 * Enniu: Zhengke Zhu
 
-* Personal: Sheng Wu, Hongtao Gao, Guangyun Li, Wenbin Wang, ZeJian Liu, Xiaoguang Ma
+* Individual: Sheng Wu, Hongtao Gao, Guangyun Li, Wenbin Wang, ZeJian Liu, Xiaoguang Ma
 
 ## Sponsors
 
