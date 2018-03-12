@@ -52,6 +52,12 @@ Sharding-JDBC在很多情况下需要投票。选票可以视情况通过手机�
 
 * 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT经理, 泽达易盛
 
+* 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666) 高级工程师, 京东
+
 # 即时通信
 
 * [Gitter](https://gitter.im/Sharding-JDBC/shardingjdbc)
+
+# 邮件列表
+
+* [Google Groups](mailto:shardingjdbc+subscribe@googlegroups.com)

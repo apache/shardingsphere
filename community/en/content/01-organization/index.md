@@ -52,6 +52,12 @@ In various situations the Sharding-JDBC shall hold a vote. These votes can happe
 
 * 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT Manager, ZeDaYiSheng
 
+* 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666) Senior engineer, Jingdong
+
 # IM
 
 * [Gitter](https://gitter.im/Sharding-JDBC/shardingjdbc)
+
+# Mailing List
+
+* [Google Groups](mailto:shardingjdbc+subscribe@googlegroups.com)

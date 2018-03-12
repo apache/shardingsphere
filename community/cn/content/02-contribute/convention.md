@@ -1,9 +1,9 @@
 +++
 date = "2018-03-05T16:06:17+08:00"
 title = "开发规范"
-weight = 0
-prev = "/02-contribute/"
-next = "/04-company/"
+weight = 2
+prev = "/02-contribute/contributor"
+next = "/03-company/"
 chapter = true
 +++
 
