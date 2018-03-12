@@ -15,6 +15,9 @@ import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.common.ConfigRuntime;
 import io.shardingjdbc.dbtest.common.FileUtils;
 import io.shardingjdbc.dbtest.common.PathUtils;
+import io.shardingjdbc.dbtest.init.InItCreateSchema;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -48,7 +51,13 @@ public class StartTest {
         return params;
     }
 
-
+    @BeforeClass
+    public static void beforeClass()  {
+        if(ConfigRuntime.isInitialized()){
+            InItCreateSchema.createDatabase();
+            InItCreateSchema.initTable();
+        }
+    }
 
     @Test
     public void test()  {
@@ -56,6 +65,13 @@ public class StartTest {
             AssertEngine.runAssert(path);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @AfterClass
+    public  static void afterClass()  {
+        if(ConfigRuntime.isInitialized()){
+            InItCreateSchema.dropDatabase();
         }
     }
 

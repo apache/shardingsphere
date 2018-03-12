@@ -115,4 +115,8 @@ public class ConfigRuntime {
     public static String getAssertPath(){
         return ConfigUtils.getString("assert.path",null);
     }
+
+    public static boolean isInitialized(){
+        return Boolean.valueOf(ConfigUtils.getString("initialized","false"));
+    }
 }
