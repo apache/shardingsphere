@@ -186,9 +186,9 @@ gitter: https://gitter.im/Sharding-JDBC/shardingjdbc
 
 * 曹昊, Hao Cao, 
 
-* 吴晟, Sheng Wu, 
+* 吴晟, Sheng Wu, wusheng@apache.org
 
-* 高洪涛, Hongtao Gao, 
+* 高洪涛, Hongtao Gao, hanahmily@apache.org
 
 * 李广云, Guangyun Li, 
 
