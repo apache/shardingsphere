@@ -210,7 +210,7 @@ public final class MySQLPacketPayload {
             byteBuf.writeByte(0);
             return;
         }
-        writeIntLenenc(value.length());
+        writeIntLenenc(value.getBytes().length);
         byteBuf.writeBytes(value.getBytes());
     }
     
@@ -285,7 +285,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read rest of packet string from byte buffers.
-     * @see @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
      *
      * @return rest of packet string
      */
@@ -297,7 +297,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write rest of packet string to byte buffers.
-     * @see @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
      *
      * @param value rest of packet string
      */
@@ -320,7 +320,7 @@ public final class MySQLPacketPayload {
      * @param length length of reserved
      */
     public void writeReserved(final int length) {
-        for (int i = 0; i < length; i ++) {
+        for (int i = 0; i < length; i++) {
             byteBuf.writeByte(0);
         }
     }

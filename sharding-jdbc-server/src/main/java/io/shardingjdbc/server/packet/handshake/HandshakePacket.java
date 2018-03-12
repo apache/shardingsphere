@@ -4,7 +4,7 @@ import io.shardingjdbc.server.constant.CapabilityFlag;
 import io.shardingjdbc.server.constant.ServerInfo;
 import io.shardingjdbc.server.constant.StatusFlag;
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
-import io.shardingjdbc.server.packet.MySQLSentPacket;
+import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
 import lombok.Getter;
 
 /**
@@ -15,7 +15,7 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter
-public class HandshakePacket extends MySQLSentPacket {
+public class HandshakePacket extends AbstractMySQLSentPacket {
     
     private final int protocolVersion = ServerInfo.PROTOCOL_VERSION;
     
@@ -33,7 +33,7 @@ public class HandshakePacket extends MySQLSentPacket {
     
     private final AuthPluginData authPluginData;
     
-    public HandshakePacket(final int connectionId, AuthPluginData authPluginData) {
+    public HandshakePacket(final int connectionId, final AuthPluginData authPluginData) {
         setSequenceId(0);
         this.connectionId = connectionId;
         this.authPluginData = authPluginData;

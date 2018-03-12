@@ -17,9 +17,15 @@
 
 package io.shardingjdbc.core.rewrite;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
+import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
+import io.shardingjdbc.core.rewrite.placeholder.ShardingPlaceholder;
+import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
+import io.shardingjdbc.core.rule.ShardingRule;
+import io.shardingjdbc.core.rule.TableRule;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -31,16 +37,12 @@ import java.util.Map;
  * @author gaohongtao
  * @author zhangliang
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLBuilder {
     
     private final List<Object> segments;
     
     private StringBuilder currentSegment;
     
-    /**
-     * Constructs a empty SQL builder.
-     */
     public SQLBuilder() {
         segments = new LinkedList<>();
         currentSegment = new StringBuilder();
@@ -57,24 +59,12 @@ public final class SQLBuilder {
     }
     
     /**
-     * Append index token.
+     * Append sharding placeholder.
      *
-     * @param indexName index name
-     * @param tableName table name
+     * @param shardingPlaceholder sharding placeholder
      */
-    public void appendIndex(final String indexName, final String tableName) {
-        segments.add(new IndexToken(indexName, tableName));
-        currentSegment = new StringBuilder();
-        segments.add(currentSegment);
-    }
-    
-    /**
-     * Append table token.
-     *
-     * @param tableName table name
-     */
-    public void appendTable(final String tableName) {
-        segments.add(new TableToken(tableName));
+    public void appendPlaceholder(final ShardingPlaceholder shardingPlaceholder) {
+        segments.add(shardingPlaceholder);
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }
@@ -82,50 +72,41 @@ public final class SQLBuilder {
     /**
      * Convert to SQL string.
      *
-     * @param tableTokens table tokens
+     * @param logicAndActualTableMap logic and actual map
+     * @param shardingRule sharding rule
      * @return SQL string
      */
-    public String toSQL(final Map<String, String> tableTokens) {
+    public String toSQL(final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule) {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
-            if (each instanceof TableToken && tableTokens.containsKey(((TableToken) each).tableName)) {
-                result.append(tableTokens.get(((TableToken) each).tableName));
-            } else if (each instanceof IndexToken) {
-                IndexToken indexToken = (IndexToken) each;
-                result.append(indexToken.indexName);
-                String tableName = tableTokens.get(indexToken.tableName);
-                if (!Strings.isNullOrEmpty(tableName)) {
+            if (!(each instanceof ShardingPlaceholder)) {
+                result.append(each);
+                continue;
+            }
+            String logicTableName = ((ShardingPlaceholder) each).getLogicTableName();
+            String actualTableName = logicAndActualTableMap.get(logicTableName);
+            if (each instanceof TablePlaceholder) {
+                result.append(null == actualTableName ? logicTableName : actualTableName);
+            } else if (each instanceof SchemaPlaceholder) {
+                SchemaPlaceholder schemaPlaceholder = (SchemaPlaceholder) each;
+                Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(actualTableName);
+                if (!tableRule.isPresent() && Strings.isNullOrEmpty(shardingRule.getDefaultDataSourceName())) {
+                    throw new ShardingJdbcException("Cannot found schema name '%s' in sharding rule.", schemaPlaceholder.getLogicSchemaName());
+                }
+                // TODO 目前只能找到真实数据源名称. 未来需要在初始化sharding rule时创建connnection,并验证连接是否正确,并获取出真实的schema的名字, 然后在这里替换actualDataSourceName为actualSchemaName
+                // TODO 目前actualDataSourceName必须actualSchemaName一样,才能保证替换schema的场景不出错, 如: show columns xxx
+                result.append(tableRule.get().getActualDatasourceNames().iterator().next());
+            } else if (each instanceof IndexPlaceholder) {
+                IndexPlaceholder indexPlaceholder = (IndexPlaceholder) each;
+                result.append(indexPlaceholder.getLogicIndexName());
+                if (!Strings.isNullOrEmpty(actualTableName)) {
                     result.append("_");
-                    result.append(tableName);
+                    result.append(actualTableName);
                 }
             } else {
                 result.append(each);
             }
         }
         return result.toString();
-    }
-    
-    @RequiredArgsConstructor
-    private class TableToken {
-        
-        private final String tableName;
-        
-        @Override
-        public String toString() {
-            return tableName;
-        }
-    }
-    
-    @RequiredArgsConstructor
-    private class IndexToken {
-        
-        private final String indexName;
-        
-        private final String tableName;
-        
-        @Override
-        public String toString() {
-            return indexName;
-        }
     }
 }

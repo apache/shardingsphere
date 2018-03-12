@@ -32,7 +32,7 @@
         <slf4j.version>1.7.7</slf4j.version>
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
-        <netty.version>4.1.20.Final</netty.version>
+        <netty.version>4.1.16.Final</netty.version>
         <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
         <spring-boot.version>[1.5.0.RELEASE,2.0.0.M1)</spring-boot.version>
         <mysql-connector-java.version>5.1.30</mysql-connector-java.version>
@@ -44,13 +44,12 @@
         <hamcrest.version>1.3</hamcrest.version>
         <dbunit.version>2.5.3</dbunit.version>
         <mockito.version>2.7.21</mockito.version>
-        <elastic-job.version>1.0.6</elastic-job.version>
         <grpc.version>1.7.0</grpc.version>
         <protobuf.version>3.4.0</protobuf.version>
         <guava-retrying.version>2.0.0</guava-retrying.version>
         
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-        <maven-assembly-plugin.version>2.5.5</maven-assembly-plugin.version>
+        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
         <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
@@ -124,6 +123,12 @@
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-client</artifactId>
                 <version>${curator.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>netty</artifactId>
+                        <groupId>io.netty</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.curator</groupId>
@@ -270,11 +275,6 @@
                 <version>${gson.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.dangdang</groupId>
-                <artifactId>elastic-job-core</artifactId>
-                <version>${elastic-job.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter</artifactId>
                 <version>${spring-boot.version}</version>
@@ -332,6 +332,10 @@
                     <configuration>
                         <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${maven-assembly-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.rewrite;
 
+import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -36,30 +37,30 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
         sqlBuilder.appendLiterals("table_x");
-        assertThat(sqlBuilder.toSQL(Collections.<String, String>emptyMap()), is("SELECT table_x.id FROM table_x"));
+        assertThat(sqlBuilder.toSQL(Collections.<String, String>emptyMap(), null), is("SELECT table_x.id FROM table_x"));
     }
     
     @Test
     public void assertAppendTableWithoutTableToken() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SELECT ");
-        sqlBuilder.appendTable("table_x");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x"));
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
-        sqlBuilder.appendTable("table_x");
-        assertThat(sqlBuilder.toSQL(Collections.<String, String>emptyMap()), is("SELECT table_x.id FROM table_x"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x"));
+        assertThat(sqlBuilder.toSQL(Collections.<String, String>emptyMap(), null), is("SELECT table_x.id FROM table_x"));
     }
     
     @Test
     public void assertAppendTableWithTableToken() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SELECT ");
-        sqlBuilder.appendTable("table_x");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x"));
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
-        sqlBuilder.appendTable("table_x");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x"));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
-        assertThat(sqlBuilder.toSQL(tableTokens), is("SELECT table_x_1.id FROM table_x_1"));
+        assertThat(sqlBuilder.toSQL(tableTokens, null), is("SELECT table_x_1.id FROM table_x_1"));
     }
 }

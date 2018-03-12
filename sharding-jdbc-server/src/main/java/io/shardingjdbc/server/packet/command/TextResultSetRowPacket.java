@@ -1,7 +1,7 @@
 package io.shardingjdbc.server.packet.command;
 
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
-import io.shardingjdbc.server.packet.MySQLSentPacket;
+import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
 
 import java.util.List;
 
@@ -11,7 +11,9 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class TextResultSetRowPacket extends MySQLSentPacket {
+public final class TextResultSetRowPacket extends AbstractMySQLSentPacket {
+    
+    private static final int NULL = 0xfb;
     
     private final List<Object> data;
     
@@ -23,7 +25,11 @@ public final class TextResultSetRowPacket extends MySQLSentPacket {
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
         for (Object each : data) {
-            mysqlPacketPayload.writeStringLenenc(each.toString());
+            if (null == each) {
+                mysqlPacketPayload.writeInt1(NULL);
+            } else {
+                mysqlPacketPayload.writeStringLenenc(each.toString());
+            }
         }
     }
 }

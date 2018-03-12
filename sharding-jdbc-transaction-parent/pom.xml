@@ -10,13 +10,12 @@
     </parent>
     <artifactId>sharding-jdbc-transaction-parent</artifactId>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>sharding-jdbc-transaction</module>
         <module>sharding-jdbc-transaction-storage</module>
-        <module>sharding-jdbc-transaction-async-job</module>
     </modules>
-
+    
     <dependencies>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -69,11 +68,6 @@
                 <groupId>io.shardingjdbc</groupId>
                 <artifactId>sharding-jdbc-core</artifactId>
                 <version>${project.parent.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.dangdang</groupId>
-                <artifactId>elastic-job-core</artifactId>
-                <version>${elastic-job.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>

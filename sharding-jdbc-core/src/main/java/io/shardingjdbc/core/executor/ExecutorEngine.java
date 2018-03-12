@@ -24,7 +24,6 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.shardingjdbc.core.constant.SQLType;
-import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.executor.event.AbstractExecutionEvent;
 import io.shardingjdbc.core.executor.event.DMLExecutionEvent;
 import io.shardingjdbc.core.executor.event.DQLExecutionEvent;
@@ -59,6 +58,9 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public final class ExecutorEngine implements AutoCloseable {
+    
+    private static final ThreadPoolExecutor SHUTDOWN_EXECUTOR = new ThreadPoolExecutor(
+            0, 1, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingJDBC-ExecutorEngineCloseTimer").build());
     
     private final ListeningExecutorService executorService;
     
@@ -214,13 +216,19 @@ public final class ExecutorEngine implements AutoCloseable {
     
     @Override
     public void close() {
-        executorService.shutdownNow();
-        try {
-            executorService.awaitTermination(5, TimeUnit.SECONDS);
-        } catch (final InterruptedException ignored) {
-        }
-        if (!executorService.isTerminated()) {
-            throw new ShardingJdbcException("ExecutorEngine can not been terminated");
-        }
+        SHUTDOWN_EXECUTOR.execute(new Runnable() {
+            
+            @Override
+            public void run() {
+                try {
+                    executorService.shutdown();
+                    while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                        executorService.shutdownNow();
+                    }
+                } catch (final InterruptedException ex) {
+                    log.error("ExecutorEngine can not been terminated", ex);
+                }
+            }
+        });
     }
 }

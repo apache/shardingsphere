@@ -150,6 +150,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
             }
         }
     }
+    
     @Test
     public void assertExecuteWithPreparedStatement() throws SQLException {
         execute(true, false);

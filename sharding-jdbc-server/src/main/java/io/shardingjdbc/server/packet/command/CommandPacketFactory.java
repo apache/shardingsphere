@@ -7,17 +7,18 @@ package io.shardingjdbc.server.packet.command;
  */
 public final class CommandPacketFactory {
     
-    public static CommandPacket getCommandPacket(final int commandPacketTypeValue) {
+    public static AbstractCommandPacket getCommandPacket(final int commandPacketTypeValue) {
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
+            case COM_QUIT:
+                return new ComQuitPacket();
+            case COM_INIT_DB:
+                return new ComInitDbPacket();
+            case COM_FIELD_LIST:
+                return new ComFieldListPacket();
             case COM_QUERY:
                 return new ComQueryPacket();
-            case COM_STMT_EXECUTE:
-                return new ComStatExecutePacket();
             case COM_SLEEP:
-            case COM_QUIT:
-            case COM_INIT_DB:
-            case COM_FIELD_LIST:
             case COM_CREATE_DB:
             case COM_DROP_DB:
             case COM_REFRESH:
@@ -36,6 +37,7 @@ public final class CommandPacketFactory {
             case COM_CONNECT_OUT:
             case COM_REGISTER_SLAVE:
             case COM_STMT_PREPARE:
+            case COM_STMT_EXECUTE:
             case COM_STMT_SEND_LONG_DATA:
             case COM_STMT_CLOSE:
             case COM_STMT_RESET:

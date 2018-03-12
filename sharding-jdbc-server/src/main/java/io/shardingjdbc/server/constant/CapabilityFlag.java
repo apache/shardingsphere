@@ -85,7 +85,7 @@ public enum CapabilityFlag {
     }
     
     // TODO use xor to calculate lower and upper
-    private static int calculateCapabilityFlags(CapabilityFlag... capabilities) {
+    private static int calculateCapabilityFlags(final CapabilityFlag... capabilities) {
         int result = 0;
         for (CapabilityFlag each : capabilities) {
             result |= each.value;

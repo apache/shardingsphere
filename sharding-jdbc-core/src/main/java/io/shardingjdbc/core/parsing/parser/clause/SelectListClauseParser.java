@@ -113,7 +113,7 @@ public class SelectListClauseParser implements SQLClauseParser {
             result.append(lexerEngine.skipParentheses(selectStatement));
         } else if (lexerEngine.equalAny(Symbol.DOT)) {
             String tableName = SQLUtil.getExactlyValue(literals);
-            if (shardingRule.tryFindTableRule(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {
+            if (shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()) {
                 selectStatement.getSqlTokens().add(new TableToken(position, literals));
             }
             result.append(lexerEngine.getCurrentToken().getLiterals());

@@ -19,7 +19,7 @@ package io.shardingjdbc.core.merger.groupby;
 
 import io.shardingjdbc.core.constant.AggregationType;
 import io.shardingjdbc.core.constant.OrderType;
-import io.shardingjdbc.core.merger.MergeEngine;
+import io.shardingjdbc.core.merger.SelectMergeEngine;
 import io.shardingjdbc.core.merger.ResultSetMerger;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 
 public final class GroupByStreamResultSetMergerTest {
     
-    private MergeEngine mergeEngine;
+    private SelectMergeEngine mergeEngine;
     
     private List<ResultSet> resultSets;
     
@@ -88,14 +88,14 @@ public final class GroupByStreamResultSetMergerTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);
@@ -137,7 +137,7 @@ public final class GroupByStreamResultSetMergerTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new SelectMergeEngine(resultSets, selectStatement);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);

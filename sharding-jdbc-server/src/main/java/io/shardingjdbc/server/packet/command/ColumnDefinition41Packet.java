@@ -3,7 +3,7 @@ package io.shardingjdbc.server.packet.command;
 import io.shardingjdbc.server.constant.ColumnType;
 import io.shardingjdbc.server.constant.ServerInfo;
 import io.shardingjdbc.server.packet.MySQLPacketPayload;
-import io.shardingjdbc.server.packet.MySQLSentPacket;
+import io.shardingjdbc.server.packet.AbstractMySQLSentPacket;
 
 /**
  * Column definition above MySQL 4.1 packet protocol.
@@ -11,7 +11,7 @@ import io.shardingjdbc.server.packet.MySQLSentPacket;
  *
  * @author zhangliang
  */
-public final class ColumnDefinition41Packet extends MySQLSentPacket {
+public final class ColumnDefinition41Packet extends AbstractMySQLSentPacket {
     
     private final String catalog = "def";
     
@@ -37,7 +37,8 @@ public final class ColumnDefinition41Packet extends MySQLSentPacket {
     
     private final int decimals;
     
-    public ColumnDefinition41Packet(int sequenceId, final String schema, final String table, final String orgTable, final String name, final String orgName, final int columnLength, final ColumnType columnType, final int decimals) {
+    public ColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable, 
+                                    final String name, final String orgName, final int columnLength, final ColumnType columnType, final int decimals) {
         setSequenceId(sequenceId);
         this.schema = schema;
         this.table = table;

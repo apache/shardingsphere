@@ -17,23 +17,23 @@
 
 package io.shardingjdbc.core.routing;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import io.shardingjdbc.core.api.HintManager;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguration;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.fixture.OrderDatabaseHintShardingAlgorithm;
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
+import io.shardingjdbc.core.jdbc.core.ShardingContext;
+import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,7 +49,7 @@ public class DatabaseTest {
     public void setRouteRuleContext() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(OrderDatabaseHintShardingAlgorithm.class.getName()));
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
         shardingRule = shardingRuleConfig.build(dataSourceMap);
@@ -74,7 +74,7 @@ public class DatabaseTest {
         String originSql = "select * from tesT";
         ShardingContext shardingContext = new ShardingContext(shardingRule, DatabaseType.MySQL, null, false);
         SQLRouteResult actual = new StatementRoutingEngine(shardingContext).route(originSql);
-        assertThat(actual.getExecutionUnits().size(), is(2));
+        assertThat(actual.getExecutionUnits().size(), is(1));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
         
             @Override
@@ -82,8 +82,8 @@ public class DatabaseTest {
                 return input.getDataSource();
             }
         }));
-        assertThat(actualDataSources.size(), is(2));
-        assertThat(actualDataSources, hasItems("ds_1"));
+        assertThat(actualDataSources.size(), is(1));
+        assertThat(actualDataSources, hasItems("ds_0"));
         Collection<String> actualSQLs = Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
         
             @Override
