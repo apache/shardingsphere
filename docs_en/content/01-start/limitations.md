@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2016-12-06T22:38:50+08:00"
 title = "Use Limits"
 weight = 5
 prev = "/01-start/features"

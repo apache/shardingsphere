@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2018-02-24T18:25:50+08:00"
 title = "Sharding-JDBC-Server"
 weight = 13
 prev = "/02-guide/apm/"

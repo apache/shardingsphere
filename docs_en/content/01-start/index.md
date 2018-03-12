@@ -1,6 +1,5 @@
 +++
 icon = "<b>1. </b>"
-date = "2016-12-02T16:06:17+08:00"
 title = "Introduction"
 weight = 0
 prev = "/00-overview/contribution/"

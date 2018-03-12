@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2016-12-06T22:38:50+08:00"
 title = "未来线路规划"
 weight = 4
 prev = "/03-design/module"

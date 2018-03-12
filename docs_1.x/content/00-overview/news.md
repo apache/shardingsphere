@@ -1,6 +1,5 @@
 +++
 icon = "<b>0. </b>"
-date = "2017-04-12T16:06:17+08:00"
 title = "新闻"
 weight = 2
 prev = "/00-overview/intro/"

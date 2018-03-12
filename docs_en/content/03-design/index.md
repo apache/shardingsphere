@@ -1,6 +1,5 @@
 +++
 icon = "<b>3. </b>"
-date = "2016-12-12T16:06:17+08:00"
 title = "Design Plan"
 weight = 0
 prev = "/02-guide/apm/"

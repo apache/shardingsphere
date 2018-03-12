@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2016-12-06T22:38:50+08:00"
 title = "配置手册"
 weight = 5
 prev = "/02-guide/master-slave/"

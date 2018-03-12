@@ -1,6 +1,5 @@
 +++
 icon = "<b>0. </b>"
-date = "2017-04-12T16:06:17+08:00"
 title = "概览"
 weight = 0
 prev = "/03-design/roadmap/"
