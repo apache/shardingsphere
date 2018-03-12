@@ -10,7 +10,7 @@ Sharding has good community in China, it is adopted by many [companies and organ
 
 We want bring Sharding into Apache Software Foundation in order to build a global, diverse and stronger open source community.
 
-Dangdang submits this proposal to donate Sharding's source code and all related documentations to the Apache Software Foundation. The code is already under Apache License Version 2.0.
+Dangdang submits this proposal to donate Sharding's source code and all related documentations to the Apache Software Foundation. The codes are already under Apache License Version 2.0.
 
 * Code base: https://github.com/shardingjdbc
   
@@ -22,9 +22,11 @@ Dangdang submits this proposal to donate Sharding's source code and all related 
 
 ## Background
 
-Sharding started in Open Source on GitHub at year 2016. Beginning with a JDBC driver to sharding data only (name as Sharding-JDBC), Right now, it offers data sharding, read-write splitting, BASE transaction and database orchestration. Excepted JDBC, proxy with database protocol is also supported, sidecar version will begin soon.
+Sharding started in Open Source on GitHub at year 2016. Beginning with a JDBC driver to sharding data only (name as Sharding-JDBC), Right now, it offers data sharding, read-write splitting, BASE transaction and database orchestration. Besides JDBC, proxy with database protocol is also supported, and sidecar feature is in our roadmap.
 
-Sharding-JDBC has won [TOP 20 most popular open source projects in China 2016](http://www.oschina.net/project/top_cn_2016). Because it is not only for JDBC, project renamed to Sharding right now, and will do more and more features surround sharding. We believe more developers and organizations can be benefit from Sharding by doing so.
+Sharding-JDBC has won [TOP 20 most popular open source projects in China 2016](http://www.oschina.net/project/top_cn_2016). 
+
+Because in our roadmap, it should not base on JDBC only, proxy and sidecar features are not JDBC based, we want to rename it to **Sharding** after it accepted by Apache Software Foundation.
 
 ## Rationale
 
@@ -40,12 +42,12 @@ By using Database Mesh, applications and databases will form a large grid system
 
 ### Meritocracy
 
-This project started from Dangdang at year 2015 and opened on GitHub at year 2016. At year 2017 Jingdong recognized its value, and determined sponsor it to ASF. We set up the PMC team and committer team.
+This project started from Dangdang at year 2015 and opened on GitHub at year 2016. At year 2017 Jingdong recognized its value, and determined to sponsor. We set up the PMC team and committer team.
 The project has contributors and users from many companies. The new contributors are guided, discussed and reviewed by the existed PMC members. When they are ready, PMC will start a vote to promote him/her to become a member of PMC and Committer Team. See the details [here](http://shardingjdbc.io/community/en/02-contribute/). Contributions are always welcomed. 
 
 ### Community
 
-Now we have set 2 development teams on JingDong and Dangdang for project, CHINA TELECOM, Sohu, DataMan, Enniu interesting on Sharding, We hope to grow the base of contributors by inviting all those who offer contributions and excel through the use of The Apache Way. 
+Now we have set 2 development teams on JingDong and Dangdang for project. CHINA TELECOM, Sohu, DataMan and Enniu are interesting on Sharding, We hope to grow the base of contributors by inviting all those who offer contributions and excel through the use of The Apache Way. 
 Right now, we make use of github as code hosting as well as gitter for community communication.
 
 ### Core Developers
@@ -103,8 +105,6 @@ A complete set of Sharding documentations is provided on shardingjdbc.io in both
 The project consists of five distinct codebases: JDBC driver, Proxy, Opentracing adapter, example and document. These have existed as separate git repositories.
 
 * https://github.com/shardingjdbc/sharding-jdbc
-
-* https://github.com/shardingjdbc/sharding-proxy (TODO)
 
 * https://github.com/shardingjdbc/sharding-opentracing
 
@@ -204,7 +204,7 @@ gitter: https://gitter.im/Sharding-JDBC/shardingjdbc
 
 * Enniu: Zhengke Zhu
 
-* Personal: Sheng Wu, Hongtao Gao, Guangyun Li, Wenbin Wang, ZeJian Liu, Xiaoguang Ma
+* Individuals: Sheng Wu, Hongtao Gao, Guangyun Li, Wenbin Wang, ZeJian Liu, Xiaoguang Ma
 
 ## Sponsors
 
