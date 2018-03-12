@@ -31,7 +31,7 @@ Because in our roadmap, it should not base on JDBC only, proxy and sidecar featu
 ## Rationale
 
 Relational database still plays a very important role on current application system. The maturity of production and surrounding ecosystem, friendliness of data query, the mastery degree of developers and DBAs, it cannot be completely replaced with NoSQL or NewSQL in the near future.
-But current relational database cannot support cloud native very well, for distributed system unfriendliness. 
+But current relational database cannot support cloud native very well and unfriendliness for distributed system. 
 
 The final proposal of Sharding is let user use distributed databases as a single database. Sharding uses mesher to manage the databases scattered around the system. 
 The interaction among the applications and the databases, which is concentrated in the mesher, is as complex and orderly as a cobweb. As the point, the concept of Database Mesh is similar like Service Mesh. 
@@ -43,11 +43,11 @@ By using Database Mesh, applications and databases will form a large grid system
 ### Meritocracy
 
 This project started from Dangdang at year 2015 and opened on GitHub at year 2016. At year 2017 Jingdong recognized its value, and determined to sponsor. We set up the PMC team and committer team.
-The project has contributors and users from many companies. The new contributors are guided, discussed and reviewed by the existed PMC members. When they are ready, PMC will start a vote to promote him/her to become a member of PMC and Committer Team. See the details [here](http://shardingjdbc.io/community/en/02-contribute/). Contributions are always welcomed. 
+The project has contributors and users from many companies. The new contributors are guided, discussed and reviewed by the existed PMC members. When they are ready, PMC will start a vote to promote him/her to become a member of PMC and Committer Team. See the details [here](http://shardingjdbc.io/community/en/01-organization/). Contributions are always welcomed. 
 
 ### Community
 
-Now we have set 2 development teams on JingDong and Dangdang for project. CHINA TELECOM, Sohu, DataMan and Enniu are interesting on Sharding, We hope to grow the base of contributors by inviting all those who offer contributions and excel through the use of The Apache Way. 
+Now we have set 2 development teams on JingDong and Dangdang for the project. CHINA TELECOM, Sohu, DataMan and Enniu are interesting on Sharding, We hope to grow the base of contributors by inviting all those who offer contributions and excel through the use of The Apache Way. 
 Right now, we make use of github as code hosting as well as gitter for community communication.
 
 ### Core Developers
@@ -56,25 +56,25 @@ The core developers are a diverse group of experienced open source developers an
 
 #### PMC members
 
-* 张亮, Liang Zhang, @terrymanu Java and architect expert, Jingdong
+* 张亮, Liang Zhang, Java and architect expert, Jingdong
 
-* 曹昊, Hao Cao, @haocao Senior Architect, Dangdang
+* 曹昊, Hao Cao, Senior Architect, Dangdang
 
-* 吴晟, Sheng Wu, @wu-sheng APM and tracing expert, Apache SkyWalking(incubator) creator & PMC member
+* 吴晟, Sheng Wu, APM and tracing expert, Apache SkyWalking(incubator) creator & PMC member
 
-* 高洪涛, Hongtao Gao, @hanahmily Database and APM expert, Apache SkyWalking(incubator) PMC member
+* 高洪涛, Hongtao Gao, Database and APM expert, Apache SkyWalking(incubator) PMC member
 
 #### Committer members
 
-* 李广云, Guangyun Li, @guangyun1013 Java Expert, Antfin
+* 李广云, Guangyun Li, Java Expert, Antfin
 
-* 王文斌, Wenbin Wang, @YunaiV Technical manager, Kangda
+* 王文斌, Wenbin Wang, Technical manager, Kangda
 
-* 朱政科, Zhengke Zhu, @CharlesMaster Senior engineer, Hangzhou Enniu Network Technology Company Limited
+* 朱政科, Zhengke Zhu, Senior engineer, Hangzhou Enniu Network Technology Company Limited
 
-* 马晓光, Xiaoguang Ma, @ma-xiao-guang-64 Senior engineer, huimai365
+* 马晓光, Xiaoguang Ma, Senior engineer, huimai365
 
-* 刘泽剑, ZeJian Liu, @qiankunshe IT Manager, ZeDaYiSheng
+* 刘泽剑, ZeJian Liu, IT Manager, ZeDaYiSheng
 
 ## Known Risks
 
@@ -102,7 +102,7 @@ A complete set of Sharding documentations is provided on shardingjdbc.io in both
 
 ## Initial Source
 
-The project consists of five distinct codebases: JDBC driver, Proxy, Opentracing adapter, example and document. These have existed as separate git repositories.
+The project consists of four distinct codebases: Core, Opentracing adapter, example and document. These have existed as separate git repositories.
 
 * https://github.com/shardingjdbc/sharding-jdbc
 
@@ -119,11 +119,11 @@ The code is currently Apache 2.0 license, and was verified to have no intellectu
 ## External Dependencies
 
 All dependencies are managed using Apache Maven, none of the external libraries need to be packaged in a source distribution. 
-Most of dependencies all have Apache compatible licenses. But mysql and dbunit use GPL-2.0 and LGPL-2.1. 
+Most of dependencies have Apache compatible licenses. But mysql and dbunit use GPL-2.0 and LGPL-2.1. 
 
 We will remove dbunit and mysql dependencies in future. 
 Dbunit only for initialization data set during test case running. 
-MySQL JDBC driver is using on MySQL Proxy to connect MySQL now, we will mock MySQL protocol to connect MySQL in future and do not need MySQL driver any more.
+MySQL JDBC driver is using on MySQL Proxy to connect MySQL now, we will use MySQL protocol format only and use socket to connect MySQL in future, so it do not need MySQL JDBC driver any more.
 
 | *Dependency*                         | *License*       |
 | ------------------------------------ | --------------- |
@@ -200,9 +200,11 @@ gitter: https://gitter.im/Sharding-JDBC/shardingjdbc
 
 * 刘泽剑, ZeJian Liu, 
 
+* 张永伦, Yonglun Zhang, 
+
 ## Affiliations
 
-* Jingdong: Liang Zhang
+* Jingdong: Liang Zhang, Yonglun Zhang
 
 * Dangdang: Hao Cao
 
