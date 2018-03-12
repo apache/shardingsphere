@@ -6,40 +6,40 @@ prev = "/02-sharding/concept/"
 next = "/02-sharding/scenario/"
 +++
 
-Sharding-JDBC是一个具有分库分表功能的数据库中间件。它通过JDBC扩展 => SQL解析 => SQL路由 => SQL改写 => SQL执行 => 结果归并的流程，在SQL通过使用逻辑表，配合用户配置的分片规则，将对数据库访问的真实SQL完全屏蔽。
+Sharding-JDBC is a middleware supports database sharding and table sharding way.By processes of JDBC Extension => SQL Parser => SQL Router => SQL Rewrite => SQL Execution => Result Merger, and using the logical table which the user configured, the real SQL is completely shielded from the database access.
 
-![内部实现架构图](http://ovfotjrsi.bkt.clouddn.com/sharding_core_cn.png)
+![Architecture Diagram](http://ovfotjrsi.bkt.clouddn.com/sharding_core_cn.png)
 
-## JDBC扩展
+## JDBC Extension
 
-将JDBC接口中的Connection和Statement(PreparedStatement)的对应关系从一对一转换为一对多。因此一个逻辑SQL的执行，则有可能被拆分为多个执行结果集。
+The mapping between Connection and Statement (PreparedStatement) in the JDBC interface is converted from one-one to one-many. Therefore, the execution of a logical SQL may be split into multiple execution result sets.
 
-## SQL解析
+## SQL Parser
 
-分为词法解析和语法解析。先通过词法解析将SQL拆分为一个个不可再分的单词。再使用语法解析器对SQL进行理解，并最终提炼出解析上下文。解析上下文包括表、选择项、排序项、分组项、聚合函数、分页信息、查询条件以及可能需要修改的占位符的标记。
+It is divided into lexical parser and syntactic parser. First of all, the SQL is split into some separate words by lexical parser. The syntactic parser is used to understand the SQL, and then the context is finally extracted. Parsing context includes tables, selections, sorting items, grouping items, aggregate functions, paging information, query conditions, and placeholders that may need to be modified.
 
-## SQL路由
+## SQL Router
 
-根据解析上下文匹配用户配置的分片策略，并生成路由路径。目前支持分片路由、Hint路由、广播路由、单播路由以及阻断路由等方式。
-分片路由用于携带分片键的SQL路由，根据分片键的不同又可以划分为单片路由(分片操作符是等号)、多片路由(分片操作符是IN)和范围路由(分片操作符是BETWEEN)。
-Hint路由用于通过程序的方式注入路由最终目的地的方式路由，可用于分片信息不包含在SQL中的场景。
-广播路由用于SQL中不包含分片键的场景。根据SQL类型又可以划分为全库广播路由(SET AUTOCOMMIT=1)和全库表广播路由(DQL, DML, DDL)。
-单播路由用于获取某一真实表信息的场景，如DESCRIBE table_name。
-阻断路由用于屏蔽SQL对数据库的操作，如USE db_name，因为Sharding-JDBC仅有一个逻辑数据源，无需切换。
+The sharding strategy by the user configuration is matched based on the parsing context, and the routing path is generated. It currently supports sharding routing, Hint routing, broadcast routing, unicast routing, and blocking routing.
+Sharding routing is used to routing SQL with sharding keys. According to the difference of sharding keys, it can be divided into single key routing (sharding operators is '='), multiple keys routing (sharding operators is 'IN') and range routing (sharding operators is 'BETWEEN').
+Hint routing is used as a route to the way the destination is injected through a program, and it can be used when the sharding information is not included in the SQL.
+Broadcast routing is used for scenes that do not contain sharding keys in SQL. According to the SQL type, it can be divided into all databases broadcast routing (SET AUTOCOMMIT=1) and all databases and tables broadcast routing (DQL, DML, DDL).
+Unicast routing is used to obtain information of a actual table, such as DESCRIBE table_name.
+Block routing is used to block the operation of SQL to the database, such as USE db_name, because Sharding-JDBC has only one logical data source and does not need to switch.
 
-## SQL改写
+## SQL Rewrite
 
-将SQL改写为在真实数据库中可以正确执行的语句。SQL改写分为正确性改写和优化改写。
-正确性改写包括将逻辑表名称替换为真实表名称，将分页信息的启示取值和结束取值改写，增加为排序、分组和自增主键使用的补列，将AVG改写为SUM / COUNT等。
-优化改写则是能将SQL改写的更加适于在分布式的数据库中执行，如将仅有分组的SQL增加排序字段，以便于将分组归并从内存归并转化为流式归并。
+Rewrite the SQL as a statement that can be executed correctly in a real database. SQL rewriting is divided into correctness  rewriting and optimization rewriting.
+Correctness rewriting includes replacing the name of logical table with the name of real table, rewrite the initial value and ending value of paging information, add complement column of sorting, grouping and increasing primary key, and rewriting AVG to SUM / COUNT.
+Optimization rewriting is able to rewrite SQL, which is more suitable for executing in distributed database. For example, add sorting column to SQLs which contain only GROUP BY operator, so that group merging can be converted from memory merging to flow merging.
 
-## SQL执行
+## SQL Execution
 
-通过多线程执行器异步执行，但同一个物理数据源的不同分表的SQL会采用同一连接的同一线程，以保证其事务的完整性。
+Asynchronous execution is performed through multithreading executor, but the SQL of different tables of the same physical data source will use the same thread of the same connection to ensure the integrity of its transaction.
 
-## 结果归并
+## Result Merger
 
-将多个执行结果集归并以便于通过统一的JDBC接口输出。结果归并包括流式归并、内存归并和使用装饰者模式的追加归并这几种方式。
-流式归并用于简单查询、排序查询、分组查询以及排序和分组但排序项和分组项完全一致的场景，流式归并的结果集的遍历方式是通过每一次调用next方法取出，无需占用额外的内存。
-内存归并仅用于排序项和分组项不一致的场景，需要将结果集中的所有数据加载至内存处理，如果结果集过多，会占用大量内存。
-使用装饰者模式的追加归并用于分页，无论是简单查询、排序查询还是分组查询，包含分页的SQL都会经过分页的装饰器处理分页相关的结果归并。
+Multiple execution result sets are incorporated in order to facilitate the output of a unified JDBC interface. The result is the merging of the flow merging, the memory merging, and the addition of the decorator pattern merging.
+Flow merging is used for simple queries, sorting queries, grouping queries, sorting and grouping, but sorting items and grouping items are exactly the same. The way of traversing the result set of flow merging is getting data by calling next method every time without additional memory.
+Memory merging is only used for scenes that are inconsistent with sorting items and grouping items. It is necessary to load all the data in the result to memory. If the result set is too large, it will occupy a lot of memory.
+Using decorator pattern merging for paging, whether it is simple query, sorting query or group query, paging SQL will merge through paging decorator to process paging related results.
