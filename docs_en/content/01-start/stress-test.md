@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2016-12-06T22:38:50+08:00"
 title = "The performance-test report"
 weight = 7
 prev = "/01-start/sql-supported"

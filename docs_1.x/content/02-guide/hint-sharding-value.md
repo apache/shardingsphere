@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2016-12-06T22:38:50+08:00"
 title = "强制路由"
 weight = 6
 prev = "/02-guide/configuration"

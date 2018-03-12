@@ -1,5 +1,4 @@
 +++
-date = "2018-03-05T16:06:17+08:00"
 title = "采用公司"
 weight = 0
 prev = "/03-convention/"

@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2016-12-06T22:38:50+08:00"
 title = "快速入门"
 weight = 1
 prev = "/01-start"

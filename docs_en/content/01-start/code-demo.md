@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2017-08-23T22:38:50+08:00"
 title = "Usage Example"
 weight = 2
 prev = "/01-start/quick-start"

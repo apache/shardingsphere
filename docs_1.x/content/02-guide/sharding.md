@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2016-12-06T22:38:50+08:00"
 title = "分库分表"
 weight = 2
 prev = "/02-guide/concepts/"

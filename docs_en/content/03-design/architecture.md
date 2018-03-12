@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2016-12-06T22:38:50+08:00"
 title = "Architecture Design"
 weight = 1
 prev = "/03-design"

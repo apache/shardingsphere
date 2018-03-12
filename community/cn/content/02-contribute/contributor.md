@@ -1,9 +1,8 @@
 +++
-date = "2018-03-05T16:06:17+08:00"
 title = "Contributor指南"
 weight = 1
 prev = "/02-contribute/"
-next = "/02-contribute/convention"
+next = "/02-contribute/convention/"
 chapter = true
 +++
 

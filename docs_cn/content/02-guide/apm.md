@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2017-10-18T18:25:50+08:00"
 title = "应用性能监控"
 weight = 12
 prev = "/02-guide/test-framework/"

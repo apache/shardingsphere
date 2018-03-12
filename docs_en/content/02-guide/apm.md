@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2017-10-18T18:25:50+08:00"
 title = "APM"
 weight = 12
 prev = "/02-guide/test-framework/"

@@ -1,6 +1,5 @@
 +++
 toc = true
-date = "2016-12-06T22:38:50+08:00"
 title = "SQL支持详细列表"
 weight = 5
 prev = "/01-start/limitations"

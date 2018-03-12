@@ -1,6 +1,5 @@
 +++
 icon = "<b>2. </b>"
-date = "2016-12-12T16:06:17+08:00"
 title = "使用指南"
 weight = 0
 prev = "/01-start/stress-test"
