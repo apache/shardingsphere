@@ -2,8 +2,8 @@
 toc = true
 title = "未来线路规划"
 weight = 4
-prev = "/03-design/module"
-next = "/00-overview"
+prev = "/03-design/module/"
+next = "/00-overview/"
 +++
 
 ## 已完成

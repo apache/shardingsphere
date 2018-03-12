@@ -3,7 +3,7 @@ toc = true
 title = "Contribute Code"
 weight = 4
 prev = "/00-overview/news/"
-next = "/01-start"
+next = "/01-start/"
 
 +++
 

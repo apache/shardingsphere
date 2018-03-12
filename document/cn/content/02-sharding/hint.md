@@ -2,8 +2,8 @@
 toc = true
 title = "强制路由"
 weight = 5
-prev = "/02-sharding/configuration"
-next = "/02-sharding/key-generator"
+prev = "/02-sharding/configuration/"
+next = "/02-sharding/key-generator/"
 +++
 
 ## 背景

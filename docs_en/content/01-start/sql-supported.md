@@ -2,8 +2,8 @@
 toc = true
 title = "The list of available SQL syntax"
 weight = 6
-prev = "/01-start/limitations"
-next = "/01-start/stress-test"
+prev = "/01-start/limitations/"
+next = "/01-start/stress-test/"
 
 +++
 

@@ -2,8 +2,8 @@
 toc = true
 title = "Available SQL list"
 weight = 7
-prev = "/02-sharding/key-generator"
-next = "/02-sharding/subquery"
+prev = "/02-sharding/key-generator/"
+next = "/02-sharding/subquery/"
 +++
 
 Because of the flexibility and complexity of SQL syntax and the different handling for SQL queries for distributed databases and single database, not all of the SQLs can be used in Sharding-JDBC.

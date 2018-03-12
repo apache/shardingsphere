@@ -2,8 +2,8 @@
 toc = true
 title = "Use Limits"
 weight = 5
-prev = "/01-start/features"
-next = "/01-start/sql-supported"
+prev = "/01-start/features/"
+next = "/01-start/sql-supported/"
 
 +++
 

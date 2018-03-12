@@ -2,8 +2,8 @@
 toc = true
 title = "快速入门"
 weight = 1
-prev = "/01-start"
-next = "/01-start/code-demo"
+prev = "/01-start/"
+next = "/01-start/code-demo/"
 
 +++
 

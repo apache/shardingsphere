@@ -2,8 +2,8 @@
 toc = true
 title = "Distributed Primary key"
 weight = 8
-prev = "/02-guide/hint-sharding-value"
-next = "/02-guide/transaction"
+prev = "/02-guide/hint-sharding-value/"
+next = "/02-guide/transaction/"
 
 +++
 

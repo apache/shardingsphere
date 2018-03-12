@@ -2,8 +2,8 @@
 toc = true
 title = "分布式主键"
 weight = 6
-prev = "/02-sharding/hint"
-next = "/02-sharding/sql-supported"
+prev = "/02-sharding/hint/"
+next = "/02-sharding/sql-supported/"
 +++
 
 ## 实现动机
