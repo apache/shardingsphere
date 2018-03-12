@@ -1,0 +1,8 @@
+<dataset>
+    <table-config>
+        <data>
+            <int>int</int>
+        </data>
+    </table-config>
+    <int value="1" />
+</dataset>

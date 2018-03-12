@@ -1,0 +1,21 @@
+<asserts sharding-rule-config="./assert-test-data/test.yaml">
+    <assert id="test" init-data-file="./assert-test-data/init" expected-data-file="./assert-test-data/expected/1.xml">
+        <sql>select order_id,user_id from t_order where order_id in (%s,%s,%s)</sql>
+        <parameters>
+            <parameter value="1000" type="int"/>
+            <parameter value="1100" type="int"/>
+            <parameter value="2200" type="int"/>
+        </parameters>
+        <!--<parse-context>
+            <tables>
+                <table name="t_order" />
+            </tables>
+            <table-tokens>
+                <table-token begin-position="40" original-literals="t_order" />
+            </table-tokens>
+            <aggregation-select-items>
+                <aggregation-select-item inner-expression="(user_id)" aggregation-type="SUM" alias="user_id_sum" />
+            </aggregation-select-items>
+        </parse-context>-->
+    </assert>
+</asserts>
