@@ -6,11 +6,11 @@ Sharding is a distributed database middleware, focus on data sharding, read-writ
 
 ## Proposal
 
-Sharding has good community in China, it is adopted by many [companies and organizations](http://shardingjdbc.io/community/en/04-company/). 
+Sharding has good community in China, it has many end users, including [companies and organizations](http://shardingjdbc.io/community/en/04-company/). 
 
-We want bring Sharding into Apache Software Foundation in order to build a global, diverse and stronger open source community.
+We want to bring Sharding into Apache Software Foundation in order to build a global, diverse and stronger open source community.
 
-Dangdang submits this proposal to donate Sharding's source code and all related documentations to the Apache Software Foundation. The codes are already under Apache License Version 2.0.
+Dangdang submits this proposal to donate Sharding's source codes and all related documentations to the Apache Software Foundation. The codes are already under Apache License Version 2.0.
 
 * Code base: https://github.com/shardingjdbc
   
