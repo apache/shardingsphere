@@ -1,12 +1,10 @@
 +++
-title = "Contributor指南"
+title = "贡献者指南"
 weight = 1
 prev = "/02-contribute/"
 next = "/02-contribute/convention/"
 chapter = true
 +++
-
-# Contributor指南
 
 您可以报告bug，提交一个新的功能增强建议或者直接对以上内容提交改进补丁。
 
@@ -18,7 +16,7 @@ chapter = true
  - 使用一个清晰并有描述性的标题来定义issue。
  - 如果您提交的是一个bug，请尽量提供如下信息：
       - 详细的描述复现bug的步骤。包括您使用的SQL，配置情况，预计产生的结果，实际产生的结果。并附加详细的TRACE日志。
-      - Sharding-JDBC以及操作系统版本。
+      - Sharding以及操作系统版本。
       - 在github提供用于可以复现问题的项目演示代码。
       - 如果程序抛出异常，请附加完整的堆栈日志。
       - 如有可能，请附上屏幕截图或动态的GIF图，这些图片能帮助演示整个问题的产生过程。
@@ -38,7 +36,7 @@ chapter = true
  - 在选中相关的issue之后，请回复以表明您当前正在这个issue上工作。并在回复的时候为自己设置一个deadline，添加至回复内容中。
  - 在[开发者列表](/01-organization/)中找到一个导师，导师会在设计与功能实现上给予即时的反馈。
  - 您需要fork一个分支到您自己的repo来开始工作。
- - 请您在开发过程中遵循Sharding-JDBC的[开发规范](/03-convention/)。并在准备提交pull request之前完成相应的检查。
+ - 请您在开发过程中遵循Sharding的[开发规范](/03-convention/)。并在准备提交pull request之前完成相应的检查。
  - 完成后，发送一个pull request到shardingjdbc的dev分支，请不要提交pull request至master分支中。
  - 接着导师做CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当导师对本次修改满意后，会将提交合并到当前开发版本的分支中。
- - 最后，恭喜您已经成为了Sharding-JDBC的官方贡献者！
+ - 最后，恭喜您已经成为了Sharding的官方贡献者！

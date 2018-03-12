@@ -6,8 +6,6 @@ next = "/02-contribute/convention/"
 chapter = true
 +++
 
-# Contributors' Guide
-
 You can report a bug, submit a new feature enhancement recommendation, or commit codes by a pull request.
 
 ## Reporting Bugs
@@ -18,7 +16,7 @@ You can report a bug, submit a new feature enhancement recommendation, or commit
  - Define a clear and descriptive title for the issue.
  - If bug reported, please provide information below:
        - Details for reproduce bug step by step. Include SQL, configuration, expected results, actual results and tracing log.
-       - Sharding-JDBC and Operation System version.
+       - Sharding and Operation System version.
        - Source code to reproduce bug on github cna copy the link here.
        - Stack trace if exception thrown.
        - Screenshot and animated gif to help bug reproduce if necessary.
@@ -38,7 +36,7 @@ You can report a bug, submit a new feature enhancement recommendation, or commit
  - Reply a deadline message to pickup this issue. 
  - Find a mentor in [Core developers list](/01-organization/), he will give you feedback for design and implements.
  - Fork to your github repo and begin to work.
- - Please follow Sharding-JDBC's [Development conventions](/03-convention/), and complete check before pull request submit.
+ - Please follow Sharding's [Development conventions](/03-convention/), and complete check before pull request submit.
  - Submit a pull request to dev branch when finished, please do not submit pull request to master.
  - Mentor will do code review and discuss some details, include design, implement, performance and code style. Code will be merged until mentor accepted.
- - Finally, congratulations that you have become the official contributor for Sharding-JDBC!
+ - Finally, congratulations that you have become the official contributor for Sharding!
