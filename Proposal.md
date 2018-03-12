@@ -22,7 +22,7 @@ Dangdang submits this proposal to donate Sharding's source codes and all related
 
 ## Background
 
-Sharding started in Open Source on GitHub at year 2016. Beginning with a JDBC driver to sharding data only (name as Sharding-JDBC), Right now, it offers data sharding, read-write splitting, BASE transaction and database orchestration. Besides JDBC, proxy with database protocol is also supported, and sidecar feature is in our roadmap.
+Sharding started in Open Source on GitHub at year 2016. Because of data growth quickly on internet company, relational database can not afford any more, but developer and DBA still want use it to persist core data. Sharding is beginning with a JDBC driver to sharding data only (name as Sharding-JDBC) at Dangdang internal framework. It offers data sharding, read-write splitting, BASE transaction and database orchestration right now. Besides JDBC, proxy with database protocol is also supported, and sidecar feature is in our roadmap.
 
 Sharding-JDBC has won [TOP 20 most popular open source projects in China 2016](http://www.oschina.net/project/top_cn_2016). 
 
