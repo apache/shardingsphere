@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.config.bean.parseContext;
+package io.shardingjdbc.dbtest.config.bean.parsecontext;
 
 import lombok.Getter;
 import lombok.Setter;

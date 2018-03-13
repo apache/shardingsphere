@@ -1,12 +1,12 @@
 package io.shardingjdbc.dbtest.config.bean;
 
-import io.shardingjdbc.dbtest.config.bean.parseContext.ParseContexDefinition;
-import lombok.Data;
-import lombok.Getter;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
-import javax.xml.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.List;
+import io.shardingjdbc.dbtest.config.bean.parsecontext.ParseContexDefinition;
+import lombok.Getter;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)

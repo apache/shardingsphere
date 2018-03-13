@@ -1,9 +1,12 @@
 package io.shardingjdbc.dbtest.core.parsing.parser.jaxb.helper;
 
+import java.util.List;
+
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+
 import io.shardingjdbc.core.constant.AggregationType;
 import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
@@ -11,11 +14,9 @@ import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectI
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
 import io.shardingjdbc.core.parsing.parser.context.table.Tables;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingjdbc.dbtest.config.bean.parseContext.GroupByColumn;
-import io.shardingjdbc.dbtest.config.bean.parseContext.OrderByColumn;
-import io.shardingjdbc.dbtest.config.bean.parseContext.ParseContexDefinition;
-
-import java.util.List;
+import io.shardingjdbc.dbtest.config.bean.parsecontext.GroupByColumn;
+import io.shardingjdbc.dbtest.config.bean.parsecontext.OrderByColumn;
+import io.shardingjdbc.dbtest.config.bean.parsecontext.ParseContexDefinition;
 
 public class ParserJAXBHelper {
     
@@ -26,12 +27,12 @@ public class ParserJAXBHelper {
         return parameters.split(",");
     }
     
-    public static Tables getTables(final io.shardingjdbc.dbtest.config.bean.parseContext.Tables tables) {
+    public static Tables getTables(final io.shardingjdbc.dbtest.config.bean.parsecontext.Tables tables) {
         Tables result = new Tables();
         if (null == tables) {
             return result;
         }
-        for (io.shardingjdbc.dbtest.config.bean.parseContext.Table each : tables.getTables()) {
+        for (io.shardingjdbc.dbtest.config.bean.parsecontext.Table each : tables.getTables()) {
             Table table = new Table(each.getName(), Optional.fromNullable(each.getAlias()));
             result.add(table);
         }
@@ -75,13 +76,13 @@ public class ParserJAXBHelper {
         }
         if (null != assertObj.getAggregationSelectItems()) {
             List<AggregationSelectItem> selectItems = Lists.transform(assertObj.getAggregationSelectItems(),
-                    new Function<io.shardingjdbc.dbtest.config.bean.parseContext.AggregationSelectItem, AggregationSelectItem>() {
+                    new Function<io.shardingjdbc.dbtest.config.bean.parsecontext.AggregationSelectItem, AggregationSelectItem>() {
                         
                         @Override
-                        public AggregationSelectItem apply(final io.shardingjdbc.dbtest.config.bean.parseContext.AggregationSelectItem input) {
+                        public AggregationSelectItem apply(final io.shardingjdbc.dbtest.config.bean.parsecontext.AggregationSelectItem input) {
                             AggregationSelectItem result = new AggregationSelectItem(
                                     AggregationType.valueOf(input.getAggregationType().toUpperCase()), input.getInnerExpression(), Optional.fromNullable(input.getAlias()));
-                            for (io.shardingjdbc.dbtest.config.bean.parseContext.AggregationSelectItem each : input.getDerivedColumns()) {
+                            for (io.shardingjdbc.dbtest.config.bean.parsecontext.AggregationSelectItem each : input.getDerivedColumns()) {
                                 result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(
                                         AggregationType.valueOf(each.getAggregationType().toUpperCase()), each.getInnerExpression(), Optional.fromNullable(each.getAlias())));
                             }

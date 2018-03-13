@@ -20,11 +20,13 @@ import org.xml.sax.SAXException;
 /**
  * <br>
  * xpath辅助类
+ * 
  * @version 1.0
  */
 public class XMLUtil {
 	/**
 	 * 构造xml文档对应的document对象
+	 * 
 	 * @param file
 	 * @return
 	 * @throws Exception
@@ -39,8 +41,10 @@ public class XMLUtil {
 		XPathFactory factory = XPathFactory.newInstance();
 		return doc;
 	}
+
 	/**
 	 * 构造输入流对应的document对象
+	 * 
 	 * @param in
 	 * @return
 	 * @throws Exception
@@ -51,28 +55,29 @@ public class XMLUtil {
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		org.w3c.dom.Document doc = db.parse(in);
 
-
 		return doc;
 	}
+
 	/**
 	 * 获取结点值
+	 * 
 	 * @param node
 	 * @return
 	 */
-	public static String getNodeValue(Node node)
-	{
+	public static String getNodeValue(Node node) {
 		String dataValue = node.getTextContent();
 		return dataValue;
 	}
+
 	/**
 	 * 获取结点List
+	 * 
 	 * @param node
 	 * @param xpath
 	 * @return
 	 * @throws XPathExpressionException
 	 */
-	public static NodeList getNodeList(org.w3c.dom.Node node, String xpath) throws XPathExpressionException
-	{
+	public static NodeList getNodeList(org.w3c.dom.Node node, String xpath) throws XPathExpressionException {
 		// 创建XPath对象
 		XPathFactory factory = XPathFactory.newInstance();
 		XPath oXpath = factory.newXPath();
@@ -80,15 +85,16 @@ public class XMLUtil {
 
 		return nodeList;
 	}
+
 	/**
 	 * 获取单个结点
+	 * 
 	 * @param node
 	 * @param xpath
 	 * @return
 	 * @throws XPathExpressionException
 	 */
-	public static Node getNode(org.w3c.dom.Node node, String xpath) throws XPathExpressionException
-	{
+	public static Node getNode(org.w3c.dom.Node node, String xpath) throws XPathExpressionException {
 		// 创建XPath对象
 		XPathFactory factory = XPathFactory.newInstance();
 		XPath oXpath = factory.newXPath();

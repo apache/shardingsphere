@@ -1,5 +1,16 @@
 package io.shardingjdbc.dbtest.core.parsing.parser.jaxb.helper;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
@@ -20,20 +31,10 @@ import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
 import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
 import io.shardingjdbc.core.parsing.parser.token.SQLToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
-import io.shardingjdbc.dbtest.config.bean.parseContext.Condition;
-import io.shardingjdbc.dbtest.config.bean.parseContext.Conditions;
-import io.shardingjdbc.dbtest.config.bean.parseContext.Tables;
-import io.shardingjdbc.dbtest.config.bean.parseContext.Value;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import io.shardingjdbc.dbtest.config.bean.parsecontext.Condition;
+import io.shardingjdbc.dbtest.config.bean.parsecontext.Conditions;
+import io.shardingjdbc.dbtest.config.bean.parsecontext.Tables;
+import io.shardingjdbc.dbtest.config.bean.parsecontext.Value;
 
 public class ParserAssertHelper {
     
@@ -86,7 +87,7 @@ public class ParserAssertHelper {
         return result;
     }
     
-    public static void assertSqlTokens(final List<io.shardingjdbc.dbtest.config.bean.parseContext.SQLToken> expected, final List<SQLToken> actual, final boolean isPreparedStatement) {
+    public static void assertSqlTokens(final List<io.shardingjdbc.dbtest.config.bean.parsecontext.SQLToken> expected, final List<SQLToken> actual, final boolean isPreparedStatement) {
         if (null == expected || expected.size() == 0) {
             return;
         }
@@ -104,12 +105,12 @@ public class ParserAssertHelper {
         }
     }
     
-    private static List<SQLToken> buildExpectedSqlTokens(final List<io.shardingjdbc.dbtest.config.bean.parseContext.SQLToken> sqlTokens,
+    private static List<SQLToken> buildExpectedSqlTokens(final List<io.shardingjdbc.dbtest.config.bean.parsecontext.SQLToken> sqlTokens,
             final boolean isPreparedStatement) {
         List<SQLToken> result = new ArrayList<>(sqlTokens.size());
-        for (io.shardingjdbc.dbtest.config.bean.parseContext.SQLToken each : sqlTokens) {
-            if (isPreparedStatement && (each instanceof io.shardingjdbc.dbtest.config.bean.parseContext.OffsetToken
-                    || each instanceof io.shardingjdbc.dbtest.config.bean.parseContext.RowCountToken)) {
+        for (io.shardingjdbc.dbtest.config.bean.parsecontext.SQLToken each : sqlTokens) {
+            if (isPreparedStatement && (each instanceof io.shardingjdbc.dbtest.config.bean.parsecontext.OffsetToken
+                    || each instanceof io.shardingjdbc.dbtest.config.bean.parsecontext.RowCountToken)) {
                 continue;
             }
             result.add(buildExpectedSQLToken(each, isPreparedStatement));
@@ -117,42 +118,42 @@ public class ParserAssertHelper {
         return result;
     }
     
-    private static SQLToken buildExpectedSQLToken(final io.shardingjdbc.dbtest.config.bean.parseContext.SQLToken sqlToken, final boolean isPreparedStatement) {
-        if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parseContext.TableToken) {
-            return new TableToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.dbtest.config.bean.parseContext.TableToken) sqlToken).getOriginalLiterals());
+    private static SQLToken buildExpectedSQLToken(final io.shardingjdbc.dbtest.config.bean.parsecontext.SQLToken sqlToken, final boolean isPreparedStatement) {
+        if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parsecontext.TableToken) {
+            return new TableToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.dbtest.config.bean.parsecontext.TableToken) sqlToken).getOriginalLiterals());
         }
-        if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parseContext.IndexToken) {
-            return new IndexToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.dbtest.config.bean.parseContext.IndexToken) sqlToken).getOriginalLiterals(),
-                    ((io.shardingjdbc.dbtest.config.bean.parseContext.IndexToken) sqlToken).getTableName());
-        } else if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parseContext.ItemsToken) {
+        if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parsecontext.IndexToken) {
+            return new IndexToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.dbtest.config.bean.parsecontext.IndexToken) sqlToken).getOriginalLiterals(),
+                    ((io.shardingjdbc.dbtest.config.bean.parsecontext.IndexToken) sqlToken).getTableName());
+        } else if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parsecontext.ItemsToken) {
             ItemsToken itemsToken = new ItemsToken(sqlToken.getBeginPosition());
-            itemsToken.getItems().addAll(((io.shardingjdbc.dbtest.config.bean.parseContext.ItemsToken) sqlToken).getItems());
+            itemsToken.getItems().addAll(((io.shardingjdbc.dbtest.config.bean.parsecontext.ItemsToken) sqlToken).getItems());
             return itemsToken;
-        } else if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parseContext.GeneratedKeyToken) {
+        } else if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parsecontext.GeneratedKeyToken) {
             if (isPreparedStatement) {
-                return new GeneratedKeyToken(((io.shardingjdbc.dbtest.config.bean.parseContext.GeneratedKeyToken) sqlToken).getBeginPositionOfPreparedStatement());
+                return new GeneratedKeyToken(((io.shardingjdbc.dbtest.config.bean.parsecontext.GeneratedKeyToken) sqlToken).getBeginPositionOfPreparedStatement());
             } else {
-                return new GeneratedKeyToken(((io.shardingjdbc.dbtest.config.bean.parseContext.GeneratedKeyToken) sqlToken).getBeginPositionOfStatement());
+                return new GeneratedKeyToken(((io.shardingjdbc.dbtest.config.bean.parsecontext.GeneratedKeyToken) sqlToken).getBeginPositionOfStatement());
             }
-        } else if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parseContext.MultipleInsertValuesToken) {
+        } else if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parsecontext.MultipleInsertValuesToken) {
             MultipleInsertValuesToken multipleInsertValuesToken = new MultipleInsertValuesToken(sqlToken.getBeginPosition());
-            multipleInsertValuesToken.getValues().addAll(((io.shardingjdbc.dbtest.config.bean.parseContext.MultipleInsertValuesToken) sqlToken).getValues());
+            multipleInsertValuesToken.getValues().addAll(((io.shardingjdbc.dbtest.config.bean.parsecontext.MultipleInsertValuesToken) sqlToken).getValues());
             return multipleInsertValuesToken;
-        } else if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parseContext.RowCountToken) {
-            return new RowCountToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.dbtest.config.bean.parseContext.RowCountToken) sqlToken).getRowCount());
-        } else if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parseContext.OrderByToken) {
+        } else if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parsecontext.RowCountToken) {
+            return new RowCountToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.dbtest.config.bean.parsecontext.RowCountToken) sqlToken).getRowCount());
+        } else if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parsecontext.OrderByToken) {
             if (isPreparedStatement) {
-                return new OrderByToken(((io.shardingjdbc.dbtest.config.bean.parseContext.OrderByToken) sqlToken).getBeginPositionOfPreparedStatement());
+                return new OrderByToken(((io.shardingjdbc.dbtest.config.bean.parsecontext.OrderByToken) sqlToken).getBeginPositionOfPreparedStatement());
             } else {
-                return new OrderByToken(((io.shardingjdbc.dbtest.config.bean.parseContext.OrderByToken) sqlToken).getBeginPositionOfStatement());
+                return new OrderByToken(((io.shardingjdbc.dbtest.config.bean.parsecontext.OrderByToken) sqlToken).getBeginPositionOfStatement());
             }
-        } else if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parseContext.OffsetToken) {
-            return new OffsetToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.dbtest.config.bean.parseContext.OffsetToken) sqlToken).getOffset());
+        } else if (sqlToken instanceof io.shardingjdbc.dbtest.config.bean.parsecontext.OffsetToken) {
+            return new OffsetToken(sqlToken.getBeginPosition(), ((io.shardingjdbc.dbtest.config.bean.parsecontext.OffsetToken) sqlToken).getOffset());
         }
         return null;
     }
     
-    public static void assertLimit(final io.shardingjdbc.dbtest.config.bean.parseContext.Limit limit, final Limit actual, final boolean isPreparedStatement) {
+    public static void assertLimit(final io.shardingjdbc.dbtest.config.bean.parsecontext.Limit limit, final Limit actual, final boolean isPreparedStatement) {
         Limit expected = buildExpectedLimit(limit, isPreparedStatement);
         if (null == expected) {
             assertNull(actual);
@@ -166,7 +167,7 @@ public class ParserAssertHelper {
         }
     }
     
-    private static Limit buildExpectedLimit(final io.shardingjdbc.dbtest.config.bean.parseContext.Limit limit, final boolean isPreparedStatement) {
+    private static Limit buildExpectedLimit(final io.shardingjdbc.dbtest.config.bean.parsecontext.Limit limit, final boolean isPreparedStatement) {
         if (null == limit) {
             return null;
         }

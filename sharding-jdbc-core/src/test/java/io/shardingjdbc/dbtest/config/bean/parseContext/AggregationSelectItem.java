@@ -15,38 +15,39 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.config.bean.parseContext;
+package io.shardingjdbc.dbtest.config.bean.parsecontext;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
-import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class AggregationSelectItem {
-    
-    @XmlAttribute(name = "inner-expression")
-    private String innerExpression;
-    
-    @XmlAttribute(name = "aggregation-type")
-    private String aggregationType;
-    
-    @XmlAttribute
-    private String alias;
-    
-    @XmlAttribute 
-    private String option;
-    
-    @XmlAttribute 
-    private Integer index;
-    
-    @XmlElement(name = "derived-column") 
-    private List<AggregationSelectItem> derivedColumns = new ArrayList<>(2);
+
+	@XmlAttribute(name = "inner-expression")
+	private String innerExpression;
+
+	@XmlAttribute(name = "aggregation-type")
+	private String aggregationType;
+
+	@XmlAttribute
+	private String alias;
+
+	@XmlAttribute
+	private String option;
+
+	@XmlAttribute
+	private Integer index;
+
+	@XmlElement(name = "derived-column")
+	private List<AggregationSelectItem> derivedColumns = new ArrayList<>(2);
 }
