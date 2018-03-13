@@ -86,11 +86,11 @@ Two development teams in JingDong and Dangdang will continue to work on Sharding
 
 ### Inexperience with Open Source
 
-The current core developers all work for a company that has led or contributed to many open source software projects, including Spring Cloud, Elastic-Job, SkyWalking, opentracing, and others. Therefore, there is low risk related to inexperience with open source software and processes.
+The current core developers all work for a company that has led or contributed to many open source software projects, including [Elastic-Job](https://github.com/elasticjob), [SkyWalking](https://github.com/apache/incubator-skywalking), opentracing, and others. Therefore, there is low risk related to inexperience with open source software and processes.
 
 ### Homogenous Developers
 
-The current core developers work across a variety of organizations including Jingdong, Dangdang, Huawei and Ant Financial. While CHINA TELECOM, Sohu, DataMan and Enniu are interesting on Sharding, and we plan to encourage them to contribute and invite them to work together.
+The current core developers work across a variety of organizations including Jingdong, Dangdang and some individual developers. While CHINA TELECOM, Sohu, DataMan and Enniu are interesting on Sharding, and we plan to encourage them to contribute and invite them to work together.
 
 ### Reliance on Salaried Developers
 
