@@ -76,21 +76,33 @@ The core developers are a diverse group of experienced open source developers an
 
 * 刘泽剑, ZeJian Liu, IT Manager, ZeDaYiSheng
 
-## Known Risks
+* 张永伦, Yonglun Zhang, Senior engineer, Jingdong
 
-### Language and Culture
+## Known Risks
 
 ### Orphaned products
 
+Two development teams in JingDong and Dangdang will continue to work on Sharding 100% of the time for the foreseeable future with others from the growing community as well. And Sharding is widely used in China by many [companies and organizations](http://shardingjdbc.io/community/en/03-company/). So the risk of Sharding becoming orphaned is low.
+
 ### Inexperience with Open Source
+
+The current core developers all work for a company that has led or contributed to many open source software projects, including Spring Cloud, Elastic-Job, SkyWalking, opentracing, and others. Therefore, there is low risk related to inexperience with open source software and processes.
 
 ### Homogenous Developers
 
+The current core developers work across a variety of organizations including Jingdong, Dangdang, Huawei and Ant Financial. While CHINA TELECOM, Sohu, DataMan and Enniu are interesting on Sharding, and we plan to encourage them to contribute and invite them to work together.
+
 ### Reliance on Salaried Developers
+
+Two of the core developers are paid by their employer to contribute to the Sharding project. We expect that Sharding development will continue with salaried developers, and are committed to growing the community to include non-salaried developers as well.
 
 ### Relationships with Other Apache Products
 
+Sharding team worked with the SkyWalking team to introduce an automatic prober of Sharding to send performance data to SkyWalking. Zookeeper is integrated as one of the service registration/discovery mechanisms.
+
 ### A Excessive Fascination with the Apache Brand
+
+The Sharding community acknowledges the value and recognition that the Apache brand would bring to the Sharding project. However, our primary interest is in the community building process and long-term stability that the Apache Software Foundation provides for its projects.
 
 ## Documentation
 
@@ -176,9 +188,15 @@ https://github.com/shardingjdbc/sharding-jdbc/issues
 
 Travis
 
-### Other Resources
+### Mailing Lists
 
-gitter: https://gitter.im/Sharding-JDBC/shardingjdbc
+[sharding@googlegroups.com](mailto:sharding+subscribe@googlegroups.com)
+
+### Communication
+
+Gitter [https://gitter.im/Sharding-JDBC/shardingjdbc](https://gitter.im/Sharding-JDBC/shardingjdbc)
+
+Slack [https://sharding.slack.com](https://sharding.slack.com)
 
 ## Initial Committers
 
