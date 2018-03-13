@@ -1,7 +1,7 @@
 +++
 title = "开发规范"
-weight = 2
-prev = "/02-contribute/contributor/"
+weight = 3
+prev = "/02-contribute/committer/"
 next = "/03-company/"
 chapter = true
 +++

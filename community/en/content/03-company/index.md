@@ -1,7 +1,7 @@
 +++
 title = "Using companies"
 weight = 0
-prev = "/03-convention/"
+prev = "/02-contribute/convention/"
 next = "/01-organization/"
 chapter = true
 +++
