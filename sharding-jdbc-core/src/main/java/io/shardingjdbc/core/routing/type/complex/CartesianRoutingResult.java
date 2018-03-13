@@ -58,9 +58,7 @@ public final class CartesianRoutingResult extends RoutingResult {
     public boolean isSingleRouting() {
         Collection<CartesianTableReference> cartesianTableReferences = new LinkedList<>();
         for (CartesianDataSource cartesianDataSource : routingDataSources) {
-            for (CartesianTableReference cartesianTableReference : cartesianDataSource.getRoutingTableReferences()) {
-                cartesianTableReferences.add(cartesianTableReference);
-            }
+            cartesianTableReferences.addAll(cartesianDataSource.getRoutingTableReferences());
         }
         return 1 == cartesianTableReferences.size();
     }

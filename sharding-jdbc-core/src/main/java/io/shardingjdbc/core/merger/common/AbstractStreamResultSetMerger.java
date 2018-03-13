@@ -185,14 +185,18 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         InputStream result;
-        if ("Ascii".equals(type)) {
-            result = getCurrentResultSet().getAsciiStream(columnIndex);
-        } else if ("Unicode".equals(type)) {
-            result = getCurrentResultSet().getUnicodeStream(columnIndex);
-        } else if ("Binary".equals(type)) {
-            result = getCurrentResultSet().getBinaryStream(columnIndex);
-        } else {
-            throw new SQLException(String.format("Unsupported type: %s", type));
+        switch (type) {
+            case "Ascii":
+                result = getCurrentResultSet().getAsciiStream(columnIndex);
+                break;
+            case "Unicode":
+                result = getCurrentResultSet().getUnicodeStream(columnIndex);
+                break;
+            case "Binary":
+                result = getCurrentResultSet().getBinaryStream(columnIndex);
+                break;
+            default:
+                throw new SQLException(String.format("Unsupported type: %s", type));
         }
         wasNull = getCurrentResultSet().wasNull();
         return result;

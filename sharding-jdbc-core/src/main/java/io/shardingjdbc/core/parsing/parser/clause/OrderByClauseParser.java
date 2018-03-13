@@ -52,8 +52,7 @@ public class OrderByClauseParser implements SQLClauseParser {
         lexerEngine.accept(DefaultKeyword.BY);
         do {
             result.add(parseSelectOrderByItem(selectStatement));
-        }
-        while (lexerEngine.skipIfEqual(Symbol.COMMA));
+        } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         selectStatement.getOrderByItems().addAll(result);
     }
     
