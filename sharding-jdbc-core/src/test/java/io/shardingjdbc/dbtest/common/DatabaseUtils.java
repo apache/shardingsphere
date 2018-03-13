@@ -123,6 +123,11 @@ public class DatabaseUtils {
 		sql = sql.trim();
 		return sql.startsWith("select");
 	}
+	
+	public static boolean isInsertOrUpdateOrDelete(String sql) {
+		sql = sql.trim();
+		return sql.startsWith("insert") || sql.startsWith("update") || sql.startsWith("delete");
+	}
 
 	public static int updateUseStatementToExecuteUpdate(Connection conn, String sql, ParametersDefinition parameters)
 			throws SQLException, ParseException {

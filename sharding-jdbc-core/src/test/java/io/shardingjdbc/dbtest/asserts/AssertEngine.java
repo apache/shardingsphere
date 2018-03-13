@@ -123,8 +123,7 @@ public class AssertEngine {
 					clearTableData(dataSourceMaps, mapDatasetDefinition);
 				}
 
-			} else {
-				// updateUseStatementToExecuteUpdate
+			} else if(DatabaseUtils.isInsertOrUpdateOrDelete(rootsql)){
 				initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
 				try (Connection con = dataSource.getConnection();) {
 					int num = DatabaseUtils.updateUseStatementToExecuteUpdate(con, rootsql, anAssert.getParameters());
@@ -137,7 +136,6 @@ public class AssertEngine {
 				}
 				clearTableData(dataSourceMaps, mapDatasetDefinition);
 
-				// updateUseStatementToExecute
 				initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
 				try (Connection con = dataSource.getConnection();) {
 					boolean bool = DatabaseUtils.updateUseStatementToExecute(con, rootsql, anAssert.getParameters());
@@ -146,7 +144,6 @@ public class AssertEngine {
 				}
 				clearTableData(dataSourceMaps, mapDatasetDefinition);
 
-				// updateUsePreparedStatementToExecuteUpdate
 				initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
 				try (Connection con = dataSource.getConnection();) {
 					int num = DatabaseUtils.updateUsePreparedStatementToExecuteUpdate(con, rootsql,
@@ -160,7 +157,6 @@ public class AssertEngine {
 				}
 				clearTableData(dataSourceMaps, mapDatasetDefinition);
 
-				// updateUsePreparedStatementToExecute
 				initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
 				try (Connection con = dataSource.getConnection();) {
 					boolean bool = DatabaseUtils.updateUsePreparedStatementToExecute(con, rootsql,
@@ -176,18 +172,18 @@ public class AssertEngine {
 	}
 
 	private static void getInitDatas(List<String> dbs, String initDataFile, Map<String, DatasetDefinition> mapDatasetDefinition, Map<String, String> sqls) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-		for (String db : dbs) {
-            String tempPath = initDataFile + "/" + db + ".xml";
+		for (String each : dbs) {
+            String tempPath = initDataFile + "/" + each + ".xml";
             File file = new File(tempPath);
             if (file.exists()) {
                 DatasetDefinition datasetDefinition = AnalyzeDataset.analyze(file);
-                mapDatasetDefinition.put(db, datasetDefinition);
+                mapDatasetDefinition.put(each, datasetDefinition);
 
                 Map<String, List<Map<String, String>>> datas = datasetDefinition.getDatas();
-                for (Map.Entry<String, List<Map<String, String>>> stringStringEntry : datas.entrySet()) {
-                    String sql = DatabaseUtils.analyzeSql(stringStringEntry.getKey(),
-                            stringStringEntry.getValue().get(0));
-                    sqls.put(stringStringEntry.getKey(), sql);
+                for (Map.Entry<String, List<Map<String, String>>> eachEntry : datas.entrySet()) {
+                    String sql = DatabaseUtils.analyzeSql(eachEntry.getKey(),
+                    		eachEntry.getValue().get(0));
+                    sqls.put(eachEntry.getKey(), sql);
                 }
             }
         }
@@ -220,15 +216,15 @@ public class AssertEngine {
 
 	private static void clearTableData(Map<String, DataSource> dataSourceMaps,
 			Map<String, DatasetDefinition> mapDatasetDefinition) throws SQLException {
-		for (Map.Entry<String, DataSource> stringDataSourceEntry : dataSourceMaps.entrySet()) {
+		for (Map.Entry<String, DataSource> eachEntry : dataSourceMaps.entrySet()) {
 
-			DataSource dataSource1 = stringDataSourceEntry.getValue();
-			DatasetDefinition datasetDefinition = mapDatasetDefinition.get(stringDataSourceEntry.getKey());
+			DataSource dataSource1 = eachEntry.getValue();
+			DatasetDefinition datasetDefinition = mapDatasetDefinition.get(eachEntry.getKey());
 			Map<String, List<Map<String, String>>> datas = datasetDefinition.getDatas();
 
-			for (Map.Entry<String, List<Map<String, String>>> stringListEntry : datas.entrySet()) {
+			for (Map.Entry<String, List<Map<String, String>>> eachListEntry : datas.entrySet()) {
 				try (Connection conn = dataSource1.getConnection()) {
-					DatabaseUtils.cleanAllUsePreparedStatement(conn, stringListEntry.getKey());
+					DatabaseUtils.cleanAllUsePreparedStatement(conn, eachListEntry.getKey());
 				}
 			}
 
@@ -237,16 +233,16 @@ public class AssertEngine {
 
 	private static void initTableData(Map<String, DataSource> dataSourceMaps, Map<String, String> sqls,
 			Map<String, DatasetDefinition> mapDatasetDefinition) throws SQLException, ParseException {
-		for (Map.Entry<String, DataSource> stringDataSourceEntry : dataSourceMaps.entrySet()) {
-			DataSource dataSource1 = stringDataSourceEntry.getValue();
-			DatasetDefinition datasetDefinition = mapDatasetDefinition.get(stringDataSourceEntry.getKey());
+		for (Map.Entry<String, DataSource> eachDataSourceEntry : dataSourceMaps.entrySet()) {
+			DataSource dataSource1 = eachDataSourceEntry.getValue();
+			DatasetDefinition datasetDefinition = mapDatasetDefinition.get(eachDataSourceEntry.getKey());
 			Map<String, Map<String, String>> configs = datasetDefinition.getConfigs();
 			Map<String, List<Map<String, String>>> datas = datasetDefinition.getDatas();
 
-			for (Map.Entry<String, List<Map<String, String>>> stringListEntry : datas.entrySet()) {
+			for (Map.Entry<String, List<Map<String, String>>> eachListEntry : datas.entrySet()) {
 				try (Connection conn = dataSource1.getConnection()) {
-					DatabaseUtils.insertUsePreparedStatement(conn, sqls.get(stringListEntry.getKey()),
-							datas.get(stringListEntry.getKey()), configs.get(stringListEntry.getKey()));
+					DatabaseUtils.insertUsePreparedStatement(conn, sqls.get(eachListEntry.getKey()),
+							datas.get(eachListEntry.getKey()), configs.get(eachListEntry.getKey()));
 				}
 			}
 		}

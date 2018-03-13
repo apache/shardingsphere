@@ -46,8 +46,8 @@ public class InItCreateSchema {
 	public static void createDatabase() {
 		Connection conn = null;
 		try {
-			for (String db : ConfigRuntime.getDbs()) {
-				DatabaseType databaseType = DatabaseTypeUtils.getDatabaseType(db);
+			for (String each : ConfigRuntime.getDbs()) {
+				DatabaseType databaseType = DatabaseTypeUtils.getDatabaseType(each);
 
 				conn = initialConnection(null, databaseType);
 				String packing = "default";
@@ -78,8 +78,8 @@ public class InItCreateSchema {
 	public static synchronized void dropDatabase() {
 		Connection conn = null;
 		try {
-			for (String db : ConfigRuntime.getDbs()) {
-				DatabaseType databaseType = DatabaseTypeUtils.getDatabaseType(db);
+			for (String each : ConfigRuntime.getDbs()) {
+				DatabaseType databaseType = DatabaseTypeUtils.getDatabaseType(each);
 
 				conn = initialConnection(null, databaseType);
 				String packing = "default";
@@ -196,36 +196,8 @@ public class InItCreateSchema {
 		return result;
 	}
 
-	/*
-	 * public final Map<DatabaseType, Map<String, DataSource>>
-	 * createDataSourceMap(List<String> initDataSetFiles) { for (String each :
-	 * initDataSetFiles) { String dbName = getDatabaseName(each);
-	 * 
-	 * for (String db : ConfigRuntime.getDbs()) { DatabaseType databaseType =
-	 * DatabaseTypeUtils.getDatabaseType(db); createDataSources(dbName,
-	 * databaseType); } }
-	 * 
-	 * return databaseTypeMap; }
-	 */
-
 	private static Connection initialConnection(final String dbName, final DatabaseType type) throws SQLException {
 		return buildDataSource(dbName, type).getConnection();
 	}
-
-	/*
-	 * protected final void importDataSet() throws Exception { for (DatabaseType
-	 * databaseType : getDatabaseTypes()) { if (databaseType ==
-	 * getCurrentDatabaseType() || null == getCurrentDatabaseType()) {
-	 * DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType); for
-	 * (String each : getInitDataSetFiles()) { InputStream is =
-	 * AbstractSQLTest.class.getClassLoader().getResourceAsStream(each); IDataSet
-	 * dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
-	 * IDatabaseTester databaseTester = new
-	 * ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(),
-	 * dbEnv.getURL(getDatabaseName(each)), dbEnv.getUsername(),
-	 * dbEnv.getPassword(), dbEnv.getSchema(getDatabaseName(each)));
-	 * databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
-	 * databaseTester.setDataSet(dataSet); databaseTester.onSetup(); } } } }
-	 */
 
 }

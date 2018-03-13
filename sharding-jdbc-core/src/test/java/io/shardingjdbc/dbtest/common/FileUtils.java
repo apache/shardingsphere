@@ -22,11 +22,11 @@ public class FileUtils {
 		if (files == null) {
 			return filePaths;
 		}
-		for (File f : files) {
-			if (f.isDirectory()) {
-				getSubFilePaths(f, filePaths, prefixFile, suffix);
+		for (File each : files) {
+			if (each.isDirectory()) {
+				getSubFilePaths(each, filePaths, prefixFile, suffix);
 			} else {
-				getFiles(prefixFile, suffix, filePaths, f);
+				getFiles(prefixFile, suffix, filePaths, each);
 
 			}
 		}
@@ -55,11 +55,11 @@ public class FileUtils {
 		if (files == null) {
 			return filePaths;
 		}
-		for (File f : files) {
-			if (f.isDirectory()) {
-				getSubFilePaths(f, filePaths, prefixFile, suffix);
+		for (File each : files) {
+			if (each.isDirectory()) {
+				getSubFilePaths(each, filePaths, prefixFile, suffix);
 			} else {
-				getFiles(prefixFile, suffix, filePaths, f);
+				getFiles(prefixFile, suffix, filePaths, each);
 			}
 		}
 		return filePaths;

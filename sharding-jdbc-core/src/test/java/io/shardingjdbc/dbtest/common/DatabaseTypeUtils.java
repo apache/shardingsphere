@@ -7,9 +7,9 @@ public class DatabaseTypeUtils {
 	public static DatabaseType getDatabaseType(String type) {
 
 		DatabaseType[] databaseTypes = DatabaseType.values();
-		for (DatabaseType databaseType : databaseTypes) {
-			if (type.equalsIgnoreCase(databaseType.name())) {
-				return databaseType;
+		for (DatabaseType each : databaseTypes) {
+			if (type.equalsIgnoreCase(each.name())) {
+				return each;
 			}
 		}
 		return null;

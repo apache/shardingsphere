@@ -12,8 +12,8 @@ public class ConfigRuntime {
 	public static Set<String> getDbs() {
 		Map<String, String> dbs = ConfigUtils.getDatas("database");
 		Set<String> sets = new HashSet<>();
-		for (Map.Entry<String, String> db : dbs.entrySet()) {
-			String[] dbsts = db.getKey().split("\\.");
+		for (Map.Entry<String, String> each : dbs.entrySet()) {
+			String[] dbsts = each.getKey().split("\\.");
 			sets.add(dbsts[1]);
 		}
 		return sets;

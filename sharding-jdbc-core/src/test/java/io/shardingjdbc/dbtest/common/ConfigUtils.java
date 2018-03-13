@@ -28,10 +28,10 @@ public class ConfigUtils {
 
     public static Map<String, String> getDatas(String startKey) {
         Map<String, String> maps = new HashMap<>();
-        for (Map.Entry<Object, Object> objectObjectEntry : config.entrySet()) {
-            String key = (String) objectObjectEntry.getKey();
+        for (Map.Entry<Object, Object> eachEntry : config.entrySet()) {
+            String key = (String) eachEntry.getKey();
             if (key.startsWith(startKey)) {
-                maps.put(key, (String) objectObjectEntry.getValue());
+                maps.put(key, (String) eachEntry.getValue());
             }
         }
         return maps;
