@@ -6,7 +6,7 @@ next = "/01-organization/"
 chapter = true
 +++
 
-Please leave your company's info when using Sharding-JDBC.
+Please leave your company's info when using Sharding.
 
 Register by `company` + `homepage` + `company type` [here](https://github.com/shardingjdbc/sharding-jdbc/issues/234).
 

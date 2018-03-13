@@ -6,7 +6,7 @@ next = "/01-organization/"
 chapter = true
 +++
 
-欢迎采用了Sharding-JDBC的公司再此登记，您的支持是我们最大的动力。
+欢迎采用了Sharding的公司在此登记，您的支持是我们最大的动力。
 
 请按`公司名` + `首页` + `公司类型`的格式在[此处](https://github.com/shardingjdbc/sharding-jdbc/issues/234)登记。
 

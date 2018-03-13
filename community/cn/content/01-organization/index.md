@@ -58,4 +58,4 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 
 ## 邮件列表
 
-* [Google Groups](mailto:shardingjdbc+subscribe@googlegroups.com)
+* [Google Groups](mailto:sharding+subscribe@googlegroups.com)

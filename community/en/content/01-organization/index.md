@@ -58,4 +58,4 @@ In various situations the Sharding shall hold a vote. These votes can happen on 
 
 ## Mailing List
 
-* [Google Groups](mailto:shardingjdbc+subscribe@googlegroups.com)
+* [Google Groups](mailto:sharding+subscribe@googlegroups.com)
