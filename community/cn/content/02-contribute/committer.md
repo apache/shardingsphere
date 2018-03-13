@@ -15,7 +15,7 @@ chapter = true
 
 ## 当前提交者
 
- - 见[组织](/01-organization/)
+ - 见 [组织](/01-organization/)
  
 ## 维护者责任
 

@@ -15,7 +15,7 @@ chapter = true
 
 ## Current Committers
 
- - See[Committer](/01-organization/)
+ - See [Committer](/01-organization/)
  
 ## Maintainer responsibility
 

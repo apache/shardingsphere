@@ -56,6 +56,8 @@ In various situations the Sharding shall hold a vote. These votes can happen on 
 
 * [Gitter](https://gitter.im/Sharding-JDBC/shardingjdbc)
 
+* [Slack](https://sharding.slack.com)
+
 ## Mailing List
 
 * [Google Groups](mailto:sharding+subscribe@googlegroups.com)
