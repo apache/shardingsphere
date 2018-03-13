@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.common.env;
 
+import io.shardingjdbc.core.exception.ShardingJdbcException;
 import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.IDatabaseConnection;
@@ -42,17 +43,24 @@ public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
         DatabaseConfig dbConfig = result.getConfig();
         dbConfig.setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false);
         dbConfig.setProperty(DatabaseConfig.FEATURE_DATATYPE_WARNING, false);
-        if ("org.h2.Driver".equals(driverClass)) {
-            dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
-        } else if ("com.mysql.jdbc.Driver".equals(driverClass)) {
-            dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
-        } else if ("org.postgresql.Driver".equals(driverClass)) {
-            dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());
-        } else if ("oracle.jdbc.driver.OracleDriver".equals(driverClass)) {
-            dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new Oracle10DataTypeFactory());
-        } else if ("com.microsoft.sqlserver.jdbc.SQLServerDriver".equals(driverClass)) {
-            dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MsSqlDataTypeFactory());
-            
+        switch (driverClass) {
+            case "org.h2.Driver":
+                dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+                break;
+            case "com.mysql.jdbc.Driver":
+                dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
+                break;
+            case "org.postgresql.Driver":
+                dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());
+                break;
+            case "oracle.jdbc.driver.OracleDriver":
+                dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new Oracle10DataTypeFactory());
+                break;
+            case "com.microsoft.sqlserver.jdbc.SQLServerDriver":
+                dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MsSqlDataTypeFactory());
+                break;
+            default:
+                throw new ShardingJdbcException("Unsupported JDBC driver '%s'", driverClass);
         }
         return result;
     }

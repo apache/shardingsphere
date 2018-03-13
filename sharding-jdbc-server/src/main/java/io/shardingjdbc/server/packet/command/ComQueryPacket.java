@@ -1,6 +1,5 @@
 package io.shardingjdbc.server.packet.command;
 
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.parsing.SQLJudgeEngine;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.server.DataSourceManager;
@@ -48,14 +47,19 @@ public final class ComQueryPacket extends AbstractCommandPacket {
                 Statement statement = conn.createStatement()) {
             SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
             ResultSet resultSet;
-            if (SQLType.DQL == sqlStatement.getType()) {
-                resultSet = statement.executeQuery(sql);
-            } else if (SQLType.DML == sqlStatement.getType() || SQLType.DDL == sqlStatement.getType()) {
-                statement.executeUpdate(sql);
-                resultSet = statement.getResultSet();
-            } else {
-                statement.execute(sql);
-                resultSet = statement.getResultSet();
+            switch (sqlStatement.getType()) {
+                case DQL:
+                    resultSet = statement.executeQuery(sql);
+                    break;
+                case DML:
+                case DDL:
+                    statement.executeUpdate(sql);
+                    resultSet = statement.getResultSet();
+                    break;
+                default:
+                    statement.execute(sql);
+                    resultSet = statement.getResultSet();
+                    break;
             }
             if (null == resultSet) {
                 result.add(new OKPacket(++currentSequenceId, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));

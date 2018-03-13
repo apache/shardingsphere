@@ -17,13 +17,13 @@
 
 package io.shardingjdbc.core.parsing.parser.sql.ddl.alter;
 
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.parser.clause.TableReferencesClauseParser;
 import io.shardingjdbc.core.parsing.parser.sql.SQLParser;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -33,7 +33,7 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractAlterParser implements SQLParser {
+public abstract class AbstractAlterParser implements SQLParser { 
     
     private final ShardingRule shardingRule;
     

@@ -51,7 +51,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     
     @Test
     public void assertMasterSlaveDataSourceType() {
-        assertTrue(this.applicationContext.getBean("defaultMasterSlaveDataSource", OrchestrationMasterSlaveDataSource.class) instanceof OrchestrationMasterSlaveDataSource);
+        assertTrue(null != applicationContext.getBean("defaultMasterSlaveDataSource", OrchestrationMasterSlaveDataSource.class));
     }
     
     @Test

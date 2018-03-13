@@ -100,9 +100,7 @@ public final class SelectStatement extends DQLStatement {
             if (each instanceof AggregationSelectItem) {
                 AggregationSelectItem aggregationSelectItem = (AggregationSelectItem) each;
                 result.add(aggregationSelectItem);
-                for (AggregationSelectItem derivedEach: aggregationSelectItem.getDerivedAggregationSelectItems()) {
-                    result.add(derivedEach);
-                }
+                result.addAll(aggregationSelectItem.getDerivedAggregationSelectItems());
             }
         }
         return result;
