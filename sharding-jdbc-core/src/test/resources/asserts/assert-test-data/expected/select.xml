@@ -1,0 +1,10 @@
+<dataset>
+    <table-config>
+        <data>
+            <order_id>int</order_id>
+            <user_id>int</user_id>
+        </data>
+    </table-config>
+    <data order_id="1000" user_id="10"  />
+    <data order_id="1101" user_id="11" />
+</dataset>
