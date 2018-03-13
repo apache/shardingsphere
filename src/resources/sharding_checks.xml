@@ -29,10 +29,8 @@
         <module name="ClassDataAbstractionCoupling">
             <property name="max" value="10"/>
         </module>
-        <module name="SuppressWarningsFilter"/>
         <module name="SuppressionCommentFilter"/>
         <module name="SuppressWithNearbyCommentFilter"/>
-        <module name="UniqueProperties"/>
         <module name="LineLength">
             <property name="max" value="200"/>
             <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
