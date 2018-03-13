@@ -8,7 +8,7 @@ chapter = true
 
 ## Development idea
 
- - Write extremely clean, simplify and graceful code. Fully agree with <Refactoring: Improving the Design of Existing Code> and <Clean Code: A Handbook of Agile Software Craftsma>.
+ - Write extremely clean, simplify and graceful code. Fully agree with &lt;Refactoring: Improving the Design of Existing Code&gt; and &lt;Clean Code: A Handbook of Agile Software Craftsma&gt;.
 
 ## Code push conventions
 
