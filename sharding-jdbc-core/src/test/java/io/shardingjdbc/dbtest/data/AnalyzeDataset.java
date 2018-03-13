@@ -21,12 +21,12 @@ import io.shardingjdbc.dbtest.common.XMLUtil;
 
 public class AnalyzeDataset {
 
-	public static DatasetDefinition analyze(String path)
+	public static DatasetDefinition analyze(final String path)
 			throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
 		return analyze(new File(path));
 	}
 
-	public static DatasetDefinition analyze(File file)
+	public static DatasetDefinition analyze(final File file)
 			throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
 
 		Document doc = XMLUtil.parseFile(file);
@@ -65,7 +65,7 @@ public class AnalyzeDataset {
 		return result;
 	}
 
-	private static void analyzeTableConfig(DatasetDefinition datasetDefinition, Node firstNode) {
+	private static void analyzeTableConfig(final DatasetDefinition datasetDefinition, final Node firstNode) {
 		NodeList secondNodeList = firstNode.getChildNodes();
 		Map<String, Map<String, String>> configs = datasetDefinition.getConfigs();
 		for (int j = 0; j < secondNodeList.getLength(); j++) {

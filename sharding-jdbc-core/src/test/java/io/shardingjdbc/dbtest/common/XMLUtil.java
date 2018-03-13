@@ -19,7 +19,7 @@ import org.xml.sax.SAXException;
 
 public class XMLUtil {
 
-	public static Document parseFile(File file) throws ParserConfigurationException, IOException, SAXException {
+	public static Document parseFile(final File file) throws ParserConfigurationException, IOException, SAXException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(false);
 		DocumentBuilder db = dbf.newDocumentBuilder();
@@ -28,7 +28,7 @@ public class XMLUtil {
 		return result;
 	}
 
-	public static Document parseStream(InputStream in) throws ParserConfigurationException, IOException, SAXException {
+	public static Document parseStream(final InputStream in) throws ParserConfigurationException, IOException, SAXException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(false);
 		DocumentBuilder db = dbf.newDocumentBuilder();
@@ -36,18 +36,18 @@ public class XMLUtil {
 		return result;
 	}
 
-	public static String getNodeValue(Node node) {
+	public static String getNodeValue(final Node node) {
 		return node.getTextContent();
 	}
 
-	public static NodeList getNodeList(org.w3c.dom.Node node, String xpath) throws XPathExpressionException {
+	public static NodeList getNodeList(final org.w3c.dom.Node node, final String xpath) throws XPathExpressionException {
 		XPathFactory factory = XPathFactory.newInstance();
 		XPath oXpath = factory.newXPath();
 		NodeList result = (NodeList) oXpath.evaluate(xpath, node, XPathConstants.NODESET);
 		return result;
 	}
 
-	public static Node getNode(org.w3c.dom.Node node, String xpath) throws XPathExpressionException {
+	public static Node getNode(final org.w3c.dom.Node node, final String xpath) throws XPathExpressionException {
 		XPathFactory factory = XPathFactory.newInstance();
 		XPath oXpath = factory.newXPath();
 		Node result = (Node) oXpath.evaluate(xpath, node, XPathConstants.NODE);

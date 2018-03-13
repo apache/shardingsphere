@@ -157,19 +157,20 @@ public class InItCreateSchema {
 		return fileName.substring(0, fileName.lastIndexOf("."));
 	}
 
-	private static BasicDataSource buildDataSource(String dbName, final DatabaseType type) {
+	private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
 
+		String newDbName = dbName;
 		BasicDataSource result = new BasicDataSource();
 		result.setDriverClassName(ConfigRuntime.getDriverClassName(type));
-		if (dbName == null) {
-			dbName = ConfigRuntime.getDefualtdb(type);
+		if (newDbName == null) {
+			newDbName = ConfigRuntime.getDefualtdb(type);
 		}
-		result.setUrl(ConfigRuntime.getURL(type, dbName));
+		result.setUrl(ConfigRuntime.getURL(type, newDbName));
 		result.setUsername(ConfigRuntime.getUsername(type));
 		result.setPassword(ConfigRuntime.getPassword(type));
 		result.setMaxActive(1);
 		if (DatabaseType.Oracle == type) {
-			result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dbName));
+			result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + newDbName));
 		}
 		return result;
 	}

@@ -17,11 +17,11 @@ public class ConfigUtils {
 		}
 	}
 
-	public static String getString(String key, String defaultValue) {
+	public static String getString(final String key, final String defaultValue) {
 		return config.getProperty(key, defaultValue);
 	}
 
-	public static Map<String, String> getDatas(String startKey) {
+	public static Map<String, String> getDatas(final String startKey) {
 		Map<String, String> result = new HashMap<>();
 		for (Map.Entry<Object, Object> eachEntry : config.entrySet()) {
 			String key = (String) eachEntry.getKey();

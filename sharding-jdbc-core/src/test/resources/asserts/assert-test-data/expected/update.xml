@@ -1,8 +1,9 @@
 <dataset>
-    <table-config>
+   <table-config>
         <data>
-            <int>int</int>
+            <order_id>int</order_id>
+            <user_id>int</user_id>
         </data>
     </table-config>
-    <int value="1" />
+    <data order_id="1000" user_id="10111"  />
 </dataset>

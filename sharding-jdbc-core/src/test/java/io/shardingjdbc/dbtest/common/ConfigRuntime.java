@@ -19,11 +19,11 @@ public class ConfigRuntime {
 		return result;
 	}
 
-	private static String getJdbcConfig(String key) {
+	private static String getJdbcConfig(final String key) {
 		return ConfigUtils.getString("database." + key, "");
 	}
 
-	public static String getDriverClassName(DatabaseType type) {
+	public static String getDriverClassName(final DatabaseType type) {
 		switch (type) {
 		case H2:
 			return getJdbcConfig("h2.driver");
@@ -40,7 +40,7 @@ public class ConfigRuntime {
 		}
 	}
 
-	public static String getURL(DatabaseType type, String dbName) {
+	public static String getURL(final DatabaseType type, final String dbName) {
 		switch (type) {
 		case H2:
 			return String.format(getJdbcConfig("h2.url"), dbName);
@@ -57,7 +57,7 @@ public class ConfigRuntime {
 		}
 	}
 
-	public static String getUsername(DatabaseType type) {
+	public static String getUsername(final DatabaseType type) {
 		switch (type) {
 		case H2:
 			return getJdbcConfig("h2.username");
@@ -74,7 +74,7 @@ public class ConfigRuntime {
 		}
 	}
 
-	public static String getPassword(DatabaseType type) {
+	public static String getPassword(final DatabaseType type) {
 		switch (type) {
 		case H2:
 			return getJdbcConfig("h2.password");
@@ -91,7 +91,7 @@ public class ConfigRuntime {
 		}
 	}
 
-	public static String getDefualtdb(DatabaseType type) {
+	public static String getDefualtdb(final DatabaseType type) {
 		switch (type) {
 		case H2:
 			return getJdbcConfig("h2.defualtdb");

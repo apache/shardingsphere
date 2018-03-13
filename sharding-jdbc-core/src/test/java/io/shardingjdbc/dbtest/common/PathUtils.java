@@ -12,7 +12,7 @@ public class PathUtils {
 	 * @param path
 	 * @return
 	 */
-	public static String getPath(String path, String parent) {
+	public static String getPath(final String path, final String parent) {
 		if (path == null) {
 			throw new DbTestException("路径不能为空");
 		}
@@ -35,7 +35,7 @@ public class PathUtils {
 	 * @param path
 	 * @return
 	 */
-	public static String getPath(String path) {
+	public static String getPath(final String path) {
 		return getPath(path, null);
 	}
 

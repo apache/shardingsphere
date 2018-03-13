@@ -11,7 +11,7 @@ import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
 
 public class AnalyzeConfig {
 
-	public static AssertsDefinition analyze(String path) throws IOException, JAXBException {
+	public static AssertsDefinition analyze(final String path) throws IOException, JAXBException {
 		JAXBContext context = JAXBContext.newInstance(AssertsDefinition.class);
 
 		Unmarshaller unmarshal = context.createUnmarshaller();

@@ -18,10 +18,11 @@
             </aggregation-select-items>
         </parse-context>-->
     </assert>
-    <!-- <assert id="test2" init-data-file="./assert-test-data/init" expected-data-file="./assert-test-data/expected/update.xml">
-        <sql>update t_order set user_id = 1300 where order_id = %s</sql>
+    <assert id="test2" init-data-file="./assert-test-data/init" expected-update="1" expected-data-file="./assert-test-data/expected/update.xml">
+        <sql>update t_order set user_id = 10111 where order_id = %s</sql>
+        <expected-sql>select order_id,user_id from t_order where order_id = %s</expected-sql>
         <parameters>
             <parameter value="1000" type="int"/>
         </parameters>
-    </assert> -->
+    </assert>
 </asserts>

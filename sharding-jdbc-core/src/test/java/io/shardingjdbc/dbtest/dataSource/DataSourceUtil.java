@@ -18,7 +18,7 @@ import io.shardingjdbc.core.rule.ShardingRule;
  */
 public class DataSourceUtil {
 
-	public static DataSource getDataSource(String path) throws IOException, SQLException {
+	public static DataSource getDataSource(final String path) throws IOException, SQLException {
 		return ShardingDataSourceFactory.createDataSource(new File(path));
 	}
 

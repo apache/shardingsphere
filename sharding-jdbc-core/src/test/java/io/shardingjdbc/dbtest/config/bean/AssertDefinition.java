@@ -21,8 +21,14 @@ public class AssertDefinition {
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
 
+    @XmlAttribute(name = "expected-update")
+    private Integer expectedUpdate;
+    
     @XmlElement(name = "sql")
     private String sql;
+    
+    @XmlElement(name = "expected-sql")
+    private String expectedSql;
 
     @XmlElement(name = "parameters")
     private ParametersDefinition parameters;

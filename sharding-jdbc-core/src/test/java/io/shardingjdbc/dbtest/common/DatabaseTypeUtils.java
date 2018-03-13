@@ -4,7 +4,7 @@ import io.shardingjdbc.core.constant.DatabaseType;
 
 public class DatabaseTypeUtils {
 
-	public static DatabaseType getDatabaseType(String type) {
+	public static DatabaseType getDatabaseType(final String type) {
 
 		DatabaseType[] databaseTypes = DatabaseType.values();
 		for (DatabaseType each : databaseTypes) {

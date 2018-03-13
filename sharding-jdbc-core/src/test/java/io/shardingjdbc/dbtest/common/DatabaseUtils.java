@@ -34,7 +34,7 @@ public class DatabaseUtils {
 	/**
 	 * Map<column,data>
 	 */
-	public static String analyzeSql(String table, Map<String, String> config) {
+	public static String analyzeSql(final String table, final Map<String, String> config) {
 
 		List<String> colsConfigs = new ArrayList<>();
 		List<String> valueConfigs = new ArrayList<>();
@@ -56,8 +56,9 @@ public class DatabaseUtils {
 		return sbsql.toString();
 	}
 
-	public static boolean insertUsePreparedStatement(Connection conn, String sql, List<Map<String, String>> datas,
-			Map<String, String> config) throws SQLException, ParseException {
+	public static boolean insertUsePreparedStatement(final Connection conn, final String sql,
+			final List<Map<String, String>> datas, final Map<String, String> config)
+			throws SQLException, ParseException {
 		try (PreparedStatement pstmt = conn.prepareStatement(sql);) {
 			for (Map<String, String> data : datas) {
 				int index = 1;
@@ -112,34 +113,34 @@ public class DatabaseUtils {
 		return true;
 	}
 
-	public static void cleanAllUsePreparedStatement(Connection conn, String table) throws SQLException {
+	public static void cleanAllUsePreparedStatement(final Connection conn, final String table) throws SQLException {
 		try (Statement pstmt = conn.createStatement();) {
 			pstmt.execute("DELETE from " + table);
 		}
 	}
 
-	public static boolean isSelect(String sql) {
-		sql = sql.trim();
-		return sql.startsWith("select");
-	}
-	
-	public static boolean isInsertOrUpdateOrDelete(String sql) {
-		sql = sql.trim();
-		return sql.startsWith("insert") || sql.startsWith("update") || sql.startsWith("delete");
+	public static boolean isSelect(final String sql) {
+		String newSql = sql.trim();
+		return newSql.startsWith("select");
 	}
 
-	public static int updateUseStatementToExecuteUpdate(Connection conn, String sql, ParametersDefinition parameters)
-			throws SQLException, ParseException {
+	public static boolean isInsertOrUpdateOrDelete(final String sql) {
+		String newSql = sql.trim();
+		return newSql.startsWith("insert") || newSql.startsWith("update") || newSql.startsWith("delete");
+	}
+
+	public static int updateUseStatementToExecuteUpdate(final Connection conn, final String sql,
+			final ParametersDefinition parameters) throws SQLException, ParseException {
 		List<ParameterDefinition> parameter = parameters.getParameter();
 		int result = 0;
 		try (Statement pstmt = conn.createStatement()) {
-			sql = sqlStatement(sql, parameter);
-			result = pstmt.executeUpdate(sql);
+			String newSql = sqlStatement(sql, parameter);
+			result = pstmt.executeUpdate(newSql);
 		}
 		return result;
 	}
 
-	private static String sqlStatement(String sql, List<ParameterDefinition> parameter) {
+	private static String sqlStatement(final String sql, final List<ParameterDefinition> parameter) {
 		String result = sql;
 		for (ParameterDefinition parameterDefinition : parameter) {
 			String type = parameterDefinition.getType();
@@ -173,42 +174,42 @@ public class DatabaseUtils {
 		return result;
 	}
 
-	public static boolean updateUseStatementToExecute(Connection conn, String sql, ParametersDefinition parameters)
-			throws SQLException, ParseException {
+	public static boolean updateUseStatementToExecute(final Connection conn, final String sql,
+			final ParametersDefinition parameters) throws SQLException, ParseException {
 		List<ParameterDefinition> parameter = parameters.getParameter();
 		try (Statement pstmt = conn.createStatement()) {
-			sql = sqlStatement(sql, parameter);
-			return pstmt.execute(sql);
+			String newSql = sqlStatement(sql, parameter);
+			return pstmt.execute(newSql);
 		}
 	}
 
-	public static int updateUsePreparedStatementToExecuteUpdate(Connection conn, String sql,
-			ParametersDefinition parameters) throws SQLException, ParseException {
+	public static int updateUsePreparedStatementToExecuteUpdate(final Connection conn, final String sql,
+			final ParametersDefinition parameters) throws SQLException, ParseException {
 		List<ParameterDefinition> parameter = parameters.getParameter();
 		int result = 0;
-		sql = sql.replaceAll("\\%s", "?");
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		String newSql = sql.replaceAll("\\%s", "?");
+		try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
 			sqlPreparedStatement(parameter, pstmt);
 			result = pstmt.executeUpdate();
 		}
 		return result;
 	}
 
-	public static boolean updateUsePreparedStatementToExecute(Connection conn, String sql,
-			ParametersDefinition parameters) throws SQLException, ParseException {
+	public static boolean updateUsePreparedStatementToExecute(final Connection conn, final String sql,
+			final ParametersDefinition parameters) throws SQLException, ParseException {
 		List<ParameterDefinition> parameter = parameters.getParameter();
-		sql = sql.replaceAll("\\%s", "?");
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		String newSql = sql.replaceAll("\\%s", "?");
+		try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
 			sqlPreparedStatement(parameter, pstmt);
 			return pstmt.execute();
 		}
 	}
 
-	public static DatasetDatabase selectUsePreparedStatement(Connection conn, String sql,
+	public static DatasetDatabase selectUsePreparedStatement(final Connection conn, final String sql,
 			ParametersDefinition parameters) throws SQLException, ParseException {
 		List<ParameterDefinition> parameter = parameters.getParameter();
-		sql = sql.replaceAll("\\%s", "?");
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		String newSql = sql.replaceAll("\\%s", "?");
+		try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
 			sqlPreparedStatement(parameter, pstmt);
 			try (ResultSet resultSet = pstmt.executeQuery()) {
 
@@ -277,12 +278,12 @@ public class DatabaseUtils {
 		}
 	}
 
-	public static DatasetDatabase selectUseStatement(Connection conn, String sql, ParametersDefinition parameters)
+	public static DatasetDatabase selectUseStatement(final Connection conn, final String sql, final ParametersDefinition parameters)
 			throws SQLException, ParseException {
 		List<ParameterDefinition> parameter = parameters.getParameter();
 		try (Statement pstmt = conn.createStatement()) {
-			sql = sqlStatement(sql, parameter);
-			try (ResultSet resultSet = pstmt.executeQuery(sql)) {
+			String newSql = sqlStatement(sql, parameter);
+			try (ResultSet resultSet = pstmt.executeQuery(newSql)) {
 				ResultSetMetaData rsmd = resultSet.getMetaData();
 				int colsint = rsmd.getColumnCount();
 				Map<String, String> cols = new LinkedHashMap<>();
@@ -348,7 +349,7 @@ public class DatabaseUtils {
 		}
 	}
 
-	private static void sqlPreparedStatement(List<ParameterDefinition> parameter, PreparedStatement pstmt)
+	private static void sqlPreparedStatement(final List<ParameterDefinition> parameter, final PreparedStatement pstmt)
 			throws SQLException, ParseException {
 		int index = 1;
 		for (ParameterDefinition parameterDefinition : parameter) {
@@ -391,20 +392,20 @@ public class DatabaseUtils {
 		}
 	}
 
-	private static String getDataType(int type, int scale) {
+	private static String getDataType(final int type, final int scale) {
 		String result = "";
 
 		switch (type) {
-		case Types.INTEGER: 
+		case Types.INTEGER:
 			result = "int";
 			break;
-		case Types.LONGVARCHAR: 
+		case Types.LONGVARCHAR:
 			result = "long";
 			break;
-		case Types.BIGINT: 
+		case Types.BIGINT:
 			result = "long";
 			break;
-		case Types.FLOAT: 
+		case Types.FLOAT:
 			result = "float";
 			break;
 		case Types.DOUBLE:
@@ -446,7 +447,7 @@ public class DatabaseUtils {
 		return result;
 	}
 
-	public static void assertDatas(DatasetDefinition expected, DatasetDatabase actual) {
+	public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual) {
 		Map<String, Map<String, String>> actualConfigs = actual.getConfigs();
 		Map<String, Map<String, String>> expectedConfigs = expected.getConfigs();
 
