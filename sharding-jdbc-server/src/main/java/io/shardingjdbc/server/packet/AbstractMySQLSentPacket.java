@@ -12,5 +12,5 @@ public abstract class AbstractMySQLSentPacket extends AbstractMySQLPacket {
      * 
      * @param mysqlPacketPayload packet payload to be write
      */
-    public abstract void write(final MySQLPacketPayload mysqlPacketPayload);
+    public abstract void write(MySQLPacketPayload mysqlPacketPayload);
 }

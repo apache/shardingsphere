@@ -14,5 +14,5 @@ public abstract class AbstractMySQLReceivedPacket extends AbstractMySQLPacket {
      * 
      * @return instance of received packet
      */
-    public abstract AbstractMySQLReceivedPacket read(final MySQLPacketPayload mysqlPacketPayload);
+    public abstract AbstractMySQLReceivedPacket read(MySQLPacketPayload mysqlPacketPayload);
 }
