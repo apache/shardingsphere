@@ -35,3 +35,4 @@ next = "/01-overview/"
 | postgresql                           | BSD             |
 | mssql-jdbc                           | MIT             |
 | HikariCP                             | Apache-2.0      |
+| opentracing                          | Apache-2.0      |
