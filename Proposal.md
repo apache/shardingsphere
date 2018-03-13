@@ -34,20 +34,20 @@ Relational database still plays a very important role on current application sys
 But current relational database cannot support cloud native very well and unfriendliness for distributed system. 
 
 The final proposal of Sharding is let user use distributed databases as a single database. Sharding uses mesher to manage the databases scattered around the system. 
-The interaction among the applications and the databases, which is concentrated in the mesher, is as complex and orderly as a cobweb. As the point, the concept of Database Mesh is similar like Service Mesh. 
-The attention of Database Mesh is focused on how to connect the distributed data-access-layer and databases together. And it pays more attention to the interaction, which means the messy interaction among the applications and databases will be effectively organized. 
+The interaction among the applications and the databases, which is concentrated in the mesher, is as complex and orderly as a cobweb. As the point, the concept of Database Mesh is similar with Service Mesh. 
+The attention of Database Mesh focuses on how to connect the distributed data-access-layer and databases together. And it pays more attention to the interaction, which means the messy interaction among the applications and databases will be effectively organized. 
 By using Database Mesh, applications and databases will form a large grid system, and they just need to be put into the right position on grid system accordingly, for they are all be governed by mesher.
 
 ## Current Status
 
 ### Meritocracy
 
-This project started from Dangdang at year 2015 and opened on GitHub at year 2016. At year 2017 Jingdong recognized its value, and determined to sponsor. We set up the PMC team and committer team.
-The project has contributors and users from many companies. The new contributors are guided, discussed and reviewed by the existed PMC members. When they are ready, PMC will start a vote to promote him/her to become a member of PMC and Committer Team. See the details [here](http://shardingjdbc.io/community/en/01-organization/). Contributions are always welcomed. 
+This project started from Dangdang at 2015 and opened on GitHub at 2016. At 2017 Jingdong recognized its value, and determined to sponsor. We set up the PMC team and committer team.
+The project has contributors and users from many companies. The new contributors are guided, discussed and reviewed by the existed PMC members. When they are ready, PMC will start a vote to promote him/her to become a member of PMC and Committer Team. See the details [here](http://shardingjdbc.io/community/en/01-organization/). Contributions are always welcomed and highly valued. 
 
 ### Community
 
-Now we have set 2 development teams on JingDong and Dangdang for the project. CHINA TELECOM, Sohu, DataMan and Enniu are interesting on Sharding, We hope to grow the base of contributors by inviting all those who offer contributions and excel through the use of The Apache Way. 
+Now we have set 2 development teams in JingDong and Dangdang for the project. CHINA TELECOM, Sohu, DataMan and Enniu are interesting on Sharding, We hope to grow the base of contributors by inviting all those who offer contributions and excel through the use of The Apache Way. 
 Right now, we make use of github as code hosting as well as gitter for community communication.
 
 ### Core Developers
