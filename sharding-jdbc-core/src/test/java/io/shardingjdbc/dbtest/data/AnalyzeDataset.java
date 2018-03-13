@@ -32,15 +32,15 @@ public class AnalyzeDataset {
 		Document doc = XMLUtil.parseFile(file);
 		Node rootNode = XMLUtil.getNode(doc, "/dataset");
 		NodeList firstNodeList = rootNode.getChildNodes();
-		DatasetDefinition datasetDefinition = new DatasetDefinition();
+		DatasetDefinition result = new DatasetDefinition();
 		for (int i = 0; i < firstNodeList.getLength(); i++) {
 			Node firstNode = firstNodeList.item(i);
 			if (firstNode.getNodeType() == Node.ELEMENT_NODE) {
 
 				if ("table-config".equals(firstNode.getNodeName())) {
-					analyzeTableConfig(datasetDefinition, firstNode);
+					analyzeTableConfig(result, firstNode);
 				} else {
-					Map<String, List<Map<String, String>>> datas = datasetDefinition.getDatas();
+					Map<String, List<Map<String, String>>> datas = result.getDatas();
 					String tableName = firstNode.getNodeName();
 					List<Map<String, String>> datalists = datas.get(tableName);
 					if (datalists == null) {
@@ -62,7 +62,7 @@ public class AnalyzeDataset {
 				}
 			}
 		}
-		return datasetDefinition;
+		return result;
 	}
 
 	private static void analyzeTableConfig(DatasetDefinition datasetDefinition, Node firstNode) {

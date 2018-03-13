@@ -12,7 +12,7 @@ public class DatabaseTypeUtils {
 				return each;
 			}
 		}
-		return null;
+		return DatabaseType.H2;
 	}
 
 }

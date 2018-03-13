@@ -17,20 +17,20 @@ public class FileUtils {
 	 * @return
 	 */
 	public static List<String> getAllFilePaths(File filePath, String prefixFile, String suffix) {
-		List<String> filePaths = new ArrayList<>();
+		List<String> result = new ArrayList<>();
 		File[] files = filePath.listFiles();
 		if (files == null) {
-			return filePaths;
+			return result;
 		}
 		for (File each : files) {
 			if (each.isDirectory()) {
-				getSubFilePaths(each, filePaths, prefixFile, suffix);
+				getSubFilePaths(each, result, prefixFile, suffix);
 			} else {
-				getFiles(prefixFile, suffix, filePaths, each);
+				getFiles(prefixFile, suffix, result, each);
 
 			}
 		}
-		return filePaths;
+		return result;
 	}
 
 	private static void getFiles(String prefixFile, String suffix, List<String> filePaths, File f) {
@@ -52,17 +52,18 @@ public class FileUtils {
 	private static List<String> getSubFilePaths(File filePath, List<String> filePaths, String prefixFile,
 			String suffix) {
 		File[] files = filePath.listFiles();
+		List<String> result = filePaths;
 		if (files == null) {
-			return filePaths;
+			return result;
 		}
 		for (File each : files) {
 			if (each.isDirectory()) {
-				getSubFilePaths(each, filePaths, prefixFile, suffix);
+				getSubFilePaths(each, result, prefixFile, suffix);
 			} else {
-				getFiles(prefixFile, suffix, filePaths, each);
+				getFiles(prefixFile, suffix, result, each);
 			}
 		}
-		return filePaths;
+		return result;
 	}
 
 }

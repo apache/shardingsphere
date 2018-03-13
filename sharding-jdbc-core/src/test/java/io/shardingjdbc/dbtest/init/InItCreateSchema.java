@@ -6,25 +6,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.h2.tools.RunScript;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.dbtest.common.ConfigRuntime;
 import io.shardingjdbc.dbtest.common.DatabaseTypeUtils;
-import io.shardingjdbc.dbtest.exception.DbTestException;
 
 public class InItCreateSchema {
 
-	private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
-
-	private final Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
 
 	/**
 	 * 初始化数据库表
@@ -35,11 +26,7 @@ public class InItCreateSchema {
 			createSchema(databaseType);
 		}
 	}
-
-	protected static Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
-		return shardingDataSources;
-	}
-
+	
 	/**
 	 * 创建数据库
 	 */
@@ -106,15 +93,6 @@ public class InItCreateSchema {
 
 	public static void main(String[] args) {
 		initTable();
-	}
-
-	private static DatabaseType findDatabaseType(final String databaseType) {
-		for (DatabaseType each : DatabaseType.values()) {
-			if (each.name().equalsIgnoreCase(databaseType)) {
-				return each;
-			}
-		}
-		throw new DbTestException("Can't find database type of:" + databaseType);
 	}
 
 	private static void createSchema(final DatabaseType dbType) {

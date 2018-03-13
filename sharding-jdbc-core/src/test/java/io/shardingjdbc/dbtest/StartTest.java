@@ -32,13 +32,12 @@ public class StartTest {
 
 		String assertPath = ConfigRuntime.getAssertPath();
 		assertPath = PathUtils.getPath(assertPath);
-		// 搜索所有用例
 		List<String> paths = FileUtils.getAllFilePaths(new File(assertPath), "assert-", "xml");
-		List<String[]> params = new ArrayList<>();
+		List<String[]> result = new ArrayList<>();
 		for (String each : paths) {
-			params.add(new String[] { each });
+			result.add(new String[] { each });
 		}
-		return params;
+		return result;
 	}
 
 	@BeforeClass

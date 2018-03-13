@@ -17,15 +17,16 @@ public class PathUtils {
 			throw new DbTestException("路径不能为空");
 		}
 
-		if (path.startsWith("classpath:")) {
-			path = path.substring("classpath:".length());
-			path = BasePath + path;
-			return path;
+		String result = path;
+		if (result.startsWith("classpath:")) {
+			result = result.substring("classpath:".length());
+			result = BasePath + result;
+			return result;
 		}
 		if (parent != null) {
-			return parent + path;
+			return parent + result;
 		}
-		return path;
+		return result;
 	}
 
 	/**

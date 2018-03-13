@@ -11,100 +11,100 @@ public class ConfigRuntime {
 
 	public static Set<String> getDbs() {
 		Map<String, String> dbs = ConfigUtils.getDatas("database");
-		Set<String> sets = new HashSet<>();
+		Set<String> result = new HashSet<>();
 		for (Map.Entry<String, String> each : dbs.entrySet()) {
 			String[] dbsts = each.getKey().split("\\.");
-			sets.add(dbsts[1]);
+			result.add(dbsts[1]);
 		}
-		return sets;
+		return result;
 	}
 
-	private static String getjdbcConfig(String key) {
+	private static String getJdbcConfig(String key) {
 		return ConfigUtils.getString("database." + key, "");
 	}
 
 	public static String getDriverClassName(DatabaseType type) {
 		switch (type) {
 		case H2:
-			return getjdbcConfig("h2.driver");
+			return getJdbcConfig("h2.driver");
 		case MySQL:
-			return getjdbcConfig("mysql.driver");
+			return getJdbcConfig("mysql.driver");
 		case Oracle:
-			return getjdbcConfig("oracle.driver");
+			return getJdbcConfig("oracle.driver");
 		case SQLServer:
-			return getjdbcConfig("sqlserver.driver");
+			return getJdbcConfig("sqlserver.driver");
 		case PostgreSQL:
-			return getjdbcConfig("postgresql.driver");
+			return getJdbcConfig("postgresql.driver");
 		default:
-			return null;
+			return getJdbcConfig("h2.driver");
 		}
 	}
 
 	public static String getURL(DatabaseType type, String dbName) {
 		switch (type) {
 		case H2:
-			return String.format(getjdbcConfig("h2.url"), dbName);
+			return String.format(getJdbcConfig("h2.url"), dbName);
 		case MySQL:
-			return String.format(getjdbcConfig("mysql.url"), dbName);
+			return String.format(getJdbcConfig("mysql.url"), dbName);
 		case Oracle:
-			return String.format(getjdbcConfig("oracle.url"), dbName);
+			return String.format(getJdbcConfig("oracle.url"), dbName);
 		case SQLServer:
-			return String.format(getjdbcConfig("sqlserver.url"), dbName);
+			return String.format(getJdbcConfig("sqlserver.url"), dbName);
 		case PostgreSQL:
-			return String.format(getjdbcConfig("postgresql.url"), dbName);
+			return String.format(getJdbcConfig("postgresql.url"), dbName);
 		default:
-			return null;
+			return String.format(getJdbcConfig("h2.url"), dbName);
 		}
 	}
 
 	public static String getUsername(DatabaseType type) {
 		switch (type) {
 		case H2:
-			return getjdbcConfig("h2.username");
+			return getJdbcConfig("h2.username");
 		case MySQL:
-			return getjdbcConfig("mysql.username");
+			return getJdbcConfig("mysql.username");
 		case Oracle:
-			return getjdbcConfig("oracle.username");
+			return getJdbcConfig("oracle.username");
 		case SQLServer:
-			return getjdbcConfig("sqlserver.username");
+			return getJdbcConfig("sqlserver.username");
 		case PostgreSQL:
-			return getjdbcConfig("postgresql.username");
+			return getJdbcConfig("postgresql.username");
 		default:
-			return null;
+			return getJdbcConfig("h2.driver");
 		}
 	}
 
 	public static String getPassword(DatabaseType type) {
 		switch (type) {
 		case H2:
-			return getjdbcConfig("h2.password");
+			return getJdbcConfig("h2.password");
 		case MySQL:
-			return getjdbcConfig("mysql.password");
+			return getJdbcConfig("mysql.password");
 		case Oracle:
-			return getjdbcConfig("oracle.password");
+			return getJdbcConfig("oracle.password");
 		case SQLServer:
-			return getjdbcConfig("sqlserver.password");
+			return getJdbcConfig("sqlserver.password");
 		case PostgreSQL:
-			return getjdbcConfig("postgresql.password");
+			return getJdbcConfig("postgresql.password");
 		default:
-			return null;
+			return getJdbcConfig("h2.driver");
 		}
 	}
 
 	public static String getDefualtdb(DatabaseType type) {
 		switch (type) {
 		case H2:
-			return getjdbcConfig("h2.defualtdb");
+			return getJdbcConfig("h2.defualtdb");
 		case MySQL:
-			return getjdbcConfig("mysql.defualtdb");
+			return getJdbcConfig("mysql.defualtdb");
 		case Oracle:
-			return getjdbcConfig("oracle.defualtdb");
+			return getJdbcConfig("oracle.defualtdb");
 		case SQLServer:
-			return getjdbcConfig("sqlserver.defualtdb");
+			return getJdbcConfig("sqlserver.defualtdb");
 		case PostgreSQL:
-			return getjdbcConfig("postgresql.defualtdb");
+			return getJdbcConfig("postgresql.defualtdb");
 		default:
-			return null;
+			return getJdbcConfig("h2.defualtdb");
 		}
 	}
 

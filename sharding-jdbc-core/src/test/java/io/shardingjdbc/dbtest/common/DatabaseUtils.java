@@ -1,6 +1,5 @@
 package io.shardingjdbc.dbtest.common;
 
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
@@ -132,15 +131,16 @@ public class DatabaseUtils {
 	public static int updateUseStatementToExecuteUpdate(Connection conn, String sql, ParametersDefinition parameters)
 			throws SQLException, ParseException {
 		List<ParameterDefinition> parameter = parameters.getParameter();
-		int num = 0;
+		int result = 0;
 		try (Statement pstmt = conn.createStatement()) {
 			sql = sqlStatement(sql, parameter);
-			num = pstmt.executeUpdate(sql);
+			result = pstmt.executeUpdate(sql);
 		}
-		return num;
+		return result;
 	}
 
 	private static String sqlStatement(String sql, List<ParameterDefinition> parameter) {
+		String result = sql;
 		for (ParameterDefinition parameterDefinition : parameter) {
 			String type = parameterDefinition.getType();
 			String datacol = parameterDefinition.getValue();
@@ -151,26 +151,26 @@ public class DatabaseUtils {
 			case "long":
 			case "float":
 			case "double":
-				sql = Pattern.compile("%s", Pattern.LITERAL).matcher(sql)
+				result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
 						.replaceFirst((Matcher.quoteReplacement(datacol.toString())));
 				break;
 			case "boolean":
-				sql = Pattern.compile("%s", Pattern.LITERAL).matcher(sql)
+				result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
 						.replaceFirst((Matcher.quoteReplacement(Boolean.valueOf(datacol).toString())));
 				break;
 			case "Date":
 				throw new DbTestException("Date type not supported for the time being");
 			case "String":
-				sql = Pattern.compile("%s", Pattern.LITERAL).matcher(sql)
+				result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
 						.replaceFirst((Matcher.quoteReplacement("'" + datacol + "'")));
 				break;
 			default:
-				sql = Pattern.compile("%s", Pattern.LITERAL).matcher(sql)
+				result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
 						.replaceFirst((Matcher.quoteReplacement("'" + datacol + "'")));
 				break;
 			}
 		}
-		return sql;
+		return result;
 	}
 
 	public static boolean updateUseStatementToExecute(Connection conn, String sql, ParametersDefinition parameters)
@@ -185,19 +185,18 @@ public class DatabaseUtils {
 	public static int updateUsePreparedStatementToExecuteUpdate(Connection conn, String sql,
 			ParametersDefinition parameters) throws SQLException, ParseException {
 		List<ParameterDefinition> parameter = parameters.getParameter();
-		int num = 0;
+		int result = 0;
 		sql = sql.replaceAll("\\%s", "?");
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			sqlPreparedStatement(parameter, pstmt);
-			num = pstmt.executeUpdate();
+			result = pstmt.executeUpdate();
 		}
-		return num;
+		return result;
 	}
 
 	public static boolean updateUsePreparedStatementToExecute(Connection conn, String sql,
 			ParametersDefinition parameters) throws SQLException, ParseException {
 		List<ParameterDefinition> parameter = parameters.getParameter();
-		int num = 0;
 		sql = sql.replaceAll("\\%s", "?");
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			sqlPreparedStatement(parameter, pstmt);
@@ -270,10 +269,10 @@ public class DatabaseUtils {
 					}
 					ls.add(data);
 				}
-				DatasetDatabase dd = new DatasetDatabase();
-				dd.setConfigs(configs);
-				dd.setDatas(datas);
-				return dd;
+				DatasetDatabase result = new DatasetDatabase();
+				result.setConfigs(configs);
+				result.setDatas(datas);
+				return result;
 			}
 		}
 	}
@@ -341,10 +340,10 @@ public class DatabaseUtils {
 					}
 					ls.add(data);
 				}
-				DatasetDatabase dd = new DatasetDatabase();
-				dd.setConfigs(configs);
-				dd.setDatas(datas);
-				return dd;
+				DatasetDatabase result = new DatasetDatabase();
+				result.setConfigs(configs);
+				result.setDatas(datas);
+				return result;
 			}
 		}
 	}
@@ -393,58 +392,58 @@ public class DatabaseUtils {
 	}
 
 	private static String getDataType(int type, int scale) {
-		String dataType = "";
+		String result = "";
 
 		switch (type) {
 		case Types.INTEGER: 
-			dataType = "int";
+			result = "int";
 			break;
 		case Types.LONGVARCHAR: 
-			dataType = "long";
+			result = "long";
 			break;
 		case Types.BIGINT: 
-			dataType = "long";
+			result = "long";
 			break;
 		case Types.FLOAT: 
-			dataType = "float";
+			result = "float";
 			break;
 		case Types.DOUBLE:
-			dataType = "double";
+			result = "double";
 			break;
 		case Types.BOOLEAN:
-			dataType = "boolean";
+			result = "boolean";
 			break;
 		case Types.CHAR:
-			dataType = "char";
+			result = "char";
 			break;
 		case Types.NUMERIC:
 			switch (scale) {
 			case 0:
-				dataType = "double";
+				result = "double";
 				break;
 			case -127:
-				dataType = "float";
+				result = "float";
 				break;
 			default:
-				dataType = "double";
+				result = "double";
 			}
 			break;
 		case Types.VARCHAR:
-			dataType = "String";
+			result = "String";
 			break;
 		case Types.DATE:
-			dataType = "Date";
+			result = "Date";
 			break;
 		case Types.TIMESTAMP:
-			dataType = "Date";
+			result = "Date";
 			break;
 		case Types.BLOB:
-			dataType = "Blob";
+			result = "Blob";
 			break;
 		default:
-			dataType = "String";
+			result = "String";
 		}
-		return dataType;
+		return result;
 	}
 
 	public static void assertDatas(DatasetDefinition expected, DatasetDatabase actual) {

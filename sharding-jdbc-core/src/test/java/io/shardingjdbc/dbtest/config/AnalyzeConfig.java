@@ -7,22 +7,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.xml.sax.SAXException;
-
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
 
-/**
- *
- */
 public class AnalyzeConfig {
 
-	/**
-	 *
-	 * @param path
-	 * @return
-	 * @throws IOException
-	 * @throws SAXException
-	 */
 	public static AssertsDefinition analyze(String path) throws IOException, JAXBException {
 		JAXBContext context = JAXBContext.newInstance(AssertsDefinition.class);
 
