@@ -27,6 +27,17 @@
         <module name="AbbreviationAsWordInName">
             <property name="allowedAbbreviationLength" value="6"/>
         </module>
+
+        <!-- Imports -->
+        <module name="AvoidStarImport"/>
+        <module name="AvoidStaticImport">
+            <property name="excludes" value="org.junit.Assert.*,org.hamcrest.CoreMatchers.*,org.mockito.Mockito.*"/>
+        </module>
+        <module name="IllegalImport"/>
+        <module name="RedundantImport"/>
+        <module name="UnusedImports"/>
+        <module name="CustomImportOrder"/>
+        
         
         <module name="OuterTypeFilename"/>
         <module name="IllegalTokenText">
@@ -57,11 +68,6 @@
         </module>
         <module name="ParameterNumber"/>
         <module name="OuterTypeNumber"/>
-        <module name="AvoidStarImport"/>
-        <module name="IllegalImport"/>
-        <module name="RedundantImport"/>
-        <module name="UnusedImports"/>
-        <module name="CustomImportOrder"/>
         <module name="OneTopLevelClass"/>
         <module name="NoLineWrap"/>
         <module name="CovariantEquals"/>
