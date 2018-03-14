@@ -86,7 +86,7 @@ Two development teams in JingDong and Dangdang will continue to work on Sharding
 
 ### Inexperience with Open Source
 
-The current core developers all work for a company that has led or contributed to many open source software projects, including [Elastic-Job](https://github.com/elasticjob), [SkyWalking](https://github.com/apache/incubator-skywalking), opentracing, and others. Therefore, there is low risk related to inexperience with open source software and processes.
+The current core developers all work for a company that has led or contributed to many open source software projects, including [Apache SkyWalking (Incubating)](https://github.com/apache/incubator-skywalking), [Apache Dubbo (Incubator)](https://incubator.apache.org/projects/dubbo.html), CNCF OpenTracing, [Elastic-Job](https://github.com/elasticjob), and others. Therefore, there is low risk related to inexperience with open source software and processes.
 
 ### Homogenous Developers
 
