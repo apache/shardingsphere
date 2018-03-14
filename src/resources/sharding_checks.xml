@@ -8,6 +8,7 @@
         <property name="eachLine" value="true"/>
     </module>
     <module name="TreeWalker">
+        
         <!-- Naming Conventions -->
         <module name="PackageName">
             <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
@@ -27,7 +28,7 @@
         <module name="AbbreviationAsWordInName">
             <property name="allowedAbbreviationLength" value="6"/>
         </module>
-
+        
         <!-- Imports -->
         <module name="AvoidStarImport"/>
         <module name="AvoidStaticImport">
@@ -37,6 +38,23 @@
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
         <module name="CustomImportOrder"/>
+        
+        <!-- Annotations -->
+        <module name="AnnotationLocation">
+            <property name="id" value="AnnotationLocationMostCases"/>
+            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF"/>
+        </module>
+        <module name="AnnotationLocation">
+            <property name="id" value="AnnotationLocationVariables"/>
+            <property name="tokens" value="VARIABLE_DEF"/>
+            <property name="allowSamelineMultipleAnnotations" value="true"/>
+        </module>
+        <module name="AnnotationUseStyle"/>
+        <module name="MissingOverride"/>
+        <module name="SuppressWarnings"/>
+        <module name="MissingDeprecated"/>
+        <module name="SuppressWarningsHolder"/>
+        
         
         
         <module name="OuterTypeFilename"/>
@@ -116,12 +134,6 @@
         <module name="NestedIfDepth"/>
         <module name="NestedTryDepth"/>
         <module name="UpperEll"/>
-        <module name="MissingOverride"/>
-        <module name="AnnotationUseStyle"/>
-        <module name="SuppressWarnings">
-            <property name="tokens" value="ANNOTATION_DEF,ANNOTATION_FIELD_DEF,CTOR_DEF,ENUM_CONSTANT_DEF,METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
-        </module>
-        <module name="MissingDeprecated"/>
         <module name="IllegalInstantiation"/>
         <module name="IllegalCatch"/>
         <module name="IllegalThrows"/>
@@ -200,15 +212,6 @@
         <module name="OperatorWrap">
             <property name="option" value="NL"/>
             <property name="tokens" value="BAND, BOR, BSR, BXOR, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR, LT, MINUS, MOD, NOT_EQUAL, PLUS, QUESTION, SL, SR, STAR, METHOD_REF "/>
-        </module>
-        <module name="AnnotationLocation">
-            <property name="id" value="AnnotationLocationMostCases"/>
-            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF"/>
-        </module>
-        <module name="AnnotationLocation">
-            <property name="id" value="AnnotationLocationVariables"/>
-            <property name="tokens" value="VARIABLE_DEF"/>
-            <property name="allowSamelineMultipleAnnotations" value="true"/>
         </module>
         <module name="BooleanExpressionComplexity"/>
         <module name="ClassFanOutComplexity"/>
