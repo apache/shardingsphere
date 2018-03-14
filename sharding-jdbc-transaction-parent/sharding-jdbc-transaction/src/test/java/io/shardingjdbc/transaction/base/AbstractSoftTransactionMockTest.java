@@ -36,7 +36,7 @@ public abstract class AbstractSoftTransactionMockTest {
     private SoftTransactionManager softTransactionManager;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         SoftTransactionConfiguration softTransactionConfiguration = mock(SoftTransactionConfiguration.class);
         when(softTransactionConfiguration.getTransactionLogDataSource()).thenReturn(mock(DataSource.class));
         when(softTransactionConfiguration.getBestEffortsDeliveryJobConfiguration()).thenReturn(Optional.<NestedBestEffortsDeliveryJobConfiguration>absent());

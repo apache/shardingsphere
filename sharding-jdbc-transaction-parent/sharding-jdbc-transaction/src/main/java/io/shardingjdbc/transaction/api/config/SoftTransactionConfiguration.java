@@ -33,8 +33,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static io.shardingjdbc.transaction.constants.TransactionLogDataSourceType.RDB;
-
 /**
  * B.A.S.E transaction configuration.
  * 
@@ -59,7 +57,7 @@ public class SoftTransactionConfiguration {
     /**
      * Transaction log storage type.
      */
-    private TransactionLogDataSourceType storageType = RDB;
+    private TransactionLogDataSourceType storageType = TransactionLogDataSourceType.RDB;
     
     /**
      * Transaction log data source.

@@ -20,7 +20,7 @@ package io.shardingjdbc.core.util;
 import io.shardingjdbc.core.constant.DatabaseType;
 import org.junit.Test;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class SQLUtilTest {

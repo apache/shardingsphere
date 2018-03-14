@@ -19,14 +19,14 @@ package io.shardingjdbc.core.api;
 
 import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
+import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
-import io.shardingjdbc.core.constant.ShardingOperator;
 import org.junit.Test;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class HintManagerTest {
     

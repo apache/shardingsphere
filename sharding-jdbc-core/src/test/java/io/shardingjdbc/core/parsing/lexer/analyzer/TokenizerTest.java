@@ -26,8 +26,8 @@ import org.junit.Test;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class TokenizerTest {

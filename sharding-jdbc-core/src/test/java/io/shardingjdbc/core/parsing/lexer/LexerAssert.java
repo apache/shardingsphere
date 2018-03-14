@@ -4,8 +4,8 @@ import io.shardingjdbc.core.parsing.lexer.token.Token;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
 import lombok.NoArgsConstructor;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @NoArgsConstructor
 public final class LexerAssert {

@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 
 import java.util.UUID;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public abstract class AbstractTransactionLogStorageOperationsTest {

@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import java.sql.PreparedStatement;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class SetParameterMethodInvocationTest {

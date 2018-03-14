@@ -25,8 +25,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import static io.shardingjdbc.core.common.util.SQLPlaceholderUtil.replacePreparedStatement;
-import static io.shardingjdbc.core.common.util.SQLPlaceholderUtil.replaceStatement;
 import static org.dbunit.Assertion.assertEquals;
 
 @RequiredArgsConstructor
@@ -36,7 +34,7 @@ public class SQLAssertHelper {
     
     public void executeWithPreparedStatement(final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters) throws SQLException {
         try (Connection connection = abstractDataSourceAdapter.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql))) {
+             PreparedStatement preparedStatement = connection.prepareStatement(SQLPlaceholderUtil.replacePreparedStatement(sql))) {
             setParameters(preparedStatement, parameters);
             if (isExecute) {
                 preparedStatement.execute();
@@ -50,9 +48,9 @@ public class SQLAssertHelper {
         try (Connection connection = abstractDataSourceAdapter.getConnection();
              Statement statement = connection.createStatement()) {
             if (isExecute) {
-                statement.execute(replaceStatement(sql, parameters.toArray()));
+                statement.execute(SQLPlaceholderUtil.replaceStatement(sql, parameters.toArray()));
             } else {
-                statement.executeUpdate(replaceStatement(sql, parameters.toArray()));
+                statement.executeUpdate(SQLPlaceholderUtil.replaceStatement(sql, parameters.toArray()));
             }
         }
     }
@@ -60,7 +58,7 @@ public class SQLAssertHelper {
     public void executeQueryWithPreparedStatement(final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         try (Connection conn = abstractDataSourceAdapter.getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(replacePreparedStatement(sql))) {
+             PreparedStatement preparedStatement = conn.prepareStatement(SQLPlaceholderUtil.replacePreparedStatement(sql))) {
             setParameters(preparedStatement, parameters);
             ReplacementDataSet expectedDataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(file));
             expectedDataSet.addReplacementObject("[null]", null);
@@ -81,7 +79,7 @@ public class SQLAssertHelper {
     public void executeQueryWithStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         try (Connection conn = abstractDataSourceAdapter.getConnection()) {
-            String querySql = replaceStatement(sql, parameters.toArray());
+            String querySql = SQLPlaceholderUtil.replaceStatement(sql, parameters.toArray());
             ReplacementDataSet expectedDataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(file));
             expectedDataSet.addReplacementObject("[null]", null);
             for (ITable each : expectedDataSet.getTables()) {

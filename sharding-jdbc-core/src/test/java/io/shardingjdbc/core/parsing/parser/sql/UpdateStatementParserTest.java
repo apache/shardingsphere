@@ -17,9 +17,9 @@
 
 package io.shardingjdbc.core.parsing.parser.sql;
 
+import com.google.common.collect.Range;
 import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
@@ -27,7 +27,7 @@ import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
-import com.google.common.collect.Range;
+import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
