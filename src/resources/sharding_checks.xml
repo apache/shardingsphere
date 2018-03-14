@@ -4,15 +4,15 @@
     <property name="charset" value="UTF-8"/>
     <property name="severity" value="warning"/>
     <property name="fileExtensions" value="java, properties, xml"/>
-    <module name="FileTabCharacter">
-        <property name="eachLine" value="true"/>
-    </module>
-    
-    <!-- Headers -->
     <module name="Header">
         <property name="headerFile" value="copyright.txt"/>
         <property name="fileExtensions" value="java"/>
     </module>
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+    <module name="FileLength"/>
+    
     <module name="TreeWalker">
         
         <!-- Naming Conventions -->
@@ -146,7 +146,18 @@
             <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
         </module>
         
-        
+        <!-- Size Violations -->
+        <module name="AnonInnerLength"/>
+        <module name="MethodLength"/>
+        <module name="LineLength">
+            <property name="max" value="200"/>
+        </module>
+        <module name="MethodCount"/>
+        <module name="ExecutableStatementCount">
+            <property name="max" value="50"/>
+        </module>
+        <module name="OuterTypeNumber"/>
+        <module name="ParameterNumber"/>
         
         
         
@@ -161,19 +172,6 @@
         <module name="TodoComment"/>
         <module name="SuppressionCommentFilter"/>
         <module name="SuppressWithNearbyCommentFilter"/>
-        <module name="LineLength">
-            <property name="max" value="200"/>
-            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
-        </module>
-        <module name="MethodLength"/>
-        <module name="AnonInnerLength"/>
-        <module name="MethodCount"/>
-        <module name="ExecutableStatementCount">
-            <property name="max" value="50"/>
-            <property name="tokens" value="INSTANCE_INIT,STATIC_INIT,METHOD_DEF,CTOR_DEF"/>
-        </module>
-        <module name="ParameterNumber"/>
-        <module name="OuterTypeNumber"/>
         <module name="OneTopLevelClass"/>
         <module name="EmptyBlock">
             <property name="option" value="TEXT"/>
