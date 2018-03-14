@@ -204,7 +204,7 @@ public abstract class AbstractSQLTest {
     }
     
     @AfterClass
-    public static void clear() throws SQLException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    public static void clear() throws SQLException, ReflectiveOperationException {
         if (!shardingDataSources.isEmpty()) {
             for (ShardingDataSource each : shardingDataSources.values()) {
                 each.close();
