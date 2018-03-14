@@ -155,7 +155,9 @@
         <module name="SuperFinalize"/>
         <module name="OneStatementPerLine"/>
         <module name="OverloadMethodsDeclarationOrder"/>
-        <module name="PackageDeclaration"/>
+        <module name="PackageDeclaration">
+            <property name="matchDirectoryStructure" value="false"/>
+        </module>
         <module name="ParameterAssignment"/>
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
