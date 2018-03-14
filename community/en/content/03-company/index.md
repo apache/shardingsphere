@@ -61,7 +61,6 @@ Using companies in chronological order.
 * [CIBN](http://www.91vst.com/)
 * [oppo](http://www.oppo.com/)
 
-
 ## Enterprise
 
 * [ffzxnet](http://www.ffzxnet.com/)
@@ -78,13 +77,22 @@ Using companies in chronological order.
 
 * [Guangxi province territorial resources information center](http://z.gxdlr.gov.cn/)
 
-## Other
+## Internet Plus
 
 * [trawe](http://www.trawe.cn/)
-* [xiachufang](http://www.xiachufang.com/)
-* [eeka](http://www.eeka.cn/)
-* [zto](http://www.zto.com/)
 * [biechipang](http://www.biechipang.net/)
-* [huochebang](http://www.huochebang.com/)
-* [Lily&Beauty](http://www.lrlz.com/)
 * [youxuan](http://www.youx.mobi/)
+* [huochebang](http://www.huochebang.com/)
+
+## Express
+
+* [zto](http://www.zto.com/)
+
+## UGC
+
+* [xiachufang](http://www.xiachufang.com/)
+
+## Manufacturing
+
+* [eeka](http://www.eeka.cn/)
+* [Lily&Beauty](http://www.lrlz.com/)

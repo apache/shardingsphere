@@ -61,7 +61,6 @@ chapter = true
 * [CIBN微视听](http://www.91vst.com/)
 * [oppo](http://www.oppo.com/)
 
-
 ## 企业服务
 
 * [非凡之星](http://www.ffzxnet.com/)
@@ -78,13 +77,22 @@ chapter = true
 
 * [广西壮族自治区国土资源信息中心](http://z.gxdlr.gov.cn/)
 
-## 其他
+## 互联网+
 
 * [特微智能](http://www.trawe.cn/)
-* [下厨房](http://www.xiachufang.com/)
-* [赢家服饰](http://www.eeka.cn/)
-* [中通快递](http://www.zto.com/)
 * [别吃胖](http://www.biechipang.net/)
-* [货车帮](http://www.huochebang.com/)
-* [丽人丽妆](http://www.lrlz.com/)
 * [YOU选](http://www.youx.mobi/)
+* [货车帮](http://www.huochebang.com/)
+
+## 物流
+
+* [中通快递](http://www.zto.com/)
+
+## UGC
+
+* [下厨房](http://www.xiachufang.com/)
+
+## 制造业
+
+* [赢家服饰](http://www.eeka.cn/)
+* [丽人丽妆](http://www.lrlz.com/)
