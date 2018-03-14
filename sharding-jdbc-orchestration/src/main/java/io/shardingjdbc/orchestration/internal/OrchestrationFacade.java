@@ -153,9 +153,9 @@ public final class OrchestrationFacade implements AutoCloseable {
     public void close() {
         try {
             regCenter.close();
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             log.warn("Sharding-JDBC: regCenter exception for: {}", ex.getMessage());
         }
     }

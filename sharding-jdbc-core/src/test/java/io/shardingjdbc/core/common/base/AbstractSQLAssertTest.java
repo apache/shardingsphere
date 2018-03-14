@@ -141,9 +141,9 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
                 try (Connection conn = each.getValue().getConnection();
                      Statement statement = conn.createStatement()) {
                     statement.execute(sql);
-                    //CHECKSTYLE:OFF
+                    // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
-                    //CHECKSTYLE:ON
+                    // CHECKSTYLE:ON
                     ex.printStackTrace();
                     throw new RuntimeException(ex);
                 }
@@ -176,9 +176,9 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
             if (getCurrentDatabaseType() == each.getKey()) {
                 try {
                     executeAndAssertSQL(isPreparedStatement, isExecute, each.getValue());
-                    //CHECKSTYLE:OFF
+                    // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
-                    //CHECKSTYLE:ON
+                    // CHECKSTYLE:ON
                     ex.printStackTrace();
                     throw new RuntimeException(ex);
                 }

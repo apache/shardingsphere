@@ -47,9 +47,7 @@ import java.util.Map;
 public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends AbstractOrchestrationBeanDefinitionParser {
     
     @Override
-    //CHECKSTYLE:OFF
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-    //CHECKSTYLE:ON
         String regCenter = parseRegistryCenterRef(element);
         if (Strings.isNullOrEmpty(regCenter)) {
             return getSpringMasterSlaveDataSourceBean(element, parserContext);

@@ -29,12 +29,10 @@ public final class Bootstrap {
     /**
      * Main Entrance.
      * 
-     * @param args startup arguments.
+     * @param args startup arguments
      * @throws InterruptedException interrupted exception
      */
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws InterruptedException {
-        // CHECKSTYLE:ON
         new ShardingJDBCServer().start(getPort(args));
     }
     

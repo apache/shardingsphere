@@ -48,9 +48,7 @@ import java.util.Properties;
 public class OrchestrationShardingDataSourceBeanDefinitionParser extends AbstractOrchestrationBeanDefinitionParser {
     
     @Override
-    //CHECKSTYLE:OFF
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-    //CHECKSTYLE:ON
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationShardingDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseShardingRuleConfig(element));

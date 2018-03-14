@@ -132,9 +132,9 @@ public final class ExecutorEngine implements AutoCloseable {
         try {
             firstOutput = syncExecute(sqlType, firstInput, parameterSets, executeCallback);
             restOutputs = restFutures.get();
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             event.setException(ex);
             event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
             EventBusInstance.getInstance().post(event);

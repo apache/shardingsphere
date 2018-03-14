@@ -45,9 +45,8 @@ import java.util.Map;
 public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
-    //CHECKSTYLE:OFF
+    // SUPPRESS CHECKSTYLE
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-    //CHECKSTYLE:ON
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringMasterSlaveDataSource.class);
         factory.addConstructorArgValue(parseId(element));
         String masterDataSourceName = parseMasterDataSourceRef(element);

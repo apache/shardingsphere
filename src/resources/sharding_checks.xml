@@ -17,6 +17,7 @@
     </module>
     <module name="Translation"/>
     <module name="UniqueProperties"/>
+    <module name="SeverityMatchFilter"/>
     
     <module name="TreeWalker">
         
@@ -210,7 +211,9 @@
         <module name="OuterTypeFilename"/>
         <module name="TodoComment"/>
         <module name="TrailingComment"/>
-        <module name="UncommentedMain"/>
+        <module name="UncommentedMain">
+            <property name="excludedClasses" value="\.Bootstrap"/>
+        </module>
         
         <!-- Javadoc Comments -->
         <module name="AtclauseOrder">
@@ -222,9 +225,11 @@
         <module name="JavadocTagContinuationIndentation"/>
         <module name="SingleLineJavadoc"/>
         <module name="SummaryJavadoc"/>
+        <!--
         <module name="JavadocType">
             <property name="scope" value="public"/>
         </module>
+        -->
         <module name="JavadocMethod">
             <property name="scope" value="public"/>
             <property name="allowedAnnotations" value="Override, Test, Before, After, BeforeClass, AfterClass, Parameterized, Parameters"/>
@@ -232,6 +237,7 @@
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
         </module>
         
+        <!-- Filters -->
         <module name="SuppressionCommentFilter"/>
         <module name="SuppressWithNearbyCommentFilter"/>
     </module>
