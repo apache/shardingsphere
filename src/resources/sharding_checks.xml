@@ -55,14 +55,53 @@
         <module name="MissingDeprecated"/>
         <module name="SuppressWarningsHolder"/>
         
-        
-        
-        <module name="OuterTypeFilename"/>
+        <!-- Coding -->
+        <module name="ArrayTrailingComma"/>
+        <module name="CovariantEquals"/>
+        <module name="DefaultComesLast"/>
+        <module name="DeclarationOrder"/>
+        <module name="EmptyStatement"/>
+        <module name="EqualsAvoidNull"/>
+        <module name="EqualsHashCode"/>
+        <module name="ExplicitInitialization"/>
+        <module name="FallThrough"/>
+        <module name="IllegalInstantiation"/>
+        <module name="IllegalCatch"/>
+        <module name="IllegalThrows"/>
+        <module name="IllegalType">
+            <property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
+        </module>
         <module name="IllegalTokenText">
             <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
             <property name="format" value="\\u00(09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)"/>
             <property name="message" value="Consider using special escape sequence instead of octal value or Unicode escaped value."/>
         </module>
+        <module name="MissingSwitchDefault"/>
+        <module name="ModifiedControlVariable"/>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="NestedForDepth"/>
+        <module name="NestedIfDepth"/>
+        <module name="NestedTryDepth"/>
+        <module name="NoClone"/>
+        <module name="NoFinalizer"/>
+        <module name="SuperClone"/>
+        <module name="SuperFinalize"/>
+        <module name="OneStatementPerLine"/>
+        <module name="OverloadMethodsDeclarationOrder"/>
+        <module name="PackageDeclaration"/>
+        <module name="ParameterAssignment"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+        <module name="StringLiteralEquality"/>
+        <module name="UnnecessaryParentheses"/>
+        <module name="VariableDeclarationUsageDistance"/>
+        
+        
+        
+        
+        
+        
+        <module name="OuterTypeFilename"/>
         <module name="AvoidEscapedUnicodeCharacters">
             <property name="allowEscapesForControlCharacters" value="true"/>
             <property name="allowByTailComment" value="true"/>
@@ -88,7 +127,7 @@
         <module name="OuterTypeNumber"/>
         <module name="OneTopLevelClass"/>
         <module name="NoLineWrap"/>
-        <module name="CovariantEquals"/>
+        
         <module name="EmptyBlock">
             <property name="option" value="TEXT"/>
             <property name="tokens" value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
@@ -118,28 +157,10 @@
                      value="WhitespaceAround: ''{0}'' is not preceded with whitespace."/>
         </module>
         <module name="WhitespaceAfter"/>
-        <module name="OneStatementPerLine"/>
-        <module name="ModifiedControlVariable"/>
-        <module name="MultipleVariableDeclarations"/>
         <module name="ArrayTypeStyle"/>
-        <module name="MissingSwitchDefault"/>
-        <module name="DefaultComesLast"/>
-        <module name="DeclarationOrder"/>
-        <module name="EmptyStatement"/>
-        <module name="EqualsAvoidNull"/>
-        <module name="EqualsHashCode"/>
-        <module name="ExplicitInitialization"/>
-        <module name="FallThrough"/>
-        <module name="NestedForDepth"/>
-        <module name="NestedIfDepth"/>
-        <module name="NestedTryDepth"/>
+        
+        
         <module name="UpperEll"/>
-        <module name="IllegalInstantiation"/>
-        <module name="IllegalCatch"/>
-        <module name="IllegalThrows"/>
-        <module name="IllegalType">
-            <property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
-        </module>
         <module name="ModifierOrder"/>
         <module name="RedundantModifier"/>
         <module name="AvoidNestedBlocks"/>
@@ -171,17 +192,6 @@
             <property name="tokens" value="METHOD_REF"/>
             <property name="option" value="nl"/>
         </module>
-        <module name="PackageDeclaration"/>
-        <module name="ParameterAssignment"/>
-        <module name="NoClone"/>
-        <module name="NoFinalizer"/>
-        <module name="SuperClone"/>
-        <module name="SuperFinalize"/>
-        <module name="SimplifyBooleanExpression"/>
-        <module name="SimplifyBooleanReturn"/>
-        <module name="StringLiteralEquality"/>
-        <module name="ArrayTrailingComma"/>
-        <module name="UnnecessaryParentheses"/>
         <module name="GenericWhitespace">
             <message key="ws.followed"
                      value="GenericWhitespace ''{0}'' is followed by whitespace."/>
@@ -198,8 +208,6 @@
         <module name="FinalParameters">
             <property name="tokens" value="LITERAL_CATCH,CTOR_DEF,METHOD_DEF"/>
         </module>
-        <module name="OverloadMethodsDeclarationOrder"/>
-        <module name="VariableDeclarationUsageDistance"/>
         <module name="MethodParamPad"/>
         <module name="EmptyForIteratorPad"/>
         <module name="ParenPad"/>
