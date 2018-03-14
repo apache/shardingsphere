@@ -1,10 +1,9 @@
 +++
-title = "How to contribute"
+title = "Get Involved"
 weight = 0
 prev = "/01-organization/"
 next = "/02-contribute/contributor/"
 chapter = true
 +++
 
-Sharding is a open and active community, we always welcome high-value contributors to build Apache Way together. 
-Before you become a contributor, please read [contributor guide](/02-contribute/contributor/) and [development convention](/02-contribute/convention/). Thank you for attend Sharding. 
+Sharding is a open and active community, we always welcome high-value contributors to build Apache Way together. Before you become a contributor, please read [Contributors' Guide](/02-contribute/contributor/) and [Conventions](/02-contribute/convention/). If you want to be a committer , please read [Committers' Guide](/02-contribute/committer/). Thank you for attend Sharding. 

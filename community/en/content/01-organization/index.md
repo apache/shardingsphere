@@ -52,12 +52,12 @@ In various situations the Sharding shall hold a vote. These votes can happen on 
 
 * 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666) Senior engineer, Jingdong
 
+## Mailing List
+
+* [Google Groups](mailto:sharding+subscribe@googlegroups.com)
+
 ## IM
 
 * [Gitter](https://gitter.im/Sharding-JDBC/shardingjdbc)
 
 * [Slack](https://sharding.slack.com)
-
-## Mailing List
-
-* [Google Groups](mailto:sharding+subscribe@googlegroups.com)

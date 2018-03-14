@@ -52,12 +52,12 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 
 * 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666) 高级工程师, 京东
 
+## 邮件列表
+
+* [Google Groups](mailto:sharding+subscribe@googlegroups.com)
+
 ## 即时通信
 
 * [Gitter](https://gitter.im/Sharding-JDBC/shardingjdbc)
 
 * [Slack](https://sharding.slack.com)
-
-## 邮件列表
-
-* [Google Groups](mailto:sharding+subscribe@googlegroups.com)
