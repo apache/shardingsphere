@@ -33,21 +33,21 @@ import lombok.Setter;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class AggregationSelectItem {
 
-	@XmlAttribute(name = "inner-expression")
-	private String innerExpression;
+    @XmlAttribute(name = "inner-expression")
+    private String innerExpression;
 
-	@XmlAttribute(name = "aggregation-type")
-	private String aggregationType;
+    @XmlAttribute(name = "aggregation-type")
+    private String aggregationType;
 
-	@XmlAttribute
-	private String alias;
+    @XmlAttribute
+    private String alias;
 
-	@XmlAttribute
-	private String option;
+    @XmlAttribute
+    private String option;
 
-	@XmlAttribute
-	private Integer index;
+    @XmlAttribute
+    private Integer index;
 
-	@XmlElement(name = "derived-column")
-	private List<AggregationSelectItem> derivedColumns = new ArrayList<>(2);
+    @XmlElement(name = "derived-column")
+    private List<AggregationSelectItem> derivedColumns = new ArrayList<>(2);
 }

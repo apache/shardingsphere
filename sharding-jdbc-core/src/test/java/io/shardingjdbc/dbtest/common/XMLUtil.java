@@ -19,39 +19,39 @@ import org.xml.sax.SAXException;
 
 public class XMLUtil {
 
-	public static Document parseFile(final File file) throws ParserConfigurationException, IOException, SAXException {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setValidating(false);
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document result = db.parse(file);
+    public static Document parseFile(final File file) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setValidating(false);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document result = db.parse(file);
 
-		return result;
-	}
+        return result;
+    }
 
-	public static Document parseStream(final InputStream in) throws ParserConfigurationException, IOException, SAXException {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setValidating(false);
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document result = db.parse(in);
-		return result;
-	}
+    public static Document parseStream(final InputStream in) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setValidating(false);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document result = db.parse(in);
+        return result;
+    }
 
-	public static String getNodeValue(final Node node) {
-		return node.getTextContent();
-	}
+    public static String getNodeValue(final Node node) {
+        return node.getTextContent();
+    }
 
-	public static NodeList getNodeList(final Node node, final String xpath) throws XPathExpressionException {
-		XPathFactory factory = XPathFactory.newInstance();
-		XPath oXpath = factory.newXPath();
-		NodeList result = (NodeList) oXpath.evaluate(xpath, node, XPathConstants.NODESET);
-		return result;
-	}
+    public static NodeList getNodeList(final Node node, final String xpath) throws XPathExpressionException {
+        XPathFactory factory = XPathFactory.newInstance();
+        XPath oXpath = factory.newXPath();
+        NodeList result = (NodeList) oXpath.evaluate(xpath, node, XPathConstants.NODESET);
+        return result;
+    }
 
-	public static Node getNode(final Node node, final String xpath) throws XPathExpressionException {
-		XPathFactory factory = XPathFactory.newInstance();
-		XPath oXpath = factory.newXPath();
-		Node result = (Node) oXpath.evaluate(xpath, node, XPathConstants.NODE);
+    public static Node getNode(final Node node, final String xpath) throws XPathExpressionException {
+        XPathFactory factory = XPathFactory.newInstance();
+        XPath oXpath = factory.newXPath();
+        Node result = (Node) oXpath.evaluate(xpath, node, XPathConstants.NODE);
 
-		return result;
-	}
+        return result;
+    }
 }

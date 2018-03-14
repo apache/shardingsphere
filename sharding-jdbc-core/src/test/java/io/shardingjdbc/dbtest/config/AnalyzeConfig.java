@@ -11,13 +11,13 @@ import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
 
 public class AnalyzeConfig {
 
-	public static AssertsDefinition analyze(final String path) throws IOException, JAXBException {
-		JAXBContext context = JAXBContext.newInstance(AssertsDefinition.class);
+    public static AssertsDefinition analyze(final String path) throws IOException, JAXBException {
+        JAXBContext context = JAXBContext.newInstance(AssertsDefinition.class);
 
-		Unmarshaller unmarshal = context.createUnmarshaller();
-		FileReader reader = new FileReader(path);
-		return (AssertsDefinition) unmarshal.unmarshal(reader);
+        Unmarshaller unmarshal = context.createUnmarshaller();
+        FileReader reader = new FileReader(path);
+        return (AssertsDefinition) unmarshal.unmarshal(reader);
 
-	}
+    }
 
 }

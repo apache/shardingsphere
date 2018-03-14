@@ -18,35 +18,35 @@ import io.shardingjdbc.core.rule.ShardingRule;
  */
 public class DataSourceUtil {
 
-	public static DataSource getDataSource(final String path) throws IOException, SQLException {
-		return ShardingDataSourceFactory.createDataSource(new File(path));
-	}
+    public static DataSource getDataSource(final String path) throws IOException, SQLException {
+        return ShardingDataSourceFactory.createDataSource(new File(path));
+    }
 
-	public static Map<String, DataSource> getDataSourceMap(final ShardingDataSource shardingDataSource)
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		ShardingContext shardingContext = getShardingContext(shardingDataSource);
-		return shardingContext.getShardingRule().getDataSourceMap();
-	}
+    public static Map<String, DataSource> getDataSourceMap(final ShardingDataSource shardingDataSource)
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        ShardingContext shardingContext = getShardingContext(shardingDataSource);
+        return shardingContext.getShardingRule().getDataSourceMap();
+    }
 
-	public static ShardingRule getShardingRule(final ShardingDataSource shardingDataSource)
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		ShardingContext shardingContext = getShardingContext(shardingDataSource);
-		return shardingContext.getShardingRule();
-	}
+    public static ShardingRule getShardingRule(final ShardingDataSource shardingDataSource)
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        ShardingContext shardingContext = getShardingContext(shardingDataSource);
+        return shardingContext.getShardingRule();
+    }
 
-	public static ShardingContext getShardingContext(final ShardingDataSource shardingDataSource)
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		Field field = shardingDataSource.getClass().getDeclaredField("shardingContext");
-		field.setAccessible(true);
-		return (ShardingContext) field.get(shardingDataSource);
-	}
+    public static ShardingContext getShardingContext(final ShardingDataSource shardingDataSource)
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Field field = shardingDataSource.getClass().getDeclaredField("shardingContext");
+        field.setAccessible(true);
+        return (ShardingContext) field.get(shardingDataSource);
+    }
 
-	public static String getDatabaseName(final String dataSetFile) {
-		String fileName = new File(dataSetFile).getName();
-		if (-1 == fileName.lastIndexOf(".")) {
-			return fileName;
-		}
-		return fileName.substring(0, fileName.lastIndexOf("."));
-	}
+    public static String getDatabaseName(final String dataSetFile) {
+        String fileName = new File(dataSetFile).getName();
+        if (-1 == fileName.lastIndexOf(".")) {
+            return fileName;
+        }
+        return fileName.substring(0, fileName.lastIndexOf("."));
+    }
 
 }
