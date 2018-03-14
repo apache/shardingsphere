@@ -216,7 +216,6 @@ public final class CircuitBreakerDatabaseMetaDataTest {
         assertFalse(metaData.nullPlusNonNullIsNull());
     }
     
-    
     @Test
     public void assertSupportsConvert() throws SQLException {
         assertFalse(metaData.supportsConvert());
@@ -642,7 +641,6 @@ public final class CircuitBreakerDatabaseMetaDataTest {
         assertNull(metaData.getSchemas());
     }
     
-    
     @Test
     public void assertGetSchemasWithParameter() throws SQLException {
         assertNull(metaData.getSchemas(null, null));
@@ -677,7 +675,6 @@ public final class CircuitBreakerDatabaseMetaDataTest {
     public void assertGetBestRowIdentifier() throws SQLException {
         assertNull(metaData.getBestRowIdentifier("", "", "", 0, false));
     }
-    
     
     @Test
     public void assertGetVersionColumns() throws SQLException {

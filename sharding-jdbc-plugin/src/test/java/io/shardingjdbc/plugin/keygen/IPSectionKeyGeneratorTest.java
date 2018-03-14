@@ -46,12 +46,11 @@ import static org.junit.Assert.assertThat;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @SuppressWarnings("all")
 public class IPSectionKeyGeneratorTest {
-
+    
     private static InetAddress ipv4Address;
-
+    
     private static InetAddress ipv6Address;
-
-
+    
     @Rule
     public ExpectedException exception = ExpectedException.none();
 

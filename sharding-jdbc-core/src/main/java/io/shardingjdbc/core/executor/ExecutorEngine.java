@@ -116,7 +116,7 @@ public final class ExecutorEngine implements AutoCloseable {
         return execute(sqlType, batchPreparedStatementUnits, parameterSets, executeCallback);
     }
     
-    private  <T> List<T> execute(
+    private <T> List<T> execute(
             final SQLType sqlType, final Collection<? extends BaseStatementUnit> baseStatementUnits, 
             final List<List<Object>> parameterSets, final ExecuteCallback<T> executeCallback) throws SQLException {
         if (baseStatementUnits.isEmpty()) {

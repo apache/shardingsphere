@@ -196,7 +196,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
                 File expectedDataSetFile = getExpectedFile(each.getExpected());
                 if (sql.toUpperCase().startsWith("SELECT")) {
                     assertDQL(isPreparedStatement, isExecute, abstractDataSourceAdapter, each, expectedDataSetFile);
-                } else  {
+                } else {
                     assertDMLAndDDL(isPreparedStatement, isExecute, abstractDataSourceAdapter, each, expectedDataSetFile);
                 }
             }

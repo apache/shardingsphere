@@ -86,7 +86,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         }
     }
     
-    
     @Test
     public void assertExecuteUpdateWithParameter() throws SQLException {
         try (

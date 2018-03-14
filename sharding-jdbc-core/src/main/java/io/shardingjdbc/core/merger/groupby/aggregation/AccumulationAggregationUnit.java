@@ -47,7 +47,7 @@ public final class AccumulationAggregationUnit implements AggregationUnit {
     }
     
     @Override
-    public Comparable<?>  getResult() {
+    public Comparable<?> getResult() {
         return result;
     }
 }

@@ -47,6 +47,6 @@ public final class NestedBestEffortsDeliveryJobConfiguration extends AbstractBes
     /**
      * Delay millis for asynchronized delivery.
      */
-    private long asyncMaxDeliveryTryDelayMillis = 60  * 1000L;
+    private long asyncMaxDeliveryTryDelayMillis = 60 * 1000L;
     
 }

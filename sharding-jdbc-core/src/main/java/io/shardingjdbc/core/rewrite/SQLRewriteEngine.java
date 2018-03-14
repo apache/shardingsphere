@@ -254,7 +254,6 @@ public final class SQLRewriteEngine {
         }
         return tableTokens;
     }
-
     
     private Map<String, String> getBindingTableTokens(final TableUnit tableUnit, final BindingTableRule bindingTableRule) {
         Map<String, String> result = new HashMap<>();

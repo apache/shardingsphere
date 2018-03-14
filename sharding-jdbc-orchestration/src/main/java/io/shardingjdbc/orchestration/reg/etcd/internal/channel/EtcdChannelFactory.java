@@ -53,7 +53,7 @@ public final class EtcdChannelFactory {
                 .nameResolverFactory(new EtcdNameSolverFactory(TARGET, endpoints))
                 .loadBalancerFactory(RoundRobinLoadBalancerFactory.getInstance())
                 .build();
-        Channel result =  etcdChannels.putIfAbsent(endpoints, channel);
+        Channel result = etcdChannels.putIfAbsent(endpoints, channel);
         return null == result ? channel : result;
     }
 }

@@ -31,7 +31,7 @@ public final class RdbTransactionLogStorageOperationsTest extends AbstractTransa
     
     @Test
     public void assertRdbTransactionLogStorageOperations() throws SQLException {
-        BasicDataSource dataSource =  new BasicDataSource();
+        BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName(org.h2.Driver.class.getName());
         dataSource.setUrl("jdbc:h2:mem:db_transaction_storage");
         dataSource.setUsername("sa");

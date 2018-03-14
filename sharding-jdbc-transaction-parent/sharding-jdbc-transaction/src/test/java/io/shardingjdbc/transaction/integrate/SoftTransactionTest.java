@@ -71,7 +71,7 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
         } catch (final SQLException e) {
             e.printStackTrace();
         }
-        return  id;
+        return id;
     }
     
     private SoftTransactionConfiguration getSoftTransactionConfiguration(final ShardingDataSource dataSource) {

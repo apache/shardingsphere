@@ -277,7 +277,7 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
     @Override
     public final void setObject(final int parameterIndex, final Object x, final int targetSqlType) throws SQLException {
         setParameter(parameterIndex, x);
-        recordSetParameter("setObject", new Class[]{int.class, Object.class, int.class}, parameterIndex,  x, targetSqlType);
+        recordSetParameter("setObject", new Class[]{int.class, Object.class, int.class}, parameterIndex, x, targetSqlType);
     }
     
     @Override
