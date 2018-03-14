@@ -31,7 +31,7 @@ chapter = true
  - Replace Nested Conditional with Guard Clauses.
  - Access permissions for classes and methods should minimal as possible.
  - Parameters and return value are not allowed to be null.
- - If use comment to explain the code, try to split several small methods, and use method name to explain it. 
+ - If use comment to explain the code, try to split several small methods, and use method name to explain it.
  - Use lombok instead of the constructor, getter, setter methods and log variable.
  - keep style consistent with existed code.
  - No duplicate code and configuration.
