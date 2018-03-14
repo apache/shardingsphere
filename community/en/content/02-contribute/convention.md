@@ -41,7 +41,7 @@ chapter = true
  - Test code and production code equality, should follow the same code conventions.
  - Test cases should fully covered if no special reason.
  - Separate environment preparation codes and test codes.
- - Only junit Assert, hamcrest CoreMatchers, Mockitorelated can use static import.
+ - Only junit Assert, hamcrest CoreMatchers, Mockito ˚related can use static import.
  - For single parameter assert, should use `assertTrue`, `assertFalse`, `assertNull` and `assertNotNull`.
  - For multiple parameters assert, should use `assertThat`.
  - Assert accurately, do not use `not`, `containsString` and so on.
