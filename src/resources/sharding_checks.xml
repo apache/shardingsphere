@@ -159,7 +159,9 @@
         <module name="OuterTypeNumber"/>
         <module name="ParameterNumber"/>
         
-        
+        <!-- Modifiers -->
+        <module name="ModifierOrder"/>
+        <module name="RedundantModifier"/>
         
         <module name="OuterTypeFilename"/>
         <module name="AvoidEscapedUnicodeCharacters">
@@ -195,8 +197,6 @@
         
         
         <module name="UpperEll"/>
-        <module name="ModifierOrder"/>
-        <module name="RedundantModifier"/>
         <module name="AvoidNestedBlocks"/>
         <module name="Indentation"/>
         <module name="MutableException"/>
