@@ -12,6 +12,11 @@
         <property name="eachLine" value="true"/>
     </module>
     <module name="FileLength"/>
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf"/>
+    </module>
+    <module name="Translation"/>
+    <module name="UniqueProperties"/>
     
     <module name="TreeWalker">
         
@@ -185,34 +190,36 @@
         <module name="MutableException"/>
         <module name="ThrowsCount"/>
         
-        
-        <module name="OuterTypeFilename"/>
-        <module name="AvoidEscapedUnicodeCharacters">
-            <property name="allowEscapesForControlCharacters" value="true"/>
-            <property name="allowByTailComment" value="true"/>
-            <property name="allowNonPrintableEscapes" value="true"/>
-        </module>
-        <module name="TrailingComment"/>
-        <module name="UncommentedMain"/>
-        <module name="TodoComment"/>
-        <module name="SuppressionCommentFilter"/>
-        <module name="SuppressWithNearbyCommentFilter"/>
-        <module name="ArrayTypeStyle"/>
-        
-        
-        <module name="UpperEll"/>
-        <module name="Indentation"/>
-        <module name="FinalParameters">
-            <property name="tokens" value="LITERAL_CATCH,CTOR_DEF,METHOD_DEF"/>
-        </module>
+        <!-- Metrics -->
         <module name="BooleanExpressionComplexity"/>
+        <module name="ClassDataAbstractionCoupling">
+            <property name="max" value="10"/>
+        </module>
         <module name="ClassFanOutComplexity"/>
         <module name="CyclomaticComplexity"/>
         <module name="NPathComplexity"/>
         <module name="JavaNCSS"/>
-        <module name="ClassDataAbstractionCoupling">
-            <property name="max" value="10"/>
-        </module>
+        
+        <!-- Miscellaneous -->
+        <module name="ArrayTypeStyle"/>
+        <module name="UpperEll"/>
+        <module name="AvoidEscapedUnicodeCharacters"/>
+        <module name="DescendantToken"/>
+        <module name="FinalParameters"/>
+        <module name="Indentation"/>
+        <module name="OuterTypeFilename"/>
+        <module name="TodoComment"/>
+        <module name="TrailingComment"/>
+        <module name="UncommentedMain"/>
+        
+        
+        
+        
+        <module name="SuppressionCommentFilter"/>
+        <module name="SuppressWithNearbyCommentFilter"/>
+        
+        
+        
         <module name="NonEmptyAtclauseDescription"/>
         <module name="JavadocStyle"/>
         <module name="JavadocTagContinuationIndentation"/>
