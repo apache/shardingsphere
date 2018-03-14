@@ -66,7 +66,7 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
     }
     
     @Test
-    public void assertWithDataSource() throws SQLException, URISyntaxException, IOException, NoSuchFieldException, IllegalAccessException {
+    public void assertWithDataSource() throws SQLException, URISyntaxException, IOException, ReflectiveOperationException {
         File yamlFile = new File(YamlShardingIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
