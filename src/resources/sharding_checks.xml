@@ -7,6 +7,12 @@
     <module name="FileTabCharacter">
         <property name="eachLine" value="true"/>
     </module>
+    
+    <!-- Headers -->
+    <module name="Header">
+        <property name="headerFile" value="copyright.txt"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
     <module name="TreeWalker">
         
         <!-- Naming Conventions -->
