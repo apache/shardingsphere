@@ -79,6 +79,12 @@ public class MasterSlaveRuleConfiguration {
         return result;
     }
     
+    /**
+     * New instance.
+     * 
+     * @param masterSlaveLoadBalanceAlgorithmClassName master-slave load balance algorithm class name
+     * @return master-slave load balance algorithm
+     */
     public MasterSlaveLoadBalanceAlgorithm newInstance(final String masterSlaveLoadBalanceAlgorithmClassName) {
         try {
             Class<?> result = Class.forName(masterSlaveLoadBalanceAlgorithmClassName);

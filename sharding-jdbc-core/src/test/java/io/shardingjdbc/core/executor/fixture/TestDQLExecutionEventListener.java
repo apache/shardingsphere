@@ -27,6 +27,11 @@ public final class TestDQLExecutionEventListener {
     
     private final EventCaller eventCaller;
     
+    /**
+     * Listen event.
+     *
+     * @param event execution event
+     */
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final DQLExecutionEvent event) {

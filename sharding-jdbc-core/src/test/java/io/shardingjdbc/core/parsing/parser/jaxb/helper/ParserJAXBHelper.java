@@ -34,8 +34,13 @@ import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 
 import java.util.List;
 
-public class ParserJAXBHelper {
+public final class ParserJAXBHelper {
     
+    /**
+     * get parameters.
+     * @param parameters parameters
+     * @return parameters
+     */
     public static String[] getParameters(final String parameters) {
         if (Strings.isNullOrEmpty(parameters)) {
             return new String[]{};
@@ -43,6 +48,12 @@ public class ParserJAXBHelper {
         return parameters.split(",");
     }
     
+    /**
+     * Get tables.
+     * 
+     * @param tables tables
+     * @return tables
+     */
     public static Tables getTables(final io.shardingjdbc.core.parsing.parser.jaxb.Tables tables) {
         Tables result = new Tables();
         if (null == tables) {
@@ -55,6 +66,12 @@ public class ParserJAXBHelper {
         return result;
     }
     
+    /**
+     * Get select statement.
+     * 
+     * @param assertObj assert object
+     * @return select statement
+     */
     public static SelectStatement getSelectStatement(final Assert assertObj) {
         final SelectStatement result = new SelectStatement();
         if (null != assertObj.getOrderByColumns()) {

@@ -86,6 +86,11 @@ public final class Assert {
     @XmlElement 
     private Limit limit;
     
+    /**
+     * Get SQL tokens.
+     * 
+     * @return SQL tokens
+     */
     public List<SQLToken> getSqlTokens() {
         List<SQLToken> result = new ArrayList<>(7);
         if (null != tableTokens) {

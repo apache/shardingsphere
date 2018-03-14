@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 public class ExecutorExceptionHandlerTest {
     
     @After
-    public void tearDown() throws NoSuchFieldException, IllegalAccessException {
+    public void tearDown() throws ReflectiveOperationException {
         ExecutorTestUtil.clear();
     }
     

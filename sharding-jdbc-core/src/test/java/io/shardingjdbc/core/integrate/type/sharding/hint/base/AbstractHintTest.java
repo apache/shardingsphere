@@ -24,6 +24,7 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.ShardingRule;
+import org.dbunit.Assertion;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
@@ -38,8 +39,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractHintTest extends AbstractSQLTest {
     
@@ -102,9 +101,8 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
                 ps.setObject(i++, param);
             }
             ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(type), connection).createTable("t_order", ps);
-            IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractHintTest.class.getClassLoader()
-                    .getResourceAsStream(expectedDataSetFile)));
-            assertEquals(expectedDataSet.getTable("t_order"), actualTable);
+            IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractHintTest.class.getClassLoader().getResourceAsStream(expectedDataSetFile)));
+            Assertion.assertEquals(expectedDataSet.getTable("t_order"), actualTable);
         }
     }
 }

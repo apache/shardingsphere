@@ -24,6 +24,12 @@ package io.shardingjdbc.server.packet.command;
  */
 public final class CommandPacketFactory {
     
+    /**
+     * Get command Packet.
+     * 
+     * @param commandPacketTypeValue command packet type value
+     * @return Command packet
+     */
     public static AbstractCommandPacket getCommandPacket(final int commandPacketTypeValue) {
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {

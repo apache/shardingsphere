@@ -59,6 +59,12 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Autowired
     private SpringBootOrchestrationConfigurationProperties orchestrationProperties;
     
+    /**
+     * Get data source bean.
+     * 
+     * @return data source bean
+     * @throws SQLException SQL Exception
+     */
     @Bean
     public DataSource dataSource() throws SQLException {
         return null == masterSlaveProperties.getMasterDataSourceName() 

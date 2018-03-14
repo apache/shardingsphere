@@ -33,9 +33,6 @@ public final class OrchestrationInstance {
     
     private static final OrchestrationInstance INSTANCE = new OrchestrationInstance();
     
-    /**
-     * Orchestration instance id.
-     */
     private String instanceId;
     
     private OrchestrationInstance() {
@@ -43,6 +40,11 @@ public final class OrchestrationInstance {
         instanceId = IpUtils.getIp() + splitFlag + ManagementFactory.getRuntimeMXBean().getName().split(splitFlag)[0] + splitFlag + UUID.randomUUID().toString();
     }
     
+    /**
+     * Get instance.
+     * 
+     * @return instance
+     */
     public static OrchestrationInstance getInstance() {
         return INSTANCE;
     }

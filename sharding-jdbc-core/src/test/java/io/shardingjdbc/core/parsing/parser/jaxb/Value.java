@@ -38,6 +38,11 @@ public final class Value {
     @XmlAttribute
     private String type;
     
+    /**
+     * Get value with type.
+     * 
+     * @return value with type
+     */
     public Comparable<?> getValueWithType() {
         if (boolean.class.getName().equals(type) || Boolean.class.getName().equals(type)) {
             return Boolean.valueOf(literal);

@@ -54,6 +54,12 @@ public class SpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
+    /**
+     * Get data source bean.
+     * 
+     * @return data source bean
+     * @throws SQLException SQL exception
+     */
     @Bean
     public DataSource dataSource() throws SQLException {
         return null == masterSlaveProperties.getMasterDataSourceName() 

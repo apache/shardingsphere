@@ -60,7 +60,7 @@ public abstract class AbstractBaseExecutorTest {
     }
     
     @After
-    public void tearDown() throws NoSuchFieldException, IllegalAccessException {
+    public void tearDown() throws ReflectiveOperationException {
         ExecutorTestUtil.clear();
         EventBusInstance.getInstance().unregister(overallExecutionEventListener);
         EventBusInstance.getInstance().unregister(dqlExecutionEventListener);

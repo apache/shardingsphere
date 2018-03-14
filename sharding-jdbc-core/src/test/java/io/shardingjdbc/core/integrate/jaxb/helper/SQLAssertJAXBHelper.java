@@ -32,8 +32,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class SQLAssertJAXBHelper {
+public final class SQLAssertJAXBHelper {
     
+    /**
+     * Get data parameters.
+     * 
+     * @param filePath file path
+     * @param sqlType SQL type
+     * @return data parameters
+     */
     public static Collection<Object[]> getDataParameters(final String filePath, final SQLType sqlType) {
         Collection<Object[]> result = new ArrayList<>();
         URL url = SQLAssertJAXBHelper.class.getClassLoader().getResource(filePath);

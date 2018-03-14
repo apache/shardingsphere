@@ -39,6 +39,11 @@ public abstract class AbstractSQLExecutionEvent extends AbstractExecutionEvent {
     
     private final List<Object> parameters;
     
+    /**
+     * Get exception.
+     *
+     * @return exception
+     */
     public Optional<SQLException> getException() {
         Optional<? extends Exception> ex = super.getException();
         if (ex.isPresent()) {

@@ -43,6 +43,11 @@ import java.sql.SQLException;
 @Slf4j
 public final class BestEffortsDeliveryListener {
     
+    /**
+     * Listen event.
+     * 
+     * @param event dml execution event
+     */
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final DMLExecutionEvent event) {

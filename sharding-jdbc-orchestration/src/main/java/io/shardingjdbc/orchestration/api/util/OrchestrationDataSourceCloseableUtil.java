@@ -29,6 +29,11 @@ import javax.sql.DataSource;
  */
 public final class OrchestrationDataSourceCloseableUtil {
     
+    /**
+     * Close quietly.
+     * 
+     * @param dataSource dataSource
+     */
     public static void closeQuietly(final DataSource dataSource) {
         if (dataSource instanceof OrchestrationShardingDataSource) {
             ((OrchestrationShardingDataSource) dataSource).close();

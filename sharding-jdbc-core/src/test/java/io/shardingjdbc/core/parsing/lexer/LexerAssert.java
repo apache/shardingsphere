@@ -19,12 +19,13 @@ package io.shardingjdbc.core.parsing.lexer;
 
 import io.shardingjdbc.core.parsing.lexer.token.Token;
 import io.shardingjdbc.core.parsing.lexer.token.TokenType;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.NONE)
 public final class LexerAssert {
     
     public static void assertNextToken(final Lexer lexer, final TokenType expectedTokenType, final String expectedLiterals) {

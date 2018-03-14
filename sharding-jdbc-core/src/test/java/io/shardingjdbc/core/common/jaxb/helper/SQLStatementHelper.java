@@ -84,16 +84,32 @@ public final class SQLStatementHelper {
         }
     }
     
+    /**
+     * Get unsupported SQL statements.
+     * 
+     * @return unsupported SQL statements
+     */
     public static Collection<SQLStatement> getUnsupportedSqlStatements() {
         return UNSUPPORTED_STATEMENT_MAP.values();
     }
     
+    /**
+     * Get SQL.
+     * @param sqlId SQL ID
+     * @return SQL
+     */
     public static String getSql(final String sqlId) {
         checkSqlId(sqlId);
         SQLStatement statement = STATEMENT_MAP.get(sqlId);
         return statement.getSql();
     }
     
+    /**
+     * Get database types.
+     * 
+     * @param sqlId SQL ID
+     * @return database types
+     */
     public static Set<DatabaseType> getTypes(final String sqlId) {
         checkSqlId(sqlId);
         SQLStatement statement = STATEMENT_MAP.get(sqlId);

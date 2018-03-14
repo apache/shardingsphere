@@ -19,11 +19,11 @@ package io.shardingjdbc.core.executor;
 
 /**
  * Statement execute callback interface.
- * 
- * @param <T> class type of return value
- * 
+ *
  * @author gaohongtao
  * @author zhangliang
+ * 
+ * @param <T> class type of return value
  */
 public interface ExecuteCallback<T> {
     

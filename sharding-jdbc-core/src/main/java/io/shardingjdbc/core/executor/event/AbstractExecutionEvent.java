@@ -40,6 +40,11 @@ public abstract class AbstractExecutionEvent {
     @Setter
     private Exception exception;
     
+    /**
+     * Get exception.
+     * 
+     * @return exception
+     */
     public Optional<? extends Exception> getException() {
         return Optional.fromNullable(exception);
     }
