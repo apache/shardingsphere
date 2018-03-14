@@ -25,7 +25,6 @@ chapter = true
  - No unnecessary blank line.
  - All logs and java docs are in English.
  - Commit allow javadoc, todo and fixme only.
- - Static import is forbidden.
  - Give a meaningful variable name. The name of return value is result; The name of unit value is each in for each sentence, instead of entry for map iterator.
  - Name of properties file is camel-case, first letter is lowercase.
  - The nested loop should extract to a new private method.
@@ -42,7 +41,7 @@ chapter = true
  - Test code and production code equality, should follow the same code conventions.
  - Test cases should fully covered if no special reason.
  - Separate environment preparation codes and test codes.
- - Only assertXXX, hamcrest for junit and mocktio related can use static import.
+ - Only junit Assert, hamcrest CoreMatchers, Mockitorelated can use static import.
  - For single parameter assert, should use `assertTrue`, `assertFalse`, `assertNull` and `assertNotNull`.
  - For multiple parameters assert, should use `assertThat`.
  - Assert accurately, do not use `not`, `containsString` and so on.

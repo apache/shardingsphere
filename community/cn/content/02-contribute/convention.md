@@ -25,7 +25,6 @@ chapter = true
  - 不应有无意义的空行。
  - 日志与注释一律使用英文。
  - 注释只能包含javadoc，todo和fixme。
- - 禁止使用static import。
  - 变量命名要有意义。返回值变量使用result命名；循环中使用each命名循环变量；map中使用entry代替each。
  - 配置文件使用驼峰命名，文件名首字母小写。
  - 嵌套循环尽量提成方法。
@@ -43,7 +42,7 @@ chapter = true
  - 测试代码和生产代码需遵守相同代码规范。
  - 如无特殊理由，测试需全覆盖。
  - 准备环境的代码和测试代码分离。
- - 只有junit assertXXX，hamcrest，mocktio相关可以使用static import。
+ - 只有junit Assert，hamcrest CoreMatchers，Mockito相关可以使用static import。
  - 单数据断言，应使用`assertTrue`，`assertFalse`，`assertNull`和`assertNotNull`。
  - 多数据断言，应使用`assertThat`。
  - 精确断言，尽量不使用`not`，`containsString`断言。
