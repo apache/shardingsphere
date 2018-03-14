@@ -73,7 +73,7 @@ public final class ShardingConnectionTest {
     public void clear() {
         try {
             connection.close();
-        } catch (final SQLException ignored) {
+        } catch (final SQLException ignore) {
         }
     }
     

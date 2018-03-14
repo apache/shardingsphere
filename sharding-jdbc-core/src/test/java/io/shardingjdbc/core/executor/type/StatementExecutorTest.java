@@ -471,7 +471,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         StatementExecutor actual = new StatementExecutor(getExecutorEngine(), SQLType.DML, createStatementUnits(DML_SQL, statement, "ds_0"));
         try {
             assertFalse(actual.execute());
-        } catch (final SQLException ignored) {
+        } catch (final SQLException ignore) {
         }
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);

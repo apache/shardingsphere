@@ -81,7 +81,7 @@ public final class DataSourceUtil {
                     method.invoke(dataSource, setterValue);
                 }
                 return;
-            } catch (final ReflectiveOperationException ignored) {
+            } catch (final ReflectiveOperationException ignore) {
             }
         }
     }

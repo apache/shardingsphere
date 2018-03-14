@@ -94,7 +94,7 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
             Object getterResult = null;
             try {
                 getterResult = entry.getValue().invoke(value.getDataSource());
-            } catch (final Exception ignored) {
+            } catch (final Exception ignore) {
             }
             if (null != getterResult) {
                 out.name(entry.getKey()).value(getterResult.toString());
