@@ -173,8 +173,15 @@
         <module name="LeftCurly"/>
         <module name="RightCurly"/>
         
-        
-        
+        <!-- Class Design -->
+        <!-- <module name="DesignForExtension"/> -->
+        <module name="FinalClass"/>
+        <module name="OneTopLevelClass"/>
+        <module name="InterfaceIsType"/>
+        <module name="InnerTypeLast"/>
+        <module name="VisibilityModifier"/>
+        <module name="MutableException"/>
+        <module name="ThrowsCount"/>
         
         
         <module name="OuterTypeFilename"/>
@@ -188,16 +195,11 @@
         <module name="TodoComment"/>
         <module name="SuppressionCommentFilter"/>
         <module name="SuppressWithNearbyCommentFilter"/>
-        <module name="OneTopLevelClass"/>
-        <module name="FinalClass"/>
-        <module name="InterfaceIsType"/>
-        <module name="VisibilityModifier"/>
         <module name="ArrayTypeStyle"/>
         
         
         <module name="UpperEll"/>
         <module name="Indentation"/>
-        <module name="MutableException"/>
         <module name="FinalParameters">
             <property name="tokens" value="LITERAL_CATCH,CTOR_DEF,METHOD_DEF"/>
         </module>
