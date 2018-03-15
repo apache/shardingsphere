@@ -22,7 +22,7 @@ package io.shardingjdbc.proxy.packet;
  * 
  * @author zhangliang 
  */
-public abstract class AbstractMySQLReceivedPacket extends AbstractMySQLPacket {
+public abstract class MySQLReceivedPacket extends MySQLPacket {
     
     /**
      * Read packet from byte buffer.
@@ -31,5 +31,5 @@ public abstract class AbstractMySQLReceivedPacket extends AbstractMySQLPacket {
      * 
      * @return instance of received packet
      */
-    public abstract AbstractMySQLReceivedPacket read(MySQLPacketPayload mysqlPacketPayload);
+    public abstract MySQLReceivedPacket read(MySQLPacketPayload mysqlPacketPayload);
 }

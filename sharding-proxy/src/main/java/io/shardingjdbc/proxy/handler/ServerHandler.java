@@ -21,9 +21,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.shardingjdbc.proxy.constant.StatusFlag;
-import io.shardingjdbc.proxy.packet.AbstractMySQLSentPacket;
+import io.shardingjdbc.proxy.packet.MySQLSentPacket;
 import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.packet.command.AbstractCommandPacket;
+import io.shardingjdbc.proxy.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.packet.command.CommandPacketFactory;
 import io.shardingjdbc.proxy.packet.handshake.AuthPluginData;
 import io.shardingjdbc.proxy.packet.handshake.ConnectionIdGenerator;
@@ -43,13 +43,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private boolean authorized;
     
     @Override
-    public void channelActive(final ChannelHandlerContext context) throws Exception {
+    public void channelActive(final ChannelHandlerContext context) {
         authPluginData = new AuthPluginData();
         context.writeAndFlush(new HandshakePacket(ConnectionIdGenerator.getInstance().nextId(), authPluginData));
     }
     
     @Override
-    public void channelRead(final ChannelHandlerContext context, final Object message) throws Exception {
+    public void channelRead(final ChannelHandlerContext context, final Object message) {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload((ByteBuf) message);
         if (!authorized) {
             auth(context, mysqlPacketPayload);
@@ -67,10 +67,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     
     private void executeCommand(final ChannelHandlerContext context, final MySQLPacketPayload mysqlPacketPayload) {
         int sequenceId = mysqlPacketPayload.readInt1();
-        AbstractCommandPacket commandPacket = CommandPacketFactory.getCommandPacket(mysqlPacketPayload.readInt1());
+        CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(mysqlPacketPayload.readInt1());
         commandPacket.setSequenceId(sequenceId);
         commandPacket.read(mysqlPacketPayload);
-        for (AbstractMySQLSentPacket each : commandPacket.execute()) {
+        for (MySQLSentPacket each : commandPacket.execute()) {
             context.write(each);
         }
         context.flush();

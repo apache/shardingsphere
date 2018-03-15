@@ -19,7 +19,7 @@ package io.shardingjdbc.proxy.packet.handshake;
 
 import io.shardingjdbc.proxy.constant.CapabilityFlag;
 import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.packet.AbstractMySQLReceivedPacket;
+import io.shardingjdbc.proxy.packet.MySQLReceivedPacket;
 import lombok.Getter;
 
 /**
@@ -29,7 +29,7 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter
-public final class HandshakeResponse41Packet extends AbstractMySQLReceivedPacket {
+public final class HandshakeResponse41Packet extends MySQLReceivedPacket {
     
     private int capabilityFlags;
     

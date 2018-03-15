@@ -18,7 +18,7 @@
 package io.shardingjdbc.proxy.packet.ok;
 
 import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.packet.AbstractMySQLSentPacket;
+import io.shardingjdbc.proxy.packet.MySQLSentPacket;
 import lombok.Getter;
 
 /**
@@ -28,7 +28,7 @@ import lombok.Getter;
  * @author zhangliang 
  */
 @Getter
-public class ErrPacket extends AbstractMySQLSentPacket {
+public class ErrPacket extends MySQLSentPacket {
     
     private static final int HEADER = 0xff;
     

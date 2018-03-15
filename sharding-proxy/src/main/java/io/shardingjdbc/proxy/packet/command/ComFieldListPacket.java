@@ -21,7 +21,7 @@ import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.proxy.DataSourceManager;
 import io.shardingjdbc.proxy.constant.ColumnType;
 import io.shardingjdbc.proxy.constant.StatusFlag;
-import io.shardingjdbc.proxy.packet.AbstractMySQLSentPacket;
+import io.shardingjdbc.proxy.packet.MySQLSentPacket;
 import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.packet.ok.EofPacket;
 import io.shardingjdbc.proxy.packet.ok.ErrPacket;
@@ -41,7 +41,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Slf4j
-public final class ComFieldListPacket extends AbstractCommandPacket {
+public final class ComFieldListPacket extends CommandPacket {
     
     private String table;
     
@@ -57,9 +57,9 @@ public final class ComFieldListPacket extends AbstractCommandPacket {
     }
     
     @Override
-    public List<AbstractMySQLSentPacket> execute() {
+    public List<MySQLSentPacket> execute() {
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
-        List<AbstractMySQLSentPacket> result = new LinkedList<>();
+        List<MySQLSentPacket> result = new LinkedList<>();
         int currentSequenceId = getSequenceId();
         try (
                 Connection conn = DataSourceManager.getInstance().getDataSource().getConnection();

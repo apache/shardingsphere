@@ -19,7 +19,7 @@ package io.shardingjdbc.proxy.packet.command;
 
 import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.proxy.constant.StatusFlag;
-import io.shardingjdbc.proxy.packet.AbstractMySQLSentPacket;
+import io.shardingjdbc.proxy.packet.MySQLSentPacket;
 import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.packet.ok.ErrPacket;
 import io.shardingjdbc.proxy.packet.ok.OKPacket;
@@ -35,7 +35,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Slf4j
-public final class ComInitDbPacket extends AbstractCommandPacket {
+public final class ComInitDbPacket extends CommandPacket {
     
     private String schemaName;
     
@@ -47,10 +47,10 @@ public final class ComInitDbPacket extends AbstractCommandPacket {
     }
     
     @Override
-    public List<AbstractMySQLSentPacket> execute() {
+    public List<MySQLSentPacket> execute() {
         if (ShardingConstant.LOGIC_SCHEMA_NAME.equalsIgnoreCase(schemaName)) {
-            return Collections.<AbstractMySQLSentPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            return Collections.<MySQLSentPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
-        return Collections.<AbstractMySQLSentPacket>singletonList(new ErrPacket(getSequenceId() + 1, 1049, "", "", String.format("Unknown database '%s'", schemaName)));
+        return Collections.<MySQLSentPacket>singletonList(new ErrPacket(getSequenceId() + 1, 1049, "", "", String.format("Unknown database '%s'", schemaName)));
     }
 }

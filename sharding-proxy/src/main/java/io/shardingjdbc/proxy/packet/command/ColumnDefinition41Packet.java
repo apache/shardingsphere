@@ -20,7 +20,7 @@ package io.shardingjdbc.proxy.packet.command;
 import io.shardingjdbc.proxy.constant.ColumnType;
 import io.shardingjdbc.proxy.constant.ServerInfo;
 import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.packet.AbstractMySQLSentPacket;
+import io.shardingjdbc.proxy.packet.MySQLSentPacket;
 
 /**
  * Column definition above MySQL 4.1 packet protocol.
@@ -28,7 +28,7 @@ import io.shardingjdbc.proxy.packet.AbstractMySQLSentPacket;
  *
  * @author zhangliang
  */
-public final class ColumnDefinition41Packet extends AbstractMySQLSentPacket {
+public final class ColumnDefinition41Packet extends MySQLSentPacket {
     
     private final String catalog = "def";
     

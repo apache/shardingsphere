@@ -22,7 +22,7 @@ import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.proxy.DataSourceManager;
 import io.shardingjdbc.proxy.constant.ColumnType;
 import io.shardingjdbc.proxy.constant.StatusFlag;
-import io.shardingjdbc.proxy.packet.AbstractMySQLSentPacket;
+import io.shardingjdbc.proxy.packet.MySQLSentPacket;
 import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.packet.ok.EofPacket;
 import io.shardingjdbc.proxy.packet.ok.ErrPacket;
@@ -44,7 +44,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Slf4j
-public final class ComQueryPacket extends AbstractCommandPacket {
+public final class ComQueryPacket extends CommandPacket {
     
     private String sql;
     
@@ -56,8 +56,8 @@ public final class ComQueryPacket extends AbstractCommandPacket {
     }
     
     @Override
-    public List<AbstractMySQLSentPacket> execute() {
-        List<AbstractMySQLSentPacket> result = new LinkedList<>();
+    public List<MySQLSentPacket> execute() {
+        List<MySQLSentPacket> result = new LinkedList<>();
         int currentSequenceId = getSequenceId();
         try (
                 Connection conn = DataSourceManager.getInstance().getDataSource().getConnection();

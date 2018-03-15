@@ -18,7 +18,7 @@
 package io.shardingjdbc.proxy.packet.command;
 
 import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.packet.AbstractMySQLSentPacket;
+import io.shardingjdbc.proxy.packet.MySQLSentPacket;
 import io.shardingjdbc.proxy.packet.ok.ErrPacket;
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +31,7 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class UnsupportedCommandPacket extends AbstractCommandPacket {
+public final class UnsupportedCommandPacket extends CommandPacket {
     
     private static final int ERROR_CODE = 0xcc;
     
@@ -49,7 +49,7 @@ public final class UnsupportedCommandPacket extends AbstractCommandPacket {
     }
     
     @Override
-    public List<AbstractMySQLSentPacket> execute() {
-        return Collections.<AbstractMySQLSentPacket>singletonList(new ErrPacket(getSequenceId() + 1, ERROR_CODE, SQL_STATE_MARKER, SQL_STATE, String.format(ERROR_MESSAGE, type)));
+    public List<MySQLSentPacket> execute() {
+        return Collections.<MySQLSentPacket>singletonList(new ErrPacket(getSequenceId() + 1, ERROR_CODE, SQL_STATE_MARKER, SQL_STATE, String.format(ERROR_MESSAGE, type)));
     }
 }

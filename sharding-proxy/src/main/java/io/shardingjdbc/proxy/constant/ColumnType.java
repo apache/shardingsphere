@@ -31,6 +31,7 @@ import java.sql.Types;
 @RequiredArgsConstructor
 @Getter
 public enum ColumnType {
+    
     MYSQL_TYPE_DECIMAL(0x00), 
     MYSQL_TYPE_TINY(0x01), 
     MYSQL_TYPE_SHORT(0x02), 

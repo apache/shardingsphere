@@ -21,9 +21,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
-import io.shardingjdbc.proxy.packet.AbstractMySQLPacket;
+import io.shardingjdbc.proxy.packet.MySQLPacket;
 import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.packet.AbstractMySQLSentPacket;
+import io.shardingjdbc.proxy.packet.MySQLSentPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -34,32 +34,32 @@ import java.util.List;
  * @author zhangliang 
  */
 @Slf4j
-public final class MySQLPacketCodec extends ByteToMessageCodec<AbstractMySQLSentPacket> {
+public final class MySQLPacketCodec extends ByteToMessageCodec<MySQLSentPacket> {
     
     @Override
     protected void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) throws Exception {
         int readableBytes = in.readableBytes();
-        if (readableBytes < AbstractMySQLPacket.PAYLOAD_LENGTH + AbstractMySQLPacket.SEQUENCE_LENGTH) {
+        if (readableBytes < MySQLPacket.PAYLOAD_LENGTH + MySQLPacket.SEQUENCE_LENGTH) {
             return;
         }
         if (log.isDebugEnabled()) {
             log.debug("Read from client: \n {}", ByteBufUtil.prettyHexDump(in));
         }
         int payloadLength = in.markReaderIndex().readMediumLE();
-        int realPacketLength = payloadLength + AbstractMySQLPacket.PAYLOAD_LENGTH + AbstractMySQLPacket.SEQUENCE_LENGTH;
+        int realPacketLength = payloadLength + MySQLPacket.PAYLOAD_LENGTH + MySQLPacket.SEQUENCE_LENGTH;
         if (readableBytes < realPacketLength) {
             in.resetReaderIndex();
             return;
         }
         if (readableBytes > realPacketLength) {
-            out.add(in.readRetainedSlice(payloadLength + AbstractMySQLPacket.SEQUENCE_LENGTH));
+            out.add(in.readRetainedSlice(payloadLength + MySQLPacket.SEQUENCE_LENGTH));
             return;
         }
         out.add(in);
     }
     
     @Override
-    protected void encode(final ChannelHandlerContext context, final AbstractMySQLSentPacket message, final ByteBuf out) throws Exception {
+    protected void encode(final ChannelHandlerContext context, final MySQLSentPacket message, final ByteBuf out) throws Exception {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(context.alloc().buffer());
         message.write(mysqlPacketPayload);
         out.writeMediumLE(mysqlPacketPayload.getByteBuf().readableBytes());

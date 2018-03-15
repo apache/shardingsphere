@@ -21,7 +21,7 @@ import io.shardingjdbc.proxy.constant.CapabilityFlag;
 import io.shardingjdbc.proxy.constant.ServerInfo;
 import io.shardingjdbc.proxy.constant.StatusFlag;
 import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.packet.AbstractMySQLSentPacket;
+import io.shardingjdbc.proxy.packet.MySQLSentPacket;
 import lombok.Getter;
 
 /**
@@ -32,7 +32,7 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter
-public class HandshakePacket extends AbstractMySQLSentPacket {
+public class HandshakePacket extends MySQLSentPacket {
     
     private final int protocolVersion = ServerInfo.PROTOCOL_VERSION;
     

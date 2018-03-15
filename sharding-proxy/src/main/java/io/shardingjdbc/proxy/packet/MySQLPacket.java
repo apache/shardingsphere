@@ -17,17 +17,21 @@
 
 package io.shardingjdbc.proxy.packet;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * MySQL send packet.
- * 
- * @author zhangliang 
+ * MySQL packet.
+ *
+ * @author zhangliang
  */
-public abstract class AbstractMySQLSentPacket extends AbstractMySQLPacket {
+@Getter
+@Setter
+public abstract class MySQLPacket {
     
-    /**
-     * Write packet to byte buffer.
-     * 
-     * @param mysqlPacketPayload packet payload to be write
-     */
-    public abstract void write(MySQLPacketPayload mysqlPacketPayload);
+    public static final int PAYLOAD_LENGTH = 3;
+    
+    public static final int SEQUENCE_LENGTH = 1;
+    
+    private int sequenceId;
 }

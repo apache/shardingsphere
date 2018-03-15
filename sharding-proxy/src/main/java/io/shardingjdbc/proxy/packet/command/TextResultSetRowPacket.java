@@ -18,7 +18,7 @@
 package io.shardingjdbc.proxy.packet.command;
 
 import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.packet.AbstractMySQLSentPacket;
+import io.shardingjdbc.proxy.packet.MySQLSentPacket;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class TextResultSetRowPacket extends AbstractMySQLSentPacket {
+public final class TextResultSetRowPacket extends MySQLSentPacket {
     
     private static final int NULL = 0xfb;
     

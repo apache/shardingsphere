@@ -30,7 +30,7 @@ public final class CommandPacketFactory {
      * @param commandPacketTypeValue command packet type value
      * @return Command packet
      */
-    public static AbstractCommandPacket getCommandPacket(final int commandPacketTypeValue) {
+    public static CommandPacket getCommandPacket(final int commandPacketTypeValue) {
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
             case COM_QUIT:
