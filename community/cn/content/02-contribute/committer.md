@@ -41,7 +41,6 @@ chapter = true
      
      * 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily)
      
-     
  - sharding-jdbc-core-spring
  
      * 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
@@ -74,7 +73,7 @@ chapter = true
      
      * 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
  
- - sharding-jdbc-server
+ - sharding-proxy
   
      * 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
      

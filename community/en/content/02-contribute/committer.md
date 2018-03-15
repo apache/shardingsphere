@@ -74,7 +74,7 @@ Committers are more than contributors. While it's important for committers to ma
      
      * 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
  
- - sharding-jdbc-server
+ - sharding-proxy
   
      * 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
      

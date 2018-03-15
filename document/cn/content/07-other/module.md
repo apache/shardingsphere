@@ -18,7 +18,7 @@ sharding-jdbc
     ├──sharding-jdbc-orchestration-spring                                     数据库服务编排治理的Spring父模块，不应接使用
     ├      ├──sharding-jdbc-orchestration-core-spring-namespace               数据库服务编排治理的Spring命名空间支持模块，可直接使用
     ├      ├──sharding-jdbc-orchestration-core-spring-boot                    数据库服务编排治理的SpringBoot支持模块，可直接使用
-    ├──sharding-jdbc-server                                                   提供代理服务器连接数据库的模块，可直接使用
+    ├──sharding-proxy                                                   提供代理服务器连接数据库的模块，可直接使用
     ├──sharding-jdbc-transaction-parent                                       柔性事务父模块，不应直接使用
     ├      ├──sharding-jdbc-transaction                                       柔性事务核心模块，可直接使用
     ├      ├──sharding-jdbc-transaction-storage                               柔性事务存储模块，不应直接使用

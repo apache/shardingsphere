@@ -18,7 +18,7 @@ sharding-jdbc
     ├──sharding-jdbc-orchestration-spring                                     orchestration for spring parent module
     ├      ├──sharding-jdbc-orchestration-core-spring-namespace               orchestration for spring namespace module
     ├      ├──sharding-jdbc-orchestration-core-spring-boot                    orchestration for spring boot starter module
-    ├──sharding-jdbc-server                                                   database proxy server module
+    ├──sharding-proxy                                                   database proxy server module
     ├──sharding-jdbc-transaction-parent                                       BASE transaction parent module
     ├      ├──sharding-jdbc-transaction                                       BASE transaction core module
     ├      ├──sharding-jdbc-transaction-storage                               BASE transaction storage module

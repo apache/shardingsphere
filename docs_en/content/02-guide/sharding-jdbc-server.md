@@ -17,7 +17,7 @@ Sharding-JDBC-Server is suitable for uses to manage and debug, and can be connec
 
 ## Usage
 
-1. Download the latest version of Sharding-JDBC-Server from https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-jdbc-server-2.1.0-SNAPSHOT-assembly-v4.tar.gz
+1. Download the latest version of Sharding-JDBC-Server from https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-proxy-2.1.0-SNAPSHOT-assembly-v1.tar.gz
 2. Modify the conf/sharding-config.yaml file after decompression, and configure the sharding rule. Refer to [The YAML configuration in Sharding-JDBC](/02-guide/configuration/)。
 3. Run bin/start.sh in Linux, or bin/start.bat in Windows to start Sharding-JDBC-Server.
 4. Connect to it by means of any client tools, e.g. mysql -u root -h 127.0.0.1 -P3307
