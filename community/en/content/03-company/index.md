@@ -1,16 +1,16 @@
 +++
-title = "Using companies"
+title = "Sharding Adopters"
 weight = 0
 prev = "/02-contribute/convention/"
 next = "/01-organization/"
 chapter = true
 +++
 
-Please leave your company's info when using Sharding.
+It's our pleasure if you leave the information of your organization when using Sharding.
 
 Register by `company` + `homepage` + `company type` [here](https://github.com/shardingjdbc/sharding-jdbc/issues/234).
 
-Using companies in chronological order.
+Organizations using Sharding in chronological order.
 
 ## E-commerce
 
