@@ -15,19 +15,24 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.util;
+package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
-import io.shardingjdbc.proxy.transport.mysql.packet.handshake.RandomGenerator;
-import org.junit.Test;
+import io.shardingjdbc.proxy.transport.mysql.packet.MySQLReceivedPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.List;
 
-public final class RandomGeneratorTest {
+/**
+ * Command packet.
+ *
+ * @author zhangliang
+ */
+public abstract class CommandPacket extends MySQLReceivedPacket {
     
-    @Test
-    public void assertGenerateRandomBytes() {
-        assertThat(RandomGenerator.getInstance().generateRandomBytes(8).length, is(8));
-        assertThat(RandomGenerator.getInstance().generateRandomBytes(12).length, is(12));
-    }
+    /**
+     * Execute command.
+     * 
+     * @return result packets to be sent
+     */
+    public abstract List<MySQLSentPacket> execute();
 }

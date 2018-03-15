@@ -15,19 +15,24 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.util;
+package io.shardingjdbc.proxy.transport.mysql.packet;
 
-import io.shardingjdbc.proxy.transport.mysql.packet.handshake.RandomGenerator;
-import org.junit.Test;
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
+import lombok.Getter;
+import lombok.Setter;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class RandomGeneratorTest {
+/**
+ * MySQL packet.
+ *
+ * @author zhangliang
+ */
+@Getter
+@Setter
+public abstract class MySQLPacket implements DatabaseProtocolPacket {
     
-    @Test
-    public void assertGenerateRandomBytes() {
-        assertThat(RandomGenerator.getInstance().generateRandomBytes(8).length, is(8));
-        assertThat(RandomGenerator.getInstance().generateRandomBytes(12).length, is(12));
-    }
+    public static final int PAYLOAD_LENGTH = 3;
+    
+    public static final int SEQUENCE_LENGTH = 1;
+    
+    private int sequenceId;
 }
