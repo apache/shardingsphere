@@ -21,8 +21,8 @@ import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.proxy.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.transport.mysql.packet.ok.ErrPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.ok.OKPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;

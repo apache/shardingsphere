@@ -29,7 +29,7 @@ import io.shardingjdbc.proxy.transport.mysql.packet.handshake.AuthPluginData;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
-import io.shardingjdbc.proxy.transport.mysql.packet.ok.OKPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
 
 /**
  * MySQL proxy handler.

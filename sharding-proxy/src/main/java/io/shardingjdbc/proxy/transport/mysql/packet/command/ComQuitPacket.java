@@ -20,7 +20,7 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command;
 import io.shardingjdbc.proxy.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.transport.mysql.packet.ok.OKPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
 
 import java.util.Collections;
 import java.util.List;

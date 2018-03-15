@@ -19,7 +19,7 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.ok.ErrPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
