@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,7 @@ public abstract class AbstractBaseExecutorTest {
     }
     
     @After
-    public void tearDown() throws NoSuchFieldException, IllegalAccessException {
+    public void tearDown() throws ReflectiveOperationException {
         ExecutorTestUtil.clear();
         EventBusInstance.getInstance().unregister(overallExecutionEventListener);
         EventBusInstance.getInstance().unregister(dqlExecutionEventListener);

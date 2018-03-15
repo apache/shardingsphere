@@ -32,6 +32,9 @@ public final class EmbedTestingServer {
     
     private static volatile TestingServer testingServer;
     
+    /**
+     * Start embed zookeeper server.
+     */
     public static void start() {
         if (null != testingServer) {
             return;

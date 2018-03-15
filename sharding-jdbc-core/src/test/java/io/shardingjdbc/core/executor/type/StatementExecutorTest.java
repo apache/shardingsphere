@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,8 +36,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -471,7 +471,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         StatementExecutor actual = new StatementExecutor(getExecutorEngine(), SQLType.DML, createStatementUnits(DML_SQL, statement, "ds_0"));
         try {
             assertFalse(actual.execute());
-        } catch (final SQLException ignored) {
+        } catch (final SQLException ignore) {
         }
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);

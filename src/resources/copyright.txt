@@ -14,25 +14,3 @@
  * limitations under the License.
  * </p>
  */
-
-package io.shardingjdbc.core.parsing.parser.context.selectitem;
-
-import com.google.common.base.Optional;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
-/**
- * Common select item.
- *
- * @author zhangliang
- */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class CommonSelectItem implements SelectItem {
-    
-    private final String expression;
-    
-    private final Optional<String> alias;
-}

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class RdbTransactionLogStorageTest {
@@ -40,7 +40,7 @@ public final class RdbTransactionLogStorageTest {
     
     @Before
     public void setup() throws SQLException {
-        BasicDataSource dataSource =  new BasicDataSource();
+        BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName(org.h2.Driver.class.getName());
         dataSource.setUrl("jdbc:h2:mem:db_trans");
         dataSource.setUsername("sa");

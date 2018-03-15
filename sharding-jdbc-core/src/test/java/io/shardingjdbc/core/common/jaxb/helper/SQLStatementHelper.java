@@ -1,3 +1,20 @@
+/*
+ * Copyright 1999-2015 dangdang.com.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * </p>
+ */
+
 package io.shardingjdbc.core.common.jaxb.helper;
 
 import io.shardingjdbc.core.common.jaxb.SQLStatement;
@@ -67,16 +84,32 @@ public final class SQLStatementHelper {
         }
     }
     
+    /**
+     * Get unsupported SQL statements.
+     * 
+     * @return unsupported SQL statements
+     */
     public static Collection<SQLStatement> getUnsupportedSqlStatements() {
         return UNSUPPORTED_STATEMENT_MAP.values();
     }
     
+    /**
+     * Get SQL.
+     * @param sqlId SQL ID
+     * @return SQL
+     */
     public static String getSql(final String sqlId) {
         checkSqlId(sqlId);
         SQLStatement statement = STATEMENT_MAP.get(sqlId);
         return statement.getSql();
     }
     
+    /**
+     * Get database types.
+     * 
+     * @param sqlId SQL ID
+     * @return database types
+     */
     public static Set<DatabaseType> getTypes(final String sqlId) {
         checkSqlId(sqlId);
         SQLStatement statement = STATEMENT_MAP.get(sqlId);

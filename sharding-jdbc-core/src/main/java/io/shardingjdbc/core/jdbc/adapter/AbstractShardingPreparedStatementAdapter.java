@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -277,7 +277,7 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
     @Override
     public final void setObject(final int parameterIndex, final Object x, final int targetSqlType) throws SQLException {
         setParameter(parameterIndex, x);
-        recordSetParameter("setObject", new Class[]{int.class, Object.class, int.class}, parameterIndex,  x, targetSqlType);
+        recordSetParameter("setObject", new Class[]{int.class, Object.class, int.class}, parameterIndex, x, targetSqlType);
     }
     
     @Override

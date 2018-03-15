@@ -18,6 +18,8 @@
 package io.shardingjdbc.core.common.util;
 
 import io.shardingjdbc.core.common.env.DatabaseEnvironment;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -29,8 +31,16 @@ import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 
 import java.sql.Connection;
 
-public class DBUnitUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DBUnitUtil {
     
+    /**
+     * Get connection.
+     * @param dbEnv Database environment
+     * @param connection connection
+     * @return database connection
+     * @throws DatabaseUnitException DatabaseUnitException
+     */
     public static IDatabaseConnection getConnection(final DatabaseEnvironment dbEnv, final Connection connection) throws DatabaseUnitException {
         switch (dbEnv.getDatabaseType()) {
             case H2:

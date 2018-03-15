@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,9 +23,9 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public final class CircuitBreakerDatabaseMetaDataTest {
     
@@ -215,7 +215,6 @@ public final class CircuitBreakerDatabaseMetaDataTest {
     public void assertNullPlusNonNullIsNull() throws SQLException {
         assertFalse(metaData.nullPlusNonNullIsNull());
     }
-    
     
     @Test
     public void assertSupportsConvert() throws SQLException {
@@ -642,7 +641,6 @@ public final class CircuitBreakerDatabaseMetaDataTest {
         assertNull(metaData.getSchemas());
     }
     
-    
     @Test
     public void assertGetSchemasWithParameter() throws SQLException {
         assertNull(metaData.getSchemas(null, null));
@@ -677,7 +675,6 @@ public final class CircuitBreakerDatabaseMetaDataTest {
     public void assertGetBestRowIdentifier() throws SQLException {
         assertNull(metaData.getBestRowIdentifier("", "", "", 0, false));
     }
-    
     
     @Test
     public void assertGetVersionColumns() throws SQLException {

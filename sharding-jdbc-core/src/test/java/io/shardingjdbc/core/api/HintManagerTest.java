@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,14 +19,14 @@ package io.shardingjdbc.core.api;
 
 import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
+import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
-import io.shardingjdbc.core.constant.ShardingOperator;
 import org.junit.Test;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class HintManagerTest {
     

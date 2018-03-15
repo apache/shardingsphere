@@ -26,6 +26,22 @@ import java.lang.reflect.Field;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FieldValueUtil {
     
+    /**
+     * Get field value.
+     * 
+     * @param obj obj
+     * @param fieldName field name
+     * @param isFromSuperClass is from super class
+     * @return field value
+     */
+    public static Object getFieldValue(final Object obj, final String fieldName, final boolean isFromSuperClass) {
+        if (null == obj || Strings.isNullOrEmpty(fieldName)) {
+            return null;
+        }
+        Class<?> clazz = isFromSuperClass ? obj.getClass().getSuperclass() : obj.getClass();
+        return getFieldValue(clazz, obj, fieldName);
+    }
+    
     private static Object getFieldValue(final Class<?> clazz, final Object obj, final String fieldName) {
         try {
             Field field = clazz.getDeclaredField(fieldName);
@@ -39,14 +55,13 @@ public final class FieldValueUtil {
         }
     }
     
-    public static Object getFieldValue(final Object obj, final String fieldName, final boolean fromSuperclass) {
-        if (null == obj || Strings.isNullOrEmpty(fieldName)) {
-            return null;
-        }
-        Class<?> clazz = fromSuperclass ? obj.getClass().getSuperclass() : obj.getClass();
-        return getFieldValue(clazz, obj, fieldName);
-    }
-    
+    /**
+     * Get field value.
+     * 
+     * @param obj obj
+     * @param fieldName field name
+     * @return field value
+     */
     public static Object getFieldValue(final Object obj, final String fieldName) {
         return getFieldValue(obj, fieldName, false);
     }

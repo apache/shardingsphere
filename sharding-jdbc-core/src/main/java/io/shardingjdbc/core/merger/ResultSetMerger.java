@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ public interface ResultSetMerger {
      * @return data value
      * @throws SQLException SQL Exception
      */
-    Object getValue(final int columnIndex, final Class<?> type) throws SQLException;
+    Object getValue(int columnIndex, Class<?> type) throws SQLException;
     
     /**
      * Get data value.
@@ -54,7 +54,7 @@ public interface ResultSetMerger {
      * @return data value
      * @throws SQLException SQL Exception
      */
-    Object getValue(final String columnLabel, final Class<?> type) throws SQLException;
+    Object getValue(String columnLabel, Class<?> type) throws SQLException;
     
     /**
      * Get calendar value.
@@ -65,7 +65,7 @@ public interface ResultSetMerger {
      * @return calendar value
      * @throws SQLException SQL Exception
      */
-    Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException;
+    Object getCalendarValue(int columnIndex, Class<?> type, Calendar calendar) throws SQLException;
     
     /**
      * Get calendar value.
@@ -76,7 +76,7 @@ public interface ResultSetMerger {
      * @return calendar value
      * @throws SQLException SQL Exception
      */
-    Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException;
+    Object getCalendarValue(String columnLabel, Class<?> type, Calendar calendar) throws SQLException;
     
     /**
      * Get InputStream.
@@ -86,7 +86,7 @@ public interface ResultSetMerger {
      * @return InputStream
      * @throws SQLException SQL Exception
      */
-    InputStream getInputStream(final int columnIndex, final String type) throws SQLException;
+    InputStream getInputStream(int columnIndex, String type) throws SQLException;
     
     /**
      * Get InputStream.
@@ -96,7 +96,7 @@ public interface ResultSetMerger {
      * @return InputStream
      * @throws SQLException SQL Exception
      */
-    InputStream getInputStream(final String columnLabel, final String type) throws SQLException;
+    InputStream getInputStream(String columnLabel, String type) throws SQLException;
     
     /**
      * Adjust ResultSet is null or not.

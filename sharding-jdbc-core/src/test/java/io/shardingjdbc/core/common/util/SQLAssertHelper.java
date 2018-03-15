@@ -1,9 +1,27 @@
+/*
+ * Copyright 1999-2015 dangdang.com.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * </p>
+ */
+
 package io.shardingjdbc.core.common.util;
 
 import io.shardingjdbc.core.common.env.DatabaseEnvironment;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
 import lombok.RequiredArgsConstructor;
+import org.dbunit.Assertion;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.CachedResultSetTable;
 import org.dbunit.database.ForwardOnlyResultSetTable;
@@ -25,18 +43,41 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import static io.shardingjdbc.core.common.util.SQLPlaceholderUtil.replacePreparedStatement;
-import static io.shardingjdbc.core.common.util.SQLPlaceholderUtil.replaceStatement;
-import static org.dbunit.Assertion.assertEquals;
-
 @RequiredArgsConstructor
-public class SQLAssertHelper {
+public final class SQLAssertHelper {
     
     private final String sql;
     
+    /**
+     * Execute with statement.
+     *
+     * @param isExecute is execute method
+     * @param abstractDataSourceAdapter data source adapter
+     * @param parameters parameters
+     * @throws SQLException SQL exception
+     */
+    public void executeWithStatement(final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters) throws SQLException {
+        try (Connection connection = abstractDataSourceAdapter.getConnection();
+             Statement statement = connection.createStatement()) {
+            if (isExecute) {
+                statement.execute(SQLPlaceholderUtil.replaceStatement(sql, parameters.toArray()));
+            } else {
+                statement.executeUpdate(SQLPlaceholderUtil.replaceStatement(sql, parameters.toArray()));
+            }
+        }
+    }
+    
+    /**
+     * Execute with prepared statement.
+     * 
+     * @param isExecute is execute method
+     * @param abstractDataSourceAdapter data source adapter
+     * @param parameters parameters
+     * @throws SQLException SQL exception
+     */
     public void executeWithPreparedStatement(final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters) throws SQLException {
         try (Connection connection = abstractDataSourceAdapter.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql))) {
+             PreparedStatement preparedStatement = connection.prepareStatement(SQLPlaceholderUtil.replacePreparedStatement(sql))) {
             setParameters(preparedStatement, parameters);
             if (isExecute) {
                 preparedStatement.execute();
@@ -46,21 +87,49 @@ public class SQLAssertHelper {
         }
     }
     
-    public void executeWithStatement(final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters) throws SQLException {
-        try (Connection connection = abstractDataSourceAdapter.getConnection();
-             Statement statement = connection.createStatement()) {
-            if (isExecute) {
-                statement.execute(replaceStatement(sql, parameters.toArray()));
-            } else {
-                statement.executeUpdate(replaceStatement(sql, parameters.toArray()));
+    /**
+     * Execute query with statement.
+     * 
+     * @param abstractDataSourceAdapter data source adapter
+     * @param parameters parameters
+     * @param file file
+     * 
+     * @throws MalformedURLException malformed URL exception
+     * @throws SQLException SQL exception
+     * @throws DatabaseUnitException database unit exception
+     */
+    public void executeQueryWithStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
+            throws MalformedURLException, SQLException, DatabaseUnitException {
+        try (Connection conn = abstractDataSourceAdapter.getConnection()) {
+            String querySql = SQLPlaceholderUtil.replaceStatement(sql, parameters.toArray());
+            ReplacementDataSet expectedDataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(file));
+            expectedDataSet.addReplacementObject("[null]", null);
+            for (ITable each : expectedDataSet.getTables()) {
+                String tableName = each.getTableMetaData().getTableName();
+                IDatabaseConnection connection = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn);
+                ITable actualTable = connection.createQueryTable(tableName, querySql);
+                // TODO customized CachedResultSetTable with statement 
+                Assertion.assertEquals(expectedDataSet.getTable(tableName), actualTable);
             }
         }
     }
     
+    /**
+     * Execute query with prepared statement.
+     * 
+     * @param isExecute is execute method
+     * @param abstractDataSourceAdapter data source adapter
+     * @param parameters parameters
+     * @param file file
+     *
+     * @throws MalformedURLException malformed URL exception
+     * @throws SQLException SQL exception
+     * @throws DatabaseUnitException database unit exception
+     */
     public void executeQueryWithPreparedStatement(final boolean isExecute, final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
             throws MalformedURLException, SQLException, DatabaseUnitException {
         try (Connection conn = abstractDataSourceAdapter.getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(replacePreparedStatement(sql))) {
+             PreparedStatement preparedStatement = conn.prepareStatement(SQLPlaceholderUtil.replacePreparedStatement(sql))) {
             setParameters(preparedStatement, parameters);
             ReplacementDataSet expectedDataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(file));
             expectedDataSet.addReplacementObject("[null]", null);
@@ -73,23 +142,7 @@ public class SQLAssertHelper {
                 } else {
                     actualTable = connection.createTable(tableName, preparedStatement);
                 }
-                assertEquals(expectedDataSet.getTable(tableName), actualTable);
-            }
-        }
-    }
-    
-    public void executeQueryWithStatement(final AbstractDataSourceAdapter abstractDataSourceAdapter, final List<String> parameters, final File file)
-            throws MalformedURLException, SQLException, DatabaseUnitException {
-        try (Connection conn = abstractDataSourceAdapter.getConnection()) {
-            String querySql = replaceStatement(sql, parameters.toArray());
-            ReplacementDataSet expectedDataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(file));
-            expectedDataSet.addReplacementObject("[null]", null);
-            for (ITable each : expectedDataSet.getTables()) {
-                String tableName = each.getTableMetaData().getTableName();
-                IDatabaseConnection connection = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn);
-                ITable actualTable = connection.createQueryTable(tableName, querySql);
-                // TODO customized CachedResultSetTable with statement 
-                assertEquals(expectedDataSet.getTable(tableName), actualTable);
+                Assertion.assertEquals(expectedDataSet.getTable(tableName), actualTable);
             }
         }
     }
@@ -127,7 +180,7 @@ public class SQLAssertHelper {
                 String verifySql = "SELECT * FROM " + actualTableName + " WHERE status = '" + getStatus(file) + "'" + getOrderByCondition(actualTableName);
                 ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
                         .createQueryTable(actualTableName, verifySql);
-                assertEquals(expectedTable, actualTable);
+                Assertion.assertEquals(expectedTable, actualTable);
             }
         }
     }
@@ -139,7 +192,7 @@ public class SQLAssertHelper {
             default: return "";
         }
     }
-
+    
     private String getStatus(final File file) {
         return sql.toUpperCase().startsWith("DELETE") ? "init" : file.getParentFile().getName();
     }

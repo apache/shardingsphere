@@ -1,3 +1,20 @@
+/*
+ * Copyright 1999-2015 dangdang.com.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * </p>
+ */
+
 package io.shardingjdbc.core.parsing.parser.jaxb.helper;
 
 import com.google.common.base.Function;
@@ -17,8 +34,13 @@ import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 
 import java.util.List;
 
-public class ParserJAXBHelper {
+public final class ParserJAXBHelper {
     
+    /**
+     * get parameters.
+     * @param parameters parameters
+     * @return parameters
+     */
     public static String[] getParameters(final String parameters) {
         if (Strings.isNullOrEmpty(parameters)) {
             return new String[]{};
@@ -26,6 +48,12 @@ public class ParserJAXBHelper {
         return parameters.split(",");
     }
     
+    /**
+     * Get tables.
+     * 
+     * @param tables tables
+     * @return tables
+     */
     public static Tables getTables(final io.shardingjdbc.core.parsing.parser.jaxb.Tables tables) {
         Tables result = new Tables();
         if (null == tables) {
@@ -38,6 +66,12 @@ public class ParserJAXBHelper {
         return result;
     }
     
+    /**
+     * Get select statement.
+     * 
+     * @param assertObj assert object
+     * @return select statement
+     */
     public static SelectStatement getSelectStatement(final Assert assertObj) {
         final SelectStatement result = new SelectStatement();
         if (null != assertObj.getOrderByColumns()) {
