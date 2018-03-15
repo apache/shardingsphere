@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy;
+package io.shardingjdbc.proxy.backend;
 
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.exception.ShardingJdbcException;

@@ -18,7 +18,7 @@
 package io.shardingjdbc.proxy.packet.command;
 
 import io.shardingjdbc.core.constant.ShardingConstant;
-import io.shardingjdbc.proxy.DataSourceManager;
+import io.shardingjdbc.proxy.backend.DataSourceManager;
 import io.shardingjdbc.proxy.constant.ColumnType;
 import io.shardingjdbc.proxy.constant.StatusFlag;
 import io.shardingjdbc.proxy.packet.MySQLSentPacket;
