@@ -40,7 +40,7 @@ public final class DataSourceManager {
     
     private final DataSource dataSource;
     
-    public DataSourceManager() {
+    private DataSourceManager() {
         try {
             dataSource = ShardingDataSourceFactory.createDataSource(new File(ComQueryPacket.class.getResource("/conf/sharding-config.yaml").getFile()));
         } catch (final IOException | SQLException ex) {

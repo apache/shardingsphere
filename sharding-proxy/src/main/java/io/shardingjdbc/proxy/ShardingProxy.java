@@ -29,14 +29,14 @@ import io.shardingjdbc.proxy.codec.MySQLPacketCodec;
 import io.shardingjdbc.proxy.handler.ServerHandler;
 
 /**
- * Sharding-JDBC Server.
+ * Sharding-Proxy.
  *
  * @author zhangliang
  */
-public final class ShardingJDBCServer {
+public final class ShardingProxy {
     
     /**
-     * Start Sharding-JDBC Server.
+     * Start Sharding-Proxy.
      * 
      * @param port port
      * @throws InterruptedException interrupted exception
@@ -50,7 +50,7 @@ public final class ShardingJDBCServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         
                         @Override
-                        public void initChannel(final SocketChannel socketChannel) throws Exception {
+                        public void initChannel(final SocketChannel socketChannel) {
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             pipeline.addLast(new MySQLPacketCodec());
                             pipeline.addLast(new ServerHandler());

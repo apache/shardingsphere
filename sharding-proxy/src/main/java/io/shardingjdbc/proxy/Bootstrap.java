@@ -18,7 +18,7 @@
 package io.shardingjdbc.proxy;
 
 /**
- * Sharding-JDBC Server Bootstrap.
+ * Sharding-Proxy Bootstrap.
  *
  * @author zhangliang
  */
@@ -33,7 +33,7 @@ public final class Bootstrap {
      * @throws InterruptedException interrupted exception
      */
     public static void main(final String[] args) throws InterruptedException {
-        new ShardingJDBCServer().start(getPort(args));
+        new ShardingProxy().start(getPort(args));
     }
     
     private static int getPort(final String[] args) {
