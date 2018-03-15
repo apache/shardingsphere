@@ -35,7 +35,7 @@ Using companies in chronological order.
 * [Zhong Ce Auto Space](http://www.zcckj.com/)
 * [Shouqi](http://www.01zhuanche.com/)
 
-## Financial
+## FinTech
 
 * [xiaoniu88](https://www.xiaoniu88.com/)
 * [HUAXIA FINANCE](https://www.huaxiafinance.com/)
