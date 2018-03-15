@@ -17,6 +17,11 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
+import io.shardingjdbc.proxy.transport.mysql.packet.command.fieldlist.ComFieldListPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.initdb.ComInitDbPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.query.ComQueryPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.quit.ComQuitPacket;
+
 /**
  * Command packet factory.
  *

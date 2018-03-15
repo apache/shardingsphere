@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.mysql.packet.command;
+package io.shardingjdbc.proxy.transport.mysql.packet.generic;
 
 import io.shardingjdbc.proxy.constant.ColumnType;
 import io.shardingjdbc.proxy.constant.ServerInfo;

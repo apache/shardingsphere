@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.mysql.packet.command;
+package io.shardingjdbc.proxy.transport.mysql.packet.command.query;
 
 import io.shardingjdbc.core.parsing.SQLJudgeEngine;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
@@ -24,6 +24,8 @@ import io.shardingjdbc.proxy.constant.ColumnType;
 import io.shardingjdbc.proxy.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.generic.ColumnDefinition41Packet;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;

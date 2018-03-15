@@ -15,11 +15,12 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.mysql.packet.command;
+package io.shardingjdbc.proxy.transport.mysql.packet.command.quit;
 
 import io.shardingjdbc.proxy.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
 
 import java.util.Collections;

@@ -15,38 +15,28 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.mysql.packet.command;
+package io.shardingjdbc.proxy.transport.mysql.packet.command.query;
 
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 
-import java.util.List;
-
 /**
- * Text result set row packet.
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow">ResultsetRow</a>
+ * COM_QUERY response field count packet.
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html">COM_QUERY field count</a>
  *
  * @author zhangliang
  */
-public final class TextResultSetRowPacket extends MySQLSentPacket {
+public final class FieldCountPacket extends MySQLSentPacket {
     
-    private static final int NULL = 0xfb;
+    private final long columnCount;
     
-    private final List<Object> data;
-    
-    public TextResultSetRowPacket(final int sequenceId, final List<Object> data) {
+    public FieldCountPacket(final int sequenceId, final long columnCount) {
         setSequenceId(sequenceId);
-        this.data = data;
+        this.columnCount = columnCount;
     }
     
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        for (Object each : data) {
-            if (null == each) {
-                mysqlPacketPayload.writeInt1(NULL);
-            } else {
-                mysqlPacketPayload.writeStringLenenc(each.toString());
-            }
-        }
+        mysqlPacketPayload.writeIntLenenc(columnCount);
     }
 }
