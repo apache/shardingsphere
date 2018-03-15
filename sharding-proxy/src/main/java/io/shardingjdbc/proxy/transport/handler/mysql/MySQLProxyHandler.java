@@ -15,57 +15,48 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.handler;
+package io.shardingjdbc.proxy.transport.handler.mysql;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.shardingjdbc.proxy.constant.StatusFlag;
-import io.shardingjdbc.proxy.packet.MySQLSentPacket;
-import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.packet.command.CommandPacket;
-import io.shardingjdbc.proxy.packet.command.CommandPacketFactory;
-import io.shardingjdbc.proxy.packet.handshake.AuthPluginData;
-import io.shardingjdbc.proxy.packet.handshake.ConnectionIdGenerator;
-import io.shardingjdbc.proxy.packet.handshake.HandshakePacket;
-import io.shardingjdbc.proxy.packet.handshake.HandshakeResponse41Packet;
-import io.shardingjdbc.proxy.packet.ok.OKPacket;
+import io.shardingjdbc.proxy.transport.handler.DatabaseProxyHandler;
+import io.shardingjdbc.proxy.transport.packet.mysql.MySQLPacketPayload;
+import io.shardingjdbc.proxy.transport.packet.mysql.MySQLSentPacket;
+import io.shardingjdbc.proxy.transport.packet.mysql.command.CommandPacket;
+import io.shardingjdbc.proxy.transport.packet.mysql.command.CommandPacketFactory;
+import io.shardingjdbc.proxy.transport.packet.mysql.handshake.AuthPluginData;
+import io.shardingjdbc.proxy.transport.packet.mysql.handshake.ConnectionIdGenerator;
+import io.shardingjdbc.proxy.transport.packet.mysql.handshake.HandshakePacket;
+import io.shardingjdbc.proxy.transport.packet.mysql.handshake.HandshakeResponse41Packet;
+import io.shardingjdbc.proxy.transport.packet.mysql.ok.OKPacket;
 
 /**
- * Server handler.
+ * MySQL proxy handler.
  * 
  * @author zhangliang 
  */
-public class ServerHandler extends ChannelInboundHandlerAdapter {
+public final class MySQLProxyHandler extends DatabaseProxyHandler {
     
     private AuthPluginData authPluginData;
     
-    private boolean authorized;
-    
     @Override
-    public void channelActive(final ChannelHandlerContext context) {
+    protected void handshake(final ChannelHandlerContext context) {
         authPluginData = new AuthPluginData();
         context.writeAndFlush(new HandshakePacket(ConnectionIdGenerator.getInstance().nextId(), authPluginData));
     }
     
     @Override
-    public void channelRead(final ChannelHandlerContext context, final Object message) {
-        MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload((ByteBuf) message);
-        if (!authorized) {
-            auth(context, mysqlPacketPayload);
-        } else {
-            executeCommand(context, mysqlPacketPayload);
-        }
-    }
-    
-    private void auth(final ChannelHandlerContext context, final MySQLPacketPayload mysqlPacketPayload) {
-        HandshakeResponse41Packet response41 = new HandshakeResponse41Packet().read(mysqlPacketPayload);
+    protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
+        MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
         // TODO use authPluginData to auth
-        authorized = true;
+        HandshakeResponse41Packet response41 = new HandshakeResponse41Packet().read(mysqlPacketPayload);
         context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
     }
     
-    private void executeCommand(final ChannelHandlerContext context, final MySQLPacketPayload mysqlPacketPayload) {
+    @Override
+    protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
+        MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
         int sequenceId = mysqlPacketPayload.readInt1();
         CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(mysqlPacketPayload.readInt1());
         commandPacket.setSequenceId(sequenceId);

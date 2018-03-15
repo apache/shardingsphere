@@ -15,16 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.codec;
+package io.shardingjdbc.proxy.transport.codec.mysql;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageCodec;
-import io.shardingjdbc.proxy.packet.MySQLPacket;
-import io.shardingjdbc.proxy.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.packet.MySQLSentPacket;
-import lombok.extern.slf4j.Slf4j;
+import io.shardingjdbc.proxy.transport.codec.PacketCodec;
+import io.shardingjdbc.proxy.transport.packet.mysql.MySQLPacket;
+import io.shardingjdbc.proxy.transport.packet.mysql.MySQLPacketPayload;
+import io.shardingjdbc.proxy.transport.packet.mysql.MySQLSentPacket;
 
 import java.util.List;
 
@@ -33,18 +31,15 @@ import java.util.List;
  * 
  * @author zhangliang 
  */
-@Slf4j
-public final class MySQLPacketCodec extends ByteToMessageCodec<MySQLSentPacket> {
+public final class MySQLPacketCodec extends PacketCodec<MySQLSentPacket> {
     
     @Override
-    protected void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) throws Exception {
-        int readableBytes = in.readableBytes();
-        if (readableBytes < MySQLPacket.PAYLOAD_LENGTH + MySQLPacket.SEQUENCE_LENGTH) {
-            return;
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("Read from client: \n {}", ByteBufUtil.prettyHexDump(in));
-        }
+    protected boolean isValidHeader(final int readableBytes) {
+        return readableBytes > MySQLPacket.PAYLOAD_LENGTH + MySQLPacket.SEQUENCE_LENGTH;
+    }
+    
+    @Override
+    protected void doDecode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int readableBytes) {
         int payloadLength = in.markReaderIndex().readMediumLE();
         int realPacketLength = payloadLength + MySQLPacket.PAYLOAD_LENGTH + MySQLPacket.SEQUENCE_LENGTH;
         if (readableBytes < realPacketLength) {
@@ -59,14 +54,11 @@ public final class MySQLPacketCodec extends ByteToMessageCodec<MySQLSentPacket> 
     }
     
     @Override
-    protected void encode(final ChannelHandlerContext context, final MySQLSentPacket message, final ByteBuf out) throws Exception {
+    protected void doEncode(final ChannelHandlerContext context, final MySQLSentPacket message, final ByteBuf out) {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(context.alloc().buffer());
         message.write(mysqlPacketPayload);
         out.writeMediumLE(mysqlPacketPayload.getByteBuf().readableBytes());
         out.writeByte(message.getSequenceId());
         out.writeBytes(mysqlPacketPayload.getByteBuf());
-        if (log.isDebugEnabled()) {
-            log.debug("Write to client: \n {}", ByteBufUtil.prettyHexDump(out));
-        }
     }
 }

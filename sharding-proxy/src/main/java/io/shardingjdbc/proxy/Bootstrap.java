@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.proxy;
 
+import io.shardingjdbc.proxy.transport.ShardingProxy;
+
 /**
  * Sharding-Proxy Bootstrap.
  *

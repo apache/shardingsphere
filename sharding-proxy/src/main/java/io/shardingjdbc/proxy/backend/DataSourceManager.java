@@ -19,7 +19,6 @@ package io.shardingjdbc.proxy.backend;
 
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
-import io.shardingjdbc.proxy.packet.command.ComQueryPacket;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -42,7 +41,7 @@ public final class DataSourceManager {
     
     private DataSourceManager() {
         try {
-            dataSource = ShardingDataSourceFactory.createDataSource(new File(ComQueryPacket.class.getResource("/conf/sharding-config.yaml").getFile()));
+            dataSource = ShardingDataSourceFactory.createDataSource(new File(DataSourceManager.class.getResource("/conf/sharding-config.yaml").getFile()));
         } catch (final IOException | SQLException ex) {
             throw new ShardingJdbcException(ex);
         }
