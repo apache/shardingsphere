@@ -53,7 +53,7 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 
 # 部署架构
 
-## Sharding-JDBC-Driver
+## Sharding-JDBC
 
 通过客户端分片的方式由应用程序直连数据库，减少二次转发成本，性能最高，适合线上程序使用。
 
@@ -61,26 +61,26 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 * 可基于任何第三方的数据库连接池，如：DBCP, BoneCP, Druid等。
 * 可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。
 
-![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_brief_cn.png)
+![Sharding-JDBC Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_brief_cn.png)
 
-## Sharding-JDBC-Server
+## Sharding-Proxy
 
 通过代理服务器连接数据库(目前仅支持MySQL)，适合其他开发语言或MySQL客户端操作数据。
 
 * 向应用程序完全透明，可直接当做MySQL使用。
 * 可适用于任何兼容MySQL协议的的客户端。
 
-![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_brief_cn.png)
+![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/server_brief_cn.png)
 
-## Sharding-JDBC-Sidecar(TBD)
+## Sharding-Sidecar(TBD)
 
 通过sidecar分片的方式，由IPC代替RPC，自动代理SQL分片，适合与Kubernetes或Mesos配合使用。
 
-![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_cn.png)
+![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_cn.png)
 
 # 快速入门
 
-## Sharding-JDBC-Driver
+## Sharding-JDBC
 
 ### 引入maven依赖
 
@@ -105,14 +105,14 @@ Sharding-JDBC可以通过`Java`，`YAML`，`Spring命名空间`和`Spring Boot S
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
 ```
 
-## Sharding-JDBC-Server
+## Sharding-Proxy
 
 ### 规则配置
 
-编辑`${sharding-jdbc-server}\conf\sharding-config.yaml`。配置规则同Sharding-JDBC-Driver的`YAML`格式。 
+编辑`${sharding-proxy}\conf\sharding-config.yaml`。配置规则同Sharding-JDBC-Driver的`YAML`格式。 
 
 ### 启动服务
 
 ``` shell
-${sharding-jdbc-server}\bin\start.sh ${port}
+${sharding-proxy}\bin\start.sh ${port}
 ```

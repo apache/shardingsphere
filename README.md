@@ -51,7 +51,7 @@ Sharding-JDBC is a distributed database middleware, focus on data sharding, read
 
 # Architecture
 
-## Sharding-JDBC-Driver
+## Sharding-JDBC
 
 Use JDBC connect databases without redirect cost for java application, best performance for production.
 
@@ -59,26 +59,26 @@ Use JDBC connect databases without redirect cost for java application, best perf
 * Connection-pool compatible. DBCP, BoneCP, Druid supported.
 * Multi SQL-based databases compatible. Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
 
-![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_brief_en.png)
+![Sharding-JDBC Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_brief_en.png)
 
-## Sharding-JDBC-Server
+## Sharding-Proxy
 
 Database router. Deploy as a stateless server, support MySQL protocol for now.
 
 * Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
 * Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.
 
-![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_brief_en.png)
+![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/server_brief_en.png)
 
-## Sharding-JDBC-Sidecar(TBD)
+## Sharding-Sidecar(TBD)
 
 Use sidecar to connect databases, best for Kubernetes or Mesos together.
 
-![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_en.png)
+![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_en.png)
 
 # Quick Start
 
-## Sharding-JDBC-Driver
+## Sharding-JDBC
 
 ### Add maven dependency
 
@@ -103,14 +103,14 @@ Use ShardingDataSourceFactory to create ShardingDataSource, which is a standard 
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
 ```
 
-## Sharding-JDBC-Server
+## Sharding-Proxy
 
 ### Configure sharding rule
 
-Edit `${sharding-jdbc-server}\conf\sharding-config.yaml`. Same format with Sharding-JDBC-Driver's `YAML` configuration. 
+Edit `${sharding-proxy}\conf\sharding-config.yaml`. Same format with Sharding-JDBC-Driver's `YAML` configuration. 
 
 ### Start server
 
 ``` shell
-${sharding-jdbc-server}\bin\start.sh ${port}
+${sharding-proxy}\bin\start.sh ${port}
 ```

@@ -1,7 +1,7 @@
 ## 2.1.0
 
 ### 里程碑
-1. Sharding-JDBC-Server发布. 支持以数据库的形式使用Sharding-JDBC, 全面提供对MySQL命令行以及图形化客户端的支持
+1. Sharding-Proxy发布. 支持以数据库的形式使用Sharding-JDBC, 全面提供对MySQL命令行以及图形化客户端的支持
 
 ### 功能提升
 1. [ISSUE #608](https://github.com/shardingjdbc/sharding-jdbc/issues/608) 支持MySQL的USE语句

@@ -12,7 +12,7 @@
         <module>sharding-jdbc-transaction-parent</module>
         <module>sharding-jdbc-orchestration</module>
         <module>sharding-jdbc-orchestration-spring</module>
-        <module>sharding-jdbc-server</module>
+        <module>sharding-proxy</module>
     </modules>
     
     <properties>

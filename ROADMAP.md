@@ -1,6 +1,6 @@
 # Roadmap
 
-## Sharding-JDBC-Driver
+## Sharding-JDBC
 
 ### JDBC
 - [x] Data Source
@@ -23,7 +23,7 @@
 - [x] Spring Namespace
 - [x] Spring Boot Starter
 
-## Sharding-JDBC-Server
+## Sharding-Proxy
 
 ### Database
 - [x] MySQL
@@ -46,7 +46,7 @@
 ### Configuration
 - [x] YAML
 
-## Sharding-JDBC-Sidecar
+## Sharding-Sidecar
 - [ ] TODO
 
 ## Kernel
