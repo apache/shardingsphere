@@ -1,3 +1,20 @@
+/*
+ * Copyright 1999-2015 dangdang.com.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * </p>
+ */
+
 package io.shardingjdbc.dbtest.common;
 
 import static org.junit.Assert.assertTrue;
@@ -28,11 +45,16 @@ import io.shardingjdbc.dbtest.config.bean.ParametersDefinition;
 import io.shardingjdbc.dbtest.data.DatasetDatabase;
 import io.shardingjdbc.dbtest.data.DatasetDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
+import org.junit.Assert;
 
 public class DatabaseUtils {
 
     /**
-     * Map<column,data>
+     * Generating sql.
+     *
+     * @param table  table
+     * @param config Map column,data
+     * @return sql
      */
     public static String analyzeSql(final String table, final Map<String, String> config) {
 
@@ -56,8 +78,19 @@ public class DatabaseUtils {
         return sbsql.toString();
     }
 
+    /**
+     * Insert initialization data.
+     *
+     * @param conn   Jdbc connection
+     * @param sql    sql
+     * @param datas  init data
+     * @param config Table field type
+     * @return Success or failure
+     * @throws SQLException   SQL executes exceptions
+     * @throws ParseException Precompiled anomaly
+     */
     public static boolean insertUsePreparedStatement(final Connection conn, final String sql,
-            final List<Map<String, String>> datas, final Map<String, String> config)
+                                                     final List<Map<String, String>> datas, final Map<String, String> config)
             throws SQLException, ParseException {
         try (PreparedStatement pstmt = conn.prepareStatement(sql);) {
             for (Map<String, String> data : datas) {
@@ -73,37 +106,37 @@ public class DatabaseUtils {
                         type = "String";
                     }
                     switch (type) {
-                    case "byte":
-                        pstmt.setByte(index, Byte.valueOf(datacol));
-                        break;
-                    case "short":
-                        pstmt.setShort(index, Short.valueOf(datacol));
-                        break;
-                    case "int":
-                        pstmt.setInt(index, Integer.valueOf(datacol));
-                        break;
-                    case "long":
-                        pstmt.setLong(index, Long.valueOf(datacol));
-                        break;
-                    case "float":
-                        pstmt.setFloat(index, Float.valueOf(datacol));
-                        break;
-                    case "double":
-                        pstmt.setDouble(index, Double.valueOf(datacol));
-                        break;
-                    case "boolean":
-                        pstmt.setBoolean(index, Boolean.valueOf(datacol));
-                        break;
-                    case "Date":
-                        FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd");
-                        pstmt.setDate(index, new Date(fdf.parse(datacol).getTime()));
-                        break;
-                    case "String":
-                        pstmt.setString(index, datacol);
-                        break;
-                    default:
-                        pstmt.setString(index, datacol);
-                        break;
+                        case "byte":
+                            pstmt.setByte(index, Byte.valueOf(datacol));
+                            break;
+                        case "short":
+                            pstmt.setShort(index, Short.valueOf(datacol));
+                            break;
+                        case "int":
+                            pstmt.setInt(index, Integer.valueOf(datacol));
+                            break;
+                        case "long":
+                            pstmt.setLong(index, Long.valueOf(datacol));
+                            break;
+                        case "float":
+                            pstmt.setFloat(index, Float.valueOf(datacol));
+                            break;
+                        case "double":
+                            pstmt.setDouble(index, Double.valueOf(datacol));
+                            break;
+                        case "boolean":
+                            pstmt.setBoolean(index, Boolean.valueOf(datacol));
+                            break;
+                        case "Date":
+                            FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd");
+                            pstmt.setDate(index, new Date(fdf.parse(datacol).getTime()));
+                            break;
+                        case "String":
+                            pstmt.setString(index, datacol);
+                            break;
+                        default:
+                            pstmt.setString(index, datacol);
+                            break;
                     }
                     index++;
                 }
@@ -113,24 +146,52 @@ public class DatabaseUtils {
         return true;
     }
 
+    /**
+     * clear table.
+     *
+     * @param conn  Jdbc connection
+     * @param table table
+     * @throws SQLException SQL executes exceptions
+     */
     public static void cleanAllUsePreparedStatement(final Connection conn, final String table) throws SQLException {
         try (Statement pstmt = conn.createStatement();) {
             pstmt.execute("DELETE from " + table);
         }
     }
 
+    /**
+     * To determine if it is a query statement.
+     *
+     * @param sql sql
+     * @return true select
+     */
     public static boolean isSelect(final String sql) {
         String newSql = sql.trim();
         return newSql.startsWith("select");
     }
 
+    /**
+     * To determine whether the statement is an update.
+     *
+     * @param sql sql
+     * @return true update
+     */
     public static boolean isInsertOrUpdateOrDelete(final String sql) {
         String newSql = sql.trim();
         return newSql.startsWith("insert") || newSql.startsWith("update") || newSql.startsWith("delete");
     }
 
+    /**
+     * Use Statement Test data update.
+     *
+     * @param conn       Jdbc connection
+     * @param sql        sql
+     * @param parameters parameters
+     * @return Number of rows as a result of execution
+     * @throws SQLException SQL executes exceptions
+     */
     public static int updateUseStatementToExecuteUpdate(final Connection conn, final String sql,
-            final ParametersDefinition parameters) throws SQLException, ParseException {
+                                                        final ParametersDefinition parameters) throws SQLException {
         List<ParameterDefinition> parameter = parameters.getParameter();
         int result = 0;
         try (Statement pstmt = conn.createStatement()) {
@@ -140,42 +201,58 @@ public class DatabaseUtils {
         return result;
     }
 
+    /**
+     * Processing statement sql.
+     *
+     * @param sql       sql
+     * @param parameter parameter
+     * @return sql
+     */
     private static String sqlStatement(final String sql, final List<ParameterDefinition> parameter) {
         String result = sql;
         for (ParameterDefinition parameterDefinition : parameter) {
             String type = parameterDefinition.getType();
             String datacol = parameterDefinition.getValue();
             switch (type) {
-            case "byte":
-            case "short":
-            case "int":
-            case "long":
-            case "float":
-            case "double":
-                result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
-                        .replaceFirst((Matcher.quoteReplacement(datacol.toString())));
-                break;
-            case "boolean":
-                result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
-                        .replaceFirst((Matcher.quoteReplacement(Boolean.valueOf(datacol).toString())));
-                break;
-            case "Date":
-                throw new DbTestException("Date type not supported for the time being");
-            case "String":
-                result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
-                        .replaceFirst((Matcher.quoteReplacement("'" + datacol + "'")));
-                break;
-            default:
-                result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
-                        .replaceFirst((Matcher.quoteReplacement("'" + datacol + "'")));
-                break;
+                case "byte":
+                case "short":
+                case "int":
+                case "long":
+                case "float":
+                case "double":
+                    result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
+                            .replaceFirst(Matcher.quoteReplacement(datacol.toString()));
+                    break;
+                case "boolean":
+                    result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
+                            .replaceFirst(Matcher.quoteReplacement(Boolean.valueOf(datacol).toString()));
+                    break;
+                case "Date":
+                    throw new DbTestException("Date type not supported for the time being");
+                case "String":
+                    result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
+                            .replaceFirst(Matcher.quoteReplacement("'" + datacol + "'"));
+                    break;
+                default:
+                    result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
+                            .replaceFirst(Matcher.quoteReplacement("'" + datacol + "'"));
+                    break;
             }
         }
         return result;
     }
 
+    /**
+     * Use Statement Test data update.
+     *
+     * @param conn       Jdbc connection
+     * @param sql        sql
+     * @param parameters parameters
+     * @return Implementation results
+     * @throws SQLException SQL executes exceptions
+     */
     public static boolean updateUseStatementToExecute(final Connection conn, final String sql,
-            final ParametersDefinition parameters) throws SQLException, ParseException {
+                                                      final ParametersDefinition parameters) throws SQLException {
         List<ParameterDefinition> parameter = parameters.getParameter();
         try (Statement pstmt = conn.createStatement()) {
             String newSql = sqlStatement(sql, parameter);
@@ -183,8 +260,18 @@ public class DatabaseUtils {
         }
     }
 
+    /**
+     * Use PreparedStatement Test data update.
+     *
+     * @param conn       Jdbc connection
+     * @param sql        sql
+     * @param parameters parameters
+     * @return Number of rows as a result of execution
+     * @throws SQLException   SQL executes exceptions
+     * @throws ParseException ParseException
+     */
     public static int updateUsePreparedStatementToExecuteUpdate(final Connection conn, final String sql,
-            final ParametersDefinition parameters) throws SQLException, ParseException {
+                                                                final ParametersDefinition parameters) throws SQLException, ParseException {
         List<ParameterDefinition> parameter = parameters.getParameter();
         int result = 0;
         String newSql = sql.replaceAll("\\%s", "?");
@@ -195,8 +282,18 @@ public class DatabaseUtils {
         return result;
     }
 
+    /**
+     * Use PreparedStatement Test data update.
+     *
+     * @param conn       Jdbc connection
+     * @param sql        sql
+     * @param parameters parameters
+     * @return Implementation results
+     * @throws SQLException   SQL executes exceptions
+     * @throws ParseException ParseException
+     */
     public static boolean updateUsePreparedStatementToExecute(final Connection conn, final String sql,
-            final ParametersDefinition parameters) throws SQLException, ParseException {
+                                                              final ParametersDefinition parameters) throws SQLException, ParseException {
         List<ParameterDefinition> parameter = parameters.getParameter();
         String newSql = sql.replaceAll("\\%s", "?");
         try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
@@ -205,150 +302,193 @@ public class DatabaseUtils {
         }
     }
 
+    /**
+     * Use PreparedStatement Test sql select.
+     *
+     * @param conn       Jdbc connection
+     * @param sql        sql
+     * @param parameters parameters
+     * @return Query result set
+     * @throws SQLException   SQL executes exceptions
+     * @throws ParseException ParseException
+     */
     public static DatasetDatabase selectUsePreparedStatement(final Connection conn, final String sql,
-            ParametersDefinition parameters) throws SQLException, ParseException {
+                                                             final ParametersDefinition parameters) throws SQLException, ParseException {
         List<ParameterDefinition> parameter = parameters.getParameter();
         String newSql = sql.replaceAll("\\%s", "?");
         try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
             sqlPreparedStatement(parameter, pstmt);
             try (ResultSet resultSet = pstmt.executeQuery()) {
-
-                ResultSetMetaData rsmd = resultSet.getMetaData();
-                int colsint = rsmd.getColumnCount();
-                Map<String, String> cols = new LinkedHashMap<>();
-                for (int i = 1; i < colsint + 1; i++) {
-                    String name = rsmd.getColumnName(i);
-                    String type = getDataType(rsmd.getColumnType(i), rsmd.getScale(i));
-                    cols.put(name, type);
-                }
-
-                Map<String, Map<String, String>> configs = new HashMap<>();
-                configs.put("data", cols);
-
-                List<Map<String, String>> ls = new ArrayList<>();
-                Map<String, List<Map<String, String>>> datas = new HashMap<>();
-                datas.put("data", ls);
-
-                while (resultSet.next()) {
-                    Map<String, String> data = new HashMap<>();
-                    for (Map.Entry<String, String> stringStringEntry : cols.entrySet()) {
-                        String name = stringStringEntry.getKey();
-                        String type = stringStringEntry.getValue();
-                        switch (type) {
-                        case "int":
-                            data.put(name, String.valueOf(resultSet.getInt(name)));
-                            break;
-                        case "long":
-                            data.put(name, String.valueOf(resultSet.getLong(name)));
-                            break;
-                        case "float":
-                            data.put(name, String.valueOf(resultSet.getFloat(name)));
-                            break;
-                        case "double":
-                            data.put(name, String.valueOf(resultSet.getDouble(name)));
-                            break;
-                        case "boolean":
-                            data.put(name, String.valueOf(resultSet.getBoolean(name)));
-                            break;
-                        case "char":
-                            data.put(name, String.valueOf(resultSet.getString(name)));
-                            break;
-                        case "String":
-                            data.put(name, String.valueOf(resultSet.getString(name)));
-                            break;
-                        case "Date":
-                            data.put(name, DateFormatUtils.format(new java.util.Date(resultSet.getDate(name).getTime()),
-                                    "yyyy-MM-dd"));
-                            break;
-                        case "Blob":
-                            data.put(name, String.valueOf(resultSet.getBlob(name)));
-                            break;
-                        default:
-                            data.put(name, resultSet.getString(name));
-                            break;
-                        }
-                    }
-                    ls.add(data);
-                }
-                DatasetDatabase result = new DatasetDatabase();
-                result.setConfigs(configs);
-                result.setDatas(datas);
-                return result;
+                return usePreparedStatementBackResultSet(resultSet);
             }
         }
     }
 
+    /**
+     * Use PreparedStatement Test sql select.
+     *
+     * @param conn       Jdbc connection
+     * @param sql        sql
+     * @param parameters parameters
+     * @return Query result set
+     * @throws SQLException   SQL executes exceptions
+     * @throws ParseException ParseException
+     */
+    public static DatasetDatabase selectUsePreparedStatementToExecuteSelect(final Connection conn, final String sql,
+                                                                            final ParametersDefinition parameters) throws SQLException, ParseException {
+        List<ParameterDefinition> parameter = parameters.getParameter();
+        String newSql = sql.replaceAll("\\%s", "?");
+        try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
+            sqlPreparedStatement(parameter, pstmt);
+            boolean flag = pstmt.execute();
+            Assert.assertTrue("Not a query statement.", flag);
+            try (ResultSet resultSet = pstmt.getResultSet()) {
+                return usePreparedStatementBackResultSet(resultSet);
+            }
+        }
+    }
+
+    private static DatasetDatabase usePreparedStatementBackResultSet(final ResultSet resultSet) throws SQLException {
+        ResultSetMetaData rsmd = resultSet.getMetaData();
+        int colsint = rsmd.getColumnCount();
+        Map<String, String> cols = new LinkedHashMap<>();
+        for (int i = 1; i < colsint + 1; i++) {
+            String name = rsmd.getColumnName(i);
+            String type = getDataType(rsmd.getColumnType(i), rsmd.getScale(i));
+            cols.put(name, type);
+        }
+
+        Map<String, Map<String, String>> configs = new HashMap<>();
+        configs.put("data", cols);
+
+        List<Map<String, String>> ls = new ArrayList<>();
+        Map<String, List<Map<String, String>>> datas = new HashMap<>();
+        datas.put("data", ls);
+
+        handleResultSet(resultSet, cols, ls);
+        DatasetDatabase result = new DatasetDatabase();
+        result.setConfigs(configs);
+        result.setDatas(datas);
+        return result;
+    }
+
+    private static void handleResultSet(final ResultSet resultSet, final Map<String, String> cols, final List<Map<String, String>> ls) throws SQLException {
+        while (resultSet.next()) {
+            Map<String, String> data = new HashMap<>();
+            for (Map.Entry<String, String> stringStringEntry : cols.entrySet()) {
+                String name = stringStringEntry.getKey();
+                String type = stringStringEntry.getValue();
+                switch (type) {
+                    case "int":
+                        data.put(name, String.valueOf(resultSet.getInt(name)));
+                        break;
+                    case "long":
+                        data.put(name, String.valueOf(resultSet.getLong(name)));
+                        break;
+                    case "float":
+                        data.put(name, String.valueOf(resultSet.getFloat(name)));
+                        break;
+                    case "double":
+                        data.put(name, String.valueOf(resultSet.getDouble(name)));
+                        break;
+                    case "boolean":
+                        data.put(name, String.valueOf(resultSet.getBoolean(name)));
+                        break;
+                    case "char":
+                        data.put(name, String.valueOf(resultSet.getString(name)));
+                        break;
+                    case "String":
+                        data.put(name, String.valueOf(resultSet.getString(name)));
+                        break;
+                    case "Date":
+                        data.put(name, DateFormatUtils.format(new java.util.Date(resultSet.getDate(name).getTime()),
+                                "yyyy-MM-dd"));
+                        break;
+                    case "Blob":
+                        data.put(name, String.valueOf(resultSet.getBlob(name)));
+                        break;
+                    default:
+                        data.put(name, resultSet.getString(name));
+                        break;
+                }
+            }
+            ls.add(data);
+        }
+    }
+
+    /**
+     * Use Statement Test sql select.
+     *
+     * @param conn       Jdbc connection
+     * @param sql        sql
+     * @param parameters parameters
+     * @return Query result set
+     * @throws SQLException SQL executes exceptions
+     */
     public static DatasetDatabase selectUseStatement(final Connection conn, final String sql,
-            final ParametersDefinition parameters) throws SQLException, ParseException {
+                                                     final ParametersDefinition parameters) throws SQLException {
         List<ParameterDefinition> parameter = parameters.getParameter();
         try (Statement pstmt = conn.createStatement()) {
             String newSql = sqlStatement(sql, parameter);
             try (ResultSet resultSet = pstmt.executeQuery(newSql)) {
-                ResultSetMetaData rsmd = resultSet.getMetaData();
-                int colsint = rsmd.getColumnCount();
-                Map<String, String> cols = new LinkedHashMap<>();
-                for (int i = 1; i < colsint + 1; i++) {
-                    String name = rsmd.getColumnName(i);
-                    String type = getDataType(rsmd.getColumnType(i), rsmd.getScale(i));
-                    cols.put(name, type);
-                }
-
-                Map<String, Map<String, String>> configs = new HashMap<>();
-                configs.put("data", cols);
-
-                List<Map<String, String>> ls = new ArrayList<>();
-                Map<String, List<Map<String, String>>> datas = new HashMap<>();
-                datas.put("data", ls);
-
-                while (resultSet.next()) {
-                    Map<String, String> data = new HashMap<>();
-                    for (Map.Entry<String, String> stringStringEntry : cols.entrySet()) {
-                        String name = stringStringEntry.getKey();
-                        String type = stringStringEntry.getValue();
-                        switch (type) {
-                        case "int":
-                            data.put(name, String.valueOf(resultSet.getInt(name)));
-                            break;
-                        case "long":
-                            data.put(name, String.valueOf(resultSet.getLong(name)));
-                            break;
-                        case "float":
-                            data.put(name, String.valueOf(resultSet.getFloat(name)));
-                            break;
-                        case "double":
-                            data.put(name, String.valueOf(resultSet.getDouble(name)));
-                            break;
-                        case "boolean":
-                            data.put(name, String.valueOf(resultSet.getBoolean(name)));
-                            break;
-                        case "char":
-                            data.put(name, String.valueOf(resultSet.getString(name)));
-                            break;
-                        case "String":
-                            data.put(name, String.valueOf(resultSet.getString(name)));
-                            break;
-                        case "Date":
-                            data.put(name, DateFormatUtils.format(new java.util.Date(resultSet.getDate(name).getTime()),
-                                    "yyyy-MM-dd"));
-                            break;
-                        case "Blob":
-                            data.put(name, String.valueOf(resultSet.getBlob(name)));
-                            break;
-                        default:
-                            data.put(name, resultSet.getString(name));
-                            break;
-                        }
-                    }
-                    ls.add(data);
-                }
-                DatasetDatabase result = new DatasetDatabase();
-                result.setConfigs(configs);
-                result.setDatas(datas);
-                return result;
+                return useStatementBackResultSet(resultSet);
             }
         }
     }
 
+    /**
+     * Use Statement Test sql select.
+     *
+     * @param conn       Jdbc connection
+     * @param sql        sql
+     * @param parameters parameters
+     * @return Query result set
+     * @throws SQLException SQL executes exceptions
+     */
+    public static DatasetDatabase selectUseStatementToExecuteSelect(final Connection conn, final String sql,
+                                                                    final ParametersDefinition parameters) throws SQLException {
+        List<ParameterDefinition> parameter = parameters.getParameter();
+        try (Statement pstmt = conn.createStatement()) {
+            String newSql = sqlStatement(sql, parameter);
+            try (ResultSet resultSet = pstmt.executeQuery(newSql)) {
+                return useStatementBackResultSet(resultSet);
+            }
+        }
+    }
+
+    private static DatasetDatabase useStatementBackResultSet(final ResultSet resultSet) throws SQLException {
+        ResultSetMetaData rsmd = resultSet.getMetaData();
+        int colsint = rsmd.getColumnCount();
+        Map<String, String> cols = new LinkedHashMap<>();
+        for (int i = 1; i < colsint + 1; i++) {
+            String name = rsmd.getColumnName(i);
+            String type = getDataType(rsmd.getColumnType(i), rsmd.getScale(i));
+            cols.put(name, type);
+        }
+
+        Map<String, Map<String, String>> configs = new HashMap<>();
+        configs.put("data", cols);
+
+        List<Map<String, String>> ls = new ArrayList<>();
+        Map<String, List<Map<String, String>>> datas = new HashMap<>();
+        datas.put("data", ls);
+
+        handleResultSet(resultSet, cols, ls);
+        DatasetDatabase result = new DatasetDatabase();
+        result.setConfigs(configs);
+        result.setDatas(datas);
+        return result;
+    }
+
+
+    /**
+     * Sql parameter injection.
+     *
+     * @param parameter parameter
+     * @param pstmt     PreparedStatement
+     * @throws SQLException   SQL executes exceptions
+     * @throws ParseException ParseException
+     */
     private static void sqlPreparedStatement(final List<ParameterDefinition> parameter, final PreparedStatement pstmt)
             throws SQLException, ParseException {
         int index = 1;
@@ -356,97 +496,109 @@ public class DatabaseUtils {
             String type = parameterDefinition.getType();
             String datacol = parameterDefinition.getValue();
             switch (type) {
-            case "byte":
-                pstmt.setByte(index, Byte.valueOf(datacol));
-                break;
-            case "short":
-                pstmt.setShort(index, Short.valueOf(datacol));
-                break;
-            case "int":
-                pstmt.setInt(index, Integer.valueOf(datacol));
-                break;
-            case "long":
-                pstmt.setLong(index, Long.valueOf(datacol));
-                break;
-            case "float":
-                pstmt.setFloat(index, Float.valueOf(datacol));
-                break;
-            case "double":
-                pstmt.setDouble(index, Double.valueOf(datacol));
-                break;
-            case "boolean":
-                pstmt.setBoolean(index, Boolean.valueOf(datacol));
-                break;
-            case "Date":
-                FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd");
-                pstmt.setDate(index, new Date(fdf.parse(datacol).getTime()));
-                break;
-            case "String":
-                pstmt.setString(index, datacol);
-                break;
-            default:
-                pstmt.setString(index, datacol);
-                break;
+                case "byte":
+                    pstmt.setByte(index, Byte.valueOf(datacol));
+                    break;
+                case "short":
+                    pstmt.setShort(index, Short.valueOf(datacol));
+                    break;
+                case "int":
+                    pstmt.setInt(index, Integer.valueOf(datacol));
+                    break;
+                case "long":
+                    pstmt.setLong(index, Long.valueOf(datacol));
+                    break;
+                case "float":
+                    pstmt.setFloat(index, Float.valueOf(datacol));
+                    break;
+                case "double":
+                    pstmt.setDouble(index, Double.valueOf(datacol));
+                    break;
+                case "boolean":
+                    pstmt.setBoolean(index, Boolean.valueOf(datacol));
+                    break;
+                case "Date":
+                    FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd");
+                    pstmt.setDate(index, new Date(fdf.parse(datacol).getTime()));
+                    break;
+                case "String":
+                    pstmt.setString(index, datacol);
+                    break;
+                default:
+                    pstmt.setString(index, datacol);
+                    break;
             }
             index++;
         }
     }
 
+    /**
+     * Database type to java type.
+     *
+     * @param type  database type
+     * @param scale scale
+     * @return java type
+     */
     private static String getDataType(final int type, final int scale) {
-        String result = "";
-
+        String result = null;
         switch (type) {
-        case Types.INTEGER:
-            result = "int";
-            break;
-        case Types.LONGVARCHAR:
-            result = "long";
-            break;
-        case Types.BIGINT:
-            result = "long";
-            break;
-        case Types.FLOAT:
-            result = "float";
-            break;
-        case Types.DOUBLE:
-            result = "double";
-            break;
-        case Types.BOOLEAN:
-            result = "boolean";
-            break;
-        case Types.CHAR:
-            result = "char";
-            break;
-        case Types.NUMERIC:
-            switch (scale) {
-            case 0:
-                result = "double";
+            case Types.INTEGER:
+                result = "int";
                 break;
-            case -127:
+            case Types.LONGVARCHAR:
+                result = "long";
+                break;
+            case Types.BIGINT:
+                result = "long";
+                break;
+            case Types.FLOAT:
                 result = "float";
                 break;
-            default:
+            case Types.DOUBLE:
                 result = "double";
-            }
-            break;
-        case Types.VARCHAR:
-            result = "String";
-            break;
-        case Types.DATE:
-            result = "Date";
-            break;
-        case Types.TIMESTAMP:
-            result = "Date";
-            break;
-        case Types.BLOB:
-            result = "Blob";
-            break;
-        default:
-            result = "String";
+                break;
+            case Types.BOOLEAN:
+                result = "boolean";
+                break;
+            case Types.CHAR:
+                result = "char";
+                break;
+            case Types.NUMERIC:
+                switch (scale) {
+                    case 0:
+                        result = "double";
+                        break;
+                    case -127:
+                        result = "float";
+                        break;
+                    default:
+                        result = "double";
+                }
+                break;
+            case Types.VARCHAR:
+                result = "String";
+                break;
+            case Types.DATE:
+                result = "Date";
+                break;
+            case Types.TIMESTAMP:
+                result = "Date";
+                break;
+            case Types.BLOB:
+                result = "Blob";
+                break;
+            default:
+                result = "String";
         }
         return result;
     }
 
+    /**
+     * Comparative data set.
+     *
+     * @param expected expected
+     * @param actual   actual
+     */
     public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual) {
         Map<String, Map<String, String>> actualConfigs = actual.getConfigs();
         Map<String, Map<String, String>> expectedConfigs = expected.getConfigs();
