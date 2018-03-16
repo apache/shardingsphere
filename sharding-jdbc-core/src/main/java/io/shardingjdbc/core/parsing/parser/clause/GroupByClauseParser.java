@@ -81,7 +81,7 @@ public class GroupByClauseParser implements SQLClauseParser {
         if (sqlExpression instanceof SQLPropertyExpression) {
             SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
             orderItem = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, OrderType.ASC,
-                    selectStatement.getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner() + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName()))));
+                    selectStatement.getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName() + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName()))));
         } else if (sqlExpression instanceof SQLIdentifierExpression) {
             SQLIdentifierExpression sqlIdentifierExpression = (SQLIdentifierExpression) sqlExpression;
             orderItem = new OrderItem(
