@@ -19,13 +19,13 @@ chapter = true
  
 ## Maintainer responsibility
 
-Committers are more than contributors. While it's important for committers to maintain standing by committing code, their key role is to build and foster a healthy and active community. This means that committers should:
+Maintainers are committers that have spent a significant amount of time and effort in the maintenance of a component in the project. This means that maintainer should:
    
  - Review PRs in a timely and reliable fashion
  - They should also help to actively whittle down the PR backlog
  - Answering questions
  - Taking on core changes/bugs/feature requests
- - Some changes are important enough that a committer needs to ensure it gets done.
+ - Some changes are important enough that a maintainer needs to ensure it gets done.
  - Improving processes and tooling
  - Refactoring
  
