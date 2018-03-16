@@ -126,7 +126,6 @@ public class AssertEngine {
                 try {
 
                     doSelectUsePreparedStatement(rootPath, dataSource, anAssert, rootsql);
-
                     doSelectUsePreparedStatementToExecuteSelect(rootPath, dataSource, anAssert, rootsql);
 
                     doSelectUseStatement(rootPath, dataSource, anAssert, rootsql);
