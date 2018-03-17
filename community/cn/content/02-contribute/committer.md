@@ -31,74 +31,46 @@ chapter = true
  
 ## 当前组件维护者列表
 
- - All Components in Sharding:
+ - *All Components in Sharding*
  
-     * 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu) 
+     - 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu); 曹昊, Hao Cao, [@haocao](https://github.com/haocao); 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng); 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily)
      
-     * 曹昊, Hao Cao, [@haocao](https://github.com/haocao)
-     
-     * 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng)
-     
-     * 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily)
-     
- - sharding-jdbc-core-spring
+ - *sharding-jdbc-core-spring*
  
-     * 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
+     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013); 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
      
-     * 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
+ - *sharding-jdbc-core*
+ 
+     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013); 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
      
- - sharding-jdbc-core
+ - *sharding-jdbc-orchestration-spring*
  
-     * 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
-     
-     * 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
-     
- - sharding-jdbc-orchestration-spring
+     - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster); 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
  
-     * 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster)
- 
-     * 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
- 
- - sharding-jdbc-orchestration
+ - *sharding-jdbc-orchestration*
   
-     * 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster)
+     - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster); 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
  
-     * 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
+ - *sharding-jdbc-plugin*
  
- - sharding-jdbc-plugin
+     - 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe); 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster); 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
  
-     * 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) 
-     
-     * 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster)
-     
-     * 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
- 
- - sharding-proxy
+ - *sharding-proxy*
   
-     * 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
+     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013); 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV); 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
+ 
+ - *sharding-jdbc-transaction-parent*
+ 
+     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013); 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
      
-     * 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
-     
-     * 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
+ - *sharding-jdbc-doc*
  
- - sharding-jdbc-transaction-parent
+     - 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666)
  
-     * 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
-     
-     * 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
-     
- - sharding-jdbc-doc
+ - *sharding-jdbc-example*
  
-     * 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666)
+     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013); 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
  
- - sharding-jdbc-example
+ - *sharding-jdbc-opentracing*
  
-     * 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
-     
-     * 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
- 
- - sharding-jdbc-opentracing
- 
-     * 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster)
- 
-     * 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
+     - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster); 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
