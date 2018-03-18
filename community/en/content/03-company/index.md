@@ -1,5 +1,5 @@
 +++
-title = "Sharding Adopters"
+title = "End users"
 weight = 0
 prev = "/02-contribute/convention/"
 next = "/01-organization/"
@@ -8,7 +8,7 @@ chapter = true
 
 It's our pleasure if you leave the information of your organization when using Sharding.
 
-Register by `company` + `homepage` + `company type` [here](https://github.com/shardingjdbc/sharding-jdbc/issues/234).
+Welcome to register by `company` + `homepage` + `company type` [here](https://github.com/shardingjdbc/sharding-jdbc/issues/234).
 
 Organizations using Sharding in chronological order.
 
@@ -42,6 +42,8 @@ Organizations using Sharding in chronological order.
 * [niiwoo](https://www.niiwoo.com/)
 * [haier cash](https://www.haiercash.com/)
 * [51credit](http://www.51credit.com/)
+* [sui](https://www.sui.com/)
+* [mljr](https://www.mljr.com/)
 
 ## SNS
 
