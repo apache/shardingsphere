@@ -78,7 +78,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
-    public final boolean isClosed() throws SQLException {
+    public final boolean isClosed() {
         return closed;
     }
     

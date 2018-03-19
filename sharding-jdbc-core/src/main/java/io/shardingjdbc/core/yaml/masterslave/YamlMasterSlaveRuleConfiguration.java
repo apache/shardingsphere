@@ -22,7 +22,6 @@ import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -53,9 +52,8 @@ public class YamlMasterSlaveRuleConfiguration {
      * Get master-slave rule configuration from yaml.
      *
      * @return master-slave rule configuration from yaml
-     * @throws SQLException SQL exception
      */
-    public MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() throws SQLException {
+    public MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
         MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
         result.setName(name);
         result.setMasterDataSourceName(masterDataSourceName);

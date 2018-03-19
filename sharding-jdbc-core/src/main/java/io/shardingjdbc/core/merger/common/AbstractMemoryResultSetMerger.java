@@ -68,7 +68,7 @@ public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
     }
     
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         // TODO 时间相关取值未实现calendar模式
         Object result = currentResultSetRow.getCell(columnIndex);
         wasNull = null == result;
@@ -76,7 +76,7 @@ public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
     }
     
     @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
         // TODO 时间相关取值未实现calendar模式
         Object result = currentResultSetRow.getCell(labelAndIndexMap.get(columnLabel));
         wasNull = null == result;
@@ -94,7 +94,7 @@ public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
     }
     
     @Override
-    public boolean wasNull() throws SQLException {
+    public boolean wasNull() {
         return wasNull;
     }
 }

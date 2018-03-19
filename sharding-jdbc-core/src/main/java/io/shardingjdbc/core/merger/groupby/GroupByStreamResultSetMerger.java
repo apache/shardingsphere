@@ -128,23 +128,23 @@ public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMe
     }
     
     @Override
-    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
+    public Object getValue(final int columnIndex, final Class<?> type) {
         return currentRow.get(columnIndex - 1);
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
+    public Object getValue(final String columnLabel, final Class<?> type) {
         Preconditions.checkState(labelAndIndexMap.containsKey(columnLabel), String.format("Can't find columnLabel: %s", columnLabel));
         return currentRow.get(labelAndIndexMap.get(columnLabel) - 1);
     }
     
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         return currentRow.get(columnIndex - 1);
     }
     
     @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
         Preconditions.checkState(labelAndIndexMap.containsKey(columnLabel), String.format("Can't find columnLabel: %s", columnLabel));
         return currentRow.get(labelAndIndexMap.get(columnLabel) - 1);
     }

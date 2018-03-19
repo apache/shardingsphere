@@ -137,7 +137,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     @Override
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() {
         return new MasterSlaveConnection(this);
     }
 }

@@ -193,7 +193,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     @Override
-    public void clearBatch() throws SQLException {
+    public void clearBatch() {
         currentResultSet = null;
         clearParameters();
         batchStatementUnits.clear();

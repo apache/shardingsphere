@@ -19,12 +19,10 @@ package io.shardingjdbc.core.merger.common.fixture;
 
 import io.shardingjdbc.core.merger.common.AbstractStreamResultSetMerger;
 
-import java.sql.SQLException;
-
 public final class TestStreamResultSetMerger extends AbstractStreamResultSetMerger {
     
     @Override
-    public boolean next() throws SQLException {
+    public boolean next() {
         return false;
     }
 }

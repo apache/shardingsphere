@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 public final class InsertStatementParserTest extends AbstractStatementParserTest {
     
     @Test
-    public void assertParseWithoutParameter() throws SQLException {
+    public void assertParseWithoutParameter() {
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)", shardingRule);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse();
@@ -57,7 +57,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void assertParseWithParameter() throws SQLException {
+    public void assertParseWithParameter() {
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)", shardingRule);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse();
@@ -65,7 +65,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void assertParseWithGenerateKeyColumnsWithoutParameter() throws SQLException {
+    public void assertParseWithGenerateKeyColumnsWithoutParameter() {
         ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)", shardingRule);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse();
@@ -81,7 +81,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void assertParseWithGenerateKeyColumnsWithParameter() throws SQLException {
+    public void assertParseWithGenerateKeyColumnsWithParameter() {
         ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)", shardingRule);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse();
@@ -95,7 +95,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.<Object>singletonList(0))).getValues().iterator().next(), is((Comparable) 0));
     }
     
-    private ShardingRule createShardingRuleWithGenerateKeyColumns() throws SQLException {
+    private ShardingRule createShardingRuleWithGenerateKeyColumns() {
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -118,7 +118,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void parseWithSpecialSyntax() throws SQLException {
+    public void parseWithSpecialSyntax() {
 //        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT LOW_PRIORITY IGNORE INTO `TABLE_XXX` PARTITION (partition1,partition2) (`field1`) VALUE (1)");
         parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT INTO TABLE_XXX SET field1=1");
         // TODO
@@ -127,7 +127,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @SuppressWarnings("unchecked")
-    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) throws SQLException {
+    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
         ShardingRule shardingRule = createShardingRule();
         InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule).parse();
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
@@ -139,19 +139,19 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     @Test
     // TODO assert
-    public void parseMultipleInsertForMySQL() throws SQLException {
+    public void parseMultipleInsertForMySQL() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (`field1`, `field2`) VALUES (1, 'value_char'), (2, 'value_char')", shardingRule).parse();
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
-    public void parseInsertAllForOracle() throws SQLException {
+    public void parseInsertAllForOracle() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.Oracle, "INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2", shardingRule).parse();
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
-    public void parseInsertFirstForOracle() throws SQLException {
+    public void parseInsertFirstForOracle() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.Oracle, "INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2", shardingRule).parse();
     }

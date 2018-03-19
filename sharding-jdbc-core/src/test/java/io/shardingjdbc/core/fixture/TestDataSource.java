@@ -31,8 +31,8 @@ import java.util.Collections;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-@EqualsAndHashCode(callSuper = false)
 @Setter
+@EqualsAndHashCode(callSuper = false)
 public final class TestDataSource extends AbstractDataSourceAdapter {
     
     private final String name;

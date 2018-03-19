@@ -103,9 +103,8 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      * @param yamlByteArray yaml byte array for master-slave rule configuration with data sources
      * @return master-slave data source
      * @throws SQLException SQL exception
-     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
+    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlByteArray);
         return createDataSource(config.getDataSources(), config.getMasterSlaveRule().getMasterSlaveRuleConfiguration(), 
                 config.getMasterSlaveRule().getConfigMap(), config.getOrchestration().getOrchestrationConfiguration());
@@ -120,9 +119,8 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      * @param yamlByteArray yaml byte array for master-slave rule configuration without data sources
      * @return master-slave data source
      * @throws SQLException SQL exception
-     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException, IOException {
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlByteArray);
         return createDataSource(dataSourceMap, config.getMasterSlaveRule().getMasterSlaveRuleConfiguration(), 
                 config.getMasterSlaveRule().getConfigMap(), config.getOrchestration().getOrchestrationConfiguration());
@@ -137,7 +135,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         }
     }
     
-    private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final byte[] yamlByteArray) throws IOException {
+    private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final byte[] yamlByteArray) {
         return new Yaml(new Constructor(YamlOrchestrationMasterSlaveRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlOrchestrationMasterSlaveRuleConfiguration.class);
     }
 }

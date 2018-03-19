@@ -29,7 +29,6 @@ import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.listener.EventListener;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -61,12 +60,8 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    try {
-                        Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources();
-                        shardingDataSource.renew(dataSourceMap, dataSourceService.getAvailableShardingRuleConfiguration().build(dataSourceMap.keySet()), configService.loadShardingProperties());
-                    } catch (final SQLException ex) {
-                        throw new ShardingJdbcException(ex);
-                    }
+                    Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources();
+                    shardingDataSource.renew(dataSourceMap, dataSourceService.getAvailableShardingRuleConfiguration().build(dataSourceMap.keySet()), configService.loadShardingProperties());
                 }
             }
         });

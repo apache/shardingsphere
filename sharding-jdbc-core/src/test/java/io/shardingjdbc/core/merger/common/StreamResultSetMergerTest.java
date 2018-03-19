@@ -157,35 +157,35 @@ public final class StreamResultSetMergerTest {
     }
     
     @Test
-    public void assertGetValueWithColumnIndexWithBlob() throws SQLException, MalformedURLException {
+    public void assertGetValueWithColumnIndexWithBlob() throws SQLException {
         Blob blob = mock(Blob.class);
         when(resultSet.getBlob(1)).thenReturn(blob);
         assertThat((Blob) streamResultSetMerger.getValue(1, Blob.class), is(blob));
     }
     
     @Test
-    public void assertGetValueWithColumnIndexWithClob() throws SQLException, MalformedURLException {
+    public void assertGetValueWithColumnIndexWithClob() throws SQLException {
         Clob clob = mock(Clob.class);
         when(resultSet.getClob(1)).thenReturn(clob);
         assertThat((Clob) streamResultSetMerger.getValue(1, Clob.class), is(clob));
     }
     
     @Test
-    public void assertGetValueWithColumnIndexWithSQLXML() throws SQLException, MalformedURLException {
+    public void assertGetValueWithColumnIndexWithSQLXML() throws SQLException {
         SQLXML sqlxml = mock(SQLXML.class);
         when(resultSet.getSQLXML(1)).thenReturn(sqlxml);
         assertThat((SQLXML) streamResultSetMerger.getValue(1, SQLXML.class), is(sqlxml));
     }
     
     @Test
-    public void assertGetValueWithColumnIndexWithReader() throws SQLException, MalformedURLException {
+    public void assertGetValueWithColumnIndexWithReader() throws SQLException {
         Reader reader = mock(Reader.class);
         when(resultSet.getCharacterStream(1)).thenReturn(reader);
         assertThat((Reader) streamResultSetMerger.getValue(1, Reader.class), is(reader));
     }
     
     @Test
-    public void assertGetValueWithColumnIndexWithOtherObject() throws SQLException, MalformedURLException {
+    public void assertGetValueWithColumnIndexWithOtherObject() throws SQLException {
         when(resultSet.getObject(1)).thenReturn("1");
         assertThat((String) streamResultSetMerger.getValue(1, Collection.class), is("1"));
     }
@@ -281,35 +281,35 @@ public final class StreamResultSetMergerTest {
     }
     
     @Test
-    public void assertGetValueWithColumnLabelWithBlob() throws SQLException, MalformedURLException {
+    public void assertGetValueWithColumnLabelWithBlob() throws SQLException {
         Blob blob = mock(Blob.class);
         when(resultSet.getBlob("label")).thenReturn(blob);
         assertThat((Blob) streamResultSetMerger.getValue("label", Blob.class), is(blob));
     }
     
     @Test
-    public void assertGetValueWithColumnLabelWithClob() throws SQLException, MalformedURLException {
+    public void assertGetValueWithColumnLabelWithClob() throws SQLException {
         Clob clob = mock(Clob.class);
         when(resultSet.getClob("label")).thenReturn(clob);
         assertThat((Clob) streamResultSetMerger.getValue("label", Clob.class), is(clob));
     }
     
     @Test
-    public void assertGetValueWithColumnLabelWithSQLXML() throws SQLException, MalformedURLException {
+    public void assertGetValueWithColumnLabelWithSQLXML() throws SQLException {
         SQLXML sqlxml = mock(SQLXML.class);
         when(resultSet.getSQLXML("label")).thenReturn(sqlxml);
         assertThat((SQLXML) streamResultSetMerger.getValue("label", SQLXML.class), is(sqlxml));
     }
     
     @Test
-    public void assertGetValueWithColumnLabelWithReader() throws SQLException, MalformedURLException {
+    public void assertGetValueWithColumnLabelWithReader() throws SQLException {
         Reader reader = mock(Reader.class);
         when(resultSet.getCharacterStream("label")).thenReturn(reader);
         assertThat((Reader) streamResultSetMerger.getValue("label", Reader.class), is(reader));
     }
     
     @Test
-    public void assertGetValueWithColumnLabelWithOtherObject() throws SQLException, MalformedURLException {
+    public void assertGetValueWithColumnLabelWithOtherObject() throws SQLException {
         when(resultSet.getObject("label")).thenReturn("1");
         assertThat((String) streamResultSetMerger.getValue("label", Collection.class), is("1"));
     }

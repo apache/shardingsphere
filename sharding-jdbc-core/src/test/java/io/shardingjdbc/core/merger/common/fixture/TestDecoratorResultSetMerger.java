@@ -20,8 +20,6 @@ package io.shardingjdbc.core.merger.common.fixture;
 import io.shardingjdbc.core.merger.ResultSetMerger;
 import io.shardingjdbc.core.merger.common.AbstractDecoratorResultSetMerger;
 
-import java.sql.SQLException;
-
 public final class TestDecoratorResultSetMerger extends AbstractDecoratorResultSetMerger {
     
     public TestDecoratorResultSetMerger(final ResultSetMerger resultSetMerger) {
@@ -29,7 +27,7 @@ public final class TestDecoratorResultSetMerger extends AbstractDecoratorResultS
     }
     
     @Override
-    public boolean next() throws SQLException {
+    public boolean next() {
         return false;
     }
 }

@@ -44,7 +44,7 @@ public class WrapperAdapter implements Wrapper {
     }
     
     @Override
-    public final boolean isWrapperFor(final Class<?> iface) throws SQLException {
+    public final boolean isWrapperFor(final Class<?> iface) {
         return iface.isInstance(this);
     }
     

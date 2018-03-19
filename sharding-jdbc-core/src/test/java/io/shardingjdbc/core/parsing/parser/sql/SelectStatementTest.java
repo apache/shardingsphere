@@ -17,13 +17,11 @@
 
 package io.shardingjdbc.core.parsing.parser.sql;
 
+import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
-import com.google.common.base.Optional;
 import org.junit.Test;
-
-import java.sql.SQLException;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,12 +29,12 @@ import static org.junit.Assert.assertTrue;
 public final class SelectStatementTest {
     
     @Test
-    public void assertIsSameGroupByAndOrderByItemsWhenGroupByAndOrderByAllEmpty() throws SQLException {
+    public void assertIsSameGroupByAndOrderByItemsWhenGroupByAndOrderByAllEmpty() {
         assertFalse(new SelectStatement().isSameGroupByAndOrderByItems());
     }
     
     @Test
-    public void assertIsSameGroupByAndOrderByItemsWhenSame() throws SQLException {
+    public void assertIsSameGroupByAndOrderByItemsWhenSame() {
         SelectStatement actual = new SelectStatement();
         actual.getOrderByItems().add(new OrderItem("col", OrderType.ASC, OrderType.ASC, Optional.<String>absent()));
         actual.getGroupByItems().add(new OrderItem("col", OrderType.ASC, OrderType.ASC, Optional.<String>absent()));
@@ -44,7 +42,7 @@ public final class SelectStatementTest {
     }
     
     @Test
-    public void assertIsSameGroupByAndOrderByItemsWhenDifferent() throws SQLException {
+    public void assertIsSameGroupByAndOrderByItemsWhenDifferent() {
         SelectStatement actual = new SelectStatement();
         actual.getOrderByItems().add(new OrderItem("order_col", OrderType.ASC, OrderType.ASC, Optional.<String>absent()));
         actual.getGroupByItems().add(new OrderItem("group_col", OrderType.ASC, OrderType.ASC, Optional.<String>absent()));

@@ -76,7 +76,7 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
         return getShardingDataSources();
     }
     
-    protected abstract ShardingRule getShardingRule(Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) throws SQLException;
+    protected abstract ShardingRule getShardingRule(Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry);
     
     protected void assertDataSet(final String expectedDataSetFile, final HintShardingValueHelper helper, 
                                  final Connection connection, final String sql, 

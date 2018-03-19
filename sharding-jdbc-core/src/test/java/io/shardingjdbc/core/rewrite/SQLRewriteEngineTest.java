@@ -17,9 +17,9 @@
 
 package io.shardingjdbc.core.rewrite;
 
+import com.google.common.base.Optional;
 import io.shardingjdbc.core.api.fixture.ShardingRuleMockBuilder;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
@@ -33,11 +33,10 @@ import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
-import com.google.common.base.Optional;
+import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,7 +54,7 @@ public final class SQLRewriteEngineTest {
     private Map<String, String> tableTokens;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         shardingRule = new ShardingRuleMockBuilder().addGenerateKeyColumn("table_x", "id").addBindingTable("table_y").build();
         selectStatement = new SelectStatement();
         tableTokens = new HashMap<>(1, 1);

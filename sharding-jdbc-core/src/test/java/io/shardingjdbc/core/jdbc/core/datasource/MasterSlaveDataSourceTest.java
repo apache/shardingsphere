@@ -153,7 +153,7 @@ public final class MasterSlaveDataSourceTest {
     }
     
     @Test
-    public void assertGetConnection() throws SQLException {
+    public void assertGetConnection() {
         assertThat(masterSlaveDataSource.getConnection(), instanceOf(MasterSlaveConnection.class));
     }
     

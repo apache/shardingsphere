@@ -38,7 +38,7 @@ public class GeneratedKeysResultSetMetaDataTest {
     private ResultSetMetaData actualMetaData;
     
     @Before
-    public void init() throws SQLException {
+    public void init() {
         actualMetaData = new GeneratedKeysResultSet(Arrays.<Number>asList(1L, 2L).iterator(), "order_id", Mockito.mock(Statement.class)).getMetaData();
     }
     

@@ -59,12 +59,12 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
-    public final boolean isClosed() throws SQLException {
+    public final boolean isClosed() {
         return closed;
     }
     
     @Override
-    public final boolean isPoolable() throws SQLException {
+    public final boolean isPoolable() {
         return poolable;
     }
     
@@ -78,7 +78,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
-    public final int getFetchSize() throws SQLException {
+    public final int getFetchSize() {
         return fetchSize;
     }
     
@@ -123,21 +123,21 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
-    public SQLWarning getWarnings() throws SQLException {
+    public SQLWarning getWarnings() {
         return null;
     }
     
     @Override
-    public void clearWarnings() throws SQLException {
+    public void clearWarnings() {
     }
     
     @Override
-    public final boolean getMoreResults() throws SQLException {
+    public final boolean getMoreResults() {
         return false;
     }
     
     @Override
-    public final boolean getMoreResults(final int current) throws SQLException {
+    public final boolean getMoreResults(final int current) {
         return false;
     }
     

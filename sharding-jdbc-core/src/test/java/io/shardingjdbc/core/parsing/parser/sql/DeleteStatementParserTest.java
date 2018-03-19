@@ -17,19 +17,18 @@
 
 package io.shardingjdbc.core.parsing.parser.sql;
 
+import com.google.common.collect.Range;
 import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
-import com.google.common.collect.Range;
+import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -42,7 +41,7 @@ import static org.junit.Assert.assertThat;
 public final class DeleteStatementParserTest extends AbstractStatementParserTest {
     
     @Test
-    public void parseWithoutCondition() throws SQLException {
+    public void parseWithoutCondition() {
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX", shardingRule);
         DMLStatement deleteStatement = (DMLStatement) statementParser.parse();
@@ -50,7 +49,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void parseWithoutParameter() throws SQLException {
+    public void parseWithoutParameter() {
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, 
                 "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10", shardingRule);
@@ -78,7 +77,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void parseWithParameter() throws SQLException {
+    public void parseWithParameter() {
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, 
                 "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?", shardingRule);
@@ -106,25 +105,25 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test(expected = UnsupportedOperationException.class)
-    public void parseStatementWithDeleteMultipleTable() throws SQLException {
+    public void parseStatementWithDeleteMultipleTable() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.MySQL, "DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2", shardingRule).parse();
     }
     
     @Test(expected = UnsupportedOperationException.class)
-    public void parseStatementWithDeleteMultipleTableWithUsing() throws SQLException {
+    public void parseStatementWithDeleteMultipleTableWithUsing() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2", shardingRule).parse();
     }
     
     @Test
-    public void parseWithSpecialSyntax() throws SQLException {
+    public void parseWithSpecialSyntax() {
 //        parseWithSpecialSyntax(DatabaseType.MySQL, "DELETE `TABLE_XXX` WHERE `field1`=1");
         parseWithSpecialSyntax(DatabaseType.Oracle, "DELETE /*+ index(field1) */ ONLY (TABLE_XXX) WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG");
         parseWithSpecialSyntax(DatabaseType.Oracle, "DELETE /*+ index(field1) */ ONLY (TABLE_XXX) WHERE field1=1 RETURNING *");
     }
     
-    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) throws SQLException {
+    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
         ShardingRule shardingRule = createShardingRule();
         DMLStatement deleteStatement = (DMLStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule).parse();
         assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));

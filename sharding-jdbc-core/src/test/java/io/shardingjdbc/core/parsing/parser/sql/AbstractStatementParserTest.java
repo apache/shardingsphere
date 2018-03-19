@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 
 public abstract class AbstractStatementParserTest {
     
-    protected final ShardingRule createShardingRule() throws SQLException {
+    protected final ShardingRule createShardingRule() {
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);

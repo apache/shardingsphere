@@ -43,7 +43,7 @@ public final class DefaultKeyGeneratorTest {
             generatedKeys.add(executor.submit(new Callable<Number>() {
                 
                 @Override
-                public Number call() throws Exception {
+                public Number call() {
                     return keyGenerator.generateKey();
                 }
             }).get());

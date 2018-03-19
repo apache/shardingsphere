@@ -97,9 +97,8 @@ public final class MasterSlaveDataSourceFactory {
      * @param yamlByteArray yaml byte array for master-slave rule configuration with data sources
      * @return master-slave data source
      * @throws SQLException SQL exception
-     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
+    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException {
         YamlMasterSlaveConfiguration config = unmarshal(yamlByteArray);
         return new MasterSlaveDataSource(config.getDataSources(), config.getMasterSlaveRule().getMasterSlaveRuleConfiguration().build(), config.getMasterSlaveRule().getConfigMap());
     }

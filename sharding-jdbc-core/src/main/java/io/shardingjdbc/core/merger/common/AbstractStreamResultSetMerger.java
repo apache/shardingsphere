@@ -220,7 +220,7 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
     }
     
     @Override
-    public boolean wasNull() throws SQLException {
+    public boolean wasNull() {
         return wasNull;
     }
 }

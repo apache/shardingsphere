@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,9 +44,8 @@ public class YamlShardingConfiguration {
      *
      * @param dataSourceNames data source names
      * @return sharding rule from yaml
-     * @throws SQLException SQL exception
      */
-    public ShardingRule getShardingRule(final Collection<String> dataSourceNames) throws SQLException {
+    public ShardingRule getShardingRule(final Collection<String> dataSourceNames) {
         return getShardingRule().getShardingRuleConfiguration().build(dataSourceNames.isEmpty() ? dataSources.keySet() : dataSourceNames);
     }
 }

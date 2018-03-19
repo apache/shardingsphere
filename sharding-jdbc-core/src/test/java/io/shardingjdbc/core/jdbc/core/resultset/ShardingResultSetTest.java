@@ -396,13 +396,13 @@ public final class ShardingResultSetTest {
     }
     
     @Test
-    public void assertGetObjectWithColumnIndex() throws SQLException, MalformedURLException {
+    public void assertGetObjectWithColumnIndex() throws SQLException {
         when(mergeResultSet.getValue(1, Object.class)).thenReturn("object_value");
         assertThat(shardingResultSet.getObject(1), is((Object) "object_value"));
     }
     
     @Test
-    public void assertGetObjectWithColumnLabel() throws SQLException, MalformedURLException {
+    public void assertGetObjectWithColumnLabel() throws SQLException {
         when(mergeResultSet.getValue("label", Object.class)).thenReturn("object_value");
         assertThat(shardingResultSet.getObject("label"), is((Object) "object_value"));
     }

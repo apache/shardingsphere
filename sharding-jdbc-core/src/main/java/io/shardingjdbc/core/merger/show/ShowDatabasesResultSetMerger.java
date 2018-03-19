@@ -21,7 +21,6 @@ import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.core.merger.ResultSetMerger;
 
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
 
@@ -35,7 +34,7 @@ public final class ShowDatabasesResultSetMerger implements ResultSetMerger {
     private boolean firstNext = true;
     
     @Override
-    public boolean next() throws SQLException {
+    public boolean next() {
         if (firstNext) {
             firstNext = false;
             return true;
@@ -44,37 +43,37 @@ public final class ShowDatabasesResultSetMerger implements ResultSetMerger {
     }
     
     @Override
-    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
+    public Object getValue(final int columnIndex, final Class<?> type) {
         return ShardingConstant.LOGIC_SCHEMA_NAME;
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
+    public Object getValue(final String columnLabel, final Class<?> type) {
         return ShardingConstant.LOGIC_SCHEMA_NAME;
     }
     
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException();
     }
     
     @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException();
     }
     
     @Override
-    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
+    public InputStream getInputStream(final int columnIndex, final String type) throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException();
     }
     
     @Override
-    public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
+    public InputStream getInputStream(final String columnLabel, final String type) throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException();
     }
     
     @Override
-    public boolean wasNull() throws SQLException {
+    public boolean wasNull() {
         return false;
     }
 }

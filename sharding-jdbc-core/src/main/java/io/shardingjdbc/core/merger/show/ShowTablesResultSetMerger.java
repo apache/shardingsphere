@@ -81,7 +81,7 @@ public final class ShowTablesResultSetMerger extends AbstractMemoryResultSetMerg
     }
     
     @Override
-    public boolean next() throws SQLException {
+    public boolean next() {
         if (memoryResultSetRows.hasNext()) {
             setCurrentResultSetRow(memoryResultSetRows.next());
             return true;

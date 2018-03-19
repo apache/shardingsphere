@@ -119,13 +119,13 @@ public final class MemoryResultSetMergerTest {
     }
     
     @Test
-    public void assertGetCalendarValueWithColumnIndex() throws SQLException {
+    public void assertGetCalendarValueWithColumnIndex() {
         when(memoryResultSetRow.getCell(1)).thenReturn(new Date(0L));
         assertThat((Date) memoryResultSetMerger.getCalendarValue(1, Object.class, Calendar.getInstance()), is(new Date(0L)));
     }
     
     @Test
-    public void assertGetCalendarValueWithColumnLabel() throws SQLException {
+    public void assertGetCalendarValueWithColumnLabel() {
         when(memoryResultSetRow.getCell(1)).thenReturn(new Date(0L));
         assertThat((Date) memoryResultSetMerger.getCalendarValue("label", Object.class, Calendar.getInstance()), is(new Date(0L)));
     }

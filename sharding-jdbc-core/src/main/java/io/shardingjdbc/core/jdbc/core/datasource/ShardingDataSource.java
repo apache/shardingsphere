@@ -69,9 +69,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
      * @param newDataSourceMap new data source map
      * @param newShardingRule new sharding rule
      * @param newProps new sharding properties
-     * @throws SQLException SQL exception
      */
-    public void renew(final Map<String, DataSource> newDataSourceMap, final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
+    public void renew(final Map<String, DataSource> newDataSourceMap, final ShardingRule newShardingRule, final Properties newProps) {
         ShardingProperties newShardingProperties = new ShardingProperties(null == newProps ? new Properties() : newProps);
         int originalExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
@@ -86,7 +85,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     }
     
     @Override
-    public ShardingConnection getConnection() throws SQLException {
+    public ShardingConnection getConnection() {
         return new ShardingConnection(shardingContext);
     }
     

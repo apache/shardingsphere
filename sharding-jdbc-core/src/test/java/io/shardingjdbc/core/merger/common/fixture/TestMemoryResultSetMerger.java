@@ -19,7 +19,6 @@ package io.shardingjdbc.core.merger.common.fixture;
 
 import io.shardingjdbc.core.merger.common.AbstractMemoryResultSetMerger;
 
-import java.sql.SQLException;
 import java.util.Map;
 
 public final class TestMemoryResultSetMerger extends AbstractMemoryResultSetMerger {
@@ -29,7 +28,7 @@ public final class TestMemoryResultSetMerger extends AbstractMemoryResultSetMerg
     }
     
     @Override
-    public boolean next() throws SQLException {
+    public boolean next() {
         return false;
     }
 }

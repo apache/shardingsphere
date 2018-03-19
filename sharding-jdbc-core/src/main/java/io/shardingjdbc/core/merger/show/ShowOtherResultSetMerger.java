@@ -72,7 +72,7 @@ public final class ShowOtherResultSetMerger implements ResultSetMerger {
     }
     
     @Override
-    public boolean wasNull() throws SQLException {
+    public boolean wasNull() {
         return false;
     }
 }

@@ -17,24 +17,23 @@
 
 package io.shardingjdbc.core.parsing;
 
-import io.shardingjdbc.core.common.jaxb.helper.SQLStatementHelper;
-import io.shardingjdbc.core.common.util.SQLPlaceholderUtil;
+import io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.fixture.ShardingRuleMockBuilder;
-import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
+import io.shardingjdbc.core.common.jaxb.helper.SQLStatementHelper;
+import io.shardingjdbc.core.common.util.SQLPlaceholderUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.base.AbstractBaseParseSQLTest;
 import io.shardingjdbc.core.parsing.parser.base.AbstractBaseParseTest;
 import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
 import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserJAXBHelper;
+import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
@@ -54,18 +53,18 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     }
     
     @Test
-    public void assertStatement() throws SQLException {
+    public void assertStatement() {
         assertStatement(new SQLParsingEngine(getDatabaseType(), SQLPlaceholderUtil.replaceStatement(SQLStatementHelper.getSql(getTestCaseName()), parameters), buildShardingRule()).parse());
     }
     
     @Test
-    public void assertPreparedStatement() throws SQLException {
+    public void assertPreparedStatement() {
         for (DatabaseType each : SQLStatementHelper.getTypes(getTestCaseName())) {
             assertPreparedStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLStatementHelper.getSql(getTestCaseName())), buildShardingRule()).parse());
         }
     }
     
-    private ShardingRule buildShardingRule() throws SQLException {
+    private ShardingRule buildShardingRule() {
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
         orderTableRuleConfig.setActualDataNodes("db0.t_order,db1.t_order");

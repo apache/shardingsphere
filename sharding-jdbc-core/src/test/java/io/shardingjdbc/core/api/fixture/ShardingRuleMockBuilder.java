@@ -26,7 +26,6 @@ import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
 import io.shardingjdbc.core.rule.ShardingRule;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,7 +66,7 @@ public class ShardingRuleMockBuilder {
         return this;
     }
     
-    public ShardingRule build() throws SQLException {
+    public ShardingRule build() {
         Collection<TableRuleConfiguration> tableRuleConfigs = Lists.newArrayList(Iterators.transform(generateKeyColumnsMap.keySet().iterator(), new Function<String, TableRuleConfiguration>() {
             
             @Override
