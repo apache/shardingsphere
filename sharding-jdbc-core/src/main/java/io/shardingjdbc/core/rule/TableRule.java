@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.rule;
 
 import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.keygen.KeyGenerator;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import lombok.Getter;
@@ -77,7 +78,9 @@ public final class TableRule {
         List<DataNode> result = new LinkedList<>();
         for (String each : actualDataNodes) {
             DataNode dataNode = new DataNode(each);
-            Preconditions.checkArgument(dataSourceMap.containsKey(dataNode.getDataSourceName()), String.format("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each));
+            if (!dataSourceMap.containsKey(dataNode.getDataSourceName())) {
+                throw new ShardingJdbcException("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each);
+            }
             result.add(dataNode);
         }
         return result;

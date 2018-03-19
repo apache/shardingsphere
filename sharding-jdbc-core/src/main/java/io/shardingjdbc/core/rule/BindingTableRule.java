@@ -18,7 +18,6 @@
 package io.shardingjdbc.core.rule;
 
 import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +69,9 @@ public final class BindingTableRule {
                 break;
             }
         }
-        Preconditions.checkState(-1 != index, String.format("Actual table [%s].[%s] is not in table config", dataSource, otherActualTable));
+        if (-1 == index) {
+            throw new ShardingRuleException("Actual table [%s].[%s] is not in table config", dataSource, otherActualTable);
+        }
         for (TableRule each : tableRules) {
             if (each.getLogicTable().equals(logicTable.toLowerCase())) {
                 return each.getActualDataNodes().get(index).getTableName().toLowerCase();

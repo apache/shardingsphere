@@ -48,7 +48,7 @@ public final class BindingTableRuleTest {
         assertThat(createBindingTableRule().getBindingActualTable("ds1", "Sub_Logic_Table", "table_1"), is("sub_table_1"));
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = ShardingRuleException.class)
     public void assertGetBindingActualTablesFailureWhenNotFound() {
         createBindingTableRule().getBindingActualTable("no_ds", "Sub_Logic_Table", "table_1");
     }

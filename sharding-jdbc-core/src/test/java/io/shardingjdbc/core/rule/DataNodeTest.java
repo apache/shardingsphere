@@ -31,12 +31,12 @@ public class DataNodeTest {
         assertThat(dataNode.getTableName(), is("tbl_0"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ShardingRuleException.class)
     public void assertNewInValidDataNodeWithoutDelimiter() {
         new DataNode("ds_0tbl_0");
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ShardingRuleException.class)
     public void assertNewInValidDataNodeWithTwoDelimiters() {
         new DataNode("ds_0.tbl_0.tbl_1");
     }
