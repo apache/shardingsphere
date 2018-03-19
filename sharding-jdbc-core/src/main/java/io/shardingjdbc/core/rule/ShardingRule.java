@@ -19,8 +19,6 @@ package io.shardingjdbc.core.rule;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.keygen.KeyGenerator;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
@@ -138,10 +136,6 @@ public final class ShardingRule {
     private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
         Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1, 1);
         defaultDataSourceMap.put(defaultDataSourceName, dataSourceMap.get(defaultDataSourceName));
-        TableRuleConfiguration config = new TableRuleConfiguration();
-        config.setLogicTable(logicTableName);
-        config.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-        config.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         return new TableRule(logicTableName, null, defaultDataSourceMap, null, null, null, null, null);
     }
     
@@ -191,7 +185,6 @@ public final class ShardingRule {
         result.addAll(bindingTableRule.get().getAllLogicTables());
         return !result.isEmpty() && result.containsAll(logicTables);
     }
-    
     
     /**
      * Adjust logic tables is all belong to default data source.
