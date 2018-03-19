@@ -26,11 +26,8 @@ import io.shardingjdbc.core.rule.MasterSlaveRule;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Master-slave rule configuration.
@@ -54,19 +51,14 @@ public class MasterSlaveRuleConfiguration {
     /**
      * Build master-slave rule.
      *
-     * @param dataSourceMap data source map
      * @return sharding rule
      */
-    public MasterSlaveRule build(final Map<String, DataSource> dataSourceMap) {
+    public MasterSlaveRule build() {
         Preconditions.checkNotNull(name, "name cannot be null.");
         Preconditions.checkNotNull(masterDataSourceName, "masterDataSourceName cannot be null.");
         Preconditions.checkNotNull(slaveDataSourceNames, "slaveDataSourceNames cannot be null.");
         Preconditions.checkArgument(!slaveDataSourceNames.isEmpty(), "slaveDataSourceNames cannot be empty.");
-        Map<String, DataSource> slaveDataSources = new HashMap<>(slaveDataSourceNames.size(), 1);
-        for (String each : slaveDataSourceNames) {
-            slaveDataSources.put(each, dataSourceMap.get(each));
-        }
-        return new MasterSlaveRule(name, masterDataSourceName, dataSourceMap.get(masterDataSourceName), slaveDataSources, getLoadBalanceAlgorithm());
+        return new MasterSlaveRule(name, masterDataSourceName, slaveDataSourceNames, getLoadBalanceAlgorithm());
     }
     
     private MasterSlaveLoadBalanceAlgorithm getLoadBalanceAlgorithm() {

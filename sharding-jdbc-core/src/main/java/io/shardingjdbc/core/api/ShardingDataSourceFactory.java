@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -73,7 +74,7 @@ public final class ShardingDataSourceFactory {
         YamlShardingConfiguration config = unmarshal(yamlFile);
         Map<String, DataSource> dataSourceMap = config.getDataSources();
         processDataSourceMapWithMasterSlave(dataSourceMap, config.getShardingRule().getShardingRuleConfiguration());
-        return new ShardingDataSource(dataSourceMap, config.getShardingRule(Collections.<String>emptySet()), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
+        return new ShardingDataSource(dataSourceMap, config.getShardingRule(dataSourceMap.keySet()), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
     }
     
     /**
@@ -97,13 +98,12 @@ public final class ShardingDataSourceFactory {
      * @param yamlByteArray yaml byte array for rule configuration of databases and tables sharding with data sources
      * @return sharding data source
      * @throws SQLException SQL exception
-     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
+    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException {
         YamlShardingConfiguration config = unmarshal(yamlByteArray);
         Map<String, DataSource> dataSourceMap = config.getDataSources();
         processDataSourceMapWithMasterSlave(dataSourceMap, config.getShardingRule().getShardingRuleConfiguration());
-        return new ShardingDataSource(config.getDataSources(), config.getShardingRule(Collections.<String>emptySet()), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
+        return new ShardingDataSource(dataSourceMap, config.getShardingRule(dataSourceMap.keySet()), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
     }
     
     /**
@@ -113,9 +113,8 @@ public final class ShardingDataSourceFactory {
      * @param yamlByteArray yaml byte array for rule configuration of databases and tables sharding without data sources
      * @return sharding data source
      * @throws SQLException SQL exception
-     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException, IOException {
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException {
         YamlShardingConfiguration config = unmarshal(yamlByteArray);
         processDataSourceMapWithMasterSlave(dataSourceMap, config.getShardingRule().getShardingRuleConfiguration());
         return new ShardingDataSource(dataSourceMap, config.getShardingRule(dataSourceMap.keySet()), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
@@ -130,17 +129,22 @@ public final class ShardingDataSourceFactory {
         }
     }
     
-    private static YamlShardingConfiguration unmarshal(final byte[] yamlByteArray) throws IOException {
+    private static YamlShardingConfiguration unmarshal(final byte[] yamlByteArray) {
         return new Yaml(new Constructor(YamlShardingConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlShardingConfiguration.class);
     }
     
     private static void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfiguration) throws SQLException {
         for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
-            dataSourceMap.put(each.getName(), MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, each, Collections.<String, Object>emptyMap()));
-            dataSourceMap.remove(each.getMasterDataSourceName());
-            for (String slaveDataSourceName : each.getSlaveDataSourceNames()) {
-                dataSourceMap.remove(slaveDataSourceName);
-            }
+            processDataSourceMapWithMasterSlave(dataSourceMap, each);
         }
+    }
+    
+    private static void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
+        Map<String, DataSource> masterSlaveDataSourceMap = new LinkedHashMap<>(masterSlaveRuleConfig.getSlaveDataSourceNames().size() + 1, 1);
+        for (String each : masterSlaveRuleConfig.getSlaveDataSourceNames()) {
+            masterSlaveDataSourceMap.put(each, dataSourceMap.remove(each));
+        }
+        masterSlaveDataSourceMap.put(masterSlaveRuleConfig.getMasterDataSourceName(), dataSourceMap.remove(masterSlaveRuleConfig.getMasterDataSourceName()));
+        dataSourceMap.put(masterSlaveRuleConfig.getName(), MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap()));
     }
 }

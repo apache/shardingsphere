@@ -17,13 +17,12 @@
 
 package io.shardingjdbc.core.rule;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 
-import javax.sql.DataSource;
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Databases and tables master-slave rule configuration.
@@ -37,28 +36,22 @@ public final class MasterSlaveRule {
     
     private final String masterDataSourceName;
     
-    private final DataSource masterDataSource;
-    
-    private final Map<String, DataSource> slaveDataSourceMap;
+    private final Collection<String> slaveDataSourceNames;
     
     private final MasterSlaveLoadBalanceAlgorithm strategy;
     
-    public MasterSlaveRule(final String name, final String masterDataSourceName,
-                           final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap) {
-        this(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, null);
+    public MasterSlaveRule(final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
+        this(name, masterDataSourceName, slaveDataSourceNames, null);
     }
     
-    public MasterSlaveRule(final String name, final String masterDataSourceName, 
-                           final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithm strategy) {
+    public MasterSlaveRule(final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames, final MasterSlaveLoadBalanceAlgorithm strategy) {
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(masterDataSourceName);
-        Preconditions.checkNotNull(masterDataSource);
-        Preconditions.checkNotNull(slaveDataSourceMap);
-        Preconditions.checkState(!slaveDataSourceMap.isEmpty());
+        Preconditions.checkNotNull(slaveDataSourceNames);
+        Preconditions.checkState(!slaveDataSourceNames.isEmpty());
         this.name = name;
         this.masterDataSourceName = masterDataSourceName;
-        this.masterDataSource = masterDataSource;
-        this.slaveDataSourceMap = slaveDataSourceMap;
+        this.slaveDataSourceNames = slaveDataSourceNames;
         this.strategy = null == strategy ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm() : strategy;
     }
 }

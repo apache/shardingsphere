@@ -51,9 +51,11 @@ public final class ShardingConnectionTest {
     public static void init() throws SQLException {
         DataSource masterDataSource = new TestDataSource("test_ds_master");
         DataSource slaveDataSource = new TestDataSource("test_ds_slave");
-        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
-        slaveDataSourceMap.put("test_ds_slave", slaveDataSource);
-        masterSlaveDataSource = new MasterSlaveDataSource(new MasterSlaveRule("test_ds", "test_ds_master", masterDataSource, slaveDataSourceMap), Collections.<String, Object>emptyMap());
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("test_ds_master", masterDataSource);
+        dataSourceMap.put("test_ds_slave", slaveDataSource);
+        masterSlaveDataSource = new MasterSlaveDataSource(
+                dataSourceMap, new MasterSlaveRule("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave")), Collections.<String, Object>emptyMap());
         ((TestDataSource) slaveDataSource).setThrowExceptionWhenClosing(true);
     }
     

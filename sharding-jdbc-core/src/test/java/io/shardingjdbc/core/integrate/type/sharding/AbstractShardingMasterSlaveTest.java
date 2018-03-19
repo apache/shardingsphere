@@ -157,9 +157,8 @@ public abstract class AbstractShardingMasterSlaveTest extends AbstractSQLAssertT
     
     private MasterSlaveDataSource getMasterSlaveDataSource(final Map<String, DataSource> masterSlaveDataSourceMap, 
                                                            final String name, final String masterDataSourceName, final String slaveDataSourceName) throws SQLException {
-        Map<String, DataSource> slaveDs0 = new HashMap<>(1, 1);
-        slaveDs0.put(slaveDataSourceName, masterSlaveDataSourceMap.get(slaveDataSourceName));
-        return new MasterSlaveDataSource(new MasterSlaveRule(name, masterDataSourceName, masterSlaveDataSourceMap.get(masterDataSourceName), slaveDs0), Collections.<String, Object>emptyMap());
+        return new MasterSlaveDataSource(
+                masterSlaveDataSourceMap, new MasterSlaveRule(name, masterDataSourceName, Collections.singleton(slaveDataSourceName)), Collections.<String, Object>emptyMap());
     }
     
     @After

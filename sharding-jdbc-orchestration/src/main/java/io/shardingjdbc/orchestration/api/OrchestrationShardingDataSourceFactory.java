@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -106,9 +107,8 @@ public final class OrchestrationShardingDataSourceFactory {
      * @param yamlByteArray yaml byte array for rule configuration of databases and tables sharding with data sources
      * @return sharding data source
      * @throws SQLException SQL exception
-     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
+    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException {
         YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlByteArray);
         YamlShardingRuleConfiguration shardingRuleConfig = config.getShardingRule();
         return createDataSource(config.getDataSources(), shardingRuleConfig.getShardingRuleConfiguration(),  
@@ -122,9 +122,8 @@ public final class OrchestrationShardingDataSourceFactory {
      * @param yamlByteArray yaml byte array for rule configuration of databases and tables sharding without data sources
      * @return sharding data source
      * @throws SQLException SQL exception
-     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException, IOException {
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException {
         YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlByteArray);
         YamlShardingRuleConfiguration shardingRuleConfig = config.getShardingRule();
         return createDataSource(dataSourceMap, shardingRuleConfig.getShardingRuleConfiguration(),  
@@ -140,17 +139,22 @@ public final class OrchestrationShardingDataSourceFactory {
         }
     }
     
-    private static YamlOrchestrationShardingRuleConfiguration unmarshal(final byte[] yamlByteArray) throws IOException {
+    private static YamlOrchestrationShardingRuleConfiguration unmarshal(final byte[] yamlByteArray) {
         return new Yaml(new Constructor(YamlOrchestrationShardingRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlOrchestrationShardingRuleConfiguration.class);
     }
     
     private static void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfiguration) throws SQLException {
         for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
-            dataSourceMap.put(each.getName(), MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, each, Collections.<String, Object>emptyMap()));
-            dataSourceMap.remove(each.getMasterDataSourceName());
-            for (String slaveDataSourceName : each.getSlaveDataSourceNames()) {
-                dataSourceMap.remove(slaveDataSourceName);
-            }
+            processDataSourceMapWithMasterSlave(dataSourceMap, each);
         }
+    }
+    
+    private static void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
+        Map<String, DataSource> masterSlaveDataSourceMap = new LinkedHashMap<>(masterSlaveRuleConfig.getSlaveDataSourceNames().size() + 1, 1);
+        for (String each : masterSlaveRuleConfig.getSlaveDataSourceNames()) {
+            masterSlaveDataSourceMap.put(each, dataSourceMap.remove(each));
+        }
+        masterSlaveDataSourceMap.put(masterSlaveRuleConfig.getMasterDataSourceName(), dataSourceMap.remove(masterSlaveRuleConfig.getMasterDataSourceName()));
+        dataSourceMap.put(masterSlaveRuleConfig.getName(), MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap()));
     }
 }

@@ -88,7 +88,7 @@ public final class InstanceListenerManager implements ListenerManager {
                             dataSourceMap.put(each, new CircuitBreakerDataSource());
                         }
                     }
-                    masterSlaveDataSource.renew(configService.loadMasterSlaveRuleConfiguration().build(dataSourceMap));
+                    masterSlaveDataSource.renew(dataSourceMap, configService.loadMasterSlaveRuleConfiguration().build());
                 }
             }
         });

@@ -28,7 +28,6 @@ import io.shardingjdbc.core.rule.TableRule;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -62,9 +61,8 @@ public class ShardingRuleConfiguration {
      *
      * @param dataSourceNames data source names
      * @return sharding rule
-     * @throws SQLException SQL exception
      */
-    public ShardingRule build(final Collection<String> dataSourceNames) throws SQLException {
+    public ShardingRule build(final Collection<String> dataSourceNames) {
         Preconditions.checkNotNull(dataSourceNames, "dataSources cannot be null.");
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "dataSources cannot be null.");
         Set<String> dataSourceNameSet = new LinkedHashSet<>(dataSourceNames);

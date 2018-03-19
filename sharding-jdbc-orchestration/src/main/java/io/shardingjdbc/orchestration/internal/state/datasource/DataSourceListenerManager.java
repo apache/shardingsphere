@@ -83,7 +83,7 @@ public final class DataSourceListenerManager implements ListenerManager {
                     if (masterSlaveRuleConfiguration.getSlaveDataSourceNames().isEmpty()) {
                         throw new ShardingJdbcException("No available slave datasource, can't apply the configuration!");
                     } 
-                    masterSlaveDataSource.renew(masterSlaveRuleConfiguration.build(dataSourceService.getAvailableDataSources()));
+                    masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), masterSlaveRuleConfiguration.build());
                 }
             }
         });

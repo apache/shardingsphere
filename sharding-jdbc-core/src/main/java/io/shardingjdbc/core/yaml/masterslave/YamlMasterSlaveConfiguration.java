@@ -17,12 +17,10 @@
 
 package io.shardingjdbc.core.yaml.masterslave;
 
-import io.shardingjdbc.core.rule.MasterSlaveRule;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,15 +36,4 @@ public class YamlMasterSlaveConfiguration {
     private Map<String, DataSource> dataSources = new HashMap<>();
     
     private YamlMasterSlaveRuleConfiguration masterSlaveRule;
-    
-    /**
-     * Get master-slave rule from yaml.
-     *
-     * @param dataSourceMap data source map
-     * @return master-slave rule from yaml
-     * @throws SQLException SQL exception
-     */
-    public MasterSlaveRule getMasterSlaveRule(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return masterSlaveRule.getMasterSlaveRuleConfiguration().build(dataSourceMap.isEmpty() ? dataSources : dataSourceMap);
-    }
 }
