@@ -17,18 +17,17 @@
 
 package io.shardingjdbc.core.parsing.parser.sql;
 
+import com.google.common.collect.Lists;
+import io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,8 +52,6 @@ public abstract class AbstractStatementParserTest {
                 new ComplexShardingStrategyConfiguration("field1, field2, field3, field4, field5, field6, field7", TestComplexKeysShardingAlgorithm.class.getName()));
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("ds", dataSource);
-        return shardingRuleConfig.build(dataSourceMap);
+        return shardingRuleConfig.build(Lists.newArrayList("ds"));
     }
 }

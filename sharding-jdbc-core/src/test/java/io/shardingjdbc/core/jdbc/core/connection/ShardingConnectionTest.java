@@ -65,7 +65,7 @@ public final class ShardingConnectionTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
-        ShardingContext shardingContext = new ShardingContext(shardingRuleConfig.build(dataSourceMap), null, null, false);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRuleConfig.build(dataSourceMap.keySet()), null, null, false);
         connection = new ShardingConnection(shardingContext);
     }
     

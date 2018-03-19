@@ -43,16 +43,18 @@ import static org.junit.Assert.assertThat;
 
 public class DatabaseTest {
     
+    private Map<String, DataSource> dataSourceMap;
+    
     private ShardingRule shardingRule;
     
     @Before
     public void setRouteRuleContext() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(OrderDatabaseHintShardingAlgorithm.class.getName()));
-        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
+        dataSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
-        shardingRule = shardingRuleConfig.build(dataSourceMap);
+        shardingRule = shardingRuleConfig.build(dataSourceMap.keySet());
     }
     
     @Test
@@ -72,7 +74,7 @@ public class DatabaseTest {
     @Test
     public void assertDatabaseAllRoutingSQL() {
         String originSql = "select * from tesT";
-        ShardingContext shardingContext = new ShardingContext(shardingRule, DatabaseType.MySQL, null, false);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, false);
         SQLRouteResult actual = new StatementRoutingEngine(shardingContext).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
@@ -95,7 +97,7 @@ public class DatabaseTest {
     }
     
     private void assertTarget(final String originSql, final String targetDataSource) {
-        ShardingContext shardingContext = new ShardingContext(shardingRule, DatabaseType.MySQL, null, false);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, false);
         SQLRouteResult actual = new StatementRoutingEngine(shardingContext).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {

@@ -23,12 +23,9 @@ import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguratio
 import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -43,7 +40,7 @@ public final class TableRuleTest {
     public void assertCreateMinTableRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
-        TableRule actual = tableRuleConfig.build(createDataSourceMap());
+        TableRule actual = tableRuleConfig.build(createDataSourceNames());
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(2));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "LOGIC_TABLE")));
@@ -63,7 +60,7 @@ public final class TableRuleTest {
         tableRuleConfig.setKeyGeneratorColumnName("col_1");
         tableRuleConfig.setKeyGeneratorClass(IncrementKeyGenerator.class.getName());
         tableRuleConfig.setLogicIndex("LOGIC_INDEX");
-        TableRule actual = tableRuleConfig.build(createDataSourceMap());
+        TableRule actual = tableRuleConfig.build(createDataSourceNames());
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(6));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "table_0")));
@@ -84,7 +81,7 @@ public final class TableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
-        TableRule actual = tableRuleConfig.build(createDataSourceMap());
+        TableRule actual = tableRuleConfig.build(createDataSourceNames());
         assertThat(actual.getActualDatasourceNames(), is((Collection<String>) Sets.newLinkedHashSet(Arrays.asList("ds0", "ds1"))));
     }
     
@@ -93,7 +90,7 @@ public final class TableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
-        TableRule actual = tableRuleConfig.build(createDataSourceMap());
+        TableRule actual = tableRuleConfig.build(createDataSourceNames());
         assertThat(actual.getActualTableNames("ds0"), is((Collection<String>) Sets.newLinkedHashSet(Arrays.asList("table_0", "table_1", "table_2"))));
         assertThat(actual.getActualTableNames("ds1"), is((Collection<String>) Sets.newLinkedHashSet(Arrays.asList("table_0", "table_1", "table_2"))));
         assertThat(actual.getActualTableNames("ds2"), is((Collection<String>) Collections.<String>emptySet()));
@@ -104,7 +101,7 @@ public final class TableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
-        TableRule actual = tableRuleConfig.build(createDataSourceMap());
+        TableRule actual = tableRuleConfig.build(createDataSourceNames());
         assertThat(actual.findActualTableIndex("ds1", "table_1"), is(4));
     }
     
@@ -113,14 +110,11 @@ public final class TableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
-        TableRule actual = tableRuleConfig.build(createDataSourceMap());
+        TableRule actual = tableRuleConfig.build(createDataSourceNames());
         assertThat(actual.findActualTableIndex("ds2", "table_2"), is(-1));
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds0", null);
-        result.put("ds1", null);
-        return result;
+    private Collection<String> createDataSourceNames() {
+        return Arrays.asList("ds0", "ds1");
     }
 }

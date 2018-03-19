@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.orchestration.api;
 
+import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
@@ -34,6 +36,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -60,6 +63,7 @@ public final class OrchestrationShardingDataSourceFactory {
     public static DataSource createDataSource(
             final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
             final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        processDataSourceMapWithMasterSlave(dataSourceMap, shardingRuleConfig);
         OrchestrationShardingDataSource result = new OrchestrationShardingDataSource(dataSourceMap, shardingRuleConfig, configMap, props, orchestrationConfig);
         result.init();
         return result;
@@ -76,7 +80,7 @@ public final class OrchestrationShardingDataSourceFactory {
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlFile);
         YamlShardingRuleConfiguration shardingRuleConfig = config.getShardingRule();
-        return createDataSource(config.getDataSources(), shardingRuleConfig.getShardingRuleConfiguration(),  
+        return createDataSource(config.getDataSources(), shardingRuleConfig.getShardingRuleConfiguration(), 
                 shardingRuleConfig.getConfigMap(), shardingRuleConfig.getProps(), config.getOrchestration().getOrchestrationConfiguration());
     }
     
@@ -138,5 +142,15 @@ public final class OrchestrationShardingDataSourceFactory {
     
     private static YamlOrchestrationShardingRuleConfiguration unmarshal(final byte[] yamlByteArray) throws IOException {
         return new Yaml(new Constructor(YamlOrchestrationShardingRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlOrchestrationShardingRuleConfiguration.class);
+    }
+    
+    private static void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfiguration) throws SQLException {
+        for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
+            dataSourceMap.put(each.getName(), MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, each, Collections.<String, Object>emptyMap()));
+            dataSourceMap.remove(each.getMasterDataSourceName());
+            for (String slaveDataSourceName : each.getSlaveDataSourceNames()) {
+                dataSourceMap.remove(slaveDataSourceName);
+            }
+        }
     }
 }

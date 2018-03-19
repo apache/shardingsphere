@@ -18,7 +18,6 @@
 package io.shardingjdbc.core.api.config;
 
 import com.google.common.base.Preconditions;
-import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingjdbc.core.keygen.DefaultKeyGenerator;
 import io.shardingjdbc.core.keygen.KeyGenerator;
@@ -29,12 +28,11 @@ import io.shardingjdbc.core.rule.TableRule;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * Sharding rule configuration.
@@ -62,31 +60,21 @@ public class ShardingRuleConfiguration {
     /**
      * Build sharding rule.
      *
-     * @param dataSourceMap data source map
+     * @param dataSourceNames data source names
      * @return sharding rule
      * @throws SQLException SQL exception
      */
-    public ShardingRule build(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Preconditions.checkNotNull(dataSourceMap, "dataSources cannot be null.");
-        Preconditions.checkArgument(!dataSourceMap.isEmpty(), "dataSources cannot be null.");
-        processDataSourceMapWithMasterSlave(dataSourceMap);
+    public ShardingRule build(final Collection<String> dataSourceNames) throws SQLException {
+        Preconditions.checkNotNull(dataSourceNames, "dataSources cannot be null.");
+        Preconditions.checkArgument(!dataSourceNames.isEmpty(), "dataSources cannot be null.");
+        Set<String> dataSourceNameSet = new LinkedHashSet<>(dataSourceNames);
         Collection<TableRule> tableRules = new LinkedList<>();
         for (TableRuleConfiguration each : tableRuleConfigs) {
-            tableRules.add(each.build(dataSourceMap));
+            tableRules.add(each.build(dataSourceNameSet));
         }
         ShardingStrategy defaultDatabaseShardingStrategy = null == defaultDatabaseShardingStrategyConfig ? null : defaultDatabaseShardingStrategyConfig.build();
         ShardingStrategy defaultTableShardingStrategy = null == defaultTableShardingStrategyConfig ? null : defaultTableShardingStrategyConfig.build();
         KeyGenerator keyGenerator = KeyGeneratorFactory.newInstance(null == defaultKeyGeneratorClass ? DefaultKeyGenerator.class.getName() : defaultKeyGeneratorClass);
-        return new ShardingRule(dataSourceMap, defaultDataSourceName, tableRules, bindingTableGroups, defaultDatabaseShardingStrategy, defaultTableShardingStrategy, keyGenerator);
-    }
-    
-    private void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        for (MasterSlaveRuleConfiguration each : masterSlaveRuleConfigs) {
-            dataSourceMap.put(each.getName(), MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, each, Collections.<String, Object>emptyMap()));
-            dataSourceMap.remove(each.getMasterDataSourceName());
-            for (String slaveDataSourceName : each.getSlaveDataSourceNames()) {
-                dataSourceMap.remove(slaveDataSourceName);
-            }
-        }
+        return new ShardingRule(dataSourceNameSet, defaultDataSourceName, tableRules, bindingTableGroups, defaultDatabaseShardingStrategy, defaultTableShardingStrategy, keyGenerator);
     }
 }

@@ -17,19 +17,16 @@
 
 package io.shardingjdbc.core.rule;
 
-import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.keygen.KeyGenerator;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import lombok.Getter;
 import lombok.ToString;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Table rule configuration.
@@ -54,11 +51,11 @@ public final class TableRule {
     
     private final String logicIndex;
     
-    public TableRule(final String logicTable, final List<String> actualDataNodes, final Map<String, DataSource> dataSourceMap,
+    public TableRule(final String logicTable, final List<String> actualDataNodes, final Collection<String> dataSourceNames,
                      final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy, 
                      final String generateKeyColumn, final KeyGenerator keyGenerator, final String logicIndex) {
         this.logicTable = logicTable.toLowerCase();
-        this.actualDataNodes = null == actualDataNodes || actualDataNodes.isEmpty() ? generateDataNodes(logicTable, dataSourceMap) : generateDataNodes(actualDataNodes, dataSourceMap);
+        this.actualDataNodes = null == actualDataNodes || actualDataNodes.isEmpty() ? generateDataNodes(logicTable, dataSourceNames) : generateDataNodes(actualDataNodes, dataSourceNames);
         this.databaseShardingStrategy = databaseShardingStrategy;
         this.tableShardingStrategy = tableShardingStrategy;
         this.generateKeyColumn = generateKeyColumn;
@@ -66,19 +63,19 @@ public final class TableRule {
         this.logicIndex = null == logicIndex ? null : logicIndex.toLowerCase();
     }
     
-    private List<DataNode> generateDataNodes(final String logicTable, final Map<String, DataSource> dataSourceMap) {
+    private List<DataNode> generateDataNodes(final String logicTable, final Collection<String> dataSourceNames) {
         List<DataNode> result = new LinkedList<>();
-        for (String each : dataSourceMap.keySet()) {
+        for (String each : dataSourceNames) {
             result.add(new DataNode(each, logicTable));
         }
         return result;
     }
     
-    private List<DataNode> generateDataNodes(final List<String> actualDataNodes, final Map<String, DataSource> dataSourceMap) {
+    private List<DataNode> generateDataNodes(final List<String> actualDataNodes, final Collection<String> dataSourceNames) {
         List<DataNode> result = new LinkedList<>();
         for (String each : actualDataNodes) {
             DataNode dataNode = new DataNode(each);
-            if (!dataSourceMap.containsKey(dataNode.getDataSourceName())) {
+            if (!dataSourceNames.contains(dataNode.getDataSourceName())) {
                 throw new ShardingJdbcException("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each);
             }
             result.add(dataNode);

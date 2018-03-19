@@ -71,7 +71,7 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             ShardingRule shardingRule = getShardingRule(each);
-            getShardingDataSources().put(each.getKey(), new ShardingDataSource(shardingRule));
+            getShardingDataSources().put(each.getKey(), new ShardingDataSource(each.getValue(), shardingRule));
         }
         return getShardingDataSources();
     }

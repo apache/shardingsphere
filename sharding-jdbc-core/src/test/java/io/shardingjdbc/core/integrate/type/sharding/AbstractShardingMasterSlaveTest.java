@@ -123,7 +123,7 @@ public abstract class AbstractShardingMasterSlaveTest extends AbstractSQLAssertT
                     new StandardShardingStrategyConfiguration("t_order_item", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
-            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(masterSlaveDataSourceMap)));
+            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(masterSlaveDataSourceMap, shardingRuleConfig.build(masterSlaveDataSourceMap.keySet())));
         }
         return getShardingDataSources();
     }

@@ -230,7 +230,7 @@ public abstract class AbstractSQLTest {
         Field field = shardingDataSource.getClass().getDeclaredField("shardingContext");
         field.setAccessible(true);
         ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);
-        return shardingContext.getShardingRule().getDataSourceMap();
+        return shardingContext.getDataSourceMap();
     }
     
     private static void closeDataSources(final Collection<DataSource> dataSources) throws SQLException {

@@ -17,12 +17,12 @@
 
 package io.shardingjdbc.core.parsing.parser.sql;
 
+import com.google.common.collect.Lists;
+import io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
-import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
@@ -31,6 +31,7 @@ import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
+import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -38,8 +39,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -115,9 +114,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         tableRuleConfig.setKeyGeneratorColumnName("field2");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRuleConfig.setDefaultKeyGeneratorClass(IncrementKeyGenerator.class.getName());
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1);
-        dataSourceMap.put("ds", dataSource);
-        return shardingRuleConfig.build(dataSourceMap);
+        return shardingRuleConfig.build(Lists.newArrayList("ds"));
     }
     
     @Test

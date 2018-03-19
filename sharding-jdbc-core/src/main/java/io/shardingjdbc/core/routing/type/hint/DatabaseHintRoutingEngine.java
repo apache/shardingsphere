@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.core.routing.type.hint;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
@@ -24,15 +26,11 @@ import io.shardingjdbc.core.routing.strategy.hint.HintShardingStrategy;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.TableUnit;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Database hint only routing engine.
@@ -44,7 +42,7 @@ import java.util.Map;
 @Slf4j
 public final class DatabaseHintRoutingEngine implements RoutingEngine {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Collection<String> dataSourceNames;
     
     private final HintShardingStrategy databaseShardingStrategy;
     
@@ -52,9 +50,9 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
     public RoutingResult route() {
         Optional<ShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME));
         Preconditions.checkState(shardingValue.isPresent());
-        log.debug("Before database sharding only db:{} sharding values: {}", dataSourceMap.keySet(), shardingValue.get());
+        log.debug("Before database sharding only db:{} sharding values: {}", dataSourceNames, shardingValue.get());
         Collection<String> routingDataSources;
-        routingDataSources = databaseShardingStrategy.doSharding(dataSourceMap.keySet(), Collections.singletonList(shardingValue.get()));
+        routingDataSources = databaseShardingStrategy.doSharding(dataSourceNames, Collections.singletonList(shardingValue.get()));
         Preconditions.checkState(!routingDataSources.isEmpty(), "no database route info");
         log.debug("After database sharding only result: {}", routingDataSources);
         RoutingResult result = new RoutingResult();

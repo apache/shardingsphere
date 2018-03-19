@@ -19,9 +19,9 @@ package io.shardingjdbc.transaction.base;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -51,8 +51,9 @@ public abstract class AbstractSoftTransactionIntegrationTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("transaction_test");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        ShardingRule shardingRule = shardingRuleConfig.build(createDataSourceMap());
-        shardingDataSource = new ShardingDataSource(shardingRule);
+        Map<String, DataSource> dataSourceMap = createDataSourceMap();
+        ShardingRule shardingRule = shardingRuleConfig.build(dataSourceMap.keySet());
+        shardingDataSource = new ShardingDataSource(dataSourceMap, shardingRule);
         createTable(shardingDataSource);
         transactionDataSource = createTransactionLogDataSource();
     }

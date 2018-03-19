@@ -33,6 +33,6 @@ public abstract class AbstractRoutingDatabaseOnlyWithHintTest extends AbstractHi
     protected ShardingRule getShardingRule(final Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(HintModuloDatabaseShardingAlgorithm.class.getName()));
-        return shardingRuleConfig.build(dataSourceEntry.getValue());
+        return shardingRuleConfig.build(dataSourceEntry.getValue().keySet());
     }
 }

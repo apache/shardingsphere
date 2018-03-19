@@ -20,11 +20,8 @@ package io.shardingjdbc.core.rule;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -75,20 +72,17 @@ public final class BindingTableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..1}");
-        return tableRuleConfig.build(createDataSourceMap());
+        return tableRuleConfig.build(createDataSourceNames());
     }
     
     private TableRule createSubTableRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("SUB_LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.sub_table_${0..1}");
-        return tableRuleConfig.build(createDataSourceMap());
+        return tableRuleConfig.build(createDataSourceNames());
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds0", null);
-        result.put("ds1", null);
-        return result;
+    private Collection<String> createDataSourceNames() {
+        return Arrays.asList("ds0", "ds1");
     }
 }

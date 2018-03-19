@@ -88,8 +88,8 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
                     new StandardShardingStrategyConfiguration("user_id", PreciseOrderShardingAlgorithm.class.getName(), RangeOrderShardingAlgorithm.class.getName()));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("order_id", PreciseOrderShardingAlgorithm.class.getName(), RangeOrderShardingAlgorithm.class.getName()));
-            ShardingRule shardingRule = shardingRuleConfig.build(entry.getValue());
-            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(shardingRule));
+            ShardingRule shardingRule = shardingRuleConfig.build(entry.getValue().keySet());
+            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(entry.getValue(), shardingRule));
         }
     }
     

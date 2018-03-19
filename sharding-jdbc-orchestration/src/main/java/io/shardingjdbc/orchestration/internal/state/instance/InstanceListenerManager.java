@@ -66,7 +66,7 @@ public final class InstanceListenerManager implements ListenerManager {
                         }
                     }
                     try {
-                        shardingDataSource.renew(configService.loadShardingRuleConfiguration().build(dataSourceMap), configService.loadShardingProperties());
+                        shardingDataSource.renew(dataSourceMap, configService.loadShardingRuleConfiguration().build(dataSourceMap.keySet()), configService.loadShardingProperties());
                     } catch (final SQLException ex) {
                         throw new ShardingJdbcException(ex);
                     }

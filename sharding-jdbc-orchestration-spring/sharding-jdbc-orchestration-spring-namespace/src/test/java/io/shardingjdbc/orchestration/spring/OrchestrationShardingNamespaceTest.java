@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -104,17 +105,19 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     
     @Test
     public void assertSimpleShardingDataSource() {
+        Map<String, DataSource> dataSourceMap = getDataSourceMap("simpleShardingDataSource");
         ShardingRule shardingRule = getShardingRule("simpleShardingDataSource");
-        assertNotNull(shardingRule.getDataSourceMap().get("dbtbl_0"));
+        assertNotNull(dataSourceMap.get("dbtbl_0"));
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
     }
     
     @Test
     public void assertShardingRuleWithAttributesDataSource() {
+        Map<String, DataSource> dataSourceMap = getDataSourceMap("shardingRuleWithAttributesDataSource");
         ShardingRule shardingRule = getShardingRule("shardingRuleWithAttributesDataSource");
-        assertNotNull(shardingRule.getDataSourceMap().get("dbtbl_0"));
-        assertNotNull(shardingRule.getDataSourceMap().get("dbtbl_1"));
+        assertNotNull(dataSourceMap.get("dbtbl_0"));
+        assertNotNull(dataSourceMap.get("dbtbl_1"));
         assertThat(shardingRule.getDefaultDataSourceName(), is("dbtbl_0"));
         assertTrue(Arrays.equals(shardingRule.getDefaultDatabaseShardingStrategy().getShardingColumns().toArray(new String[]{}), 
                 new String[]{this.applicationContext.getBean("standardStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
@@ -213,6 +216,13 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         assertThat(orderItemRule.getActualDataNodes().size(), is(2));
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order_item")));
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_1", "t_order_item")));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Map<String, DataSource> getDataSourceMap(final String shardingDataSourceName) {
+        ShardingDataSource shardingDataSource = this.applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
+        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
+        return (Map) FieldValueUtil.getFieldValue(shardingContext, "dataSourceMap");
     }
     
     private ShardingRule getShardingRule(final String shardingDataSourceName) {

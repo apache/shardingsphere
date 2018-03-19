@@ -89,8 +89,8 @@ public abstract class AbstractNullableShardingTableOnlyTest extends AbstractSQLA
             tableRuleConfig.setLogicTable("t_order");
             shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", ComplexKeysModuloDatabaseShardingAlgorithm.class.getName()));
-            ShardingRule shardingRule = shardingRuleConfig.build(each.getValue());
-            getShardingDataSources().put(each.getKey(), new ShardingDataSource(shardingRule));
+            ShardingRule shardingRule = shardingRuleConfig.build(each.getValue().keySet());
+            getShardingDataSources().put(each.getKey(), new ShardingDataSource(each.getValue(), shardingRule));
         }
         return getShardingDataSources();
     }

@@ -27,12 +27,10 @@ import io.shardingjdbc.core.util.StringUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeSet;
 
 /**
@@ -44,7 +42,7 @@ import java.util.TreeSet;
 @Getter
 public final class ShardingRule {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Collection<String> dataSourceNames;
     
     private final String defaultDataSourceName;
     
@@ -58,10 +56,10 @@ public final class ShardingRule {
     
     private final KeyGenerator defaultKeyGenerator;
     
-    public ShardingRule(final Map<String, DataSource> dataSourceMap, final String defaultDataSourceName, final Collection<TableRule> tableRules, final Collection<String> bindingTableGroups, 
+    public ShardingRule(final Collection<String> dataSourceNames, final String defaultDataSourceName, final Collection<TableRule> tableRules, final Collection<String> bindingTableGroups, 
                         final ShardingStrategy defaultDatabaseShardingStrategy, final ShardingStrategy defaultTableShardingStrategy, final KeyGenerator defaultKeyGenerator) {
-        this.dataSourceMap = dataSourceMap;
-        this.defaultDataSourceName = getDefaultDataSourceName(dataSourceMap, defaultDataSourceName);
+        this.dataSourceNames = dataSourceNames;
+        this.defaultDataSourceName = getDefaultDataSourceName(dataSourceNames, defaultDataSourceName);
         this.tableRules = tableRules;
         for (String group : bindingTableGroups) {
             List<TableRule> tableRulesForBinding = new LinkedList<>();
@@ -75,9 +73,9 @@ public final class ShardingRule {
         this.defaultKeyGenerator = defaultKeyGenerator;
     }
     
-    private String getDefaultDataSourceName(final Map<String, DataSource> dataSourceMap, final String defaultDataSourceName) {
-        if (1 == dataSourceMap.size()) {
-            return dataSourceMap.entrySet().iterator().next().getKey();
+    private String getDefaultDataSourceName(final Collection<String> dataSourceNames, final String defaultDataSourceName) {
+        if (1 == dataSourceNames.size()) {
+            return dataSourceNames.iterator().next();
         }
         if (Strings.isNullOrEmpty(defaultDataSourceName)) {
             return null;
@@ -133,9 +131,7 @@ public final class ShardingRule {
     }
     
     private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
-        Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1, 1);
-        defaultDataSourceMap.put(defaultDataSourceName, dataSourceMap.get(defaultDataSourceName));
-        return new TableRule(logicTableName, null, defaultDataSourceMap, null, null, null, null, null);
+        return new TableRule(logicTableName, null, Collections.singletonList(defaultDataSourceName), null, null, null, null, null);
     }
     
     /**
@@ -305,7 +301,7 @@ public final class ShardingRule {
     public DataNode findDataNodeByLogicTable(final String logicTableName) {
         TableRule tableRule = getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
-            if (dataSourceMap.containsKey(each.getDataSourceName())) {
+            if (dataSourceNames.contains(each.getDataSourceName())) {
                 return each;
             }
         }

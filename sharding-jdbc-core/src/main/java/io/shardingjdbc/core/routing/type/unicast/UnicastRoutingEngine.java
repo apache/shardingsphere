@@ -41,7 +41,7 @@ public final class UnicastRoutingEngine implements RoutingEngine {
     public RoutingResult route() {
         RoutingResult result = new RoutingResult();
         if (sqlStatement.getTables().isEmpty()) {
-            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getDataSourceMap().keySet().iterator().next(), "", ""));
+            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getDataSourceNames().iterator().next(), "", ""));
         } else if (sqlStatement.getTables().isSingleTable()) {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
             DataNode dataNode = shardingRule.findDataNodeByLogicTable(logicTableName);

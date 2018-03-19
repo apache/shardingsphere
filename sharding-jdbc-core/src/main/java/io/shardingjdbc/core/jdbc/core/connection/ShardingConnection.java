@@ -65,7 +65,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      */
     // TODO Return value is Connection because will support multiple master datasources in future.
     public Collection<Connection> getConnectionsForDDL(final String dataSourceName) throws SQLException {
-        DataSource dataSource = shardingContext.getShardingRule().getDataSourceMap().get(dataSourceName);
+        DataSource dataSource = shardingContext.getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
         Map<String, DataSource> dataSources;
         if (dataSource instanceof MasterSlaveDataSource) {
@@ -96,7 +96,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         if (getCachedConnections().containsKey(dataSourceName)) {
             return getCachedConnections().get(dataSourceName);
         }
-        DataSource dataSource = shardingContext.getShardingRule().getDataSourceMap().get(dataSourceName);
+        DataSource dataSource = shardingContext.getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
         String realDataSourceName;
         if (dataSource instanceof MasterSlaveDataSource) {
@@ -130,7 +130,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return getConnection(shardingContext.getShardingRule().getDataSourceMap().keySet().iterator().next(), SQLType.DQL).getMetaData();
+        return getConnection(shardingContext.getDataSourceMap().keySet().iterator().next(), SQLType.DQL).getMetaData();
     }
     
     @Override

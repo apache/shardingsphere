@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,9 +69,10 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void assertDefaultShardingDataSource() {
+        Map<String, DataSource> dataSourceMap = getDataSourceMap("defaultShardingDataSource");
+        assertNotNull(dataSourceMap.get("randomMasterSlaveDataSource"));
+        assertNotNull(dataSourceMap.get("refMasterSlaveDataSource"));
         ShardingRule shardingRule = getShardingRule("defaultShardingDataSource");
-        assertNotNull(shardingRule.getDataSourceMap().get("randomMasterSlaveDataSource"));
-        assertNotNull(shardingRule.getDataSourceMap().get("refMasterSlaveDataSource"));
         assertThat(shardingRule.getDefaultDataSourceName(), is("randomMasterSlaveDataSource"));
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
@@ -79,6 +81,13 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertShardingDataSourceType() {
         assertTrue(this.applicationContext.getBean("defaultMasterSlaveDataSource", MasterSlaveDataSource.class) instanceof SpringMasterSlaveDataSource);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Map<String, DataSource> getDataSourceMap(final String shardingDataSourceName) {
+        ShardingDataSource shardingDataSource = this.applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
+        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
+        return (Map) FieldValueUtil.getFieldValue(shardingContext, "dataSourceMap");
     }
     
     private ShardingRule getShardingRule(final String shardingDataSourceName) {

@@ -94,7 +94,7 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("order_id", PreciseModuloTableShardingAlgorithm.class.getName(), RangeModuloTableShardingAlgorithm.class.getName()));
-            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(entry.getValue())));
+            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(entry.getValue(), shardingRuleConfig.build(entry.getValue().keySet())));
         }
         return getShardingDataSources();
     }
