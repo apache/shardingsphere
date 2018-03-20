@@ -17,11 +17,11 @@
 
 package io.shardingjdbc.transaction.storage.impl;
 
+import com.google.common.collect.Lists;
 import io.shardingjdbc.transaction.constants.SoftTransactionType;
 import io.shardingjdbc.transaction.storage.TransactionLog;
 import io.shardingjdbc.transaction.storage.TransactionLogStorage;
-import com.google.common.collect.Lists;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
 

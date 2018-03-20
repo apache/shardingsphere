@@ -25,8 +25,7 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.AfterClass;
 

@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.yaml;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
 
@@ -42,7 +42,7 @@ public abstract class AbstractYamlDataSourceTest {
         result.setDriverClassName(org.h2.Driver.class.getName());
         result.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", dsName));
         result.setUsername("sa");
-        result.setMaxActive(100);
+        result.setMaxTotal(100);
         return result;
     }
     

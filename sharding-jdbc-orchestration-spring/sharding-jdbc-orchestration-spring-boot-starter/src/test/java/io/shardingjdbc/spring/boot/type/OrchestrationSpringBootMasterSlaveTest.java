@@ -20,7 +20,7 @@ package io.shardingjdbc.spring.boot.type;
 import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.spring.boot.util.EmbedTestingServer;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +56,7 @@ public class OrchestrationSpringBootMasterSlaveTest {
     public void assertWithMasterSlaveDataSource() {
         assertTrue(dataSource instanceof MasterSlaveDataSource);
         for (DataSource each : ((MasterSlaveDataSource) dataSource).getAllDataSources().values()) {
-            assertThat(((BasicDataSource) each).getMaxActive(), is(16));
+            assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");

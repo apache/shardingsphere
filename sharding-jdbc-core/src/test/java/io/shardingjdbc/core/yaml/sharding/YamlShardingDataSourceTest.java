@@ -24,7 +24,7 @@ import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.BindingTableRule;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.ShardingRuleException;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.Driver;
 import org.junit.Test;
 
