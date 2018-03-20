@@ -20,6 +20,8 @@ Organizations using Sharding in chronological order.
 * [TCL](http://www.tcl.com/)
 * [nanyiku](http://www.nanyiku.com/)
 * [yiwugou](http://www.yiwugou.com/)
+* [JD.ru](https://www.jd.ru/)
+* [Joybuy](https://www.joybuy.com/)
 
 ## Information
 
@@ -44,6 +46,7 @@ Organizations using Sharding in chronological order.
 * [51credit](http://www.51credit.com/)
 * [sui](https://www.sui.com/)
 * [mljr](https://www.mljr.com/)
+* [tuandai](https://www.tuandai.com/)
 
 ## SNS
 

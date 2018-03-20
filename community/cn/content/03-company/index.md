@@ -20,6 +20,8 @@ chapter = true
 * [TCL](http://www.tcl.com/)
 * [男衣库](http://www.nanyiku.com/)
 * [义乌购](http://www.yiwugou.com/)
+* [京东商城俄罗斯站](https://www.jd.ru/)
+* [京东商城海外站](https://www.joybuy.com/)
 
 ## 信息资讯
 
@@ -44,6 +46,7 @@ chapter = true
 * [我爱卡](http://www.51credit.com/)
 * [随手记](https://www.sui.com/)
 * [美丽金融](https://www.mljr.com/)
+* [团贷网](https://www.tuandai.com/)
 
 ## 社交平台
 
