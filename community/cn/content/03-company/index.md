@@ -20,7 +20,7 @@ chapter = true
 * [TCL](http://www.tcl.com/)
 * [男衣库](http://www.nanyiku.com/)
 * [义乌购](http://www.yiwugou.com/)
-* [京东商城俄罗斯站](https://www.jd.ru/)
+* [京东商城俄文站](https://www.jd.ru/)
 * [京东商城海外站](https://www.joybuy.com/)
 
 ## 信息资讯
