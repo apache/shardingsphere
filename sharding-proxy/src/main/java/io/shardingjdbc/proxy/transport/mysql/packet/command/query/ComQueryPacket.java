@@ -66,13 +66,21 @@ public final class ComQueryPacket extends CommandPacket {
                 Statement statement = conn.createStatement()) {
             SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
             ResultSet resultSet;
+            int affectedRows = 0;
+            long lastInsertId = 0;
             switch (sqlStatement.getType()) {
                 case DQL:
                     resultSet = statement.executeQuery(sql);
                     break;
                 case DML:
                 case DDL:
-                    statement.executeUpdate(sql);
+                    if (needGeneratedKey()) {
+                        affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+                        lastInsertId = getGeneratedKey(statement);
+                    } else {
+                        affectedRows = statement.executeUpdate(sql);
+                        lastInsertId = -1;
+                    }
                     resultSet = statement.getResultSet();
                     break;
                 default:
@@ -81,7 +89,7 @@ public final class ComQueryPacket extends CommandPacket {
                     break;
             }
             if (null == resultSet) {
-                result.add(new OKPacket(++currentSequenceId, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+                result.add(new OKPacket(++currentSequenceId, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
                 return result;
             }
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -92,8 +100,8 @@ public final class ComQueryPacket extends CommandPacket {
             }
             result.add(new FieldCountPacket(++currentSequenceId, columnCount));
             for (int i = 1; i <= columnCount; i++) {
-                result.add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i), 
-                        resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i), 
+                result.add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
+                        resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
                         resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
             }
             result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
@@ -117,6 +125,20 @@ public final class ComQueryPacket extends CommandPacket {
                 result.add(new ErrPacket(++currentSequenceId, 99, "", "unknown", ex.getMessage()));
             }
             return result;
+        }
+        return result;
+    }
+    
+    private boolean needGeneratedKey() {
+        // TODO justify based on the request protocol
+        return sql.toUpperCase().startsWith("INSERT");
+    }
+
+    private long getGeneratedKey(final Statement statement) throws SQLException {
+        long result = -1;
+        ResultSet resultSet = statement.getGeneratedKeys();
+        if (resultSet.next()) {
+            result = resultSet.getLong(1);
         }
         return result;
     }
