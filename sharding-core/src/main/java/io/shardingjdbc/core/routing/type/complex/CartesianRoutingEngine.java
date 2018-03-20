@@ -17,13 +17,13 @@
 
 package io.shardingjdbc.core.routing.type.complex;
 
-import io.shardingjdbc.core.routing.type.RoutingEngine;
-import io.shardingjdbc.core.routing.type.RoutingResult;
-import io.shardingjdbc.core.routing.type.TableUnit;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import io.shardingjdbc.core.routing.type.RoutingEngine;
+import io.shardingjdbc.core.routing.type.RoutingResult;
+import io.shardingjdbc.core.routing.type.TableUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

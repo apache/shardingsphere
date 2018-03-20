@@ -17,17 +17,17 @@
 
 package io.shardingjdbc.core.routing.type.complex;
 
-import io.shardingjdbc.core.rule.BindingTableRule;
-import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.rule.TableRule;
-import io.shardingjdbc.core.exception.ShardingJdbcException;
-import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
-import io.shardingjdbc.core.routing.type.RoutingResult;
-import io.shardingjdbc.core.routing.type.RoutingEngine;
-import io.shardingjdbc.core.routing.type.standard.StandardRoutingEngine;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.routing.type.RoutingEngine;
+import io.shardingjdbc.core.routing.type.RoutingResult;
+import io.shardingjdbc.core.routing.type.standard.StandardRoutingEngine;
+import io.shardingjdbc.core.rule.BindingTableRule;
+import io.shardingjdbc.core.rule.ShardingRule;
+import io.shardingjdbc.core.rule.TableRule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

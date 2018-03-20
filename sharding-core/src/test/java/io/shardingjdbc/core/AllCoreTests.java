@@ -19,7 +19,10 @@ package io.shardingjdbc.core;
 
 import io.shardingjdbc.core.api.AllApiTests;
 import io.shardingjdbc.core.constant.AllConstantsTests;
+import io.shardingjdbc.core.hint.AllHintTests;
 import io.shardingjdbc.core.parsing.AllParsingTests;
+import io.shardingjdbc.core.rewrite.AllRewriteTests;
+import io.shardingjdbc.core.routing.AllRoutingTests;
 import io.shardingjdbc.core.util.AllUtilTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -30,7 +33,10 @@ import org.junit.runners.Suite.SuiteClasses;
         AllConstantsTests.class, 
         AllApiTests.class, 
         AllUtilTests.class, 
-        AllParsingTests.class
-    })
+        AllParsingTests.class,
+        AllRewriteTests.class,
+        AllRoutingTests.class,
+        AllHintTests.class
+})
 public class AllCoreTests {
 }

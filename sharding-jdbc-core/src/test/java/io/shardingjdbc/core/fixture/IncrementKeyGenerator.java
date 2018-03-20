@@ -15,29 +15,18 @@
  * </p>
  */
 
-package io.shardingjdbc.core.keygen.fixture;
+package io.shardingjdbc.core.fixture;
 
-import io.shardingjdbc.core.keygen.DefaultKeyGenerator;
-import io.shardingjdbc.core.keygen.TimeService;
-import lombok.RequiredArgsConstructor;
+import io.shardingjdbc.core.keygen.KeyGenerator;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-@RequiredArgsConstructor
-public final class FixedTimeService extends TimeService {
+public class IncrementKeyGenerator implements KeyGenerator {
     
-    private final int expectedInvokedTimes;
-    
-    private final AtomicInteger invokedTimes = new AtomicInteger();
-    
-    private long current = DefaultKeyGenerator.EPOCH;
+    private final AtomicInteger count = new AtomicInteger();
     
     @Override
-    public long getCurrentMillis() {
-        if (invokedTimes.getAndIncrement() < expectedInvokedTimes) {
-            return current;
-        }
-        invokedTimes.set(0);
-        return ++current;
+    public Number generateKey() {
+        return count.incrementAndGet();
     }
 }

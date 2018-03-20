@@ -17,15 +17,15 @@
 
 package io.shardingjdbc.core.api;
 
-import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
-import io.shardingjdbc.core.hint.HintManagerHolder;
-import io.shardingjdbc.core.hint.ShardingKey;
-import io.shardingjdbc.core.constant.ShardingOperator;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
+import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.constant.ShardingOperator;
+import io.shardingjdbc.core.hint.HintManagerHolder;
+import io.shardingjdbc.core.hint.ShardingKey;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

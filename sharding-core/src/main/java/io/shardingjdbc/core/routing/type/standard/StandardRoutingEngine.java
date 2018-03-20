@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.core.routing.type.standard;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
@@ -30,8 +32,6 @@ import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

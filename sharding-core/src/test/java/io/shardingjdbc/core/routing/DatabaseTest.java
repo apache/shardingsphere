@@ -24,7 +24,6 @@ import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.fixture.OrderDatabaseHintShardingAlgorithm;
-import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,8 +72,7 @@ public class DatabaseTest {
     @Test
     public void assertDatabaseAllRoutingSQL() {
         String originSql = "select * from tesT";
-        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, false);
-        SQLRouteResult actual = new StatementRoutingEngine(shardingContext.getShardingRule(), shardingContext.getDatabaseType(), shardingContext.isShowSQL()).route(originSql);
+        SQLRouteResult actual = new StatementRoutingEngine(shardingRule, DatabaseType.MySQL, false).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
         
@@ -96,8 +94,7 @@ public class DatabaseTest {
     }
     
     private void assertTarget(final String originSql, final String targetDataSource) {
-        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, false);
-        SQLRouteResult actual = new StatementRoutingEngine(shardingContext.getShardingRule(), shardingContext.getDatabaseType(), shardingContext.isShowSQL()).route(originSql);
+        SQLRouteResult actual = new StatementRoutingEngine(shardingRule, DatabaseType.MySQL, false).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
             

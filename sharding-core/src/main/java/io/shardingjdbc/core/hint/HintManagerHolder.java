@@ -17,10 +17,10 @@
 
 package io.shardingjdbc.core.hint;
 
-import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
-import io.shardingjdbc.core.api.HintManager;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.api.HintManager;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
