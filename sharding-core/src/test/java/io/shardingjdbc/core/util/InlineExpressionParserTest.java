@@ -19,13 +19,20 @@ package io.shardingjdbc.core.util;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class InlineBasicExpressionParserTest {
+public final class InlineExpressionParserTest {
+    
+    @Test
+    public void assertEvaluateForExpressionIsNull() {
+        List<String> expected = new InlineExpressionParser(null).evaluate();
+        assertThat(expected, is(Collections.<String>emptyList()));
+    }
     
     @Test
     public void assertEvaluateForSimpleString() {
