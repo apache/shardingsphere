@@ -7,6 +7,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>sharding-core</module>
         <module>sharding-jdbc-core</module>
         <module>sharding-jdbc-core-spring</module>
         <module>sharding-jdbc-transaction-parent</module>
