@@ -30,14 +30,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author caohao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public final class ConfigMapContext {
     
     private static final ConfigMapContext INSTANCE = new ConfigMapContext();
     
-    @Getter
     private Map<String, Object> shardingConfig = new ConcurrentHashMap<>();
     
-    @Getter
     private Map<String, Object> masterSlaveConfig = new ConcurrentHashMap<>();
     
     /**
