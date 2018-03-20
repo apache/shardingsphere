@@ -15,13 +15,12 @@
  * </p>
  */
 
-package io.shardingjdbc.core.common.jaxb.helper;
+package io.shardingjdbc.core.parsing.jaxb.helper;
 
-import io.shardingjdbc.core.common.jaxb.SQLStatement;
-import io.shardingjdbc.core.common.jaxb.SQLStatements;
-import io.shardingjdbc.core.integrate.jaxb.helper.SQLAssertJAXBHelper;
-import io.shardingjdbc.core.constant.DatabaseType;
 import com.google.common.collect.Sets;
+import io.shardingjdbc.core.parsing.jaxb.SQLStatement;
+import io.shardingjdbc.core.parsing.jaxb.SQLStatements;
+import io.shardingjdbc.core.constant.DatabaseType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -49,7 +48,7 @@ public final class SQLStatementHelper {
     
     private static Map<String, SQLStatement> loadSqlStatements(final String directory) {
         Map<String, SQLStatement> result = new HashMap<>();
-        URL url = SQLAssertJAXBHelper.class.getClassLoader().getResource(directory);
+        URL url = SQLStatementHelper.class.getClassLoader().getResource(directory);
         if (null == url) {
             return result;
         }

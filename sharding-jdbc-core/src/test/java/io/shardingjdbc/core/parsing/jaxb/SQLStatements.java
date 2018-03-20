@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.integrate.jaxb;
+package io.shardingjdbc.core.parsing.jaxb;
 
 import lombok.Getter;
 
@@ -26,8 +26,8 @@ import java.util.List;
 
 @XmlRootElement(name = "sqls")
 @Getter
-public final class SQLAsserts {
+public final class SQLStatements {
     
     @XmlElement(name = "sql")
-    private List<SQLAssert> sqlAsserts = new ArrayList<>();
+    private List<SQLStatement> sqls = new ArrayList<>();
 }

@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.integrate.type.sharding.hint.type;
 
-import io.shardingjdbc.core.common.util.SQLPlaceholderUtil;
+import io.shardingjdbc.core.util.SQLPlaceholderUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.sql.DatabaseTestSQL;

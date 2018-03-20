@@ -21,8 +21,8 @@ import io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorit
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.fixture.ShardingRuleMockBuilder;
-import io.shardingjdbc.core.common.jaxb.helper.SQLStatementHelper;
-import io.shardingjdbc.core.common.util.SQLPlaceholderUtil;
+import io.shardingjdbc.core.parsing.jaxb.helper.SQLStatementHelper;
+import io.shardingjdbc.core.util.SQLPlaceholderUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.base.AbstractBaseParseSQLTest;
 import io.shardingjdbc.core.parsing.parser.base.AbstractBaseParseTest;

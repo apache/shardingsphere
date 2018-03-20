@@ -15,13 +15,13 @@
  * </p>
  */
 
-package io.shardingjdbc.core.common.jaxb.helper;
+package io.shardingjdbc.core.parsing.jaxb.helper;
 
-import com.google.common.collect.Sets;
-import io.shardingjdbc.core.common.jaxb.SQLStatement;
-import io.shardingjdbc.core.common.jaxb.SQLStatements;
-import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.parsing.jaxb.SQLStatement;
+import io.shardingjdbc.core.parsing.jaxb.SQLStatements;
 import io.shardingjdbc.core.integrate.jaxb.helper.SQLAssertJAXBHelper;
+import io.shardingjdbc.core.constant.DatabaseType;
+import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

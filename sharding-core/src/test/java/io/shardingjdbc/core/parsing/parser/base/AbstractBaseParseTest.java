@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.base;
 
-import io.shardingjdbc.core.common.jaxb.helper.SQLStatementHelper;
+import io.shardingjdbc.core.parsing.jaxb.helper.SQLStatementHelper;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
 import io.shardingjdbc.core.parsing.parser.jaxb.Asserts;

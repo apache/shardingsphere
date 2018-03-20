@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.common.util;
+package io.shardingjdbc.core.util;
 
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import lombok.AccessLevel;

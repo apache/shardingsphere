@@ -15,25 +15,19 @@
  * </p>
  */
 
-package io.shardingjdbc.core.integrate.jaxb;
+package io.shardingjdbc.core.parsing.jaxb;
 
 import lombok.Getter;
-import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "sqls")
 @Getter
-@Setter
-public final class SQLShardingRule {
+public final class SQLStatements {
     
-    @XmlAttribute(name = "value")
-    private String value;
-    
-    @XmlElement
-    private List<SQLAssertData> data;
+    @XmlElement(name = "sql")
+    private List<SQLStatement> sqls = new ArrayList<>();
 }
