@@ -66,6 +66,7 @@ Maintainers are committers that have spent a significant amount of time and effo
  - *sharding-jdbc-doc*
  
      - 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666)
+     - 潘娟, Juan Pan, [@tristaZero](https://github.com/tristaZero)
  
  - *sharding-jdbc-example*
  

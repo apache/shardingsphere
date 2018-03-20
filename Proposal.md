@@ -78,6 +78,8 @@ The core developers are a diverse group of experienced open source developers an
 
 * 张永伦, Yonglun Zhang, Senior engineer, Jingdong
 
+* 潘娟, Juan Pan, Senior DBA, Jingdong
+
 ## Known Risks
 
 ### Orphaned products
@@ -220,9 +222,11 @@ Slack [https://sharding.slack.com](https://sharding.slack.com)
 
 * 张永伦, Yonglun Zhang, 
 
+* 潘娟, Juan Pan,
+
 ## Affiliations
 
-* Jingdong: Liang Zhang, Yonglun Zhang
+* Jingdong: Liang Zhang, Yonglun Zhang, Juan Pan
 
 * Dangdang: Hao Cao
 

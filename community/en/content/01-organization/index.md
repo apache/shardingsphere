@@ -52,6 +52,8 @@ In various situations the Sharding shall hold a vote. These votes can happen on 
 
 * 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666) Senior engineer, Jingdong
 
+* 潘娟, Juan Pan, [@tristaZero](https://github.com/tristaZero) Senior DBA, Jingdong
+
 ## Mailing List
 
 * [Google Groups](mailto:sharding+subscribe@googlegroups.com)

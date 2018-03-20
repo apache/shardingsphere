@@ -52,6 +52,8 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 
 * 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666) 高级工程师, 京东
 
+* 潘娟, Juan Pan, [@tristaZero](https://github.com/tristaZero) 高级DBA, 京东
+
 ## 邮件列表
 
 * [Google Groups](mailto:sharding+subscribe@googlegroups.com)

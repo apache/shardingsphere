@@ -66,6 +66,7 @@ chapter = true
  - *sharding-jdbc-doc*
  
      - 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666)
+     - 潘娟, Juan Pan, [@tristaZero](https://github.com/tristaZero)
  
  - *sharding-jdbc-example*
  
