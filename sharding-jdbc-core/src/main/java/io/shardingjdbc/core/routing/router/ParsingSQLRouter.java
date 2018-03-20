@@ -18,7 +18,6 @@
 package io.shardingjdbc.core.routing.router;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
@@ -47,6 +46,7 @@ import io.shardingjdbc.core.routing.type.standard.StandardRoutingEngine;
 import io.shardingjdbc.core.routing.type.unicast.UnicastRoutingEngine;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLLogger;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -57,6 +57,7 @@ import java.util.List;
  * 
  * @author zhangiang
  */
+@RequiredArgsConstructor
 public final class ParsingSQLRouter implements SQLRouter {
     
     private final ShardingRule shardingRule;
@@ -65,14 +66,7 @@ public final class ParsingSQLRouter implements SQLRouter {
     
     private final boolean showSQL;
     
-    private final List<Number> generatedKeys;
-    
-    public ParsingSQLRouter(final ShardingContext shardingContext) {
-        shardingRule = shardingContext.getShardingRule();
-        databaseType = shardingContext.getDatabaseType();
-        showSQL = shardingContext.isShowSQL();
-        generatedKeys = new LinkedList<>();
-    }
+    private final List<Number> generatedKeys = new LinkedList<>();
     
     @Override
     public SQLStatement parse(final String logicSQL, final int parametersSize) {

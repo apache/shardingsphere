@@ -17,8 +17,9 @@
 
 package io.shardingjdbc.core.routing.router;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
-import io.shardingjdbc.core.jdbc.core.ShardingContext;
+import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -33,10 +34,12 @@ public final class SQLRouterFactory {
     /**
      * Create SQL router.
      * 
-     * @param shardingContext Sharding runtime context
+     * @param shardingRule Sharding rule
+     * @param databaseType database type
+     * @param showSQL is log SQL
      * @return SQL router instance
      */
-    public static SQLRouter createSQLRouter(final ShardingContext shardingContext) {
-        return HintManagerHolder.isDatabaseShardingOnly() ? new DatabaseHintSQLRouter(shardingContext) : new ParsingSQLRouter(shardingContext);
+    public static SQLRouter createSQLRouter(final ShardingRule shardingRule, final DatabaseType databaseType, final boolean showSQL) {
+        return HintManagerHolder.isDatabaseShardingOnly() ? new DatabaseHintSQLRouter(shardingRule, showSQL) : new ParsingSQLRouter(shardingRule, databaseType, showSQL);
     }
 }

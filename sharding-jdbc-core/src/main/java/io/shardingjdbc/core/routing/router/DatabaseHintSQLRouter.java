@@ -17,8 +17,6 @@
 
 package io.shardingjdbc.core.routing.router;
 
-import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.parsing.SQLJudgeEngine;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
@@ -27,7 +25,9 @@ import io.shardingjdbc.core.routing.strategy.hint.HintShardingStrategy;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.hint.DatabaseHintRoutingEngine;
+import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLLogger;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -36,16 +36,12 @@ import java.util.List;
  * 
  * @author zhangiang
  */
+@RequiredArgsConstructor
 public final class DatabaseHintSQLRouter implements SQLRouter {
     
     private final ShardingRule shardingRule;
     
     private final boolean showSQL;
-    
-    public DatabaseHintSQLRouter(final ShardingContext shardingContext) {
-        shardingRule = shardingContext.getShardingRule();
-        showSQL = shardingContext.isShowSQL();
-    }
     
     @Override
     public SQLStatement parse(final String logicSQL, final int parametersSize) {

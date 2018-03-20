@@ -74,7 +74,7 @@ public class DatabaseTest {
     public void assertDatabaseAllRoutingSQL() {
         String originSql = "select * from tesT";
         ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, false);
-        SQLRouteResult actual = new StatementRoutingEngine(shardingContext).route(originSql);
+        SQLRouteResult actual = new StatementRoutingEngine(shardingContext.getShardingRule(), shardingContext.getDatabaseType(), shardingContext.isShowSQL()).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
         
@@ -97,7 +97,7 @@ public class DatabaseTest {
     
     private void assertTarget(final String originSql, final String targetDataSource) {
         ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, false);
-        SQLRouteResult actual = new StatementRoutingEngine(shardingContext).route(originSql);
+        SQLRouteResult actual = new StatementRoutingEngine(shardingContext.getShardingRule(), shardingContext.getDatabaseType(), shardingContext.isShowSQL()).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
             

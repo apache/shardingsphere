@@ -17,10 +17,11 @@
 
 package io.shardingjdbc.core.routing;
 
-import io.shardingjdbc.core.jdbc.core.ShardingContext;
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.router.SQLRouter;
 import io.shardingjdbc.core.routing.router.SQLRouterFactory;
+import io.shardingjdbc.core.rule.ShardingRule;
 
 import java.util.Collections;
 
@@ -33,8 +34,8 @@ public final class StatementRoutingEngine {
     
     private final SQLRouter sqlRouter;
     
-    public StatementRoutingEngine(final ShardingContext shardingContext) {
-        sqlRouter = SQLRouterFactory.createSQLRouter(shardingContext);
+    public StatementRoutingEngine(final ShardingRule shardingRule, final DatabaseType databaseType, final boolean showSQL) {
+        sqlRouter = SQLRouterFactory.createSQLRouter(shardingRule, databaseType, showSQL);
     }
     
     /**

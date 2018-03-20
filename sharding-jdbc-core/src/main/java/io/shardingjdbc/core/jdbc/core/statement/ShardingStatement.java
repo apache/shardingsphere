@@ -22,6 +22,7 @@ import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.executor.type.statement.StatementExecutor;
 import io.shardingjdbc.core.executor.type.statement.StatementUnit;
 import io.shardingjdbc.core.jdbc.adapter.AbstractStatementAdapter;
+import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.connection.ShardingConnection;
 import io.shardingjdbc.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingjdbc.core.jdbc.core.resultset.ShardingResultSet;
@@ -199,7 +200,8 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         clearPrevious();
-        routeResult = new StatementRoutingEngine(connection.getShardingContext()).route(sql);
+        ShardingContext shardingContext = connection.getShardingContext();
+        routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), shardingContext.getDatabaseType(), shardingContext.isShowSQL()).route(sql);
         Collection<StatementUnit> statementUnits = new LinkedList<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             Collection<Connection> connections;

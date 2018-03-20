@@ -26,6 +26,7 @@ import io.shardingjdbc.core.executor.type.batch.BatchPreparedStatementUnit;
 import io.shardingjdbc.core.executor.type.prepared.PreparedStatementExecutor;
 import io.shardingjdbc.core.executor.type.prepared.PreparedStatementUnit;
 import io.shardingjdbc.core.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
+import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.connection.ShardingConnection;
 import io.shardingjdbc.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingjdbc.core.jdbc.core.resultset.ShardingResultSet;
@@ -109,7 +110,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
-        routingEngine = new PreparedStatementRoutingEngine(sql, connection.getShardingContext());
+        ShardingContext shardingContext = connection.getShardingContext();
+        routingEngine = new PreparedStatementRoutingEngine(sql, shardingContext.getShardingRule(), shardingContext.getDatabaseType(), shardingContext.isShowSQL());
     }
     
     @Override
