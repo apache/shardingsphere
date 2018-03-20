@@ -15,15 +15,18 @@
  * </p>
  */
 
-package io.shardingjdbc.core.util;
+package io.shardingjdbc.core.keygen.fixture;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import io.shardingjdbc.core.keygen.KeyGenerator;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        EventBusInstanceTest.class,
-        DataSourceUtilTest.class
-    })
-public class AllUtilTests {
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class IncrementKeyGenerator implements KeyGenerator {
+    
+    private final AtomicInteger count = new AtomicInteger();
+    
+    @Override
+    public Number generateKey() {
+        return count.incrementAndGet();
+    }
 }

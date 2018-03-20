@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertInsertWithAllPlaceholders" parameters="1,1,'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </table-tokens>
+        <conditions>
+            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="1" type="int" /> 
+            </condition>
+            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                <value index="1" literal="1" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    <assert id="assertInsertWithPartialPlaceholder" parameters="1,1">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </table-tokens>
+        <conditions>
+            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="1" type="int" />
+            </condition>
+            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                <value index="1" literal="1" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    <assert id="assertInsertWithGenerateKeyColumn" parameters="10000,1000,10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+        </table-tokens>
+        <conditions>
+            <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                <value index="0" literal="10000" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                <value index="1" literal="1000" type="int" />
+            </condition>
+            <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                <value index="2" literal="10" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    <assert id="assertInsertWithoutGenerateKeyColumn" parameters="1000,10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+        </table-tokens>
+        <items-token begin-position="50">
+            <items>
+                <item>item_id</item>
+            </items>
+        </items-token>
+        <generated-key-token begin-position-of-statement="77" begin-position-of-prepared-statement="73" />
+        <conditions>
+            <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                <value index="0" literal="1000" type="int" />
+            </condition>
+            <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                <value index="1" literal="10" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    <!-- // TODO
+    <assert id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )"">
+        <tables>
+            <table name="order" />
+        </tables>
+        <condition-contexts>
+           <condition-context/>
+        </condition-contexts>
+    </assert>
+    -->
+</asserts>

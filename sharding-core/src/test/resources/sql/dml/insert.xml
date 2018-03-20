@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertInsertWithAllPlaceholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)" />
+    <sql id="assertInsertWithPartialPlaceholder" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, 'insert')" />
+    <sql id="assertInsertWithGenerateKeyColumn" value="INSERT INTO t_order_item(item_id, order_id, user_id, status) values(%s, %s, %s, 'insert')" />
+    <sql id="assertInsertWithoutGenerateKeyColumn" value="INSERT INTO t_order_item(order_id, user_id, status) values(%s, %s, 'insert')" />
+</sqls>

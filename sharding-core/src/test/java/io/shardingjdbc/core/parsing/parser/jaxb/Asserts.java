@@ -15,15 +15,19 @@
  * </p>
  */
 
-package io.shardingjdbc.core.util;
+package io.shardingjdbc.core.parsing.parser.jaxb;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import lombok.Getter;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        EventBusInstanceTest.class,
-        DataSourceUtilTest.class
-    })
-public class AllUtilTests {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
+
+@XmlRootElement(name = "asserts")
+@Getter
+public final class Asserts {
+    
+    @XmlElement(name = "assert")
+    private List<Assert> asserts = new ArrayList<>();
 }

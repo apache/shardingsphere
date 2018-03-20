@@ -15,15 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.core.util;
+package io.shardingjdbc.core.common.env;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        EventBusInstanceTest.class,
-        DataSourceUtilTest.class
-    })
-public class AllUtilTests {
+public enum ShardingTestStrategy {
+    
+    tbl, db, dbtbl, masterslave, nullable, masterslaveonly
 }

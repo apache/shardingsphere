@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertAlterTable">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="12" original-literals="t_log" />
+        </table-tokens>
+    </assert>
+    <assert id="assertAlterTableIfExistAndOnly">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="27" original-literals="t_log" />
+        </table-tokens>
+    </assert>
+</asserts>

@@ -15,15 +15,23 @@
  * </p>
  */
 
-package io.shardingjdbc.core.util;
+package io.shardingjdbc.core.api;
 
+import io.shardingjdbc.core.api.algorithm.common.ShardingStrategyTest;
+import io.shardingjdbc.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithmTest;
+import io.shardingjdbc.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithmTest;
+import io.shardingjdbc.core.api.algorithm.sharding.DatabaseShardingStrategyTest;
+import io.shardingjdbc.core.api.algorithm.table.TableShardingStrategyTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        EventBusInstanceTest.class,
-        DataSourceUtilTest.class
+        ShardingStrategyTest.class, 
+        DatabaseShardingStrategyTest.class, 
+        TableShardingStrategyTest.class, 
+        RoundRobinMasterSlaveLoadBalanceAlgorithmTest.class,
+        RandomMasterSlaveLoadBalanceAlgorithmTest.class
     })
-public class AllUtilTests {
+public class AllApiTests {
 }

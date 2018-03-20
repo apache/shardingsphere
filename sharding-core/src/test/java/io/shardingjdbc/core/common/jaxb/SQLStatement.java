@@ -15,15 +15,26 @@
  * </p>
  */
 
-package io.shardingjdbc.core.util;
+package io.shardingjdbc.core.common.jaxb;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import lombok.Getter;
+import lombok.Setter;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        EventBusInstanceTest.class,
-        DataSourceUtilTest.class
-    })
-public class AllUtilTests {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@Getter
+@Setter
+public final class SQLStatement {
+    
+    @XmlAttribute
+    private String id;
+    
+    @XmlAttribute(name = "value")
+    private String sql;
+    
+    @XmlAttribute(name = "type")
+    private String types;
 }

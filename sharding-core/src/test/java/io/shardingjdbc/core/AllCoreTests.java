@@ -15,15 +15,22 @@
  * </p>
  */
 
-package io.shardingjdbc.core.util;
+package io.shardingjdbc.core;
 
+import io.shardingjdbc.core.api.AllApiTests;
+import io.shardingjdbc.core.constant.AllConstantsTests;
+import io.shardingjdbc.core.parsing.AllParsingTests;
+import io.shardingjdbc.core.util.AllUtilTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-        EventBusInstanceTest.class,
-        DataSourceUtilTest.class
+@SuiteClasses({
+        AllConstantsTests.class, 
+        AllApiTests.class, 
+        AllUtilTests.class, 
+        AllParsingTests.class
     })
-public class AllUtilTests {
+public class AllCoreTests {
 }

@@ -15,15 +15,25 @@
  * </p>
  */
 
-package io.shardingjdbc.core.util;
+package io.shardingjdbc.core.integrate.jaxb;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import lombok.Getter;
+import lombok.Setter;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        EventBusInstanceTest.class,
-        DataSourceUtilTest.class
-    })
-public class AllUtilTests {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@Getter
+@Setter
+public final class SQLShardingRule {
+    
+    @XmlAttribute(name = "value")
+    private String value;
+    
+    @XmlElement
+    private List<SQLAssertData> data;
 }

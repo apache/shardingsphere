@@ -22,8 +22,10 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        EventBusInstanceTest.class,
-        DataSourceUtilTest.class
+        NumberUtilTest.class,
+        StringUtilTest.class,
+        InlineBasicExpressionParserTest.class,
+        SQLUtilTest.class
     })
 public class AllUtilTests {
 }

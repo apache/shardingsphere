@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertAlterTable" value="ALTER TABLE t_log ADD name varchar(10)" />
+    <sql id="assertAlterTableIfExistAndOnly" value="ALTER TABLE IF EXISTS ONLY t_log ADD name varchar" type="PostgreSQL" />
+</sqls>
