@@ -17,15 +17,17 @@
 
 package io.shardingjdbc.core.merger.groupby;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import io.shardingjdbc.core.constant.AggregationType;
 import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.merger.DQLMergeEngine;
 import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.ResultSetMergerInput;
+import io.shardingjdbc.core.merger.jdbc.JDBCResultSetMergerInput;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,6 +35,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -50,11 +53,17 @@ public final class GroupByStreamResultSetMergerTest {
     
     private List<ResultSet> resultSets;
     
+    private List<ResultSetMergerInput> resultSetMergerInputs;
+    
     private SelectStatement selectStatement;
     
     @Before
     public void setUp() throws SQLException {
         resultSets = Lists.newArrayList(mockResultSet(), mockResultSet(), mockResultSet());
+        resultSetMergerInputs = new ArrayList<>(resultSets.size());
+        for (ResultSet each : resultSets) {
+            resultSetMergerInputs.add(new JDBCResultSetMergerInput(each));
+        }
         selectStatement = new SelectStatement();
         AggregationSelectItem aggregationSelectItem1 = new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent());
         aggregationSelectItem1.setIndex(1);
@@ -88,14 +97,14 @@ public final class GroupByStreamResultSetMergerTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(resultSets, selectStatement);
+        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(resultSets, selectStatement);
+        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);
@@ -137,7 +146,7 @@ public final class GroupByStreamResultSetMergerTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        mergeEngine = new DQLMergeEngine(resultSets, selectStatement);
+        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);

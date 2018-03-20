@@ -28,7 +28,6 @@ import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public final class DALMergeEngine implements MergeEngine {
     
     private final ShardingRule shardingRule;
     
-    private final List<ResultSet> resultSets;
+    private final List<ResultSetMergerInput> resultSetMergerInputs;
     
     private final DALStatement dalStatement;
     
@@ -52,11 +51,11 @@ public final class DALMergeEngine implements MergeEngine {
             return new ShowDatabasesResultSetMerger();
         }
         if (dalStatement instanceof ShowTablesStatement) {
-            return new ShowTablesResultSetMerger(shardingRule, resultSets);
+            return new ShowTablesResultSetMerger(shardingRule, resultSetMergerInputs);
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableResultSetMerger(shardingRule, resultSets);
+            return new ShowCreateTableResultSetMerger(shardingRule, resultSetMergerInputs);
         }
-        return new ShowOtherResultSetMerger(resultSets.get(0));
+        return new ShowOtherResultSetMerger(resultSetMergerInputs.get(0));
     }
 }

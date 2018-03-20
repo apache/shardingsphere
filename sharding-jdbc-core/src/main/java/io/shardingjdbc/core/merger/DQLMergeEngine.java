@@ -21,16 +21,14 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.merger.groupby.GroupByMemoryResultSetMerger;
 import io.shardingjdbc.core.merger.groupby.GroupByStreamResultSetMerger;
 import io.shardingjdbc.core.merger.iterator.IteratorStreamResultSetMerger;
+import io.shardingjdbc.core.merger.orderby.OrderByStreamResultSetMerger;
 import io.shardingjdbc.core.merger.pagination.LimitDecoratorResultSetMerger;
 import io.shardingjdbc.core.merger.pagination.RowNumberDecoratorResultSetMerger;
 import io.shardingjdbc.core.merger.pagination.TopAndRowNumberDecoratorResultSetMerger;
-import io.shardingjdbc.core.merger.orderby.OrderByStreamResultSetMerger;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.util.SQLUtil;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -43,23 +41,22 @@ import java.util.TreeMap;
  */
 public final class DQLMergeEngine implements MergeEngine {
     
-    private final List<ResultSet> resultSets;
+    private final List<ResultSetMergerInput> resultSetMergerInputs;
     
     private final SelectStatement selectStatement;
     
     private final Map<String, Integer> columnLabelIndexMap;
     
-    public DQLMergeEngine(final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
-        this.resultSets = resultSets;
+    public DQLMergeEngine(final List<ResultSetMergerInput> resultSetMergerInputs, final SelectStatement selectStatement) throws SQLException {
+        this.resultSetMergerInputs = resultSetMergerInputs;
         this.selectStatement = selectStatement;
-        columnLabelIndexMap = getColumnLabelIndexMap(resultSets.get(0));
+        columnLabelIndexMap = getColumnLabelIndexMap(resultSetMergerInputs.get(0));
     }
     
-    private Map<String, Integer> getColumnLabelIndexMap(final ResultSet resultSet) throws SQLException {
-        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+    private Map<String, Integer> getColumnLabelIndexMap(final ResultSetMergerInput resultSetMergerInput) throws SQLException {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-            result.put(SQLUtil.getExactlyValue(resultSetMetaData.getColumnLabel(i)), i);
+        for (int i = 1; i <= resultSetMergerInput.getColumnCount(); i++) {
+            result.put(SQLUtil.getExactlyValue(resultSetMergerInput.getColumnLabel(i)), i);
         }
         return result;
     }
@@ -73,15 +70,15 @@ public final class DQLMergeEngine implements MergeEngine {
     private ResultSetMerger build() throws SQLException {
         if (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) {
             if (selectStatement.isSameGroupByAndOrderByItems()) {
-                return new GroupByStreamResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
+                return new GroupByStreamResultSetMerger(columnLabelIndexMap, resultSetMergerInputs, selectStatement);
             } else {
-                return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
+                return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSetMergerInputs, selectStatement);
             }
         }
         if (!selectStatement.getOrderByItems().isEmpty()) {
-            return new OrderByStreamResultSetMerger(resultSets, selectStatement.getOrderByItems());
+            return new OrderByStreamResultSetMerger(resultSetMergerInputs, selectStatement.getOrderByItems());
         }
-        return new IteratorStreamResultSetMerger(resultSets);
+        return new IteratorStreamResultSetMerger(resultSetMergerInputs);
     }
     
     private ResultSetMerger decorate(final ResultSetMerger resultSetMerger) throws SQLException {

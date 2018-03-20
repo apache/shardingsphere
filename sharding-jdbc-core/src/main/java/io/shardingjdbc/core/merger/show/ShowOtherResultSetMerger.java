@@ -18,10 +18,10 @@
 package io.shardingjdbc.core.merger.show;
 
 import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.ResultSetMergerInput;
 import lombok.RequiredArgsConstructor;
 
 import java.io.InputStream;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
@@ -34,21 +34,21 @@ import java.util.Calendar;
 @RequiredArgsConstructor
 public final class ShowOtherResultSetMerger implements ResultSetMerger {
     
-    private final ResultSet resultSet;
+    private final ResultSetMergerInput resultSetMergerInput;
     
     @Override
     public boolean next() throws SQLException {
-        return resultSet.next();
+        return resultSetMergerInput.next();
     }
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return resultSet.getObject(columnIndex);
+        return resultSetMergerInput.getValue(columnIndex, type);
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return resultSet.getObject(columnLabel);
+        return resultSetMergerInput.getValue(columnLabel, type);
     }
     
     @Override

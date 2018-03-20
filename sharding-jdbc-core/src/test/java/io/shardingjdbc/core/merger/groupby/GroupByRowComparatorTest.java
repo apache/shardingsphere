@@ -18,7 +18,9 @@
 package io.shardingjdbc.core.merger.groupby;
 
 import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.merger.ResultSetMergerInput;
 import io.shardingjdbc.core.merger.common.MemoryResultSetRow;
+import io.shardingjdbc.core.merger.jdbc.JDBCResultSetMergerInput;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.junit.Test;
@@ -99,7 +101,7 @@ public final class GroupByRowComparatorTest {
         assertThat(groupByRowComparator.compare(o1, o2), is(0));
     }
     
-    private ResultSet mockResult(final Object... values) throws SQLException {
+    private ResultSetMergerInput mockResult(final Object... values) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(result.getMetaData()).thenReturn(resultSetMetaData);
@@ -108,6 +110,6 @@ public final class GroupByRowComparatorTest {
         for (Object each : values) {
             when(result.getObject(++index)).thenReturn(each);
         }
-        return result;
+        return new JDBCResultSetMergerInput(result);
     }
 }

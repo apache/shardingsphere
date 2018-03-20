@@ -17,17 +17,17 @@
 
 package io.shardingjdbc.core.merger.groupby;
 
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import io.shardingjdbc.core.merger.ResultSetMergerInput;
 import io.shardingjdbc.core.merger.common.AbstractMemoryResultSetMerger;
 import io.shardingjdbc.core.merger.common.MemoryResultSetRow;
 import io.shardingjdbc.core.merger.groupby.aggregation.AggregationUnit;
 import io.shardingjdbc.core.merger.groupby.aggregation.AggregationUnitFactory;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,16 +49,16 @@ public final class GroupByMemoryResultSetMerger extends AbstractMemoryResultSetM
     private final Iterator<MemoryResultSetRow> memoryResultSetRows;
     
     public GroupByMemoryResultSetMerger(
-            final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
+            final Map<String, Integer> labelAndIndexMap, final List<ResultSetMergerInput> resultSetMergerInputs, final SelectStatement selectStatement) throws SQLException {
         super(labelAndIndexMap);
         this.selectStatement = selectStatement;
-        memoryResultSetRows = init(resultSets);
+        memoryResultSetRows = init(resultSetMergerInputs);
     }
     
-    private Iterator<MemoryResultSetRow> init(final List<ResultSet> resultSets) throws SQLException {
+    private Iterator<MemoryResultSetRow> init(final List<ResultSetMergerInput> resultSetMergerInputs) throws SQLException {
         Map<GroupByValue, MemoryResultSetRow> dataMap = new HashMap<>(1024);
         Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap = new HashMap<>(1024);
-        for (ResultSet each : resultSets) {
+        for (ResultSetMergerInput each : resultSetMergerInputs) {
             while (each.next()) {
                 GroupByValue groupByValue = new GroupByValue(each, selectStatement.getGroupByItems());
                 initForFirstGroupByValue(each, groupByValue, dataMap, aggregationMap);
@@ -73,10 +73,10 @@ public final class GroupByMemoryResultSetMerger extends AbstractMemoryResultSetM
         return result.iterator();
     }
     
-    private void initForFirstGroupByValue(final ResultSet resultSet, final GroupByValue groupByValue, final Map<GroupByValue, MemoryResultSetRow> dataMap, 
+    private void initForFirstGroupByValue(final ResultSetMergerInput resultSetMergerInput, final GroupByValue groupByValue, final Map<GroupByValue, MemoryResultSetRow> dataMap, 
                                           final Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap) throws SQLException {
         if (!dataMap.containsKey(groupByValue)) {
-            dataMap.put(groupByValue, new MemoryResultSetRow(resultSet));
+            dataMap.put(groupByValue, new MemoryResultSetRow(resultSetMergerInput));
         }
         if (!aggregationMap.containsKey(groupByValue)) {
             Map<AggregationSelectItem, AggregationUnit> map = Maps.toMap(selectStatement.getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
@@ -90,22 +90,23 @@ public final class GroupByMemoryResultSetMerger extends AbstractMemoryResultSetM
         }
     }
     
-    private void aggregate(final ResultSet resultSet, final GroupByValue groupByValue, final Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap) throws SQLException {
+    private void aggregate(final ResultSetMergerInput resultSetMergerInput, 
+                           final GroupByValue groupByValue, final Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap) throws SQLException {
         for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
             List<Comparable<?>> values = new ArrayList<>(2);
             if (each.getDerivedAggregationSelectItems().isEmpty()) {
-                values.add(getAggregationValue(resultSet, each));
+                values.add(getAggregationValue(resultSetMergerInput, each));
             } else {
                 for (AggregationSelectItem derived : each.getDerivedAggregationSelectItems()) {
-                    values.add(getAggregationValue(resultSet, derived));
+                    values.add(getAggregationValue(resultSetMergerInput, derived));
                 }
             }
             aggregationMap.get(groupByValue).get(each).merge(values);
         }
     }
     
-    private Comparable<?> getAggregationValue(final ResultSet resultSet, final AggregationSelectItem aggregationSelectItem) throws SQLException {
-        Object result = resultSet.getObject(aggregationSelectItem.getIndex());
+    private Comparable<?> getAggregationValue(final ResultSetMergerInput resultSetMergerInput, final AggregationSelectItem aggregationSelectItem) throws SQLException {
+        Object result = resultSetMergerInput.getValue(aggregationSelectItem.getIndex(), Object.class);
         Preconditions.checkState(null == result || result instanceof Comparable, "Aggregation value must implements Comparable");
         return (Comparable<?>) result;
     }

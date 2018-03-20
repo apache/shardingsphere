@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.merger.groupby;
 
 import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.merger.jdbc.JDBCResultSetMergerInput;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +48,8 @@ public final class GroupByValueTest {
     
     @Test
     public void assertGetGroupByValues() throws SQLException {
-        List<?> actual = new GroupByValue(resultSet, Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(3, OrderType.DESC, OrderType.ASC))).getGroupValues();
+        List<?> actual = new GroupByValue(
+                new JDBCResultSetMergerInput(resultSet), Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(3, OrderType.DESC, OrderType.ASC))).getGroupValues();
         List<?> expected = Arrays.asList("1", "3");
         assertTrue(actual.equals(expected));
     }

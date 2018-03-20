@@ -17,11 +17,11 @@
 
 package io.shardingjdbc.core.merger.groupby;
 
+import io.shardingjdbc.core.merger.ResultSetMergerInput;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +37,14 @@ public final class GroupByValue {
     
     private final List<?> groupValues;
     
-    public GroupByValue(final ResultSet resultSet, final List<OrderItem> groupByItems) throws SQLException {
-        groupValues = getGroupByValues(resultSet, groupByItems);
+    public GroupByValue(final ResultSetMergerInput resultSetMergerInput, final List<OrderItem> groupByItems) throws SQLException {
+        groupValues = getGroupByValues(resultSetMergerInput, groupByItems);
     }
     
-    private List<?> getGroupByValues(final ResultSet resultSet, final List<OrderItem> groupByItems) throws SQLException {
+    private List<?> getGroupByValues(final ResultSetMergerInput resultSetMergerInput, final List<OrderItem> groupByItems) throws SQLException {
         List<Object> result = new ArrayList<>(groupByItems.size());
         for (OrderItem each : groupByItems) {
-            result.add(resultSet.getObject(each.getIndex()));
+            result.add(resultSetMergerInput.getValue(each.getIndex(), Object.class));
         }
         return result;
     }

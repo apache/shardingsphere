@@ -17,13 +17,13 @@
 
 package io.shardingjdbc.core.merger.orderby;
 
+import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.merger.ResultSetMergerInput;
 import io.shardingjdbc.core.merger.util.ResultSetUtil;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +38,7 @@ import java.util.List;
 public final class OrderByValue implements Comparable<OrderByValue> {
     
     @Getter
-    private final ResultSet resultSet;
+    private final ResultSetMergerInput resultSetMergerInput;
     
     private final List<OrderItem> orderByItems;
     
@@ -51,7 +51,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
      * @throws SQLException SQL Exception
      */
     public boolean next() throws SQLException {
-        boolean result = resultSet.next();
+        boolean result = resultSetMergerInput.next();
         orderValues = result ? getOrderValues() : Collections.<Comparable<?>>emptyList();
         return result;
     }
@@ -59,7 +59,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     private List<Comparable<?>> getOrderValues() throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
         for (OrderItem each : orderByItems) {
-            Object value = resultSet.getObject(each.getIndex());
+            Object value = resultSetMergerInput.getValue(each.getIndex(), Object.class);
             Preconditions.checkState(null == value || value instanceof Comparable, "Order by value must implements Comparable");
             result.add((Comparable<?>) value);
         }

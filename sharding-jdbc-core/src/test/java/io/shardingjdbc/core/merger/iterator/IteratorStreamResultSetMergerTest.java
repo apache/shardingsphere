@@ -17,10 +17,12 @@
 
 package io.shardingjdbc.core.merger.iterator;
 
+import com.google.common.collect.Lists;
 import io.shardingjdbc.core.merger.DQLMergeEngine;
 import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.ResultSetMergerInput;
+import io.shardingjdbc.core.merger.jdbc.JDBCResultSetMergerInput;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
-import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,7 +40,7 @@ public final class IteratorStreamResultSetMergerTest {
     
     private DQLMergeEngine mergeEngine;
     
-    private List<ResultSet> resultSets;
+    private List<ResultSetMergerInput> resultSetMergerInputs;
     
     private SelectStatement selectStatement;
     
@@ -47,23 +49,24 @@ public final class IteratorStreamResultSetMergerTest {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        resultSets = Lists.newArrayList(resultSet, mock(ResultSet.class), mock(ResultSet.class));
+        resultSetMergerInputs = Lists.<ResultSetMergerInput>newArrayList(
+                new JDBCResultSetMergerInput(resultSet), new JDBCResultSetMergerInput(mock(ResultSet.class)), new JDBCResultSetMergerInput(mock(ResultSet.class)));
         selectStatement = new SelectStatement();
     }
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(resultSets, selectStatement);
+        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForResultSetsAllNotEmpty() throws SQLException {
-        for (ResultSet each : resultSets) {
+        for (ResultSetMergerInput each : resultSetMergerInputs) {
             when(each.next()).thenReturn(true, false);
         }
-        mergeEngine = new DQLMergeEngine(resultSets, selectStatement);
+        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -73,8 +76,8 @@ public final class IteratorStreamResultSetMergerTest {
     
     @Test
     public void assertNextForFirstResultSetsNotEmptyOnly() throws SQLException {
-        when(resultSets.get(0).next()).thenReturn(true, false);
-        mergeEngine = new DQLMergeEngine(resultSets, selectStatement);
+        when(resultSetMergerInputs.get(0).next()).thenReturn(true, false);
+        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -82,8 +85,8 @@ public final class IteratorStreamResultSetMergerTest {
     
     @Test
     public void assertNextForMiddleResultSetsNotEmpty() throws SQLException {
-        when(resultSets.get(1).next()).thenReturn(true, false);
-        mergeEngine = new DQLMergeEngine(resultSets, selectStatement);
+        when(resultSetMergerInputs.get(1).next()).thenReturn(true, false);
+        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -91,8 +94,8 @@ public final class IteratorStreamResultSetMergerTest {
     
     @Test
     public void assertNextForLastResultSetsNotEmptyOnly() throws SQLException {
-        when(resultSets.get(2).next()).thenReturn(true, false);
-        mergeEngine = new DQLMergeEngine(resultSets, selectStatement);
+        when(resultSetMergerInputs.get(2).next()).thenReturn(true, false);
+        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -100,13 +103,13 @@ public final class IteratorStreamResultSetMergerTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        resultSets.add(mock(ResultSet.class));
-        resultSets.add(mock(ResultSet.class));
-        resultSets.add(mock(ResultSet.class));
-        when(resultSets.get(1).next()).thenReturn(true, false);
-        when(resultSets.get(3).next()).thenReturn(true, false);
-        when(resultSets.get(5).next()).thenReturn(true, false);
-        mergeEngine = new DQLMergeEngine(resultSets, selectStatement);
+        resultSetMergerInputs.add(new JDBCResultSetMergerInput(mock(ResultSet.class)));
+        resultSetMergerInputs.add(new JDBCResultSetMergerInput(mock(ResultSet.class)));
+        resultSetMergerInputs.add(new JDBCResultSetMergerInput(mock(ResultSet.class)));
+        when(resultSetMergerInputs.get(1).next()).thenReturn(true, false);
+        when(resultSetMergerInputs.get(3).next()).thenReturn(true, false);
+        when(resultSetMergerInputs.get(5).next()).thenReturn(true, false);
+        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());

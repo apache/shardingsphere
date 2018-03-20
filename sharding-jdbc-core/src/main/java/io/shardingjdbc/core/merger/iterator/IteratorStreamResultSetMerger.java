@@ -17,9 +17,9 @@
 
 package io.shardingjdbc.core.merger.iterator;
 
+import io.shardingjdbc.core.merger.ResultSetMergerInput;
 import io.shardingjdbc.core.merger.common.AbstractStreamResultSetMerger;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
@@ -31,29 +31,29 @@ import java.util.List;
  */
 public final class IteratorStreamResultSetMerger extends AbstractStreamResultSetMerger {
     
-    private final Iterator<ResultSet> resultSets;
+    private final Iterator<ResultSetMergerInput> resultSetMergerInputs;
     
-    public IteratorStreamResultSetMerger(final List<ResultSet> resultSets) {
-        this.resultSets = resultSets.iterator();
-        setCurrentResultSet(this.resultSets.next());
+    public IteratorStreamResultSetMerger(final List<ResultSetMergerInput> resultSetMergerInputs) {
+        this.resultSetMergerInputs = resultSetMergerInputs.iterator();
+        setCurrentResultSetMergerInput(this.resultSetMergerInputs.next());
     }
     
     @Override
     public boolean next() throws SQLException {
-        if (getCurrentResultSet().next()) {
+        if (getCurrentResultSetMergerInput().next()) {
             return true;
         }
-        if (!resultSets.hasNext()) {
+        if (!resultSetMergerInputs.hasNext()) {
             return false;
         }
-        setCurrentResultSet(resultSets.next());
-        boolean hasNext = getCurrentResultSet().next();
+        setCurrentResultSetMergerInput(resultSetMergerInputs.next());
+        boolean hasNext = getCurrentResultSetMergerInput().next();
         if (hasNext) {
             return true;
         }
-        while (!hasNext && resultSets.hasNext()) {
-            setCurrentResultSet(resultSets.next());
-            hasNext = getCurrentResultSet().next();
+        while (!hasNext && resultSetMergerInputs.hasNext()) {
+            setCurrentResultSetMergerInput(resultSetMergerInputs.next());
+            hasNext = getCurrentResultSetMergerInput().next();
         }
         return hasNext;
     }

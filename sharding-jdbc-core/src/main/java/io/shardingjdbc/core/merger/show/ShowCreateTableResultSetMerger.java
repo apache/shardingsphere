@@ -19,13 +19,13 @@ package io.shardingjdbc.core.merger.show;
 
 import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.merger.ResultSetMergerInput;
 import io.shardingjdbc.core.merger.common.AbstractMemoryResultSetMerger;
 import io.shardingjdbc.core.merger.common.MemoryResultSetRow;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -51,15 +51,15 @@ public final class ShowCreateTableResultSetMerger extends AbstractMemoryResultSe
         LABEL_AND_INDEX_MAP.put("Create Table", 2);
     }
     
-    public ShowCreateTableResultSetMerger(final ShardingRule shardingRule, final List<ResultSet> resultSets) throws SQLException {
+    public ShowCreateTableResultSetMerger(final ShardingRule shardingRule, final List<ResultSetMergerInput> resultSetMergerInputs) throws SQLException {
         super(LABEL_AND_INDEX_MAP);
         this.shardingRule = shardingRule;
-        memoryResultSetRows = init(resultSets);
+        memoryResultSetRows = init(resultSetMergerInputs);
     }
     
-    private Iterator<MemoryResultSetRow> init(final List<ResultSet> resultSets) throws SQLException {
+    private Iterator<MemoryResultSetRow> init(final List<ResultSetMergerInput> resultSetMergerInputs) throws SQLException {
         List<MemoryResultSetRow> result = new LinkedList<>();
-        for (ResultSet each : resultSets) {
+        for (ResultSetMergerInput each : resultSetMergerInputs) {
             while (each.next()) {
                 MemoryResultSetRow memoryResultSetRow = new MemoryResultSetRow(each);
                 String tableName = memoryResultSetRow.getCell(1).toString();

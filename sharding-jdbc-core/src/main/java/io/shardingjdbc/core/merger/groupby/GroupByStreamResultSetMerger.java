@@ -17,16 +17,16 @@
 
 package io.shardingjdbc.core.merger.groupby;
 
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import io.shardingjdbc.core.merger.ResultSetMergerInput;
 import io.shardingjdbc.core.merger.groupby.aggregation.AggregationUnit;
 import io.shardingjdbc.core.merger.groupby.aggregation.AggregationUnitFactory;
 import io.shardingjdbc.core.merger.orderby.OrderByStreamResultSetMerger;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,12 +51,12 @@ public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMe
     private List<?> currentGroupByValues;
     
     public GroupByStreamResultSetMerger(
-            final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
-        super(resultSets, selectStatement.getOrderByItems());
+            final Map<String, Integer> labelAndIndexMap, final List<ResultSetMergerInput> resultSetMergerInputs, final SelectStatement selectStatement) throws SQLException {
+        super(resultSetMergerInputs, selectStatement.getOrderByItems());
         this.labelAndIndexMap = labelAndIndexMap;
         this.selectStatement = selectStatement;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
-        currentGroupByValues = getOrderByValuesQueue().isEmpty() ? Collections.emptyList() : new GroupByValue(getCurrentResultSet(), selectStatement.getGroupByItems()).getGroupValues();
+        currentGroupByValues = getOrderByValuesQueue().isEmpty() ? Collections.emptyList() : new GroupByValue(getCurrentResultSetMergerInput(), selectStatement.getGroupByItems()).getGroupValues();
     }
     
     @Override
@@ -69,7 +69,7 @@ public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMe
             super.next();
         }
         if (aggregateCurrentGroupByRowAndNext()) {
-            currentGroupByValues = new GroupByValue(getCurrentResultSet(), selectStatement.getGroupByItems()).getGroupValues();
+            currentGroupByValues = new GroupByValue(getCurrentResultSetMergerInput(), selectStatement.getGroupByItems()).getGroupValues();
         }
         return true;
     }
@@ -83,7 +83,7 @@ public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMe
                 return AggregationUnitFactory.create(input.getType());
             }
         });
-        while (currentGroupByValues.equals(new GroupByValue(getCurrentResultSet(), selectStatement.getGroupByItems()).getGroupValues())) {
+        while (currentGroupByValues.equals(new GroupByValue(getCurrentResultSetMergerInput(), selectStatement.getGroupByItems()).getGroupValues())) {
             aggregate(aggregationUnitMap);
             cacheCurrentRow();
             result = super.next();
@@ -110,13 +110,13 @@ public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMe
     }
     
     private void cacheCurrentRow() throws SQLException {
-        for (int i = 0; i < getCurrentResultSet().getMetaData().getColumnCount(); i++) {
-            currentRow.add(getCurrentResultSet().getObject(i + 1));
+        for (int i = 0; i < getCurrentResultSetMergerInput().getColumnCount(); i++) {
+            currentRow.add(getCurrentResultSetMergerInput().getValue(i + 1, Object.class));
         }
     }
     
     private Comparable<?> getAggregationValue(final AggregationSelectItem aggregationSelectItem) throws SQLException {
-        Object result = getCurrentResultSet().getObject(aggregationSelectItem.getIndex());
+        Object result = getCurrentResultSetMergerInput().getValue(aggregationSelectItem.getIndex(), Object.class);
         Preconditions.checkState(null == result || result instanceof Comparable, "Aggregation value must implements Comparable");
         return (Comparable<?>) result;
     }
