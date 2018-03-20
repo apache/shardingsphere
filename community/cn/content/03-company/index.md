@@ -47,6 +47,7 @@ chapter = true
 * [随手记](https://www.sui.com/)
 * [美丽金融](https://www.mljr.com/)
 * [团贷网](https://www.tuandai.com/)
+* [京东金融](http://jr.jd.com/)
 
 ## 社交平台
 

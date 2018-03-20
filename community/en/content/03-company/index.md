@@ -47,6 +47,7 @@ Organizations using Sharding in chronological order.
 * [sui](https://www.sui.com/)
 * [mljr](https://www.mljr.com/)
 * [tuandai](https://www.tuandai.com/)
+* [JD Finance](http://jr.jd.com/)
 
 ## SNS
 
