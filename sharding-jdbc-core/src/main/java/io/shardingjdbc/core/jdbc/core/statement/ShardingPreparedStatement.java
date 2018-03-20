@@ -32,7 +32,7 @@ import io.shardingjdbc.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingjdbc.core.jdbc.core.resultset.ShardingResultSet;
 import io.shardingjdbc.core.merger.DALMergeEngine;
 import io.shardingjdbc.core.merger.MergeEngine;
-import io.shardingjdbc.core.merger.SelectMergeEngine;
+import io.shardingjdbc.core.merger.DQLMergeEngine;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -123,7 +123,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
                     getConnection().getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeQuery();
             MergeEngine mergeEngine;
             if (routeResult.getSqlStatement() instanceof SelectStatement) {
-                mergeEngine = new SelectMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
+                mergeEngine = new DQLMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
             } else if (routeResult.getSqlStatement() instanceof DALStatement) {
                 mergeEngine = new DALMergeEngine(connection.getShardingContext().getShardingRule(), resultSets, (DALStatement) routeResult.getSqlStatement());
             } else {
@@ -287,7 +287,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
         MergeEngine mergeEngine = null;
         if (routeResult.getSqlStatement() instanceof SelectStatement) {
-            mergeEngine = new SelectMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
+            mergeEngine = new DQLMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
         } else if (routeResult.getSqlStatement() instanceof DALStatement) {
             mergeEngine = new DALMergeEngine(connection.getShardingContext().getShardingRule(), resultSets, (DALStatement) routeResult.getSqlStatement());
         }

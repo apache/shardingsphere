@@ -28,7 +28,7 @@ import io.shardingjdbc.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingjdbc.core.jdbc.core.resultset.ShardingResultSet;
 import io.shardingjdbc.core.merger.DALMergeEngine;
 import io.shardingjdbc.core.merger.MergeEngine;
-import io.shardingjdbc.core.merger.SelectMergeEngine;
+import io.shardingjdbc.core.merger.DQLMergeEngine;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -102,7 +102,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
             List<ResultSet> resultSets = generateExecutor(sql).executeQuery();
             MergeEngine mergeEngine;
             if (routeResult.getSqlStatement() instanceof SelectStatement) {
-                mergeEngine = new SelectMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
+                mergeEngine = new DQLMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
             } else if (routeResult.getSqlStatement() instanceof DALStatement) {
                 mergeEngine = new DALMergeEngine(connection.getShardingContext().getShardingRule(), resultSets, (DALStatement) routeResult.getSqlStatement());
             } else {
@@ -262,7 +262,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         }
         MergeEngine mergeEngine = null;
         if (routeResult.getSqlStatement() instanceof SelectStatement) {
-            mergeEngine = new SelectMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
+            mergeEngine = new DQLMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
         } else if (routeResult.getSqlStatement() instanceof DALStatement && !resultSets.isEmpty()) {
             mergeEngine = new DALMergeEngine(connection.getShardingContext().getShardingRule(), resultSets, (DALStatement) routeResult.getSqlStatement());
         }

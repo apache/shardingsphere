@@ -34,7 +34,7 @@ public interface ResultSetMerger {
      * @return has next data
      * @throws SQLException SQL Exception
      */
-    boolean next()throws SQLException;
+    boolean next() throws SQLException;
     
     /**
      * Get data value.
