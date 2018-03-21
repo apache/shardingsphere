@@ -63,6 +63,7 @@ public final class SQLJudgeEngine {
                 if (isDQL(tokenType)) {
                     return new SelectStatement();
                 }
+                // TODO use InsertStatement, UpdateStatement ...
                 if (isDML(tokenType)) {
                     return new DMLStatement();
                 }

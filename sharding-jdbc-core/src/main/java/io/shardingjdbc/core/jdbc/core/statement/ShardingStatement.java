@@ -30,7 +30,7 @@ import io.shardingjdbc.core.merger.DALMergeEngine;
 import io.shardingjdbc.core.merger.DQLMergeEngine;
 import io.shardingjdbc.core.merger.MergeEngine;
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.merger.jdbc.JDBCQueryResult;
+import io.shardingjdbc.core.merger.JDBCQueryResult;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
