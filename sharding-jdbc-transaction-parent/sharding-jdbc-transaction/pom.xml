@@ -18,9 +18,5 @@
             <artifactId>sharding-jdbc-transaction-storage</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.dangdang</groupId>
-            <artifactId>elastic-job-core</artifactId>
-        </dependency>
     </dependencies>
 </project>

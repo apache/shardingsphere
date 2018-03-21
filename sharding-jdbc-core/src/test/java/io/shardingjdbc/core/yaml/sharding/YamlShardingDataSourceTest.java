@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,8 @@ import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.BindingTableRule;
 import io.shardingjdbc.core.rule.ShardingRule;
-import org.apache.commons.dbcp.BasicDataSource;
+import io.shardingjdbc.core.rule.ShardingRuleException;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.Driver;
 import org.junit.Test;
 
@@ -37,14 +38,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsCollectionContaining.hasItems;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class YamlShardingDataSourceTest {
     
     @Test
-    public void assertAll() throws IOException, NoSuchFieldException, IllegalAccessException, URISyntaxException, SQLException {
+    public void assertAll() throws SQLException, IOException, URISyntaxException, ReflectiveOperationException {
         ShardingRule shardingRule = getShardingRule("/yaml/config/config-all.yaml");
         assertThat(shardingRule.getTableRules().size(), is(3));
         assertThat(shardingRule.getBindingTableRules().size(), is(1));
@@ -53,7 +54,7 @@ public class YamlShardingDataSourceTest {
     }
     
     @Test
-    public void assertMin() throws IOException, ReflectiveOperationException, URISyntaxException, SQLException {
+    public void assertMin() throws SQLException, IOException, URISyntaxException, ReflectiveOperationException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", createDataSource());
         ShardingRule shardingRule = getShardingRule(dataSourceMap, "/yaml/config/config-min.yaml");
@@ -61,12 +62,12 @@ public class YamlShardingDataSourceTest {
     }
     
     @Test(expected = ShardingJdbcException.class)
-    public void assertClassNotFound() throws IOException, NoSuchFieldException, IllegalAccessException, URISyntaxException, SQLException {
+    public void assertClassNotFound() throws SQLException, IOException, URISyntaxException, ReflectiveOperationException {
         getShardingRule("/yaml/config/config-classNotFound.yaml");
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertBindingError() throws IOException, ReflectiveOperationException, URISyntaxException, SQLException {
+    @Test(expected = ShardingRuleException.class)
+    public void assertBindingError() throws SQLException, IOException, URISyntaxException, ReflectiveOperationException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", createDataSource());
         ShardingRule shardingRule = getShardingRule(dataSourceMap, "/yaml/config/config-bindingError.yaml");
@@ -75,15 +76,15 @@ public class YamlShardingDataSourceTest {
         }
     }
     
-    private ShardingRule getShardingRule(final String fileName) throws NoSuchFieldException, IllegalAccessException, URISyntaxException, IOException, SQLException {
+    private ShardingRule getShardingRule(final String fileName) throws SQLException, IOException, URISyntaxException, ReflectiveOperationException {
         return getShardingRule(ShardingDataSourceFactory.createDataSource(new File(getClass().getResource(fileName).toURI())));
     }
     
-    private ShardingRule getShardingRule(final Map<String, DataSource> dataSourceMap, final String fileName) throws ReflectiveOperationException, URISyntaxException, IOException, SQLException {
+    private ShardingRule getShardingRule(final Map<String, DataSource> dataSourceMap, final String fileName) throws SQLException, IOException, URISyntaxException, ReflectiveOperationException {
         return getShardingRule(ShardingDataSourceFactory.createDataSource(dataSourceMap, new File(getClass().getResource(fileName).toURI())));
     }
     
-    private ShardingRule getShardingRule(final DataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
+    private ShardingRule getShardingRule(final DataSource shardingDataSource) throws ReflectiveOperationException {
         Field field = ShardingDataSource.class.getDeclaredField("shardingContext");
         field.setAccessible(true);
         ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);

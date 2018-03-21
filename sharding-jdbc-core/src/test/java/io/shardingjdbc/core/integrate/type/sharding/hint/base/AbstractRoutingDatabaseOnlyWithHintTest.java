@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,22 +17,21 @@
 
 package io.shardingjdbc.core.integrate.type.sharding.hint.base;
 
-import io.shardingjdbc.core.integrate.fixture.HintModuloDatabaseShardingAlgorithm;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguration;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.integrate.fixture.HintModuloDatabaseShardingAlgorithm;
+import io.shardingjdbc.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Map;
 
 public abstract class AbstractRoutingDatabaseOnlyWithHintTest extends AbstractHintTest {
     
     @Override
-    protected ShardingRule getShardingRule(final Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) throws SQLException {
+    protected ShardingRule getShardingRule(final Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(HintModuloDatabaseShardingAlgorithm.class.getName()));
-        return shardingRuleConfig.build(dataSourceEntry.getValue());
+        return shardingRuleConfig.build(dataSourceEntry.getValue().keySet());
     }
 }

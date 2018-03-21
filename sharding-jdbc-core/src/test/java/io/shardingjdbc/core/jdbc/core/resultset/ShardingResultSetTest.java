@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,9 +41,9 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -396,13 +396,13 @@ public final class ShardingResultSetTest {
     }
     
     @Test
-    public void assertGetObjectWithColumnIndex() throws SQLException, MalformedURLException {
+    public void assertGetObjectWithColumnIndex() throws SQLException {
         when(mergeResultSet.getValue(1, Object.class)).thenReturn("object_value");
         assertThat(shardingResultSet.getObject(1), is((Object) "object_value"));
     }
     
     @Test
-    public void assertGetObjectWithColumnLabel() throws SQLException, MalformedURLException {
+    public void assertGetObjectWithColumnLabel() throws SQLException {
         when(mergeResultSet.getValue("label", Object.class)).thenReturn("object_value");
         assertThat(shardingResultSet.getObject("label"), is((Object) "object_value"));
     }

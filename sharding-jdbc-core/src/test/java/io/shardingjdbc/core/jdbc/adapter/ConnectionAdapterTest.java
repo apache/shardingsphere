@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -105,24 +104,19 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             assertTrue(actual.isReadOnly());
             actual.setReadOnly(false);
             actual.createStatement().executeQuery(sql);
-            assertReadOnly(actual, false, getCurrentDatabaseType());
+            assertReadOnly(actual, false);
             if (DatabaseType.SQLServer != getCurrentDatabaseType()) {
                 actual.setReadOnly(true);
-                assertReadOnly(actual, true, getCurrentDatabaseType());
+                assertReadOnly(actual, true);
             }
         }
     }
 
-    private void assertReadOnly(final ShardingConnection actual, final boolean readOnly, final DatabaseType type) throws SQLException {
+    private void assertReadOnly(final ShardingConnection actual, final boolean readOnly) throws SQLException {
         assertThat(actual.isReadOnly(), is(readOnly));
         assertThat(actual.getCachedConnections().size(), is(2));
         for (Connection each : actual.getCachedConnections().values()) {
-            // H2数据库未实现setReadOnly方法
-            if (DatabaseType.H2 == type) {
-                assertFalse(each.isReadOnly());
-            } else {
-                assertThat(each.isReadOnly(), is(readOnly));
-            }
+            assertThat(each.isReadOnly(), is(readOnly));
         }
     }
 

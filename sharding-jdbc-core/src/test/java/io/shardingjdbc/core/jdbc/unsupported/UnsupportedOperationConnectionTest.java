@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ public final class UnsupportedOperationConnectionTest extends AbstractShardingJD
     }
     
     @Before
-    public void init() throws SQLException {
+    public void init() {
         shardingConnections.add(getShardingDataSource().getConnection());
     }
     
@@ -233,14 +233,14 @@ public final class UnsupportedOperationConnectionTest extends AbstractShardingJD
     }
     
     @Test(expected = UnsupportedOperationException.class)
-    public void assertSetClientInfo() throws SQLException {
+    public void assertSetClientInfo() {
         for (ShardingConnection each : shardingConnections) {
             each.setClientInfo("", "");
         }
     }
     
     @Test(expected = UnsupportedOperationException.class)
-    public void assertSetClientInfoWithProperties() throws SQLException {
+    public void assertSetClientInfoWithProperties() {
         for (ShardingConnection each : shardingConnections) {
             each.setClientInfo(new Properties());
         }

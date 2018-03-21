@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,13 +18,13 @@
 package io.shardingjdbc.core.util;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class DataSourceUtilTest {
@@ -93,7 +93,7 @@ public final class DataSourceUtilTest {
     public void assertDataSourceForIntValue() throws ReflectiveOperationException {
         Map<String, Object> dataSourceProperties = new HashMap<>(7, 1);
         dataSourceProperties.put("defaultTransactionIsolation", -13);
-        dataSourceProperties.put("maxActive", 16);
+        dataSourceProperties.put("maxTotal", 16);
         dataSourceProperties.put("maxIdle", 4);
         dataSourceProperties.put("minIdle", 16);
         dataSourceProperties.put("initialSize", 7);
@@ -101,7 +101,7 @@ public final class DataSourceUtilTest {
         dataSourceProperties.put("numTestsPerEvictionRun", 13);
         BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
         assertThat(actual.getDefaultTransactionIsolation(), is(-13));
-        assertThat(actual.getMaxActive(), is(16));
+        assertThat(actual.getMaxTotal(), is(16));
         assertThat(actual.getMaxIdle(), is(4));
         assertThat(actual.getMinIdle(), is(16));
         assertThat(actual.getInitialSize(), is(7));
@@ -112,11 +112,9 @@ public final class DataSourceUtilTest {
     @Test
     public void assertDataSourceForLongValue() throws ReflectiveOperationException {
         Map<String, Object> dataSourceProperties = new HashMap<>(3, 1);
-        dataSourceProperties.put("maxWait", 1304L);
         dataSourceProperties.put("timeBetweenEvictionRunsMillis", 16L);
         dataSourceProperties.put("minEvictableIdleTimeMillis", 4000L);
         BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
-        assertThat(actual.getMaxWait(), is(1304L));
         assertThat(actual.getTimeBetweenEvictionRunsMillis(), is(16L));
         assertThat(actual.getMinEvictableIdleTimeMillis(), is(4000L));
     }

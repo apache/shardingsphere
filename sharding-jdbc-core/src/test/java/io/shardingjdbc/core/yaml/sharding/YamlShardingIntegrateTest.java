@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,8 +43,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
@@ -66,7 +66,7 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
     }
     
     @Test
-    public void assertWithDataSource() throws SQLException, URISyntaxException, IOException, NoSuchFieldException, IllegalAccessException {
+    public void assertWithDataSource() throws SQLException, URISyntaxException, IOException, ReflectiveOperationException {
         File yamlFile = new File(YamlShardingIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {

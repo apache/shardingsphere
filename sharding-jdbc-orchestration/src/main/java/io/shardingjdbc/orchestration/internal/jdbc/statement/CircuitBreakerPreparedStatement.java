@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,6 @@ import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
@@ -49,250 +48,250 @@ import java.util.Collections;
 public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOperationPreparedStatement {
     
     @Override
-    public void setNull(final int parameterIndex, final int sqlType) throws SQLException {
+    public void setNull(final int parameterIndex, final int sqlType) {
         
     }
     
     @Override
-    public void setNull(final int parameterIndex, final int sqlType, final String typeName) throws SQLException {
+    public void setNull(final int parameterIndex, final int sqlType, final String typeName) {
         
     }
     
     @Override
-    public void setBoolean(final int parameterIndex, final boolean x) throws SQLException {
+    public void setBoolean(final int parameterIndex, final boolean x) {
         
     }
     
     @Override
-    public void setByte(final int parameterIndex, final byte x) throws SQLException {
+    public void setByte(final int parameterIndex, final byte x) {
         
     }
     
     @Override
-    public void setShort(final int parameterIndex, final short x) throws SQLException {
+    public void setShort(final int parameterIndex, final short x) {
         
     }
     
     @Override
-    public void setInt(final int parameterIndex, final int x) throws SQLException {
+    public void setInt(final int parameterIndex, final int x) {
         
     }
     
     @Override
-    public void setLong(final int parameterIndex, final long x) throws SQLException {
+    public void setLong(final int parameterIndex, final long x) {
         
     }
     
     @Override
-    public void setFloat(final int parameterIndex, final float x) throws SQLException {
+    public void setFloat(final int parameterIndex, final float x) {
         
     }
     
     @Override
-    public void setDouble(final int parameterIndex, final double x) throws SQLException {
+    public void setDouble(final int parameterIndex, final double x) {
         
     }
     
     @Override
-    public void setBigDecimal(final int parameterIndex, final BigDecimal x) throws SQLException {
+    public void setBigDecimal(final int parameterIndex, final BigDecimal x) {
         
     }
     
     @Override
-    public void setString(final int parameterIndex, final String x) throws SQLException {
+    public void setString(final int parameterIndex, final String x) {
         
     }
     
     @Override
-    public void setBytes(final int parameterIndex, final byte[] x) throws SQLException {
+    public void setBytes(final int parameterIndex, final byte[] x) {
         
     }
     
     @Override
-    public void setDate(final int parameterIndex, final Date x) throws SQLException {
+    public void setDate(final int parameterIndex, final Date x) {
         
     }
     
     @Override
-    public void setDate(final int parameterIndex, final Date x, final Calendar cal) throws SQLException {
+    public void setDate(final int parameterIndex, final Date x, final Calendar cal) {
         
     }
     
     @Override
-    public void setTime(final int parameterIndex, final Time x) throws SQLException {
+    public void setTime(final int parameterIndex, final Time x) {
         
     }
     
     @Override
-    public void setTime(final int parameterIndex, final Time x, final Calendar cal) throws SQLException {
+    public void setTime(final int parameterIndex, final Time x, final Calendar cal) {
         
     }
     
     @Override
-    public void setTimestamp(final int parameterIndex, final Timestamp x) throws SQLException {
+    public void setTimestamp(final int parameterIndex, final Timestamp x) {
         
     }
     
     @Override
-    public void setTimestamp(final int parameterIndex, final Timestamp x, final Calendar cal) throws SQLException {
+    public void setTimestamp(final int parameterIndex, final Timestamp x, final Calendar cal) {
         
     }
     
     @Override
-    public void setAsciiStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
+    public void setAsciiStream(final int parameterIndex, final InputStream x, final int length) {
         
     }
     
     @Override
-    public void setAsciiStream(final int parameterIndex, final InputStream x) throws SQLException {
+    public void setAsciiStream(final int parameterIndex, final InputStream x) {
         
     }
     
     @Override
-    public void setAsciiStream(final int parameterIndex, final InputStream x, final long length) throws SQLException {
+    public void setAsciiStream(final int parameterIndex, final InputStream x, final long length) {
         
     }
     
     @Override
-    public void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
+    public void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) {
         
     }
     
     @Override
-    public void setBinaryStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
+    public void setBinaryStream(final int parameterIndex, final InputStream x, final int length) {
         
     }
     
     @Override
-    public void setBinaryStream(final int parameterIndex, final InputStream x, final long length) throws SQLException {
+    public void setBinaryStream(final int parameterIndex, final InputStream x, final long length) {
         
     }
     
     @Override
-    public void setBinaryStream(final int parameterIndex, final InputStream x) throws SQLException {
+    public void setBinaryStream(final int parameterIndex, final InputStream x) {
         
     }
     
     @Override
-    public void clearParameters() throws SQLException {
+    public void clearParameters() {
         
     }
     
     @Override
-    public void setObject(final int parameterIndex, final Object x) throws SQLException {
+    public void setObject(final int parameterIndex, final Object x) {
         
     }
     
     @Override
-    public void setObject(final int parameterIndex, final Object x, final int targetSqlType) throws SQLException {
+    public void setObject(final int parameterIndex, final Object x, final int targetSqlType) {
         
     }
     
     @Override
-    public void setObject(final int parameterIndex, final Object x, final int targetSqlType, final int scaleOrLength) throws SQLException {
+    public void setObject(final int parameterIndex, final Object x, final int targetSqlType, final int scaleOrLength) {
         
     }
     
     @Override
-    public boolean execute() throws SQLException {
+    public boolean execute() {
         return false;
     }
     
     @Override
-    public void clearBatch() throws SQLException {
+    public void clearBatch() {
     }
     
     @Override
-    public void addBatch() throws SQLException {
+    public void addBatch() {
     }
     
     @Override
-    public void setCharacterStream(final int parameterIndex, final Reader reader, final int length) throws SQLException {
+    public void setCharacterStream(final int parameterIndex, final Reader reader, final int length) {
         
     }
     
     @Override
-    public void setCharacterStream(final int parameterIndex, final Reader reader, final long length) throws SQLException {
+    public void setCharacterStream(final int parameterIndex, final Reader reader, final long length) {
         
     }
     
     @Override
-    public void setCharacterStream(final int parameterIndex, final Reader reader) throws SQLException {
+    public void setCharacterStream(final int parameterIndex, final Reader reader) {
         
     }
     
     @Override
-    public void setBlob(final int parameterIndex, final Blob x) throws SQLException {
+    public void setBlob(final int parameterIndex, final Blob x) {
         
     }
     
     @Override
-    public void setBlob(final int parameterIndex, final InputStream inputStream, final long length) throws SQLException {
+    public void setBlob(final int parameterIndex, final InputStream inputStream, final long length) {
         
     }
     
     @Override
-    public void setBlob(final int parameterIndex, final InputStream inputStream) throws SQLException {
+    public void setBlob(final int parameterIndex, final InputStream inputStream) {
         
     }
     
     @Override
-    public void setClob(final int parameterIndex, final Clob x) throws SQLException {
+    public void setClob(final int parameterIndex, final Clob x) {
         
     }
     
     @Override
-    public void setClob(final int parameterIndex, final Reader reader, final long length) throws SQLException {
+    public void setClob(final int parameterIndex, final Reader reader, final long length) {
         
     }
     
     @Override
-    public void setClob(final int parameterIndex, final Reader reader) throws SQLException {
+    public void setClob(final int parameterIndex, final Reader reader) {
         
     }
     
     @Override
-    public void setURL(final int parameterIndex, final URL x) throws SQLException {
+    public void setURL(final int parameterIndex, final URL x) {
         
     }
     
     @Override
-    public void setSQLXML(final int parameterIndex, final SQLXML xmlObject) throws SQLException {
+    public void setSQLXML(final int parameterIndex, final SQLXML xmlObject) {
         
     }
     
     @Override
-    public int[] executeBatch() throws SQLException {
+    public int[] executeBatch() {
         return new int[]{-1};
     }
     
     @Override
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() {
         return new CircuitBreakerConnection();
     }
     
     @Override
-    public ResultSet getGeneratedKeys() throws SQLException {
+    public ResultSet getGeneratedKeys() {
         return new CircuitBreakerResultSet();
     }
     
     @Override
-    public int getResultSetHoldability() throws SQLException {
+    public int getResultSetHoldability() {
         return 0;
     }
     
     @Override
-    public ResultSet getResultSet() throws SQLException {
+    public ResultSet getResultSet() {
         return new CircuitBreakerResultSet();
     }
     
     @Override
-    public int getResultSetConcurrency() throws SQLException {
+    public int getResultSetConcurrency() {
         return ResultSet.CONCUR_READ_ONLY;
     }
     
     @Override
-    public int getResultSetType() throws SQLException {
+    public int getResultSetType() {
         return ResultSet.TYPE_FORWARD_ONLY;
     }
     
@@ -302,12 +301,12 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     }
     
     @Override
-    public ResultSet executeQuery() throws SQLException {
+    public ResultSet executeQuery() {
         return new CircuitBreakerResultSet();
     }
     
     @Override
-    public int executeUpdate() throws SQLException {
+    public int executeUpdate() {
         return -1;
     }
 }

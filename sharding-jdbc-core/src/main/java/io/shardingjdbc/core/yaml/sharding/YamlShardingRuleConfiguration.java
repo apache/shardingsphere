@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,6 @@ import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,9 +63,8 @@ public class YamlShardingRuleConfiguration {
      * Get sharding rule configuration from yaml.
      *
      * @return sharding rule configuration from yaml
-     * @throws SQLException SQL exception
      */
-    public ShardingRuleConfiguration getShardingRuleConfiguration() throws SQLException {
+    public ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setDefaultDataSourceName(defaultDataSourceName);
         for (Map.Entry<String, YamlTableRuleConfiguration> entry : tables.entrySet()) {

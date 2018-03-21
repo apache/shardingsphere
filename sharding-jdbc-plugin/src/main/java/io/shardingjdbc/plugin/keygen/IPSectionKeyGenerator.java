@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,18 +57,19 @@ public final class IPSectionKeyGenerator implements KeyGenerator {
         }
         byte[] ipAddressByteArray = address.getAddress();
         long workerId = 0L;
-        //IPV4
-        if (ipAddressByteArray.length == 4) {
-            for (byte byteNum : ipAddressByteArray) {
-                workerId += byteNum & 0xFF;
-            }
-            //IPV6
-        } else if (ipAddressByteArray.length == 16) {
-            for (byte byteNum : ipAddressByteArray) {
-                workerId += byteNum & 0B111111;
-            }
-        } else {
-            throw new IllegalStateException("Bad LocalHost InetAddress, please check your network!");
+        switch (ipAddressByteArray.length) {
+            case 4:
+                for (byte byteNum : ipAddressByteArray) {
+                    workerId += byteNum & 0xFF;
+                }
+                break;
+            case 16:
+                for (byte byteNum : ipAddressByteArray) {
+                    workerId += byteNum & 0B111111;
+                }
+                break;
+            default:
+                throw new IllegalStateException("Bad LocalHost InetAddress, please check your network!");
         }
         DefaultKeyGenerator.setWorkerId(workerId);
     }

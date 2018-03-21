@@ -54,12 +54,16 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
         in.beginObject();
         while (in.hasNext()) {
             String jsonName = in.nextName();
-            if (DataSourceGsonTypeConstants.DATASOURCE_NAME.equals(jsonName)) {
-                name = in.nextString();
-            } else if (DataSourceGsonTypeConstants.CLAZZ_NAME.equals(jsonName)) {
-                clazz = in.nextString();
-            } else {
-                properties.put(jsonName, in.nextString());
+            switch (jsonName) {
+                case DataSourceGsonTypeConstants.DATASOURCE_NAME:
+                    name = in.nextString();
+                    break;
+                case DataSourceGsonTypeConstants.CLAZZ_NAME:
+                    clazz = in.nextString();
+                    break;
+                default:
+                    properties.put(jsonName, in.nextString());
+                    break;
             }
         }
         in.endObject();
@@ -90,10 +94,10 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
             Object getterResult = null;
             try {
                 getterResult = entry.getValue().invoke(value.getDataSource());
-            // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
+                // CHECKSTYLE:OFF
+            } catch (final Exception ignore) {
+                // CHECKSTYLE:ON
             }
-            // CHECKSTYLE:ON
             if (null != getterResult) {
                 out.name(entry.getKey()).value(getterResult.toString());
             }

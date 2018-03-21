@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,17 +17,16 @@
 
 package io.shardingjdbc.transaction.api;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingjdbc.core.util.EventBusInstance;
 import io.shardingjdbc.transaction.api.config.SoftTransactionConfiguration;
 import io.shardingjdbc.transaction.bed.BEDSoftTransaction;
-import io.shardingjdbc.transaction.bed.async.NestedBestEffortsDeliveryJobFactory;
 import io.shardingjdbc.transaction.bed.sync.BestEffortsDeliveryListener;
 import io.shardingjdbc.transaction.constants.SoftTransactionType;
 import io.shardingjdbc.transaction.constants.TransactionLogDataSourceType;
 import io.shardingjdbc.transaction.tcc.TCCSoftTransaction;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -61,9 +60,6 @@ public final class SoftTransactionManager {
         if (TransactionLogDataSourceType.RDB == transactionConfig.getStorageType()) {
             Preconditions.checkNotNull(transactionConfig.getTransactionLogDataSource());
             createTable();
-        }
-        if (transactionConfig.getBestEffortsDeliveryJobConfiguration().isPresent()) {
-            new NestedBestEffortsDeliveryJobFactory(transactionConfig).init();
         }
     }
     

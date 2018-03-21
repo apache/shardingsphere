@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.integrate.type.sharding.hint.type;
 
+import io.shardingjdbc.core.util.SQLPlaceholderUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.integrate.sql.DatabaseTestSQL;
 import io.shardingjdbc.core.integrate.type.sharding.hint.base.AbstractRoutingDatabaseOnlyWithHintTest;
@@ -28,8 +29,6 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Map;
-
-import static io.shardingjdbc.core.common.util.SQLPlaceholderUtil.replacePreparedStatement;
 
 public class RoutingDatabaseOnlyWithHintForSelectTest extends AbstractRoutingDatabaseOnlyWithHintTest {
     
@@ -43,7 +42,7 @@ public class RoutingDatabaseOnlyWithHintForSelectTest extends AbstractRoutingDat
     @Test
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
         for (Map.Entry<DatabaseType, ShardingDataSource> each : shardingDataSources.entrySet()) {
-            String sql = replacePreparedStatement(DatabaseTestSQL.SELECT_EQUALS_WITH_SINGLE_TABLE_SQL);
+            String sql = SQLPlaceholderUtil.replacePreparedStatement(DatabaseTestSQL.SELECT_EQUALS_WITH_SINGLE_TABLE_SQL);
             assertDataSet("integrate/dataset/sharding/db/expect/select/SelectEqualsWithSingleTable_0.xml", new HintDatabaseShardingValueHelper(10), 
                     each.getValue().getConnection(), sql, each.getKey(), 10, 1000);
             assertDataSet("integrate/dataset/sharding/db/expect/select/SelectEqualsWithSingleTable_1.xml", new HintDatabaseShardingValueHelper(12), 

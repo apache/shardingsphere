@@ -128,9 +128,9 @@ public final class ZookeeperRegistryCenter implements RegistryCenter {
     public String getDirectly(final String key) {
         try {
             return new String(client.getData().forPath(key), Charsets.UTF_8);
-        //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-        //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
             return null;
         }
@@ -140,9 +140,9 @@ public final class ZookeeperRegistryCenter implements RegistryCenter {
     public boolean isExisted(final String key) {
         try {
             return null != client.checkExists().forPath(key);
-        //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-        //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
             return false;
         }
@@ -160,9 +160,9 @@ public final class ZookeeperRegistryCenter implements RegistryCenter {
                 }
             });
             return result;
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
             return Collections.emptyList();
         }
@@ -176,9 +176,9 @@ public final class ZookeeperRegistryCenter implements RegistryCenter {
             } else {
                 update(key, value);
             }
-        //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-        //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
         }
     }
@@ -187,9 +187,9 @@ public final class ZookeeperRegistryCenter implements RegistryCenter {
     public void update(final String key, final String value) {
         try {
             client.inTransaction().check().forPath(key).and().setData().forPath(key, value.getBytes(Charsets.UTF_8)).and().commit();
-        //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-        //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
         }
     }
@@ -201,9 +201,9 @@ public final class ZookeeperRegistryCenter implements RegistryCenter {
                 client.delete().deletingChildrenIfNeeded().forPath(key);
             }
             client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(Charsets.UTF_8));
-        //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-        //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
         }
     }
@@ -243,9 +243,9 @@ public final class ZookeeperRegistryCenter implements RegistryCenter {
         TreeCache cache = new TreeCache(client, cachePath);
         try {
             cache.start();
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
         }
         caches.put(cachePath + "/", cache);

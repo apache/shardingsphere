@@ -22,6 +22,7 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSourceTest;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSourceTest;
 import io.shardingjdbc.core.jdbc.core.resultset.GeneratedKeysResultSetMetaDataTest;
 import io.shardingjdbc.core.jdbc.core.resultset.GeneratedKeysResultSetTest;
+import io.shardingjdbc.core.jdbc.core.resultset.ResultSetUtilTest;
 import io.shardingjdbc.core.jdbc.core.resultset.ShardingResultSetTest;
 import io.shardingjdbc.core.jdbc.core.statement.ShardingPreparedStatementTest;
 import io.shardingjdbc.core.jdbc.core.statement.ShardingStatementTest;
@@ -35,7 +36,8 @@ import org.junit.runners.Suite;
         ShardingConnectionTest.class, 
         ShardingStatementTest.class, 
         ShardingPreparedStatementTest.class, 
-        ShardingResultSetTest.class, 
+        ShardingResultSetTest.class,
+        ResultSetUtilTest.class, 
         GeneratedKeysResultSetTest.class, 
         GeneratedKeysResultSetMetaDataTest.class 
     })

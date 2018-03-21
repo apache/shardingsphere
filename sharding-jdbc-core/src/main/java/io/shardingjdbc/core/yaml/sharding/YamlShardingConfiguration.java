@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,11 +42,10 @@ public class YamlShardingConfiguration {
     /**
      * Get sharding rule from yaml.
      *
-     * @param dataSourceMap data source map
+     * @param dataSourceNames data source names
      * @return sharding rule from yaml
-     * @throws SQLException SQL exception
      */
-    public ShardingRule getShardingRule(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return getShardingRule().getShardingRuleConfiguration().build(dataSourceMap.isEmpty() ? dataSources : dataSourceMap);
+    public ShardingRule getShardingRule(final Collection<String> dataSourceNames) {
+        return getShardingRule().getShardingRuleConfiguration().build(dataSourceNames.isEmpty() ? dataSources.keySet() : dataSourceNames);
     }
 }

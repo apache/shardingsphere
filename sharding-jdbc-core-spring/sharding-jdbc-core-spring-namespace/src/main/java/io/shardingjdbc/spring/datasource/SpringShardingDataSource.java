@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,6 +34,6 @@ public class SpringShardingDataSource extends ShardingDataSource {
     
     public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
                                     final Map<String, Object> configMap, final Properties props) throws SQLException {
-        super(shardingRuleConfig.build(dataSourceMap), configMap, props);
+        super(dataSourceMap, shardingRuleConfig.build(dataSourceMap.keySet()), configMap, props);
     }
 }

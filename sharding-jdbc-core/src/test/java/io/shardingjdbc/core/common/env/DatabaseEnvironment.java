@@ -78,22 +78,49 @@ public final class DatabaseEnvironment {
     
     }
     
+    /**
+     * Get driver class name.
+     * 
+     * @return driver class name
+     */
     public String getDriverClassName() {
         return DRIVER_CLASS_NAME.get(databaseType);
     }
     
+    /**
+     * Get URL.
+     * 
+     * @param dbName database name
+     * @return database URL
+     */
     public String getURL(final String dbName) {
         return String.format(URL.get(databaseType), dbName);
     }
     
+    /**
+     * Get username.
+     * 
+     * @return username
+     */
     public String getUsername() {
         return USERNAME.get(databaseType);
     }
     
+    /**
+     * Get password.
+     * 
+     * @return password
+     */
     public String getPassword() {
         return PASSWORD.get(databaseType);
     }
     
+    /**
+     * Get schema.
+     * 
+     * @param dbName database name
+     * @return schema
+     */
     public String getSchema(final String dbName) {
         return null == SCHEMA.get(databaseType) ? null : String.format(SCHEMA.get(databaseType), dbName);
     }

@@ -25,7 +25,7 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.fixture.PreciseOrderShardingAlgorithm;
 import io.shardingjdbc.core.fixture.RangeOrderShardingAlgorithm;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
+import io.shardingjdbc.core.fixture.IncrementKeyGenerator;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -88,8 +88,8 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
                     new StandardShardingStrategyConfiguration("user_id", PreciseOrderShardingAlgorithm.class.getName(), RangeOrderShardingAlgorithm.class.getName()));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("order_id", PreciseOrderShardingAlgorithm.class.getName(), RangeOrderShardingAlgorithm.class.getName()));
-            ShardingRule shardingRule = shardingRuleConfig.build(entry.getValue());
-            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(shardingRule));
+            ShardingRule shardingRule = shardingRuleConfig.build(entry.getValue().keySet());
+            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(entry.getValue(), shardingRule));
         }
     }
     

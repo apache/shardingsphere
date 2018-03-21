@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertDeleteWithShardingValue" value="DELETE FROM t_order WHERE order_id = %s AND user_id = %s AND status=%s" />
+    <sql id="assertDeleteWithoutShardingValue" value="DELETE FROM t_order WHERE status=%s" />
+</sqls>

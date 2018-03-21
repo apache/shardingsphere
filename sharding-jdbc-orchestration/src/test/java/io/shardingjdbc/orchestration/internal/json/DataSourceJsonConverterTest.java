@@ -18,28 +18,34 @@
 package io.shardingjdbc.orchestration.internal.json;
 
 import com.mysql.jdbc.Driver;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class DataSourceJsonConverterTest {
     
-    private final String dataSourceMapJson = "[{\"shardingJdbcDataSourceName\":\"ds_jdbc_1\",\"shardingJdbcDataSourceClazz\":\"org.apache.commons.dbcp.BasicDataSource\","
-            + "\"defaultAutoCommit\":\"true\",\"defaultReadOnly\":\"false\",\"defaultTransactionIsolation\":\"-1\",\"driverClassName\":\"com.mysql.jdbc.Driver\",\"initialSize\":\"0\","
-            + "\"logAbandoned\":\"false\",\"maxActive\":\"8\",\"maxIdle\":\"8\",\"maxOpenPreparedStatements\":\"-1\",\"maxWait\":\"-1\",\"minEvictableIdleTimeMillis\":\"1800000\",\"minIdle\":\"0\","
-            + "\"numTestsPerEvictionRun\":\"3\",\"password\":\"\",\"removeAbandoned\":\"false\",\"removeAbandonedTimeout\":\"300\",\"testOnBorrow\":\"true\",\"testOnReturn\":\"false\","
-            + "\"testWhileIdle\":\"false\",\"timeBetweenEvictionRunsMillis\":\"-1\",\"url\":\"jdbc:mysql://localhost:3306/ds_jdbc_1\",\"username\":\"root\",\"validationQueryTimeout\":\"-1\"},"
-            + "{\"shardingJdbcDataSourceName\":\"ds_jdbc_0\",\"shardingJdbcDataSourceClazz\":\"org.apache.commons.dbcp.BasicDataSource\",\"defaultAutoCommit\":\"true\",\"defaultReadOnly\":\"false\","
-            + "\"defaultTransactionIsolation\":\"-1\",\"driverClassName\":\"com.mysql.jdbc.Driver\",\"initialSize\":\"0\",\"logAbandoned\":\"false\",\"maxActive\":\"8\",\"maxIdle\":\"8\","
-            + "\"maxOpenPreparedStatements\":\"-1\",\"maxWait\":\"-1\",\"minEvictableIdleTimeMillis\":\"1800000\",\"minIdle\":\"0\",\"numTestsPerEvictionRun\":\"3\",\"password\":\"\","
-            + "\"removeAbandoned\":\"false\",\"removeAbandonedTimeout\":\"300\",\"testOnBorrow\":\"true\",\"testOnReturn\":\"false\",\"testWhileIdle\":\"false\","
-            + "\"timeBetweenEvictionRunsMillis\":\"-1\",\"url\":\"jdbc:mysql://localhost:3306/ds_jdbc_0\",\"username\":\"root\",\"validationQueryTimeout\":\"-1\"}]";
+    private final String dataSourceMapJson = "[{\"shardingJdbcDataSourceName\":\"ds_jdbc_1\",\"shardingJdbcDataSourceClazz\":\"org.apache.commons.dbcp2.BasicDataSource\","
+            + "\"abandonedUsageTracking\":\"false\",\"cacheState\":\"true\",\"defaultTransactionIsolation\":\"-1\",\"driverClassName\":\"com.mysql.jdbc.Driver\","
+            + "\"enableAutoCommitOnReturn\":\"true\",\"evictionPolicyClassName\":\"org.apache.commons.pool2.impl.DefaultEvictionPolicy\",\"fastFailValidation\":\"false\","
+            + "\"initialSize\":\"0\",\"lifo\":\"true\",\"logAbandoned\":\"false\",\"logExpiredConnections\":\"true\",\"maxConnLifetimeMillis\":\"-1\",\"maxIdle\":\"8\","
+            + "\"maxOpenPreparedStatements\":\"-1\",\"maxTotal\":\"8\",\"maxWaitMillis\":\"-1\",\"minEvictableIdleTimeMillis\":\"1800000\",\"minIdle\":\"0\",\"numTestsPerEvictionRun\":\"3\","
+            + "\"password\":\"\",\"removeAbandonedOnBorrow\":\"false\",\"removeAbandonedOnMaintenance\":\"false\",\"removeAbandonedTimeout\":\"300\",\"rollbackOnReturn\":\"true\","
+            + "\"softMinEvictableIdleTimeMillis\":\"-1\",\"testOnBorrow\":\"true\",\"testOnCreate\":\"false\",\"testOnReturn\":\"false\",\"testWhileIdle\":\"false\","
+            + "\"timeBetweenEvictionRunsMillis\":\"-1\",\"url\":\"jdbc:mysql://localhost:3306/ds_jdbc_1\",\"username\":\"root\",\"validationQueryTimeout\":\"-1\"},"
+            + "{\"shardingJdbcDataSourceName\":\"ds_jdbc_0\",\"shardingJdbcDataSourceClazz\":\"org.apache.commons.dbcp2.BasicDataSource\",\"abandonedUsageTracking\":\"false\","
+            + "\"cacheState\":\"true\",\"defaultTransactionIsolation\":\"-1\",\"driverClassName\":\"com.mysql.jdbc.Driver\",\"enableAutoCommitOnReturn\":\"true\","
+            + "\"evictionPolicyClassName\":\"org.apache.commons.pool2.impl.DefaultEvictionPolicy\",\"fastFailValidation\":\"false\",\"initialSize\":\"0\",\"lifo\":\"true\","
+            + "\"logAbandoned\":\"false\",\"logExpiredConnections\":\"true\",\"maxConnLifetimeMillis\":\"-1\",\"maxIdle\":\"8\",\"maxOpenPreparedStatements\":\"-1\",\"maxTotal\":\"8\","
+            + "\"maxWaitMillis\":\"-1\",\"minEvictableIdleTimeMillis\":\"1800000\",\"minIdle\":\"0\",\"numTestsPerEvictionRun\":\"3\",\"password\":\"\",\"removeAbandonedOnBorrow\":\"false\","
+            + "\"removeAbandonedOnMaintenance\":\"false\",\"removeAbandonedTimeout\":\"300\",\"rollbackOnReturn\":\"true\",\"softMinEvictableIdleTimeMillis\":\"-1\",\"testOnBorrow\":\"true\","
+            + "\"testOnCreate\":\"false\",\"testOnReturn\":\"false\",\"testWhileIdle\":\"false\",\"timeBetweenEvictionRunsMillis\":\"-1\",\"url\":\"jdbc:mysql://localhost:3306/ds_jdbc_0\","
+            + "\"username\":\"root\",\"validationQueryTimeout\":\"-1\"}]";
     
     @Test
     public void assertToJson() {
@@ -56,7 +62,7 @@ public final class DataSourceJsonConverterTest {
     
     private void assertDataSource(final BasicDataSource actual, final BasicDataSource expect) {
         assertThat(actual.getUrl(), is(expect.getUrl()));
-        assertThat(actual.getMaxActive(), is(expect.getMaxActive()));
+        assertThat(actual.getMaxTotal(), is(expect.getMaxTotal()));
         assertThat(actual.getDefaultTransactionIsolation(), is(expect.getDefaultTransactionIsolation()));
         assertThat(actual.getRemoveAbandonedTimeout(), is(expect.getRemoveAbandonedTimeout()));
     }

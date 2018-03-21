@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,21 +51,23 @@ public final class ShardingConnectionTest {
     public static void init() throws SQLException {
         DataSource masterDataSource = new TestDataSource("test_ds_master");
         DataSource slaveDataSource = new TestDataSource("test_ds_slave");
-        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(1, 1);
-        slaveDataSourceMap.put("test_ds_slave", slaveDataSource);
-        masterSlaveDataSource = new MasterSlaveDataSource(new MasterSlaveRule("test_ds", "test_ds_master", masterDataSource, slaveDataSourceMap), Collections.<String, Object>emptyMap());
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("test_ds_master", masterDataSource);
+        dataSourceMap.put("test_ds_slave", slaveDataSource);
+        masterSlaveDataSource = new MasterSlaveDataSource(
+                dataSourceMap, new MasterSlaveRule("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave")), Collections.<String, Object>emptyMap());
         ((TestDataSource) slaveDataSource).setThrowExceptionWhenClosing(true);
     }
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("test");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
-        ShardingContext shardingContext = new ShardingContext(shardingRuleConfig.build(dataSourceMap), null, null, false);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRuleConfig.build(dataSourceMap.keySet()), null, null, false);
         connection = new ShardingConnection(shardingContext);
     }
     
@@ -73,7 +75,7 @@ public final class ShardingConnectionTest {
     public void clear() {
         try {
             connection.close();
-        } catch (final SQLException ignored) {
+        } catch (final SQLException ignore) {
         }
     }
     

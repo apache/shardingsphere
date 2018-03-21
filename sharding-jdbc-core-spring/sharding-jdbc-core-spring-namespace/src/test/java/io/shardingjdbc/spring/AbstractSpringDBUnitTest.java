@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,7 @@ package io.shardingjdbc.spring;
 
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import lombok.Getter;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.tools.RunScript;
 import org.junit.Before;
 import org.springframework.test.context.TestExecutionListeners;
@@ -58,7 +58,7 @@ public abstract class AbstractSpringDBUnitTest extends AbstractJUnit4SpringConte
         result.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", getFileName(dataSetFile)));
         result.setUsername("sa");
         result.setPassword("");
-        result.setMaxActive(100);
+        result.setMaxTotal(100);
         return result;
     }
     

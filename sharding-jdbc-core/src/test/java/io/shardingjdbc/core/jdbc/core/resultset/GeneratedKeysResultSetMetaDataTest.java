@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Arrays;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -38,7 +38,7 @@ public class GeneratedKeysResultSetMetaDataTest {
     private ResultSetMetaData actualMetaData;
     
     @Before
-    public void init() throws SQLException {
+    public void init() {
         actualMetaData = new GeneratedKeysResultSet(Arrays.<Number>asList(1L, 2L).iterator(), "order_id", Mockito.mock(Statement.class)).getMetaData();
     }
     

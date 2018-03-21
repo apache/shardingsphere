@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package io.shardingjdbc.transaction.integrate.storage;
 
 import io.shardingjdbc.transaction.storage.TransactionLogStorage;
 import io.shardingjdbc.transaction.storage.impl.RdbTransactionLogStorage;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -31,7 +31,7 @@ public final class RdbTransactionLogStorageOperationsTest extends AbstractTransa
     
     @Test
     public void assertRdbTransactionLogStorageOperations() throws SQLException {
-        BasicDataSource dataSource =  new BasicDataSource();
+        BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName(org.h2.Driver.class.getName());
         dataSource.setUrl("jdbc:h2:mem:db_transaction_storage");
         dataSource.setUsername("sa");

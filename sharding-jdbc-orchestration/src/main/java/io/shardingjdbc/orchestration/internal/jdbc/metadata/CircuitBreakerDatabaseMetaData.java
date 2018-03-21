@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.RowIdLifetime;
-import java.sql.SQLException;
 
 /**
  * Circuit breaker metadata.
@@ -31,67 +30,67 @@ import java.sql.SQLException;
 public final class CircuitBreakerDatabaseMetaData implements DatabaseMetaData {
     
     @Override
-    public boolean allProceduresAreCallable() throws SQLException {
+    public boolean allProceduresAreCallable() {
         return false;
     }
     
     @Override
-    public boolean allTablesAreSelectable() throws SQLException {
+    public boolean allTablesAreSelectable() {
         return false;
     }
     
     @Override
-    public String getURL() throws SQLException {
+    public String getURL() {
         return null;
     }
     
     @Override
-    public String getUserName() throws SQLException {
+    public String getUserName() {
         return null;
     }
     
     @Override
-    public boolean isReadOnly() throws SQLException {
+    public boolean isReadOnly() {
         return false;
     }
     
     @Override
-    public boolean nullsAreSortedHigh() throws SQLException {
+    public boolean nullsAreSortedHigh() {
         return false;
     }
     
     @Override
-    public boolean nullsAreSortedLow() throws SQLException {
+    public boolean nullsAreSortedLow() {
         return false;
     }
     
     @Override
-    public boolean nullsAreSortedAtStart() throws SQLException {
+    public boolean nullsAreSortedAtStart() {
         return false;
     }
     
     @Override
-    public boolean nullsAreSortedAtEnd() throws SQLException {
+    public boolean nullsAreSortedAtEnd() {
         return false;
     }
     
     @Override
-    public String getDatabaseProductName() throws SQLException {
+    public String getDatabaseProductName() {
         return "H2";
     }
     
     @Override
-    public String getDatabaseProductVersion() throws SQLException {
+    public String getDatabaseProductVersion() {
         return null;
     }
     
     @Override
-    public String getDriverName() throws SQLException {
+    public String getDriverName() {
         return null;
     }
     
     @Override
-    public String getDriverVersion() throws SQLException {
+    public String getDriverVersion() {
         return null;
     }
     
@@ -106,808 +105,808 @@ public final class CircuitBreakerDatabaseMetaData implements DatabaseMetaData {
     }
     
     @Override
-    public boolean usesLocalFiles() throws SQLException {
+    public boolean usesLocalFiles() {
         return false;
     }
     
     @Override
-    public boolean usesLocalFilePerTable() throws SQLException {
+    public boolean usesLocalFilePerTable() {
         return false;
     }
     
     @Override
-    public boolean supportsMixedCaseIdentifiers() throws SQLException {
+    public boolean supportsMixedCaseIdentifiers() {
         return false;
     }
     
     @Override
-    public boolean storesUpperCaseIdentifiers() throws SQLException {
+    public boolean storesUpperCaseIdentifiers() {
         return false;
     }
     
     @Override
-    public boolean storesLowerCaseIdentifiers() throws SQLException {
+    public boolean storesLowerCaseIdentifiers() {
         return false;
     }
     
     @Override
-    public boolean storesMixedCaseIdentifiers() throws SQLException {
+    public boolean storesMixedCaseIdentifiers() {
         return false;
     }
     
     @Override
-    public boolean supportsMixedCaseQuotedIdentifiers() throws SQLException {
+    public boolean supportsMixedCaseQuotedIdentifiers() {
         return false;
     }
     
     @Override
-    public boolean storesUpperCaseQuotedIdentifiers() throws SQLException {
+    public boolean storesUpperCaseQuotedIdentifiers() {
         return false;
     }
     
     @Override
-    public boolean storesLowerCaseQuotedIdentifiers() throws SQLException {
+    public boolean storesLowerCaseQuotedIdentifiers() {
         return false;
     }
     
     @Override
-    public boolean storesMixedCaseQuotedIdentifiers() throws SQLException {
+    public boolean storesMixedCaseQuotedIdentifiers() {
         return false;
     }
     
     @Override
-    public String getIdentifierQuoteString() throws SQLException {
+    public String getIdentifierQuoteString() {
         return null;
     }
     
     @Override
-    public String getSQLKeywords() throws SQLException {
+    public String getSQLKeywords() {
         return null;
     }
     
     @Override
-    public String getNumericFunctions() throws SQLException {
+    public String getNumericFunctions() {
         return null;
     }
     
     @Override
-    public String getStringFunctions() throws SQLException {
+    public String getStringFunctions() {
         return null;
     }
     
     @Override
-    public String getSystemFunctions() throws SQLException {
+    public String getSystemFunctions() {
         return null;
     }
     
     @Override
-    public String getTimeDateFunctions() throws SQLException {
+    public String getTimeDateFunctions() {
         return null;
     }
     
     @Override
-    public String getSearchStringEscape() throws SQLException {
+    public String getSearchStringEscape() {
         return null;
     }
     
     @Override
-    public String getExtraNameCharacters() throws SQLException {
+    public String getExtraNameCharacters() {
         return null;
     }
     
     @Override
-    public boolean supportsAlterTableWithAddColumn() throws SQLException {
+    public boolean supportsAlterTableWithAddColumn() {
         return false;
     }
     
     @Override
-    public boolean supportsAlterTableWithDropColumn() throws SQLException {
+    public boolean supportsAlterTableWithDropColumn() {
         return false;
     }
     
     @Override
-    public boolean supportsColumnAliasing() throws SQLException {
+    public boolean supportsColumnAliasing() {
         return false;
     }
     
     @Override
-    public boolean nullPlusNonNullIsNull() throws SQLException {
+    public boolean nullPlusNonNullIsNull() {
         return false;
     }
     
     @Override
-    public boolean supportsConvert() throws SQLException {
+    public boolean supportsConvert() {
         return false;
     }
     
     @Override
-    public boolean supportsConvert(final int fromType, final int toType) throws SQLException {
+    public boolean supportsConvert(final int fromType, final int toType) {
         return false;
     }
     
     @Override
-    public boolean supportsTableCorrelationNames() throws SQLException {
+    public boolean supportsTableCorrelationNames() {
         return false;
     }
     
     @Override
-    public boolean supportsDifferentTableCorrelationNames() throws SQLException {
+    public boolean supportsDifferentTableCorrelationNames() {
         return false;
     }
     
     @Override
-    public boolean supportsExpressionsInOrderBy() throws SQLException {
+    public boolean supportsExpressionsInOrderBy() {
         return false;
     }
     
     @Override
-    public boolean supportsOrderByUnrelated() throws SQLException {
+    public boolean supportsOrderByUnrelated() {
         return false;
     }
     
     @Override
-    public boolean supportsGroupBy() throws SQLException {
+    public boolean supportsGroupBy() {
         return false;
     }
     
     @Override
-    public boolean supportsGroupByUnrelated() throws SQLException {
+    public boolean supportsGroupByUnrelated() {
         return false;
     }
     
     @Override
-    public boolean supportsGroupByBeyondSelect() throws SQLException {
+    public boolean supportsGroupByBeyondSelect() {
         return false;
     }
     
     @Override
-    public boolean supportsLikeEscapeClause() throws SQLException {
+    public boolean supportsLikeEscapeClause() {
         return false;
     }
     
     @Override
-    public boolean supportsMultipleResultSets() throws SQLException {
+    public boolean supportsMultipleResultSets() {
         return false;
     }
     
     @Override
-    public boolean supportsMultipleTransactions() throws SQLException {
+    public boolean supportsMultipleTransactions() {
         return false;
     }
     
     @Override
-    public boolean supportsNonNullableColumns() throws SQLException {
+    public boolean supportsNonNullableColumns() {
         return false;
     }
     
     @Override
-    public boolean supportsMinimumSQLGrammar() throws SQLException {
+    public boolean supportsMinimumSQLGrammar() {
         return false;
     }
     
     @Override
-    public boolean supportsCoreSQLGrammar() throws SQLException {
+    public boolean supportsCoreSQLGrammar() {
         return false;
     }
     
     @Override
-    public boolean supportsExtendedSQLGrammar() throws SQLException {
+    public boolean supportsExtendedSQLGrammar() {
         return false;
     }
     
     @Override
-    public boolean supportsANSI92EntryLevelSQL() throws SQLException {
+    public boolean supportsANSI92EntryLevelSQL() {
         return false;
     }
     
     @Override
-    public boolean supportsANSI92IntermediateSQL() throws SQLException {
+    public boolean supportsANSI92IntermediateSQL() {
         return false;
     }
     
     @Override
-    public boolean supportsANSI92FullSQL() throws SQLException {
+    public boolean supportsANSI92FullSQL() {
         return false;
     }
     
     @Override
-    public boolean supportsIntegrityEnhancementFacility() throws SQLException {
+    public boolean supportsIntegrityEnhancementFacility() {
         return false;
     }
     
     @Override
-    public boolean supportsOuterJoins() throws SQLException {
+    public boolean supportsOuterJoins() {
         return false;
     }
     
     @Override
-    public boolean supportsFullOuterJoins() throws SQLException {
+    public boolean supportsFullOuterJoins() {
         return false;
     }
     
     @Override
-    public boolean supportsLimitedOuterJoins() throws SQLException {
+    public boolean supportsLimitedOuterJoins() {
         return false;
     }
     
     @Override
-    public String getSchemaTerm() throws SQLException {
+    public String getSchemaTerm() {
         return null;
     }
     
     @Override
-    public String getProcedureTerm() throws SQLException {
+    public String getProcedureTerm() {
         return null;
     }
     
     @Override
-    public String getCatalogTerm() throws SQLException {
+    public String getCatalogTerm() {
         return null;
     }
     
     @Override
-    public boolean isCatalogAtStart() throws SQLException {
+    public boolean isCatalogAtStart() {
         return false;
     }
     
     @Override
-    public String getCatalogSeparator() throws SQLException {
+    public String getCatalogSeparator() {
         return null;
     }
     
     @Override
-    public boolean supportsSchemasInDataManipulation() throws SQLException {
+    public boolean supportsSchemasInDataManipulation() {
         return false;
     }
     
     @Override
-    public boolean supportsSchemasInProcedureCalls() throws SQLException {
+    public boolean supportsSchemasInProcedureCalls() {
         return false;
     }
     
     @Override
-    public boolean supportsSchemasInTableDefinitions() throws SQLException {
+    public boolean supportsSchemasInTableDefinitions() {
         return false;
     }
     
     @Override
-    public boolean supportsSchemasInIndexDefinitions() throws SQLException {
+    public boolean supportsSchemasInIndexDefinitions() {
         return false;
     }
     
     @Override
-    public boolean supportsSchemasInPrivilegeDefinitions() throws SQLException {
+    public boolean supportsSchemasInPrivilegeDefinitions() {
         return false;
     }
     
     @Override
-    public boolean supportsCatalogsInDataManipulation() throws SQLException {
+    public boolean supportsCatalogsInDataManipulation() {
         return false;
     }
     
     @Override
-    public boolean supportsCatalogsInProcedureCalls() throws SQLException {
+    public boolean supportsCatalogsInProcedureCalls() {
         return false;
     }
     
     @Override
-    public boolean supportsCatalogsInTableDefinitions() throws SQLException {
+    public boolean supportsCatalogsInTableDefinitions() {
         return false;
     }
     
     @Override
-    public boolean supportsCatalogsInIndexDefinitions() throws SQLException {
+    public boolean supportsCatalogsInIndexDefinitions() {
         return false;
     }
     
     @Override
-    public boolean supportsCatalogsInPrivilegeDefinitions() throws SQLException {
+    public boolean supportsCatalogsInPrivilegeDefinitions() {
         return false;
     }
     
     @Override
-    public boolean supportsPositionedDelete() throws SQLException {
+    public boolean supportsPositionedDelete() {
         return false;
     }
     
     @Override
-    public boolean supportsPositionedUpdate() throws SQLException {
+    public boolean supportsPositionedUpdate() {
         return false;
     }
     
     @Override
-    public boolean supportsSelectForUpdate() throws SQLException {
+    public boolean supportsSelectForUpdate() {
         return false;
     }
     
     @Override
-    public boolean supportsStoredProcedures() throws SQLException {
+    public boolean supportsStoredProcedures() {
         return false;
     }
     
     @Override
-    public boolean supportsSubqueriesInComparisons() throws SQLException {
+    public boolean supportsSubqueriesInComparisons() {
         return false;
     }
     
     @Override
-    public boolean supportsSubqueriesInExists() throws SQLException {
+    public boolean supportsSubqueriesInExists() {
         return false;
     }
     
     @Override
-    public boolean supportsSubqueriesInIns() throws SQLException {
+    public boolean supportsSubqueriesInIns() {
         return false;
     }
     
     @Override
-    public boolean supportsSubqueriesInQuantifieds() throws SQLException {
+    public boolean supportsSubqueriesInQuantifieds() {
         return false;
     }
     
     @Override
-    public boolean supportsCorrelatedSubqueries() throws SQLException {
+    public boolean supportsCorrelatedSubqueries() {
         return false;
     }
     
     @Override
-    public boolean supportsUnion() throws SQLException {
+    public boolean supportsUnion() {
         return false;
     }
     
     @Override
-    public boolean supportsUnionAll() throws SQLException {
+    public boolean supportsUnionAll() {
         return false;
     }
     
     @Override
-    public boolean supportsOpenCursorsAcrossCommit() throws SQLException {
+    public boolean supportsOpenCursorsAcrossCommit() {
         return false;
     }
     
     @Override
-    public boolean supportsOpenCursorsAcrossRollback() throws SQLException {
+    public boolean supportsOpenCursorsAcrossRollback() {
         return false;
     }
     
     @Override
-    public boolean supportsOpenStatementsAcrossCommit() throws SQLException {
+    public boolean supportsOpenStatementsAcrossCommit() {
         return false;
     }
     
     @Override
-    public boolean supportsOpenStatementsAcrossRollback() throws SQLException {
+    public boolean supportsOpenStatementsAcrossRollback() {
         return false;
     }
     
     @Override
-    public int getMaxBinaryLiteralLength() throws SQLException {
+    public int getMaxBinaryLiteralLength() {
         return 0;
     }
     
     @Override
-    public int getMaxCharLiteralLength() throws SQLException {
+    public int getMaxCharLiteralLength() {
         return 0;
     }
     
     @Override
-    public int getMaxColumnNameLength() throws SQLException {
+    public int getMaxColumnNameLength() {
         return 0;
     }
     
     @Override
-    public int getMaxColumnsInGroupBy() throws SQLException {
+    public int getMaxColumnsInGroupBy() {
         return 0;
     }
     
     @Override
-    public int getMaxColumnsInIndex() throws SQLException {
+    public int getMaxColumnsInIndex() {
         return 0;
     }
     
     @Override
-    public int getMaxColumnsInOrderBy() throws SQLException {
+    public int getMaxColumnsInOrderBy() {
         return 0;
     }
     
     @Override
-    public int getMaxColumnsInSelect() throws SQLException {
+    public int getMaxColumnsInSelect() {
         return 0;
     }
     
     @Override
-    public int getMaxColumnsInTable() throws SQLException {
+    public int getMaxColumnsInTable() {
         return 0;
     }
     
     @Override
-    public int getMaxConnections() throws SQLException {
+    public int getMaxConnections() {
         return 0;
     }
     
     @Override
-    public int getMaxCursorNameLength() throws SQLException {
+    public int getMaxCursorNameLength() {
         return 0;
     }
     
     @Override
-    public int getMaxIndexLength() throws SQLException {
+    public int getMaxIndexLength() {
         return 0;
     }
     
     @Override
-    public int getMaxSchemaNameLength() throws SQLException {
+    public int getMaxSchemaNameLength() {
         return 0;
     }
     
     @Override
-    public int getMaxProcedureNameLength() throws SQLException {
+    public int getMaxProcedureNameLength() {
         return 0;
     }
     
     @Override
-    public int getMaxCatalogNameLength() throws SQLException {
+    public int getMaxCatalogNameLength() {
         return 0;
     }
     
     @Override
-    public int getMaxRowSize() throws SQLException {
+    public int getMaxRowSize() {
         return 0;
     }
     
     @Override
-    public boolean doesMaxRowSizeIncludeBlobs() throws SQLException {
+    public boolean doesMaxRowSizeIncludeBlobs() {
         return false;
     }
     
     @Override
-    public int getMaxStatementLength() throws SQLException {
+    public int getMaxStatementLength() {
         return 0;
     }
     
     @Override
-    public int getMaxStatements() throws SQLException {
+    public int getMaxStatements() {
         return 0;
     }
     
     @Override
-    public int getMaxTableNameLength() throws SQLException {
+    public int getMaxTableNameLength() {
         return 0;
     }
     
     @Override
-    public int getMaxTablesInSelect() throws SQLException {
+    public int getMaxTablesInSelect() {
         return 0;
     }
     
     @Override
-    public int getMaxUserNameLength() throws SQLException {
+    public int getMaxUserNameLength() {
         return 0;
     }
     
     @Override
-    public int getDefaultTransactionIsolation() throws SQLException {
+    public int getDefaultTransactionIsolation() {
         return 0;
     }
     
     @Override
-    public boolean supportsTransactions() throws SQLException {
+    public boolean supportsTransactions() {
         return false;
     }
     
     @Override
-    public boolean supportsTransactionIsolationLevel(final int level) throws SQLException {
+    public boolean supportsTransactionIsolationLevel(final int level) {
         return false;
     }
     
     @Override
-    public boolean supportsDataDefinitionAndDataManipulationTransactions() throws SQLException {
+    public boolean supportsDataDefinitionAndDataManipulationTransactions() {
         return false;
     }
     
     @Override
-    public boolean supportsDataManipulationTransactionsOnly() throws SQLException {
+    public boolean supportsDataManipulationTransactionsOnly() {
         return false;
     }
     
     @Override
-    public boolean dataDefinitionCausesTransactionCommit() throws SQLException {
+    public boolean dataDefinitionCausesTransactionCommit() {
         return false;
     }
     
     @Override
-    public boolean dataDefinitionIgnoredInTransactions() throws SQLException {
+    public boolean dataDefinitionIgnoredInTransactions() {
         return false;
     }
     
     @Override
-    public ResultSet getProcedures(final String catalog, final String schemaPattern, final String procedureNamePattern) throws SQLException {
+    public ResultSet getProcedures(final String catalog, final String schemaPattern, final String procedureNamePattern) {
         return null;
     }
     
     @Override
-    public ResultSet getProcedureColumns(final String catalog, final String schemaPattern, final String procedureNamePattern, final String columnNamePattern) throws SQLException {
+    public ResultSet getProcedureColumns(final String catalog, final String schemaPattern, final String procedureNamePattern, final String columnNamePattern) {
         return null;
     }
     
     @Override
-    public ResultSet getTables(final String catalog, final String schemaPattern, final String tableNamePattern, final String[] types) throws SQLException {
+    public ResultSet getTables(final String catalog, final String schemaPattern, final String tableNamePattern, final String[] types) {
         return null;
     }
     
     @Override
-    public ResultSet getSchemas() throws SQLException {
+    public ResultSet getSchemas() {
         return null;
     }
     
     @Override
-    public ResultSet getSchemas(final String catalog, final String schemaPattern) throws SQLException {
+    public ResultSet getSchemas(final String catalog, final String schemaPattern) {
         return null;
     }
     
     @Override
-    public ResultSet getCatalogs() throws SQLException {
+    public ResultSet getCatalogs() {
         return null;
     }
     
     @Override
-    public ResultSet getTableTypes() throws SQLException {
+    public ResultSet getTableTypes() {
         return null;
     }
     
     @Override
-    public ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
+    public ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) {
         return null;
     }
     
     @Override
-    public ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
+    public ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) {
         return null;
     }
     
     @Override
-    public ResultSet getTablePrivileges(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
+    public ResultSet getTablePrivileges(final String catalog, final String schemaPattern, final String tableNamePattern) {
         return null;
     }
     
     @Override
-    public ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) throws SQLException {
+    public ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) {
         return null;
     }
     
     @Override
-    public ResultSet getVersionColumns(final String catalog, final String schema, final String table) throws SQLException {
+    public ResultSet getVersionColumns(final String catalog, final String schema, final String table) {
         return null;
     }
     
     @Override
-    public ResultSet getPrimaryKeys(final String catalog, final String schema, final String table) throws SQLException {
+    public ResultSet getPrimaryKeys(final String catalog, final String schema, final String table) {
         return null;
     }
     
     @Override
-    public ResultSet getImportedKeys(final String catalog, final String schema, final String table) throws SQLException {
+    public ResultSet getImportedKeys(final String catalog, final String schema, final String table) {
         return null;
     }
     
     @Override
-    public ResultSet getExportedKeys(final String catalog, final String schema, final String table) throws SQLException {
+    public ResultSet getExportedKeys(final String catalog, final String schema, final String table) {
         return null;
     }
     
     @Override
     public ResultSet getCrossReference(final String parentCatalog, final String parentSchema, final String parentTable, final String foreignCatalog, 
-                                       final String foreignSchema, final String foreignTable) throws SQLException {
+                                       final String foreignSchema, final String foreignTable) {
         return null;
     }
     
     @Override
-    public ResultSet getTypeInfo() throws SQLException {
+    public ResultSet getTypeInfo() {
         return null;
     }
     
     @Override
-    public ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) throws SQLException {
+    public ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) {
         return null;
     }
     
     @Override
-    public boolean supportsResultSetType(final int type) throws SQLException {
+    public boolean supportsResultSetType(final int type) {
         return false;
     }
     
     @Override
-    public boolean supportsResultSetConcurrency(final int type, final int concurrency) throws SQLException {
+    public boolean supportsResultSetConcurrency(final int type, final int concurrency) {
         return false;
     }
     
     @Override
-    public boolean ownUpdatesAreVisible(final int type) throws SQLException {
+    public boolean ownUpdatesAreVisible(final int type) {
         return false;
     }
     
     @Override
-    public boolean ownDeletesAreVisible(final int type) throws SQLException {
+    public boolean ownDeletesAreVisible(final int type) {
         return false;
     }
     
     @Override
-    public boolean ownInsertsAreVisible(final int type) throws SQLException {
+    public boolean ownInsertsAreVisible(final int type) {
         return false;
     }
     
     @Override
-    public boolean othersUpdatesAreVisible(final int type) throws SQLException {
+    public boolean othersUpdatesAreVisible(final int type) {
         return false;
     }
     
     @Override
-    public boolean othersDeletesAreVisible(final int type) throws SQLException {
+    public boolean othersDeletesAreVisible(final int type) {
         return false;
     }
     
     @Override
-    public boolean othersInsertsAreVisible(final int type) throws SQLException {
+    public boolean othersInsertsAreVisible(final int type) {
         return false;
     }
     
     @Override
-    public boolean updatesAreDetected(final int type) throws SQLException {
+    public boolean updatesAreDetected(final int type) {
         return false;
     }
     
     @Override
-    public boolean deletesAreDetected(final int type) throws SQLException {
+    public boolean deletesAreDetected(final int type) {
         return false;
     }
     
     @Override
-    public boolean insertsAreDetected(final int type) throws SQLException {
+    public boolean insertsAreDetected(final int type) {
         return false;
     }
     
     @Override
-    public boolean supportsBatchUpdates() throws SQLException {
+    public boolean supportsBatchUpdates() {
         return false;
     }
     
     @Override
-    public ResultSet getUDTs(final String catalog, final String schemaPattern, final String typeNamePattern, final int[] types) throws SQLException {
+    public ResultSet getUDTs(final String catalog, final String schemaPattern, final String typeNamePattern, final int[] types) {
         return null;
     }
     
     @Override
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() {
         return null;
     }
     
     @Override
-    public boolean supportsSavepoints() throws SQLException {
+    public boolean supportsSavepoints() {
         return false;
     }
     
     @Override
-    public boolean supportsNamedParameters() throws SQLException {
+    public boolean supportsNamedParameters() {
         return false;
     }
     
     @Override
-    public boolean supportsMultipleOpenResults() throws SQLException {
+    public boolean supportsMultipleOpenResults() {
         return false;
     }
     
     @Override
-    public boolean supportsGetGeneratedKeys() throws SQLException {
+    public boolean supportsGetGeneratedKeys() {
         return false;
     }
     
     @Override
-    public ResultSet getSuperTypes(final String catalog, final String schemaPattern, final String typeNamePattern) throws SQLException {
+    public ResultSet getSuperTypes(final String catalog, final String schemaPattern, final String typeNamePattern) {
         return null;
     }
     
     @Override
-    public ResultSet getSuperTables(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
+    public ResultSet getSuperTables(final String catalog, final String schemaPattern, final String tableNamePattern) {
         return null;
     }
     
     @Override
-    public ResultSet getAttributes(final String catalog, final String schemaPattern, final String typeNamePattern, final String attributeNamePattern) throws SQLException {
+    public ResultSet getAttributes(final String catalog, final String schemaPattern, final String typeNamePattern, final String attributeNamePattern) {
         return null;
     }
     
     @Override
-    public boolean supportsResultSetHoldability(final int holdability) throws SQLException {
+    public boolean supportsResultSetHoldability(final int holdability) {
         return false;
     }
     
     @Override
-    public int getResultSetHoldability() throws SQLException {
+    public int getResultSetHoldability() {
         return 0;
     }
     
     @Override
-    public int getDatabaseMajorVersion() throws SQLException {
+    public int getDatabaseMajorVersion() {
         return 0;
     }
     
     @Override
-    public int getDatabaseMinorVersion() throws SQLException {
+    public int getDatabaseMinorVersion() {
         return 0;
     }
     
     @Override
-    public int getJDBCMajorVersion() throws SQLException {
+    public int getJDBCMajorVersion() {
         return 0;
     }
     
     @Override
-    public int getJDBCMinorVersion() throws SQLException {
+    public int getJDBCMinorVersion() {
         return 0;
     }
     
     @Override
-    public int getSQLStateType() throws SQLException {
+    public int getSQLStateType() {
         return DatabaseMetaData.sqlStateSQL;
     }
     
     @Override
-    public boolean locatorsUpdateCopy() throws SQLException {
+    public boolean locatorsUpdateCopy() {
         return false;
     }
     
     @Override
-    public boolean supportsStatementPooling() throws SQLException {
+    public boolean supportsStatementPooling() {
         return false;
     }
     
     @Override
-    public RowIdLifetime getRowIdLifetime() throws SQLException {
+    public RowIdLifetime getRowIdLifetime() {
         return null;
     }
     
     @Override
-    public boolean supportsStoredFunctionsUsingCallSyntax() throws SQLException {
+    public boolean supportsStoredFunctionsUsingCallSyntax() {
         return false;
     }
     
     @Override
-    public boolean autoCommitFailureClosesAllResultSets() throws SQLException {
+    public boolean autoCommitFailureClosesAllResultSets() {
         return false;
     }
     
     @Override
-    public ResultSet getClientInfoProperties() throws SQLException {
+    public ResultSet getClientInfoProperties() {
         return null;
     }
     
     @Override
-    public ResultSet getFunctions(final String catalog, final String schemaPattern, final String functionNamePattern) throws SQLException {
+    public ResultSet getFunctions(final String catalog, final String schemaPattern, final String functionNamePattern) {
         return null;
     }
     
     @Override
-    public ResultSet getFunctionColumns(final String catalog, final String schemaPattern, final String functionNamePattern, final String columnNamePattern) throws SQLException {
+    public ResultSet getFunctionColumns(final String catalog, final String schemaPattern, final String functionNamePattern, final String columnNamePattern) {
         return null;
     }
     
     @Override
-    public ResultSet getPseudoColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
+    public ResultSet getPseudoColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) {
         return null;
     }
     
     @Override
-    public boolean generatedKeyAlwaysReturned() throws SQLException {
+    public boolean generatedKeyAlwaysReturned() {
         return false;
     }
     
     @Override
-    public <T> T unwrap(final Class<T> iface) throws SQLException {
+    public <T> T unwrap(final Class<T> iface) {
         return null;
     }
     
     @Override
-    public boolean isWrapperFor(final Class<?> iface) throws SQLException {
+    public boolean isWrapperFor(final Class<?> iface) {
         return false;
     }
 }

@@ -4,7 +4,7 @@
 
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
 [![GitHub release](https://img.shields.io/github/release/shardingjdbc/sharding-jdbc.svg)](https://github.com/shardingjdbc/sharding-jdbc/releases)
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-jdbc-server-2.1.0-SNAPSHOT-assembly.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-proxy-2.1.0-SNAPSHOT-assembly-v1.tar.gz)
 
 [![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.png?branch=master)](https://travis-ci.org/shardingjdbc/sharding-jdbc)
 [![Coverage Status](https://codecov.io/github/shardingjdbc/sharding-jdbc/coverage.svg?branch=master)](https://codecov.io/github/shardingjdbc/sharding-jdbc?branch=master)
@@ -14,7 +14,7 @@
 
 # Overview
 
-Sharding-JDBC: A data sharding, read-write splitting, BASE transaction and database orchestration middleware. It provides maximum compatibilities for applications by JDBC and MySQL protocol.
+Sharding-JDBC is a distributed database middleware, focus on data sharding, read-write splitting, BASE transaction and database orchestration. It provides maximum compatibilities for applications by JDBC driver or database protocols proxy.
 
 # Document
 
@@ -51,34 +51,34 @@ Sharding-JDBC: A data sharding, read-write splitting, BASE transaction and datab
 
 # Architecture
 
-## Sharding-JDBC-Driver
+## Sharding-JDBC
 
 Use JDBC connect databases without redirect cost for java application, best performance for production.
 
 * ORM compatible. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
-* Connection-pool compatible. DBCP, C3P0, BoneCP, Druid supported.
+* Connection-pool compatible. DBCP, BoneCP, Druid supported.
 * Multi SQL-based databases compatible. Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
 
-![Sharding-JDBC-Driver Architecture](http://ovfotjrsi.bkt.clouddn.com/driver_brief_en.png)
+![Sharding-JDBC Architecture](http://ovfotjrsi.bkt.clouddn.com/jdbc_brief_en.png)
 
-## Sharding-JDBC-Server
+## Sharding-Proxy
 
 Database router. Deploy as a stateless server, support MySQL protocol for now.
 
 * Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
 * Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.
 
-![Sharding-JDBC-Server Architecture](http://ovfotjrsi.bkt.clouddn.com/server_brief_en.png)
+![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/proxy_brief_en.png)
 
-## Sharding-JDBC-Sidecar(TBD)
+## Sharding-Sidecar(TBD)
 
 Use sidecar to connect databases, best for Kubernetes or Mesos together.
 
-![Sharding-JDBC-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_en.png)
+![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_v2_en.png)
 
 # Quick Start
 
-## Sharding-JDBC-Driver
+## Sharding-JDBC
 
 ### Add maven dependency
 
@@ -103,14 +103,14 @@ Use ShardingDataSourceFactory to create ShardingDataSource, which is a standard 
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
 ```
 
-## Sharding-JDBC-Server
+## Sharding-Proxy
 
 ### Configure sharding rule
 
-Edit `${sharding-jdbc-server}\conf\sharding-config.yaml`. Same format with Sharding-JDBC-Driver's `YAML` configuration. 
+Edit `${sharding-proxy}\conf\sharding-config.yaml`. Same format with Sharding-JDBC-Driver's `YAML` configuration. 
 
 ### Start server
 
 ``` shell
-${sharding-jdbc-server}\bin\start.sh ${port}
+${sharding-proxy}\bin\start.sh ${port}
 ```

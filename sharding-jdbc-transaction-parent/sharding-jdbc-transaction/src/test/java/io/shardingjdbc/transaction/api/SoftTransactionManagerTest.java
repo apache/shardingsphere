@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ public final class SoftTransactionManagerTest extends AbstractSoftTransactionMoc
     }
     
     @Test
-    public void assertGetBEDCurrentTransaction() throws SQLException {
+    public void assertGetBEDCurrentTransaction() {
         getSoftTransactionManager().getTransaction(SoftTransactionType.BestEffortsDelivery);
         assertNotNull(SoftTransactionManager.getCurrentTransaction().get());
         assertNotNull(SoftTransactionManager.getCurrentTransactionConfiguration().get());
@@ -45,7 +45,7 @@ public final class SoftTransactionManagerTest extends AbstractSoftTransactionMoc
     }
     
     @Test
-    public void assertGetTCCCurrentTransaction() throws SQLException {
+    public void assertGetTCCCurrentTransaction() {
         getSoftTransactionManager().getTransaction(SoftTransactionType.TryConfirmCancel);
         assertNotNull(SoftTransactionManager.getCurrentTransaction().get());
         assertNotNull(SoftTransactionManager.getCurrentTransactionConfiguration().get());

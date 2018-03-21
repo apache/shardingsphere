@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,11 +29,13 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -47,23 +49,20 @@ import java.util.Map;
 public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends AbstractOrchestrationBeanDefinitionParser {
     
     @Override
-    //CHECKSTYLE:OFF
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-    //CHECKSTYLE:ON
         String regCenter = parseRegistryCenterRef(element);
         if (Strings.isNullOrEmpty(regCenter)) {
-            return getSpringMasterSlaveDataSourceBean(element, parserContext);
+            return getSpringMasterSlaveDataSourceBean(element);
         }
         return getOrchestrationSpringMasterSlaveDataSourceBean(element, parserContext);
     }
     
-    private AbstractBeanDefinition getSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext) {
+    private AbstractBeanDefinition getSpringMasterSlaveDataSourceBean(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringMasterSlaveDataSource.class);
+        factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseId(element));
-        String masterDataSourceName = parseMasterDataSourceRef(element);
-        factory.addConstructorArgValue(masterDataSourceName);
-        factory.addConstructorArgReference(masterDataSourceName);
-        factory.addConstructorArgValue(parseSlaveDataSourceBeans(element, parserContext));
+        factory.addConstructorArgValue(parseMasterDataSourceRef(element));
+        factory.addConstructorArgValue(parseSlaveDataSourcesRef(element));
         String strategyRef = parseStrategyRef(element);
         if (!Strings.isNullOrEmpty(strategyRef)) {
             factory.addConstructorArgReference(strategyRef);
@@ -75,7 +74,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     
     private AbstractBeanDefinition getOrchestrationSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationMasterSlaveDataSource.class);
-        factory.addConstructorArgValue(parseDataSources(element, parserContext));
+        factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element, parserContext));
         factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         factory.addConstructorArgValue(parseOrchestrationConfiguration(element));
@@ -84,15 +83,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         return factory.getBeanDefinition();
     }
     
-    private String parseId(final Element element) {
-        return element.getAttribute(ID_ATTRIBUTE);
-    }
-    
-    private String parseRegistryCenterRef(final Element element) {
-        return element.getAttribute("registry-center-ref");
-    }
-    
-    private Map<String, RuntimeBeanReference> parseDataSources(final Element element, final ParserContext parserContext) {
+    private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
         String masterDataSource = parseMasterDataSourceRef(element);
         Map<String, RuntimeBeanReference> result = new ManagedMap<>();
         result.put(masterDataSource, new RuntimeBeanReference(masterDataSource));
@@ -100,6 +91,14 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
             result.put(each, new RuntimeBeanReference(each));
         }
         return result;
+    }
+    
+    private String parseId(final Element element) {
+        return element.getAttribute(ID_ATTRIBUTE);
+    }
+    
+    private String parseRegistryCenterRef(final Element element) {
+        return element.getAttribute("registry-center-ref");
     }
     
     private BeanDefinition parseMasterSlaveRuleConfig(final Element element, final ParserContext parserContext) {
@@ -120,12 +119,10 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         return element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.MASTER_DATA_SOURCE_NAME_ATTRIBUTE);
     }
     
-    private Map<String, BeanDefinition> parseSlaveDataSourceBeans(final Element element, final ParserContext parserContext) {
+    private Collection<String> parseSlaveDataSourcesRef(final Element element) {
         List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE));
-        Map<String, BeanDefinition> result = new ManagedMap<>(slaveDataSources.size());
-        for (String each : slaveDataSources) {
-            result.put(each, parserContext.getRegistry().getBeanDefinition(each));
-        }
+        Collection<String> result = new ManagedList<>(slaveDataSources.size());
+        result.addAll(slaveDataSources);
         return result;
     }
     

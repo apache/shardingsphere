@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,11 +19,12 @@ package io.shardingjdbc.core.integrate.type.sharding.hint.base;
 
 import io.shardingjdbc.core.common.base.AbstractSQLTest;
 import io.shardingjdbc.core.common.env.DatabaseEnvironment;
-import io.shardingjdbc.core.common.util.DBUnitUtil;
+import io.shardingjdbc.core.util.DBUnitUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.ShardingRule;
+import org.dbunit.Assertion;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
@@ -39,13 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static org.dbunit.Assertion.assertEquals;
-
 public abstract class AbstractHintTest extends AbstractSQLTest {
-    
-    public AbstractHintTest() {
-        
-    }
     
     @Before
     public void cleanAndInitTable() throws Exception {
@@ -76,12 +71,12 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             ShardingRule shardingRule = getShardingRule(each);
-            getShardingDataSources().put(each.getKey(), new ShardingDataSource(shardingRule));
+            getShardingDataSources().put(each.getKey(), new ShardingDataSource(each.getValue(), shardingRule));
         }
         return getShardingDataSources();
     }
     
-    protected abstract ShardingRule getShardingRule(Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) throws SQLException;
+    protected abstract ShardingRule getShardingRule(Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry);
     
     protected void assertDataSet(final String expectedDataSetFile, final HintShardingValueHelper helper, 
                                  final Connection connection, final String sql, 
@@ -106,9 +101,8 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
                 ps.setObject(i++, param);
             }
             ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(type), connection).createTable("t_order", ps);
-            IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractHintTest.class.getClassLoader()
-                    .getResourceAsStream(expectedDataSetFile)));
-            assertEquals(expectedDataSet.getTable("t_order"), actualTable);
+            IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractHintTest.class.getClassLoader().getResourceAsStream(expectedDataSetFile)));
+            Assertion.assertEquals(expectedDataSet.getTable("t_order"), actualTable);
         }
     }
 }

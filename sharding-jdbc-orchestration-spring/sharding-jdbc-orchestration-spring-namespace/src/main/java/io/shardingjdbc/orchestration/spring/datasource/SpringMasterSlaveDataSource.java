@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +24,7 @@ import io.shardingjdbc.core.rule.MasterSlaveRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -34,13 +35,13 @@ import java.util.Map;
  */
 public class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
     
-    public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName,
-                                       final DataSource masterDataSource, final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithm strategy) throws SQLException {
-        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategy), Collections.<String, Object>emptyMap());
+    public SpringMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final String name, 
+                                       final String masterDataSourceName, final Collection<String> slaveDataSourceNames, final MasterSlaveLoadBalanceAlgorithm strategy) throws SQLException {
+        super(dataSourceMap, new MasterSlaveRule(name, masterDataSourceName, slaveDataSourceNames, strategy), Collections.<String, Object>emptyMap());
     }
     
-    public SpringMasterSlaveDataSource(final String name, final String masterDataSourceName, final DataSource masterDataSource,
-                                       final Map<String, DataSource> slaveDataSourceMap, final MasterSlaveLoadBalanceAlgorithmType strategyType) throws SQLException {
-        super(new MasterSlaveRule(name, masterDataSourceName, masterDataSource, slaveDataSourceMap, strategyType.getAlgorithm()), Collections.<String, Object>emptyMap());
+    public SpringMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final String name, 
+                                       final String masterDataSourceName, final Collection<String> slaveDataSourceNames, final MasterSlaveLoadBalanceAlgorithmType strategyType) throws SQLException {
+        super(dataSourceMap, new MasterSlaveRule(name, masterDataSourceName, slaveDataSourceNames, strategyType.getAlgorithm()), Collections.<String, Object>emptyMap());
     }
 }

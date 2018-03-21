@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.integrate.type.sharding.hint.type;
 
+import io.shardingjdbc.core.util.SQLPlaceholderUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.sql.DatabaseTestSQL;
@@ -33,7 +34,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static io.shardingjdbc.core.common.util.SQLPlaceholderUtil.replacePreparedStatement;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -105,7 +105,7 @@ public final class ShardingDatabaseOnlyWithHintForDMLTest extends AbstractShardi
             for (int j = 0; j < 2; j++) {
                 try (HintShardingValueHelper helper = new HintShardingValueHelper(i, i * 100 + j);
                      Connection connection = dataSourceEntry.getValue().getConnection()) {
-                    PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(DatabaseTestSQL.UPDATE_WITHOUT_ALIAS_SQL));
+                    PreparedStatement preparedStatement = connection.prepareStatement(SQLPlaceholderUtil.replacePreparedStatement(DatabaseTestSQL.UPDATE_WITHOUT_ALIAS_SQL));
                     preparedStatement.setString(1, "updated");
                     preparedStatement.setInt(2, i * 100 + j);
                     preparedStatement.setInt(3, i);
@@ -153,7 +153,7 @@ public final class ShardingDatabaseOnlyWithHintForDMLTest extends AbstractShardi
             for (int j = 0; j < 2; j++) {
                 try (HintShardingValueHelper helper = new HintShardingValueHelper(i, i * 100 + j);
                      Connection connection = dataSourceEntry.getValue().getConnection()) {
-                    PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(DatabaseTestSQL.DELETE_WITHOUT_ALIAS_SQL));
+                    PreparedStatement preparedStatement = connection.prepareStatement(SQLPlaceholderUtil.replacePreparedStatement(DatabaseTestSQL.DELETE_WITHOUT_ALIAS_SQL));
                     preparedStatement.setInt(1, i * 100 + j);
                     preparedStatement.setInt(2, i);
                     preparedStatement.setString(3, "init");
@@ -167,7 +167,7 @@ public final class ShardingDatabaseOnlyWithHintForDMLTest extends AbstractShardi
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/sharding/hint/expect/%s/db_%s.xml", expectedDataSetPattern, i),
                     connection.getConnection(String.format("dataSource_db_%s", i), SQLType.DQL),
-                    replacePreparedStatement(DatabaseTestSQL.ASSERT_SELECT_WITH_STATUS_SQL), type, status);
+                    SQLPlaceholderUtil.replacePreparedStatement(DatabaseTestSQL.ASSERT_SELECT_WITH_STATUS_SQL), type, status);
         }
     }
 }

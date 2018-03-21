@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,8 +33,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static io.shardingjdbc.transaction.constants.TransactionLogDataSourceType.RDB;
-
 /**
  * B.A.S.E transaction configuration.
  * 
@@ -59,7 +57,7 @@ public class SoftTransactionConfiguration {
     /**
      * Transaction log storage type.
      */
-    private TransactionLogDataSourceType storageType = RDB;
+    private TransactionLogDataSourceType storageType = TransactionLogDataSourceType.RDB;
     
     /**
      * Transaction log data source.

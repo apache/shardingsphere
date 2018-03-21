@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,9 +23,8 @@ import io.shardingjdbc.orchestration.internal.jdbc.statement.CircuitBreakerState
 import org.junit.Test;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -38,76 +37,76 @@ public final class CircuitBreakerConnectionTest {
     private final String sql = "select 1";
     
     @Test
-    public void assertGetMetaData() throws SQLException {
+    public void assertGetMetaData() {
         assertTrue(connection.getMetaData() instanceof CircuitBreakerDatabaseMetaData);
     }
     
     @Test
-    public void setReadOnly() throws SQLException {
+    public void setReadOnly() {
         connection.setReadOnly(true);
         assertFalse(connection.isReadOnly());
     }
     
     @Test
-    public void assertIsReadOnly() throws SQLException {
+    public void assertIsReadOnly() {
         assertFalse(connection.isReadOnly());
     }
     
     @Test
-    public void assertSetTransactionIsolation() throws SQLException {
+    public void assertSetTransactionIsolation() {
         connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
         assertThat(connection.getTransactionIsolation(), is(Connection.TRANSACTION_NONE));
     }
     
     @Test
-    public void assertGetTransactionIsolation() throws SQLException {
+    public void assertGetTransactionIsolation() {
         assertThat(connection.getTransactionIsolation(), is(Connection.TRANSACTION_NONE));
     }
     
     @Test
-    public void assertGetWarnings() throws SQLException {
+    public void assertGetWarnings() {
         assertNull(connection.getWarnings());
     }
     
     @Test
-    public void assertClearWarnings() throws SQLException {
+    public void assertClearWarnings() {
         connection.clearWarnings();
     }
     
     @Test
-    public void assertSetAutoCommit() throws SQLException {
+    public void assertSetAutoCommit() {
         connection.setAutoCommit(true);
         assertFalse(connection.getAutoCommit());
     }
     
     @Test
-    public void assertGetAutoCommit() throws SQLException {
+    public void assertGetAutoCommit() {
         assertFalse(connection.getAutoCommit());
     }
     
     @Test
-    public void assertCommit() throws SQLException {
+    public void assertCommit() {
         connection.commit();
     }
     
     @Test
-    public void assertRollback() throws SQLException {
+    public void assertRollback() {
         connection.rollback();
     }
     
     @Test
-    public void assertSetHoldability() throws SQLException {
+    public void assertSetHoldability() {
         connection.setHoldability(-1);
         assertThat(connection.getHoldability(), is(0));
     }
     
     @Test
-    public void assertGetHoldability() throws SQLException {
+    public void assertGetHoldability() {
         assertThat(connection.getHoldability(), is(0));
     }
     
     @Test
-    public void assertPrepareStatement() throws SQLException {
+    public void assertPrepareStatement() {
         assertTrue(connection.prepareStatement(sql) instanceof CircuitBreakerPreparedStatement);
         assertTrue(connection.prepareStatement(sql, 0, 0) instanceof CircuitBreakerPreparedStatement);
         assertTrue(connection.prepareStatement(sql, 0, 0, 0) instanceof CircuitBreakerPreparedStatement);
@@ -117,19 +116,19 @@ public final class CircuitBreakerConnectionTest {
     }
     
     @Test
-    public void assertCreateStatement() throws SQLException {
+    public void assertCreateStatement() {
         assertTrue(connection.createStatement() instanceof CircuitBreakerStatement);
         assertTrue(connection.createStatement(0, 0) instanceof CircuitBreakerStatement);
         assertTrue(connection.createStatement(0, 0, 0) instanceof CircuitBreakerStatement);
     }
     
     @Test
-    public void assertClose() throws SQLException {
+    public void assertClose() {
         connection.close();
     }
     
     @Test
-    public void assertIsClosed() throws SQLException {
+    public void assertIsClosed() {
         assertFalse(connection.isClosed());
     }
 }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -241,7 +241,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetDateForColumnIndex() throws SQLException {
+    public void assertGetDateForColumnIndex() {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getDate(1);
@@ -253,7 +253,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetDateForColumnLabel() throws SQLException {
+    public void assertGetDateForColumnLabel() {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getDate(columnName);
@@ -265,7 +265,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetDateColumnIndexWithCalendar() throws SQLException {
+    public void assertGetDateColumnIndexWithCalendar() {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getDate(1, Calendar.getInstance());
@@ -277,7 +277,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetDateColumnLabelWithCalendar() throws SQLException {
+    public void assertGetDateColumnLabelWithCalendar() {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getDate(columnName, Calendar.getInstance());
@@ -289,7 +289,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetTimeForColumnIndex() throws SQLException {
+    public void assertGetTimeForColumnIndex() {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getTime(1);
@@ -301,7 +301,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetTimeForColumnLabel() throws SQLException {
+    public void assertGetTimeForColumnLabel() {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getTime(columnName);
@@ -313,7 +313,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetTimeColumnIndexWithCalendar() throws SQLException {
+    public void assertGetTimeColumnIndexWithCalendar() {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getTime(1, Calendar.getInstance());
@@ -325,7 +325,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetTimeColumnLabelWithCalendar() throws SQLException {
+    public void assertGetTimeColumnLabelWithCalendar() {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getTime(columnName, Calendar.getInstance());
@@ -337,7 +337,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetTimestampForColumnIndex() throws SQLException {
+    public void assertGetTimestampForColumnIndex() {
         for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(1);
@@ -352,7 +352,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetTimestampForColumnLabel() throws SQLException {
+    public void assertGetTimestampForColumnLabel() {
         for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(columnName);
@@ -367,7 +367,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetTimestampColumnIndexWithCalendar() throws SQLException {
+    public void assertGetTimestampColumnIndexWithCalendar() {
         for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(1, Calendar.getInstance());
@@ -382,7 +382,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetTimestampColumnLabelWithCalendar() throws SQLException {
+    public void assertGetTimestampColumnLabelWithCalendar() {
         for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(columnName, Calendar.getInstance());
@@ -535,7 +535,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetURLForColumnIndex() throws SQLException {
+    public void assertGetURLForColumnIndex() {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getURL(1);
@@ -548,7 +548,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetURLForColumnLabel() throws SQLException {
+    public void assertGetURLForColumnLabel() {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getURL(columnName);

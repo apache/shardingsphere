@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,17 +55,17 @@ public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
-    public void assertIsWrapperFor() throws SQLException {
+    public void assertIsWrapperFor() {
         assertTrue(getShardingDataSource().isWrapperFor(Object.class));
     }
     
     @Test
-    public void assertIsNotWrapperFor() throws SQLException {
+    public void assertIsNotWrapperFor() {
         assertFalse(getShardingDataSource().isWrapperFor(String.class));
     }
     
     @Test
-    public void assertRecordMethodInvocationSuccess() throws SQLException {
+    public void assertRecordMethodInvocationSuccess() {
         List<?> list = mock(List.class);
         when(list.isEmpty()).thenReturn(true);
         getShardingDataSource().recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
@@ -74,19 +74,19 @@ public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test(expected = ShardingJdbcException.class)
-    public void assertRecordMethodInvocationFailure() throws SQLException {
+    public void assertRecordMethodInvocationFailure() {
         getShardingDataSource().recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
     }
     
     @Test
-    public void assertSetLogWriter() throws SQLException {
+    public void assertSetLogWriter() {
         assertThat(getShardingDataSource().getLogWriter(), instanceOf(PrintWriter.class));
         getShardingDataSource().setLogWriter(null);
         assertNull(getShardingDataSource().getLogWriter());
     }
     
     @Test
-    public void assertGetParentLogger() throws SQLException {
+    public void assertGetParentLogger() {
         assertThat(getShardingDataSource().getParentLogger().getName(), is(Logger.GLOBAL_LOGGER_NAME));
     }
     

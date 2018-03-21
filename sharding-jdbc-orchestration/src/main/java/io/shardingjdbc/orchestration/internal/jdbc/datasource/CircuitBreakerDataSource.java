@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,8 +22,6 @@ import io.shardingjdbc.orchestration.internal.jdbc.connection.CircuitBreakerConn
 
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 /**
@@ -34,30 +32,30 @@ import java.util.logging.Logger;
 public final class CircuitBreakerDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
     @Override
-    public void close() throws Exception {
+    public void close() {
     }
     
     @Override
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() {
         return new CircuitBreakerConnection();
     }
     
     @Override
-    public Connection getConnection(final String username, final String password) throws SQLException {
+    public Connection getConnection(final String username, final String password) {
         return new CircuitBreakerConnection();
     }
     
     @Override
-    public PrintWriter getLogWriter() throws SQLException {
+    public PrintWriter getLogWriter() {
         return null;
     }
     
     @Override
-    public void setLogWriter(final PrintWriter out) throws SQLException {
+    public void setLogWriter(final PrintWriter out) {
     }
     
     @Override
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    public Logger getParentLogger() {
         return null;
     }
 }

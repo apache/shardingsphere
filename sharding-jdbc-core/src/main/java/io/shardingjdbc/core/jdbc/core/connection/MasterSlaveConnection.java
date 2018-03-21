@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -84,17 +84,17 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     }
     
     @Override
-    public Statement createStatement() throws SQLException {
+    public Statement createStatement() {
         return new MasterSlaveStatement(this);
     }
     
     @Override
-    public Statement createStatement(final int resultSetType, final int resultSetConcurrency) throws SQLException {
+    public Statement createStatement(final int resultSetType, final int resultSetConcurrency) {
         return new MasterSlaveStatement(this, resultSetType, resultSetConcurrency);
     }
     
     @Override
-    public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
+    public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         return new MasterSlaveStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     

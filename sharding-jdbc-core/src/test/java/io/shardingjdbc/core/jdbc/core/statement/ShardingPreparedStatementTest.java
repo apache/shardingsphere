@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,14 +17,15 @@
 
 package io.shardingjdbc.core.jdbc.core.statement;
 
+import com.google.common.eventbus.Subscribe;
 import io.shardingjdbc.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingjdbc.core.integrate.sql.DatabaseTestSQL;
+import io.shardingjdbc.core.util.SQLPlaceholderUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.executor.event.DMLExecutionEvent;
 import io.shardingjdbc.core.executor.event.EventExecutionType;
+import io.shardingjdbc.core.integrate.sql.DatabaseTestSQL;
 import io.shardingjdbc.core.jdbc.util.JDBCTestSQL;
 import io.shardingjdbc.core.util.EventBusInstance;
-import com.google.common.eventbus.Subscribe;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -35,7 +36,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.shardingjdbc.core.common.util.SQLPlaceholderUtil.replacePreparedStatement;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -86,12 +86,11 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         }
     }
     
-    
     @Test
     public void assertExecuteUpdateWithParameter() throws SQLException {
         try (
                 Connection connection = getShardingDataSource().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(DatabaseTestSQL.DELETE_WITHOUT_SHARDING_VALUE_SQL))) {
+                PreparedStatement preparedStatement = connection.prepareStatement(SQLPlaceholderUtil.replacePreparedStatement(DatabaseTestSQL.DELETE_WITHOUT_SHARDING_VALUE_SQL))) {
             preparedStatement.setString(1, "init");
             assertThat(preparedStatement.executeUpdate(), is(4));
             preparedStatement.setString(1, "null");
@@ -271,7 +270,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         if (DatabaseType.Oracle == getCurrentDatabaseType()) {
             return;
         }
-        String sql = replacePreparedStatement(DatabaseTestSQL.INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL);
+        String sql = SQLPlaceholderUtil.replacePreparedStatement(DatabaseTestSQL.INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL);
         try (
                 Connection connection = getShardingDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -390,7 +389,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     
     @Test
     public void assertUpdateBatch() throws SQLException {
-        String sql = replacePreparedStatement(DatabaseTestSQL.UPDATE_WITHOUT_SHARDING_VALUE_SQL);
+        String sql = SQLPlaceholderUtil.replacePreparedStatement(DatabaseTestSQL.UPDATE_WITHOUT_SHARDING_VALUE_SQL);
         try (
                 Connection connection = getShardingDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertSelectExpressionWithSingleTable" value="SELECT o.order_id + 1 * 2 FROM t_order AS o ORDER BY o.order_id" />
+    <sql id="assertSelectDateFuncWithSingleTable" value="SELECT DATE(i.c_date) AS c_date FROM `t_order_item` AS i ORDER BY DATE(i.c_date) DESC" type="MySQL" />
+    <sql id="assertSelectCountWithExpression" value="SELECT COUNT(o.order_id) + 1^2 FROM t_order o" />
+    <sql id="assertSelectRegexpWithSingleTable" value="SELECT * FROM t_order_item t WHERE t.status REGEXP %s AND t.item_id IN (%s, %s)" type="MySQL" />
+</sqls>

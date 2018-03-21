@@ -26,7 +26,10 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-import static org.hamcrest.core.Is.is;
+import javax.sql.DataSource;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -40,13 +43,21 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
     
     @Test
     public void assertDefaultShardingDataSource() {
+        Map<String, DataSource> dataSourceMap = getDataSourceMap();
+        assertNotNull(dataSourceMap.get("randomMasterSlaveDataSource"));
+        assertNotNull(dataSourceMap.get("refMasterSlaveDataSource"));
+        assertNotNull(dataSourceMap.get("defaultMasterSlaveDataSource"));
         ShardingRule shardingRule = getShardingRule();
-        assertNotNull(shardingRule.getDataSourceMap().get("randomMasterSlaveDataSource"));
-        assertNotNull(shardingRule.getDataSourceMap().get("refMasterSlaveDataSource"));
-        assertNotNull(shardingRule.getDataSourceMap().get("defaultMasterSlaveDataSource"));
         assertThat(shardingRule.getDefaultDataSourceName(), is("defaultMasterSlaveDataSource"));
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Map<String, DataSource> getDataSourceMap() {
+        ShardingDataSource shardingDataSource = this.applicationContext.getBean("defaultShardingDataSource", ShardingDataSource.class);
+        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
+        return (Map) FieldValueUtil.getFieldValue(shardingContext, "dataSourceMap");
     }
     
     private ShardingRule getShardingRule() {

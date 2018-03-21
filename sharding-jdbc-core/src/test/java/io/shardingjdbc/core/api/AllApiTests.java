@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,28 +17,14 @@
 
 package io.shardingjdbc.core.api;
 
-import io.shardingjdbc.core.api.algorithm.common.ShardingStrategyTest;
-import io.shardingjdbc.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithmTest;
-import io.shardingjdbc.core.api.algorithm.sharding.DatabaseShardingStrategyTest;
-import io.shardingjdbc.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithmTest;
-import io.shardingjdbc.core.api.algorithm.table.TableShardingStrategyTest;
-import io.shardingjdbc.core.constant.ShardingPropertiesConstantTest;
-import io.shardingjdbc.core.constant.ShardingPropertiesTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         ShardingDataSourceFactoryTest.class, 
-        ShardingPropertiesTest.class, 
-        ShardingPropertiesConstantTest.class, 
-        ShardingStrategyTest.class, 
-        DatabaseShardingStrategyTest.class, 
-        TableShardingStrategyTest.class, 
-        HintManagerTest.class, 
-        MasterSlaveDataSourceFactoryTest.class, 
-        RoundRobinMasterSlaveLoadBalanceAlgorithmTest.class,
-        RandomMasterSlaveLoadBalanceAlgorithmTest.class
+        MasterSlaveDataSourceFactoryTest.class,
+        HintManagerTest.class
     })
 public class AllApiTests {
 }

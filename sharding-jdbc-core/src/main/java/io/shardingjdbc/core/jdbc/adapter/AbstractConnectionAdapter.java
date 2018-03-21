@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,7 +48,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
     @Override
-    public final boolean getAutoCommit() throws SQLException {
+    public final boolean getAutoCommit() {
         return autoCommit;
     }
     
@@ -102,12 +102,12 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final boolean isClosed() throws SQLException {
+    public final boolean isClosed() {
         return closed;
     }
     
     @Override
-    public final boolean isReadOnly() throws SQLException {
+    public final boolean isReadOnly() {
         return readOnly;
     }
     
@@ -121,7 +121,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final int getTransactionIsolation() throws SQLException {
+    public final int getTransactionIsolation() {
         return transactionIsolation;
     }
     
@@ -137,20 +137,20 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     // ------- Consist with MySQL driver implementation -------
     
     @Override
-    public SQLWarning getWarnings() throws SQLException {
+    public SQLWarning getWarnings() {
         return null;
     }
     
     @Override
-    public void clearWarnings() throws SQLException {
+    public void clearWarnings() {
     }
     
     @Override
-    public final int getHoldability() throws SQLException {
+    public final int getHoldability() {
         return ResultSet.CLOSE_CURSORS_AT_COMMIT;
     }
     
     @Override
-    public final void setHoldability(final int holdability) throws SQLException {
+    public final void setHoldability(final int holdability) {
     }
 }
