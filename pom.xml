@@ -13,6 +13,7 @@
         <module>sharding-jdbc-orchestration</module>
         <module>sharding-jdbc-orchestration-spring</module>
         <module>sharding-proxy</module>
+        <module>sharding-console</module>
     </modules>
     
     <properties>

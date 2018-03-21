@@ -17,24 +17,28 @@
 
 package io.shardingjdbc.console.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.shardingjdbc.console.service.SqlService;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * SelectController.
+ * SqlController.
  *
  * @author zhangyonglun
  */
 @RestController
-public class SelectController {
+public class SqlController {
+
+    @Autowired
+    private SqlService sqlService;
 
     /**
-     * Get resource.
+     * execute SQL.
      *
      * @return result
      */
-    @RequestMapping("/select")
-    public String helloWorld() {
-        return "Hello World!";
+    @RequestMapping(value = "/sql", method = RequestMethod.POST)
+    public Object executeSQL(@RequestBody String sql) {
+        return sqlService.execute(sql);
     }
 }
