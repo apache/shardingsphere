@@ -22,7 +22,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class DataNodeTest {
+public final  class DataNodeTest {
     
     @Test
     public void assertNewValidDataNode() {
