@@ -24,13 +24,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private AuthPluginData authPluginData;
     
     private boolean authorized;
-    
+
     @Override
     public void channelActive(final ChannelHandlerContext context) throws Exception {
         authPluginData = new AuthPluginData();
         context.writeAndFlush(new HandshakePacket(ConnectionIdGenerator.getInstance().nextId(), authPluginData));
     }
-    
+
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) throws Exception {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload((ByteBuf) message);
@@ -40,7 +40,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             executeCommand(context, mysqlPacketPayload);
         }
     }
-    
+
+
     private void auth(final ChannelHandlerContext context, final MySQLPacketPayload mysqlPacketPayload) {
         HandshakeResponse41Packet response41 = new HandshakeResponse41Packet().read(mysqlPacketPayload);
         // TODO use authPluginData to auth
@@ -57,5 +58,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             context.write(each);
         }
         context.flush();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+         cause.printStackTrace();
+         ctx.close();
     }
 }

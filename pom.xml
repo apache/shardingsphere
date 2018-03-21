@@ -5,7 +5,7 @@
     <version>2.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-    
+
     <modules>
         <module>sharding-jdbc-core</module>
         <module>sharding-jdbc-core-spring</module>
@@ -20,7 +20,7 @@
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
-        
+
         <lombok.version>1.16.4</lombok.version>
         <guava.version>18.0</guava.version>
         <common-lang3>3.6</common-lang3>
@@ -48,7 +48,7 @@
         <grpc.version>1.7.0</grpc.version>
         <protobuf.version>3.4.0</protobuf.version>
         <guava-retrying.version>2.0.0</guava-retrying.version>
-        
+
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
@@ -72,10 +72,10 @@
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <protobuf-maven-plugin.version>0.5.0</protobuf-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
-        
+
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -126,8 +126,12 @@
                 <version>${curator.version}</version>
                 <exclusions>
                     <exclusion>
-                        <artifactId>netty</artifactId>
-                        <groupId>io.netty</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>guava</artifactId>
+                        <groupId>com.google.guava</groupId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -140,11 +144,31 @@
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-netty</artifactId>
                 <version>${grpc.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>guava</artifactId>
+                        <groupId>com.google.guava</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jsr305</artifactId>
+                        <groupId>com.google.code.findbugs</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-protobuf</artifactId>
                 <version>${grpc.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>guava</artifactId>
+                        <groupId>com.google.guava</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>gson</artifactId>
+                        <groupId>com.google.code.gson</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.grpc</groupId>
@@ -155,12 +179,24 @@
                 <groupId>com.github.rholder</groupId>
                 <artifactId>guava-retrying</artifactId>
                 <version>${guava-retrying.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>guava</artifactId>
+                        <groupId>com.google.guava</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-test</artifactId>
                 <version>${curator.version}</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>guava</artifactId>
+                        <groupId>com.google.guava</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -179,18 +215,18 @@
                 <artifactId>dbunit</artifactId>
                 <version>${dbunit.version}</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>slf4j-api</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.version}</version>
                 <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-core</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -208,13 +244,13 @@
                 <groupId>commons-dbcp</groupId>
                 <artifactId>commons-dbcp</artifactId>
                 <version>${commons-dbcp.version}</version>
+                <scope>test</scope>
                 <exclusions>
                     <exclusion>
-                        <groupId>commons-pool</groupId>
                         <artifactId>commons-pool</artifactId>
+                        <groupId>commons-pool</groupId>
                     </exclusion>
                 </exclusions>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.h2database</groupId>
@@ -245,6 +281,12 @@
                 <artifactId>HikariCP-java7</artifactId>
                 <version>${hikari-cp.version}</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>slf4j-api</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
@@ -279,12 +321,41 @@
                 <groupId>com.dangdang</groupId>
                 <artifactId>elastic-job-core</artifactId>
                 <version>${elastic-job.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>slf4j-api</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-logging</artifactId>
+                        <groupId>commons-logging</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-collections</groupId>
+                        <artifactId>commons-collections</artifactId>
+                    </exclusion>
+                </exclusions>
+
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter</artifactId>
                 <version>${spring-boot.version}</version>
                 <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>slf4j-api</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>snakeyaml</artifactId>
+                        <groupId>org.yaml</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>logback-classic</artifactId>
+                        <groupId>ch.qos.logback</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -297,6 +368,17 @@
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring-boot.version}</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>slf4j-api</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>mockito-core</artifactId>
+                        <groupId>org.mockito</groupId>
+                    </exclusion>
+
+                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -552,7 +634,7 @@
              -->
         </plugins>
     </build>
-    
+
     <reporting>
         <plugins>
             <plugin>
@@ -630,7 +712,7 @@
             </plugin>
         </plugins>
     </reporting>
-    
+
     <repositories>
         <repository>
             <id>alfresco-maven-repo</id>
@@ -657,7 +739,7 @@
             </releases>
         </repository>
     </repositories>
-    
+
     <url>http://shardingjdbc.io</url>
     <description>RDB Sharding</description>
     <licenses>
@@ -667,20 +749,20 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
+
     <scm>
         <connection>scm:https://github.com/shardingjdbc/sharding-jdbc</connection>
         <developerConnection>scm:https://github.com/shardingjdbc/sharding-jdbc</developerConnection>
         <url>https://github.com/shardingjdbc/sharding-jdbc</url>
     </scm>
-    
+
     <mailingLists>
         <mailingList>
             <name>Zhangliang</name>
             <post>zhangliang@dangdang.com</post>
         </mailingList>
     </mailingLists>
-    
+
     <developers>
         <developer>
             <id>zhangliang</id>
@@ -689,7 +771,7 @@
             <timezone>8</timezone>
         </developer>
     </developers>
-    
+
     <distributionManagement>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
