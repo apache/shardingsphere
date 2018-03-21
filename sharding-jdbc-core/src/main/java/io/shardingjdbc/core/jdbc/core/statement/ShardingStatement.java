@@ -26,11 +26,10 @@ import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.connection.ShardingConnection;
 import io.shardingjdbc.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingjdbc.core.jdbc.core.resultset.ShardingResultSet;
-import io.shardingjdbc.core.merger.dal.DALMergeEngine;
-import io.shardingjdbc.core.merger.dql.DQLMergeEngine;
-import io.shardingjdbc.core.merger.MergeEngine;
-import io.shardingjdbc.core.merger.QueryResult;
 import io.shardingjdbc.core.merger.JDBCQueryResult;
+import io.shardingjdbc.core.merger.MergeEngine;
+import io.shardingjdbc.core.merger.MergeEngineFactory;
+import io.shardingjdbc.core.merger.QueryResult;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -106,14 +105,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
             for (ResultSet each : resultSets) {
                 queryResults.add(new JDBCQueryResult(each));
             }
-            MergeEngine mergeEngine;
-            if (routeResult.getSqlStatement() instanceof SelectStatement) {
-                mergeEngine = new DQLMergeEngine(queryResults, (SelectStatement) routeResult.getSqlStatement());
-            } else if (routeResult.getSqlStatement() instanceof DALStatement) {
-                mergeEngine = new DALMergeEngine(connection.getShardingContext().getShardingRule(), queryResults, (DALStatement) routeResult.getSqlStatement());
-            } else {
-                throw new UnsupportedOperationException(String.format("Cannot support type '%s'", routeResult.getSqlStatement().getType()));
-            }
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement());
             result = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
         } finally {
             currentResultSet = null;
@@ -269,13 +261,8 @@ public class ShardingStatement extends AbstractStatementAdapter {
             resultSets.add(resultSet);
             queryResults.add(new JDBCQueryResult(resultSet));
         }
-        MergeEngine mergeEngine = null;
-        if (routeResult.getSqlStatement() instanceof SelectStatement) {
-            mergeEngine = new DQLMergeEngine(queryResults, (SelectStatement) routeResult.getSqlStatement());
-        } else if (routeResult.getSqlStatement() instanceof DALStatement && !queryResults.isEmpty()) {
-            mergeEngine = new DALMergeEngine(connection.getShardingContext().getShardingRule(), queryResults, (DALStatement) routeResult.getSqlStatement());
-        }
-        if (null != mergeEngine) {
+        if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement());
             currentResultSet = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
         }
         return currentResultSet;

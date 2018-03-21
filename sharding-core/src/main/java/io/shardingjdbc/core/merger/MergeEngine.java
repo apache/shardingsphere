@@ -20,7 +20,7 @@ package io.shardingjdbc.core.merger;
 import java.sql.SQLException;
 
 /**
- * result set merge engine.
+ * Result set merge engine.
  *
  * @author zhangliang
  */
