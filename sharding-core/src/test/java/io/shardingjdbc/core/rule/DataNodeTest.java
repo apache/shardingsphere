@@ -30,7 +30,12 @@ public class DataNodeTest {
         assertThat(dataNode.getDataSourceName(), is("ds_0"));
         assertThat(dataNode.getTableName(), is("tbl_0"));
     }
-    
+
+    @Test(expected = ShardingRuleException.class)
+    public void assertNewValidDataNodeWithInvalidDelimiter() {
+        new DataNode("ds_0,tbl_0");
+    }
+
     @Test(expected = ShardingRuleException.class)
     public void assertNewInValidDataNodeWithoutDelimiter() {
         new DataNode("ds_0tbl_0");
