@@ -17,26 +17,28 @@
 
 package io.shardingjdbc.core.merger;
 
-import io.shardingjdbc.core.merger.common.DecoratorResultSetMergerTest;
-import io.shardingjdbc.core.merger.common.MemoryResultSetMergerTest;
-import io.shardingjdbc.core.merger.common.MemoryResultSetRowTest;
-import io.shardingjdbc.core.merger.common.StreamResultSetMergerTest;
-import io.shardingjdbc.core.merger.groupby.GroupByMemoryResultSetMergerTest;
-import io.shardingjdbc.core.merger.groupby.GroupByRowComparatorTest;
-import io.shardingjdbc.core.merger.groupby.GroupByStreamResultSetMergerTest;
-import io.shardingjdbc.core.merger.groupby.GroupByValueTest;
-import io.shardingjdbc.core.merger.groupby.aggregation.AllAggregationTests;
-import io.shardingjdbc.core.merger.iterator.IteratorStreamResultSetMergerTest;
-import io.shardingjdbc.core.merger.pagination.LimitDecoratorResultSetMergerTest;
-import io.shardingjdbc.core.merger.orderby.OrderByStreamResultSetMergerTest;
-import io.shardingjdbc.core.merger.orderby.OrderByValueTest;
+import io.shardingjdbc.core.merger.dql.DQLMergeEngineTest;
+import io.shardingjdbc.core.merger.dql.common.DecoratorResultSetMergerTest;
+import io.shardingjdbc.core.merger.dql.common.MemoryResultSetMergerTest;
+import io.shardingjdbc.core.merger.dql.common.MemoryResultSetRowTest;
+import io.shardingjdbc.core.merger.dql.common.StreamResultSetMergerTest;
+import io.shardingjdbc.core.merger.dql.groupby.GroupByMemoryResultSetMergerTest;
+import io.shardingjdbc.core.merger.dql.groupby.GroupByRowComparatorTest;
+import io.shardingjdbc.core.merger.dql.groupby.GroupByStreamResultSetMergerTest;
+import io.shardingjdbc.core.merger.dql.groupby.GroupByValueTest;
+import io.shardingjdbc.core.merger.dql.groupby.aggregation.AllAggregationTests;
+import io.shardingjdbc.core.merger.dql.iterator.IteratorStreamResultSetMergerTest;
+import io.shardingjdbc.core.merger.dql.orderby.CompareUtilTest;
+import io.shardingjdbc.core.merger.dql.orderby.OrderByStreamResultSetMergerTest;
+import io.shardingjdbc.core.merger.dql.orderby.OrderByValueTest;
+import io.shardingjdbc.core.merger.dql.pagination.LimitDecoratorResultSetMergerTest;
 import io.shardingjdbc.core.merger.util.ResultSetUtilTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        SelectMergeEngineTest.class, 
+        DQLMergeEngineTest.class, 
         StreamResultSetMergerTest.class, 
         MemoryResultSetMergerTest.class, 
         DecoratorResultSetMergerTest.class, 
@@ -44,6 +46,7 @@ import org.junit.runners.Suite;
         IteratorStreamResultSetMergerTest.class, 
         OrderByValueTest.class, 
         OrderByStreamResultSetMergerTest.class, 
+        CompareUtilTest.class, 
         GroupByValueTest.class, 
         GroupByRowComparatorTest.class, 
         GroupByStreamResultSetMergerTest.class, 

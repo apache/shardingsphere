@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.core.merger.util;
 
-import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -121,28 +120,5 @@ public final class ResultSetUtil {
             default:
                 throw new ShardingJdbcException("Unsupported Date type:%s", convertType);
         }
-    }
-    
-    /**
-     * Compare two object with order type.
-     * 
-     * @param thisValue this value
-     * @param otherValue other value
-     * @param orderType order type
-     * @param nullOrderType null value order type
-     * @return 比较结果
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType orderType, final OrderType nullOrderType) {
-        if (null == thisValue && null == otherValue) {
-            return 0;
-        }
-        if (null == thisValue) {
-            return orderType == nullOrderType ? -1 : 1;
-        }
-        if (null == otherValue) {
-            return orderType == nullOrderType ? 1 : -1;
-        }
-        return OrderType.ASC == orderType ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
 }
