@@ -32,7 +32,6 @@ import io.shardingjdbc.core.merger.dql.orderby.CompareUtilTest;
 import io.shardingjdbc.core.merger.dql.orderby.OrderByStreamResultSetMergerTest;
 import io.shardingjdbc.core.merger.dql.orderby.OrderByValueTest;
 import io.shardingjdbc.core.merger.dql.pagination.LimitDecoratorResultSetMergerTest;
-import io.shardingjdbc.core.merger.util.ResultSetUtilTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -52,8 +51,7 @@ import org.junit.runners.Suite;
         GroupByStreamResultSetMergerTest.class, 
         GroupByMemoryResultSetMergerTest.class, 
         AllAggregationTests.class, 
-        LimitDecoratorResultSetMergerTest.class, 
-        ResultSetUtilTest.class
+        LimitDecoratorResultSetMergerTest.class 
     })
 public class AllMergerTests {
 }

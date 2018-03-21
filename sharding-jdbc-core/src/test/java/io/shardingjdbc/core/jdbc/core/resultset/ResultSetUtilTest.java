@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.merger.util;
+package io.shardingjdbc.core.jdbc.core.resultset;
 
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import org.junit.Test;

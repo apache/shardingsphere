@@ -19,7 +19,6 @@ package io.shardingjdbc.core.jdbc.core.resultset;
 
 import io.shardingjdbc.core.jdbc.adapter.AbstractResultSetAdapter;
 import io.shardingjdbc.core.merger.ResultSetMerger;
-import io.shardingjdbc.core.merger.util.ResultSetUtil;
 
 import java.io.InputStream;
 import java.io.Reader;
