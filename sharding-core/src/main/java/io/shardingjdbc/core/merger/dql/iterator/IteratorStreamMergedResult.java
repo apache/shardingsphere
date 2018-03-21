@@ -18,22 +18,22 @@
 package io.shardingjdbc.core.merger.dql.iterator;
 
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.merger.dql.common.AbstractStreamResultSetMerger;
+import io.shardingjdbc.core.merger.dql.common.StreamMergedResult;
 
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * Stream merger for iterator.
+ * Stream merged result for iterator.
  *
  * @author zhangliang
  */
-public final class IteratorStreamResultSetMerger extends AbstractStreamResultSetMerger {
+public final class IteratorStreamMergedResult extends StreamMergedResult {
     
     private final Iterator<QueryResult> queryResults;
     
-    public IteratorStreamResultSetMerger(final List<QueryResult> queryResults) {
+    public IteratorStreamMergedResult(final List<QueryResult> queryResults) {
         this.queryResults = queryResults.iterator();
         setCurrentQueryResult(this.queryResults.next());
     }

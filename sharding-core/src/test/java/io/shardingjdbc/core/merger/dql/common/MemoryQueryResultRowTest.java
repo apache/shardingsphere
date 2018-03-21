@@ -34,12 +34,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MemoryResultSetRowTest {
+public final class MemoryQueryResultRowTest {
     
     @Mock
     private ResultSet resultSet;
     
-    private MemoryResultSetRow memoryResultSetRow;
+    private MemoryQueryResultRow memoryResultSetRow;
     
     @Before
     public void setUp() throws SQLException {
@@ -47,7 +47,7 @@ public final class MemoryResultSetRowTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getObject(1)).thenReturn("value");
-        memoryResultSetRow = new MemoryResultSetRow(new TestQueryResult(resultSet));
+        memoryResultSetRow = new MemoryQueryResultRow(new TestQueryResult(resultSet));
     }
     
     @Test

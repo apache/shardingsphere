@@ -15,16 +15,13 @@
  * </p>
  */
 
-package io.shardingjdbc.core.merger.dql.pagination;
+package io.shardingjdbc.core.merger.dql.iterator;
 
 import com.google.common.collect.Lists;
-import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.merger.dql.DQLMergeEngine;
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
 import io.shardingjdbc.core.merger.fixture.TestQueryResult;
-import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
-import io.shardingjdbc.core.parsing.parser.context.limit.LimitValue;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +29,6 @@ import org.junit.Test;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
@@ -40,11 +36,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class LimitDecoratorResultSetMergerTest {
+public final class IteratorStreamMergedResultTest {
     
     private DQLMergeEngine mergeEngine;
-    
-    private List<ResultSet> resultSets;
     
     private List<QueryResult> queryResults;
     
@@ -55,40 +49,25 @@ public final class LimitDecoratorResultSetMergerTest {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        resultSets = Lists.newArrayList(resultSet, mock(ResultSet.class), mock(ResultSet.class), mock(ResultSet.class));
-        queryResults = new ArrayList<>(resultSets.size());
-        for (ResultSet each : resultSets) {
-            queryResults.add(new TestQueryResult(each));
-        }
+        queryResults = Lists.<QueryResult>newArrayList(
+                new TestQueryResult(resultSet), new TestQueryResult(mock(ResultSet.class)), new TestQueryResult(mock(ResultSet.class)));
         selectStatement = new SelectStatement();
     }
     
     @Test
-    public void assertNextForSkipAll() throws SQLException {
-        Limit limit = new Limit(DatabaseType.MySQL);
-        limit.setOffset(new LimitValue(Integer.MAX_VALUE, -1, true));
-        selectStatement.setLimit(limit);
-        for (ResultSet each : resultSets) {
-            when(each.next()).thenReturn(true, true, false);
-        }
+    public void assertNextForResultSetsAllEmpty() throws SQLException {
         mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
-        ResultSetMerger actual = mergeEngine.merge();
+        MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
-    public void assertNextWithoutRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.MySQL);
-        limit.setOffset(new LimitValue(2, -1, true));
-        selectStatement.setLimit(limit);
-        for (ResultSet each : resultSets) {
-            when(each.next()).thenReturn(true, true, false);
+    public void assertNextForResultSetsAllNotEmpty() throws SQLException {
+        for (QueryResult each : queryResults) {
+            when(each.next()).thenReturn(true, false);
         }
         mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
-        ResultSetMerger actual = mergeEngine.merge();
-        assertTrue(actual.next());
-        assertTrue(actual.next());
-        assertTrue(actual.next());
+        MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -96,32 +75,43 @@ public final class LimitDecoratorResultSetMergerTest {
     }
     
     @Test
-    public void assertNextWithRewriteRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.MySQL);
-        limit.setOffset(new LimitValue(2, -1, true));
-        limit.setRowCount(new LimitValue(2, -1, false));
-        selectStatement.setLimit(limit);
-        for (ResultSet each : resultSets) {
-            when(each.next()).thenReturn(true, true, false);
-        }
+    public void assertNextForFirstResultSetsNotEmptyOnly() throws SQLException {
+        when(queryResults.get(0).next()).thenReturn(true, false);
         mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
-        ResultSetMerger actual = mergeEngine.merge();
-        assertTrue(actual.next());
+        MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
     
     @Test
-    public void assertNextWithNotRewriteRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.Oracle);
-        limit.setOffset(new LimitValue(2, -1, true));
-        limit.setRowCount(new LimitValue(4, -1, false));
-        selectStatement.setLimit(limit);
-        for (ResultSet each : resultSets) {
-            when(each.next()).thenReturn(true, true, false);
-        }
+    public void assertNextForMiddleResultSetsNotEmpty() throws SQLException {
+        when(queryResults.get(1).next()).thenReturn(true, false);
         mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
-        ResultSetMerger actual = mergeEngine.merge();
+        MergedResult actual = mergeEngine.merge();
+        assertTrue(actual.next());
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertNextForLastResultSetsNotEmptyOnly() throws SQLException {
+        when(queryResults.get(2).next()).thenReturn(true, false);
+        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        MergedResult actual = mergeEngine.merge();
+        assertTrue(actual.next());
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertNextForMix() throws SQLException {
+        queryResults.add(new TestQueryResult(mock(ResultSet.class)));
+        queryResults.add(new TestQueryResult(mock(ResultSet.class)));
+        queryResults.add(new TestQueryResult(mock(ResultSet.class)));
+        when(queryResults.get(1).next()).thenReturn(true, false);
+        when(queryResults.get(3).next()).thenReturn(true, false);
+        when(queryResults.get(5).next()).thenReturn(true, false);
+        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        MergedResult actual = mergeEngine.merge();
+        assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertFalse(actual.next());

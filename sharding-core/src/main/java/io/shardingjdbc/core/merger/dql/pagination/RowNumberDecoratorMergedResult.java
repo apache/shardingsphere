@@ -17,18 +17,18 @@
 
 package io.shardingjdbc.core.merger.dql.pagination;
 
-import io.shardingjdbc.core.merger.ResultSetMerger;
-import io.shardingjdbc.core.merger.dql.common.AbstractDecoratorResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
+import io.shardingjdbc.core.merger.dql.common.DecoratorMergedResult;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 
 import java.sql.SQLException;
 
 /**
- * Decorator merger for rownum pagination.
+ * Decorator merged result for rownum pagination.
  *
  * @author zhangliang
  */
-public final class RowNumberDecoratorResultSetMerger extends AbstractDecoratorResultSetMerger {
+public final class RowNumberDecoratorMergedResult extends DecoratorMergedResult {
     
     private final Limit limit;
     
@@ -36,8 +36,8 @@ public final class RowNumberDecoratorResultSetMerger extends AbstractDecoratorRe
     
     private int rowNumber;
     
-    public RowNumberDecoratorResultSetMerger(final ResultSetMerger resultSetMerger, final Limit limit) throws SQLException {
-        super(resultSetMerger);
+    public RowNumberDecoratorMergedResult(final MergedResult mergedResult, final Limit limit) throws SQLException {
+        super(mergedResult);
         this.limit = limit;
         skipAll = skipOffset();
     }
@@ -50,7 +50,7 @@ public final class RowNumberDecoratorResultSetMerger extends AbstractDecoratorRe
             end = limit.getOffset().isBoundOpened() ? limit.getOffsetValue() - 1 : limit.getOffsetValue();
         }
         for (int i = 0; i < end; i++) {
-            if (!getResultSetMerger().next()) {
+            if (!getMergedResult().next()) {
                 return true;
             }
         }
@@ -64,11 +64,11 @@ public final class RowNumberDecoratorResultSetMerger extends AbstractDecoratorRe
             return false;
         }
         if (limit.getRowCountValue() < 0) {
-            return getResultSetMerger().next();
+            return getMergedResult().next();
         }
         if (limit.getRowCount().isBoundOpened()) {
-            return rowNumber++ <= limit.getRowCountValue() && getResultSetMerger().next();
+            return rowNumber++ <= limit.getRowCountValue() && getMergedResult().next();
         }
-        return rowNumber++ < limit.getRowCountValue() && getResultSetMerger().next();
+        return rowNumber++ < limit.getRowCountValue() && getMergedResult().next();
     }
 }

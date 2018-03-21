@@ -17,9 +17,9 @@
 
 package io.shardingjdbc.core.merger.dql.common.fixture;
 
-import io.shardingjdbc.core.merger.dql.common.AbstractStreamResultSetMerger;
+import io.shardingjdbc.core.merger.dql.common.StreamMergedResult;
 
-public final class TestStreamResultSetMerger extends AbstractStreamResultSetMerger {
+public final class TestStreamMergedResult extends StreamMergedResult {
     
     @Override
     public boolean next() {

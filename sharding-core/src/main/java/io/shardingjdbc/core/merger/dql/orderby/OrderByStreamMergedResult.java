@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.merger.dql.orderby;
 
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.merger.dql.common.AbstractStreamResultSetMerger;
+import io.shardingjdbc.core.merger.dql.common.StreamMergedResult;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,11 +29,11 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
- * Stream merger for order by.
+ * Stream merged result for order by.
  *
  * @author zhangliang
  */
-public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger {
+public class OrderByStreamMergedResult extends StreamMergedResult {
     
     private final List<OrderItem> orderByItems;
     
@@ -43,7 +43,7 @@ public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger 
     @Getter(AccessLevel.PROTECTED)
     private boolean isFirstNext;
     
-    public OrderByStreamResultSetMerger(final List<QueryResult> queryResults, final List<OrderItem> orderByItems) throws SQLException {
+    public OrderByStreamMergedResult(final List<QueryResult> queryResults, final List<OrderItem> orderByItems) throws SQLException {
         this.orderByItems = orderByItems;
         this.orderByValuesQueue = new PriorityQueue<>(queryResults.size());
         orderResultSetsToQueue(queryResults);

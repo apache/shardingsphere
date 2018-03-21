@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.dql.common;
 
-import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
 import io.shardingjdbc.core.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -33,17 +33,17 @@ import java.util.Calendar;
 import java.util.Map;
 
 /**
- * 内存归并结果集.
+ * Memory merged result.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
+public abstract class MemoryMergedResult implements MergedResult {
     
     private final Map<String, Integer> labelAndIndexMap;
     
     @Setter
-    private MemoryResultSetRow currentResultSetRow;
+    private MemoryQueryResultRow currentResultSetRow;
     
     private boolean wasNull;
     
@@ -69,7 +69,7 @@ public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        // TODO 时间相关取值未实现calendar模式
+        // TODO implement with calendar
         Object result = currentResultSetRow.getCell(columnIndex);
         wasNull = null == result;
         return result;
@@ -77,7 +77,7 @@ public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        // TODO 时间相关取值未实现calendar模式
+        // TODO implement with calendar
         Object result = currentResultSetRow.getCell(labelAndIndexMap.get(columnLabel));
         wasNull = null == result;
         return result;

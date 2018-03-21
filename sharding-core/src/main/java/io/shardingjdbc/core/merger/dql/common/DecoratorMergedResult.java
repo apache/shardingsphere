@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.dql.common;
 
-import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -26,48 +26,48 @@ import java.sql.SQLException;
 import java.util.Calendar;
 
 /**
- * 装饰结果集归并.
+ * Decorator merged result.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class AbstractDecoratorResultSetMerger implements ResultSetMerger {
+public abstract class DecoratorMergedResult implements MergedResult {
     
-    private final ResultSetMerger resultSetMerger;
+    private final MergedResult mergedResult;
         
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return resultSetMerger.getValue(columnIndex, type);
+        return mergedResult.getValue(columnIndex, type);
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return resultSetMerger.getValue(columnLabel, type);
+        return mergedResult.getValue(columnLabel, type);
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        return resultSetMerger.getCalendarValue(columnIndex, type, calendar);
+        return mergedResult.getCalendarValue(columnIndex, type, calendar);
     }
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
-        return resultSetMerger.getCalendarValue(columnLabel, type, calendar);
+        return mergedResult.getCalendarValue(columnLabel, type, calendar);
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        return resultSetMerger.getInputStream(columnIndex, type);
+        return mergedResult.getInputStream(columnIndex, type);
     }
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
-        return resultSetMerger.getInputStream(columnLabel, type);
+        return mergedResult.getInputStream(columnLabel, type);
     }
     
     @Override
     public boolean wasNull() throws SQLException {
-        return resultSetMerger.wasNull();
+        return mergedResult.wasNull();
     }
 }

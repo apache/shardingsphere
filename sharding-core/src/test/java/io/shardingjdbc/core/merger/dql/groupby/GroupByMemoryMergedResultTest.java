@@ -23,7 +23,7 @@ import io.shardingjdbc.core.constant.AggregationType;
 import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.merger.dql.DQLMergeEngine;
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
 import io.shardingjdbc.core.merger.fixture.TestQueryResult;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class GroupByMemoryResultSetMergerTest {
+public final class GroupByMemoryMergedResultTest {
     
     private DQLMergeEngine mergeEngine;
     
@@ -95,7 +95,7 @@ public final class GroupByMemoryResultSetMergerTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
-        ResultSetMerger actual = mergeEngine.merge();
+        MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
@@ -114,7 +114,7 @@ public final class GroupByMemoryResultSetMergerTest {
         when(resultSets.get(2).getObject(3)).thenReturn(2, 3);
         when(resultSets.get(2).getObject(4)).thenReturn(2, 2, 3);
         when(resultSets.get(2).getObject(5)).thenReturn(20, 20, 30);
-        ResultSetMerger actual = mergeEngine.merge();
+        MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(30)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));

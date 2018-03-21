@@ -17,14 +17,13 @@
 
 package io.shardingjdbc.core.merger.dql.common.fixture;
 
-import io.shardingjdbc.core.merger.dql.common.AbstractMemoryResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
+import io.shardingjdbc.core.merger.dql.common.DecoratorMergedResult;
 
-import java.util.Map;
-
-public final class TestMemoryResultSetMerger extends AbstractMemoryResultSetMerger {
+public final class TestDecoratorMergedResult extends DecoratorMergedResult {
     
-    public TestMemoryResultSetMerger(final Map<String, Integer> labelAndIndexMap) {
-        super(labelAndIndexMap);
+    public TestDecoratorMergedResult(final MergedResult mergedResult) {
+        super(mergedResult);
     }
     
     @Override

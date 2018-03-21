@@ -18,18 +18,18 @@
 package io.shardingjdbc.core.merger.dal.show;
 
 import io.shardingjdbc.core.constant.ShardingConstant;
-import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
 
 import java.io.InputStream;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
 
 /**
- * Show databases result set merger.
+ * Merged result for show databases.
  *
  * @author zhangliang
  */
-public final class ShowDatabasesResultSetMerger implements ResultSetMerger {
+public final class ShowDatabasesMergedResult implements MergedResult {
     
     private boolean firstNext = true;
     

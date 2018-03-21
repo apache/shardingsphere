@@ -22,11 +22,11 @@ import java.sql.SQLException;
 import java.util.Calendar;
 
 /**
- * ResultSet merger interface.
+ * Merged result after merge engine.
  *
  * @author zhangliang
  */
-public interface ResultSetMerger {
+public interface MergedResult {
     
     /**
      * iterate next data.

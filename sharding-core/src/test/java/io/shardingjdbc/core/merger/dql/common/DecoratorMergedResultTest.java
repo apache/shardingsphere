@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.core.merger.dql.common;
 
-import io.shardingjdbc.core.merger.ResultSetMerger;
-import io.shardingjdbc.core.merger.dql.common.fixture.TestDecoratorResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
+import io.shardingjdbc.core.merger.dql.common.fixture.TestDecoratorMergedResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,53 +35,53 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DecoratorResultSetMergerTest {
+public final class DecoratorMergedResultTest {
     
     @Mock
-    private ResultSetMerger resultSetMerger;
+    private MergedResult mergedResult;
     
-    private TestDecoratorResultSetMerger decoratorResultSetMerger;
+    private TestDecoratorMergedResult decoratorMergedResult;
     
     @Before
     public void setUp() {
-        decoratorResultSetMerger = new TestDecoratorResultSetMerger(resultSetMerger);
+        decoratorMergedResult = new TestDecoratorMergedResult(mergedResult);
     }
     
     @Test
     public void assertGetValueWithColumnIndex() throws SQLException {
-        when(resultSetMerger.getValue(1, Object.class)).thenReturn("1");
-        assertThat(decoratorResultSetMerger.getValue(1, Object.class).toString(), is("1"));
+        when(mergedResult.getValue(1, Object.class)).thenReturn("1");
+        assertThat(decoratorMergedResult.getValue(1, Object.class).toString(), is("1"));
     }
     
     @Test
     public void assertGetValueWithColumnLabel() throws SQLException {
-        when(resultSetMerger.getValue("label", Object.class)).thenReturn("1");
-        assertThat(decoratorResultSetMerger.getValue("label", Object.class).toString(), is("1"));
+        when(mergedResult.getValue("label", Object.class)).thenReturn("1");
+        assertThat(decoratorMergedResult.getValue("label", Object.class).toString(), is("1"));
     }
     
     @Test
     public void assertGetCalenderValueWithColumnIndex() throws SQLException {
         Calendar calendar = Calendar.getInstance();
-        when(resultSetMerger.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
-        assertThat((Date) decoratorResultSetMerger.getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
+        when(mergedResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
+        assertThat((Date) decoratorMergedResult.getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
     }
     
     @Test
     public void assertGetCalenderValueWithColumnLabel() throws SQLException {
         Calendar calendar = Calendar.getInstance();
-        when(resultSetMerger.getCalendarValue("label", Date.class, calendar)).thenReturn(new Date(0L));
-        assertThat((Date) decoratorResultSetMerger.getCalendarValue("label", Date.class, calendar), is(new Date(0L)));
+        when(mergedResult.getCalendarValue("label", Date.class, calendar)).thenReturn(new Date(0L));
+        assertThat((Date) decoratorMergedResult.getCalendarValue("label", Date.class, calendar), is(new Date(0L)));
     }
     
     @Test
     public void assertGetInputStreamWithColumnIndex() throws SQLException {
-        when(resultSetMerger.getInputStream(1, "ascii")).thenReturn(null);
-        assertNull(decoratorResultSetMerger.getInputStream(1, "ascii"));
+        when(mergedResult.getInputStream(1, "ascii")).thenReturn(null);
+        assertNull(decoratorMergedResult.getInputStream(1, "ascii"));
     }
     
     @Test
     public void assertGetInputStreamWithColumnLabel() throws SQLException {
-        when(resultSetMerger.getInputStream("label", "ascii")).thenReturn(null);
-        assertNull(decoratorResultSetMerger.getInputStream("label", "ascii"));
+        when(mergedResult.getInputStream("label", "ascii")).thenReturn(null);
+        assertNull(decoratorMergedResult.getInputStream("label", "ascii"));
     }
 }

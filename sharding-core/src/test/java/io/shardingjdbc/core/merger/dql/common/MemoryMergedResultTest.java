@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.dql.common;
 
-import io.shardingjdbc.core.merger.dql.common.fixture.TestMemoryResultSetMerger;
+import io.shardingjdbc.core.merger.dql.common.fixture.TestMemoryMergedResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,102 +41,102 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MemoryResultSetMergerTest {
+public final class MemoryMergedResultTest {
     
     @Mock
-    private MemoryResultSetRow memoryResultSetRow;
+    private MemoryQueryResultRow memoryResultSetRow;
     
-    private TestMemoryResultSetMerger memoryResultSetMerger;
+    private TestMemoryMergedResult memoryMergedResult;
     
     @Before
     public void setUp() {
         Map<String, Integer> labelAndIndexMap = new HashMap<>(1, 1);
         labelAndIndexMap.put("label", 1);
-        memoryResultSetMerger = new TestMemoryResultSetMerger(labelAndIndexMap);
-        memoryResultSetMerger.setCurrentResultSetRow(memoryResultSetRow);
+        memoryMergedResult = new TestMemoryMergedResult(labelAndIndexMap);
+        memoryMergedResult.setCurrentResultSetRow(memoryResultSetRow);
     }
     
     @Test
     public void assertGetValueWithColumnIndex() throws SQLException {
         when(memoryResultSetRow.getCell(1)).thenReturn("1");
-        assertThat(memoryResultSetMerger.getValue(1, Object.class).toString(), is("1"));
+        assertThat(memoryMergedResult.getValue(1, Object.class).toString(), is("1"));
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetValueWithColumnIndexForBlob() throws SQLException {
-        memoryResultSetMerger.getValue(1, Blob.class);
+        memoryMergedResult.getValue(1, Blob.class);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetValueWithColumnIndexForClob() throws SQLException {
-        memoryResultSetMerger.getValue(1, Clob.class);
+        memoryMergedResult.getValue(1, Clob.class);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetValueWithColumnIndexForReader() throws SQLException {
-        memoryResultSetMerger.getValue(1, Reader.class);
+        memoryMergedResult.getValue(1, Reader.class);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetValueWithColumnIndexForInputStream() throws SQLException {
-        memoryResultSetMerger.getValue(1, InputStream.class);
+        memoryMergedResult.getValue(1, InputStream.class);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetValueWithColumnIndexForSQLXML() throws SQLException {
-        memoryResultSetMerger.getValue(1, SQLXML.class);
+        memoryMergedResult.getValue(1, SQLXML.class);
     }
     
     @Test
     public void assertGetValueWithColumnLabel() throws SQLException {
         when(memoryResultSetRow.getCell(1)).thenReturn("1");
-        assertThat(memoryResultSetMerger.getValue("label", Object.class).toString(), is("1"));
+        assertThat(memoryMergedResult.getValue("label", Object.class).toString(), is("1"));
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetValueWithColumnLabelForBlob() throws SQLException {
-        memoryResultSetMerger.getValue("label", Blob.class);
+        memoryMergedResult.getValue("label", Blob.class);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetValueWithColumnLabelForClob() throws SQLException {
-        memoryResultSetMerger.getValue("label", Clob.class);
+        memoryMergedResult.getValue("label", Clob.class);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetValueWithColumnLabelForReader() throws SQLException {
-        memoryResultSetMerger.getValue("label", Reader.class);
+        memoryMergedResult.getValue("label", Reader.class);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetValueWithColumnLabelForInputStream() throws SQLException {
-        memoryResultSetMerger.getValue("label", InputStream.class);
+        memoryMergedResult.getValue("label", InputStream.class);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetValueWithColumnLabelForSQLXML() throws SQLException {
-        memoryResultSetMerger.getValue("label", SQLXML.class);
+        memoryMergedResult.getValue("label", SQLXML.class);
     }
     
     @Test
     public void assertGetCalendarValueWithColumnIndex() {
         when(memoryResultSetRow.getCell(1)).thenReturn(new Date(0L));
-        assertThat((Date) memoryResultSetMerger.getCalendarValue(1, Object.class, Calendar.getInstance()), is(new Date(0L)));
+        assertThat((Date) memoryMergedResult.getCalendarValue(1, Object.class, Calendar.getInstance()), is(new Date(0L)));
     }
     
     @Test
     public void assertGetCalendarValueWithColumnLabel() {
         when(memoryResultSetRow.getCell(1)).thenReturn(new Date(0L));
-        assertThat((Date) memoryResultSetMerger.getCalendarValue("label", Object.class, Calendar.getInstance()), is(new Date(0L)));
+        assertThat((Date) memoryMergedResult.getCalendarValue("label", Object.class, Calendar.getInstance()), is(new Date(0L)));
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetInputStreamWithColumnIndex() throws SQLException {
-        memoryResultSetMerger.getInputStream(1, "ascii");
+        memoryMergedResult.getInputStream(1, "ascii");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetInputStreamWithColumnLabel() throws SQLException {
-        memoryResultSetMerger.getInputStream("label", "ascii");
+        memoryMergedResult.getInputStream("label", "ascii");
     }
 }

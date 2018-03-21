@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.dql.common;
 
-import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
 import io.shardingjdbc.core.merger.QueryResult;
 import lombok.Setter;
 
@@ -31,7 +31,7 @@ import java.util.Calendar;
  * @author thor zhangliang
  */
 @Setter
-public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
+public abstract class StreamMergedResult implements MergedResult {
     
     private QueryResult currentQueryResult;
     

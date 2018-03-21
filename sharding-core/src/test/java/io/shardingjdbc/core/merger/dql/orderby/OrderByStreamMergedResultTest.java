@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.merger.dql.DQLMergeEngine;
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
 import io.shardingjdbc.core.merger.fixture.TestQueryResult;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OrderByStreamResultSetMergerTest {
+public final class OrderByStreamMergedResultTest {
     
     private DQLMergeEngine mergeEngine;
     
@@ -62,7 +62,7 @@ public final class OrderByStreamResultSetMergerTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
-        ResultSetMerger actual = mergeEngine.merge();
+        MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
@@ -73,7 +73,7 @@ public final class OrderByStreamResultSetMergerTest {
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        ResultSetMerger actual = mergeEngine.merge();
+        MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -92,7 +92,7 @@ public final class OrderByStreamResultSetMergerTest {
         when(queryResults.get(1).getValue(1, Object.class)).thenReturn("2", "2", "3", "3", "4", "4");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        ResultSetMerger actual = mergeEngine.merge();
+        MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());

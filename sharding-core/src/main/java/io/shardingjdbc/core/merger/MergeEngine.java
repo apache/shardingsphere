@@ -32,5 +32,5 @@ public interface MergeEngine {
      * @return merged result set.
      * @throws SQLException SQL exception
      */
-    ResultSetMerger merge() throws SQLException;
+    MergedResult merge() throws SQLException;
 }

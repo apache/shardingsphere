@@ -20,8 +20,8 @@ package io.shardingjdbc.core.merger.dal.show;
 import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.merger.dql.common.AbstractMemoryResultSetMerger;
-import io.shardingjdbc.core.merger.dql.common.MemoryResultSetRow;
+import io.shardingjdbc.core.merger.dql.common.MemoryMergedResult;
+import io.shardingjdbc.core.merger.dql.common.MemoryQueryResultRow;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
@@ -34,34 +34,34 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Show create table result set merger.
+ * Merged result for show create table.
  *
  * @author zhangliang
  */
-public final class ShowCreateTableResultSetMerger extends AbstractMemoryResultSetMerger {
+public final class ShowCreateTableMergedResult extends MemoryMergedResult {
     
     private static final Map<String, Integer> LABEL_AND_INDEX_MAP = new HashMap<>(2, 1);
     
     private final ShardingRule shardingRule;
     
-    private final Iterator<MemoryResultSetRow> memoryResultSetRows;
+    private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
     static {
         LABEL_AND_INDEX_MAP.put("Table", 1);
         LABEL_AND_INDEX_MAP.put("Create Table", 2);
     }
     
-    public ShowCreateTableResultSetMerger(final ShardingRule shardingRule, final List<QueryResult> queryResults) throws SQLException {
+    public ShowCreateTableMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults) throws SQLException {
         super(LABEL_AND_INDEX_MAP);
         this.shardingRule = shardingRule;
         memoryResultSetRows = init(queryResults);
     }
     
-    private Iterator<MemoryResultSetRow> init(final List<QueryResult> queryResults) throws SQLException {
-        List<MemoryResultSetRow> result = new LinkedList<>();
+    private Iterator<MemoryQueryResultRow> init(final List<QueryResult> queryResults) throws SQLException {
+        List<MemoryQueryResultRow> result = new LinkedList<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
-                MemoryResultSetRow memoryResultSetRow = new MemoryResultSetRow(each);
+                MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String tableName = memoryResultSetRow.getCell(1).toString();
                 Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(tableName);
                 if (tableRule.isPresent()) {

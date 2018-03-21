@@ -23,15 +23,15 @@ import io.shardingjdbc.core.merger.QueryResult;
 import java.sql.SQLException;
 
 /**
- * 内存数据行对象.
+ * Memory query result row.
  * 
  * @author zhangliang
  */
-public class MemoryResultSetRow {
+public class MemoryQueryResultRow {
     
     private final Object[] data;
     
-    public MemoryResultSetRow(final QueryResult queryResult) throws SQLException {
+    public MemoryQueryResultRow(final QueryResult queryResult) throws SQLException {
         data = load(queryResult);
     }
     
@@ -45,10 +45,10 @@ public class MemoryResultSetRow {
     }
     
     /**
-     * 获取数据.
+     * Get data from cell.
      * 
-     * @param columnIndex 列索引
-     * @return 数据
+     * @param columnIndex column index
+     * @return data from cell
      */
     public Object getCell(final int columnIndex) {
         Preconditions.checkArgument(columnIndex > 0 && columnIndex < data.length + 1);
@@ -56,10 +56,10 @@ public class MemoryResultSetRow {
     }
     
     /**
-     * 设置数据.
+     * Set data for cell.
      *
-     * @param columnIndex 列索引
-     * @param value 值
+     * @param columnIndex column index
+     * @param value data for cell
      */
     public void setCell(final int columnIndex, final Object value) {
         Preconditions.checkArgument(columnIndex > 0 && columnIndex < data.length + 1);

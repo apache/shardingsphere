@@ -23,7 +23,7 @@ import com.google.common.collect.Maps;
 import io.shardingjdbc.core.merger.QueryResult;
 import io.shardingjdbc.core.merger.dql.groupby.aggregation.AggregationUnit;
 import io.shardingjdbc.core.merger.dql.groupby.aggregation.AggregationUnitFactory;
-import io.shardingjdbc.core.merger.dql.orderby.OrderByStreamResultSetMerger;
+import io.shardingjdbc.core.merger.dql.orderby.OrderByStreamMergedResult;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 
@@ -36,11 +36,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Stream merger for group by.
+ * Stream merged result for group by.
  *
  * @author zhangliang
  */
-public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMerger {
+public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     private final Map<String, Integer> labelAndIndexMap;
     
@@ -50,7 +50,7 @@ public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMe
     
     private List<?> currentGroupByValues;
     
-    public GroupByStreamResultSetMerger(
+    public GroupByStreamMergedResult(
             final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectStatement selectStatement) throws SQLException {
         super(queryResults, selectStatement.getOrderByItems());
         this.labelAndIndexMap = labelAndIndexMap;

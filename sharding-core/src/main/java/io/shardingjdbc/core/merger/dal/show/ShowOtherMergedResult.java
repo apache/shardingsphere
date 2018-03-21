@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.dal.show;
 
-import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
 import io.shardingjdbc.core.merger.QueryResult;
 import lombok.RequiredArgsConstructor;
 
@@ -27,12 +27,12 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
 
 /**
- * Show other result set merger.
+ * Merged result for show others.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShowOtherResultSetMerger implements ResultSetMerger {
+public final class ShowOtherMergedResult implements MergedResult {
     
     private final QueryResult queryResult;
     

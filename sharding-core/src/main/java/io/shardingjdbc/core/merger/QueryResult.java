@@ -17,18 +17,28 @@
 
 package io.shardingjdbc.core.merger;
 
+import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 /**
  * Query result form database.
  *
  * @author zhangliang
  */
-public interface QueryResult extends ResultSetMerger {
+public interface QueryResult {
+    
+    /**
+     * iterate next data.
+     *
+     * @return has next data
+     * @throws SQLException SQL Exception
+     */
+    boolean next() throws SQLException;
     
     /**
      * Get column count.
-     * 
+     *
      * @return column count
      * @throws SQLException SQL Exception
      */
@@ -36,10 +46,80 @@ public interface QueryResult extends ResultSetMerger {
     
     /**
      * Get column label.
-     * 
+     *
      * @param columnIndex column index
      * @return column label
      * @throws SQLException SQL Exception
      */
     String getColumnLabel(int columnIndex) throws SQLException;
+    
+    /**
+     * Get data value.
+     *
+     * @param columnIndex column index
+     * @param type class type of data value
+     * @return data value
+     * @throws SQLException SQL Exception
+     */
+    Object getValue(int columnIndex, Class<?> type) throws SQLException;
+    
+    /**
+     * Get data value.
+     *
+     * @param columnLabel column label
+     * @param type class type of data value
+     * @return data value
+     * @throws SQLException SQL Exception
+     */
+    Object getValue(String columnLabel, Class<?> type) throws SQLException;
+    
+    /**
+     * Get calendar value.
+     *
+     * @param columnIndex column index
+     * @param type class type of data value
+     * @param calendar calendar
+     * @return calendar value
+     * @throws SQLException SQL Exception
+     */
+    Object getCalendarValue(int columnIndex, Class<?> type, Calendar calendar) throws SQLException;
+    
+    /**
+     * Get calendar value.
+     *
+     * @param columnLabel column label
+     * @param type class type of data value
+     * @param calendar calendar
+     * @return calendar value
+     * @throws SQLException SQL Exception
+     */
+    Object getCalendarValue(String columnLabel, Class<?> type, Calendar calendar) throws SQLException;
+    
+    /**
+     * Get InputStream.
+     *
+     * @param columnIndex column index
+     * @param type class type of data value
+     * @return InputStream
+     * @throws SQLException SQL Exception
+     */
+    InputStream getInputStream(int columnIndex, String type) throws SQLException;
+    
+    /**
+     * Get InputStream.
+     *
+     * @param columnLabel column label
+     * @param type class type of data value
+     * @return InputStream
+     * @throws SQLException SQL Exception
+     */
+    InputStream getInputStream(String columnLabel, String type) throws SQLException;
+    
+    /**
+     * Adjust ResultSet is null or not.
+     *
+     * @return ResultSet is null or not
+     * @throws SQLException SQL Exception
+     */
+    boolean wasNull() throws SQLException;
 }
