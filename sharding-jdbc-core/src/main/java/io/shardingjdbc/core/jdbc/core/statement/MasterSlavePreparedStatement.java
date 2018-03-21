@@ -132,7 +132,7 @@ public final class MasterSlavePreparedStatement extends AbstractMasterSlavePrepa
     
     @Override
     public ResultSet getResultSet() throws SQLException {
-        Preconditions.checkArgument(1 == routedStatements.size(), "Cannot support getCurrentResultSetMergerInput for DDL");
+        Preconditions.checkArgument(1 == routedStatements.size(), "Cannot support getResultSet for DDL");
         return routedStatements.iterator().next().getResultSet();
     }
     

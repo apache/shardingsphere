@@ -21,8 +21,8 @@ import com.google.common.collect.Lists;
 import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.merger.DQLMergeEngine;
 import io.shardingjdbc.core.merger.ResultSetMerger;
-import io.shardingjdbc.core.merger.ResultSetMergerInput;
-import io.shardingjdbc.core.merger.jdbc.JDBCResultSetMergerInput;
+import io.shardingjdbc.core.merger.QueryResult;
+import io.shardingjdbc.core.merger.jdbc.JDBCQueryResult;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.junit.Before;
@@ -44,7 +44,7 @@ public final class OrderByStreamResultSetMergerTest {
     
     private DQLMergeEngine mergeEngine;
     
-    private List<ResultSetMergerInput> resultSetMergerInputs;
+    private List<QueryResult> queryResults;
     
     private SelectStatement selectStatement;
     
@@ -53,26 +53,26 @@ public final class OrderByStreamResultSetMergerTest {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        resultSetMergerInputs = Lists.<ResultSetMergerInput>newArrayList(
-                new JDBCResultSetMergerInput(resultSet), new JDBCResultSetMergerInput(mock(ResultSet.class)), new JDBCResultSetMergerInput(mock(ResultSet.class)));
+        queryResults = Lists.<QueryResult>newArrayList(
+                new JDBCQueryResult(resultSet), new JDBCQueryResult(mock(ResultSet.class)), new JDBCQueryResult(mock(ResultSet.class)));
         selectStatement = new SelectStatement();
         selectStatement.getOrderByItems().add(new OrderItem(1, OrderType.ASC, OrderType.ASC));
     }
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
+        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
-        when(resultSetMergerInputs.get(0).next()).thenReturn(true, false);
-        when(resultSetMergerInputs.get(0).getValue(1, Object.class)).thenReturn("2");
-        when(resultSetMergerInputs.get(2).next()).thenReturn(true, true, false);
-        when(resultSetMergerInputs.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
+        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        when(queryResults.get(0).next()).thenReturn(true, false);
+        when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
+        when(queryResults.get(2).next()).thenReturn(true, true, false);
+        when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
@@ -85,13 +85,13 @@ public final class OrderByStreamResultSetMergerTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
-        when(resultSetMergerInputs.get(0).next()).thenReturn(true, false);
-        when(resultSetMergerInputs.get(0).getValue(1, Object.class)).thenReturn("2");
-        when(resultSetMergerInputs.get(1).next()).thenReturn(true, true, true, false);
-        when(resultSetMergerInputs.get(1).getValue(1, Object.class)).thenReturn("2", "2", "3", "3", "4", "4");
-        when(resultSetMergerInputs.get(2).next()).thenReturn(true, true, false);
-        when(resultSetMergerInputs.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
+        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        when(queryResults.get(0).next()).thenReturn(true, false);
+        when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
+        when(queryResults.get(1).next()).thenReturn(true, true, true, false);
+        when(queryResults.get(1).getValue(1, Object.class)).thenReturn("2", "2", "3", "3", "4", "4");
+        when(queryResults.get(2).next()).thenReturn(true, true, false);
+        when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));

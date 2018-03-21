@@ -41,22 +41,22 @@ import java.util.TreeMap;
  */
 public final class DQLMergeEngine implements MergeEngine {
     
-    private final List<ResultSetMergerInput> resultSetMergerInputs;
+    private final List<QueryResult> queryResults;
     
     private final SelectStatement selectStatement;
     
     private final Map<String, Integer> columnLabelIndexMap;
     
-    public DQLMergeEngine(final List<ResultSetMergerInput> resultSetMergerInputs, final SelectStatement selectStatement) throws SQLException {
-        this.resultSetMergerInputs = resultSetMergerInputs;
+    public DQLMergeEngine(final List<QueryResult> queryResults, final SelectStatement selectStatement) throws SQLException {
+        this.queryResults = queryResults;
         this.selectStatement = selectStatement;
-        columnLabelIndexMap = getColumnLabelIndexMap(resultSetMergerInputs.get(0));
+        columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
     }
     
-    private Map<String, Integer> getColumnLabelIndexMap(final ResultSetMergerInput resultSetMergerInput) throws SQLException {
+    private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (int i = 1; i <= resultSetMergerInput.getColumnCount(); i++) {
-            result.put(SQLUtil.getExactlyValue(resultSetMergerInput.getColumnLabel(i)), i);
+        for (int i = 1; i <= queryResult.getColumnCount(); i++) {
+            result.put(SQLUtil.getExactlyValue(queryResult.getColumnLabel(i)), i);
         }
         return result;
     }
@@ -70,15 +70,15 @@ public final class DQLMergeEngine implements MergeEngine {
     private ResultSetMerger build() throws SQLException {
         if (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) {
             if (selectStatement.isSameGroupByAndOrderByItems()) {
-                return new GroupByStreamResultSetMerger(columnLabelIndexMap, resultSetMergerInputs, selectStatement);
+                return new GroupByStreamResultSetMerger(columnLabelIndexMap, queryResults, selectStatement);
             } else {
-                return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSetMergerInputs, selectStatement);
+                return new GroupByMemoryResultSetMerger(columnLabelIndexMap, queryResults, selectStatement);
             }
         }
         if (!selectStatement.getOrderByItems().isEmpty()) {
-            return new OrderByStreamResultSetMerger(resultSetMergerInputs, selectStatement.getOrderByItems());
+            return new OrderByStreamResultSetMerger(queryResults, selectStatement.getOrderByItems());
         }
-        return new IteratorStreamResultSetMerger(resultSetMergerInputs);
+        return new IteratorStreamResultSetMerger(queryResults);
     }
     
     private ResultSetMerger decorate(final ResultSetMerger resultSetMerger) throws SQLException {

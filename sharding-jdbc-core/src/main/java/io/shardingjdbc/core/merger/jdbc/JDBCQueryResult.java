@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.jdbc;
 
-import io.shardingjdbc.core.merger.ResultSetMergerInput;
+import io.shardingjdbc.core.merger.QueryResult;
 import lombok.RequiredArgsConstructor;
 
 import java.io.InputStream;
@@ -35,12 +35,12 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
- * JDBC based result set merger input.
+ * Query result form database for JDBC.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class JDBCResultSetMergerInput implements ResultSetMergerInput {
+public final class JDBCQueryResult implements QueryResult {
     
     private final ResultSet resultSet; 
     

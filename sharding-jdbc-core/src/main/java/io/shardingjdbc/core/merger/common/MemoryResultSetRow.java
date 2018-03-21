@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.merger.common;
 
 import com.google.common.base.Preconditions;
-import io.shardingjdbc.core.merger.ResultSetMergerInput;
+import io.shardingjdbc.core.merger.QueryResult;
 
 import java.sql.SQLException;
 
@@ -31,15 +31,15 @@ public class MemoryResultSetRow {
     
     private final Object[] data;
     
-    public MemoryResultSetRow(final ResultSetMergerInput resultSetMergerInput) throws SQLException {
-        data = load(resultSetMergerInput);
+    public MemoryResultSetRow(final QueryResult queryResult) throws SQLException {
+        data = load(queryResult);
     }
     
-    private Object[] load(final ResultSetMergerInput resultSetMergerInput) throws SQLException {
-        int columnCount = resultSetMergerInput.getColumnCount();
+    private Object[] load(final QueryResult queryResult) throws SQLException {
+        int columnCount = queryResult.getColumnCount();
         Object[] result = new Object[columnCount];
         for (int i = 0; i < columnCount; i++) {
-            result[i] = resultSetMergerInput.getValue(i + 1, Object.class);
+            result[i] = queryResult.getValue(i + 1, Object.class);
         }
         return result;
     }

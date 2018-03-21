@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.merger.common;
 
 import io.shardingjdbc.core.merger.ResultSetMerger;
-import io.shardingjdbc.core.merger.ResultSetMergerInput;
+import io.shardingjdbc.core.merger.QueryResult;
 import lombok.Setter;
 
 import java.io.InputStream;
@@ -33,58 +33,58 @@ import java.util.Calendar;
 @Setter
 public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
     
-    private ResultSetMergerInput currentResultSetMergerInput;
+    private QueryResult currentQueryResult;
     
     private boolean wasNull;
     
-    protected ResultSetMergerInput getCurrentResultSetMergerInput() throws SQLException {
-        if (null == currentResultSetMergerInput) {
+    protected QueryResult getCurrentQueryResult() throws SQLException {
+        if (null == currentQueryResult) {
             throw new SQLException("Current ResultSet is null, ResultSet perhaps end of next.");
         }
-        return currentResultSetMergerInput;
+        return currentQueryResult;
     }
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        Object result = getCurrentResultSetMergerInput().getValue(columnIndex, type);
-        wasNull = getCurrentResultSetMergerInput().wasNull();
+        Object result = getCurrentQueryResult().getValue(columnIndex, type);
+        wasNull = getCurrentQueryResult().wasNull();
         return result;
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        Object result = getCurrentResultSetMergerInput().getValue(columnLabel, type);
-        wasNull = getCurrentResultSetMergerInput().wasNull();
+        Object result = getCurrentQueryResult().getValue(columnLabel, type);
+        wasNull = getCurrentQueryResult().wasNull();
         return result;
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        Object result = getCurrentResultSetMergerInput().getCalendarValue(columnIndex, type, calendar);
-        wasNull = getCurrentResultSetMergerInput().wasNull();
+        Object result = getCurrentQueryResult().getCalendarValue(columnIndex, type, calendar);
+        wasNull = getCurrentQueryResult().wasNull();
         return result;
     }
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
-        Object result = getCurrentResultSetMergerInput().getCalendarValue(columnLabel, type, calendar);
-        wasNull = getCurrentResultSetMergerInput().wasNull();
+        Object result = getCurrentQueryResult().getCalendarValue(columnLabel, type, calendar);
+        wasNull = getCurrentQueryResult().wasNull();
         return result;
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        InputStream result = getCurrentResultSetMergerInput().getInputStream(columnIndex, type);
-        wasNull = getCurrentResultSetMergerInput().wasNull();
+        InputStream result = getCurrentQueryResult().getInputStream(columnIndex, type);
+        wasNull = getCurrentQueryResult().wasNull();
         return result;
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
-        InputStream result = getCurrentResultSetMergerInput().getInputStream(columnLabel, type);
-        wasNull = getCurrentResultSetMergerInput().wasNull();
+        InputStream result = getCurrentQueryResult().getInputStream(columnLabel, type);
+        wasNull = getCurrentQueryResult().wasNull();
         return result;
     }
     

@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.common;
 
-import io.shardingjdbc.core.merger.jdbc.JDBCResultSetMergerInput;
+import io.shardingjdbc.core.merger.jdbc.JDBCQueryResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +47,7 @@ public final class MemoryResultSetRowTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getObject(1)).thenReturn("value");
-        memoryResultSetRow = new MemoryResultSetRow(new JDBCResultSetMergerInput(resultSet));
+        memoryResultSetRow = new MemoryResultSetRow(new JDBCQueryResult(resultSet));
     }
     
     @Test

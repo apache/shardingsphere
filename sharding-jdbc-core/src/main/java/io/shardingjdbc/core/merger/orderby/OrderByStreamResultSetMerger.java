@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.orderby;
 
-import io.shardingjdbc.core.merger.ResultSetMergerInput;
+import io.shardingjdbc.core.merger.QueryResult;
 import io.shardingjdbc.core.merger.common.AbstractStreamResultSetMerger;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import lombok.AccessLevel;
@@ -43,21 +43,21 @@ public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger 
     @Getter(AccessLevel.PROTECTED)
     private boolean isFirstNext;
     
-    public OrderByStreamResultSetMerger(final List<ResultSetMergerInput> resultSetMergerInputs, final List<OrderItem> orderByItems) throws SQLException {
+    public OrderByStreamResultSetMerger(final List<QueryResult> queryResults, final List<OrderItem> orderByItems) throws SQLException {
         this.orderByItems = orderByItems;
-        this.orderByValuesQueue = new PriorityQueue<>(resultSetMergerInputs.size());
-        orderResultSetsToQueue(resultSetMergerInputs);
+        this.orderByValuesQueue = new PriorityQueue<>(queryResults.size());
+        orderResultSetsToQueue(queryResults);
         isFirstNext = true;
     }
     
-    private void orderResultSetsToQueue(final List<ResultSetMergerInput> resultSetMergerInputs) throws SQLException {
-        for (ResultSetMergerInput each : resultSetMergerInputs) {
+    private void orderResultSetsToQueue(final List<QueryResult> queryResults) throws SQLException {
+        for (QueryResult each : queryResults) {
             OrderByValue orderByValue = new OrderByValue(each, orderByItems);
             if (orderByValue.next()) {
                 orderByValuesQueue.offer(orderByValue);
             }
         }
-        setCurrentResultSetMergerInput(orderByValuesQueue.isEmpty() ? resultSetMergerInputs.get(0) : orderByValuesQueue.peek().getResultSetMergerInput());
+        setCurrentQueryResult(orderByValuesQueue.isEmpty() ? queryResults.get(0) : orderByValuesQueue.peek().getQueryResult());
     }
     
     @Override
@@ -76,7 +76,7 @@ public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger 
         if (orderByValuesQueue.isEmpty()) {
             return false;
         }
-        setCurrentResultSetMergerInput(orderByValuesQueue.peek().getResultSetMergerInput());
+        setCurrentQueryResult(orderByValuesQueue.peek().getQueryResult());
         return true;
     }
 }

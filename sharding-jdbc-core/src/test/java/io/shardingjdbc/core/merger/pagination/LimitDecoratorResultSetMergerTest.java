@@ -21,8 +21,8 @@ import com.google.common.collect.Lists;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.merger.DQLMergeEngine;
 import io.shardingjdbc.core.merger.ResultSetMerger;
-import io.shardingjdbc.core.merger.ResultSetMergerInput;
-import io.shardingjdbc.core.merger.jdbc.JDBCResultSetMergerInput;
+import io.shardingjdbc.core.merger.QueryResult;
+import io.shardingjdbc.core.merger.jdbc.JDBCQueryResult;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.limit.LimitValue;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -46,7 +46,7 @@ public final class LimitDecoratorResultSetMergerTest {
     
     private List<ResultSet> resultSets;
     
-    private List<ResultSetMergerInput> resultSetMergerInputs;
+    private List<QueryResult> queryResults;
     
     private SelectStatement selectStatement;
     
@@ -56,9 +56,9 @@ public final class LimitDecoratorResultSetMergerTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         resultSets = Lists.newArrayList(resultSet, mock(ResultSet.class), mock(ResultSet.class), mock(ResultSet.class));
-        resultSetMergerInputs = new ArrayList<>(resultSets.size());
+        queryResults = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
-            resultSetMergerInputs.add(new JDBCResultSetMergerInput(each));
+            queryResults.add(new JDBCQueryResult(each));
         }
         selectStatement = new SelectStatement();
     }
@@ -71,7 +71,7 @@ public final class LimitDecoratorResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, true, false);
         }
-        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
+        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
@@ -84,7 +84,7 @@ public final class LimitDecoratorResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, true, false);
         }
-        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
+        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -104,7 +104,7 @@ public final class LimitDecoratorResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, true, false);
         }
-        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
+        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -120,7 +120,7 @@ public final class LimitDecoratorResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, true, false);
         }
-        mergeEngine = new DQLMergeEngine(resultSetMergerInputs, selectStatement);
+        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());

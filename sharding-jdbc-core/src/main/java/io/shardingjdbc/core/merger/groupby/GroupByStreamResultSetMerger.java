@@ -20,7 +20,7 @@ package io.shardingjdbc.core.merger.groupby;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import io.shardingjdbc.core.merger.ResultSetMergerInput;
+import io.shardingjdbc.core.merger.QueryResult;
 import io.shardingjdbc.core.merger.groupby.aggregation.AggregationUnit;
 import io.shardingjdbc.core.merger.groupby.aggregation.AggregationUnitFactory;
 import io.shardingjdbc.core.merger.orderby.OrderByStreamResultSetMerger;
@@ -51,12 +51,12 @@ public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMe
     private List<?> currentGroupByValues;
     
     public GroupByStreamResultSetMerger(
-            final Map<String, Integer> labelAndIndexMap, final List<ResultSetMergerInput> resultSetMergerInputs, final SelectStatement selectStatement) throws SQLException {
-        super(resultSetMergerInputs, selectStatement.getOrderByItems());
+            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectStatement selectStatement) throws SQLException {
+        super(queryResults, selectStatement.getOrderByItems());
         this.labelAndIndexMap = labelAndIndexMap;
         this.selectStatement = selectStatement;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
-        currentGroupByValues = getOrderByValuesQueue().isEmpty() ? Collections.emptyList() : new GroupByValue(getCurrentResultSetMergerInput(), selectStatement.getGroupByItems()).getGroupValues();
+        currentGroupByValues = getOrderByValuesQueue().isEmpty() ? Collections.emptyList() : new GroupByValue(getCurrentQueryResult(), selectStatement.getGroupByItems()).getGroupValues();
     }
     
     @Override
@@ -69,7 +69,7 @@ public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMe
             super.next();
         }
         if (aggregateCurrentGroupByRowAndNext()) {
-            currentGroupByValues = new GroupByValue(getCurrentResultSetMergerInput(), selectStatement.getGroupByItems()).getGroupValues();
+            currentGroupByValues = new GroupByValue(getCurrentQueryResult(), selectStatement.getGroupByItems()).getGroupValues();
         }
         return true;
     }
@@ -83,7 +83,7 @@ public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMe
                 return AggregationUnitFactory.create(input.getType());
             }
         });
-        while (currentGroupByValues.equals(new GroupByValue(getCurrentResultSetMergerInput(), selectStatement.getGroupByItems()).getGroupValues())) {
+        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), selectStatement.getGroupByItems()).getGroupValues())) {
             aggregate(aggregationUnitMap);
             cacheCurrentRow();
             result = super.next();
@@ -110,13 +110,13 @@ public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMe
     }
     
     private void cacheCurrentRow() throws SQLException {
-        for (int i = 0; i < getCurrentResultSetMergerInput().getColumnCount(); i++) {
-            currentRow.add(getCurrentResultSetMergerInput().getValue(i + 1, Object.class));
+        for (int i = 0; i < getCurrentQueryResult().getColumnCount(); i++) {
+            currentRow.add(getCurrentQueryResult().getValue(i + 1, Object.class));
         }
     }
     
     private Comparable<?> getAggregationValue(final AggregationSelectItem aggregationSelectItem) throws SQLException {
-        Object result = getCurrentResultSetMergerInput().getValue(aggregationSelectItem.getIndex(), Object.class);
+        Object result = getCurrentQueryResult().getValue(aggregationSelectItem.getIndex(), Object.class);
         Preconditions.checkState(null == result || result instanceof Comparable, "Aggregation value must implements Comparable");
         return (Comparable<?>) result;
     }

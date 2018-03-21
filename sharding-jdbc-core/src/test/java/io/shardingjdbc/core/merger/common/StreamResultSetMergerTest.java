@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.merger.common;
 
 import io.shardingjdbc.core.merger.common.fixture.TestStreamResultSetMerger;
-import io.shardingjdbc.core.merger.jdbc.JDBCResultSetMergerInput;
+import io.shardingjdbc.core.merger.jdbc.JDBCQueryResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,13 +58,13 @@ public final class StreamResultSetMergerTest {
     @Before
     public void setUp() {
         streamResultSetMerger = new TestStreamResultSetMerger();
-        streamResultSetMerger.setCurrentResultSetMergerInput(new JDBCResultSetMergerInput(resultSet));
+        streamResultSetMerger.setCurrentQueryResult(new JDBCQueryResult(resultSet));
     }
     
     @Test(expected = SQLException.class)
     public void assertGetCurrentResultSetIfNull() throws SQLException {
-        streamResultSetMerger.setCurrentResultSetMergerInput(null);
-        streamResultSetMerger.getCurrentResultSetMergerInput();
+        streamResultSetMerger.setCurrentQueryResult(null);
+        streamResultSetMerger.getCurrentQueryResult();
     } 
     
     @Test

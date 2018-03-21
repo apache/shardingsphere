@@ -41,7 +41,7 @@ public final class DALMergeEngine implements MergeEngine {
     
     private final ShardingRule shardingRule;
     
-    private final List<ResultSetMergerInput> resultSetMergerInputs;
+    private final List<QueryResult> queryResults;
     
     private final DALStatement dalStatement;
     
@@ -51,11 +51,11 @@ public final class DALMergeEngine implements MergeEngine {
             return new ShowDatabasesResultSetMerger();
         }
         if (dalStatement instanceof ShowTablesStatement) {
-            return new ShowTablesResultSetMerger(shardingRule, resultSetMergerInputs);
+            return new ShowTablesResultSetMerger(shardingRule, queryResults);
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableResultSetMerger(shardingRule, resultSetMergerInputs);
+            return new ShowCreateTableResultSetMerger(shardingRule, queryResults);
         }
-        return new ShowOtherResultSetMerger(resultSetMergerInputs.get(0));
+        return new ShowOtherResultSetMerger(queryResults.get(0));
     }
 }
