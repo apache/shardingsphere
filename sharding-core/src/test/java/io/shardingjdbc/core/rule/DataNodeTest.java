@@ -45,4 +45,9 @@ public final class DataNodeTest {
     public void assertNewInValidDataNodeWithTwoDelimiters() {
         new DataNode("ds_0.tbl_0.tbl_1");
     }
+
+    @Test
+    public void assertNewValidDataNodeString() {
+        new DataNode("ds_0.tbl_0").toString();
+    }
 }
