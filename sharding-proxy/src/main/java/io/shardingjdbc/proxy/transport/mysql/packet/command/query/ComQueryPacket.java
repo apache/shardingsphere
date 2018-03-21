@@ -19,6 +19,7 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.query;
 
 import io.shardingjdbc.core.parsing.SQLJudgeEngine;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.proxy.backend.DataSourceManager;
 import io.shardingjdbc.proxy.constant.ColumnType;
 import io.shardingjdbc.proxy.constant.StatusFlag;
@@ -74,12 +75,11 @@ public final class ComQueryPacket extends CommandPacket {
                     break;
                 case DML:
                 case DDL:
-                    if (needGeneratedKey()) {
+                    if (isNeedGeneratedKey(sqlStatement)) {
                         affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
                         lastInsertId = getGeneratedKey(statement);
                     } else {
                         affectedRows = statement.executeUpdate(sql);
-                        lastInsertId = -1;
                     }
                     resultSet = statement.getResultSet();
                     break;
@@ -129,9 +129,9 @@ public final class ComQueryPacket extends CommandPacket {
         return result;
     }
     
-    private boolean needGeneratedKey() {
+    private boolean isNeedGeneratedKey(final SQLStatement statement) {
         // TODO justify based on the request protocol
-        return sql.toUpperCase().startsWith("INSERT");
+        return statement instanceof InsertStatement;
     }
 
     private long getGeneratedKey(final Statement statement) throws SQLException {
