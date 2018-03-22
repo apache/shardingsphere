@@ -23,4 +23,33 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class DataNodeTest {
+    
+    @Test
+    public void assertNewValidDataNode() {
+        DataNode dataNode = new DataNode("ds_0.tbl_0");
+        assertThat(dataNode.getDataSourceName(), is("ds_0"));
+        assertThat(dataNode.getTableName(), is("tbl_0"));
+    }
+    
+    @Test(expected = ShardingRuleException.class)
+    public void assertNewValidDataNodeWithInvalidDelimiter() {
+        new DataNode("ds_0,tbl_0");
+    }
+    
+    @Test(expected = ShardingRuleException.class)
+    public void assertNewInValidDataNodeWithoutDelimiter() {
+        new DataNode("ds_0tbl_0");
+    }
+    
+    @Test(expected = ShardingRuleException.class)
+    public void assertNewInValidDataNodeWithTwoDelimiters() {
+        new DataNode("ds_0.tbl_0.tbl_1");
+    }
+    
+    @Test
+    public void assertNewValidDataNodeString() {
+        new DataNode("ds_0.tbl_0").toString();
+    }
+    
+    
 }
