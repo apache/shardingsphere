@@ -51,7 +51,7 @@ public final class DataNodeTest {
     
     @Test
     public void assertNewValidDataNodeString() {
-        new DataNode("ds_0.tbl_0").toString();
+        assertThat( new DataNode("ds_0.tbl_0").toString(),is("ds_0.tbl_0"));
     }
     
     @Test
