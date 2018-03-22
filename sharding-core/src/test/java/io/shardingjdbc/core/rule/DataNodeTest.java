@@ -20,7 +20,10 @@ package io.shardingjdbc.core.rule;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class DataNodeTest {
     
@@ -51,5 +54,13 @@ public final class DataNodeTest {
         new DataNode("ds_0.tbl_0").toString();
     }
     
+    @Test
+    public void assertNewValidDataNodeHashCode() {
+         assertThat(new DataNode("ds_0.tbl_0").hashCode(), is(new DataNode("ds_0.tbl_0").hashCode()));
+    }
     
+    @Test
+    public void assertNewValidDataNodeEquals() {
+        assertTrue(new DataNode("ds_0.tbl_0").equals(new DataNode("ds_0.tbl_0")));
+    }
 }
