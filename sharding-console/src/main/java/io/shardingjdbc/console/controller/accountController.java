@@ -17,36 +17,34 @@
 
 package io.shardingjdbc.console.controller;
 
-import io.shardingjdbc.console.service.SqlService;
-import org.springframework.web.bind.annotation.*;
+import io.shardingjdbc.console.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.List;
+import java.util.Map;
+
 
 /**
- * SqlController.
+ * accountController.
  *
  * @author zhangyonglun
  */
 @RestController
-public class SqlController {
+public class accountController {
 
     @Autowired
-    private SqlService sqlService;
+    private AccountService accountService;
 
-    /**
-     * execute SQL.
-     *
-     * @return result
-     */
-    @RequestMapping(value = "/sql", method = RequestMethod.POST)
-    public List<String> executeSQL(@RequestBody final String sql, final ServletRequest servletRequest) {
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String logIn(@RequestBody final Map<String, String> account, final ServletRequest servletRequest) {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpSession httpSession = httpRequest.getSession();
-        System.out.println(sql);
-        return sqlService.execute(sql, httpSession);
+        return accountService.login(account, httpSession);
     }
 }

@@ -17,13 +17,13 @@
 
 package io.shardingjdbc.console.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import io.shardingjdbc.console.constant.LoginInfo;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import javax.servlet.http.HttpSession;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SqlService.
@@ -33,12 +33,69 @@ import java.util.Set;
 @Service
 public class SqlService {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    public List<String> execute(String sql, HttpSession httpSession) {
 
-    public Object execute(String sql) {
-        return jdbcTemplate.queryForList(sql);
-//        return jdbcTemplate.execute(sql);
-//        return jdbcTemplate.update(sql);
+        String driver = (String) httpSession.getAttribute(LoginInfo.DATASOURCE_DRIVER);
+
+
+        String url = (String) httpSession.getAttribute(LoginInfo.DATASOURCE_URL);
+
+        String username = (String) httpSession.getAttribute(LoginInfo.DATASOURCE_USERNAME);
+
+        String password = (String) httpSession.getAttribute(LoginInfo.DATASOURCE_PASSWORD);
+
+        List<String> result = new ArrayList<>();
+
+        Connection conn = null;
+
+        Statement stmt = null;
+
+        ResultSet resultSet = null;
+
+        ResultSetMetaData resultSetMetaData = null;
+
+        try {
+            Class.forName(driver);
+            conn = DriverManager.getConnection(url, username, password);
+            stmt = conn.createStatement();
+            resultSet = stmt.executeQuery(sql);
+            resultSetMetaData = resultSet.getMetaData();
+            int columnCount = resultSetMetaData.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+                result.add(resultSetMetaData.getColumnName(i)
+                        + " : " + resultSetMetaData.getColumnTypeName(i)
+                        + "(" + resultSetMetaData.getColumnDisplaySize(i) + ")");
+            }
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    result.add(resultSet.getString(i));
+                }
+            }
+            resultSet.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException sqe) {
+            return null;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException rse) {
+            }
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException sse) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException cse) {
+            }
+        }
+        return result;
     }
 }
