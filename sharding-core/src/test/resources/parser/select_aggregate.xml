@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectSum">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="40" original-literals="t_order" />
+        </table-tokens>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(user_id)" aggregation-type="SUM" alias="user_id_sum" />
+        </aggregation-select-items>
+    </assert>
+    <assert id="assertSelectCount">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="37" original-literals="t_order" />
+        </table-tokens>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="orders_count" />
+        </aggregation-select-items>
+    </assert>
+    <assert id="assertSelectMax">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="40" original-literals="t_order" />
+        </table-tokens>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(user_id)" aggregation-type="MAX" alias="max_user_id" />
+        </aggregation-select-items>
+    </assert>
+    <assert id="assertSelectMin">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="40" original-literals="t_order" />
+        </table-tokens>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(user_id)" aggregation-type="MIN" alias="min_user_id" />
+        </aggregation-select-items>
+    </assert>
+    <assert id="assertSelectAvg">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="40" original-literals="t_order" />
+        </table-tokens>
+        <items-token begin-position="35">
+            <items>
+                <item>COUNT(user_id) AS AVG_DERIVED_COUNT_0 </item>
+                <item>SUM(user_id) AS AVG_DERIVED_SUM_0 </item>
+            </items>
+        </items-token>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(user_id)" aggregation-type="AVG" alias="user_id_avg">
+                <derived-column inner-expression="(user_id)" aggregation-type="COUNT" alias="AVG_DERIVED_COUNT_0" />
+                <derived-column inner-expression="(user_id)" aggregation-type="SUM" alias="AVG_DERIVED_SUM_0" />
+            </aggregation-select-item>
+        </aggregation-select-items>
+    </assert>
+    <assert id="assertSelectCountForSpecialSymbol">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="46" original-literals="t_order" />
+        </table-tokens>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(`order_id`)" aggregation-type="COUNT" alias="orders_count" />
+        </aggregation-select-items>
+    </assert>
+</asserts>
