@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,20 +34,22 @@ import java.util.List;
  * @author wangkai
  */
 @Slf4j
-public class QuartzJob implements Job {
+public final class QuartzJob implements Job {
 
     @Override
     public void execute(final JobExecutionContext jobExecutionContext) {
-        QuartzJobConfiguration quartzJobConfiguration = (QuartzJobConfiguration)jobExecutionContext.getJobDetail().getJobDataMap().get("quartzJobConfiguration");
-        TransactionLogStorage transactionLogStorage = (TransactionLogStorage)jobExecutionContext.getJobDetail().getJobDataMap().get("transactionLogStorage");
-        List<TransactionLog> TransactionLogList = transactionLogStorage.findEligibleTransactionLogs(quartzJobConfiguration.getJobConfig().getTransactionLogFetchDataCount(),
+        QuartzJobConfiguration quartzJobConfiguration = (QuartzJobConfiguration) jobExecutionContext.getJobDetail().getJobDataMap().get("quartzJobConfiguration");
+        TransactionLogStorage transactionLogStorage = (TransactionLogStorage) jobExecutionContext.getJobDetail().getJobDataMap().get("transactionLogStorage");
+        List<TransactionLog> transactionLogList = transactionLogStorage.findEligibleTransactionLogs(quartzJobConfiguration.getJobConfig().getTransactionLogFetchDataCount(),
                 quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), quartzJobConfiguration.getJobConfig().getMaxDeliveryTryDelayMillis());
-        for (TransactionLog data : TransactionLogList) {
-            try (Connection conn = quartzJobConfiguration.getTargetDataSource(data.getDataSource()).getConnection()) {
-                transactionLogStorage.processData(conn, data, quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes());
-            } catch (final SQLException | TransactionCompensationException ex) {
-                log.error(String.format("Async delivery times %s error, max try times is %s, exception is %s", data.getAsyncDeliveryTryTimes() + 1,
-                        quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), ex.getMessage()));
+        if (transactionLogList != null) {
+            for (TransactionLog data : transactionLogList) {
+                try (Connection conn = quartzJobConfiguration.getTargetDataSource(data.getDataSource()).getConnection()) {
+                    transactionLogStorage.processData(conn, data, quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes());
+                } catch (final SQLException | TransactionCompensationException ex) {
+                    log.error(String.format("Async delivery times %s error, max try times is %s, exception is %s", data.getAsyncDeliveryTryTimes() + 1,
+                            quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), ex.getMessage()));
+                }
             }
         }
     }

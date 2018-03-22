@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,14 @@ package io.shardingjdbc.transaction.job;
 import io.shardingjdbc.transaction.datasource.impl.RdbTransactionLogDataSource;
 import io.shardingjdbc.transaction.storage.TransactionLogStorageFactory;
 import lombok.RequiredArgsConstructor;
-import org.quartz.*;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
+import org.quartz.JobBuilder;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+import org.quartz.CronScheduleBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 
 /**
@@ -35,6 +42,8 @@ public final class QuartzJobFactory {
 
     /**
      * start job.
+     *
+     * @throws SchedulerException quartz scheduler exception
      */
     public void start() throws SchedulerException {
         SchedulerFactory schedulerFactory = new StdSchedulerFactory();
@@ -45,8 +54,9 @@ public final class QuartzJobFactory {
 
     private JobDetail buildJobDetail() {
         JobDetail jobDetail = JobBuilder.newJob(QuartzJob.class).withIdentity(quartzJobConfiguration.getJobConfig().getName() + "-Job").build();
-        jobDetail.getJobDataMap().put("quartzJobConfiguration",quartzJobConfiguration);
-        jobDetail.getJobDataMap().put("transactionLogStorage", TransactionLogStorageFactory.createTransactionLogStorage(new RdbTransactionLogDataSource(quartzJobConfiguration.getDefaultTransactionLogDataSource())));
+        jobDetail.getJobDataMap().put("quartzJobConfiguration", quartzJobConfiguration);
+        jobDetail.getJobDataMap().put("transactionLogStorage",
+                TransactionLogStorageFactory.createTransactionLogStorage(new RdbTransactionLogDataSource(quartzJobConfiguration.getDefaultTransactionLogDataSource())));
         return jobDetail;
     }
 
