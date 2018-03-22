@@ -1,23 +1,23 @@
 #事务日志的数据源.
 targetDataSource:
-  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds_trans_0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_0
+    url: jdbc:mysql://localhost:3306/ds_trans_0
     username: root
-    password:
-  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+    password: 123456
+  ds_trans_1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_1
+    url: jdbc:mysql://localhost:3306/ds_trans_1
     username: root
-    password:
+    password: 123456
 
 #事务日志的数据源.
 transactionLogDataSource:
-  ds_trans: !!org.apache.commons.dbcp.BasicDataSource
+  ds_trans: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/trans_log
     username: root
-    password:
+    password: 123456
 
 jobConfig:
   #作业名称
