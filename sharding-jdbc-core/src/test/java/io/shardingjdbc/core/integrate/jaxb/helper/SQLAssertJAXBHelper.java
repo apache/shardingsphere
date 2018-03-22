@@ -17,11 +17,11 @@
 
 package io.shardingjdbc.core.integrate.jaxb.helper;
 
-import io.shardingjdbc.core.parsing.jaxb.helper.SQLStatementHelper;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.jaxb.SQLAssert;
 import io.shardingjdbc.core.integrate.jaxb.SQLAsserts;
+import io.shardingjdbc.test.sql.jaxb.helper.SQLStatementHelper;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -78,8 +78,8 @@ public final class SQLAssertJAXBHelper {
         List<Object[]> result = new ArrayList<>();
         for (int i = 0; i < asserts.getSqlAsserts().size(); i++) {
             SQLAssert assertObj = asserts.getSqlAsserts().get(i);
-            for (DatabaseType each : SQLStatementHelper.getTypes(assertObj.getId())) {
-                result.add(getDataParameter(assertObj, each));
+            for (io.shardingjdbc.test.sql.jaxb.DatabaseType each : SQLStatementHelper.getTypes(assertObj.getId())) {
+                result.add(getDataParameter(assertObj, DatabaseType.valueOf(each.name())));
             }
         }
         return result;

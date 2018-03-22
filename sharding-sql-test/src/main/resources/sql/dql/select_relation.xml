@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertSelectWithInnerJoinAndRelatedWithTableAlias" value="SELECT i.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = %s" />
+    <sql id="assertSelectWithInnerJoinAndRelatedWithTableName" value="SELECT t_order_item.* FROM t_order JOIN t_order_item ON t_order.order_id = t_order_item.order_id WHERE t_order.order_id = %s" />
+    <sql id="assertSelectWithJoinUsing" value="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = %s" type="MySQL,PostgreSQL" />
+</sqls>

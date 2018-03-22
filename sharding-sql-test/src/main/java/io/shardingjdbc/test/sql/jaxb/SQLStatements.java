@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.jaxb;
+package io.shardingjdbc.test.sql.jaxb;
 
 import lombok.Getter;
 

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertTruncateTable" value="TRUNCATE TABLE t_log" />
+    <sql id="assertTruncateTableOnly" value="TRUNCATE TABLE ONLY t_log" type="PostgreSQL" />
+</sqls>

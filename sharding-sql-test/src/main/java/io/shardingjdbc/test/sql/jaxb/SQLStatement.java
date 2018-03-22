@@ -15,19 +15,26 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.jaxb;
+package io.shardingjdbc.test.sql.jaxb;
 
 import lombok.Getter;
+import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
-@XmlRootElement(name = "sqls")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class SQLStatements {
+@Setter
+public final class SQLStatement {
     
-    @XmlElement(name = "sql")
-    private List<SQLStatement> sqls = new ArrayList<>();
+    @XmlAttribute
+    private String id;
+    
+    @XmlAttribute(name = "value")
+    private String sql;
+    
+    @XmlAttribute(name = "type")
+    private String types;
 }
