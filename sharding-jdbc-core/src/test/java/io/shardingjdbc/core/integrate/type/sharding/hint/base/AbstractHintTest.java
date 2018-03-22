@@ -19,7 +19,7 @@ package io.shardingjdbc.core.integrate.type.sharding.hint.base;
 
 import io.shardingjdbc.core.common.base.AbstractSQLTest;
 import io.shardingjdbc.core.common.env.DatabaseEnvironment;
-import io.shardingjdbc.core.common.util.DBUnitUtil;
+import io.shardingjdbc.core.util.DBUnitUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;

@@ -77,7 +77,7 @@ public final class BindingTableRule {
                 return each.getActualDataNodes().get(index).getTableName().toLowerCase();
             }
         }
-        throw new IllegalStateException(String.format("Cannot find binding actual table, data source: %s, logic table: %s, other actual table: %s", dataSource, logicTable, otherActualTable));
+        throw new ShardingRuleException("Cannot find binding actual table, data source: %s, logic table: %s, other actual table: %s", dataSource, logicTable, otherActualTable);
     }
     
     Collection<String> getAllLogicTables() {

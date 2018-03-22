@@ -27,7 +27,7 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.integrate.fixture.ComplexKeysModuloDatabaseShardingAlgorithm;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
+import io.shardingjdbc.core.fixture.IncrementKeyGenerator;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

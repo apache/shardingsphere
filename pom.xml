@@ -14,6 +14,7 @@
         <module>sharding-jdbc-orchestration</module>
         <module>sharding-jdbc-orchestration-spring</module>
         <module>sharding-proxy</module>
+        <module>sharding-sql-test</module>
     </modules>
     
     <properties>
@@ -26,7 +27,7 @@
         <guava.version>18.0</guava.version>
         <common-lang3>3.6</common-lang3>
         <commons-pool.version>1.6</commons-pool.version>
-        <commons-dbcp.version>1.4</commons-dbcp.version>
+        <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
         <gson.version>2.6.1</gson.version>
         <curator.version>2.10.0</curator.version>
         <logback.version>1.1.2</logback.version>
@@ -206,9 +207,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>commons-dbcp</groupId>
-                <artifactId>commons-dbcp</artifactId>
-                <version>${commons-dbcp.version}</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-dbcp2</artifactId>
+                <version>${commons-dbcp2.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-pool</groupId>

@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.jdbc.core.resultset;
 
-import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
 public final class ShardingResultSetTest {
     
     @Mock
-    private ResultSetMerger mergeResultSet;
+    private MergedResult mergeResultSet;
     
     @Mock
     private Statement statement;

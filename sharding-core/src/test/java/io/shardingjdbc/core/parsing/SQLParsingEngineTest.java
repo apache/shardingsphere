@@ -21,14 +21,14 @@ import io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorit
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.fixture.ShardingRuleMockBuilder;
-import io.shardingjdbc.core.common.jaxb.helper.SQLStatementHelper;
-import io.shardingjdbc.core.common.util.SQLPlaceholderUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.base.AbstractBaseParseSQLTest;
 import io.shardingjdbc.core.parsing.parser.base.AbstractBaseParseTest;
 import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
 import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserJAXBHelper;
 import io.shardingjdbc.core.rule.ShardingRule;
+import io.shardingjdbc.core.util.SQLPlaceholderUtil;
+import io.shardingjdbc.test.sql.jaxb.helper.SQLStatementHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -59,8 +59,9 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     
     @Test
     public void assertPreparedStatement() {
-        for (DatabaseType each : SQLStatementHelper.getTypes(getTestCaseName())) {
-            assertPreparedStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLStatementHelper.getSql(getTestCaseName())), buildShardingRule()).parse());
+        for (io.shardingjdbc.test.sql.jaxb.DatabaseType each : SQLStatementHelper.getTypes(getTestCaseName())) {
+            assertPreparedStatement(
+                    new SQLParsingEngine(DatabaseType.valueOf(each.name()), SQLPlaceholderUtil.replacePreparedStatement(SQLStatementHelper.getSql(getTestCaseName())), buildShardingRule()).parse());
         }
     }
     

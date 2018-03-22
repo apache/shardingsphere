@@ -1,10 +1,10 @@
 dataSources:
-  demo_ds_0: !!org.apache.commons.dbcp.BasicDataSource
+  demo_ds_0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_0
     username: root
     password: 
-  demo_ds_1: !!org.apache.commons.dbcp.BasicDataSource
+  demo_ds_1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_1
     username: root

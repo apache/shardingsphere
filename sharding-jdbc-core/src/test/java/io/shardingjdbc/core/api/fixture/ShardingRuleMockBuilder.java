@@ -23,7 +23,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
+import io.shardingjdbc.core.fixture.IncrementKeyGenerator;
 import io.shardingjdbc.core.rule.ShardingRule;
 
 import java.util.Collection;

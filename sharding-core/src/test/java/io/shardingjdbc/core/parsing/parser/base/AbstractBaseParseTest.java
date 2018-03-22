@@ -17,10 +17,10 @@
 
 package io.shardingjdbc.core.parsing.parser.base;
 
-import io.shardingjdbc.core.common.jaxb.helper.SQLStatementHelper;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
 import io.shardingjdbc.core.parsing.parser.jaxb.Asserts;
+import io.shardingjdbc.test.sql.jaxb.helper.SQLStatementHelper;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -71,8 +71,8 @@ public abstract class AbstractBaseParseTest {
         List<Object[]> result = new ArrayList<>();
         for (int i = 0; i < asserts.getAsserts().size(); i++) {
             Assert assertObj = asserts.getAsserts().get(i);
-            for (DatabaseType each : SQLStatementHelper.getTypes(assertObj.getId())) {
-                result.add(getDataParameter(assertObj, each));
+            for (io.shardingjdbc.test.sql.jaxb.DatabaseType each : SQLStatementHelper.getTypes(assertObj.getId())) {
+                result.add(getDataParameter(assertObj, DatabaseType.valueOf(each.name())));
             }
         }
         return result;

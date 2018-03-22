@@ -24,7 +24,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         NumberUtilTest.class,
         StringUtilTest.class,
-        InlineBasicExpressionParserTest.class,
+        InlineExpressionParserTest.class,
         SQLUtilTest.class
     })
 public class AllUtilTests {

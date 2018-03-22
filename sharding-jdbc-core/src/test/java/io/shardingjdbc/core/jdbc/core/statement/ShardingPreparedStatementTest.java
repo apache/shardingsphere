@@ -19,7 +19,7 @@ package io.shardingjdbc.core.jdbc.core.statement;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingjdbc.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingjdbc.core.common.util.SQLPlaceholderUtil;
+import io.shardingjdbc.core.util.SQLPlaceholderUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.executor.event.DMLExecutionEvent;
 import io.shardingjdbc.core.executor.event.EventExecutionType;

@@ -35,6 +35,7 @@ import io.shardingjdbc.core.parsing.parser.exception.SQLParsingException;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
+import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.parsing.parser.sql.tcl.TCLStatement;
 import lombok.RequiredArgsConstructor;
@@ -61,16 +62,16 @@ public final class SQLJudgeEngine {
             TokenType tokenType = lexerEngine.getCurrentToken().getType();
             if (tokenType instanceof Keyword) {
                 if (isDQL(tokenType)) {
-                    return new SelectStatement();
+                    return getDQLStatement();
                 }
                 if (isDML(tokenType)) {
-                    return new DMLStatement();
+                    return getDMLStatement(tokenType);
                 }
                 if (isDDL(tokenType)) {
-                    return new DDLStatement();
+                    return getDDLStatement();
                 }
                 if (isTCL(tokenType)) {
-                    return new TCLStatement();
+                    return getTCLStatement();
                 }
                 if (isDAL(tokenType)) {
                     return getDALStatement(tokenType, lexerEngine);
@@ -102,6 +103,25 @@ public final class SQLJudgeEngine {
     
     private boolean isDAL(final TokenType tokenType) {
         return DefaultKeyword.USE == tokenType || DefaultKeyword.DESC == tokenType || MySQLKeyword.DESCRIBE == tokenType || MySQLKeyword.SHOW == tokenType;
+    }
+    
+    private SQLStatement getDQLStatement() {
+        return new SelectStatement();
+    }
+    
+    private SQLStatement getDMLStatement(final TokenType tokenType) {
+        if (DefaultKeyword.INSERT == tokenType) {
+            return new InsertStatement();
+        }
+        return new DMLStatement();
+    }
+    
+    private SQLStatement getDDLStatement() {
+        return new DDLStatement();
+    }
+    
+    private SQLStatement getTCLStatement() {
+        return new TCLStatement();
     }
     
     private SQLStatement getDALStatement(final TokenType tokenType, final LexerEngine lexerEngine) {

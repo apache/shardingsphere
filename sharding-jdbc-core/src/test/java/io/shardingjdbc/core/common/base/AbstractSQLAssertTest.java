@@ -22,7 +22,7 @@ import com.google.common.collect.Lists;
 import io.shardingjdbc.core.common.env.DatabaseEnvironment;
 import io.shardingjdbc.core.common.env.ShardingJdbcDatabaseTester;
 import io.shardingjdbc.core.common.env.ShardingTestStrategy;
-import io.shardingjdbc.core.common.util.SQLAssertHelper;
+import io.shardingjdbc.core.util.SQLAssertHelper;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.jaxb.SQLAssertData;
