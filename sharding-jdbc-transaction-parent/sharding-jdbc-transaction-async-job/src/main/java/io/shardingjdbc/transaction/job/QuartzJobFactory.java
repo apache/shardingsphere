@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.transaction.job;
 
+import io.shardingjdbc.transaction.datasource.impl.RdbTransactionLogDataSource;
+import io.shardingjdbc.transaction.storage.TransactionLogStorageFactory;
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -42,7 +44,10 @@ public final class QuartzJobFactory {
     }
 
     private JobDetail buildJobDetail() {
-        return JobBuilder.newJob(QuartzJob.class).withIdentity(quartzJobConfiguration.getJobConfig().getName() + "-Job").build();
+        JobDetail jobDetail = JobBuilder.newJob(QuartzJob.class).withIdentity(quartzJobConfiguration.getJobConfig().getName() + "-Job").build();
+        jobDetail.getJobDataMap().put("quartzJobConfiguration",quartzJobConfiguration);
+        jobDetail.getJobDataMap().put("transactionLogStorage", TransactionLogStorageFactory.createTransactionLogStorage(new RdbTransactionLogDataSource(quartzJobConfiguration.getDefaultTransactionLogDataSource())));
+        return jobDetail;
     }
 
     private Trigger buildTrigger() {

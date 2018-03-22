@@ -52,4 +52,7 @@ public class QuartzJobConfiguration {
         return targetDataSource.get(dataSourceName);
     }
 
+    public DataSource getDefaultTransactionLogDataSource() {
+        return transactionLogDataSource.values().iterator().next();
+    }
 }

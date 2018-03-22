@@ -20,7 +20,6 @@ package io.shardingjdbc.transaction.job;
 import io.shardingjdbc.transaction.exception.TransactionCompensationException;
 import io.shardingjdbc.transaction.storage.TransactionLog;
 import io.shardingjdbc.transaction.storage.TransactionLogStorage;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -37,14 +36,10 @@ import java.util.List;
 @Slf4j
 public class QuartzJob implements Job {
 
-    @Setter
-    private QuartzJobConfiguration quartzJobConfiguration;
-
-    @Setter
-    private TransactionLogStorage transactionLogStorage;
-
     @Override
     public void execute(final JobExecutionContext jobExecutionContext) {
+        QuartzJobConfiguration quartzJobConfiguration = (QuartzJobConfiguration)jobExecutionContext.getJobDetail().getJobDataMap().get("quartzJobConfiguration");
+        TransactionLogStorage transactionLogStorage = (TransactionLogStorage)jobExecutionContext.getJobDetail().getJobDataMap().get("transactionLogStorage");
         List<TransactionLog> TransactionLogList = transactionLogStorage.findEligibleTransactionLogs(quartzJobConfiguration.getJobConfig().getTransactionLogFetchDataCount(),
                 quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), quartzJobConfiguration.getJobConfig().getMaxDeliveryTryDelayMillis());
         for (TransactionLog data : TransactionLogList) {
