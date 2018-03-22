@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class DataNodeTest {
     
@@ -39,5 +40,25 @@ public class DataNodeTest {
     @Test(expected = ShardingRuleException.class)
     public void assertNewInValidDataNodeWithTwoDelimiters() {
         new DataNode("ds_0.tbl_0.tbl_1");
+    }
+    
+    @Test(expected = ShardingRuleException.class)
+    public void assertNewValidDataNodeWithInvalidDelimiter() {
+        new DataNode("ds_0,tbl_0");
+    }
+    
+    @Test
+    public void assertNewValidDataNodeString() {
+        assertThat(new DataNode("ds_0.tbl_0").toString(),is(new DataNode("ds_0.tbl_0").toString()));
+    }
+    
+    @Test
+    public void assertNewValidDataNodeHashCode() {
+        assertThat(new DataNode("ds_0.tbl_0").hashCode(), is(new DataNode("ds_0.tbl_0").hashCode()));
+    }
+    
+    @Test
+    public void assertNewValidDataNodeEquals() {
+        assertTrue(new DataNode("ds_0.tbl_0").equals(new DataNode("ds_0.tbl_0")));
     }
 }
