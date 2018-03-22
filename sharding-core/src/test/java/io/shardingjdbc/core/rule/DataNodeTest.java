@@ -48,17 +48,17 @@ public class DataNodeTest {
     }
     
     @Test
-    public void assertNewValidDataNodeString() {
-        assertThat(new DataNode("ds_0.tbl_0").toString(),is(new DataNode("ds_0.tbl_0").toString()));
+    public void assertEquals() {
+        assertTrue(new DataNode("ds_0.tbl_0").equals(new DataNode("ds_0.tbl_0")));
     }
     
     @Test
-    public void assertNewValidDataNodeHashCode() {
+    public void assertHashCode() {
         assertThat(new DataNode("ds_0.tbl_0").hashCode(), is(new DataNode("ds_0.tbl_0").hashCode()));
     }
     
     @Test
-    public void assertNewValidDataNodeEquals() {
-        assertTrue(new DataNode("ds_0.tbl_0").equals(new DataNode("ds_0.tbl_0")));
+    public void assertToString() {
+        assertThat(new DataNode("ds_0.tbl_0").toString(),is(new DataNode("ds_0.tbl_0").toString()));
     }
 }
