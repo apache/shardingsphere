@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.merger.dql.groupby;
 
 import com.google.common.base.Preconditions;
-import io.shardingjdbc.core.merger.dql.common.MemoryResultSetRow;
+import io.shardingjdbc.core.merger.dql.common.MemoryQueryResultRow;
 import io.shardingjdbc.core.merger.dql.orderby.CompareUtil;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -33,19 +33,19 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class GroupByRowComparator implements Comparator<MemoryResultSetRow> {
+public final class GroupByRowComparator implements Comparator<MemoryQueryResultRow> {
     
     private final SelectStatement selectStatement;
     
     @Override
-    public int compare(final MemoryResultSetRow o1, final MemoryResultSetRow o2) {
+    public int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2) {
         if (!selectStatement.getOrderByItems().isEmpty()) {
             return compare(o1, o2, selectStatement.getOrderByItems());
         }
         return compare(o1, o2, selectStatement.getGroupByItems());
     }
     
-    private int compare(final MemoryResultSetRow o1, final MemoryResultSetRow o2, final List<OrderItem> orderItems) {
+    private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final List<OrderItem> orderItems) {
         for (OrderItem each : orderItems) {
             Object orderValue1 = o1.getCell(each.getIndex());
             Preconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, "Order by value must implements Comparable");

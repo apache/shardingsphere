@@ -15,22 +15,26 @@
  * </p>
  */
 
-package io.shardingjdbc.core.merger;
+package io.shardingjdbc.test.sql.jaxb;
 
-import java.sql.SQLException;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Result set merge engine.
- *
- * @author zhangliang
- */
-public interface MergeEngine {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@Getter
+@Setter
+public final class SQLStatement {
     
-    /**
-     * Merge result sets.
-     *
-     * @return merged result set.
-     * @throws SQLException SQL exception
-     */
-    MergedResult merge() throws SQLException;
+    @XmlAttribute
+    private String id;
+    
+    @XmlAttribute(name = "value")
+    private String sql;
+    
+    @XmlAttribute(name = "type")
+    private String types;
 }

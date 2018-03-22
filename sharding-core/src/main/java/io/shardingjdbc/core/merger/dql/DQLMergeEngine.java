@@ -20,14 +20,14 @@ package io.shardingjdbc.core.merger.dql;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.merger.MergeEngine;
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.merger.ResultSetMerger;
-import io.shardingjdbc.core.merger.dql.groupby.GroupByMemoryResultSetMerger;
-import io.shardingjdbc.core.merger.dql.groupby.GroupByStreamResultSetMerger;
-import io.shardingjdbc.core.merger.dql.iterator.IteratorStreamResultSetMerger;
-import io.shardingjdbc.core.merger.dql.orderby.OrderByStreamResultSetMerger;
-import io.shardingjdbc.core.merger.dql.pagination.LimitDecoratorResultSetMerger;
-import io.shardingjdbc.core.merger.dql.pagination.RowNumberDecoratorResultSetMerger;
-import io.shardingjdbc.core.merger.dql.pagination.TopAndRowNumberDecoratorResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
+import io.shardingjdbc.core.merger.dql.groupby.GroupByMemoryMergedResult;
+import io.shardingjdbc.core.merger.dql.groupby.GroupByStreamMergedResult;
+import io.shardingjdbc.core.merger.dql.iterator.IteratorStreamMergedResult;
+import io.shardingjdbc.core.merger.dql.orderby.OrderByStreamMergedResult;
+import io.shardingjdbc.core.merger.dql.pagination.LimitDecoratorMergedResult;
+import io.shardingjdbc.core.merger.dql.pagination.RowNumberDecoratorMergedResult;
+import io.shardingjdbc.core.merger.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.util.SQLUtil;
@@ -65,39 +65,39 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     @Override
-    public ResultSetMerger merge() throws SQLException {
+    public MergedResult merge() throws SQLException {
         selectStatement.setIndexForItems(columnLabelIndexMap);
         return decorate(build());
     }
     
-    private ResultSetMerger build() throws SQLException {
+    private MergedResult build() throws SQLException {
         if (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) {
             if (selectStatement.isSameGroupByAndOrderByItems()) {
-                return new GroupByStreamResultSetMerger(columnLabelIndexMap, queryResults, selectStatement);
+                return new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectStatement);
             } else {
-                return new GroupByMemoryResultSetMerger(columnLabelIndexMap, queryResults, selectStatement);
+                return new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, selectStatement);
             }
         }
         if (!selectStatement.getOrderByItems().isEmpty()) {
-            return new OrderByStreamResultSetMerger(queryResults, selectStatement.getOrderByItems());
+            return new OrderByStreamMergedResult(queryResults, selectStatement.getOrderByItems());
         }
-        return new IteratorStreamResultSetMerger(queryResults);
+        return new IteratorStreamMergedResult(queryResults);
     }
     
-    private ResultSetMerger decorate(final ResultSetMerger resultSetMerger) throws SQLException {
+    private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
         Limit limit = selectStatement.getLimit();
         if (null == limit) {
-            return resultSetMerger;
+            return mergedResult;
         }
         if (DatabaseType.MySQL == limit.getDatabaseType() || DatabaseType.PostgreSQL == limit.getDatabaseType() || DatabaseType.H2 == limit.getDatabaseType()) {
-            return new LimitDecoratorResultSetMerger(resultSetMerger, selectStatement.getLimit());
+            return new LimitDecoratorMergedResult(mergedResult, selectStatement.getLimit());
         }
         if (DatabaseType.Oracle == limit.getDatabaseType()) {
-            return new RowNumberDecoratorResultSetMerger(resultSetMerger, selectStatement.getLimit());
+            return new RowNumberDecoratorMergedResult(mergedResult, selectStatement.getLimit());
         }
         if (DatabaseType.SQLServer == limit.getDatabaseType()) {
-            return new TopAndRowNumberDecoratorResultSetMerger(resultSetMerger, selectStatement.getLimit());
+            return new TopAndRowNumberDecoratorMergedResult(mergedResult, selectStatement.getLimit());
         }
-        return resultSetMerger;
+        return mergedResult;
     }
 }

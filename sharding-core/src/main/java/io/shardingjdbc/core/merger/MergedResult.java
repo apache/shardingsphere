@@ -22,36 +22,19 @@ import java.sql.SQLException;
 import java.util.Calendar;
 
 /**
- * Query result form database.
+ * Merged result after merge engine.
  *
  * @author zhangliang
  */
-public interface QueryResult {
+public interface MergedResult {
     
     /**
      * iterate next data.
-     *
+     * 
      * @return has next data
      * @throws SQLException SQL Exception
      */
     boolean next() throws SQLException;
-    
-    /**
-     * Get column count.
-     *
-     * @return column count
-     * @throws SQLException SQL Exception
-     */
-    int getColumnCount() throws SQLException;
-    
-    /**
-     * Get column label.
-     *
-     * @param columnIndex column index
-     * @return column label
-     * @throws SQLException SQL Exception
-     */
-    String getColumnLabel(int columnIndex) throws SQLException;
     
     /**
      * Get data value.
@@ -117,7 +100,7 @@ public interface QueryResult {
     
     /**
      * Adjust ResultSet is null or not.
-     *
+     * 
      * @return ResultSet is null or not
      * @throws SQLException SQL Exception
      */

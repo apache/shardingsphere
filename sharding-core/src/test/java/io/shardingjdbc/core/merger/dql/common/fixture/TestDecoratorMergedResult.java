@@ -15,22 +15,19 @@
  * </p>
  */
 
-package io.shardingjdbc.core.merger;
+package io.shardingjdbc.core.merger.dql.common.fixture;
 
-import java.sql.SQLException;
+import io.shardingjdbc.core.merger.MergedResult;
+import io.shardingjdbc.core.merger.dql.common.DecoratorMergedResult;
 
-/**
- * Result set merge engine.
- *
- * @author zhangliang
- */
-public interface MergeEngine {
+public final class TestDecoratorMergedResult extends DecoratorMergedResult {
     
-    /**
-     * Merge result sets.
-     *
-     * @return merged result set.
-     * @throws SQLException SQL exception
-     */
-    MergedResult merge() throws SQLException;
+    public TestDecoratorMergedResult(final MergedResult mergedResult) {
+        super(mergedResult);
+    }
+    
+    @Override
+    public boolean next() {
+        return false;
+    }
 }

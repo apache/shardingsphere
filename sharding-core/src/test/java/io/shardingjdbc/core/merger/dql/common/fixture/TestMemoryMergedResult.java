@@ -15,22 +15,20 @@
  * </p>
  */
 
-package io.shardingjdbc.core.merger;
+package io.shardingjdbc.core.merger.dql.common.fixture;
 
-import java.sql.SQLException;
+import io.shardingjdbc.core.merger.dql.common.MemoryMergedResult;
 
-/**
- * Result set merge engine.
- *
- * @author zhangliang
- */
-public interface MergeEngine {
+import java.util.Map;
+
+public final class TestMemoryMergedResult extends MemoryMergedResult {
     
-    /**
-     * Merge result sets.
-     *
-     * @return merged result set.
-     * @throws SQLException SQL exception
-     */
-    MergedResult merge() throws SQLException;
+    public TestMemoryMergedResult(final Map<String, Integer> labelAndIndexMap) {
+        super(labelAndIndexMap);
+    }
+    
+    @Override
+    public boolean next() {
+        return false;
+    }
 }

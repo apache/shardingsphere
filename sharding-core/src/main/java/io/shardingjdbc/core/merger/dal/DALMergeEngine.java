@@ -19,11 +19,11 @@ package io.shardingjdbc.core.merger.dal;
 
 import io.shardingjdbc.core.merger.MergeEngine;
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.merger.ResultSetMerger;
-import io.shardingjdbc.core.merger.dal.show.ShowCreateTableResultSetMerger;
-import io.shardingjdbc.core.merger.dal.show.ShowDatabasesResultSetMerger;
-import io.shardingjdbc.core.merger.dal.show.ShowOtherResultSetMerger;
-import io.shardingjdbc.core.merger.dal.show.ShowTablesResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
+import io.shardingjdbc.core.merger.dal.show.ShowCreateTableMergedResult;
+import io.shardingjdbc.core.merger.dal.show.ShowDatabasesMergedResult;
+import io.shardingjdbc.core.merger.dal.show.ShowOtherMergedResult;
+import io.shardingjdbc.core.merger.dal.show.ShowTablesMergedResult;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
@@ -49,16 +49,16 @@ public final class DALMergeEngine implements MergeEngine {
     private final DALStatement dalStatement;
     
     @Override
-    public ResultSetMerger merge() throws SQLException {
+    public MergedResult merge() throws SQLException {
         if (dalStatement instanceof ShowDatabasesStatement) {
-            return new ShowDatabasesResultSetMerger();
+            return new ShowDatabasesMergedResult();
         }
         if (dalStatement instanceof ShowTablesStatement) {
-            return new ShowTablesResultSetMerger(shardingRule, queryResults);
+            return new ShowTablesMergedResult(shardingRule, queryResults);
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableResultSetMerger(shardingRule, queryResults);
+            return new ShowCreateTableMergedResult(shardingRule, queryResults);
         }
-        return new ShowOtherResultSetMerger(queryResults.get(0));
+        return new ShowOtherMergedResult(queryResults.get(0));
     }
 }

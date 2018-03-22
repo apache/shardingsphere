@@ -19,7 +19,7 @@ package io.shardingjdbc.core.merger.dql.groupby;
 
 import io.shardingjdbc.core.constant.OrderType;
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.merger.dql.common.MemoryResultSetRow;
+import io.shardingjdbc.core.merger.dql.common.MemoryQueryResultRow;
 import io.shardingjdbc.core.merger.fixture.TestQueryResult;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -40,8 +40,8 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForAscWithOrderByItems() throws SQLException {
-        MemoryResultSetRow o1 = new MemoryResultSetRow(mockQueryResult("1", "2"));
-        MemoryResultSetRow o2 = new MemoryResultSetRow(mockQueryResult("3", "4"));
+        MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getOrderByItems().addAll(Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(2, OrderType.ASC, OrderType.ASC)));
         selectStatement.getGroupByItems().addAll(Arrays.asList(new OrderItem(1, OrderType.DESC, OrderType.ASC), new OrderItem(2, OrderType.DESC, OrderType.ASC)));
@@ -51,8 +51,8 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForDecsWithOrderByItems() throws SQLException {
-        MemoryResultSetRow o1 = new MemoryResultSetRow(mockQueryResult("1", "2"));
-        MemoryResultSetRow o2 = new MemoryResultSetRow(mockQueryResult("3", "4"));
+        MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getOrderByItems().addAll(Arrays.asList(new OrderItem(1, OrderType.DESC, OrderType.ASC), new OrderItem(2, OrderType.DESC, OrderType.ASC)));
         selectStatement.getGroupByItems().addAll(Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(2, OrderType.ASC, OrderType.ASC)));
@@ -62,8 +62,8 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForEqualWithOrderByItems() throws SQLException {
-        MemoryResultSetRow o1 = new MemoryResultSetRow(mockQueryResult("1", "2"));
-        MemoryResultSetRow o2 = new MemoryResultSetRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getOrderByItems().addAll(Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(2, OrderType.DESC, OrderType.ASC)));
         selectStatement.getGroupByItems().addAll(Arrays.asList(new OrderItem(1, OrderType.DESC, OrderType.ASC), new OrderItem(2, OrderType.ASC, OrderType.ASC)));
@@ -73,8 +73,8 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForAscWithGroupByItems() throws SQLException {
-        MemoryResultSetRow o1 = new MemoryResultSetRow(mockQueryResult("1", "2"));
-        MemoryResultSetRow o2 = new MemoryResultSetRow(mockQueryResult("3", "4"));
+        MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getGroupByItems().addAll(Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(2, OrderType.ASC, OrderType.ASC)));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatement);
@@ -83,8 +83,8 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForDecsWithGroupByItems() throws SQLException {
-        MemoryResultSetRow o1 = new MemoryResultSetRow(mockQueryResult("1", "2"));
-        MemoryResultSetRow o2 = new MemoryResultSetRow(mockQueryResult("3", "4"));
+        MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getGroupByItems().addAll(Arrays.asList(new OrderItem(1, OrderType.DESC, OrderType.ASC), new OrderItem(2, OrderType.DESC, OrderType.ASC)));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatement);
@@ -93,8 +93,8 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForEqualWithGroupByItems() throws SQLException {
-        MemoryResultSetRow o1 = new MemoryResultSetRow(mockQueryResult("1", "2"));
-        MemoryResultSetRow o2 = new MemoryResultSetRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getGroupByItems().addAll(Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(2, OrderType.DESC, OrderType.ASC)));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatement);
