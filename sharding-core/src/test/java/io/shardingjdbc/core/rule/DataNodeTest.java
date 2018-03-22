@@ -23,7 +23,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class DataNodeTest {
+public final class DataNodeTest {
     
     @Test
     public void assertNewValidDataNode() {
@@ -59,6 +59,6 @@ public class DataNodeTest {
     
     @Test
     public void assertToString() {
-        assertThat(new DataNode("ds_0.tbl_0").toString(),is(new DataNode("ds_0.tbl_0").toString()));
+        assertThat(new DataNode("ds_0.tbl_0").toString(), is(new DataNode("ds_0.tbl_0").toString()));
     }
 }
