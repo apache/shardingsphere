@@ -53,6 +53,5 @@ public final class BASETransactionJob implements Job {
                         baseTransactionJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), ex.getMessage()));
             }
         }
-        
     }
 }
