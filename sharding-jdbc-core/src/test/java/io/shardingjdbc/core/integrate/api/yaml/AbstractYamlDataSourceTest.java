@@ -55,9 +55,8 @@ public abstract class AbstractYamlDataSourceTest {
     }
     
     private static List<String> getSchemaFiles() {
-        return Arrays.asList("integrate/api/yaml/schema/sharding/db0.sql", "integrate/api/yaml/schema/sharding/db1.sql",
-                "integrate/api/yaml/schema/ms/db_master.sql", "integrate/api/yaml/schema/ms/db_slave_0.sql", "integrate/api/yaml/schema/ms/db_slave_1.sql",
-                "integrate/api/yaml/schema/sharding_ms/db0_master.sql", "integrate/api/yaml/schema/sharding_ms/db1_master.sql",
-                "integrate/api/yaml/schema/sharding_ms/db0_slave.sql", "integrate/api/yaml/schema/sharding_ms/db1_slave.sql");
+        return Arrays.asList("integrate/api/schema/sharding/db0.sql", "integrate/api/schema/sharding/db1.sql", "integrate/api/schema/ms/db_master.sql", 
+                "integrate/api/schema/ms/db_slave_0.sql", "integrate/api/schema/ms/db_slave_1.sql", "integrate/api/schema/sharding_ms/db0_master.sql", 
+                "integrate/api/schema/sharding_ms/db1_master.sql", "integrate/api/schema/sharding_ms/db0_slave.sql", "integrate/api/schema/sharding_ms/db1_slave.sql");
     }
 }

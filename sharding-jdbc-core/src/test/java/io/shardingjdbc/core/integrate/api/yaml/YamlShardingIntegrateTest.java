@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.integrate.api.yaml.sharding;
+package io.shardingjdbc.core.integrate.api.yaml;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -24,7 +24,6 @@ import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.ShardingProperties;
 import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
-import io.shardingjdbc.core.integrate.api.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;

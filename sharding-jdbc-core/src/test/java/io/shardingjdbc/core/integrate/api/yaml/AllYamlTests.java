@@ -17,9 +17,6 @@
 
 package io.shardingjdbc.core.integrate.api.yaml;
 
-import io.shardingjdbc.core.integrate.api.yaml.masterslave.YamlMasterSlaveIntegrateTest;
-import io.shardingjdbc.core.integrate.api.yaml.sharding.YamlShardingIntegrateTest;
-import io.shardingjdbc.core.integrate.api.yaml.sharding.YamlShardingWithMasterSlaveIntegrateTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
