@@ -19,8 +19,8 @@ package io.shardingjdbc.test.sql.jaxb.helper;
 
 import com.google.common.collect.Sets;
 import io.shardingjdbc.test.sql.jaxb.DatabaseType;
-import io.shardingjdbc.test.sql.jaxb.SQLStatement;
-import io.shardingjdbc.test.sql.jaxb.SQLStatements;
+import io.shardingjdbc.test.sql.jaxb.SQLCase;
+import io.shardingjdbc.test.sql.jaxb.SQLCases;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -42,19 +42,19 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLStatementHelper {
+public final class SQLCaseHelper {
     
-    private static final Map<String, SQLStatement> STATEMENT_MAP;
+    private static final Map<String, SQLCase> STATEMENT_MAP;
     
-    private static final Map<String, SQLStatement> UNSUPPORTED_STATEMENT_MAP;
+    private static final Map<String, SQLCase> UNSUPPORTED_STATEMENT_MAP;
     
     static {
         STATEMENT_MAP = loadSQLCases("sql");
         UNSUPPORTED_STATEMENT_MAP = loadSQLCases("sql/unsupported");
     }
     
-    private static Map<String, SQLStatement> loadSQLCases(final String path) {
-        File file = new File(SQLStatementHelper.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+    private static Map<String, SQLCase> loadSQLCases(final String path) {
+        File file = new File(SQLCaseHelper.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         try {
             return file.isFile() ? loadSQLCasesFromJar(path, file) : loadSQLCasesFromTargetFolder(path);
         } catch (final IOException | JAXBException ex) {
@@ -62,23 +62,23 @@ public final class SQLStatementHelper {
         }
     }
     
-    private static Map<String, SQLStatement> loadSQLCasesFromJar(final String path, final File file) throws IOException, JAXBException {
-        Map<String, SQLStatement> result = new HashMap<>(65536, 1);
+    private static Map<String, SQLCase> loadSQLCasesFromJar(final String path, final File file) throws IOException, JAXBException {
+        Map<String, SQLCase> result = new HashMap<>(65536, 1);
         try (JarFile jar = new JarFile(file)) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
                 if (name.startsWith(path + "/") && name.endsWith(".xml")) {
-                    fillStatementMap(result, SQLStatementHelper.class.getClassLoader().getResourceAsStream(name));
+                    fillStatementMap(result, SQLCaseHelper.class.getClassLoader().getResourceAsStream(name));
                 }
             }
         }
         return result;
     }
     
-    private static Map<String, SQLStatement> loadSQLCasesFromTargetFolder(final String path) throws FileNotFoundException, JAXBException {
-        Map<String, SQLStatement> result = new HashMap<>(65536, 1);
-        URL url = SQLStatementHelper.class.getClassLoader().getResource(path);
+    private static Map<String, SQLCase> loadSQLCasesFromTargetFolder(final String path) throws FileNotFoundException, JAXBException {
+        Map<String, SQLCase> result = new HashMap<>(65536, 1);
+        URL url = SQLCaseHelper.class.getClassLoader().getResource(path);
         if (null == url) {
             return result;
         }
@@ -96,7 +96,7 @@ public final class SQLStatementHelper {
         return result;
     }
     
-    private static void loadSQLCasesFromFolder(final Map<String, SQLStatement> sqlStatementMap, final File file) throws FileNotFoundException, JAXBException {
+    private static void loadSQLCasesFromFolder(final Map<String, SQLCase> sqlStatementMap, final File file) throws FileNotFoundException, JAXBException {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (null == files) {
@@ -110,9 +110,9 @@ public final class SQLStatementHelper {
         }
     }
     
-    private static void fillStatementMap(final Map<String, SQLStatement> result, final InputStream inputStream) throws JAXBException {
-        SQLStatements statements = (SQLStatements) JAXBContext.newInstance(SQLStatements.class).createUnmarshaller().unmarshal(inputStream);
-        for (SQLStatement statement : statements.getSqls()) {
+    private static void fillStatementMap(final Map<String, SQLCase> result, final InputStream inputStream) throws JAXBException {
+        SQLCases statements = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
+        for (SQLCase statement : statements.getSqls()) {
             result.put(statement.getId(), statement);
         }
     }
@@ -122,7 +122,7 @@ public final class SQLStatementHelper {
      * 
      * @return unsupported SQL statements
      */
-    public static Collection<SQLStatement> getUnsupportedSqlStatements() {
+    public static Collection<SQLCase> getUnsupportedSqlStatements() {
         return UNSUPPORTED_STATEMENT_MAP.values();
     }
     
@@ -133,7 +133,7 @@ public final class SQLStatementHelper {
      */
     public static String getSql(final String sqlId) {
         checkSqlId(sqlId);
-        SQLStatement statement = STATEMENT_MAP.get(sqlId);
+        SQLCase statement = STATEMENT_MAP.get(sqlId);
         return statement.getSql();
     }
     
@@ -145,7 +145,7 @@ public final class SQLStatementHelper {
      */
     public static Set<DatabaseType> getTypes(final String sqlId) {
         checkSqlId(sqlId);
-        SQLStatement statement = STATEMENT_MAP.get(sqlId);
+        SQLCase statement = STATEMENT_MAP.get(sqlId);
         if (null == statement.getTypes()) {
             return Sets.newHashSet(DatabaseType.values());
         }

@@ -18,23 +18,21 @@
 package io.shardingjdbc.test.sql.jaxb;
 
 import lombok.Getter;
-import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
-@XmlAccessorType(XmlAccessType.FIELD)
+/**
+ * SQL test cases for xml root tag.
+ * 
+ * @author zhangliang 
+ */
+@XmlRootElement(name = "sqls")
 @Getter
-@Setter
-public final class SQLStatement {
+public final class SQLCases {
     
-    @XmlAttribute
-    private String id;
-    
-    @XmlAttribute(name = "value")
-    private String sql;
-    
-    @XmlAttribute(name = "type")
-    private String types;
+    @XmlElement(name = "sql")
+    private List<SQLCase> sqls = new ArrayList<>();
 }

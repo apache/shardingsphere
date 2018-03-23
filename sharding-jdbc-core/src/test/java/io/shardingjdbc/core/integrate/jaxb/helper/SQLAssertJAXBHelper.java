@@ -21,7 +21,7 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.jaxb.SQLAssert;
 import io.shardingjdbc.core.integrate.jaxb.SQLAsserts;
-import io.shardingjdbc.test.sql.jaxb.helper.SQLStatementHelper;
+import io.shardingjdbc.test.sql.jaxb.helper.SQLCaseHelper;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -78,7 +78,7 @@ public final class SQLAssertJAXBHelper {
         List<Object[]> result = new ArrayList<>();
         for (int i = 0; i < asserts.getSqlAsserts().size(); i++) {
             SQLAssert assertObj = asserts.getSqlAsserts().get(i);
-            for (io.shardingjdbc.test.sql.jaxb.DatabaseType each : SQLStatementHelper.getTypes(assertObj.getId())) {
+            for (io.shardingjdbc.test.sql.jaxb.DatabaseType each : SQLCaseHelper.getTypes(assertObj.getId())) {
                 result.add(getDataParameter(assertObj, DatabaseType.valueOf(each.name())));
             }
         }
@@ -96,7 +96,7 @@ public final class SQLAssertJAXBHelper {
     private static Object[] getDataParameter(final SQLAssert sqlAssert, final DatabaseType dbType) {
         final Object[] result = new Object[4];
         result[0] = sqlAssert.getId();
-        result[1] = SQLStatementHelper.getSql(sqlAssert.getId());
+        result[1] = SQLCaseHelper.getSql(sqlAssert.getId());
         result[2] = dbType;
         result[3] = sqlAssert.getSqlShardingRules();
         return result;

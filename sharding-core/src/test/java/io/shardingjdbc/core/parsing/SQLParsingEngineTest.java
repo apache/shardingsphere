@@ -28,7 +28,7 @@ import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
 import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserJAXBHelper;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLPlaceholderUtil;
-import io.shardingjdbc.test.sql.jaxb.helper.SQLStatementHelper;
+import io.shardingjdbc.test.sql.jaxb.helper.SQLCaseHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -54,14 +54,14 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     
     @Test
     public void assertStatement() {
-        assertStatement(new SQLParsingEngine(getDatabaseType(), SQLPlaceholderUtil.replaceStatement(SQLStatementHelper.getSql(getTestCaseName()), parameters), buildShardingRule()).parse());
+        assertStatement(new SQLParsingEngine(getDatabaseType(), SQLPlaceholderUtil.replaceStatement(SQLCaseHelper.getSql(getTestCaseName()), parameters), buildShardingRule()).parse());
     }
     
     @Test
     public void assertPreparedStatement() {
-        for (io.shardingjdbc.test.sql.jaxb.DatabaseType each : SQLStatementHelper.getTypes(getTestCaseName())) {
+        for (io.shardingjdbc.test.sql.jaxb.DatabaseType each : SQLCaseHelper.getTypes(getTestCaseName())) {
             assertPreparedStatement(
-                    new SQLParsingEngine(DatabaseType.valueOf(each.name()), SQLPlaceholderUtil.replacePreparedStatement(SQLStatementHelper.getSql(getTestCaseName())), buildShardingRule()).parse());
+                    new SQLParsingEngine(DatabaseType.valueOf(each.name()), SQLPlaceholderUtil.replacePreparedStatement(SQLCaseHelper.getSql(getTestCaseName())), buildShardingRule()).parse());
         }
     }
     

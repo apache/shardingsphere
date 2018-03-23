@@ -22,8 +22,8 @@ import com.google.common.collect.Sets;
 import io.shardingjdbc.core.api.fixture.ShardingRuleMockBuilder;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
-import io.shardingjdbc.test.sql.jaxb.SQLStatement;
-import io.shardingjdbc.test.sql.jaxb.helper.SQLStatementHelper;
+import io.shardingjdbc.test.sql.jaxb.SQLCase;
+import io.shardingjdbc.test.sql.jaxb.helper.SQLCaseHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -54,7 +54,7 @@ public final class UnsupportedSQLParsingEngineTest {
     @Parameterized.Parameters(name = "{0}In{2}")
     public static Collection<Object[]> dataParameters() {
         Collection<Object[]> result = new ArrayList<>();
-        for (SQLStatement each : SQLStatementHelper.getUnsupportedSqlStatements()) {
+        for (SQLCase each : SQLCaseHelper.getUnsupportedSqlStatements()) {
             for (DatabaseType dbType : getTypes(each.getTypes())) {
                 Object[] object = new Object[3];
                 object[0] = each.getId();
