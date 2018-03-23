@@ -98,7 +98,7 @@ public class IPKeyGeneratorTest {
             hashSet.add(executor.submit(new Callable<Long>() {
                 
                 @Override
-                public Long call() throws Exception {
+                public Long call() {
                     return (Long) keyGenerator.generateKey();
                 }
             }).get());

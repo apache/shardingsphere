@@ -20,9 +20,6 @@ package io.shardingjdbc.orchestration.internal.jdbc.datasource;
 import io.shardingjdbc.orchestration.internal.jdbc.connection.CircuitBreakerConnection;
 import org.junit.Test;
 
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -31,29 +28,29 @@ public final class CircuitBreakerDataSourceTest {
     private CircuitBreakerDataSource dataSource = new CircuitBreakerDataSource();
     
     @Test
-    public void assertClose() throws Exception {
+    public void assertClose() {
         dataSource.close();
     }
     
     @Test
-    public void assertGetConnection() throws SQLException {
+    public void assertGetConnection() {
         assertTrue(dataSource.getConnection() instanceof CircuitBreakerConnection);
         assertTrue(dataSource.getConnection("", "") instanceof CircuitBreakerConnection);
     }
     
     @Test
-    public void assertGetLogWriter() throws SQLException {
+    public void assertGetLogWriter() {
         assertNull(dataSource.getLogWriter());
     }
     
     @Test
-    public void assertSetLogWriter() throws Exception {
+    public void assertSetLogWriter() {
         dataSource.setLogWriter(null);
         assertNull(dataSource.getLogWriter());
     }
     
     @Test
-    public void assertGetParentLogger() throws SQLFeatureNotSupportedException {
+    public void assertGetParentLogger() {
         assertNull(dataSource.getParentLogger());
     }
 }

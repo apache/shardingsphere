@@ -44,7 +44,7 @@ public class OrchestrationMasterSlaveDataSource extends MasterSlaveDataSource im
     
     public OrchestrationMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                               final Map<String, Object> configMap, final OrchestrationConfiguration config) throws SQLException {
-        super(masterSlaveRuleConfig.build(dataSourceMap), configMap);
+        super(dataSourceMap, masterSlaveRuleConfig.build(), configMap);
         orchestrationFacade = new OrchestrationFacade(config);
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRuleConfig = masterSlaveRuleConfig;
@@ -53,10 +53,8 @@ public class OrchestrationMasterSlaveDataSource extends MasterSlaveDataSource im
     
     /**
      * Initialize for master-slave orchestration.
-     * 
-     * @throws SQLException SQL exception
      */
-    public void init() throws SQLException {
+    public void init() {
         orchestrationFacade.init(dataSourceMap, masterSlaveRuleConfig, configMap, this);
     }
     

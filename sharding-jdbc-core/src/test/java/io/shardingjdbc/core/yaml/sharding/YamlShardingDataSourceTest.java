@@ -23,7 +23,8 @@ import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.BindingTableRule;
 import io.shardingjdbc.core.rule.ShardingRule;
-import org.apache.commons.dbcp.BasicDataSource;
+import io.shardingjdbc.core.rule.ShardingRuleException;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.Driver;
 import org.junit.Test;
 
@@ -65,7 +66,7 @@ public class YamlShardingDataSourceTest {
         getShardingRule("/yaml/config/config-classNotFound.yaml");
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = ShardingRuleException.class)
     public void assertBindingError() throws SQLException, IOException, URISyntaxException, ReflectiveOperationException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", createDataSource());

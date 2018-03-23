@@ -17,19 +17,15 @@
 
 package io.shardingjdbc.core.api.fixture;
 
-import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
-import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import org.mockito.Mockito;
+import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
+import io.shardingjdbc.core.api.config.TableRuleConfiguration;
+import io.shardingjdbc.core.fixture.IncrementKeyGenerator;
+import io.shardingjdbc.core.rule.ShardingRule;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -70,7 +66,7 @@ public class ShardingRuleMockBuilder {
         return this;
     }
     
-    public ShardingRule build() throws SQLException {
+    public ShardingRule build() {
         Collection<TableRuleConfiguration> tableRuleConfigs = Lists.newArrayList(Iterators.transform(generateKeyColumnsMap.keySet().iterator(), new Function<String, TableRuleConfiguration>() {
             
             @Override
@@ -104,7 +100,7 @@ public class ShardingRuleMockBuilder {
         }
         shardingRuleConfig.getBindingTableGroups().add(Joiner.on(",").join(bindTables));
         shardingRuleConfig.setDefaultKeyGeneratorClass(IncrementKeyGenerator.class.getName());
-        return shardingRuleConfig.build(ImmutableMap.of("db0", Mockito.mock(DataSource.class), "db1", Mockito.mock(DataSource.class)));
+        return shardingRuleConfig.build(Lists.newArrayList("db0", "db1"));
     }
     
     private boolean existInTableRuleConfig(final String logicTableName) {

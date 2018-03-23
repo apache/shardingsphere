@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.orchestration.internal.state.instance;
 
-import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
@@ -30,7 +29,6 @@ import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.listener.EventListener;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -65,11 +63,7 @@ public final class InstanceListenerManager implements ListenerManager {
                             dataSourceMap.put(each, new CircuitBreakerDataSource());
                         }
                     }
-                    try {
-                        shardingDataSource.renew(configService.loadShardingRuleConfiguration().build(dataSourceMap), configService.loadShardingProperties());
-                    } catch (final SQLException ex) {
-                        throw new ShardingJdbcException(ex);
-                    }
+                    shardingDataSource.renew(dataSourceMap, configService.loadShardingRuleConfiguration().build(dataSourceMap.keySet()), configService.loadShardingProperties());
                 }
             }
         });
@@ -88,7 +82,7 @@ public final class InstanceListenerManager implements ListenerManager {
                             dataSourceMap.put(each, new CircuitBreakerDataSource());
                         }
                     }
-                    masterSlaveDataSource.renew(configService.loadMasterSlaveRuleConfiguration().build(dataSourceMap));
+                    masterSlaveDataSource.renew(dataSourceMap, configService.loadMasterSlaveRuleConfiguration().build());
                 }
             }
         });

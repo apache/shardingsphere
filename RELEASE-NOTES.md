@@ -1,13 +1,16 @@
 ## 2.1.0
 
 ### 里程碑
-1. Sharding-JDBC-Server发布. 支持以数据库的形式使用Sharding-JDBC, 全面提供对MySQL命令行以及图形化客户端的支持
+1. Sharding-Proxy发布. 支持以数据库的形式使用Sharding-JDBC, 全面提供对MySQL命令行以及图形化客户端的支持
 
 ### 功能提升
 1. [ISSUE #608](https://github.com/shardingjdbc/sharding-jdbc/issues/608) 支持MySQL的USE语句
 1. [ISSUE #609](https://github.com/shardingjdbc/sharding-jdbc/issues/609) 支持MySQL的SHOW语句
 1. [ISSUE #610](https://github.com/shardingjdbc/sharding-jdbc/issues/610) 优化不包含表的DQL
 1. [ISSUE #611](https://github.com/shardingjdbc/sharding-jdbc/issues/611) 支持MySQL的DESC语句
+
+### 缺陷修正
+1. [ISSUE #646](https://github.com/shardingjdbc/sharding-jdbc/issues/646) 当SELECT ITEMS中的别名与GROUP BY或ORDER BY的真实列名对应时，无需补列
 
 ## 2.0.3
 

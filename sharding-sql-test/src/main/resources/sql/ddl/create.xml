@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases>
+    <sql-case id="assertCreateTable" value="CREATE TABLE t_log(id int, status varchar(10))" />
+    <sql-case id="assertCreateTableIfNotExist" value="CREATE TABLE IF NOT EXISTS t_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL" />
+    <sql-case id="assertCreateTemporaryTable" value="CREATE TEMPORARY TABLE IF NOT EXISTS t_temp_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL" />
+    <sql-case id="assertCreateGlobalTemporaryTable" value="CREATE GLOBAL TEMPORARY TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle,PostgreSQL" />
+    <sql-case id="assertCreateLocalTempTable" value="CREATE LOCAL TEMP TABLE t_temp_log(id int, status varchar(10))" db-types="PostgreSQL" />
+    <sql-case id="assertCreateUnloggedTable" value="CREATE UNLOGGED TABLE t_log(id int, status varchar(10))" db-types="PostgreSQL" />
+    <sql-case id="assertCreateIndex" value="CREATE INDEX t_log_index ON t_log (id)" />
+    <sql-case id="assertCreateUniqueIndex" value="CREATE UNIQUE INDEX t_log_index ON t_log (id)" />
+</sql-cases>

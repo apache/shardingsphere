@@ -17,22 +17,21 @@
 
 package io.shardingjdbc.core.integrate.type.sharding.hint.base;
 
-import io.shardingjdbc.core.integrate.fixture.ComplexKeysModuloDatabaseShardingAlgorithm;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.integrate.fixture.ComplexKeysModuloDatabaseShardingAlgorithm;
+import io.shardingjdbc.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Map;
 
 public abstract class AbstractShardingDatabaseOnlyWithHintTest extends AbstractHintTest {
     
     @Override
-    protected ShardingRule getShardingRule(final Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) throws SQLException {
+    protected ShardingRule getShardingRule(final Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
@@ -43,6 +42,6 @@ public abstract class AbstractShardingDatabaseOnlyWithHintTest extends AbstractH
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", ComplexKeysModuloDatabaseShardingAlgorithm.class.getName()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-        return shardingRuleConfig.build(dataSourceEntry.getValue());
+        return shardingRuleConfig.build(dataSourceEntry.getValue().keySet());
     }
 }

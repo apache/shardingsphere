@@ -175,7 +175,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
         etcdRetryEngine.execute(new Callable<Void>() {
             
             @Override
-            public Void call() throws Exception {
+            public Void call() {
                 watchStub.watch(new EtcdWatchStreamObserver(eventListener)).onNext(request);
                 return null;
             }

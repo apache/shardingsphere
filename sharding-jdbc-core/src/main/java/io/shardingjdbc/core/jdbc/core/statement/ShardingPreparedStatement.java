@@ -26,12 +26,14 @@ import io.shardingjdbc.core.executor.type.batch.BatchPreparedStatementUnit;
 import io.shardingjdbc.core.executor.type.prepared.PreparedStatementExecutor;
 import io.shardingjdbc.core.executor.type.prepared.PreparedStatementUnit;
 import io.shardingjdbc.core.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
+import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.connection.ShardingConnection;
 import io.shardingjdbc.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingjdbc.core.jdbc.core.resultset.ShardingResultSet;
-import io.shardingjdbc.core.merger.DALMergeEngine;
+import io.shardingjdbc.core.merger.JDBCQueryResult;
 import io.shardingjdbc.core.merger.MergeEngine;
-import io.shardingjdbc.core.merger.SelectMergeEngine;
+import io.shardingjdbc.core.merger.MergeEngineFactory;
+import io.shardingjdbc.core.merger.QueryResult;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -109,7 +111,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
-        routingEngine = new PreparedStatementRoutingEngine(sql, connection.getShardingContext());
+        ShardingContext shardingContext = connection.getShardingContext();
+        routingEngine = new PreparedStatementRoutingEngine(sql, shardingContext.getShardingRule(), shardingContext.getDatabaseType(), shardingContext.isShowSQL());
     }
     
     @Override
@@ -119,14 +122,11 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
             List<ResultSet> resultSets = new PreparedStatementExecutor(
                     getConnection().getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeQuery();
-            MergeEngine mergeEngine;
-            if (routeResult.getSqlStatement() instanceof SelectStatement) {
-                mergeEngine = new SelectMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
-            } else if (routeResult.getSqlStatement() instanceof DALStatement) {
-                mergeEngine = new DALMergeEngine(connection.getShardingContext().getShardingRule(), resultSets, (DALStatement) routeResult.getSqlStatement());
-            } else {
-                throw new UnsupportedOperationException(String.format("Cannot support type '%s'", routeResult.getSqlStatement().getType()));
+            List<QueryResult> queryResults = new ArrayList<>(resultSets.size());
+            for (ResultSet each : resultSets) {
+                queryResults.add(new JDBCQueryResult(each));
             }
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement());
             result = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
         } finally {
             clearBatch();
@@ -193,7 +193,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     @Override
-    public void clearBatch() throws SQLException {
+    public void clearBatch() {
         currentResultSet = null;
         clearParameters();
         batchStatementUnits.clear();
@@ -280,16 +280,14 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             return currentResultSet;
         }
         List<ResultSet> resultSets = new ArrayList<>(routedStatements.size());
+        List<QueryResult> queryResults = new ArrayList<>(routedStatements.size());
         for (PreparedStatement each : routedStatements) {
-            resultSets.add(each.getResultSet());
+            ResultSet resultSet = each.getResultSet();
+            resultSets.add(resultSet);
+            queryResults.add(new JDBCQueryResult(resultSet));
         }
-        MergeEngine mergeEngine = null;
-        if (routeResult.getSqlStatement() instanceof SelectStatement) {
-            mergeEngine = new SelectMergeEngine(resultSets, (SelectStatement) routeResult.getSqlStatement());
-        } else if (routeResult.getSqlStatement() instanceof DALStatement) {
-            mergeEngine = new DALMergeEngine(connection.getShardingContext().getShardingRule(), resultSets, (DALStatement) routeResult.getSqlStatement());
-        }
-        if (null != mergeEngine) {
+        if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement());
             currentResultSet = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
         }
         return currentResultSet;

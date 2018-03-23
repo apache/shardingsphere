@@ -109,7 +109,7 @@ public abstract class AbstractShardingDatabaseAndTableTest extends AbstractSQLAs
                     new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("order_id", PreciseModuloTableShardingAlgorithm.class.getName(), RangeModuloTableShardingAlgorithm.class.getName()));
-            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(shardingRuleConfig.build(entry.getValue())));
+            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(entry.getValue(), shardingRuleConfig.build(entry.getValue().keySet())));
         }
         return getShardingDataSources();
     }

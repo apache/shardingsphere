@@ -25,7 +25,6 @@ import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.NClob;
-import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
@@ -173,12 +172,12 @@ public abstract class AbstractUnsupportedOperationConnection extends WrapperAdap
     }
     
     @Override
-    public final void setClientInfo(final String name, final String value) throws SQLClientInfoException {
+    public final void setClientInfo(final String name, final String value) {
         throw new UnsupportedOperationException("setClientInfo name value");
     }
     
     @Override
-    public final void setClientInfo(final Properties properties) throws SQLClientInfoException {
+    public final void setClientInfo(final Properties properties) {
         throw new UnsupportedOperationException("setClientInfo properties");
     }
 }

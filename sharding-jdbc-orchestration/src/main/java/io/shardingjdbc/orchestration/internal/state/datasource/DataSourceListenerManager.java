@@ -28,7 +28,8 @@ import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingjdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingjdbc.orchestration.reg.listener.EventListener;
 
-import java.sql.SQLException;
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Data source listener manager.
@@ -59,11 +60,8 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    try {
-                        shardingDataSource.renew(dataSourceService.getAvailableShardingRuleConfiguration().build(dataSourceService.getAvailableDataSources()), configService.loadShardingProperties());
-                    } catch (final SQLException ex) {
-                        throw new ShardingJdbcException(ex);
-                    }
+                    Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources();
+                    shardingDataSource.renew(dataSourceMap, dataSourceService.getAvailableShardingRuleConfiguration().build(dataSourceMap.keySet()), configService.loadShardingProperties());
                 }
             }
         });
@@ -80,7 +78,7 @@ public final class DataSourceListenerManager implements ListenerManager {
                     if (masterSlaveRuleConfiguration.getSlaveDataSourceNames().isEmpty()) {
                         throw new ShardingJdbcException("No available slave datasource, can't apply the configuration!");
                     } 
-                    masterSlaveDataSource.renew(masterSlaveRuleConfiguration.build(dataSourceService.getAvailableDataSources()));
+                    masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), masterSlaveRuleConfiguration.build());
                 }
             }
         });

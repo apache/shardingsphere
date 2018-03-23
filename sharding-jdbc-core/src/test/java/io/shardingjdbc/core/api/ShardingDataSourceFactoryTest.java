@@ -65,7 +65,7 @@ public final class ShardingDataSourceFactoryTest {
         return result;
     }
     
-    private ShardingRuleConfiguration createShardingRuleConfig() throws SQLException {
+    private ShardingRuleConfiguration createShardingRuleConfig() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("logicTable");

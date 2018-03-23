@@ -23,7 +23,6 @@ import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,9 +63,8 @@ public class YamlShardingRuleConfiguration {
      * Get sharding rule configuration from yaml.
      *
      * @return sharding rule configuration from yaml
-     * @throws SQLException SQL exception
      */
-    public ShardingRuleConfiguration getShardingRuleConfiguration() throws SQLException {
+    public ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setDefaultDataSourceName(defaultDataSourceName);
         for (Map.Entry<String, YamlTableRuleConfiguration> entry : tables.entrySet()) {

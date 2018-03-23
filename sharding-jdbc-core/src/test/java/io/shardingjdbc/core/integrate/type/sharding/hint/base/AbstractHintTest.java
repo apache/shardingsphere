@@ -19,7 +19,7 @@ package io.shardingjdbc.core.integrate.type.sharding.hint.base;
 
 import io.shardingjdbc.core.common.base.AbstractSQLTest;
 import io.shardingjdbc.core.common.env.DatabaseEnvironment;
-import io.shardingjdbc.core.common.util.DBUnitUtil;
+import io.shardingjdbc.core.util.DBUnitUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
@@ -71,12 +71,12 @@ public abstract class AbstractHintTest extends AbstractSQLTest {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             ShardingRule shardingRule = getShardingRule(each);
-            getShardingDataSources().put(each.getKey(), new ShardingDataSource(shardingRule));
+            getShardingDataSources().put(each.getKey(), new ShardingDataSource(each.getValue(), shardingRule));
         }
         return getShardingDataSources();
     }
     
-    protected abstract ShardingRule getShardingRule(Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry) throws SQLException;
+    protected abstract ShardingRule getShardingRule(Map.Entry<DatabaseType, Map<String, DataSource>> dataSourceEntry);
     
     protected void assertDataSet(final String expectedDataSetFile, final HintShardingValueHelper helper, 
                                  final Connection connection, final String sql, 

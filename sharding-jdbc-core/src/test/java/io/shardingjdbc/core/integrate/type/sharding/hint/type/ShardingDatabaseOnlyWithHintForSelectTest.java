@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.integrate.type.sharding.hint.type;
 
 import com.google.common.collect.Lists;
-import io.shardingjdbc.core.common.util.SQLPlaceholderUtil;
+import io.shardingjdbc.core.util.SQLPlaceholderUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.integrate.sql.DatabaseTestSQL;

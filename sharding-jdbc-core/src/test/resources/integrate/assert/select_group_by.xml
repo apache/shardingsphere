@@ -53,9 +53,9 @@
             <data parameter="0" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectItemWithAliasAndMismatchOrderByAndGroupByItems">
+    <sql id="assertSelectItemWithAliasAndMatchOrderByAndGroupByItems">
         <sharding-rule>
-            <data expected="select_group_by/SelectItemWithAliasAndMismatchOrderByAndGroupByItems.xml" />
+            <data expected="select_group_by/SelectItemWithAliasAndMatchOrderByAndGroupByItems.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertSelectGroupByWithAliasIsKeyword">

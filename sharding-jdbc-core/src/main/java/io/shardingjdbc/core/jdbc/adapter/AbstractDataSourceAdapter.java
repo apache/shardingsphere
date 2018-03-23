@@ -17,16 +17,15 @@
 
 package io.shardingjdbc.core.jdbc.adapter;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.logging.Logger;
 
@@ -66,17 +65,17 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final PrintWriter getLogWriter() throws SQLException {
+    public final PrintWriter getLogWriter() {
         return logWriter;
     }
     
     @Override
-    public final void setLogWriter(final PrintWriter out) throws SQLException {
+    public final void setLogWriter(final PrintWriter out) {
         this.logWriter = out;
     }
     
     @Override
-    public final Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    public final Logger getParentLogger() {
         return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     }
     

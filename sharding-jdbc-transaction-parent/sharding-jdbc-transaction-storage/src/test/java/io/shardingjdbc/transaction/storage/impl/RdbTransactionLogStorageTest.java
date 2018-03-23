@@ -17,11 +17,11 @@
 
 package io.shardingjdbc.transaction.storage.impl;
 
+import com.google.common.collect.Lists;
 import io.shardingjdbc.transaction.constants.SoftTransactionType;
 import io.shardingjdbc.transaction.storage.TransactionLog;
 import io.shardingjdbc.transaction.storage.TransactionLogStorage;
-import com.google.common.collect.Lists;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,7 +49,7 @@ public final class RdbTransactionLogStorageTest {
     }
     
     @Test
-    public void assertAddTransactionLogStorage() throws SQLException {
+    public void assertAddTransactionLogStorage() {
         String id = UUID.randomUUID().toString();
         String transactionId = UUID.randomUUID().toString();
         TransactionLog transactionLog = buildTransactionLog(id, transactionId);
@@ -59,7 +59,7 @@ public final class RdbTransactionLogStorageTest {
     }
     
     @Test
-    public void assertRemoveTransactionLogStorage() throws SQLException {
+    public void assertRemoveTransactionLogStorage() {
         String id = UUID.randomUUID().toString();
         String transactionId = UUID.randomUUID().toString();
         TransactionLog transactionLog = buildTransactionLog(id, transactionId);
@@ -69,7 +69,7 @@ public final class RdbTransactionLogStorageTest {
     }
     
     @Test
-    public void assertIncreaseAsyncDeliveryTryTimes() throws SQLException {
+    public void assertIncreaseAsyncDeliveryTryTimes() {
         String id = UUID.randomUUID().toString();
         String transactionId = UUID.randomUUID().toString();
         TransactionLog transactionLog = buildTransactionLog(id, transactionId);

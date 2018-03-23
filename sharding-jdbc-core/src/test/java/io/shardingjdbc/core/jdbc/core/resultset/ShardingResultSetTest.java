@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.jdbc.core.resultset;
 
-import io.shardingjdbc.core.merger.ResultSetMerger;
+import io.shardingjdbc.core.merger.MergedResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
 public final class ShardingResultSetTest {
     
     @Mock
-    private ResultSetMerger mergeResultSet;
+    private MergedResult mergeResultSet;
     
     @Mock
     private Statement statement;
@@ -396,13 +396,13 @@ public final class ShardingResultSetTest {
     }
     
     @Test
-    public void assertGetObjectWithColumnIndex() throws SQLException, MalformedURLException {
+    public void assertGetObjectWithColumnIndex() throws SQLException {
         when(mergeResultSet.getValue(1, Object.class)).thenReturn("object_value");
         assertThat(shardingResultSet.getObject(1), is((Object) "object_value"));
     }
     
     @Test
-    public void assertGetObjectWithColumnLabel() throws SQLException, MalformedURLException {
+    public void assertGetObjectWithColumnLabel() throws SQLException {
         when(mergeResultSet.getValue("label", Object.class)).thenReturn("object_value");
         assertThat(shardingResultSet.getObject("label"), is((Object) "object_value"));
     }
