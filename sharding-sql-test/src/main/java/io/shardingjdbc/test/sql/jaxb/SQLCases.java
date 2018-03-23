@@ -29,10 +29,10 @@ import java.util.List;
  * 
  * @author zhangliang 
  */
-@XmlRootElement(name = "sqls")
+@XmlRootElement(name = "sql-cases")
 @Getter
 public final class SQLCases {
     
-    @XmlElement(name = "sql")
-    private List<SQLCase> sqls = new ArrayList<>();
+    @XmlElement(name = "sql-case")
+    private List<SQLCase> sqlCases = new ArrayList<>();
 }

@@ -112,7 +112,7 @@ public final class SQLCaseHelper {
     
     private static void fillStatementMap(final Map<String, SQLCase> result, final InputStream inputStream) throws JAXBException {
         SQLCases statements = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
-        for (SQLCase statement : statements.getSqls()) {
+        for (SQLCase statement : statements.getSqlCases()) {
             result.put(statement.getId(), statement);
         }
     }
@@ -134,7 +134,7 @@ public final class SQLCaseHelper {
     public static String getSql(final String sqlId) {
         checkSqlId(sqlId);
         SQLCase statement = STATEMENT_MAP.get(sqlId);
-        return statement.getSql();
+        return statement.getValue();
     }
     
     /**
@@ -146,11 +146,11 @@ public final class SQLCaseHelper {
     public static Set<DatabaseType> getTypes(final String sqlId) {
         checkSqlId(sqlId);
         SQLCase statement = STATEMENT_MAP.get(sqlId);
-        if (null == statement.getTypes()) {
+        if (null == statement.getDatabaseTypes()) {
             return Sets.newHashSet(DatabaseType.values());
         }
         Set<DatabaseType> result = new HashSet<>();
-        for (String each : statement.getTypes().split(",")) {
+        for (String each : statement.getDatabaseTypes().split(",")) {
             result.add(DatabaseType.valueOf(each));
         }
         return result;

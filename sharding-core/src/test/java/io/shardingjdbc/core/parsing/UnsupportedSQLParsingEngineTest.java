@@ -55,10 +55,10 @@ public final class UnsupportedSQLParsingEngineTest {
     public static Collection<Object[]> dataParameters() {
         Collection<Object[]> result = new ArrayList<>();
         for (SQLCase each : SQLCaseHelper.getUnsupportedSqlStatements()) {
-            for (DatabaseType dbType : getTypes(each.getTypes())) {
+            for (DatabaseType dbType : getTypes(each.getDatabaseTypes())) {
                 Object[] object = new Object[3];
                 object[0] = each.getId();
-                object[1] = each.getSql();
+                object[1] = each.getValue();
                 object[2] = dbType;
                 result.add(object);
             }
