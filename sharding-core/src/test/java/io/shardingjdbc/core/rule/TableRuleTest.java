@@ -133,14 +133,14 @@ public final class TableRuleTest {
         assertThat(actual.toString(), is(actual.toString()));
     }
     
-    private Collection<String> createDataSourceNames() {
-        return Arrays.asList("ds0", "ds1");
-    }
-    
     private  TableRuleConfiguration getTableRuleConfiguration(){
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
         return tableRuleConfig;
+    }
+    
+    private Collection<String> createDataSourceNames() {
+        return Arrays.asList("ds0", "ds1");
     }
 }
