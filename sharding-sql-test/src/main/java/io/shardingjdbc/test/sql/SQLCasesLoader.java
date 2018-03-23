@@ -52,7 +52,7 @@ public final class SQLCasesLoader {
     
     static {
         STATEMENT_MAP = loadSQLCases("sql");
-        UNSUPPORTED_STATEMENT_MAP = loadSQLCases("sql/unsupported");
+        UNSUPPORTED_STATEMENT_MAP = loadSQLCases("unsupported_sql");
     }
     
     private static Map<String, SQLCase> loadSQLCases(final String path) {
@@ -71,7 +71,7 @@ public final class SQLCasesLoader {
             while (entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
                 if (name.startsWith(path + "/") && name.endsWith(".xml")) {
-                    fillStatementMap(result, SQLCasesLoader.class.getClassLoader().getResourceAsStream(name));
+                    fillSQLMap(result, SQLCasesLoader.class.getClassLoader().getResourceAsStream(name));
                 }
             }
         }
@@ -105,17 +105,17 @@ public final class SQLCasesLoader {
                 return;
             }
             for (File each : files) {
-                fillStatementMap(sqlStatementMap, new FileInputStream(each));
+                fillSQLMap(sqlStatementMap, new FileInputStream(each));
             }
         } else {
-            fillStatementMap(sqlStatementMap, new FileInputStream(file));
+            fillSQLMap(sqlStatementMap, new FileInputStream(file));
         }
     }
     
-    private static void fillStatementMap(final Map<String, SQLCase> result, final InputStream inputStream) throws JAXBException {
+    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase statement : sqlCases.getSqlCases()) {
-            result.put(statement.getId(), statement);
+            sqlCaseMap.put(statement.getId(), statement);
         }
     }
     
