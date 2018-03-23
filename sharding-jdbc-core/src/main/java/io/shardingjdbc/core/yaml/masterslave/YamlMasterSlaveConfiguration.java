@@ -19,8 +19,16 @@ package io.shardingjdbc.core.yaml.masterslave;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.sql.DataSource;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,4 +44,33 @@ public class YamlMasterSlaveConfiguration {
     private Map<String, DataSource> dataSources = new HashMap<>();
     
     private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+    
+    /**
+     * Unmarshal yaml master slave configuration from yaml file.
+     *
+     * @param yamlFile yaml file
+     * @return yaml sharding configuration
+     * @throws IOException IO Exception
+     */
+    public static YamlMasterSlaveConfiguration unmarshal(final File yamlFile) throws IOException {
+        try (
+                FileInputStream fileInputStream = new FileInputStream(yamlFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
+        ) {
+            return new Yaml(new Constructor(YamlMasterSlaveConfiguration.class)).loadAs(inputStreamReader, YamlMasterSlaveConfiguration.class);
+        }
+    }
+    
+    /**
+     * Unmarshal yaml sharding configuration from yaml bytes.
+     *
+     * @param yamlBytes yaml bytes
+     * @return yaml sharding configuration
+     * @throws IOException IO Exception
+     */
+    public static YamlMasterSlaveConfiguration unmarshal(final byte[] yamlBytes) throws IOException {
+        try (InputStream inputStream = new ByteArrayInputStream(yamlBytes)) {
+            return new Yaml(new Constructor(YamlMasterSlaveConfiguration.class)).loadAs(inputStream, YamlMasterSlaveConfiguration.class);
+        }
+    }
 }
