@@ -51,8 +51,8 @@ public final class ShardingDataSourceFactory {
      * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
-                                              final Map<String, Object> configMap, final Properties props) throws SQLException {
+    public static DataSource createDataSource(
+            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) throws SQLException {
         processDataSourceMapWithMasterSlave(dataSourceMap, shardingRuleConfig);
         return new ShardingDataSource(dataSourceMap, shardingRuleConfig.build(dataSourceMap.keySet()), configMap, props);
     }
@@ -90,13 +90,13 @@ public final class ShardingDataSourceFactory {
     /**
      * Create sharding data source.
      *
-     * @param yamlByteArray yaml byte array for rule configuration of databases and tables sharding with data sources
+     * @param yamlBytes yaml bytes for rule configuration of databases and tables sharding with data sources
      * @return sharding data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException, IOException {
-        YamlShardingConfiguration config = YamlShardingConfiguration.unmarshal(yamlByteArray);
+    public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
+        YamlShardingConfiguration config = YamlShardingConfiguration.unmarshal(yamlBytes);
         Map<String, DataSource> dataSourceMap = config.getDataSources();
         processDataSourceMapWithMasterSlave(dataSourceMap, config.getShardingRule().getShardingRuleConfiguration());
         return new ShardingDataSource(dataSourceMap, config.getShardingRule(dataSourceMap.keySet()), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
@@ -106,13 +106,13 @@ public final class ShardingDataSourceFactory {
      * Create sharding data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlByteArray yaml byte array for rule configuration of databases and tables sharding without data sources
+     * @param yamlBytes yaml bytes for rule configuration of databases and tables sharding without data sources
      * @return sharding data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException, IOException {
-        YamlShardingConfiguration config = YamlShardingConfiguration.unmarshal(yamlByteArray);
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlBytes) throws SQLException, IOException {
+        YamlShardingConfiguration config = YamlShardingConfiguration.unmarshal(yamlBytes);
         processDataSourceMapWithMasterSlave(dataSourceMap, config.getShardingRule().getShardingRuleConfiguration());
         return new ShardingDataSource(dataSourceMap, config.getShardingRule(dataSourceMap.keySet()), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
     }
