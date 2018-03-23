@@ -15,12 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.test.sql.jaxb.helper;
+package io.shardingjdbc.test.sql.jaxb;
 
 import com.google.common.collect.Sets;
-import io.shardingjdbc.test.sql.jaxb.DatabaseType;
-import io.shardingjdbc.test.sql.jaxb.SQLCase;
-import io.shardingjdbc.test.sql.jaxb.SQLCases;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -42,7 +39,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLCaseHelper {
+public final class SQLCasesLoader {
     
     private static final Map<String, SQLCase> STATEMENT_MAP;
     
@@ -54,7 +51,7 @@ public final class SQLCaseHelper {
     }
     
     private static Map<String, SQLCase> loadSQLCases(final String path) {
-        File file = new File(SQLCaseHelper.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         try {
             return file.isFile() ? loadSQLCasesFromJar(path, file) : loadSQLCasesFromTargetFolder(path);
         } catch (final IOException | JAXBException ex) {
@@ -69,7 +66,7 @@ public final class SQLCaseHelper {
             while (entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
                 if (name.startsWith(path + "/") && name.endsWith(".xml")) {
-                    fillStatementMap(result, SQLCaseHelper.class.getClassLoader().getResourceAsStream(name));
+                    fillStatementMap(result, SQLCasesLoader.class.getClassLoader().getResourceAsStream(name));
                 }
             }
         }
@@ -78,7 +75,7 @@ public final class SQLCaseHelper {
     
     private static Map<String, SQLCase> loadSQLCasesFromTargetFolder(final String path) throws FileNotFoundException, JAXBException {
         Map<String, SQLCase> result = new HashMap<>(65536, 1);
-        URL url = SQLCaseHelper.class.getClassLoader().getResource(path);
+        URL url = SQLCasesLoader.class.getClassLoader().getResource(path);
         if (null == url) {
             return result;
         }
