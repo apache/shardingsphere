@@ -26,4 +26,6 @@ public class LoginInfo {
     public static final String DATASOURCE_USERNAME = "username";
 
     public static final String DATASOURCE_PASSWORD = "password";
+
+    public static final String DATASOURCE_PARAM_USE_AFFECTED_ROWS = "useAffectedRows=true";
 }

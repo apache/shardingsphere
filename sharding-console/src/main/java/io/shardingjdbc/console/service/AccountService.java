@@ -17,10 +17,12 @@
 
 package io.shardingjdbc.console.service;
 
+import io.shardingjdbc.console.domain.AccountResponseResult;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Map;
 
 import io.shardingjdbc.console.constant.LoginInfo;
@@ -33,28 +35,37 @@ import io.shardingjdbc.console.constant.LoginInfo;
 @Service
 public class AccountService {
 
-    public String login(final Map<String, String> account, final HttpSession httpSession) {
-        String driver = account.get("driver");
-        String url = account.get("url");
-        String username = account.get("username");
-        String password = account.get("password");
+    public AccountResponseResult login(final Map<String, String> account, final HttpSession httpSession) {
+
+        String driver = account.get(LoginInfo.DATASOURCE_DRIVER);
+        String url = account.get(LoginInfo.DATASOURCE_URL);
+        String username = account.get(LoginInfo.DATASOURCE_USERNAME);
+        String password = account.get(LoginInfo.DATASOURCE_PASSWORD);
+        AccountResponseResult accountResponseResult = new AccountResponseResult();
+
         if (null == driver || null == url || null == username || null == password) {
-            return "param error";
+            accountResponseResult.setErrMsg("param error");
+            return accountResponseResult;
         }
         if (url.equals("") || driver.equals("")) {
-            return "param empty";
+            accountResponseResult.setErrMsg("param empty");
+            return accountResponseResult;
         }
         try {
             Class.forName(driver);
             DriverManager.getConnection(url, username, password);
-        } catch (Exception e) {
-            return "login fail";
+        } catch (SQLException sqe) {
+            accountResponseResult.setErrMsg(sqe.getMessage());
+            return accountResponseResult;
+        } catch (ClassNotFoundException cne) {
+            accountResponseResult.setErrMsg(cne.getMessage());
+            return accountResponseResult;
         }
         httpSession.setAttribute(LoginInfo.DATASOURCE_DRIVER, driver);
         httpSession.setAttribute(LoginInfo.DATASOURCE_URL, url);
         httpSession.setAttribute(LoginInfo.DATASOURCE_USERNAME, username);
         httpSession.setAttribute(LoginInfo.DATASOURCE_PASSWORD, password);
-
-        return "login success";
+        accountResponseResult.setStatusCode(0);
+        return accountResponseResult;
     }
 }

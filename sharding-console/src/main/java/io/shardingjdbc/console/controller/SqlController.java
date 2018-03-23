@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.console.controller;
 
+import io.shardingjdbc.console.domain.SqlResponseResult;
 import io.shardingjdbc.console.service.SqlService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +44,9 @@ public class SqlController {
      * @return result
      */
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
-    public List<String> executeSQL(@RequestBody final String sql, final ServletRequest servletRequest) {
+    public SqlResponseResult executeSQL(@RequestBody final String sql, final ServletRequest servletRequest) {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpSession httpSession = httpRequest.getSession();
-        System.out.println(sql);
         return sqlService.execute(sql, httpSession);
     }
 }

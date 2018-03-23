@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.console.controller;
 
+import io.shardingjdbc.console.domain.AccountResponseResult;
 import io.shardingjdbc.console.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,15 +37,25 @@ import java.util.Map;
  * @author zhangyonglun
  */
 @RestController
-public class accountController {
+public class AccountController {
 
     @Autowired
     private AccountService accountService;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String logIn(@RequestBody final Map<String, String> account, final ServletRequest servletRequest) {
+    public AccountResponseResult logIn(@RequestBody final Map<String, String> account, final ServletRequest servletRequest) {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpSession httpSession = httpRequest.getSession();
         return accountService.login(account, httpSession);
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public AccountResponseResult logOut(final ServletRequest servletRequest) {
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
+        HttpSession httpSession = httpRequest.getSession();
+        httpSession.invalidate();
+        AccountResponseResult accountResponseResult = new AccountResponseResult();
+        accountResponseResult.setStatusCode(0);
+        return accountResponseResult;
     }
 }

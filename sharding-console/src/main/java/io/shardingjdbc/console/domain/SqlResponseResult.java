@@ -17,5 +17,24 @@
 
 package io.shardingjdbc.console.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Map;
+
+@Getter
+@Setter
 public class SqlResponseResult {
+
+    private Integer statusCode;
+
+    private String errMsg;
+
+    private Map<String, Object> resultInfo;
+
+    public SqlResponseResult(final Map<String, Object> resultInfo) {
+        this.resultInfo = resultInfo;
+        statusCode = -1;
+        errMsg = "";
+    }
 }
