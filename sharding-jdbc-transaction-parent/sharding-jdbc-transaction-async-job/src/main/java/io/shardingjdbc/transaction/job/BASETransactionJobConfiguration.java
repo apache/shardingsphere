@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.transaction.job;
 
+import io.shardingjdbc.transaction.config.AsyncSoftTransactionJobConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -46,7 +47,7 @@ public final class BASETransactionJobConfiguration {
     /**
      * Asynchronized B.A.S.E transaction job configuration.
      */
-    private io.shardingjdbc.transaction.config.AsyncSoftTransactionJobConfiguration jobConfig;
+    private AsyncSoftTransactionJobConfiguration jobConfig;
     
     /**
      * Get one data source by name.
