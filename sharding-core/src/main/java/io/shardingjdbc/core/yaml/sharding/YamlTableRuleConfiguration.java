@@ -52,19 +52,19 @@ public class YamlTableRuleConfiguration {
      */
     public TableRuleConfiguration build() {
         Preconditions.checkNotNull(logicTable, "Logic table cannot be null.");
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable(logicTable);
-        tableRuleConfig.setActualDataNodes(actualDataNodes);
-        tableRuleConfig.setLogicTable(logicTable);
+        TableRuleConfiguration result = new TableRuleConfiguration();
+        result.setLogicTable(logicTable);
+        result.setActualDataNodes(actualDataNodes);
+        result.setLogicTable(logicTable);
         if (null != databaseStrategy) {
-            tableRuleConfig.setDatabaseShardingStrategyConfig(databaseStrategy.build());
+            result.setDatabaseShardingStrategyConfig(databaseStrategy.build());
         }
         if (null != tableStrategy) {
-            tableRuleConfig.setTableShardingStrategyConfig(tableStrategy.build());
+            result.setTableShardingStrategyConfig(tableStrategy.build());
         }
-        tableRuleConfig.setKeyGeneratorClass(keyGeneratorClass);
-        tableRuleConfig.setKeyGeneratorColumnName(keyGeneratorColumnName);
-        tableRuleConfig.setLogicIndex(logicIndex);
-        return tableRuleConfig;
+        result.setKeyGeneratorClass(keyGeneratorClass);
+        result.setKeyGeneratorColumnName(keyGeneratorColumnName);
+        result.setLogicIndex(logicIndex);
+        return result;
     }
 }
