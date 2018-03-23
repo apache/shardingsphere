@@ -30,8 +30,9 @@ import org.junit.runners.Suite;
         ShardingStrategyTest.class, 
         DatabaseShardingStrategyTest.class, 
         TableShardingStrategyTest.class, 
-        RoundRobinMasterSlaveLoadBalanceAlgorithmTest.class,
-        RandomMasterSlaveLoadBalanceAlgorithmTest.class
+        RoundRobinMasterSlaveLoadBalanceAlgorithmTest.class, 
+        RandomMasterSlaveLoadBalanceAlgorithmTest.class, 
+        HintManagerTest.class
     })
 public class AllApiTests {
 }
