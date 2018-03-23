@@ -27,7 +27,7 @@ chapter = true
  - Commit allow javadoc, todo and fixme only.
  - Give a meaningful variable name. The name of return value is result; The name of unit value is each in for each sentence, instead of entry for map iterator.
  - Name of properties file is camel-case, first letter is lowercase.
- - Constant on left and variable on right in conditional statement.
+ - Constant on left and variable on right in conditional expression.
  - The nested loop should extract to a new private method.
  - Replace Nested Conditional with Guard Clauses.
  - Access permissions for classes and methods should minimal as possible.
