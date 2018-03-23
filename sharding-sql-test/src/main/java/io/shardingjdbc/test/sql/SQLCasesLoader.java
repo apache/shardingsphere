@@ -58,7 +58,7 @@ public final class SQLCasesLoader {
     private static Map<String, SQLCase> loadSQLCases(final String path) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         try {
-            return file.isFile() ? loadSQLCasesFromJar(path, file) : loadSQLCasesFromTargetFolder(path);
+            return file.isFile() ? loadSQLCasesFromJar(path, file) : loadSQLCasesFromTargetDirectory(path);
         } catch (final IOException | JAXBException ex) {
             throw new RuntimeException(ex);
         }
@@ -78,7 +78,7 @@ public final class SQLCasesLoader {
         return result;
     }
     
-    private static Map<String, SQLCase> loadSQLCasesFromTargetFolder(final String path) throws FileNotFoundException, JAXBException {
+    private static Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) throws FileNotFoundException, JAXBException {
         Map<String, SQLCase> result = new HashMap<>(65536, 1);
         URL url = SQLCasesLoader.class.getClassLoader().getResource(path);
         if (null == url) {
@@ -93,12 +93,12 @@ public final class SQLCasesLoader {
             return result;
         }
         for (File each : files) {
-            loadSQLCasesFromFolder(result, each);
+            loadSQLCasesFromDirectory(result, each);
         }
         return result;
     }
     
-    private static void loadSQLCasesFromFolder(final Map<String, SQLCase> sqlStatementMap, final File file) throws FileNotFoundException, JAXBException {
+    private static void loadSQLCasesFromDirectory(final Map<String, SQLCase> sqlStatementMap, final File file) throws FileNotFoundException, JAXBException {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (null == files) {
