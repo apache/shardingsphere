@@ -58,7 +58,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
+                        <id>assembly</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>

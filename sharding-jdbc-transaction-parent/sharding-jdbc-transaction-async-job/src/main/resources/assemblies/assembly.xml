@@ -1,12 +1,11 @@
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 
-                        http://maven.apache.org/xsd/assembly-1.1.2.xsd" >
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
     <id>assembly</id>
     <formats>
-        <format>tar</format>
+        <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
+
     <fileSets>
         <fileSet>
             <directory>src/main/resources/bin</directory>
@@ -18,10 +17,20 @@
             <outputDirectory>conf</outputDirectory>
             <fileMode>0644</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>logback.xml</include>
+            </includes>
+            <outputDirectory>conf</outputDirectory>
+            <fileMode>0644</fileMode>
+        </fileSet>
     </fileSets>
+
     <dependencySets>
         <dependencySet>
             <outputDirectory>lib</outputDirectory>
+            <fileMode>0644</fileMode>
         </dependencySet>
     </dependencySets>
 </assembly>
