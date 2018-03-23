@@ -24,70 +24,62 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingjdbc.test.sql.SQLCase;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
+import lombok.AllArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
+@AllArgsConstructor
 @RunWith(Parameterized.class)
-public final class UnsupportedSQLParsingEngineTest {
+public final class ParsingEngineForUnsupportedSQLTest {
     
     private String testCaseName;
     
     private String sql;
     
-    private DatabaseType type;
+    private DatabaseType dbType;
     
-    public UnsupportedSQLParsingEngineTest(final String testCaseName, final String sql, final DatabaseType type) {
-        this.testCaseName = testCaseName;
-        this.sql = sql;
-        this.type = type;
-    }
-    
-    @Parameterized.Parameters(name = "{0}In{2}")
-    public static Collection<Object[]> dataParameters() {
+    @Parameters(name = "{0}In{2}")
+    public static Collection<Object[]> getTestParameters() {
         Collection<Object[]> result = new ArrayList<>();
         for (SQLCase each : SQLCasesLoader.getInstance().getUnsupportedSQLCaseMap().values()) {
-            for (DatabaseType dbType : getTypes(each.getDatabaseTypes())) {
-                Object[] object = new Object[3];
-                object[0] = each.getId();
-                object[1] = each.getValue();
-                object[2] = dbType;
-                result.add(object);
-            }
+            result.addAll(getTestParameters(each));
         }
         return result;
     }
     
-    private static Set<DatabaseType> getTypes(final String types) {
-        if (Strings.isNullOrEmpty(types)) {
+    private static Collection<Object[]> getTestParameters(final SQLCase sqlCase) {
+        Collection<Object[]> result = new LinkedList<>();
+        for (DatabaseType each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
+            Object[] parameters = new Object[3];
+            parameters[0] = sqlCase.getId();
+            parameters[1] = sqlCase.getValue();
+            parameters[2] = each;
+            result.add(parameters);
+        }
+        return result;
+    }
+    
+    private static Set<DatabaseType> getDatabaseTypes(final String databaseTypes) {
+        if (Strings.isNullOrEmpty(databaseTypes)) {
             return Sets.newHashSet(DatabaseType.values());
         }
         Set<DatabaseType> result = new HashSet<>();
-        for (String each : types.split(",")) {
+        for (String each : databaseTypes.split(",")) {
             result.add(DatabaseType.valueOf(each));
         }
         return result;
     }
     
-    @Test
-    public void assertUnsupportedStatement() {
-        try {
-            new SQLParsingEngine(type, sql,
-                    new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id")
-                            .addGenerateKeyColumn("t_order", "order_id").build()).parse();
-            fail(String.format("Should have thrown an SQLParsingUnsupportedException because %s is invalid!", sql));
-            // CHECKSTYLE:OFF
-        } catch (final Exception exception) {
-            // CHECKSTYLE:ON
-            assertTrue(exception instanceof SQLParsingUnsupportedException);
-        }
+    @Test(expected = SQLParsingUnsupportedException.class)
+    public void assertUnsupportedSQL() {
+        new SQLParsingEngine(dbType, sql, new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addGenerateKeyColumn("t_order", "order_id").build()).parse();
     }
 }
