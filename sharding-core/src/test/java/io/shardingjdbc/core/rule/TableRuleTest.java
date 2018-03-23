@@ -22,17 +22,12 @@ import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
 import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public final class TableRuleTest {
     
@@ -112,6 +107,33 @@ public final class TableRuleTest {
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
         TableRule actual = tableRuleConfig.build(createDataSourceNames());
         assertThat(actual.findActualTableIndex("ds2", "table_2"), is(-1));
+    }
+    
+    @Test
+    public void assertToString() {
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+        tableRuleConfig.setLogicTable("LOGIC_TABLE");
+        tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
+        TableRule actual = tableRuleConfig.build(createDataSourceNames());
+        assertThat(actual.toString(), is(actual.toString()));
+    }
+    
+    @Test
+    public void assertActualTableNameExisted() {
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+        tableRuleConfig.setLogicTable("LOGIC_TABLE");
+        tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
+        TableRule actual = tableRuleConfig.build(createDataSourceNames());
+         assertTrue(actual.isExisted("table_2"));
+    }
+    
+    @Test
+    public void assertActualTableNameNotExisted() {
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+        tableRuleConfig.setLogicTable("LOGIC_TABLE");
+        tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..1}");
+        TableRule actual = tableRuleConfig.build(createDataSourceNames());
+        assertFalse(actual.isExisted("table_3"));
     }
     
     private Collection<String> createDataSourceNames() {
