@@ -24,14 +24,14 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Soft transaction base quartz job configuration.
+ * B.A.S.E transaction job configuration.
  *
  * @author caohao
  * @author wangkai
  */
 @Getter
 @Setter
-public final class QuartzJobConfiguration {
+public final class BASETransactionJobConfiguration {
     
     /**
      * Data source for transaction manager.

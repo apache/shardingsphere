@@ -31,14 +31,14 @@ import org.quartz.CronScheduleBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 
 /**
- * Soft transaction base quartz job factory.
+ * B.A.S.E transaction job factory.
  *
  * @author wangkai
  */
 @RequiredArgsConstructor
-public final class QuartzJobFactory {
+public final class BASETransactionJobFactory {
     
-    private final QuartzJobConfiguration quartzJobConfiguration;
+    private final BASETransactionJobConfiguration baseTransactionJobConfiguration;
     
     /**
      * start job.
@@ -53,16 +53,16 @@ public final class QuartzJobFactory {
     }
     
     private JobDetail buildJobDetail() {
-        JobDetail jobDetail = JobBuilder.newJob(QuartzJob.class).withIdentity(quartzJobConfiguration.getJobConfig().getName() + "-Job").build();
-        jobDetail.getJobDataMap().put("quartzJobConfiguration", quartzJobConfiguration);
+        JobDetail jobDetail = JobBuilder.newJob(BASETransactionJob.class).withIdentity(baseTransactionJobConfiguration.getJobConfig().getName() + "-Job").build();
+        jobDetail.getJobDataMap().put("baseTransactionJobConfiguration", baseTransactionJobConfiguration);
         jobDetail.getJobDataMap().put("transactionLogStorage",
-                TransactionLogStorageFactory.createTransactionLogStorage(new RdbTransactionLogDataSource(quartzJobConfiguration.getDefaultTransactionLogDataSource())));
+                TransactionLogStorageFactory.createTransactionLogStorage(new RdbTransactionLogDataSource(baseTransactionJobConfiguration.getDefaultTransactionLogDataSource())));
         return jobDetail;
     }
     
     private Trigger buildTrigger() {
         return TriggerBuilder.newTrigger()
-                .withIdentity(quartzJobConfiguration.getJobConfig().getName() + "-Trigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule(quartzJobConfiguration.getJobConfig().getCron())).build();
+                .withIdentity(baseTransactionJobConfiguration.getJobConfig().getName() + "-Trigger")
+                .withSchedule(CronScheduleBuilder.cronSchedule(baseTransactionJobConfiguration.getJobConfig().getCron())).build();
     }
 }

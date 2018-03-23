@@ -23,13 +23,13 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import java.io.InputStreamReader;
 
 /**
- * Soft transaction base quartz job main entrance.
+ * B.A.S.E transaction job main entrance.
  *
  * @author zhangliang
  * @author caohao
  * @author wangkai
  */
-public final class QuartzJobMain {
+public final class BASETransactionJobBootStrap {
     
     /**
      * Main entrance.
@@ -40,9 +40,9 @@ public final class QuartzJobMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {
         // CHECKSTYLE:ON
-        try (InputStreamReader inputStreamReader = new InputStreamReader(QuartzJobMain.class.getResourceAsStream("/conf/config.yaml"), "UTF-8")) {
-            QuartzJobConfiguration config = new Yaml(new Constructor(QuartzJobConfiguration.class)).loadAs(inputStreamReader, QuartzJobConfiguration.class);
-            new QuartzJobFactory(config).start();
+        try (InputStreamReader inputStreamReader = new InputStreamReader(BASETransactionJobBootStrap.class.getResourceAsStream("/conf/config.yaml"), "UTF-8")) {
+            BASETransactionJobConfiguration config = new Yaml(new Constructor(BASETransactionJobConfiguration.class)).loadAs(inputStreamReader, BASETransactionJobConfiguration.class);
+            new BASETransactionJobFactory(config).start();
         }
     }
 }
