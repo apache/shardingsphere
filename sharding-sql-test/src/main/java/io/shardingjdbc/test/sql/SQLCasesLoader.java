@@ -130,12 +130,12 @@ public final class SQLCasesLoader {
     
     /**
      * Get SQL.
-     * @param sqlId SQL ID
+     * @param id SQL ID
      * @return SQL
      */
-    public static String getSQL(final String sqlId) {
-        checkId(sqlId);
-        SQLCase statement = STATEMENT_MAP.get(sqlId);
+    public static String getSQL(final String id) {
+        checkId(id);
+        SQLCase statement = STATEMENT_MAP.get(id);
         return statement.getValue();
     }
     
