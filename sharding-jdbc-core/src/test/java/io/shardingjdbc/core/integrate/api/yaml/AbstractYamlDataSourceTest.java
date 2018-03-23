@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml;
+package io.shardingjdbc.core.integrate.api.yaml;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.tools.RunScript;
@@ -55,9 +55,9 @@ public abstract class AbstractYamlDataSourceTest {
     }
     
     private static List<String> getSchemaFiles() {
-        return Arrays.asList("yaml/schema/sharding/db0.sql", "yaml/schema/sharding/db1.sql",
-                "yaml/schema/ms/db_master.sql", "yaml/schema/ms/db_slave_0.sql", "yaml/schema/ms/db_slave_1.sql",
-                "yaml/schema/sharding_ms/db0_master.sql", "yaml/schema/sharding_ms/db1_master.sql",
-                "yaml/schema/sharding_ms/db0_slave.sql", "yaml/schema/sharding_ms/db1_slave.sql");
+        return Arrays.asList("integrate/api/yaml/schema/sharding/db0.sql", "integrate/api/yaml/schema/sharding/db1.sql",
+                "integrate/api/yaml/schema/ms/db_master.sql", "integrate/api/yaml/schema/ms/db_slave_0.sql", "integrate/api/yaml/schema/ms/db_slave_1.sql",
+                "integrate/api/yaml/schema/sharding_ms/db0_master.sql", "integrate/api/yaml/schema/sharding_ms/db1_master.sql",
+                "integrate/api/yaml/schema/sharding_ms/db0_slave.sql", "integrate/api/yaml/schema/sharding_ms/db1_slave.sql");
     }
 }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.fixture;
+package io.shardingjdbc.core.integrate.api.yaml.fixture;
 
 import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;

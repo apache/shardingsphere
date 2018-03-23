@@ -15,21 +15,13 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml;
+package io.shardingjdbc.core.integrate.api;
 
-import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveIntegrateTest;
-import io.shardingjdbc.core.yaml.sharding.YamlShardingIntegrateTest;
-import io.shardingjdbc.core.yaml.sharding.YamlShardingWithMasterSlaveIntegrateTest;
-import io.shardingjdbc.core.yaml.sharding.YamlShardingDataSourceTest;
+import io.shardingjdbc.core.integrate.api.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-        YamlShardingDataSourceTest.class,
-        YamlShardingIntegrateTest.class,
-        YamlMasterSlaveIntegrateTest.class,
-        YamlShardingWithMasterSlaveIntegrateTest.class
-    })
-public class AllYamlTests {
+@Suite.SuiteClasses(AllYamlTests.class)
+public class AllAPIIntegrateTests {
 }

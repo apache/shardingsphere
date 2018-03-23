@@ -15,18 +15,19 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.fixture;
+package io.shardingjdbc.core.integrate.api.yaml;
 
-import io.shardingjdbc.core.keygen.KeyGenerator;
+import io.shardingjdbc.core.integrate.api.yaml.masterslave.YamlMasterSlaveIntegrateTest;
+import io.shardingjdbc.core.integrate.api.yaml.sharding.YamlShardingIntegrateTest;
+import io.shardingjdbc.core.integrate.api.yaml.sharding.YamlShardingWithMasterSlaveIntegrateTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class IncrementKeyGenerator implements KeyGenerator {
-    
-    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
-    
-    @Override
-    public Number generateKey() {
-        return SEQUENCE.incrementAndGet();
-    }
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+        YamlShardingIntegrateTest.class,
+        YamlMasterSlaveIntegrateTest.class,
+        YamlShardingWithMasterSlaveIntegrateTest.class
+    })
+public class AllYamlTests {
 }

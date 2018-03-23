@@ -15,18 +15,19 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.masterslave;
+package io.shardingjdbc.core.integrate.api.yaml.masterslave;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
-import io.shardingjdbc.core.yaml.AbstractYamlDataSourceTest;
+import io.shardingjdbc.core.integrate.api.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayOutputStream;
@@ -56,13 +57,13 @@ public class YamlMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
     
     private final boolean isByteArray;
     
-    @Parameterized.Parameters(name = "{index}:{0}-hasDataSource:{1}-isByteArray:{2}")
+    @Parameters(name = "{index}:{0}-hasDataSource:{1}-isByteArray:{2}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true, true},
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true, false},
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", false, true},
-                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", false, false},
+                {"/integrate/api/yaml/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true, true},
+                {"/integrate/api/yaml/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true, false},
+                {"/integrate/api/yaml/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", false, true},
+                {"/integrate/api/yaml/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", false, false},
         });
     }
     

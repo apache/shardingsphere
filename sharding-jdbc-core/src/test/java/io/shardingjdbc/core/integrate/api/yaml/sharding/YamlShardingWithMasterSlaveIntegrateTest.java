@@ -15,17 +15,18 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.sharding;
+package io.shardingjdbc.core.integrate.api.yaml.sharding;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
-import io.shardingjdbc.core.yaml.AbstractYamlDataSourceTest;
+import io.shardingjdbc.core.integrate.api.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -47,13 +48,13 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
     
     private final boolean hasDataSource;
     
-    @Parameterized.Parameters(name = "{index}:{0}-{1}")
+    @Parameters(name = "{index}:{0}-{1}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/sharding_ms/configWithDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/sharding_ms/configWithoutDataSourceWithoutProps.yaml", false},
-                {"/yaml/integrate/sharding_ms/configWithDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/sharding_ms/configWithoutDataSourceWithProps.yaml", false},
+                {"/integrate/api/yaml/sharding_ms/configWithDataSourceWithoutProps.yaml", true},
+                {"/integrate/api/yaml/sharding_ms/configWithoutDataSourceWithoutProps.yaml", false},
+                {"/integrate/api/yaml/sharding_ms/configWithDataSourceWithProps.yaml", true},
+                {"/integrate/api/yaml/sharding_ms/configWithoutDataSourceWithProps.yaml", false},
         });
     }
     

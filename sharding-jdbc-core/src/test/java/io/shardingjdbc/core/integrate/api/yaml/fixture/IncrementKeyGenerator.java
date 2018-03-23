@@ -15,24 +15,18 @@
  * </p>
  */
 
-package io.shardingjdbc.core;
+package io.shardingjdbc.core.integrate.api.yaml.fixture;
 
-import io.shardingjdbc.core.api.AllApiTests;
-import io.shardingjdbc.core.executor.AllExecutorTests;
-import io.shardingjdbc.core.jdbc.AllJDBCTests;
-import io.shardingjdbc.core.util.AllUtilTests;
-import io.shardingjdbc.core.integrate.api.yaml.AllYamlTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingjdbc.core.keygen.KeyGenerator;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllApiTests.class,
-        AllExecutorTests.class, 
-        AllJDBCTests.class,
-        AllUtilTests.class,
-        AllYamlTests.class
-    })
-public class AllUnitTests {
+import java.util.concurrent.atomic.AtomicInteger;
+
+public final class IncrementKeyGenerator implements KeyGenerator {
+    
+    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
+    
+    @Override
+    public Number generateKey() {
+        return SEQUENCE.incrementAndGet();
+    }
 }

@@ -15,18 +15,17 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.fixture;
+package io.shardingjdbc.core.integrate.api.yaml.fixture;
 
-import io.shardingjdbc.core.keygen.KeyGenerator;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Collection;
 
-public final class DecrementKeyGenerator implements KeyGenerator {
-    
-    private final AtomicInteger sequence = new AtomicInteger(100);
+public class MultiAlgorithm implements ComplexKeysShardingAlgorithm {
     
     @Override
-    public Number generateKey() {
-        return sequence.decrementAndGet();
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+        return null;
     }
 }
