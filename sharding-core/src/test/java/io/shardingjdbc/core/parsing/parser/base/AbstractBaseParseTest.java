@@ -73,7 +73,7 @@ public abstract class AbstractBaseParseTest {
         List<Object[]> result = new ArrayList<>();
         for (int i = 0; i < asserts.getAsserts().size(); i++) {
             Assert assertObj = asserts.getAsserts().get(i);
-            for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getDatabaseTypes(assertObj.getId()))) {
+            for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(assertObj.getId()))) {
                 result.add(getDataParameter(assertObj, each));
             }
         }

@@ -54,7 +54,7 @@ public final class UnsupportedSQLParsingEngineTest {
     @Parameterized.Parameters(name = "{0}In{2}")
     public static Collection<Object[]> dataParameters() {
         Collection<Object[]> result = new ArrayList<>();
-        for (SQLCase each : SQLCasesLoader.getUnsupportedSQLCases()) {
+        for (SQLCase each : SQLCasesLoader.getInstance().getUnsupportedSQLCaseMap().values()) {
             for (DatabaseType dbType : getTypes(each.getDatabaseTypes())) {
                 Object[] object = new Object[3];
                 object[0] = each.getId();

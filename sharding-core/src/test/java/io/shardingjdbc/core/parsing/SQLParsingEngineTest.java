@@ -56,13 +56,13 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     
     @Test
     public void assertStatement() {
-        assertStatement(new SQLParsingEngine(getDatabaseType(), SQLPlaceholderUtil.replaceStatement(SQLCasesLoader.getSQL(getTestCaseName()), parameters), buildShardingRule()).parse());
+        assertStatement(new SQLParsingEngine(getDatabaseType(), SQLPlaceholderUtil.replaceStatement(SQLCasesLoader.getInstance().getSQL(getTestCaseName()), parameters), buildShardingRule()).parse());
     }
     
     @Test
     public void assertPreparedStatement() {
-        for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getDatabaseTypes(getTestCaseName()))) {
-            assertPreparedStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLCasesLoader.getSQL(getTestCaseName())), buildShardingRule()).parse());
+        for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(getTestCaseName()))) {
+            assertPreparedStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLCasesLoader.getInstance().getSQL(getTestCaseName())), buildShardingRule()).parse());
         }
     }
     

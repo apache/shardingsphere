@@ -80,7 +80,7 @@ public final class SQLAssertJAXBHelper {
         List<Object[]> result = new ArrayList<>();
         for (int i = 0; i < asserts.getSqlAsserts().size(); i++) {
             SQLAssert assertObj = asserts.getSqlAsserts().get(i);
-            for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getDatabaseTypes(assertObj.getId()))) {
+            for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(assertObj.getId()))) {
                 result.add(getDataParameter(assertObj, each));
             }
         }
@@ -109,7 +109,7 @@ public final class SQLAssertJAXBHelper {
     private static Object[] getDataParameter(final SQLAssert sqlAssert, final DatabaseType dbType) {
         final Object[] result = new Object[4];
         result[0] = sqlAssert.getId();
-        result[1] = SQLCasesLoader.getSQL(sqlAssert.getId());
+        result[1] = SQLCasesLoader.getInstance().getSQL(sqlAssert.getId());
         result[2] = dbType;
         result[3] = sqlAssert.getSqlShardingRules();
         return result;

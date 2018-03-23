@@ -17,10 +17,10 @@
 
 package io.shardingjdbc.test.sql;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -43,16 +43,27 @@ import java.util.jar.JarFile;
  * 
  * @author zhangliang 
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLCasesLoader {
     
-    private static final Map<String, SQLCase> STATEMENT_MAP;
+    private static final SQLCasesLoader INSTANCE = new SQLCasesLoader();
     
-    private static final Map<String, SQLCase> UNSUPPORTED_STATEMENT_MAP;
+    private final Map<String, SQLCase> sqlCaseMap;
     
-    static {
-        STATEMENT_MAP = loadSQLCases("sql");
-        UNSUPPORTED_STATEMENT_MAP = loadSQLCases("unsupported_sql");
+    @Getter
+    private final Map<String, SQLCase> unsupportedSQLCaseMap;
+    
+    private SQLCasesLoader() {
+        sqlCaseMap = loadSQLCases("sql");
+        unsupportedSQLCaseMap = loadSQLCases("unsupported_sql");
+    }
+    
+    /**
+     * Get singleton instance.
+     * 
+     * @return singleton instance
+     */
+    public static SQLCasesLoader getInstance() {
+        return INSTANCE;
     }
     
     private static Map<String, SQLCase> loadSQLCases(final String path) {
@@ -114,18 +125,9 @@ public final class SQLCasesLoader {
     
     private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
-        for (SQLCase statement : sqlCases.getSqlCases()) {
-            sqlCaseMap.put(statement.getId(), statement);
+        for (SQLCase each : sqlCases.getSqlCases()) {
+            sqlCaseMap.put(each.getId(), each);
         }
-    }
-    
-    /**
-     * Get unsupported SQL test cases.
-     * 
-     * @return unsupported SQL test cases
-     */
-    public static Collection<SQLCase> getUnsupportedSQLCases() {
-        return UNSUPPORTED_STATEMENT_MAP.values();
     }
     
     /**
@@ -133,9 +135,9 @@ public final class SQLCasesLoader {
      * @param id SQL ID
      * @return SQL
      */
-    public static String getSQL(final String id) {
-        checkId(id);
-        SQLCase statement = STATEMENT_MAP.get(id);
+    public String getSQL(final String id) {
+        Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of id: " + id);
+        SQLCase statement = sqlCaseMap.get(id);
         return statement.getValue();
     }
     
@@ -145,15 +147,9 @@ public final class SQLCasesLoader {
      * @param id SQL ID
      * @return database types
      */
-    public static Collection<String> getDatabaseTypes(final String id) {
-        checkId(id);
-        String databaseTypes = STATEMENT_MAP.get(id).getDatabaseTypes();
+    public Collection<String> getDatabaseTypes(final String id) {
+        Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of id: " + id);
+        String databaseTypes = sqlCaseMap.get(id).getDatabaseTypes();
         return Strings.isNullOrEmpty(databaseTypes) ? Collections.<String>emptyList() : Splitter.on(',').trimResults().splitToList(databaseTypes);
-    }
-    
-    private static void checkId(final String id) {
-        if (null == id || !STATEMENT_MAP.containsKey(id)) {
-            throw new RuntimeException("Can't find SQL of id: " + id);
-        }
     }
 }
