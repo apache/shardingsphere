@@ -28,7 +28,7 @@ import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
 import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserJAXBHelper;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLPlaceholderUtil;
-import io.shardingjdbc.test.sql.jaxb.SQLCasesLoader;
+import io.shardingjdbc.test.sql.SQLCasesLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

@@ -15,24 +15,31 @@
  * </p>
  */
 
-package io.shardingjdbc.test.sql.jaxb;
+package io.shardingjdbc.test.sql;
 
 import lombok.Getter;
+import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * SQL test cases for xml root tag.
- * 
- * @author zhangliang 
+ * SQL test case for xml tag.
+ *
+ * @author zhangliang
  */
-@XmlRootElement(name = "sql-cases")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class SQLCases {
+@Setter
+public final class SQLCase {
     
-    @XmlElement(name = "sql-case")
-    private List<SQLCase> sqlCases = new ArrayList<>();
+    @XmlAttribute
+    private String id;
+    
+    @XmlAttribute
+    private String value;
+    
+    @XmlAttribute(name = "db-types")
+    private String databaseTypes;
 }

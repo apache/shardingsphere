@@ -20,7 +20,7 @@ package io.shardingjdbc.core.parsing.parser.base;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
 import io.shardingjdbc.core.parsing.parser.jaxb.Asserts;
-import io.shardingjdbc.test.sql.jaxb.SQLCasesLoader;
+import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
 

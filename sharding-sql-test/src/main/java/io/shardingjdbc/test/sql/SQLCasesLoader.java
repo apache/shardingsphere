@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.test.sql.jaxb;
+package io.shardingjdbc.test.sql;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
