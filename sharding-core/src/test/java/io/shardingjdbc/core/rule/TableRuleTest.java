@@ -117,30 +117,30 @@ public final class TableRuleTest {
     
     @Test
     public void assertActualTableNameExisted() {
-        TableRule actual = getTableRuleConfiguration().build(createDataSourceNames());
+        TableRule actual = createTableRuleConfiguration().build(createDataSourceNames());
         assertTrue(actual.isExisted("table_2"));
     }
     
     @Test
     public void assertActualTableNameNotExisted() {
-        TableRule actual = getTableRuleConfiguration().build(createDataSourceNames());
+        TableRule actual = createTableRuleConfiguration().build(createDataSourceNames());
         assertFalse(actual.isExisted("table_3"));
     }
     
     @Test
     public void assertToString() {
-        TableRule actual = getTableRuleConfiguration().build(createDataSourceNames());
+        TableRule actual = createTableRuleConfiguration().build(createDataSourceNames());
         String actualString = "TableRule(logicTable=logic_table, actualDataNodes=[DataNode(dataSourceName=ds0, tableName=table_0), DataNode(dataSourceName=ds0, tableName=table_1), "
-                            + "DataNode(dataSourceName=ds0, tableName=table_2), DataNode(dataSourceName=ds1, tableName=table_0), DataNode(dataSourceName=ds1, tableName=table_1), "
-                            + "DataNode(dataSourceName=ds1, tableName=table_2)], databaseShardingStrategy=null, tableShardingStrategy=null, generateKeyColumn=null, keyGenerator=null,logicIndex=null)";
+                + "DataNode(dataSourceName=ds0, tableName=table_2), DataNode(dataSourceName=ds1, tableName=table_0), DataNode(dataSourceName=ds1, tableName=table_1), "
+                + "DataNode(dataSourceName=ds1, tableName=table_2)], databaseShardingStrategy=null, tableShardingStrategy=null, generateKeyColumn=null, keyGenerator=null, logicIndex=null)";
         assertThat(actual.toString(), is(actualString));
     }
     
-    private  TableRuleConfiguration getTableRuleConfiguration(){
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("LOGIC_TABLE");
-        tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
-        return tableRuleConfig;
+    private TableRuleConfiguration createTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration();
+        result.setLogicTable("LOGIC_TABLE");
+        result.setActualDataNodes("ds${0..1}.table_${0..2}");
+        return result;
     }
     
     private Collection<String> createDataSourceNames() {
