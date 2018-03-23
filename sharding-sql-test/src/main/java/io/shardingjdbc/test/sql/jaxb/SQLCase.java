@@ -37,7 +37,7 @@ public final class SQLCase {
     @XmlAttribute
     private String id;
     
-    @XmlAttribute(name = "value")
+    @XmlAttribute
     private String value;
     
     @XmlAttribute(name = "db-types")
