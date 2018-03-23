@@ -38,6 +38,11 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+/**
+ * SQL test cases loader.
+ * 
+ * @author zhangliang 
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLCasesLoader {
     
@@ -115,9 +120,9 @@ public final class SQLCasesLoader {
     }
     
     /**
-     * Get unsupported SQL statements.
+     * Get unsupported SQL test cases.
      * 
-     * @return unsupported SQL statements
+     * @return unsupported SQL test cases
      */
     public static Collection<SQLCase> getUnsupportedSqlStatements() {
         return UNSUPPORTED_STATEMENT_MAP.values();
