@@ -34,7 +34,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 
 @RunWith(Parameterized.class)
 public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
@@ -59,9 +61,8 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     
     @Test
     public void assertPreparedStatement() {
-        for (io.shardingjdbc.test.sql.jaxb.DatabaseType each : SQLCasesLoader.getTypes(getTestCaseName())) {
-            assertPreparedStatement(
-                    new SQLParsingEngine(DatabaseType.valueOf(each.name()), SQLPlaceholderUtil.replacePreparedStatement(SQLCasesLoader.getSql(getTestCaseName())), buildShardingRule()).parse());
+        for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getDatabaseTypes(getTestCaseName()))) {
+            assertPreparedStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLCasesLoader.getSql(getTestCaseName())), buildShardingRule()).parse());
         }
     }
     
@@ -76,5 +77,16 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
         orderItemTableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id, order_id, item_id", TestComplexKeysShardingAlgorithm.class.getName()));
         return new ShardingRuleMockBuilder().addTableRuleConfig(orderTableRuleConfig).addTableRuleConfig(orderItemTableRuleConfig)
                 .addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("item_id").addGenerateKeyColumn("t_order_item", "item_id").build();
+    }
+    
+    private static Collection<DatabaseType> getDataBaseTypes(final Collection<String> databaseTypes) {
+        if (databaseTypes.isEmpty()) {
+            return Arrays.asList(DatabaseType.values());
+        }
+        Collection<DatabaseType> result = new LinkedHashSet<>(databaseTypes.size());
+        for (String each : databaseTypes) {
+            result.add(DatabaseType.valueOf(each));
+        }
+        return result;
     }
 }

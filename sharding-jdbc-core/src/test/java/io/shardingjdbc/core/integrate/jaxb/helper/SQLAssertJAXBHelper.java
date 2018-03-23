@@ -28,8 +28,10 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public final class SQLAssertJAXBHelper {
@@ -78,8 +80,8 @@ public final class SQLAssertJAXBHelper {
         List<Object[]> result = new ArrayList<>();
         for (int i = 0; i < asserts.getSqlAsserts().size(); i++) {
             SQLAssert assertObj = asserts.getSqlAsserts().get(i);
-            for (io.shardingjdbc.test.sql.jaxb.DatabaseType each : SQLCasesLoader.getTypes(assertObj.getId())) {
-                result.add(getDataParameter(assertObj, DatabaseType.valueOf(each.name())));
+            for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getDatabaseTypes(assertObj.getId()))) {
+                result.add(getDataParameter(assertObj, each));
             }
         }
         return result;
@@ -91,6 +93,17 @@ public final class SQLAssertJAXBHelper {
         } catch (final JAXBException ex) {
             throw new RuntimeException(ex);
         }
+    }
+    
+    private static Collection<DatabaseType> getDataBaseTypes(final Collection<String> databaseTypes) {
+        if (databaseTypes.isEmpty()) {
+            return Arrays.asList(DatabaseType.values());
+        }
+        Collection<DatabaseType> result = new LinkedHashSet<>(databaseTypes.size());
+        for (String each : databaseTypes) {
+            result.add(DatabaseType.valueOf(each));
+        }
+        return result;
     }
     
     private static Object[] getDataParameter(final SQLAssert sqlAssert, final DatabaseType dbType) {

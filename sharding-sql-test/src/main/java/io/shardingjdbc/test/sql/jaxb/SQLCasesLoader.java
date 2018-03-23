@@ -17,7 +17,8 @@
 
 package io.shardingjdbc.test.sql.jaxb;
 
-import com.google.common.collect.Sets;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -30,11 +31,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -145,17 +145,10 @@ public final class SQLCasesLoader {
      * @param sqlId SQL ID
      * @return database types
      */
-    public static Set<DatabaseType> getTypes(final String sqlId) {
+    public static Collection<String> getDatabaseTypes(final String sqlId) {
         checkSqlId(sqlId);
-        SQLCase statement = STATEMENT_MAP.get(sqlId);
-        if (null == statement.getDatabaseTypes()) {
-            return Sets.newHashSet(DatabaseType.values());
-        }
-        Set<DatabaseType> result = new HashSet<>();
-        for (String each : statement.getDatabaseTypes().split(",")) {
-            result.add(DatabaseType.valueOf(each));
-        }
-        return result;
+        String databaseTypes = STATEMENT_MAP.get(sqlId).getDatabaseTypes();
+        return Strings.isNullOrEmpty(databaseTypes) ? Collections.<String>emptyList() : Splitter.on(',').trimResults().splitToList(databaseTypes);
     }
     
     private static void checkSqlId(final String sqlId) {
