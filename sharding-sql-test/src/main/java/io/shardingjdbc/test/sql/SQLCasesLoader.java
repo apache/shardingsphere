@@ -113,8 +113,8 @@ public final class SQLCasesLoader {
     }
     
     private static void fillStatementMap(final Map<String, SQLCase> result, final InputStream inputStream) throws JAXBException {
-        SQLCases statements = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
-        for (SQLCase statement : statements.getSqlCases()) {
+        SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
+        for (SQLCase statement : sqlCases.getSqlCases()) {
             result.put(statement.getId(), statement);
         }
     }
@@ -124,7 +124,7 @@ public final class SQLCasesLoader {
      * 
      * @return unsupported SQL test cases
      */
-    public static Collection<SQLCase> getUnsupportedSqlStatements() {
+    public static Collection<SQLCase> getUnsupportedSQLCases() {
         return UNSUPPORTED_STATEMENT_MAP.values();
     }
     
@@ -133,8 +133,8 @@ public final class SQLCasesLoader {
      * @param sqlId SQL ID
      * @return SQL
      */
-    public static String getSql(final String sqlId) {
-        checkSqlId(sqlId);
+    public static String getSQL(final String sqlId) {
+        checkId(sqlId);
         SQLCase statement = STATEMENT_MAP.get(sqlId);
         return statement.getValue();
     }
@@ -142,18 +142,18 @@ public final class SQLCasesLoader {
     /**
      * Get database types.
      * 
-     * @param sqlId SQL ID
+     * @param id SQL ID
      * @return database types
      */
-    public static Collection<String> getDatabaseTypes(final String sqlId) {
-        checkSqlId(sqlId);
-        String databaseTypes = STATEMENT_MAP.get(sqlId).getDatabaseTypes();
+    public static Collection<String> getDatabaseTypes(final String id) {
+        checkId(id);
+        String databaseTypes = STATEMENT_MAP.get(id).getDatabaseTypes();
         return Strings.isNullOrEmpty(databaseTypes) ? Collections.<String>emptyList() : Splitter.on(',').trimResults().splitToList(databaseTypes);
     }
     
-    private static void checkSqlId(final String sqlId) {
-        if (null == sqlId || !STATEMENT_MAP.containsKey(sqlId)) {
-            throw new RuntimeException("Can't find sql of id:" + sqlId);
+    private static void checkId(final String id) {
+        if (null == id || !STATEMENT_MAP.containsKey(id)) {
+            throw new RuntimeException("Can't find SQL of id: " + id);
         }
     }
 }
