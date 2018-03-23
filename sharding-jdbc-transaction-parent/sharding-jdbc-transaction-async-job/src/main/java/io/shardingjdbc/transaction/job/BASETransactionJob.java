@@ -42,15 +42,17 @@ public final class BASETransactionJob implements Job {
         TransactionLogStorage transactionLogStorage = (TransactionLogStorage) jobExecutionContext.getJobDetail().getJobDataMap().get("transactionLogStorage");
         List<TransactionLog> transactionLogList = transactionLogStorage.findEligibleTransactionLogs(baseTransactionJobConfiguration.getJobConfig().getTransactionLogFetchDataCount(),
                 baseTransactionJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), baseTransactionJobConfiguration.getJobConfig().getMaxDeliveryTryDelayMillis());
-        if (null != transactionLogList) {
-            for (TransactionLog each : transactionLogList) {
-                try (Connection conn = baseTransactionJobConfiguration.getTargetDataSource(each.getDataSource()).getConnection()) {
-                    transactionLogStorage.processData(conn, each, baseTransactionJobConfiguration.getJobConfig().getMaxDeliveryTryTimes());
-                } catch (final SQLException | TransactionCompensationException ex) {
-                    log.error(String.format("Async delivery times %s error, max try times is %s, exception is %s", each.getAsyncDeliveryTryTimes() + 1,
-                            baseTransactionJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), ex.getMessage()));
-                }
+        if (null == transactionLogList) {
+            return;
+        }
+        for (TransactionLog each : transactionLogList) {
+            try (Connection conn = baseTransactionJobConfiguration.getTargetDataSource(each.getDataSource()).getConnection()) {
+                transactionLogStorage.processData(conn, each, baseTransactionJobConfiguration.getJobConfig().getMaxDeliveryTryTimes());
+            } catch (final SQLException | TransactionCompensationException ex) {
+                log.error(String.format("Async delivery times %s error, max try times is %s, exception is %s", each.getAsyncDeliveryTryTimes() + 1,
+                        baseTransactionJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), ex.getMessage()));
             }
         }
+        
     }
 }

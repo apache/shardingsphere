@@ -38,7 +38,7 @@ import org.quartz.impl.StdSchedulerFactory;
 @RequiredArgsConstructor
 public final class BASETransactionJobFactory {
     
-    private final BASETransactionJobConfiguration baseTransactionJobConfiguration;
+    private final BASETransactionJobConfiguration baseTransactionJobConfig;
     
     /**
      * start job.
@@ -53,16 +53,16 @@ public final class BASETransactionJobFactory {
     }
     
     private JobDetail buildJobDetail() {
-        JobDetail jobDetail = JobBuilder.newJob(BASETransactionJob.class).withIdentity(baseTransactionJobConfiguration.getJobConfig().getName() + "-Job").build();
-        jobDetail.getJobDataMap().put("baseTransactionJobConfiguration", baseTransactionJobConfiguration);
+        JobDetail jobDetail = JobBuilder.newJob(BASETransactionJob.class).withIdentity(baseTransactionJobConfig.getJobConfig().getName() + "-Job").build();
+        jobDetail.getJobDataMap().put("baseTransactionJobConfiguration", baseTransactionJobConfig);
         jobDetail.getJobDataMap().put("transactionLogStorage",
-                TransactionLogStorageFactory.createTransactionLogStorage(new RdbTransactionLogDataSource(baseTransactionJobConfiguration.getDefaultTransactionLogDataSource())));
+                TransactionLogStorageFactory.createTransactionLogStorage(new RdbTransactionLogDataSource(baseTransactionJobConfig.getDefaultTransactionLogDataSource())));
         return jobDetail;
     }
     
     private Trigger buildTrigger() {
         return TriggerBuilder.newTrigger()
-                .withIdentity(baseTransactionJobConfiguration.getJobConfig().getName() + "-Trigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule(baseTransactionJobConfiguration.getJobConfig().getCron())).build();
+                .withIdentity(baseTransactionJobConfig.getJobConfig().getName() + "-Trigger")
+                .withSchedule(CronScheduleBuilder.cronSchedule(baseTransactionJobConfig.getJobConfig().getCron())).build();
     }
 }
