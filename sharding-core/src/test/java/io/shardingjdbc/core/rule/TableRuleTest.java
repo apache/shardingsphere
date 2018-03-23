@@ -116,33 +116,31 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertToString() {
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("LOGIC_TABLE");
-        tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
-        TableRule actual = tableRuleConfig.build(createDataSourceNames());
-        assertThat(actual.toString(), is(actual.toString()));
-    }
-    
-    @Test
     public void assertActualTableNameExisted() {
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("LOGIC_TABLE");
-        tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
-        TableRule actual = tableRuleConfig.build(createDataSourceNames());
-         assertTrue(actual.isExisted("table_2"));
+        TableRule actual = getTableRuleConfiguration().build(createDataSourceNames());
+        assertTrue(actual.isExisted("table_2"));
     }
     
     @Test
     public void assertActualTableNameNotExisted() {
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("LOGIC_TABLE");
-        tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..1}");
-        TableRule actual = tableRuleConfig.build(createDataSourceNames());
+        TableRule actual = getTableRuleConfiguration().build(createDataSourceNames());
         assertFalse(actual.isExisted("table_3"));
+    }
+    
+    @Test
+    public void assertToString() {
+        TableRule actual = getTableRuleConfiguration().build(createDataSourceNames());
+        assertThat(actual.toString(), is(actual.toString()));
     }
     
     private Collection<String> createDataSourceNames() {
         return Arrays.asList("ds0", "ds1");
+    }
+    
+    private  TableRuleConfiguration getTableRuleConfiguration(){
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+        tableRuleConfig.setLogicTable("LOGIC_TABLE");
+        tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
+        return tableRuleConfig;
     }
 }
