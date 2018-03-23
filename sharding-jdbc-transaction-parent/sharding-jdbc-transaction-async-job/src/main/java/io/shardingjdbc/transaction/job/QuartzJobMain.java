@@ -30,7 +30,7 @@ import java.io.InputStreamReader;
  * @author wangkai
  */
 public final class QuartzJobMain {
-
+    
     /**
      * Main entrance.
      *

@@ -32,22 +32,22 @@ import java.util.Map;
 @Getter
 @Setter
 public final class QuartzJobConfiguration {
-
+    
     /**
      * Data source for transaction manager.
      */
     private Map<String, DataSource> targetDataSource;
-
+    
     /**
      * Transaction log data source.
      */
     private Map<String, DataSource> transactionLogDataSource;
-
+    
     /**
      * Asynchronized B.A.S.E transaction job configuration.
      */
     private io.shardingjdbc.transaction.config.AsyncSoftTransactionJobConfiguration jobConfig;
-
+    
     /**
      * Get one data source by name.
      *
@@ -57,7 +57,7 @@ public final class QuartzJobConfiguration {
     public DataSource getTargetDataSource(final String dataSourceName) {
         return targetDataSource.get(dataSourceName);
     }
-
+    
     /**
      * Get next one transaction log data sorce.
      *

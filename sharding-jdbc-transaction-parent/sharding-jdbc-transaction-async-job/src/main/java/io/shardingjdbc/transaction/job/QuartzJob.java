@@ -42,12 +42,12 @@ public final class QuartzJob implements Job {
         TransactionLogStorage transactionLogStorage = (TransactionLogStorage) jobExecutionContext.getJobDetail().getJobDataMap().get("transactionLogStorage");
         List<TransactionLog> transactionLogList = transactionLogStorage.findEligibleTransactionLogs(quartzJobConfiguration.getJobConfig().getTransactionLogFetchDataCount(),
                 quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), quartzJobConfiguration.getJobConfig().getMaxDeliveryTryDelayMillis());
-        if (transactionLogList != null) {
-            for (TransactionLog data : transactionLogList) {
-                try (Connection conn = quartzJobConfiguration.getTargetDataSource(data.getDataSource()).getConnection()) {
-                    transactionLogStorage.processData(conn, data, quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes());
+        if (null != transactionLogList) {
+            for (TransactionLog each : transactionLogList) {
+                try (Connection conn = quartzJobConfiguration.getTargetDataSource(each.getDataSource()).getConnection()) {
+                    transactionLogStorage.processData(conn, each, quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes());
                 } catch (final SQLException | TransactionCompensationException ex) {
-                    log.error(String.format("Async delivery times %s error, max try times is %s, exception is %s", data.getAsyncDeliveryTryTimes() + 1,
+                    log.error(String.format("Async delivery times %s error, max try times is %s, exception is %s", each.getAsyncDeliveryTryTimes() + 1,
                             quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), ex.getMessage()));
                 }
             }

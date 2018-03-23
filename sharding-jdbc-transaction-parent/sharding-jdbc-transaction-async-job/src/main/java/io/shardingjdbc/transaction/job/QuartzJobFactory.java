@@ -37,9 +37,9 @@ import org.quartz.impl.StdSchedulerFactory;
  */
 @RequiredArgsConstructor
 public final class QuartzJobFactory {
-
+    
     private final QuartzJobConfiguration quartzJobConfiguration;
-
+    
     /**
      * start job.
      *
@@ -51,7 +51,7 @@ public final class QuartzJobFactory {
         scheduler.scheduleJob(buildJobDetail(), buildTrigger());
         scheduler.start();
     }
-
+    
     private JobDetail buildJobDetail() {
         JobDetail jobDetail = JobBuilder.newJob(QuartzJob.class).withIdentity(quartzJobConfiguration.getJobConfig().getName() + "-Job").build();
         jobDetail.getJobDataMap().put("quartzJobConfiguration", quartzJobConfiguration);
@@ -59,7 +59,7 @@ public final class QuartzJobFactory {
                 TransactionLogStorageFactory.createTransactionLogStorage(new RdbTransactionLogDataSource(quartzJobConfiguration.getDefaultTransactionLogDataSource())));
         return jobDetail;
     }
-
+    
     private Trigger buildTrigger() {
         return TriggerBuilder.newTrigger()
                 .withIdentity(quartzJobConfiguration.getJobConfig().getName() + "-Trigger")
