@@ -29,26 +29,26 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Soft transaction job base quartz.
+ * B.A.S.E transaction job.
  *
  * @author wangkai
  */
 @Slf4j
-public final class QuartzJob implements Job {
-
+public final class BASETransactionJob implements Job {
+    
     @Override
     public void execute(final JobExecutionContext jobExecutionContext) {
-        QuartzJobConfiguration quartzJobConfiguration = (QuartzJobConfiguration) jobExecutionContext.getJobDetail().getJobDataMap().get("quartzJobConfiguration");
+        BASETransactionJobConfiguration baseTransactionJobConfiguration = (BASETransactionJobConfiguration) jobExecutionContext.getJobDetail().getJobDataMap().get("baseTransactionJobConfiguration");
         TransactionLogStorage transactionLogStorage = (TransactionLogStorage) jobExecutionContext.getJobDetail().getJobDataMap().get("transactionLogStorage");
-        List<TransactionLog> transactionLogList = transactionLogStorage.findEligibleTransactionLogs(quartzJobConfiguration.getJobConfig().getTransactionLogFetchDataCount(),
-                quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), quartzJobConfiguration.getJobConfig().getMaxDeliveryTryDelayMillis());
-        if (transactionLogList != null) {
-            for (TransactionLog data : transactionLogList) {
-                try (Connection conn = quartzJobConfiguration.getTargetDataSource(data.getDataSource()).getConnection()) {
-                    transactionLogStorage.processData(conn, data, quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes());
+        List<TransactionLog> transactionLogList = transactionLogStorage.findEligibleTransactionLogs(baseTransactionJobConfiguration.getJobConfig().getTransactionLogFetchDataCount(),
+                baseTransactionJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), baseTransactionJobConfiguration.getJobConfig().getMaxDeliveryTryDelayMillis());
+        if (null != transactionLogList) {
+            for (TransactionLog each : transactionLogList) {
+                try (Connection conn = baseTransactionJobConfiguration.getTargetDataSource(each.getDataSource()).getConnection()) {
+                    transactionLogStorage.processData(conn, each, baseTransactionJobConfiguration.getJobConfig().getMaxDeliveryTryTimes());
                 } catch (final SQLException | TransactionCompensationException ex) {
-                    log.error(String.format("Async delivery times %s error, max try times is %s, exception is %s", data.getAsyncDeliveryTryTimes() + 1,
-                            quartzJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), ex.getMessage()));
+                    log.error(String.format("Async delivery times %s error, max try times is %s, exception is %s", each.getAsyncDeliveryTryTimes() + 1,
+                            baseTransactionJobConfiguration.getJobConfig().getMaxDeliveryTryTimes(), ex.getMessage()));
                 }
             }
         }
