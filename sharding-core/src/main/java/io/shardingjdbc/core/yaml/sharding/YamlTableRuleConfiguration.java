@@ -55,7 +55,6 @@ public class YamlTableRuleConfiguration {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable(logicTable);
         result.setActualDataNodes(actualDataNodes);
-        result.setLogicTable(logicTable);
         if (null != databaseStrategy) {
             result.setDatabaseShardingStrategyConfig(databaseStrategy.build());
         }

@@ -32,8 +32,7 @@ public final class YamlMasterSlaveRuleConfigurationTest {
     
     @Test
     public void assertGetMasterSlaveRuleConfiguration() {
-        MasterSlaveRuleConfiguration actual = createYamlMasterSlaveRuleConfig().getMasterSlaveRuleConfiguration();
-        assertMasterSlaveRuleConfig(actual);
+        assertMasterSlaveRuleConfig(createYamlMasterSlaveRuleConfig().getMasterSlaveRuleConfiguration());
     }
         
     private YamlMasterSlaveRuleConfiguration createYamlMasterSlaveRuleConfig() {

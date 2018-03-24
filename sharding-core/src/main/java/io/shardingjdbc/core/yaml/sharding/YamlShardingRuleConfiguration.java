@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -60,14 +61,14 @@ public class YamlShardingRuleConfiguration {
     private Properties props = new Properties();
     
     /**
-     * Get sharding rule configuration from yaml.
+     * Get sharding rule configuration.
      *
-     * @return sharding rule configuration from yaml
+     * @return sharding rule configuration
      */
     public ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setDefaultDataSourceName(defaultDataSourceName);
-        for (Map.Entry<String, YamlTableRuleConfiguration> entry : tables.entrySet()) {
+        for (Entry<String, YamlTableRuleConfiguration> entry : tables.entrySet()) {
             YamlTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
             result.getTableRuleConfigs().add(tableRuleConfig.build());
@@ -81,13 +82,13 @@ public class YamlShardingRuleConfiguration {
         }
         result.setDefaultKeyGeneratorClass(defaultKeyGeneratorClass);
         Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
-        for (Map.Entry<String, YamlMasterSlaveRuleConfiguration> each : masterSlaveRules.entrySet()) {
+        for (Entry<String, YamlMasterSlaveRuleConfiguration> entry : masterSlaveRules.entrySet()) {
             MasterSlaveRuleConfiguration msRuleConfig = new MasterSlaveRuleConfiguration();
-            msRuleConfig.setName(each.getKey());
-            msRuleConfig.setMasterDataSourceName(each.getValue().getMasterDataSourceName());
-            msRuleConfig.setSlaveDataSourceNames(each.getValue().getSlaveDataSourceNames());
-            msRuleConfig.setLoadBalanceAlgorithmType(each.getValue().getLoadBalanceAlgorithmType());
-            msRuleConfig.setLoadBalanceAlgorithmClassName(each.getValue().getLoadBalanceAlgorithmClassName());
+            msRuleConfig.setName(entry.getKey());
+            msRuleConfig.setMasterDataSourceName(entry.getValue().getMasterDataSourceName());
+            msRuleConfig.setSlaveDataSourceNames(entry.getValue().getSlaveDataSourceNames());
+            msRuleConfig.setLoadBalanceAlgorithmType(entry.getValue().getLoadBalanceAlgorithmType());
+            msRuleConfig.setLoadBalanceAlgorithmClassName(entry.getValue().getLoadBalanceAlgorithmClassName());
             masterSlaveRuleConfigs.add(msRuleConfig);
         }
         result.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);

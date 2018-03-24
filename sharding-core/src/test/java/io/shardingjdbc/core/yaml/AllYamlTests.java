@@ -20,6 +20,9 @@ package io.shardingjdbc.core.yaml;
 import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveConfigurationTest;
 import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfigurationTest;
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfigurationTest;
+import io.shardingjdbc.core.yaml.sharding.YamlShardingRuleConfigurationTest;
+import io.shardingjdbc.core.yaml.sharding.YamlShardingStrategyConfigurationTest;
+import io.shardingjdbc.core.yaml.sharding.YamlTableRuleConfigurationTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -27,6 +30,9 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         YamlShardingConfigurationTest.class, 
+        YamlShardingRuleConfigurationTest.class, 
+        YamlTableRuleConfigurationTest.class, 
+        YamlShardingStrategyConfigurationTest.class, 
         YamlMasterSlaveConfigurationTest.class, 
         YamlMasterSlaveRuleConfigurationTest.class
 })
