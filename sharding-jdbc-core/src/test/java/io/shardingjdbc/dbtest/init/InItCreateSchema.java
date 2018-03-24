@@ -23,35 +23,36 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import io.shardingjdbc.core.common.env.DatabaseEnvironment;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.tools.RunScript;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.dbtest.common.ConfigRuntime;
 import io.shardingjdbc.dbtest.common.DatabaseTypeUtils;
 
 public class InItCreateSchema {
-
+    
     /**
      * Initialize the database table.
      */
-    public static synchronized void initTable() {
-        for (String db : ConfigRuntime.getDbs()) {
+    public static synchronized void initTable(List<String> dbs) {
+        for (String db : dbs) {
             DatabaseType databaseType = DatabaseTypeUtils.getDatabaseType(db);
             createSchema(databaseType);
         }
     }
-
+    
     /**
      * Create a database.
      */
-    public static void createDatabase() {
+    public static void createDatabase(List<String> dbs) {
         Connection conn = null;
         try {
-            for (String each : ConfigRuntime.getDbs()) {
+            for (String each : dbs) {
                 DatabaseType databaseType = DatabaseTypeUtils.getDatabaseType(each);
-
+                
                 conn = initialConnection(null, databaseType);
                 String packing = "default";
                 if (DatabaseType.Oracle == databaseType) {
@@ -59,7 +60,7 @@ public class InItCreateSchema {
                 }
                 RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
                         .getResourceAsStream("integrate/schema/" + packing + "/manual_schema_create.sql")));
-
+                
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -71,19 +72,19 @@ public class InItCreateSchema {
                     e.printStackTrace();
                 }
             }
-
+            
         }
     }
-
+    
     /**
      * drop the database table.
      */
-    public static synchronized void dropDatabase() {
+    public static synchronized void dropDatabase(List<String> dbs) {
         Connection conn = null;
         try {
-            for (String each : ConfigRuntime.getDbs()) {
+            for (String each : dbs) {
                 DatabaseType databaseType = DatabaseTypeUtils.getDatabaseType(each);
-
+                
                 conn = initialConnection(null, databaseType);
                 String packing = "default";
                 if (DatabaseType.Oracle == databaseType) {
@@ -91,7 +92,7 @@ public class InItCreateSchema {
                 }
                 RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
                         .getResourceAsStream("integrate/schema/" + packing + "/manual_schema_drop.sql")));
-
+                
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -103,16 +104,16 @@ public class InItCreateSchema {
                     e.printStackTrace();
                 }
             }
-
+            
         }
     }
-
+    
     private static void createSchema(final DatabaseType dbType) {
         createJdbcSchema(dbType);
         createMasterSlaveOnlySchema(dbType);
         createShardingSchema(dbType);
     }
-
+    
     private static void createShardingSchema(final DatabaseType dbType) {
         try {
             Connection conn;
@@ -132,7 +133,7 @@ public class InItCreateSchema {
             ex.printStackTrace();
         }
     }
-
+    
     private static void createMasterSlaveOnlySchema(final DatabaseType dbType) {
         try {
             Connection conn;
@@ -146,7 +147,7 @@ public class InItCreateSchema {
             ex.printStackTrace();
         }
     }
-
+    
     private static void createJdbcSchema(final DatabaseType dbType) {
         try {
             Connection conn;
@@ -160,35 +161,25 @@ public class InItCreateSchema {
             ex.printStackTrace();
         }
     }
-
-    protected static String getDatabaseName(final String dataSetFile) {
-        String fileName = new File(dataSetFile).getName();
-        if (-1 == fileName.lastIndexOf(".")) {
-            return fileName;
-        }
-        return fileName.substring(0, fileName.lastIndexOf("."));
-    }
-
+    
     private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
-
-        String newDbName = dbName;
+        
+        DatabaseEnvironment dbEnv = new DatabaseEnvironment(type);
         BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName(ConfigRuntime.getDriverClassName(type));
-        if (newDbName == null) {
-            newDbName = ConfigRuntime.getDefualtdb(type);
-        }
-        result.setUrl(ConfigRuntime.getURL(type, newDbName));
-        result.setUsername(ConfigRuntime.getUsername(type));
-        result.setPassword(ConfigRuntime.getPassword(type));
-        result.setMaxActive(1);
+        result.setDriverClassName(dbEnv.getDriverClassName());
+        
+        result.setUrl(dbEnv.getURL(dbName));
+        result.setUsername(dbEnv.getUsername());
+        result.setPassword(dbEnv.getPassword());
+        //result.setMaxActive(1);
         if (DatabaseType.Oracle == type) {
-            result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + newDbName));
+            result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dbName));
         }
         return result;
     }
-
+    
     private static Connection initialConnection(final String dbName, final DatabaseType type) throws SQLException {
         return buildDataSource(dbName, type).getConnection();
     }
-
+    
 }

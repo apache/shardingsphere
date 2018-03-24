@@ -89,7 +89,7 @@ public class AssertEngine {
 
             ShardingContext shardingContext = DataSourceUtil.getShardingContext((ShardingDataSource) dataSource);
             ShardingRule shardingRule = shardingContext.getShardingRule();
-            Map<String, DataSource> dataSourceMaps = shardingRule.getDataSourceMap();
+            Map<String, DataSource> dataSourceMaps = shardingContext.getDataSourceMap();
 
             List<AssertDefinition> asserts = assertsDefinition.getAsserts();
             List<String> dbs = new ArrayList<>();

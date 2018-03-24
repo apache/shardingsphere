@@ -22,9 +22,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import javax.xml.bind.JAXBException;
 
+import lombok.AllArgsConstructor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,7 +35,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
-import io.shardingjdbc.dbtest.common.ConfigRuntime;
 import io.shardingjdbc.dbtest.common.FileUtils;
 import io.shardingjdbc.dbtest.common.PathUtils;
 import io.shardingjdbc.dbtest.config.AnalyzeConfig;
@@ -43,32 +44,68 @@ import io.shardingjdbc.dbtest.exception.DbTestException;
 import io.shardingjdbc.dbtest.init.InItCreateSchema;
 
 @RunWith(value = Parameterized.class)
+@AllArgsConstructor
 public class StartTest {
-
+    
     private String path;
-
+    
     private String id;
-
-    public StartTest(final String path, final String id) {
-        this.path = path;
-        this.id = id;
+    
+    
+    private static Properties config = new Properties();
+    
+    static {
+        try {
+            config.load(StartTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
+    
+    /**
+     * query value.
+     *
+     * @param key          key
+     * @param defaultValue default Value
+     * @return value
+     */
+    public static String getString(final String key, final String defaultValue) {
+        return config.getProperty(key, defaultValue);
+    }
+    
+    /**
+     * query Assert Path.
+     *
+     * @return Assert Path
+     */
+    public static String getAssertPath() {
+        return getString("assert.path", null);
+    }
+    
+    /**
+     * initialized.
+     *
+     * @return initialized
+     */
+    public static boolean isInitialized() {
+        return Boolean.valueOf(getString("initialized", "false"));
+    }
+    
+    
     @Parameters
-    public static Collection<String[]> getParams() {
-
-        String assertPath = ConfigRuntime.getAssertPath();
+    public static Collection<String[]> getParameters() {
+        String assertPath = getAssertPath();
         assertPath = PathUtils.getPath(assertPath);
         List<String> paths = FileUtils.getAllFilePaths(new File(assertPath), "assert-", "xml");
         List<String[]> result = new ArrayList<>();
-
+        
         try {
             for (String each : paths) {
                 AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
                 List<AssertDefinition> asserts = assertsDefinition.getAsserts();
-                List<String> ls = new ArrayList<>();
+                List<String> assertDefinitions = new ArrayList<>(asserts.size());
                 for (AssertDefinition eachAssertDefinition : asserts) {
-                    if (ls.contains(eachAssertDefinition.getId())) {
+                    if (assertDefinitions.contains(eachAssertDefinition.getId())) {
                         throw new DbTestException("ID can't be repeated");
                     }
                     result.add(new String[]{each, eachAssertDefinition.getId()});
@@ -78,28 +115,27 @@ public class StartTest {
         } catch (JAXBException | IOException e) {
             e.printStackTrace();
         }
-
         return result;
     }
-
+    
     @BeforeClass
     public static void beforeClass() {
-        if (ConfigRuntime.isInitialized()) {
+        if (isInitialized()) {
             InItCreateSchema.createDatabase();
             InItCreateSchema.initTable();
         }
     }
-
+    
     @Test
     public void test() {
         AssertEngine.runAssert(path, id);
     }
-
+    
     @AfterClass
     public static void afterClass() {
-        if (ConfigRuntime.isInitialized()) {
+        if (isInitialized()) {
             InItCreateSchema.dropDatabase();
         }
     }
-
+    
 }

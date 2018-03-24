@@ -55,7 +55,7 @@ public class DataSourceUtil {
     public static Map<String, DataSource> getDataSourceMap(final ShardingDataSource shardingDataSource)
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         ShardingContext shardingContext = getShardingContext(shardingDataSource);
-        return shardingContext.getShardingRule().getDataSourceMap();
+        return shardingContext.getDataSourceMap();
     }
 
     /**
