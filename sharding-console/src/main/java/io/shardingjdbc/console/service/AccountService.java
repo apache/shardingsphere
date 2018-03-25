@@ -17,15 +17,13 @@
 
 package io.shardingjdbc.console.service;
 
+import io.shardingjdbc.console.domain.AccountInfo;
 import io.shardingjdbc.console.domain.AccountResponseResult;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Map;
-
-import io.shardingjdbc.console.constant.LoginInfo;
 
 /**
  * SqlService.
@@ -35,12 +33,12 @@ import io.shardingjdbc.console.constant.LoginInfo;
 @Service
 public class AccountService {
 
-    public AccountResponseResult login(final Map<String, String> account, final HttpSession httpSession) {
+    public AccountResponseResult login(final AccountInfo accountInfo, final HttpSession httpSession) {
 
-        String driver = account.get(LoginInfo.DATASOURCE_DRIVER);
-        String url = account.get(LoginInfo.DATASOURCE_URL);
-        String username = account.get(LoginInfo.DATASOURCE_USERNAME);
-        String password = account.get(LoginInfo.DATASOURCE_PASSWORD);
+        String driver = accountInfo.getDriver();
+        String url = accountInfo.getUrl();
+        String username = accountInfo.getUsername();
+        String password = accountInfo.getPassword();
         AccountResponseResult accountResponseResult = new AccountResponseResult();
 
         if (null == driver || null == url || null == username || null == password) {
@@ -61,10 +59,8 @@ public class AccountService {
             accountResponseResult.setErrMsg(cne.getMessage());
             return accountResponseResult;
         }
-        httpSession.setAttribute(LoginInfo.DATASOURCE_DRIVER, driver);
-        httpSession.setAttribute(LoginInfo.DATASOURCE_URL, url);
-        httpSession.setAttribute(LoginInfo.DATASOURCE_USERNAME, username);
-        httpSession.setAttribute(LoginInfo.DATASOURCE_PASSWORD, password);
+
+        httpSession.setAttribute("accountInfo", accountInfo);
         accountResponseResult.setStatusCode(0);
         return accountResponseResult;
     }

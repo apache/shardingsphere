@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.console.service;
 
-import io.shardingjdbc.console.constant.LoginInfo;
+import io.shardingjdbc.console.domain.AccountInfo;
 import io.shardingjdbc.console.domain.SqlResponseResult;
 import org.springframework.stereotype.Service;
 
@@ -35,17 +35,19 @@ public class SqlService {
 
     public SqlResponseResult execute(final String sql, final HttpSession httpSession) {
 
-        String driver = (String) httpSession.getAttribute(LoginInfo.DATASOURCE_DRIVER);
-        String url = httpSession.getAttribute(LoginInfo.DATASOURCE_URL) + "?" + LoginInfo.DATASOURCE_PARAM_USE_AFFECTED_ROWS;
-        String username = (String) httpSession.getAttribute(LoginInfo.DATASOURCE_USERNAME);
-        String password = (String) httpSession.getAttribute(LoginInfo.DATASOURCE_PASSWORD);
         Map<String, Object> resultInfo = new LinkedHashMap<>();
         SqlResponseResult sqlResponseResult = new SqlResponseResult(resultInfo);
+        AccountInfo accountInfo = (AccountInfo) httpSession.getAttribute("accountInfo");
 
-        if (null == driver) {
+        if (null == accountInfo) {
             sqlResponseResult.setErrMsg("please login first.");
             return sqlResponseResult;
         }
+
+        String driver = accountInfo.getDriver();
+        String url = accountInfo.getUrl();
+        String username = accountInfo.getUsername();
+        String password = accountInfo.getPassword();
 
         Connection conn = null;
         Statement stmt = null;
