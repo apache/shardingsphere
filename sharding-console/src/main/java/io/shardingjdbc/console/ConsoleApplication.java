@@ -36,7 +36,9 @@ public class ConsoleApplication {
      *
      * @param args startup arguments
      */
+    // CHECKSTYLE:OFF
     public static void main(final String[] args) {
         SpringApplication.run(ConsoleApplication.class, args);
     }
+    // CHECKSTYLE:ON
 }
