@@ -19,7 +19,7 @@ package io.shardingjdbc.dbtest.common;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 
-public class DatabaseTypeUtils {
+public class DatabaseTypeUtil {
 
     /**
      * Get the database type enumeration.
@@ -36,5 +36,7 @@ public class DatabaseTypeUtils {
         }
         return DatabaseType.H2;
     }
+    
+    
 
 }

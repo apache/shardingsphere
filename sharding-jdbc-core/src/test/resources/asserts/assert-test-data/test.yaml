@@ -1,4 +1,4 @@
-dataSources:
+ dataSources:
   db_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://192.168.145.129:3306/db_0

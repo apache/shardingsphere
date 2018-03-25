@@ -19,13 +19,11 @@ package io.shardingjdbc.dbtest;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import javax.xml.bind.JAXBException;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import lombok.AllArgsConstructor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -35,8 +33,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
-import io.shardingjdbc.dbtest.common.FileUtils;
-import io.shardingjdbc.dbtest.common.PathUtils;
+import io.shardingjdbc.dbtest.common.FileUtil;
+import io.shardingjdbc.dbtest.common.PathUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeConfig;
 import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
@@ -95,21 +93,15 @@ public class StartTest {
     @Parameters
     public static Collection<String[]> getParameters() {
         String assertPath = getAssertPath();
-        assertPath = PathUtils.getPath(assertPath);
-        List<String> paths = FileUtils.getAllFilePaths(new File(assertPath), "assert-", "xml");
+        assertPath = PathUtil.getPath(assertPath);
+        List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "assert-", "xml");
         List<String[]> result = new ArrayList<>();
         
         try {
             for (String each : paths) {
                 AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
                 List<AssertDefinition> asserts = assertsDefinition.getAsserts();
-                List<String> assertDefinitions = new ArrayList<>(asserts.size());
-                for (AssertDefinition eachAssertDefinition : asserts) {
-                    if (assertDefinitions.contains(eachAssertDefinition.getId())) {
-                        throw new DbTestException("ID can't be repeated");
-                    }
-                    result.add(new String[]{each, eachAssertDefinition.getId()});
-                }
+                collateData(result, each, asserts);
                 AssertEngine.addAssertDefinition(each, assertsDefinition);
             }
         } catch (JAXBException | IOException e) {
@@ -118,11 +110,29 @@ public class StartTest {
         return result;
     }
     
+    private static void collateData(final List<String[]> result, final String path, final List<AssertDefinition> asserts) {
+        List<String> assertDefinitions = new ArrayList<>(asserts.size());
+        for (AssertDefinition each : asserts) {
+            if (assertDefinitions.contains(each.getId())) {
+                throw new DbTestException("ID can't be repeated");
+            }
+            result.add(new String[]{path, each.getId()});
+        }
+    }
+    
     @BeforeClass
     public static void beforeClass() {
-        if (isInitialized()) {
-            InItCreateSchema.createDatabase();
-            InItCreateSchema.initTable();
+        try {
+            if (isInitialized()) {
+                String assertPath = getAssertPath();
+                List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "", "yaml");
+                Set<DatabaseType> databaseSchemas = InItCreateSchema.getDatabaseSchema(paths);
+                
+                InItCreateSchema.createDatabase(databaseSchemas);
+                InItCreateSchema.initTable(databaseSchemas);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     
@@ -133,8 +143,15 @@ public class StartTest {
     
     @AfterClass
     public static void afterClass() {
-        if (isInitialized()) {
-            InItCreateSchema.dropDatabase();
+        try {
+            if (isInitialized()) {
+                String assertPath = getAssertPath();
+                List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "", "yaml");
+                Set<DatabaseType> databaseSchemas = InItCreateSchema.getDatabaseSchema(paths);
+                InItCreateSchema.dropDatabase(databaseSchemas);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     

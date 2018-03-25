@@ -19,9 +19,9 @@ package io.shardingjdbc.dbtest.common;
 
 import io.shardingjdbc.dbtest.exception.DbTestException;
 
-public class PathUtils {
+public class PathUtil {
 
-    private static final String BASEPATH = PathUtils.class.getClassLoader().getResource("").getPath();
+    private static final String BASEPATH = PathUtil.class.getClassLoader().getResource("").getPath();
 
     /**
      * Get the resource path.

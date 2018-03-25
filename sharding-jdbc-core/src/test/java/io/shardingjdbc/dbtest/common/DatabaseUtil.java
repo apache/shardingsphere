@@ -47,7 +47,7 @@ import io.shardingjdbc.dbtest.data.DatasetDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
 import org.junit.Assert;
 
-public class DatabaseUtils {
+public class DatabaseUtil {
 
     /**
      * Generating sql.

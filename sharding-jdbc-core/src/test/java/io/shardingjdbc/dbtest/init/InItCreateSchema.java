@@ -18,44 +18,46 @@
 package io.shardingjdbc.dbtest.init;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import io.shardingjdbc.core.common.env.DatabaseEnvironment;
+import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
+import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.tools.RunScript;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.dbtest.common.DatabaseTypeUtils;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+
+import javax.sql.DataSource;
 
 public class InItCreateSchema {
     
     /**
      * Initialize the database table.
      */
-    public static synchronized void initTable(List<String> dbs) {
-        for (String db : dbs) {
-            DatabaseType databaseType = DatabaseTypeUtils.getDatabaseType(db);
-            createSchema(databaseType);
+    public static synchronized void initTable(Set<DatabaseType> dbs) {
+        for (DatabaseType db : dbs) {
+            createSchema(db);
         }
     }
     
     /**
      * Create a database.
      */
-    public static void createDatabase(List<String> dbs) {
+    public static void createDatabase(Set<DatabaseType> dbs) {
         Connection conn = null;
         try {
-            for (String each : dbs) {
-                DatabaseType databaseType = DatabaseTypeUtils.getDatabaseType(each);
+            for (DatabaseType each : dbs) {
                 
-                conn = initialConnection(null, databaseType);
+                conn = initialConnection(null, each);
                 String packing = "default";
-                if (DatabaseType.Oracle == databaseType) {
+                if (DatabaseType.Oracle == each) {
                     packing = "oracle";
                 }
                 RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
@@ -79,15 +81,14 @@ public class InItCreateSchema {
     /**
      * drop the database table.
      */
-    public static synchronized void dropDatabase(List<String> dbs) {
+    public static synchronized void dropDatabase(Set<DatabaseType> dbs) {
         Connection conn = null;
         try {
-            for (String each : dbs) {
-                DatabaseType databaseType = DatabaseTypeUtils.getDatabaseType(each);
+            for (DatabaseType each : dbs) {
                 
-                conn = initialConnection(null, databaseType);
+                conn = initialConnection(null, each);
                 String packing = "default";
-                if (DatabaseType.Oracle == databaseType) {
+                if (DatabaseType.Oracle == each) {
                     packing = "oracle";
                 }
                 RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
@@ -180,6 +181,34 @@ public class InItCreateSchema {
     
     private static Connection initialConnection(final String dbName, final DatabaseType type) throws SQLException {
         return buildDataSource(dbName, type).getConnection();
+    }
+    
+    /**
+     *
+     * @param paths paths
+     * @return
+     */
+    public static Set<DatabaseType> getDatabaseSchema(final List<String> paths) throws IOException {
+        Set<DatabaseType> dbset = new HashSet<>();
+        for (String each : paths) {
+            YamlShardingConfiguration shardingConfiguration =  unmarshal(new File(each));
+            Map<String, DataSource> dataSourceMap = shardingConfiguration.getDataSources();
+            for (Map.Entry<String, DataSource> eachDataSourceEntry : dataSourceMap.entrySet()) {
+                BasicDataSource dataSource = (BasicDataSource)eachDataSourceEntry.getValue();
+                DatabaseType databaseType = DatabaseEnvironment.getDatabaseTypeByJdbcDriver( dataSource.getDriver().getClass().getName());
+                dbset.add(databaseType);
+            }
+        }
+        return dbset;
+    }
+    
+    private static YamlShardingConfiguration unmarshal(final File yamlFile) throws IOException {
+        try (
+                FileInputStream fileInputStream = new FileInputStream(yamlFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
+        ) {
+            return new Yaml(new Constructor(YamlShardingConfiguration.class)).loadAs(inputStreamReader, YamlShardingConfiguration.class);
+        }
     }
     
 }

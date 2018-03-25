@@ -75,12 +75,12 @@ public final class DatabaseEnvironment {
         USERNAME.put(DatabaseType.Oracle, "jdbc");
         PASSWORD.put(DatabaseType.Oracle, "jdbc");
         SCHEMA.put(DatabaseType.Oracle, "%s");
-    
+        
     }
     
     /**
      * Get driver class name.
-     * 
+     *
      * @return driver class name
      */
     public String getDriverClassName() {
@@ -89,7 +89,7 @@ public final class DatabaseEnvironment {
     
     /**
      * Get URL.
-     * 
+     *
      * @param dbName database name
      * @return database URL
      */
@@ -99,7 +99,7 @@ public final class DatabaseEnvironment {
     
     /**
      * Get username.
-     * 
+     *
      * @return username
      */
     public String getUsername() {
@@ -108,7 +108,7 @@ public final class DatabaseEnvironment {
     
     /**
      * Get password.
-     * 
+     *
      * @return password
      */
     public String getPassword() {
@@ -117,11 +117,26 @@ public final class DatabaseEnvironment {
     
     /**
      * Get schema.
-     * 
+     *
      * @param dbName database name
      * @return schema
      */
     public String getSchema(final String dbName) {
         return null == SCHEMA.get(databaseType) ? null : String.format(SCHEMA.get(databaseType), dbName);
+    }
+    
+    /**
+     * Get the database type enumeration.
+     *
+     * @param type String database type
+     * @return database enumeration
+     */
+    public static DatabaseType getDatabaseTypeByJdbcDriver(final String type) {
+        for (Map.Entry<DatabaseType, String> each : DRIVER_CLASS_NAME.entrySet()) {
+            if (type.equals(each.getValue())) {
+                return each.getKey();
+            }
+        }
+        return DatabaseType.H2;
     }
 }
