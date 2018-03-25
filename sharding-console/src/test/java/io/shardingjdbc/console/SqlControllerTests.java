@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.console;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockServletContext;
@@ -27,4 +28,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @SpringBootTest(classes = MockServletContext.class)
 @WebAppConfiguration
 public class SqlControllerTests {
+    @Test
+    public void assertHelloWorld() {
+    }
 }
