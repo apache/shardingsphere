@@ -3,6 +3,11 @@ package io.shardingjdbc.console.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * AccountResponseResult.
+ *
+ * @author zhangyonglun
+ */
 @Getter
 @Setter
 public class AccountResponseResult {

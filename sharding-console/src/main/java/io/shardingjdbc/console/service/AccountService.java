@@ -22,6 +22,7 @@ import io.shardingjdbc.console.domain.AccountResponseResult;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -49,15 +50,22 @@ public class AccountService {
             accountResponseResult.setErrMsg("param empty");
             return accountResponseResult;
         }
+
+        Connection connection = null;
         try {
             Class.forName(driver);
-            DriverManager.getConnection(url, username, password);
+            connection = DriverManager.getConnection(url, username, password);
         } catch (SQLException sqe) {
             accountResponseResult.setErrMsg(sqe.getMessage());
             return accountResponseResult;
         } catch (ClassNotFoundException cne) {
             accountResponseResult.setErrMsg(cne.getMessage());
             return accountResponseResult;
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (SQLException cse) { }
         }
 
         httpSession.setAttribute("accountInfo", accountInfo);

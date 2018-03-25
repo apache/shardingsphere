@@ -22,6 +22,11 @@ import lombok.Setter;
 
 import java.util.Map;
 
+/**
+ * SqlResponseResult.
+ *
+ * @author zhangyonglun
+ */
 @Getter
 @Setter
 public class SqlResponseResult {
@@ -30,11 +35,11 @@ public class SqlResponseResult {
 
     private String errMsg;
 
-    private Map<String, Object> resultInfo;
+    private ResultInfo resultInfo;
 
-    public SqlResponseResult(final Map<String, Object> resultInfo) {
-        this.resultInfo = resultInfo;
+    public SqlResponseResult() {
         statusCode = -1;
         errMsg = "";
+        resultInfo = new ResultInfo();
     }
 }

@@ -18,6 +18,7 @@
 package io.shardingjdbc.console.service;
 
 import io.shardingjdbc.console.domain.AccountInfo;
+import io.shardingjdbc.console.domain.ResultInfo;
 import io.shardingjdbc.console.domain.SqlResponseResult;
 import org.springframework.stereotype.Service;
 
@@ -35,8 +36,8 @@ public class SqlService {
 
     public SqlResponseResult execute(final String sql, final HttpSession httpSession) {
 
-        Map<String, Object> resultInfo = new LinkedHashMap<>();
-        SqlResponseResult sqlResponseResult = new SqlResponseResult(resultInfo);
+        SqlResponseResult sqlResponseResult = new SqlResponseResult();
+        ResultInfo resultInfo = sqlResponseResult.getResultInfo();
         AccountInfo accountInfo = (AccountInfo) httpSession.getAttribute("accountInfo");
 
         if (null == accountInfo) {
@@ -63,7 +64,10 @@ public class SqlService {
             if (stmt.execute(sql)) {
                 resultSet = stmt.getResultSet();
             } else {
-                resultInfo.put("tip", stmt.getUpdateCount() + " rows affected");
+                resultInfo.setTip(stmt.getUpdateCount() + " rows affected");
+                resultInfo.setDuration(System.currentTimeMillis() - startTime);
+                resultInfo.setSql(sql);
+                sqlResponseResult.setStatusCode(0);
                 return sqlResponseResult;
             }
 
@@ -83,13 +87,13 @@ public class SqlService {
                     data.put(resultSetMetaData.getColumnName(i), resultSet.getString(i));
                 }
                 resList.add(data);
-                resultInfo.put("tip", resultSet.getRow() + " rows affected");
+                resultInfo.setTip(resultSet.getRow() + " rows affected");
             }
 
-            resultInfo.put("duration", System.currentTimeMillis() - startTime);
-            resultInfo.put("sql", sql);
-            resultInfo.put("types", types);
-            resultInfo.put("data", resList);
+            resultInfo.setDuration(System.currentTimeMillis() - startTime);
+            resultInfo.setSql(sql);
+            resultInfo.setTypes(types);
+            resultInfo.setData(resList);
             sqlResponseResult.setStatusCode(0);
             resultSet.close();
             stmt.close();

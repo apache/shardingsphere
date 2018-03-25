@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
 /**
  * SqlController.
@@ -41,7 +40,7 @@ public class SqlController {
     /**
      * execute SQL.
      *
-     * @return result
+     * @return SqlResponseResult
      */
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
     public SqlResponseResult executeSQL(@RequestBody final String sql, final ServletRequest servletRequest) {
