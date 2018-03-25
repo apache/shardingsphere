@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,31 +15,40 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.config.bean.parsecontext;
+package io.shardingjdbc.dbtest.config.bean;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
 
 @Getter
-@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Condition {
+public class AssertDDLDefinition implements AssertDefinition {
+
+    @XmlAttribute(name = "id")
+    private String id;
+
+    @XmlAttribute(name = "init-data-file")
+    private String initDataFile;
+
+    @XmlAttribute(name = "expected-data-file")
+    private String expectedDataFile;
+
+    @XmlAttribute(name = "expected-update")
+    private Integer expectedUpdate;
     
-    @XmlAttribute(name = "column-name")
-    private String columnName;
+    @XmlAttribute(name = "sql")
+    private String sql;
     
-    @XmlAttribute(name = "table-name")
-    private String tableName;
+    @XmlAttribute(name = "expected-sql")
+    private String expectedSql;
+
+    @XmlElement(name = "parameters")
+    private ParametersDefinition parameters;
     
-    @XmlAttribute
-    private String operator;
-    
-    @XmlElement(name = "value") 
-    private List<Value> values;
+    @XmlElement(name = "expected-parameters")
+    private ParametersDefinition expectedParameters;
 }

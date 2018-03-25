@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,19 +15,32 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.config.bean.parsecontext;
-
-import lombok.Getter;
+package io.shardingjdbc.dbtest.config.bean;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
+
+import lombok.Getter;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Conditions {
+public class AssertDQLDefinition implements AssertDefinition {
     
-    @XmlElement(name = "condition")
-    private List<Condition> conditions;
+    @XmlAttribute(name = "id")
+    private String id;
+    
+    @XmlAttribute(name = "init-data-file")
+    private String initDataFile;
+    
+    @XmlAttribute(name = "expected-data-file")
+    private String expectedDataFile;
+    
+    @XmlAttribute(name = "sql")
+    private String sql;
+    
+    @XmlElement(name = "parameters")
+    private ParametersDefinition parameters;
+    
 }

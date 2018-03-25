@@ -131,7 +131,7 @@ public final class DatabaseEnvironment {
      * @param type String database type
      * @return database enumeration
      */
-    public static DatabaseType getDatabaseTypeByJdbcDriver(final String type) {
+    public  DatabaseType getDatabaseTypeByJdbcDriver(final String type) {
         for (Map.Entry<DatabaseType, String> each : DRIVER_CLASS_NAME.entrySet()) {
             if (type.equals(each.getValue())) {
                 return each.getKey();

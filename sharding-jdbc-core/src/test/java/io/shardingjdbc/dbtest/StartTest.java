@@ -24,6 +24,7 @@ import java.util.*;
 import javax.xml.bind.JAXBException;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.dbtest.config.bean.*;
 import lombok.AllArgsConstructor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -36,8 +37,6 @@ import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.common.FileUtil;
 import io.shardingjdbc.dbtest.common.PathUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeConfig;
-import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
-import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
 import io.shardingjdbc.dbtest.init.InItCreateSchema;
 
@@ -100,8 +99,15 @@ public class StartTest {
         try {
             for (String each : paths) {
                 AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
-                List<AssertDefinition> asserts = assertsDefinition.getAsserts();
-                collateData(result, each, asserts);
+                List<AssertDQLDefinition> assertDQLs = assertsDefinition.getAssertDQL();
+                collateData(result, each, assertDQLs);
+                
+                List<AssertDMLDefinition> assertDMLs = assertsDefinition.getAssertDML();
+                collateData(result, each, assertDMLs);
+                
+                List<AssertDDLDefinition> assertDDLs = assertsDefinition.getAssertDDL();
+                collateData(result, each, assertDDLs);
+                
                 AssertEngine.addAssertDefinition(each, assertsDefinition);
             }
         } catch (JAXBException | IOException e) {
@@ -110,7 +116,10 @@ public class StartTest {
         return result;
     }
     
-    private static void collateData(final List<String[]> result, final String path, final List<AssertDefinition> asserts) {
+    private static <T extends AssertDefinition> void collateData(final List<String[]> result, final String path, final List<T> asserts) {
+        if (asserts == null) {
+            return;
+        }
         List<String> assertDefinitions = new ArrayList<>(asserts.size());
         for (AssertDefinition each : asserts) {
             if (assertDefinitions.contains(each.getId())) {
@@ -125,7 +134,8 @@ public class StartTest {
         try {
             if (isInitialized()) {
                 String assertPath = getAssertPath();
-                List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "", "yaml");
+                assertPath = PathUtil.getPath(assertPath);
+                List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "t", "yaml");
                 Set<DatabaseType> databaseSchemas = InItCreateSchema.getDatabaseSchema(paths);
                 
                 InItCreateSchema.createDatabase(databaseSchemas);

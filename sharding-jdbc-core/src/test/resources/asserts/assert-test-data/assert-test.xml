@@ -1,0 +1,23 @@
+<asserts sharding-rule-config="./config/test.yaml">
+    <assertDQL id="test" init-data-file="./init"
+            sql="assertSelectEqualsWithSingleTable"
+            expected-data-file="./asserts/dql/select.xml">
+        <parameters>
+            <parameter value="10" type="int"/>
+            <parameter value="1000" type="int"/>
+        </parameters>
+    </assertDQL>
+    <assertDML id="test2" init-data-file="./init" expected-update="1" sql="assertUpdateWithoutAlias"
+            expected-sql="assertSelectEqualsWithSingleTable"
+            expected-data-file="./asserts/dml/update.xml">
+        <parameters>
+            <parameter value="update" />
+            <parameter value="10001" type="int"/>
+            <parameter value="10" type="int"/>
+        </parameters>
+        <expected-parameters>
+            <parameter value="10" type="int"/>
+            <parameter value="10001" type="int"/>
+        </expected-parameters>
+    </assertDML>
+</asserts>

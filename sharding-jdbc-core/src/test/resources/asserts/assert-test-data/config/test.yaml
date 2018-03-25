@@ -1,19 +1,17 @@
- dataSources:
-  db_0: !!org.apache.commons.dbcp.BasicDataSource
+dataSources:
+  db_0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://192.168.145.129:3306/db_0
     username: test
     password: test
-    maxActive: 100
-  db_1: !!org.apache.commons.dbcp.BasicDataSource
+  db_1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://192.168.145.129:3306/db_1
     username: test
     password: test
-    maxActive: 100
 
 shardingRule:
-  defaultDataSourceName: db0
+  defaultDataSourceName: db_0
 
   defaultKeyGeneratorClass: io.shardingjdbc.dbtest.core.yaml.fixture.IncrementKeyGenerator
 

@@ -190,12 +190,13 @@ public class InItCreateSchema {
      */
     public static Set<DatabaseType> getDatabaseSchema(final List<String> paths) throws IOException {
         Set<DatabaseType> dbset = new HashSet<>();
+        DatabaseEnvironment databaseEnvironment = new DatabaseEnvironment(DatabaseType.H2);
         for (String each : paths) {
             YamlShardingConfiguration shardingConfiguration =  unmarshal(new File(each));
             Map<String, DataSource> dataSourceMap = shardingConfiguration.getDataSources();
             for (Map.Entry<String, DataSource> eachDataSourceEntry : dataSourceMap.entrySet()) {
                 BasicDataSource dataSource = (BasicDataSource)eachDataSourceEntry.getValue();
-                DatabaseType databaseType = DatabaseEnvironment.getDatabaseTypeByJdbcDriver( dataSource.getDriver().getClass().getName());
+                DatabaseType databaseType = databaseEnvironment.getDatabaseTypeByJdbcDriver( dataSource.getDriverClassName());
                 dbset.add(databaseType);
             }
         }

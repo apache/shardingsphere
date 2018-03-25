@@ -34,8 +34,14 @@ public class AssertsDefinition {
 
     private String path;
 
-    @XmlElement(name = "assert")
-    private List<AssertDefinition> asserts;
+    @XmlElement(name = "assertDQL")
+    private List<AssertDQLDefinition> assertDQL;
+    
+    @XmlElement(name = "assertDML")
+    private List<AssertDMLDefinition> assertDML;
+    
+    @XmlElement(name = "assertDDL")
+    private List<AssertDDLDefinition> assertDDL;
 
     public void setPath(String path) {
         this.path = path;

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,39 +15,40 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.config.bean.parsecontext;
+package io.shardingjdbc.dbtest.config.bean;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
-import lombok.Getter;
-import lombok.Setter;
-
 @Getter
-@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class AggregationSelectItem {
+public class AssertDMLDefinition implements AssertDefinition {
 
-    @XmlAttribute(name = "inner-expression")
-    private String innerExpression;
+    @XmlAttribute(name = "id")
+    private String id;
 
-    @XmlAttribute(name = "aggregation-type")
-    private String aggregationType;
+    @XmlAttribute(name = "init-data-file")
+    private String initDataFile;
 
-    @XmlAttribute
-    private String alias;
+    @XmlAttribute(name = "expected-data-file")
+    private String expectedDataFile;
 
-    @XmlAttribute
-    private String option;
+    @XmlAttribute(name = "expected-update")
+    private Integer expectedUpdate;
+    
+    @XmlAttribute(name = "sql")
+    private String sql;
+    
+    @XmlAttribute(name = "expected-sql")
+    private String expectedSql;
 
-    @XmlAttribute
-    private Integer index;
-
-    @XmlElement(name = "derived-column")
-    private List<AggregationSelectItem> derivedColumns = new ArrayList<>(2);
+    @XmlElement(name = "parameters")
+    private ParametersDefinition parameters;
+    
+    @XmlElement(name = "expected-parameters")
+    private ParametersDefinition expectedParameters;
 }

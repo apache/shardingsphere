@@ -1,10 +1,4 @@
 <dataset>
-    <table-config>
-        <t_order>
-            <order_id>int</order_id>
-            <user_id>int</user_id>
-        </t_order>
-    </table-config>
     <t_order order_id="1600" user_id="16" status="init" />
     <t_order order_id="1601" user_id="16" status="init" />
     <t_order order_id="2600" user_id="26" status="init" />
