@@ -14,6 +14,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class ResultInfo {
+
     private String tip;
 
     private Long duration;
@@ -24,7 +25,7 @@ public class ResultInfo {
 
     private List<Map<String, String>> data;
 
-    public ResultInfo() {
+    ResultInfo() {
         tip = "";
         duration = 0L;
         sql = "";

@@ -34,6 +34,13 @@ import java.sql.SQLException;
 @Service
 public class AccountService {
 
+    /**
+     * login.
+     *
+     * @param accountInfo account information
+     * @param httpSession httpSession
+     * @return account response result
+     */
     public AccountResponseResult login(final AccountInfo accountInfo, final HttpSession httpSession) {
 
         String driver = accountInfo.getDriver();
@@ -47,7 +54,7 @@ public class AccountService {
             return accountResponseResult;
         }
 
-        if (url.equals("") || driver.equals("")) {
+        if ("".equals(url) || "".equals(driver)) {
             accountResponseResult.setErrMsg("param empty");
             return accountResponseResult;
         }
@@ -56,11 +63,8 @@ public class AccountService {
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
-        } catch (SQLException sqe) {
-            accountResponseResult.setErrMsg(sqe.getMessage());
-            return accountResponseResult;
-        } catch (ClassNotFoundException cne) {
-            accountResponseResult.setErrMsg(cne.getMessage());
+        } catch (SQLException | ClassNotFoundException ex) {
+            accountResponseResult.setErrMsg(ex.getMessage());
             return accountResponseResult;
         } finally {
             closeQuietly(connection);
@@ -70,11 +74,11 @@ public class AccountService {
         return accountResponseResult;
     }
 
-    private void closeQuietly(Connection connection) {
+    private void closeQuietly(final Connection connection) {
         if (connection != null) {
             try {
                 connection.close();
-            } catch (SQLException cse) {
+            } catch (SQLException ignore) {
             }
         }
     }

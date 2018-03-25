@@ -20,8 +20,6 @@ package io.shardingjdbc.console.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Map;
-
 /**
  * SqlResponseResult.
  *

@@ -42,6 +42,13 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
+    /**
+     * login.
+     *
+     * @param accountInfo account information
+     * @param servletRequest servlet request
+     * @return account response result
+     */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public AccountResponseResult logIn(@RequestBody final AccountInfo accountInfo, final ServletRequest servletRequest) {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
@@ -49,6 +56,12 @@ public class AccountController {
         return accountService.login(accountInfo, httpSession);
     }
 
+    /**
+     * logout.
+     *
+     * @param servletRequest servlet request
+     * @return account response result
+     */
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public AccountResponseResult logOut(final ServletRequest servletRequest) {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;

@@ -23,8 +23,16 @@ import io.shardingjdbc.console.domain.SqlResponseResult;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.ResultSetMetaData;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * SqlService.
@@ -34,6 +42,13 @@ import java.util.*;
 @Service
 public class SqlService {
 
+    /**
+     * execute sql.
+     *
+     * @param sql sql string
+     * @param httpSession httpSession
+     * @return sql response result
+     */
     public SqlResponseResult execute(final String sql, final HttpSession httpSession) {
         SqlResponseResult sqlResponseResult = new SqlResponseResult();
         ResultInfo resultInfo = sqlResponseResult.getResultInfo();
@@ -59,17 +74,16 @@ public class SqlService {
             } else {
                 return countsFormatResult(sqlResponseResult, resultInfo, statement, startTime, sql);
             }
-        } catch (SQLException sqe) {
-            sqlResponseResult.setErrMsg(sqe.getMessage());
-        } catch (Exception e) {
-            sqlResponseResult.setErrMsg(e.getMessage());
+        } catch (SQLException | ClassNotFoundException ex) {
+            sqlResponseResult.setErrMsg(ex.getMessage());
+            return sqlResponseResult;
         } finally {
             closeQuietly(connection, statement, resultSet);
-            return sqlResponseResult;
         }
     }
 
-    private SqlResponseResult countsFormatResult(SqlResponseResult sqlResponseResult, ResultInfo resultInfo, Statement statement, long startTime, String sql) throws SQLException {
+    private SqlResponseResult countsFormatResult(final SqlResponseResult sqlResponseResult, final ResultInfo resultInfo, final Statement statement,
+                                                 final long startTime, final String sql) throws SQLException {
         resultInfo.setTip(statement.getUpdateCount() + " rows affected");
         resultInfo.setSql(sql);
         sqlResponseResult.setStatusCode(0);
@@ -77,7 +91,8 @@ public class SqlService {
         return sqlResponseResult;
     }
 
-    private SqlResponseResult setsFormatResult(SqlResponseResult sqlResponseResult, ResultInfo resultInfo, ResultSet resultSet, long startTime, String sql) throws SQLException {
+    private SqlResponseResult setsFormatResult(final SqlResponseResult sqlResponseResult, final ResultInfo resultInfo, final ResultSet resultSet,
+                                               final long startTime, final String sql) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         Map<String, String> types = new LinkedHashMap<>();
@@ -104,28 +119,25 @@ public class SqlService {
         return sqlResponseResult;
     }
 
-    private void closeQuietly(Connection connection, Statement statement, ResultSet resultSet) {
+    private void closeQuietly(final Connection connection, final Statement statement, final ResultSet resultSet) {
         if (resultSet != null) {
             try {
                 resultSet.close();
-            } catch (SQLException rse) {
-
+            } catch (SQLException ignore) {
             }
         }
 
         if (statement != null) {
             try {
                 statement.close();
-            } catch (SQLException sse) {
-
+            } catch (SQLException ignore) {
             }
         }
 
         if (connection != null) {
             try {
                 connection.close();
-            } catch (SQLException cse) {
-
+            } catch (SQLException ignore) {
             }
         }
     }
