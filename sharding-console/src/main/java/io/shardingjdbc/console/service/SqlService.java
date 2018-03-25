@@ -35,7 +35,6 @@ import java.util.*;
 public class SqlService {
 
     public SqlResponseResult execute(final String sql, final HttpSession httpSession) {
-
         SqlResponseResult sqlResponseResult = new SqlResponseResult();
         ResultInfo resultInfo = sqlResponseResult.getResultInfo();
         AccountInfo accountInfo = (AccountInfo) httpSession.getAttribute("accountInfo");
@@ -44,79 +43,90 @@ public class SqlService {
             sqlResponseResult.setErrMsg("please login first.");
             return sqlResponseResult;
         }
-
-        String driver = accountInfo.getDriver();
-        String url = accountInfo.getUrl();
-        String username = accountInfo.getUsername();
-        String password = accountInfo.getPassword();
-
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet resultSet = null;
-        ResultSetMetaData resultSetMetaData;
         long startTime = System.currentTimeMillis();
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
 
         try {
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, username, password);
-            stmt = conn.createStatement();
+            Class.forName(accountInfo.getDriver());
+            connection = DriverManager.getConnection(accountInfo.getUrl(), accountInfo.getUsername(), accountInfo.getPassword());
+            statement = connection.createStatement();
 
-            if (stmt.execute(sql)) {
-                resultSet = stmt.getResultSet();
+            if (statement.execute(sql)) {
+                resultSet = statement.getResultSet();
+                return setsFormatResult(sqlResponseResult, resultInfo, resultSet, startTime, sql);
             } else {
-                resultInfo.setTip(stmt.getUpdateCount() + " rows affected");
-                resultInfo.setDuration(System.currentTimeMillis() - startTime);
-                resultInfo.setSql(sql);
-                sqlResponseResult.setStatusCode(0);
-                return sqlResponseResult;
+                return countsFormatResult(sqlResponseResult, resultInfo, statement, startTime, sql);
             }
-
-            resultSetMetaData = resultSet.getMetaData();
-            int columnCount = resultSetMetaData.getColumnCount();
-            Map<String, String> types = new LinkedHashMap<>();
-
-            for (int i = 1; i <= columnCount; i++) {
-                types.put(resultSetMetaData.getColumnName(i),
-                        resultSetMetaData.getColumnTypeName(i) + "(" + resultSetMetaData.getColumnDisplaySize(i) + ")");
-            }
-
-            List<Map<String, String>> resList = new ArrayList<>();
-            while (resultSet.next()) {
-                Map<String, String> data = new LinkedHashMap<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    data.put(resultSetMetaData.getColumnName(i), resultSet.getString(i));
-                }
-                resList.add(data);
-                resultInfo.setTip(resultSet.getRow() + " rows affected");
-            }
-
-            resultInfo.setDuration(System.currentTimeMillis() - startTime);
-            resultInfo.setSql(sql);
-            resultInfo.setTypes(types);
-            resultInfo.setData(resList);
-            sqlResponseResult.setStatusCode(0);
-            resultSet.close();
-            stmt.close();
-            conn.close();
         } catch (SQLException sqe) {
             sqlResponseResult.setErrMsg(sqe.getMessage());
         } catch (Exception e) {
             sqlResponseResult.setErrMsg(e.getMessage());
         } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (SQLException rse) { }
-            try {
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException sse) { }
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException cse) { }
+            closeQuietly(connection, statement, resultSet);
             return sqlResponseResult;
+        }
+    }
+
+    private SqlResponseResult countsFormatResult(SqlResponseResult sqlResponseResult, ResultInfo resultInfo, Statement statement, long startTime, String sql) throws SQLException {
+        resultInfo.setTip(statement.getUpdateCount() + " rows affected");
+        resultInfo.setSql(sql);
+        sqlResponseResult.setStatusCode(0);
+        resultInfo.setDuration(System.currentTimeMillis() - startTime);
+        return sqlResponseResult;
+    }
+
+    private SqlResponseResult setsFormatResult(SqlResponseResult sqlResponseResult, ResultInfo resultInfo, ResultSet resultSet, long startTime, String sql) throws SQLException {
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+        int columnCount = resultSetMetaData.getColumnCount();
+        Map<String, String> types = new LinkedHashMap<>();
+
+        for (int i = 1; i <= columnCount; i++) {
+            types.put(resultSetMetaData.getColumnName(i),
+                    resultSetMetaData.getColumnTypeName(i) + "(" + resultSetMetaData.getColumnDisplaySize(i) + ")");
+        }
+        List<Map<String, String>> dataList = new ArrayList<>();
+
+        while (resultSet.next()) {
+            Map<String, String> data = new LinkedHashMap<>();
+            for (int i = 1; i <= columnCount; i++) {
+                data.put(resultSetMetaData.getColumnName(i), resultSet.getString(i));
+            }
+            dataList.add(data);
+            resultInfo.setTip(resultSet.getRow() + " rows affected");
+        }
+        resultInfo.setSql(sql);
+        resultInfo.setTypes(types);
+        resultInfo.setData(dataList);
+        sqlResponseResult.setStatusCode(0);
+        resultInfo.setDuration(System.currentTimeMillis() - startTime);
+        return sqlResponseResult;
+    }
+
+    private void closeQuietly(Connection connection, Statement statement, ResultSet resultSet) {
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (SQLException rse) {
+
+            }
+        }
+
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException sse) {
+
+            }
+        }
+
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException cse) {
+
+            }
         }
     }
 }

@@ -46,12 +46,13 @@ public class AccountService {
             accountResponseResult.setErrMsg("param error");
             return accountResponseResult;
         }
+
         if (url.equals("") || driver.equals("")) {
             accountResponseResult.setErrMsg("param empty");
             return accountResponseResult;
         }
-
         Connection connection = null;
+
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
@@ -62,14 +63,19 @@ public class AccountService {
             accountResponseResult.setErrMsg(cne.getMessage());
             return accountResponseResult;
         } finally {
-            try {
-                if (connection != null)
-                    connection.close();
-            } catch (SQLException cse) { }
+            closeQuietly(connection);
         }
-
         httpSession.setAttribute("accountInfo", accountInfo);
         accountResponseResult.setStatusCode(0);
         return accountResponseResult;
+    }
+
+    private void closeQuietly(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException cse) {
+            }
+        }
     }
 }
