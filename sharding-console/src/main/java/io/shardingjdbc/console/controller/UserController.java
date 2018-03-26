@@ -18,7 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-
+    
     /**
      * handle https for user login.
      * 
@@ -44,7 +44,7 @@ public class UserController {
         response.addCookie(cookie);
         return new ResponseObject(ResponseCode.SUCCESS);
     }
-
+    
     /**
      * handle http for user's exiting.
      * @param userUUID

@@ -22,7 +22,7 @@ public class ExecuteSQLController {
     
     @Autowired
     private SqlServer sqlServer;
-
+    
     /**
      * execute sql.
      * @param sql

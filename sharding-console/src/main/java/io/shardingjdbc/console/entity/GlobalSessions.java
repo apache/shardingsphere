@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GlobalSessions {
-
+    
     private static Map<String, Connection> sessionInfo;
-
+    
     /**
      * create the map of uuid and connection .
      * @return  Map<String, Connection>
