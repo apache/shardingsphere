@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.core.rule;
+package io.shardingjdbc.core.exception;
 
 /**
  * Sharding rule exception.
  *
  * @author zhangliang
  */
-public final class ShardingRuleException extends RuntimeException {
+public final class ShardingConfigurationException extends RuntimeException {
     
     private static final long serialVersionUID = -1360264079938958332L;
     
@@ -32,7 +32,7 @@ public final class ShardingRuleException extends RuntimeException {
      * @param errorMessage formatted error message
      * @param args arguments of error message
      */
-    public ShardingRuleException(final String errorMessage, final Object... args) {
+    public ShardingConfigurationException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }
 }

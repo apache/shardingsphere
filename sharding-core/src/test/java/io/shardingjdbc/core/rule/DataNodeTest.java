@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.rule;
 
+import io.shardingjdbc.core.exception.ShardingConfigurationException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,17 +33,17 @@ public final class DataNodeTest {
         assertThat(dataNode.getTableName(), is("tbl_0"));
     }
     
-    @Test(expected = ShardingRuleException.class)
+    @Test(expected = ShardingConfigurationException.class)
     public void assertNewInValidDataNodeWithoutDelimiter() {
         new DataNode("ds_0tbl_0");
     }
     
-    @Test(expected = ShardingRuleException.class)
+    @Test(expected = ShardingConfigurationException.class)
     public void assertNewInValidDataNodeWithTwoDelimiters() {
         new DataNode("ds_0.tbl_0.tbl_1");
     }
     
-    @Test(expected = ShardingRuleException.class)
+    @Test(expected = ShardingConfigurationException.class)
     public void assertNewValidDataNodeWithInvalidDelimiter() {
         new DataNode("ds_0,tbl_0");
     }
