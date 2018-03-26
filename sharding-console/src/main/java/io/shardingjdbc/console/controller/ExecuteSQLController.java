@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import io.shardingjdbc.console.constant.RespCode;
 import io.shardingjdbc.console.entity.RespObj;
 import org.springframework.web.bind.annotation.*;
-import sun.jvm.hotspot.runtime.ResultTypeFinder;
 
 import java.sql.Connection;
 import java.util.*;
@@ -23,7 +22,7 @@ import java.util.*;
  */
 
 @RestController
-public class exeSQLController {
+public class ExecuteSQLController {
     @Autowired
     private SqlServer sqlServer;
 

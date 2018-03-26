@@ -1,7 +1,5 @@
 package io.shardingjdbc.console.entity;
 
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
-import io.shardingjdbc.console.constant.ConnDriver;
 import lombok.Getter;
 import lombok.Setter;
 
