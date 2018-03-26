@@ -17,18 +17,10 @@
 
 package io.shardingjdbc.core.api.config.strategy;
 
-import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
-import io.shardingjdbc.core.routing.strategy.none.NoneShardingStrategy;
-
 /**
  * None sharding strategy configuration.
  * 
  * @author zhangliang
  */
 public final class NoneShardingStrategyConfiguration implements ShardingStrategyConfiguration {
-    
-    @Override
-    public ShardingStrategy build() {
-        return new NoneShardingStrategy();
-    }
 }

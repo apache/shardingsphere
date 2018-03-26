@@ -18,6 +18,8 @@
 package io.shardingjdbc.core.api.algorithm.table;
 
 import com.google.common.collect.Sets;
+import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingjdbc.core.fixture.PreciseOrderShardingAlgorithm;
 import io.shardingjdbc.core.routing.strategy.standard.StandardShardingStrategy;
 import org.junit.Test;
 
@@ -31,6 +33,7 @@ public final class TableShardingStrategyTest {
     
     @Test
     public void assertTableShardingStrategyWithSingleShardingColumn() {
-        assertThat(new StandardShardingStrategy("shardingColumn", null).getShardingColumns(), is((Collection<String>) Sets.newTreeSet(Collections.singleton("shardingColumn"))));
+        assertThat(new StandardShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", new PreciseOrderShardingAlgorithm(), null)).getShardingColumns(), 
+                is((Collection<String>) Sets.newTreeSet(Collections.singleton("shardingColumn"))));
     }
 }

@@ -24,6 +24,7 @@ import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.keygen.KeyGenerator;
 import io.shardingjdbc.core.keygen.KeyGeneratorFactory;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
+import io.shardingjdbc.core.routing.strategy.ShardingStrategyFactory;
 import io.shardingjdbc.core.util.InlineExpressionParser;
 import lombok.Getter;
 import lombok.ToString;
@@ -60,8 +61,8 @@ public final class TableRule {
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
         List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).evaluate();
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
-        databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : tableRuleConfig.getDatabaseShardingStrategyConfig().build();
-        tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : tableRuleConfig.getTableShardingStrategyConfig().build();
+        databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
+        tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         generateKeyColumn = tableRuleConfig.getKeyGeneratorColumnName();
         keyGenerator = !hasKeyGenerator(tableRuleConfig) ? null : KeyGeneratorFactory.newInstance(tableRuleConfig.getKeyGeneratorClass());
         logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();

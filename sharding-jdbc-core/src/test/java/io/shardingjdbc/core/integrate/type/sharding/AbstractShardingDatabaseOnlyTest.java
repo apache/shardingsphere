@@ -90,7 +90,7 @@ public abstract class AbstractShardingDatabaseOnlyTest extends AbstractSQLAssert
             shardingRuleConfig.getTableRuleConfigs().add(tempLogTableRuleConfig);
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", ComplexKeysModuloDatabaseShardingAlgorithm.class.getName()));
+            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", new ComplexKeysModuloDatabaseShardingAlgorithm()));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
             getShardingDataSources().put(each.getKey(), new ShardingDataSource(each.getValue(), shardingRuleConfig.build(each.getValue().keySet())));
         }
