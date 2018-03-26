@@ -33,7 +33,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
+import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
+import io.shardingjdbc.dbtest.data.ColumnDefinition;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import org.junit.Assert;
 import org.xml.sax.SAXException;
@@ -146,7 +148,6 @@ public class AssertEngine {
                         throw new DbTestException(path + "  The use case cannot initialize the data");
                     }
                     
-                    
                     doUpdateUseStatementToExecuteUpdate(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls);
                     
                     doUpdateUseStatementToExecute(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls);
@@ -155,10 +156,10 @@ public class AssertEngine {
                     
                     doUpdateUsePreparedStatementToExecute(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls);
                     
-                    
                 }
             }
-            
+    
+           
             
         } catch (NoSuchFieldException | IllegalAccessException | ParseException | XPathExpressionException | SQLException | ParserConfigurationException | SAXException | IOException e) {
             throw new DbTestException(e);
@@ -342,7 +343,7 @@ public class AssertEngine {
         for (Map.Entry<String, DataSource> eachDataSourceEntry : dataSourceMaps.entrySet()) {
             DataSource dataSource1 = eachDataSourceEntry.getValue();
             DatasetDefinition datasetDefinition = mapDatasetDefinition.get(eachDataSourceEntry.getKey());
-            Map<String, Map<String, String>> configs = datasetDefinition.getConfigs();
+            Map<String,List<ColumnDefinition>> configs = datasetDefinition.getMetadatas();
             Map<String, List<Map<String, String>>> datas = datasetDefinition.getDatas();
             
             for (Map.Entry<String, List<Map<String, String>>> eachListEntry : datas.entrySet()) {

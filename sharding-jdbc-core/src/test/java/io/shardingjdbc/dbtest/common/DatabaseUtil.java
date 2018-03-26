@@ -30,12 +30,12 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.shardingjdbc.dbtest.data.ColumnDefinition;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -48,7 +48,7 @@ import io.shardingjdbc.dbtest.exception.DbTestException;
 import org.junit.Assert;
 
 public class DatabaseUtil {
-
+    
     /**
      * Generating sql.
      *
@@ -57,14 +57,14 @@ public class DatabaseUtil {
      * @return sql
      */
     public static String analyzeSql(final String table, final Map<String, String> config) {
-
+        
         List<String> colsConfigs = new ArrayList<>();
         List<String> valueConfigs = new ArrayList<>();
         for (Map.Entry<String, String> stringStringEntry : config.entrySet()) {
             colsConfigs.add(stringStringEntry.getKey());
             valueConfigs.add("?");
         }
-
+        
         StringBuilder sbsql = new StringBuilder("insert into ");
         sbsql.append(table);
         sbsql.append(" ( ");
@@ -74,10 +74,10 @@ public class DatabaseUtil {
         sbsql.append(" ( ");
         sbsql.append(StringUtils.join(valueConfigs, ","));
         sbsql.append(" )");
-
+        
         return sbsql.toString();
     }
-
+    
     /**
      * Insert initialization data.
      *
@@ -90,17 +90,21 @@ public class DatabaseUtil {
      * @throws ParseException Precompiled anomaly
      */
     public static boolean insertUsePreparedStatement(final Connection conn, final String sql,
-                                                     final List<Map<String, String>> datas, final Map<String, String> config)
+                                                     final List<Map<String, String>> datas, final List<ColumnDefinition> config)
             throws SQLException, ParseException {
         try (PreparedStatement pstmt = conn.prepareStatement(sql);) {
             for (Map<String, String> data : datas) {
                 int index = 1;
-                for (Map.Entry<String, String> stringStringEntry : data.entrySet()) {
-                    String key = stringStringEntry.getKey();
-                    String datacol = stringStringEntry.getValue();
+                for (Map.Entry<String, String> each : data.entrySet()) {
+                    String key = each.getKey();
+                    String datacol = each.getValue();
                     String type = "String";
                     if (config != null) {
-                        type = config.get(key);
+                        for (ColumnDefinition eachColumnDefinition : config) {
+                            if (key.equals(eachColumnDefinition.getName())) {
+                                type = eachColumnDefinition.getType();
+                            }
+                        }
                     }
                     if (type == null) {
                         type = "String";
@@ -145,7 +149,7 @@ public class DatabaseUtil {
         }
         return true;
     }
-
+    
     /**
      * clear table.
      *
@@ -158,7 +162,7 @@ public class DatabaseUtil {
             pstmt.execute("DELETE from " + table);
         }
     }
-
+    
     /**
      * To determine if it is a query statement.
      *
@@ -169,7 +173,7 @@ public class DatabaseUtil {
         String newSql = sql.trim();
         return newSql.startsWith("select");
     }
-
+    
     /**
      * To determine whether the statement is an update.
      *
@@ -180,7 +184,7 @@ public class DatabaseUtil {
         String newSql = sql.trim();
         return newSql.startsWith("insert") || newSql.startsWith("update") || newSql.startsWith("delete");
     }
-
+    
     /**
      * Use Statement Test data update.
      *
@@ -200,7 +204,7 @@ public class DatabaseUtil {
         }
         return result;
     }
-
+    
     /**
      * Processing statement sql.
      *
@@ -241,7 +245,7 @@ public class DatabaseUtil {
         }
         return result;
     }
-
+    
     /**
      * Use Statement Test data update.
      *
@@ -259,7 +263,7 @@ public class DatabaseUtil {
             return pstmt.execute(newSql);
         }
     }
-
+    
     /**
      * Use PreparedStatement Test data update.
      *
@@ -281,7 +285,7 @@ public class DatabaseUtil {
         }
         return result;
     }
-
+    
     /**
      * Use PreparedStatement Test data update.
      *
@@ -301,7 +305,7 @@ public class DatabaseUtil {
             return pstmt.execute();
         }
     }
-
+    
     /**
      * Use PreparedStatement Test sql select.
      *
@@ -323,7 +327,7 @@ public class DatabaseUtil {
             }
         }
     }
-
+    
     /**
      * Use PreparedStatement Test sql select.
      *
@@ -347,37 +351,39 @@ public class DatabaseUtil {
             }
         }
     }
-
+    
     private static DatasetDatabase usePreparedStatementBackResultSet(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData rsmd = resultSet.getMetaData();
         int colsint = rsmd.getColumnCount();
-        Map<String, String> cols = new LinkedHashMap<>();
+        List<ColumnDefinition> cols = new ArrayList<>();
         for (int i = 1; i < colsint + 1; i++) {
             String name = rsmd.getColumnName(i);
             String type = getDataType(rsmd.getColumnType(i), rsmd.getScale(i));
-            cols.put(name, type);
+            ColumnDefinition columnDefinition = new ColumnDefinition();
+            columnDefinition.setName(name);
+            columnDefinition.setType(type);
         }
-
-        Map<String, Map<String, String>> configs = new HashMap<>();
+        
+        Map<String, List<ColumnDefinition>> configs = new HashMap<>();
         configs.put("data", cols);
-
+        
         List<Map<String, String>> ls = new ArrayList<>();
         Map<String, List<Map<String, String>>> datas = new HashMap<>();
         datas.put("data", ls);
-
+        
         handleResultSet(resultSet, cols, ls);
         DatasetDatabase result = new DatasetDatabase();
-        result.setConfigs(configs);
+        result.setMetadatas(configs);
         result.setDatas(datas);
         return result;
     }
-
-    private static void handleResultSet(final ResultSet resultSet, final Map<String, String> cols, final List<Map<String, String>> ls) throws SQLException {
+    
+    private static void handleResultSet(final ResultSet resultSet, final List<ColumnDefinition> cols, final List<Map<String, String>> ls) throws SQLException {
         while (resultSet.next()) {
             Map<String, String> data = new HashMap<>();
-            for (Map.Entry<String, String> stringStringEntry : cols.entrySet()) {
-                String name = stringStringEntry.getKey();
-                String type = stringStringEntry.getValue();
+            for (ColumnDefinition each : cols) {
+                String name = each.getName();
+                String type = each.getType();
                 switch (type) {
                     case "int":
                         data.put(name, String.valueOf(resultSet.getInt(name)));
@@ -415,7 +421,7 @@ public class DatabaseUtil {
             ls.add(data);
         }
     }
-
+    
     /**
      * Use Statement Test sql select.
      *
@@ -435,7 +441,7 @@ public class DatabaseUtil {
             }
         }
     }
-
+    
     /**
      * Use Statement Test sql select.
      *
@@ -455,32 +461,34 @@ public class DatabaseUtil {
             }
         }
     }
-
+    
     private static DatasetDatabase useStatementBackResultSet(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData rsmd = resultSet.getMetaData();
         int colsint = rsmd.getColumnCount();
-        Map<String, String> cols = new LinkedHashMap<>();
+        List<ColumnDefinition> cols = new ArrayList<>();
         for (int i = 1; i < colsint + 1; i++) {
             String name = rsmd.getColumnName(i);
             String type = getDataType(rsmd.getColumnType(i), rsmd.getScale(i));
-            cols.put(name, type);
+            ColumnDefinition columnDefinition = new ColumnDefinition();
+            columnDefinition.setName(name);
+            columnDefinition.setType(type);
         }
-
-        Map<String, Map<String, String>> configs = new HashMap<>();
+        
+        Map<String, List<ColumnDefinition>> configs = new HashMap<>();
         configs.put("data", cols);
-
+        
         List<Map<String, String>> ls = new ArrayList<>();
         Map<String, List<Map<String, String>>> datas = new HashMap<>();
         datas.put("data", ls);
-
+        
         handleResultSet(resultSet, cols, ls);
         DatasetDatabase result = new DatasetDatabase();
-        result.setConfigs(configs);
+        result.setMetadatas(configs);
         result.setDatas(datas);
         return result;
     }
-
-
+    
+    
     /**
      * Sql parameter injection.
      *
@@ -531,7 +539,7 @@ public class DatabaseUtil {
             index++;
         }
     }
-
+    
     /**
      * Database type to java type.
      *
@@ -592,7 +600,7 @@ public class DatabaseUtil {
         }
         return result;
     }
-
+    
     /**
      * Comparative data set.
      *
@@ -600,34 +608,40 @@ public class DatabaseUtil {
      * @param actual   actual
      */
     public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual) {
-        Map<String, Map<String, String>> actualConfigs = actual.getConfigs();
-        Map<String, Map<String, String>> expectedConfigs = expected.getConfigs();
-
-        for (Map.Entry<String, Map<String, String>> stringMapEntry : expectedConfigs.entrySet()) {
-            Map<String, String> config = stringMapEntry.getValue();
-            Map<String, String> actualConfig = actualConfigs.get(stringMapEntry.getKey());
+        Map<String, List<ColumnDefinition>> actualConfigs = actual.getMetadatas();
+        Map<String, List<ColumnDefinition>> expectedConfigs = expected.getMetadatas();
+        
+        for (Map.Entry<String, List<ColumnDefinition>> each : expectedConfigs.entrySet()) {
+            List<ColumnDefinition> config = each.getValue();
+            List<ColumnDefinition> actualConfig = actualConfigs.get(each.getKey());
             assertTrue(actualConfig != null);
-            for (Map.Entry<String, String> stringStringEntry : config.entrySet()) {
-                assertTrue(stringStringEntry.getValue().equals(actualConfig.get(stringStringEntry.getKey())));
+            for (ColumnDefinition eachColumn : config) {
+                boolean flag = false;
+                for (ColumnDefinition eachActualColumn : actualConfig) {
+                    if (eachColumn.getName().equals(eachActualColumn.getName()) && eachColumn.getType().equals(eachActualColumn.getType())) {
+                        flag = true;
+                    }
+                }
+                assertTrue(flag);
             }
         }
-
+        
         Map<String, List<Map<String, String>>> actualDatass = actual.getDatas();
         Map<String, List<Map<String, String>>> expectDedatas = expected.getDatas();
         for (Map.Entry<String, List<Map<String, String>>> stringListEntry : expectDedatas.entrySet()) {
             List<Map<String, String>> data = stringListEntry.getValue();
             List<Map<String, String>> actualDatas = actualDatass.get(stringListEntry.getKey());
-
+            
             for (int i = 0; i < data.size(); i++) {
                 Map<String, String> expectData = data.get(i);
                 Map<String, String> actualData = actualDatas.get(i);
                 for (Map.Entry<String, String> stringStringEntry : expectData.entrySet()) {
                     assertTrue(stringStringEntry.getValue().equals(actualData.get(stringStringEntry.getKey())));
                 }
-
+                
             }
         }
-
     }
-
+    
+    
 }

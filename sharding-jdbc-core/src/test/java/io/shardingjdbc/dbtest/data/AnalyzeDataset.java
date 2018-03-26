@@ -24,9 +24,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -34,89 +40,178 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import io.shardingjdbc.dbtest.common.XMLUtil;
-
 public class AnalyzeDataset {
-
+    
     /**
      * Parsing the Dataset file.
+     *
      * @param path path
      * @return DatasetDefinition
-     * @throws IOException IOException
-     * @throws SAXException SAXException
+     * @throws IOException                  IOException
+     * @throws SAXException                 SAXException
      * @throws ParserConfigurationException ParserConfigurationException
-     * @throws XPathExpressionException XPathExpressionException
+     * @throws XPathExpressionException     XPathExpressionException
      */
     public static DatasetDefinition analyze(final String path)
             throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         return analyze(new File(path));
     }
-
+    
     /**
      * Parsing the Dataset file.
+     *
      * @param file file
      * @return DatasetDefinition
-     * @throws IOException IOException
-     * @throws SAXException SAXException
+     * @throws IOException                  IOException
+     * @throws SAXException                 SAXException
      * @throws ParserConfigurationException ParserConfigurationException
-     * @throws XPathExpressionException XPathExpressionException
+     * @throws XPathExpressionException     XPathExpressionException
      */
     public static DatasetDefinition analyze(final File file)
             throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-
-        Document doc = XMLUtil.parseFile(file);
-        Node rootNode = XMLUtil.getNode(doc, "/dataset");
+        
+        Document doc = parseFile(file);
+        Node rootNode = getNode(doc, "/init");
         NodeList firstNodeList = rootNode.getChildNodes();
         DatasetDefinition result = new DatasetDefinition();
         for (int i = 0; i < firstNodeList.getLength(); i++) {
             Node firstNode = firstNodeList.item(i);
             if (firstNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                if ("table-config".equals(firstNode.getNodeName())) {
+                
+                if ("metadata".equals(firstNode.getNodeName())) {
                     analyzeTableConfig(result, firstNode);
-                } else {
-                    Map<String, List<Map<String, String>>> datas = result.getDatas();
-                    String tableName = firstNode.getNodeName();
-                    List<Map<String, String>> datalists = datas.get(tableName);
-                    if (datalists == null) {
-                        datalists = new ArrayList<>();
-                        datas.put(tableName, datalists);
-                    }
-
-                    NamedNodeMap attrMap = firstNode.getAttributes();
-
-                    Map<String, String> datacols = new HashMap<>();
-                    datalists.add(datacols);
-                    for (int j = 0; j < attrMap.getLength(); j++) {
-                        Node nodeAttr = attrMap.item(j);
-                        Attr attr = (Attr) nodeAttr;
-                        String attrName = attr.getName();
-                        String attrValue = attr.getValue();
-                        datacols.put(attrName, attrValue);
-                    }
+                } else if ("dataset".equals(firstNode.getNodeName())) {
+                    analyzeDataset(result, firstNode);
                 }
             }
         }
         return result;
     }
-
+    
     private static void analyzeTableConfig(final DatasetDefinition datasetDefinition, final Node firstNode) {
         NodeList secondNodeList = firstNode.getChildNodes();
-        Map<String, Map<String, String>> configs = datasetDefinition.getConfigs();
+        Map<String, List<ColumnDefinition>> metadatas = datasetDefinition.getMetadatas();
         for (int j = 0; j < secondNodeList.getLength(); j++) {
             Node secondNode = secondNodeList.item(j);
             if (secondNode.getNodeType() == Node.ELEMENT_NODE) {
-                Map<String, String> maps = new HashMap<>();
-                configs.put(secondNode.getNodeName(), maps);
-                NodeList thirdNodeList = secondNode.getChildNodes();
-                for (int n = 0; n < thirdNodeList.getLength(); n++) {
-                    Node thirdNode = thirdNodeList.item(n);
-                    if (thirdNode.getNodeType() == Node.ELEMENT_NODE) {
-                        maps.put(thirdNode.getNodeName(), thirdNode.getFirstChild().getNodeValue());
+                List<ColumnDefinition> tableDefinitions = new ArrayList<>();
+                metadatas.put(getAttr("name", secondNode), tableDefinitions);
+                
+                NodeList columnNodeList = secondNode.getChildNodes();
+                for (int n = 0; n < columnNodeList.getLength(); n++) {
+                    Node attNode = columnNodeList.item(n);
+                    if (attNode.getNodeType() == Node.ELEMENT_NODE) {
+                        ColumnDefinition cd = new ColumnDefinition();
+                        tableDefinitions.add(cd);
+                        String name = getAttr("name", attNode);
+                        if (StringUtils.isNotEmpty(name)) {
+                            cd.setName(name);
+                        }
+                        
+                        String type = getAttr("type", attNode);
+                        if (StringUtils.isNotEmpty(type)) {
+                            cd.setType(type);
+                        }
+                        
+                        String size = getAttr("size", attNode);
+                        if (StringUtils.isNotEmpty(size)) {
+                            cd.setSize(Integer.valueOf(type));
+                        }
+                        
+                        String decimalDigits = getAttr("decimal-digits", attNode);
+                        if (StringUtils.isNotEmpty(decimalDigits)) {
+                            cd.setSize(Integer.valueOf(decimalDigits));
+                        }
+                        
+                        String nullAble = getAttr("null-able", attNode);
+                        if (StringUtils.isNotEmpty(nullAble)) {
+                            cd.setSize(Integer.valueOf(nullAble));
+                        }
+                        
+                        String numPrecRadix = getAttr("num-prec-radix", attNode);
+                        if (StringUtils.isNotEmpty(numPrecRadix)) {
+                            cd.setSize(Integer.valueOf(numPrecRadix));
+                        }
                     }
+                    
+                }
+            }
+        }
+        
+    }
+    
+    private static String getAttr(final String nodeName, final Node node) {
+        NamedNodeMap attNodeList = node.getAttributes();
+        for (int n = 0; n < attNodeList.getLength(); n++) {
+            Node attNode = attNodeList.item(n);
+            if (nodeName.equals(attNode.getNodeName())) {
+                return attNode.getFirstChild().getNodeValue();
+            }
+        }
+        return "";
+    }
+    
+    private static void analyzeDataset(final DatasetDefinition result, final Node firstNode) {
+        NodeList secondNodeList = firstNode.getChildNodes();
+        for (int n = 0; n < secondNodeList.getLength(); n++) {
+            Node secondNode = secondNodeList.item(n);
+            if (secondNode.getNodeType() == Node.ELEMENT_NODE) {
+                Map<String, List<Map<String, String>>> datas = result.getDatas();
+                String tableName = secondNode.getNodeName();
+                List<Map<String, String>> datalists = datas.get(tableName);
+                if (datalists == null) {
+                    datalists = new ArrayList<>();
+                    datas.put(tableName, datalists);
+                }
+                
+                NamedNodeMap attrMap = secondNode.getAttributes();
+                
+                Map<String, String> datacols = new HashMap<>();
+                datalists.add(datacols);
+                for (int j = 0; j < attrMap.getLength(); j++) {
+                    Node nodeAttr = attrMap.item(j);
+                    Attr attr = (Attr) nodeAttr;
+                    String attrName = attr.getName();
+                    String attrValue = attr.getValue();
+                    datacols.put(attrName, attrValue);
                 }
             }
         }
     }
-
+    
+    /**
+     * Parse the file to Document.
+     *
+     * @param file file
+     * @return Document
+     * @throws ParserConfigurationException ParserConfigurationException
+     * @throws IOException                  IOException
+     * @throws SAXException                 SAXException
+     */
+    private static Document parseFile(final File file) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setValidating(false);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document result = db.parse(file);
+        
+        return result;
+    }
+    
+    /**
+     * Acquisition node.
+     *
+     * @param node  node
+     * @param xpath xpath
+     * @return node
+     * @throws XPathExpressionException XPathExpressionException
+     */
+    private static Node getNode(final Node node, final String xpath) throws XPathExpressionException {
+        XPathFactory factory = XPathFactory.newInstance();
+        XPath oXpath = factory.newXPath();
+        Node result = (Node) oXpath.evaluate(xpath, node, XPathConstants.NODE);
+        
+        return result;
+    }
+    
+    
 }

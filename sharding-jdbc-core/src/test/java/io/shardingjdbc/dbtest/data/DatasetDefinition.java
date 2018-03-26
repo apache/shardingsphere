@@ -27,9 +27,9 @@ import lombok.Data;
 public class DatasetDefinition {
 
     /*
-     * Map<table,Map<column,type>>
+     * Map<table, List<ColumnDefinition>>
      */
-    private Map<String, Map<String, String>> configs = new HashMap<>();
+    private Map<String, List<ColumnDefinition>> metadatas = new HashMap<>();
 
     /*
      * Map<table,List<Map<column,data>>>

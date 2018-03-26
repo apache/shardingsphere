@@ -36,19 +36,14 @@ public class AssertDDLDefinition implements AssertDefinition {
 
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
-
-    @XmlAttribute(name = "expected-update")
-    private Integer expectedUpdate;
     
     @XmlAttribute(name = "sql")
     private String sql;
     
-    @XmlAttribute(name = "expected-sql")
-    private String expectedSql;
+    @XmlAttribute(name = "table")
+    private String table;
 
     @XmlElement(name = "parameters")
     private ParametersDefinition parameters;
     
-    @XmlElement(name = "expected-parameters")
-    private ParametersDefinition expectedParameters;
 }
