@@ -42,10 +42,10 @@ public final class MasterSlaveRule {
     private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
     
     public MasterSlaveRule(final MasterSlaveRuleConfiguration config) {
-        this.name = config.getName();
-        this.masterDataSourceName = config.getMasterDataSourceName();
-        this.slaveDataSourceNames = config.getSlaveDataSourceNames();
-        this.loadBalanceAlgorithm = null == config.getLoadBalanceAlgorithm() ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm() : config.getLoadBalanceAlgorithm();
+        name = config.getName();
+        masterDataSourceName = config.getMasterDataSourceName();
+        slaveDataSourceNames = config.getSlaveDataSourceNames();
+        loadBalanceAlgorithm = null == config.getLoadBalanceAlgorithm() ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm() : config.getLoadBalanceAlgorithm();
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(masterDataSourceName);
         Preconditions.checkNotNull(slaveDataSourceNames);
