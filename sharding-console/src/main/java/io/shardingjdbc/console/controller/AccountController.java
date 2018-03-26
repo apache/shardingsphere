@@ -38,10 +38,10 @@ import javax.servlet.http.HttpSession;
  */
 @RestController
 public class AccountController {
-
+    
     @Autowired
     private AccountService accountService;
-
+    
     /**
      * login.
      *
@@ -55,7 +55,7 @@ public class AccountController {
         HttpSession httpSession = httpRequest.getSession();
         return accountService.login(accountInfo, httpSession);
     }
-
+    
     /**
      * logout.
      *

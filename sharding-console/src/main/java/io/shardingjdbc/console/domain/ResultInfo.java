@@ -14,17 +14,17 @@ import java.util.Map;
 @Getter
 @Setter
 public class ResultInfo {
-
+    
     private String tip;
-
+    
     private Long duration;
-
+    
     private String sql;
-
+    
     private Map<String, String> types;
-
+    
     private List<Map<String, String>> data;
-
+    
     ResultInfo() {
         tip = "";
         duration = 0L;

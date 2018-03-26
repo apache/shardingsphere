@@ -28,13 +28,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SqlResponseResult {
-
+    
     private Integer statusCode;
-
+    
     private String errMsg;
-
+    
     private ResultInfo resultInfo;
-
+    
     public SqlResponseResult() {
         statusCode = -1;
         errMsg = "";

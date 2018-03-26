@@ -41,7 +41,7 @@ import java.util.ArrayList;
  */
 @Service
 public class SqlService {
-
+    
     /**
      * execute sql.
      *
@@ -53,7 +53,7 @@ public class SqlService {
         SqlResponseResult sqlResponseResult = new SqlResponseResult();
         ResultInfo resultInfo = sqlResponseResult.getResultInfo();
         AccountInfo accountInfo = (AccountInfo) httpSession.getAttribute("accountInfo");
-
+        
         if (null == accountInfo) {
             sqlResponseResult.setErrMsg("please login first.");
             return sqlResponseResult;
@@ -62,12 +62,12 @@ public class SqlService {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
-
+        
         try {
             Class.forName(accountInfo.getDriver());
             connection = DriverManager.getConnection(accountInfo.getUrl(), accountInfo.getUsername(), accountInfo.getPassword());
             statement = connection.createStatement();
-
+            
             if (statement.execute(sql)) {
                 resultSet = statement.getResultSet();
                 return setsFormatResult(sqlResponseResult, resultInfo, resultSet, startTime, sql);
@@ -81,7 +81,7 @@ public class SqlService {
             closeQuietly(connection, statement, resultSet);
         }
     }
-
+    
     private SqlResponseResult countsFormatResult(final SqlResponseResult sqlResponseResult, final ResultInfo resultInfo, final Statement statement,
                                                  final long startTime, final String sql) throws SQLException {
         resultInfo.setTip(statement.getUpdateCount() + " rows affected");
@@ -90,19 +90,19 @@ public class SqlService {
         resultInfo.setDuration(System.currentTimeMillis() - startTime);
         return sqlResponseResult;
     }
-
+    
     private SqlResponseResult setsFormatResult(final SqlResponseResult sqlResponseResult, final ResultInfo resultInfo, final ResultSet resultSet,
                                                final long startTime, final String sql) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         Map<String, String> types = new LinkedHashMap<>();
-
+        
         for (int i = 1; i <= columnCount; i++) {
             types.put(resultSetMetaData.getColumnName(i),
                     resultSetMetaData.getColumnTypeName(i) + "(" + resultSetMetaData.getColumnDisplaySize(i) + ")");
         }
         List<Map<String, String>> dataList = new ArrayList<>();
-
+        
         while (resultSet.next()) {
             Map<String, String> data = new LinkedHashMap<>();
             for (int i = 1; i <= columnCount; i++) {
@@ -118,7 +118,7 @@ public class SqlService {
         resultInfo.setDuration(System.currentTimeMillis() - startTime);
         return sqlResponseResult;
     }
-
+    
     private void closeQuietly(final Connection connection, final Statement statement, final ResultSet resultSet) {
         if (resultSet != null) {
             try {
@@ -126,14 +126,14 @@ public class SqlService {
             } catch (SQLException ignore) {
             }
         }
-
+        
         if (statement != null) {
             try {
                 statement.close();
             } catch (SQLException ignore) {
             }
         }
-
+        
         if (connection != null) {
             try {
                 connection.close();

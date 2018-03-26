@@ -33,7 +33,7 @@ import java.sql.SQLException;
  */
 @Service
 public class AccountService {
-
+    
     /**
      * login.
      *
@@ -47,18 +47,18 @@ public class AccountService {
         String username = accountInfo.getUsername();
         String password = accountInfo.getPassword();
         AccountResponseResult accountResponseResult = new AccountResponseResult();
-
+        
         if (null == driver || null == url || null == username || null == password) {
             accountResponseResult.setErrMsg("param error");
             return accountResponseResult;
         }
-
+        
         if ("".equals(url) || "".equals(driver)) {
             accountResponseResult.setErrMsg("param empty");
             return accountResponseResult;
         }
         Connection connection = null;
-
+        
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
@@ -72,7 +72,7 @@ public class AccountService {
         accountResponseResult.setStatusCode(0);
         return accountResponseResult;
     }
-
+    
     private void closeQuietly(final Connection connection) {
         if (connection != null) {
             try {
