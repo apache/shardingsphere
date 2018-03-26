@@ -355,6 +355,7 @@ public class DatabaseUtil {
             ColumnDefinition columnDefinition = new ColumnDefinition();
             columnDefinition.setName(name);
             columnDefinition.setType(type);
+            cols.add(columnDefinition);
         }
         
         Map<String, List<ColumnDefinition>> configs = new HashMap<>();
@@ -465,6 +466,7 @@ public class DatabaseUtil {
             ColumnDefinition columnDefinition = new ColumnDefinition();
             columnDefinition.setName(name);
             columnDefinition.setType(type);
+            cols.add(columnDefinition);
         }
         
         Map<String, List<ColumnDefinition>> configs = new HashMap<>();

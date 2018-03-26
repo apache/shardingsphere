@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.dbtest.config.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -35,13 +36,13 @@ public class AssertsDefinition {
     private String path;
 
     @XmlElement(name = "assertDQL")
-    private List<AssertDQLDefinition> assertDQL;
+    private List<AssertDQLDefinition> assertDQL = new ArrayList<>();
     
     @XmlElement(name = "assertDML")
-    private List<AssertDMLDefinition> assertDML;
+    private List<AssertDMLDefinition> assertDML = new ArrayList<>();
     
     @XmlElement(name = "assertDDL")
-    private List<AssertDDLDefinition> assertDDL;
+    private List<AssertDDLDefinition> assertDDL = new ArrayList<>();
 
     public void setPath(String path) {
         this.path = path;

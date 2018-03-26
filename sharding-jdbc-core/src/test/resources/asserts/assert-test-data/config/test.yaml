@@ -53,3 +53,5 @@ shardingRule:
     complex:
       shardingColumns: id, order_id
       algorithmClassName: io.shardingjdbc.dbtest.core.yaml.fixture.MultiAlgorithm
+  props:
+      sql.show: true

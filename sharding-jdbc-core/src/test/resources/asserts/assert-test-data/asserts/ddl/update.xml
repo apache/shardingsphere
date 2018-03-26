@@ -5,7 +5,4 @@
             <cloumn name="user_id" type="int" />
         </table>
     </metadata>
-    <dataset>
-        <data order_id="1000" user_id="10"  />
-    </dataset>
 </init>

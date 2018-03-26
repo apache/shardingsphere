@@ -113,20 +113,18 @@ public class AssertEngine {
                         throw new DbTestException(path + "  The use case cannot initialize the data");
                     }
                     
-                    if (DatabaseUtil.isSelect(rootsql)) {
+                    try {
                         initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
-                        try {
-                            
-                            doSelectUsePreparedStatement(rootPath, dataSource, anAssert, rootsql);
-                            doSelectUsePreparedStatementToExecuteSelect(rootPath, dataSource, anAssert, rootsql);
-                            
-                            doSelectUseStatement(rootPath, dataSource, anAssert, rootsql);
-                            doSelectUseStatementToExecuteSelect(rootPath, dataSource, anAssert, rootsql);
-                        } finally {
-                            clearTableData(dataSourceMaps, mapDatasetDefinition);
-                        }
                         
+                        doSelectUsePreparedStatement(rootPath, dataSource, anAssert, rootsql);
+                        doSelectUsePreparedStatementToExecuteSelect(rootPath, dataSource, anAssert, rootsql);
+                        
+                        doSelectUseStatement(rootPath, dataSource, anAssert, rootsql);
+                        doSelectUseStatementToExecuteSelect(rootPath, dataSource, anAssert, rootsql);
+                    } finally {
+                        clearTableData(dataSourceMaps, mapDatasetDefinition);
                     }
+                    
                 }
             }
             
@@ -210,7 +208,7 @@ public class AssertEngine {
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getSql(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
-                        anAssert.getParameters());
+                        anAssert.getExpectedParameters());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
             }
         } finally {
@@ -231,7 +229,7 @@ public class AssertEngine {
                 
                 String table = anAssert.getTable();
                 List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions,table);
+                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
             }
         } finally {
             InItCreateSchema.dropTable();
@@ -254,7 +252,7 @@ public class AssertEngine {
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getSql(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
-                        anAssert.getParameters());
+                        anAssert.getExpectedParameters());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
             }
         } finally {
@@ -276,7 +274,7 @@ public class AssertEngine {
                 
                 String table = anAssert.getTable();
                 List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions,table);
+                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
             }
         } finally {
             InItCreateSchema.dropTable();
@@ -299,7 +297,7 @@ public class AssertEngine {
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getSql(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
-                        anAssert.getParameters());
+                        anAssert.getExpectedParameters());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
             }
         } finally {
@@ -320,7 +318,7 @@ public class AssertEngine {
                 
                 String table = anAssert.getTable();
                 List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions,table);
+                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
             }
         } finally {
             InItCreateSchema.dropTable();
@@ -342,7 +340,7 @@ public class AssertEngine {
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getSql(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
-                        anAssert.getParameters());
+                        anAssert.getExpectedParameters());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
                 
             }
@@ -363,7 +361,7 @@ public class AssertEngine {
                 
                 String table = anAssert.getTable();
                 List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions,table);
+                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
             }
         } finally {
             InItCreateSchema.dropTable();
