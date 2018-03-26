@@ -1,18 +1,12 @@
 package io.shardingjdbc.console.controller;
 
-
 import io.shardingjdbc.console.domain.SqlResponseResult;
 import io.shardingjdbc.console.entity.GlobalSessions;
 import io.shardingjdbc.console.service.SqlServer;
-import io.shardingjdbc.console.service.SqlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import io.shardingjdbc.console.constant.RespCode;
-import io.shardingjdbc.console.entity.RespObj;
 import org.springframework.web.bind.annotation.*;
-import sun.jvm.hotspot.runtime.ResultTypeFinder;
-
 import java.sql.Connection;
 import java.util.*;
 
@@ -23,7 +17,7 @@ import java.util.*;
  */
 
 @RestController
-public class exeSQLController {
+public class ExeSQLController {
     @Autowired
     private SqlServer sqlServer;
 
@@ -34,7 +28,7 @@ public class exeSQLController {
 
 
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
-    public SqlResponseResult executeSql(String sql, @CookieValue(value = "userUUID", required = false,
+    public SqlResponseResult executeSql(final String sql, @CookieValue(value = "userUUID", required = false,
             defaultValue = "") String userUUID) {
         System.out.println("");
         System.out.println(sql);

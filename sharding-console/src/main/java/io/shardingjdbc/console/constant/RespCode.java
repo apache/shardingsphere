@@ -9,7 +9,7 @@ public enum RespCode {
     private int code;
     private String msg;
 
-    RespCode(int code, String msg) {
+    RespCode(final int code, final String msg) {
         this.code = code;
         this.msg = msg;
     }

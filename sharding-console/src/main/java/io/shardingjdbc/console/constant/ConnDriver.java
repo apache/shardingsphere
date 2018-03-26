@@ -11,10 +11,8 @@ public enum ConnDriver {
     private String dbName;
     private String driverName;
 
-    ConnDriver(String dbName, String driverName) {
+    ConnDriver(final String dbName, final String driverName) {
         this.dbName = dbName;
         this.driverName = driverName;
     }
-
-
 }
