@@ -50,6 +50,11 @@ public final class BindingTableRuleTest {
         createBindingTableRule().getBindingActualTable("no_ds", "Sub_Logic_Table", "table_1");
     }
     
+    @Test(expected = ShardingRuleException.class)
+    public void assertGetBindingActualTablesFailureWhenLogicTableNotFound() {
+        createBindingTableRule().getBindingActualTable("ds0", "No_Logic_Table", "table_1");
+    }
+    
     @Test
     public void assertGetAllLogicTables() {
         assertThat(createBindingTableRule().getAllLogicTables(), is((Collection<String>) Arrays.asList("logic_table", "sub_logic_table")));
