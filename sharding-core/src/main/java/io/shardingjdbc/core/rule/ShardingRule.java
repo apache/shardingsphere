@@ -19,6 +19,7 @@ package io.shardingjdbc.core.rule;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import io.shardingjdbc.core.exception.ShardingConfigurationException;
 import io.shardingjdbc.core.keygen.KeyGenerator;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
@@ -127,7 +128,7 @@ public final class ShardingRule {
         if (null != defaultDataSourceName) {
             return createTableRuleWithDefaultDataSource(logicTableName.toLowerCase());
         }
-        throw new ShardingRuleException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
+        throw new ShardingConfigurationException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
     }
     
     private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
@@ -269,7 +270,7 @@ public final class ShardingRule {
     public Number generateKey(final String logicTableName) {
         Optional<TableRule> tableRule = tryFindTableRuleByLogicTable(logicTableName);
         if (!tableRule.isPresent()) {
-            throw new ShardingRuleException("Cannot find strategy for generate keys.");
+            throw new ShardingConfigurationException("Cannot find strategy for generate keys.");
         }
         if (null != tableRule.get().getKeyGenerator()) {
             return tableRule.get().getKeyGenerator().generateKey();
@@ -289,7 +290,7 @@ public final class ShardingRule {
                 return each.getLogicTable();
             }
         }
-        throw new ShardingRuleException("Cannot find logic table name with logic index name: '%s'", logicIndexName);
+        throw new ShardingConfigurationException("Cannot find logic table name with logic index name: '%s'", logicIndexName);
     }
     
     /**
@@ -305,6 +306,6 @@ public final class ShardingRule {
                 return each;
             }
         }
-        throw new ShardingRuleException("Cannot find actual data node for logic table name: '%s'", tableRule.getLogicTable());
+        throw new ShardingConfigurationException("Cannot find actual data node for logic table name: '%s'", tableRule.getLogicTable());
     }
 }

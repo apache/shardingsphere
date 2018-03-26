@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.integrate.type.sharding;
 
 import com.google.common.base.Joiner;
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
@@ -30,7 +31,6 @@ import io.shardingjdbc.core.integrate.fixture.RangeModuloDatabaseShardingAlgorit
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.core.rule.MasterSlaveRule;
 import org.junit.After;
 
 import javax.sql.DataSource;
@@ -155,10 +155,13 @@ public abstract class AbstractShardingMasterSlaveTest extends AbstractSQLAssertT
         return result;
     }
     
-    private MasterSlaveDataSource getMasterSlaveDataSource(final Map<String, DataSource> masterSlaveDataSourceMap, 
-                                                           final String name, final String masterDataSourceName, final String slaveDataSourceName) throws SQLException {
-        return new MasterSlaveDataSource(
-                masterSlaveDataSourceMap, new MasterSlaveRule(name, masterDataSourceName, Collections.singleton(slaveDataSourceName)), Collections.<String, Object>emptyMap());
+    private MasterSlaveDataSource getMasterSlaveDataSource(
+            final Map<String, DataSource> masterSlaveDataSourceMap, final String name, final String masterDataSourceName, final String slaveDataSourceName) throws SQLException {
+        MasterSlaveRuleConfiguration config = new MasterSlaveRuleConfiguration();
+        config.setName(name);
+        config.setMasterDataSourceName(masterDataSourceName);
+        config.setSlaveDataSourceNames(Collections.singleton(slaveDataSourceName));
+        return new MasterSlaveDataSource(masterSlaveDataSourceMap, config, Collections.<String, Object>emptyMap());
     }
     
     @After

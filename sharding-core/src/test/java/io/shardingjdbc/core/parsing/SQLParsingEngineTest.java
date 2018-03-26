@@ -28,13 +28,15 @@ import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
 import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserJAXBHelper;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLPlaceholderUtil;
-import io.shardingjdbc.test.sql.jaxb.helper.SQLStatementHelper;
+import io.shardingjdbc.test.sql.SQLCasesLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 
 @RunWith(Parameterized.class)
 public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
@@ -54,14 +56,13 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     
     @Test
     public void assertStatement() {
-        assertStatement(new SQLParsingEngine(getDatabaseType(), SQLPlaceholderUtil.replaceStatement(SQLStatementHelper.getSql(getTestCaseName()), parameters), buildShardingRule()).parse());
+        assertStatement(new SQLParsingEngine(getDatabaseType(), SQLPlaceholderUtil.replaceStatement(SQLCasesLoader.getInstance().getSQL(getTestCaseName()), parameters), buildShardingRule()).parse());
     }
     
     @Test
     public void assertPreparedStatement() {
-        for (io.shardingjdbc.test.sql.jaxb.DatabaseType each : SQLStatementHelper.getTypes(getTestCaseName())) {
-            assertPreparedStatement(
-                    new SQLParsingEngine(DatabaseType.valueOf(each.name()), SQLPlaceholderUtil.replacePreparedStatement(SQLStatementHelper.getSql(getTestCaseName())), buildShardingRule()).parse());
+        for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(getTestCaseName()))) {
+            assertPreparedStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLCasesLoader.getInstance().getSQL(getTestCaseName())), buildShardingRule()).parse());
         }
     }
     
@@ -76,5 +77,16 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
         orderItemTableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id, order_id, item_id", TestComplexKeysShardingAlgorithm.class.getName()));
         return new ShardingRuleMockBuilder().addTableRuleConfig(orderTableRuleConfig).addTableRuleConfig(orderItemTableRuleConfig)
                 .addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("item_id").addGenerateKeyColumn("t_order_item", "item_id").build();
+    }
+    
+    private static Collection<DatabaseType> getDataBaseTypes(final Collection<String> databaseTypes) {
+        if (databaseTypes.isEmpty()) {
+            return Arrays.asList(DatabaseType.values());
+        }
+        Collection<DatabaseType> result = new LinkedHashSet<>(databaseTypes.size());
+        for (String each : databaseTypes) {
+            result.add(DatabaseType.valueOf(each));
+        }
+        return result;
     }
 }

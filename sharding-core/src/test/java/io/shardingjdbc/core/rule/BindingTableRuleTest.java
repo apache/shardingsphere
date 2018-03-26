@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.rule;
 
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
+import io.shardingjdbc.core.exception.ShardingConfigurationException;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -45,7 +46,7 @@ public final class BindingTableRuleTest {
         assertThat(createBindingTableRule().getBindingActualTable("ds1", "Sub_Logic_Table", "table_1"), is("sub_table_1"));
     }
     
-    @Test(expected = ShardingRuleException.class)
+    @Test(expected = ShardingConfigurationException.class)
     public void assertGetBindingActualTablesFailureWhenNotFound() {
         createBindingTableRule().getBindingActualTable("no_ds", "Sub_Logic_Table", "table_1");
     }

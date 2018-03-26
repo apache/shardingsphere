@@ -21,15 +21,17 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.jaxb.SQLAssert;
 import io.shardingjdbc.core.integrate.jaxb.SQLAsserts;
-import io.shardingjdbc.test.sql.jaxb.helper.SQLStatementHelper;
+import io.shardingjdbc.test.sql.SQLCasesLoader;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public final class SQLAssertJAXBHelper {
@@ -78,8 +80,8 @@ public final class SQLAssertJAXBHelper {
         List<Object[]> result = new ArrayList<>();
         for (int i = 0; i < asserts.getSqlAsserts().size(); i++) {
             SQLAssert assertObj = asserts.getSqlAsserts().get(i);
-            for (io.shardingjdbc.test.sql.jaxb.DatabaseType each : SQLStatementHelper.getTypes(assertObj.getId())) {
-                result.add(getDataParameter(assertObj, DatabaseType.valueOf(each.name())));
+            for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(assertObj.getId()))) {
+                result.add(getDataParameter(assertObj, each));
             }
         }
         return result;
@@ -93,10 +95,21 @@ public final class SQLAssertJAXBHelper {
         }
     }
     
+    private static Collection<DatabaseType> getDataBaseTypes(final Collection<String> databaseTypes) {
+        if (databaseTypes.isEmpty()) {
+            return Arrays.asList(DatabaseType.values());
+        }
+        Collection<DatabaseType> result = new LinkedHashSet<>(databaseTypes.size());
+        for (String each : databaseTypes) {
+            result.add(DatabaseType.valueOf(each));
+        }
+        return result;
+    }
+    
     private static Object[] getDataParameter(final SQLAssert sqlAssert, final DatabaseType dbType) {
         final Object[] result = new Object[4];
         result[0] = sqlAssert.getId();
-        result[1] = SQLStatementHelper.getSql(sqlAssert.getId());
+        result[1] = SQLCasesLoader.getInstance().getSQL(sqlAssert.getId());
         result[2] = dbType;
         result[3] = sqlAssert.getSqlShardingRules();
         return result;

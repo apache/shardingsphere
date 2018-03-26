@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.rule;
 
 import com.google.common.base.Splitter;
+import io.shardingjdbc.core.exception.ShardingConfigurationException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class DataNode {
      */
     public DataNode(final String dataNode) {
         if (!isValidDataNode(dataNode)) {
-            throw new ShardingRuleException("Invalid format for actual data nodes: '%s'", dataNode);
+            throw new ShardingConfigurationException("Invalid format for actual data nodes: '%s'", dataNode);
         }
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
         dataSourceName = segments.get(0);

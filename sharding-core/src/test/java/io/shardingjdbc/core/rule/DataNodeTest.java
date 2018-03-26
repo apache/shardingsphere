@@ -17,12 +17,14 @@
 
 package io.shardingjdbc.core.rule;
 
+import io.shardingjdbc.core.exception.ShardingConfigurationException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-public class DataNodeTest {
+public final class DataNodeTest {
     
     @Test
     public void assertNewValidDataNode() {
@@ -31,13 +33,33 @@ public class DataNodeTest {
         assertThat(dataNode.getTableName(), is("tbl_0"));
     }
     
-    @Test(expected = ShardingRuleException.class)
+    @Test(expected = ShardingConfigurationException.class)
     public void assertNewInValidDataNodeWithoutDelimiter() {
         new DataNode("ds_0tbl_0");
     }
     
-    @Test(expected = ShardingRuleException.class)
+    @Test(expected = ShardingConfigurationException.class)
     public void assertNewInValidDataNodeWithTwoDelimiters() {
         new DataNode("ds_0.tbl_0.tbl_1");
+    }
+    
+    @Test(expected = ShardingConfigurationException.class)
+    public void assertNewValidDataNodeWithInvalidDelimiter() {
+        new DataNode("ds_0,tbl_0");
+    }
+    
+    @Test
+    public void assertEquals() {
+        assertTrue(new DataNode("ds_0.tbl_0").equals(new DataNode("ds_0.tbl_0")));
+    }
+    
+    @Test
+    public void assertHashCode() {
+        assertThat(new DataNode("ds_0.tbl_0").hashCode(), is(new DataNode("ds_0.tbl_0").hashCode()));
+    }
+    
+    @Test
+    public void assertToString() {
+        assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, tableName=tbl_0)"));
     }
 }

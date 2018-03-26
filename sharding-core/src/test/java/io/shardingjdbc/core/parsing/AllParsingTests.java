@@ -28,7 +28,7 @@ import org.junit.runners.Suite;
         AllLexerTests.class,
         AllStatementParserTests.class,
         SQLParsingEngineTest.class,
-        UnsupportedSQLParsingEngineTest.class,
+        ParsingEngineForUnsupportedSQLTest.class,
         SQLJudgeEngineTest.class,
         OrderItemTest.class
     })
