@@ -1,2 +1,2 @@
-DROP t_order;
-DROP t_order_item;
+DROP TABLE t_order;
+DROP TABLE t_order_item;

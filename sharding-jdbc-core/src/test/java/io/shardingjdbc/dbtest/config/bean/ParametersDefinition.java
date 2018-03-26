@@ -18,6 +18,7 @@
 package io.shardingjdbc.dbtest.config.bean;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -31,7 +32,7 @@ import lombok.Getter;
 public class ParametersDefinition {
 
     @XmlElement(name = "parameter")
-    private List<ParameterDefinition> parameter;
+    private List<ParameterDefinition> parameter = new ArrayList<>();
 
 
 

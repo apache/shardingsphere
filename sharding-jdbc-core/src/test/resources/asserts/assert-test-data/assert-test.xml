@@ -20,4 +20,8 @@
             <parameter value="1000" type="int"/>
         </expected-parameters>
     </assertDML>
+    <assertDDL id="test3" init-data-file="./init" expected-update="1" sql="assertAlterTableTOrder"
+               table="t_order"
+               expected-data-file="./asserts/ddl/update.xml">
+    </assertDDL>
 </asserts>

@@ -1,1 +1,1 @@
-DROP t_order ;
+DROP TABLE t_order ;

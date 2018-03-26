@@ -1,8 +1,10 @@
 <init>
     <metadata>
-        <table name="data">
+        <table name="t_order">
             <cloumn name="order_id" type="int" />
             <cloumn name="user_id" type="int" />
+            <cloumn name="status" type="varchar"/>
+            <cloumn name="name" type="varchar"/>
         </table>
     </metadata>
 </init>

@@ -26,7 +26,10 @@ import java.sql.SQLException;
 import java.util.*;
 
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
+import io.shardingjdbc.dbtest.StartTest;
 import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
+import io.shardingjdbc.dbtest.common.FileUtil;
+import io.shardingjdbc.dbtest.common.PathUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -41,6 +44,20 @@ import javax.sql.DataSource;
 public class InItCreateSchema {
     
     private static Set<DatabaseType> DATABASE_SCHEMAS;
+    
+    
+    static {
+        String assertPath = StartTest.getAssertPath();
+        assertPath = PathUtil.getPath(assertPath);
+        List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "t", "yaml");
+        try {
+            Set<DatabaseType> databaseSchemas = InItCreateSchema.getDatabaseSchema(paths);
+            InItCreateSchema.setDatabaseSchemas(databaseSchemas);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+       
+    }
     
     public static Set<DatabaseType> getDatabaseSchemas() {
         return DATABASE_SCHEMAS;
@@ -203,7 +220,7 @@ public class InItCreateSchema {
             }
             conn = initialConnection("tbl", dbType);
             RunScript.execute(conn, new InputStreamReader(
-                    InItCreateSchema.class.getClassLoader().getResourceAsStream("integrate/schema/table/create/tbl.sql")));
+                    InItCreateSchema.class.getClassLoader().getResourceAsStream("integrate/schema/table/drop/tbl.sql")));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -229,6 +246,7 @@ public class InItCreateSchema {
             Connection conn;
             for (int i = 0; i < 2; i++) {
                 conn = initialConnection("jdbc_" + i, dbType);
+                
                 RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
                         .getResourceAsStream("integrate/schema/table/drop/jdbc.sql")));
                 conn.close();

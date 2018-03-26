@@ -606,7 +606,7 @@ public class DatabaseUtil {
         Map<String, List<ColumnDefinition>> configs = expected.getMetadatas();
         List<ColumnDefinition> columnDefinitions = configs.get(table);
         for (ColumnDefinition each : columnDefinitions) {
-            boolean flag = false;
+            
             for (ColumnDefinition definition : actual) {
                 if (each.getName().equals(definition.getName())) {
                     boolean flag2 = true;
@@ -640,12 +640,12 @@ public class DatabaseUtil {
                             flag2 = false;
                         }
                     }
-                    if (flag2) {
-                        flag = true;
+                    if (!flag2) {
+                        assertTrue(false);
                     }
                 }
-                assertTrue(flag);
             }
+            
         }
     }
     
@@ -702,13 +702,13 @@ public class DatabaseUtil {
      */
     public static List<ColumnDefinition> getColumnDefinitions(final Connection conn, final String table) throws SQLException, ParseException {
         DatabaseMetaData stmt = conn.getMetaData();
-        try (ResultSet rs = stmt.getColumns(conn.getCatalog(), null, table, null);) {
+        try (ResultSet rs = stmt.getColumns(null, null, table, null)) {
             List<ColumnDefinition> cols = new ArrayList<ColumnDefinition>();
             while (rs.next()) {
                 ColumnDefinition col = new ColumnDefinition();
                 String column = rs.getString("COLUMN_NAME");
                 int size = rs.getInt("COLUMN_SIZE");
-                String columnType = rs.getString("TYPE_NAME");
+                String columnType = rs.getString("TYPE_NAME").toLowerCase();
                 int decimalDigits = rs.getInt("DECIMAL_DIGITS");
                 int numPrecRadix = rs.getInt("NUM_PREC_RADIX");
                 int nullAble = rs.getInt("NULLABLE");

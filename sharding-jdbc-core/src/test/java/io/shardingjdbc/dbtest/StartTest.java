@@ -131,18 +131,9 @@ public class StartTest {
     
     @BeforeClass
     public static void beforeClass() {
-        try {
-            if (isInitialized()) {
-                String assertPath = getAssertPath();
-                assertPath = PathUtil.getPath(assertPath);
-                List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "t", "yaml");
-                Set<DatabaseType> databaseSchemas = InItCreateSchema.getDatabaseSchema(paths);
-                InItCreateSchema.setDatabaseSchemas(databaseSchemas);
-                InItCreateSchema.createDatabase();
-                InItCreateSchema.createTable();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (isInitialized()) {
+            InItCreateSchema.createDatabase();
+            InItCreateSchema.createTable();
         }
     }
     
