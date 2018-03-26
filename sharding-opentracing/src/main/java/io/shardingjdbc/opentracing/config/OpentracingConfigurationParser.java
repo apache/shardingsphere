@@ -18,32 +18,19 @@
 package io.shardingjdbc.opentracing.config;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import lombok.Getter;
 
 /**
- * Config loader.
+ * Parse config from java opts.
  * 
  * @author gaohongtao
  * @author wangkai
  */
-public class ConfigLoader {
+public class OpentracingConfigurationParser implements ConfigurationParser {
     
-    private static final ConfigParser[] PARSERS = new ConfigParser[]{new OptsConfigParser()};
+    private static final String PREFIX = "shardingjdbc.opentracing";
     
-    @Getter
-    private final String tracerClassName;
-    
-    public ConfigLoader() {
-        String tracerClassName = null;
-        for (ConfigParser each : PARSERS) {
-            Optional<String> tracerClassOptional = each.parse("tracer.class");
-            if (tracerClassOptional.isPresent()) {
-                tracerClassName = tracerClassOptional.get();
-                break;
-            }
-        }
-        Preconditions.checkNotNull(tracerClassName);
-        this.tracerClassName = tracerClassName;
+    @Override
+    public Optional<String> parse(final String configItem) {
+        return Optional.fromNullable(System.getProperty(PREFIX + "." + configItem));
     }
 }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,18 +29,18 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(OptsConfigParser.class)
-public class ConfigLoaderTest {
+@PrepareForTest(OpentracingConfigurationParser.class)
+public class ConfigurationLoaderTest {
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mockStatic(System.class);
     }
     
     @Test
     public void assertLoadConfigFromProperty() {
         when(System.getProperty("shardingjdbc.opentracing.tracer.class")).thenReturn("com.foo.fooClass");
-        assertThat(new ConfigLoader().getTracerClassName(), is("com.foo.fooClass"));
+        assertThat(new ConfigurationLoader().getTracerClassName(), is("com.foo.fooClass"));
     }
     
 }

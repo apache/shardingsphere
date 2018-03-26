@@ -56,6 +56,7 @@ public final class YamlShardingStrategyConfigurationTest {
     }
     
     private void assertStandardShardingStrategyConfig(final StandardShardingStrategyConfiguration actual) {
+
         assertThat(actual.getShardingColumn(), is("order_id"));
         assertThat(actual.getPreciseShardingAlgorithm(), instanceOf(PreciseOrderShardingAlgorithm.class));
         assertThat(actual.getRangeShardingAlgorithm(), instanceOf(RangeOrderShardingAlgorithm.class));
