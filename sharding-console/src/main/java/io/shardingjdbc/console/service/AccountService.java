@@ -42,7 +42,6 @@ public class AccountService {
      * @return account response result
      */
     public AccountResponseResult login(final AccountInfo accountInfo, final HttpSession httpSession) {
-
         String driver = accountInfo.getDriver();
         String url = accountInfo.getUrl();
         String username = accountInfo.getUsername();
