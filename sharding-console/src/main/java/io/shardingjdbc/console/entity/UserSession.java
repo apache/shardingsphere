@@ -15,7 +15,6 @@ public class UserSession {
 
     private String targetURL;
 
-    // MySQL Oracle
     private String driver = "MySQL";
 
     private String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
@@ -59,5 +58,4 @@ public class UserSession {
 
         this.uuid = uuid;
     }
-    
 }

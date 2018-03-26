@@ -44,10 +44,10 @@ public class SqlController {
      * execute SQL.
      *
      * @param sql sql string
-      @param servletRequest servlet request
+     * @param servletRequest servlet request
      * @return sql response result
      */
-    @RequestMapping(value = "/sql-bak", method = RequestMethod.POST)
+    @RequestMapping(value = "/sqlbak", method = RequestMethod.POST)
     public SqlResponseResult executeSQL(@RequestBody final String sql, final ServletRequest servletRequest) {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpSession httpSession = httpRequest.getSession();

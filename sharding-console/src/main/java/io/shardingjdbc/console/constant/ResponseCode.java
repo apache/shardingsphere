@@ -2,9 +2,8 @@ package io.shardingjdbc.console.constant;
 
 public enum ResponseCode {
 
-    SUCCESS(0, "请求成功"),
-    ERR_GEN(-1, "请求失败"),
-    ERR_USER(-2, "用户权限验证失败");
+    SUCCESS(0, "success"),
+    FAILURE(-1, "failure");
 
     private int code;
     private String msg;

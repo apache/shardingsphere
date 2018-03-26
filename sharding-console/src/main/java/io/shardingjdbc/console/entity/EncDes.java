@@ -36,7 +36,7 @@ public class EncDes {
     }
 
     /**
-     *  to encrypt.
+     * encrypt.
      * @param str
      * @return byte[]
      * @throws InvalidKeyException
@@ -54,7 +54,7 @@ public class EncDes {
     }
 
     /**
-     * to decrypt.
+     * decrypt.
      * @param buff
      * @return
      * @throws InvalidKeyException

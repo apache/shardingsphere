@@ -23,14 +23,13 @@ public class ExecuteSQLController {
     private SqlServer sqlServer;
 
     /**
-     * to execute sql.
+     * execute sql.
      * @param sql
      * @param userUUID
      * @return SqlResponseResult
      */
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
-    public SqlResponseResult executeSql(final String sql, final @CookieValue(value = "userUUID", required = false,
-            defaultValue = "") String userUUID) {
+    public SqlResponseResult executeSql(final String sql, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID) {
         Map<String, Connection> connectionMap = GlobalSessions.getSessionInfo();
         Connection connection = connectionMap.get(userUUID);
         return sqlServer.execute(sql, connection);
