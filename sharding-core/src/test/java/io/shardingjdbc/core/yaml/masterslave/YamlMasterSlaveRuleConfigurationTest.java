@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.yaml.masterslave;
 
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingjdbc.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -25,23 +26,44 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class YamlMasterSlaveRuleConfigurationTest {
     
     @Test
-    public void assertGetMasterSlaveRuleConfiguration() {
-        assertMasterSlaveRuleConfig(createYamlMasterSlaveRuleConfig().getMasterSlaveRuleConfiguration());
+    public void assertGetMasterSlaveRuleConfigurationWithLoadBalanceAlgorithmType() {
+        YamlMasterSlaveRuleConfiguration yamlConfig = createYamlMasterSlaveRuleConfig();
+        yamlConfig.setLoadBalanceAlgorithmType(MasterSlaveLoadBalanceAlgorithmType.RANDOM);
+        MasterSlaveRuleConfiguration actual = yamlConfig.getMasterSlaveRuleConfiguration();
+        assertMasterSlaveRuleConfig(actual);
+        assertThat(actual.getLoadBalanceAlgorithm(), is(MasterSlaveLoadBalanceAlgorithmType.RANDOM.getAlgorithm()));
     }
-        
+    
+    @Test
+    public void assertGetMasterSlaveRuleConfigurationWithLoadBalanceAlgorithmClassName() {
+        YamlMasterSlaveRuleConfiguration yamlConfig = createYamlMasterSlaveRuleConfig();
+        yamlConfig.setLoadBalanceAlgorithmClassName(RoundRobinMasterSlaveLoadBalanceAlgorithm.class.getName());
+        MasterSlaveRuleConfiguration actual = yamlConfig.getMasterSlaveRuleConfiguration();
+        assertMasterSlaveRuleConfig(actual);
+        assertThat(actual.getLoadBalanceAlgorithm(), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
+    }
+    
+    @Test
+    public void assertGetMasterSlaveRuleConfigurationWithoutLoadBalanceAlgorithm() {
+        YamlMasterSlaveRuleConfiguration yamlConfig = createYamlMasterSlaveRuleConfig();
+        MasterSlaveRuleConfiguration actual = yamlConfig.getMasterSlaveRuleConfiguration();
+        assertMasterSlaveRuleConfig(actual);
+        assertNull(actual.getLoadBalanceAlgorithm());
+    }
+    
     private YamlMasterSlaveRuleConfiguration createYamlMasterSlaveRuleConfig() {
         YamlMasterSlaveRuleConfiguration result = new YamlMasterSlaveRuleConfiguration();
         result.setName("master_slave_ds");
         result.setMasterDataSourceName("master_ds");
         result.setSlaveDataSourceNames(Arrays.asList("slave_ds_0", "slave_ds_1"));
-        result.setLoadBalanceAlgorithmType(MasterSlaveLoadBalanceAlgorithmType.RANDOM);
-        result.setLoadBalanceAlgorithmClassName("TestLoadBalanceAlgorithmClassName");
         return result;
     }
     
@@ -49,6 +71,5 @@ public final class YamlMasterSlaveRuleConfigurationTest {
         assertThat(actual.getName(), is("master_slave_ds"));
         assertThat(actual.getMasterDataSourceName(), is("master_ds"));
         assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Arrays.asList("slave_ds_0", "slave_ds_1")));
-        assertThat(actual.getLoadBalanceAlgorithm(), is(MasterSlaveLoadBalanceAlgorithmType.RANDOM.getAlgorithm()));
     }
 }
