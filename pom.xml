@@ -5,7 +5,7 @@
     <version>2.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-
+    
     <modules>
         <module>sharding-core</module>
         <module>sharding-jdbc-core</module>
@@ -17,13 +17,13 @@
         <module>sharding-opentracing</module>
         <module>sharding-sql-test</module>
     </modules>
-
+    
     <properties>
         <java.version>1.7</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
-
+        
         <lombok.version>1.16.4</lombok.version>
         <guava.version>18.0</guava.version>
         <common-lang3>3.6</common-lang3>
@@ -53,7 +53,7 @@
         <quartz.version>2.3.0</quartz.version>
         <opentracing.version>0.30.0</opentracing.version>
         <powermock.version>1.7.1</powermock.version>
-
+        
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
@@ -78,10 +78,10 @@
         <protobuf-maven-plugin.version>0.5.0</protobuf-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <coveralls-maven-plugin.version>4.1.0</coveralls-maven-plugin.version>
-
+        
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
-
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -301,7 +301,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
+    
     <build>
         <extensions>
             <extension>
@@ -553,7 +553,7 @@
              -->
         </plugins>
     </build>
-
+    
     <reporting>
         <plugins>
             <plugin>
@@ -631,7 +631,7 @@
             </plugin>
         </plugins>
     </reporting>
-
+    
     <repositories>
         <repository>
             <id>alfresco-maven-repo</id>
@@ -658,7 +658,7 @@
             </releases>
         </repository>
     </repositories>
-
+    
     <url>http://shardingjdbc.io</url>
     <description>RDB Sharding</description>
     <licenses>
@@ -668,20 +668,20 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
+    
     <scm>
         <connection>scm:https://github.com/shardingjdbc/sharding-jdbc</connection>
         <developerConnection>scm:https://github.com/shardingjdbc/sharding-jdbc</developerConnection>
         <url>https://github.com/shardingjdbc/sharding-jdbc</url>
     </scm>
-
+    
     <mailingLists>
         <mailingList>
             <name>Zhangliang</name>
             <post>zhangliang@dangdang.com</post>
         </mailingList>
     </mailingLists>
-
+    
     <developers>
         <developer>
             <id>zhangliang</id>
@@ -690,7 +690,7 @@
             <timezone>8</timezone>
         </developer>
     </developers>
-
+    
     <distributionManagement>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
