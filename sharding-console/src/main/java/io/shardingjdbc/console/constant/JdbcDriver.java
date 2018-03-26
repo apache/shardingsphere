@@ -3,7 +3,7 @@ package io.shardingjdbc.console.constant;
 import lombok.Getter;
 
 @Getter
-public enum ConnDriver {
+public enum JdbcDriver {
 
     MySQLDriver("mysql", "com.mysql.jdbc.Driver"),
     OracleDriver("oracle", "oracle.jdbc.driver.OracleDriver");
@@ -11,7 +11,7 @@ public enum ConnDriver {
     private String dbName;
     private String driverName;
 
-    ConnDriver(final String dbName, final String driverName) {
+    JdbcDriver(final String dbName, final String driverName) {
         this.dbName = dbName;
         this.driverName = driverName;
     }

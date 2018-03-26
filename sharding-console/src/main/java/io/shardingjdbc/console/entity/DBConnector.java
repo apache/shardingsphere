@@ -1,6 +1,6 @@
 package io.shardingjdbc.console.entity;
 
-import io.shardingjdbc.console.constant.ConnDriver;
+import io.shardingjdbc.console.constant.JdbcDriver;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,13 +17,13 @@ public class DBConnector {
      * @return Connection or null
      */
     public static Connection getConnection(final String username, final String password, final String url, final String driverDB) {
-        ConnDriver driver = ConnDriver.valueOf(driverDB + "Driver");
+        JdbcDriver driver = JdbcDriver.valueOf(driverDB + "Driver");
         try {
             Class.forName(driver.getDriverName());
             DriverManager.setLoginTimeout(5);
-            Connection conn = DriverManager.getConnection("jdbc:" + driver.getDbName() + "://" + url, username, password);
-            return conn;
-        } catch (ClassNotFoundException | SQLException e) {
+            Connection connection = DriverManager.getConnection("jdbc:" + driver.getDbName() + "://" + url, username, password);
+            return connection;
+        } catch (ClassNotFoundException | SQLException ex) {
             return null;
         }
     }

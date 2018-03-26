@@ -1,6 +1,6 @@
 package io.shardingjdbc.console.constant;
 
-public enum RespCode {
+public enum ResponseCode {
 
     SUCCESS(0, "请求成功"),
     ERR_GEN(-1, "请求失败"),
@@ -9,7 +9,7 @@ public enum RespCode {
     private int code;
     private String msg;
 
-    RespCode(final int code, final String msg) {
+    ResponseCode(final int code, final String msg) {
         this.code = code;
         this.msg = msg;
     }

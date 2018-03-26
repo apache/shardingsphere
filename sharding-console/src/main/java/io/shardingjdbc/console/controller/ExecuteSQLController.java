@@ -11,13 +11,14 @@ import java.sql.Connection;
 import java.util.*;
 
 /**
- * SelectController.
+ * ExecuteSQLController.
  *
  * @author zhangyonglun
  */
 
 @RestController
 public class ExecuteSQLController {
+    
     @Autowired
     private SqlServer sqlServer;
 
@@ -30,7 +31,7 @@ public class ExecuteSQLController {
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
     public SqlResponseResult executeSql(final String sql, final @CookieValue(value = "userUUID", required = false,
             defaultValue = "") String userUUID) {
-        Map<String, Connection> connectionMap = GlobalSessions.getSessionInfos();
+        Map<String, Connection> connectionMap = GlobalSessions.getSessionInfo();
         Connection connection = connectionMap.get(userUUID);
         return sqlServer.execute(sql, connection);
     }

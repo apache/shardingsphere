@@ -7,16 +7,16 @@ import java.util.Map;
 
 public class GlobalSessions {
 
-    private static Map<String, Connection> sessionInfos;
+    private static Map<String, Connection> sessionInfo;
 
     /**
      * to create the map of uuid and connection .
      * @return  Map<String, Connection>
      */
-    public static Map<String, Connection> getSessionInfos() {
-        if (null == sessionInfos) {
-            sessionInfos = new HashMap<>();
+    public static Map<String, Connection> getSessionInfo() {
+        if (null == sessionInfo) {
+            sessionInfo = new HashMap<>();
         }
-        return sessionInfos;
+        return sessionInfo;
     }
 }

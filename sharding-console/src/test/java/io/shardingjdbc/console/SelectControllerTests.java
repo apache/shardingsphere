@@ -39,43 +39,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = MockServletContext.class)
 @WebAppConfiguration
 public class SelectControllerTests {
-
-    private MockMvc mvc;
-    //    @Test
-//    public void encdes() {
-//        try {
-//            EncDes de1 = new EncDes();
-//            String msg = "id=aa;pwd=33;";
-//            byte[] encontent = de1.Encrytor(msg);
-//            byte[] decontent = de1.Decryptor(encontent);
-//        } catch (Exception e){
-//        }
-//
-//
-//   }
+    
     @Test
     public  void conn(){
-        UserSession userInfo = new UserSession("dev_user", "dev_ing_123", "172.25.63.243:3306/test");
-        Connection conn = DBConnector.getConnection(userInfo.getUserName(),userInfo.getPassWord(),
-                userInfo.getTargetURL(),userInfo.getDriver());
-
-
+        UserSession userSession = new UserSession("dev_user", "dev_ing_123", "172.25.63.243:3306/test");
+        Connection conn = DBConnector.getConnection(userSession.getUserName(),userSession.getPassWord(),
+                userSession.getTargetURL(),userSession.getDriver());
     }
-//    @Test
-//    public void res(){
-//        RespCode aa = RespCode.SUCCESS;
-//
-//    }
-
-//    @Before
-//    public void setUp() {
-//        mvc = MockMvcBuilders.standaloneSetup(new SelectController()).build();
-//    }
-
-//    @Test
-//    public void assertHelloWorld() throws Exception {
-//        mvc.perform(MockMvcRequestBuilders.get("/select").accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().string(equalTo("Hello World!")));
-//    }
 }
