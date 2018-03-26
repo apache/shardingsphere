@@ -18,7 +18,7 @@ public class RespObj {
         this.statusCode = respCode.getCode();
         this.errMsg = respCode.getMsg();
         this.resultInfo = null;
-   }
+    }
 
     public RespObj(final RespCode respCode, final Object data) {
         this(respCode);

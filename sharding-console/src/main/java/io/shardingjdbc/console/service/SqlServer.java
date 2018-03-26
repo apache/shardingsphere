@@ -40,10 +40,10 @@ import java.util.Map;
 public class SqlServer {
 
     /**
-     *
+     * to handle https for sqls.
      * @param sql sqls
      * @param connection db connection
-     * @return
+     * @return SqlResponseResult
      */
     public SqlResponseResult execute(final String sql, final Connection connection) {
         SqlResponseResult sqlResponseResult = new SqlResponseResult();
@@ -71,6 +71,7 @@ public class SqlServer {
             closeQuietly(statement, resultSet);
         }
     }
+
     private SqlResponseResult countsFormatResult(final SqlResponseResult sqlResponseResult, final ResultInfo resultInfo, final Statement statement,
                                                  final long startTime, final String sql) throws SQLException {
         resultInfo.setTip(statement.getUpdateCount() + " rows affected");

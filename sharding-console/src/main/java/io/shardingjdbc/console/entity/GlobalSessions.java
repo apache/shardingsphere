@@ -10,7 +10,7 @@ public class GlobalSessions {
     private static Map<String, Connection> sessionInfos;
 
     /**
-     *
+     * to create the map of uuid and connection .
      * @return  Map<String, Connection>
      */
     public static Map<String, Connection> getSessionInfos() {

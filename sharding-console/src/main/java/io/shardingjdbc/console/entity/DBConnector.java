@@ -7,8 +7,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnector {
+
     /**
-     * to get db connection
+     * to get db connection.
      * @param username username
      * @param password pwd
      * @param url db url

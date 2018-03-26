@@ -17,10 +17,12 @@ public class UserSession {
 
     // MySQL Oracle
     private String driver = "MySQL";
+
     private String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
 
     public UserSession() {
     }
+
     public UserSession(final String userName, final String passWord, final String targetURL) {
 
         this.userName = userName;
@@ -31,6 +33,7 @@ public class UserSession {
 
         this.uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
     }
+
     public UserSession(final String userName, final String passWord, final String targetURL, final String driver) {
 
         this.userName = userName;

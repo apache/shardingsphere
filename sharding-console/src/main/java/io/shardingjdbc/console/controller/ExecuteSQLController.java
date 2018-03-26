@@ -22,11 +22,13 @@ public class ExecuteSQLController {
     private SqlServer sqlServer;
 
     /**
-     *
-     * @return result
+     * to execute sql.
+     * @param sql
+     * @param userUUID
+     * @return SqlResponseResult
      */
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
-    public SqlResponseResult executeSql(final String sql,final @CookieValue(value = "userUUID", required = false,
+    public SqlResponseResult executeSql(final String sql, final @CookieValue(value = "userUUID", required = false,
             defaultValue = "") String userUUID) {
         System.out.println("");
         System.out.println(sql);

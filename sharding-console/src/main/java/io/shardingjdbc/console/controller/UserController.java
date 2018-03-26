@@ -15,8 +15,15 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
+    /**
+     * to handle https for user's login.
+     * @param userInfo
+     * @param userUUID
+     * @param response
+     * @return RespObj
+     */
     @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public RespObj login(final UserSession userInfo,final  @CookieValue(value = "userUUID", required = false,
+    public RespObj login(final UserSession userInfo, final @CookieValue(value = "userUUID", required = false,
             defaultValue = "") String userUUID, HttpServletResponse response) {
 
         System.out.println("-------------------");
@@ -50,6 +57,12 @@ public class UserController {
         }
     }
 
+    /**
+     * to handle http for user's exiting.
+     * @param userUUID
+     * @param response
+     * @return RespObj
+     */
     @RequestMapping(value = "/exit", method = RequestMethod.POST)
     public RespObj exit(final @CookieValue(value = "userUUID", required = false,
             defaultValue = "") String userUUID, HttpServletResponse response) {

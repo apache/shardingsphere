@@ -35,6 +35,14 @@ public class EncDes {
         c = Cipher.getInstance("DES");
     }
 
+    /**
+     *  to encrypt.
+     * @param str
+     * @return byte[]
+     * @throws InvalidKeyException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     */
     public byte[] encrytor(final String str) throws InvalidKeyException,
             IllegalBlockSizeException, BadPaddingException {
         // 根据密钥，对Cipher对象进行初始化，ENCRYPT_MODE表示加密模式
@@ -45,6 +53,14 @@ public class EncDes {
         return cipherByte;
     }
 
+    /**
+     * to decrypt.
+     * @param buff
+     * @return
+     * @throws InvalidKeyException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     */
     public byte[] decryptor(final byte[] buff) throws InvalidKeyException,
             IllegalBlockSizeException, BadPaddingException {
         // 根据密钥，对Cipher对象进行初始化，DECRYPT_MODE表示加密模式
