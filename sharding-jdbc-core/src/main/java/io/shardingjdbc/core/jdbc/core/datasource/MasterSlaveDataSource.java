@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.jdbc.core.datasource;
 
 import io.shardingjdbc.core.api.ConfigMapContext;
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
@@ -54,13 +55,13 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private MasterSlaveRule masterSlaveRule;
     
-    public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Map<String, Object> configMap) throws SQLException {
-        super(getAllDataSources(dataSourceMap, masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames()));
+    public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap) throws SQLException {
+        super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
         this.dataSourceMap = dataSourceMap;
+        this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
         }
-        this.masterSlaveRule = masterSlaveRule;
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
@@ -115,7 +116,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
             DML_FLAG.set(true);
             return new NamedDataSource(masterSlaveRule.getMasterDataSourceName(), dataSourceMap.get(masterSlaveRule.getMasterDataSourceName()));
         }
-        String selectedSourceName = masterSlaveRule.getStrategy().getDataSource(
+        String selectedSourceName = masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
                 masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames()));
         DataSource selectedSource = dataSourceMap.get(selectedSourceName);
         return new NamedDataSource(selectedSourceName, selectedSource);
@@ -129,11 +130,11 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
      * Renew master-slave data source.
      *
      * @param dataSourceMap data source map
-     * @param masterSlaveRule new master-slave rule
+     * @param masterSlaveRuleConfig new master-slave rule configuration
      */
-    public void renew(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule) {
+    public void renew(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         this.dataSourceMap = dataSourceMap;
-        this.masterSlaveRule = masterSlaveRule;
+        this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
     }
     
     @Override

@@ -17,13 +17,13 @@
 
 package io.shardingjdbc.core.jdbc.core.connection;
 
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.fixture.TestDataSource;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.rule.MasterSlaveRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -54,8 +54,11 @@ public final class ShardingConnectionTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("test_ds_master", masterDataSource);
         dataSourceMap.put("test_ds_slave", slaveDataSource);
-        masterSlaveDataSource = new MasterSlaveDataSource(
-                dataSourceMap, new MasterSlaveRule("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave")), Collections.<String, Object>emptyMap());
+        MasterSlaveRuleConfiguration config = new MasterSlaveRuleConfiguration();
+        config.setName("test_ds");
+        config.setMasterDataSourceName("test_ds_master");
+        config.setSlaveDataSourceNames(Collections.singletonList("test_ds_slave"));
+        masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, config, Collections.<String, Object>emptyMap());
         ((TestDataSource) slaveDataSource).setThrowExceptionWhenClosing(true);
     }
     

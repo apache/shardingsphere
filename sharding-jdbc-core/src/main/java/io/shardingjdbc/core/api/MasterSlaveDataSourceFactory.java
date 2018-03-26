@@ -50,7 +50,7 @@ public final class MasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(
             final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap) throws SQLException {
-        return new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig.build(), configMap);
+        return new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap);
     }
     
     /**

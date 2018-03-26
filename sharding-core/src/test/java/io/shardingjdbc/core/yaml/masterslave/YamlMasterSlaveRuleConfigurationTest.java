@@ -49,7 +49,6 @@ public final class YamlMasterSlaveRuleConfigurationTest {
         assertThat(actual.getName(), is("master_slave_ds"));
         assertThat(actual.getMasterDataSourceName(), is("master_ds"));
         assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Arrays.asList("slave_ds_0", "slave_ds_1")));
-        assertThat(actual.getLoadBalanceAlgorithmType(), is(MasterSlaveLoadBalanceAlgorithmType.RANDOM));
-        assertThat(actual.getLoadBalanceAlgorithmClassName(), is("TestLoadBalanceAlgorithmClassName"));
+        assertThat(actual.getLoadBalanceAlgorithm(), is(MasterSlaveLoadBalanceAlgorithmType.RANDOM.getAlgorithm()));
     }
 }

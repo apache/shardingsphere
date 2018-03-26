@@ -17,8 +17,11 @@
 
 package io.shardingjdbc.core.yaml.masterslave;
 
+import com.google.common.base.Strings;
+import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingjdbc.core.exception.ShardingConfigurationException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -58,8 +61,23 @@ public class YamlMasterSlaveRuleConfiguration {
         result.setName(name);
         result.setMasterDataSourceName(masterDataSourceName);
         result.setSlaveDataSourceNames(slaveDataSourceNames);
-        result.setLoadBalanceAlgorithmType(loadBalanceAlgorithmType);
-        result.setLoadBalanceAlgorithmClassName(loadBalanceAlgorithmClassName);
+        if (null != loadBalanceAlgorithmType) {
+            result.setLoadBalanceAlgorithm(loadBalanceAlgorithmType.getAlgorithm());
+        } else if (!Strings.isNullOrEmpty(loadBalanceAlgorithmClassName)) {
+            result.setLoadBalanceAlgorithm(newInstance(loadBalanceAlgorithmClassName));
+        }
         return result;
+    }
+    
+    private MasterSlaveLoadBalanceAlgorithm newInstance(final String masterSlaveLoadBalanceAlgorithmClassName) {
+        try {
+            Class<?> result = Class.forName(masterSlaveLoadBalanceAlgorithmClassName);
+            if (!MasterSlaveLoadBalanceAlgorithm.class.isAssignableFrom(result)) {
+                throw new ShardingConfigurationException("Class %s should be implement %s", masterSlaveLoadBalanceAlgorithmClassName, MasterSlaveLoadBalanceAlgorithm.class.getName());
+            }
+            return (MasterSlaveLoadBalanceAlgorithm) result.newInstance();
+        } catch (final ReflectiveOperationException ex) {
+            throw new ShardingConfigurationException("Class %s should have public privilege and no argument constructor", masterSlaveLoadBalanceAlgorithmClassName);
+        }
     }
 }

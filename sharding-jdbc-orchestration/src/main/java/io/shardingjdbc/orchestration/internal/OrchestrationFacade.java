@@ -145,7 +145,7 @@ public final class OrchestrationFacade implements AutoCloseable {
         result.setName(masterSlaveDataSource.getMasterSlaveRule().getName());
         result.setMasterDataSourceName(masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName());
         result.setSlaveDataSourceNames(masterSlaveDataSource.getMasterSlaveRule().getSlaveDataSourceNames());
-        result.setLoadBalanceAlgorithmClassName(masterSlaveDataSource.getMasterSlaveRule().getStrategy().getClass().getName());
+        result.setLoadBalanceAlgorithm(masterSlaveDataSource.getMasterSlaveRule().getLoadBalanceAlgorithm());
         return result;
     }
     

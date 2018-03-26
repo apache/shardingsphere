@@ -35,4 +35,13 @@ public final class ShardingConfigurationException extends RuntimeException {
     public ShardingConfigurationException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }
+    
+    /**
+     * Constructs an exception with cause exception. 
+     *
+     * @param cause cause exception
+     */
+    public ShardingConfigurationException(final Exception cause) {
+        super(cause);
+    }
 }
