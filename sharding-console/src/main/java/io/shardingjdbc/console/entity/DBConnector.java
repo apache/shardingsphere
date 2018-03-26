@@ -6,15 +6,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-
 public class DBConnector {
     /**
-     *
-     * @param username
-     * @param password
-     * @param url
-     * @param driverDB
-     * @return
+     * to get db connection
+     * @param username username
+     * @param password pwd
+     * @param url db url
+     * @param driverDB driver
+     * @return Connection or null
      */
     public static Connection getConnection(final String username, final String password, final String url, final String driverDB) {
         ConnDriver driver = ConnDriver.valueOf(driverDB + "Driver");

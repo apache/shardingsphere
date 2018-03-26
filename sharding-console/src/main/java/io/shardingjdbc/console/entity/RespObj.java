@@ -7,8 +7,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RespObj {
+
     private int statusCode;
+
     private String errMsg;
+
     private Object resultInfo;
 
     public RespObj(final RespCode respCode) {

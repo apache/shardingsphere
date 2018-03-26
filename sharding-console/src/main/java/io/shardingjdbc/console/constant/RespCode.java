@@ -14,9 +14,18 @@ public enum RespCode {
         this.msg = msg;
     }
 
+    /**
+     *
+     * @return code
+     */
     public int getCode() {
         return code;
     }
+
+    /**
+     *
+     * @return msg
+     */
     public String getMsg() {
         return msg;
     }

@@ -9,8 +9,12 @@ public class GlobalSessions {
 
     private static Map<String, Connection> sessionInfos;
 
+    /**
+     *
+     * @return  Map<String, Connection>
+     */
     public static Map<String, Connection> getSessionInfos() {
-        if(null == sessionInfos) {
+        if (null == sessionInfos) {
             sessionInfos = new HashMap<>();
         }
         return sessionInfos;

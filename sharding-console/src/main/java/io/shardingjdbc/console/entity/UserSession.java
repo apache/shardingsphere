@@ -22,23 +22,37 @@ public class UserSession {
     public UserSession() {
     }
     public UserSession(final String userName, final String passWord, final String targetURL) {
+
         this.userName = userName;
+
         this.passWord = passWord;
+
         this.targetURL = targetURL;
+
         this.uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
     }
     public UserSession(final String userName, final String passWord, final String targetURL, final String driver) {
+
         this.userName = userName;
+
         this.passWord = passWord;
+
         this.targetURL = targetURL;
+
         this.driver = driver;
+
         this.uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
     }
     public UserSession(final String userName, final String passWord, final String targetURL, final String uuid, final String driver) {
+
         this.userName = userName;
+
         this.passWord = passWord;
+
         this.targetURL = targetURL;
+
         this.driver = driver;
+
         this.uuid = uuid;
     }
 

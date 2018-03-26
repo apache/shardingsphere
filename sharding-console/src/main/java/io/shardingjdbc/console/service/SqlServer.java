@@ -40,16 +40,14 @@ import java.util.Map;
 public class SqlServer {
 
     /**
-     * execute sql.
      *
-     * @param sql sql string
-     * @return sql response result
+     * @param sql sqls
+     * @param connection db connection
+     * @return
      */
     public SqlResponseResult execute(final String sql, final Connection connection) {
         SqlResponseResult sqlResponseResult = new SqlResponseResult();
         ResultInfo resultInfo = sqlResponseResult.getResultInfo();
-
-
         if (null == connection) {
             sqlResponseResult.setErrMsg("please login first.");
             return sqlResponseResult;
@@ -57,7 +55,6 @@ public class SqlServer {
         long startTime = System.currentTimeMillis();
         Statement statement = null;
         ResultSet resultSet = null;
-
         try {
             statement = connection.createStatement();
 
@@ -74,7 +71,6 @@ public class SqlServer {
             closeQuietly(statement, resultSet);
         }
     }
-
     private SqlResponseResult countsFormatResult(final SqlResponseResult sqlResponseResult, final ResultInfo resultInfo, final Statement statement,
                                                  final long startTime, final String sql) throws SQLException {
         resultInfo.setTip(statement.getUpdateCount() + " rows affected");
