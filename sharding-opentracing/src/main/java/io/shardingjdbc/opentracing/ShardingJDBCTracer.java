@@ -21,7 +21,7 @@ import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.util.EventBusInstance;
-import io.shardingjdbc.opentracing.config.ConfigLoader;
+import io.shardingjdbc.opentracing.config.ConfigurationLoader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -41,7 +41,7 @@ public final class ShardingJDBCTracer {
         if (GlobalTracer.isRegistered()) {
             return;
         }
-        String tracerClassName = new ConfigLoader().getTracerClassName();
+        String tracerClassName = new ConfigurationLoader().getTracerClassName();
         try {
             init((Tracer) Class.forName(tracerClassName).newInstance());
         } catch (final InstantiationException | IllegalAccessException | ClassNotFoundException ex) {

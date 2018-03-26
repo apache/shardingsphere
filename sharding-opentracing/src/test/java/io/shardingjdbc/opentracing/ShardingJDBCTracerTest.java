@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,7 @@ import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
-import io.shardingjdbc.opentracing.config.OptsConfigParser;
-import org.apache.commons.lang3.builder.ToStringExclude;
+import io.shardingjdbc.opentracing.config.OpentracingConfigurationParser;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +39,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(OptsConfigParser.class)
+@PrepareForTest(OpentracingConfigurationParser.class)
 public class ShardingJDBCTracerTest {
     
     @Before

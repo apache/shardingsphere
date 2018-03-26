@@ -25,7 +25,7 @@ import com.google.common.base.Optional;
  * @author gaohongtao
  * @author wangkai
  */
-interface ConfigParser {
+interface ConfigurationParser {
     
     /**
      * Parse config item to config value.

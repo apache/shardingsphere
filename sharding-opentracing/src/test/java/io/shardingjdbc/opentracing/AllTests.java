@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,12 +17,12 @@
 
 package io.shardingjdbc.opentracing;
 
-import io.shardingjdbc.opentracing.config.ConfigLoaderTest;
+import io.shardingjdbc.opentracing.config.ConfigurationLoaderTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ConfigLoaderTest.class,
+@Suite.SuiteClasses({ConfigurationLoaderTest.class,
         ExecuteEventListenerTest.class,
         ShardingJDBCTracerTest.class
 })
