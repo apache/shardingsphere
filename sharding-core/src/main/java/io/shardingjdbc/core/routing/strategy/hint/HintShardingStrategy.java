@@ -17,8 +17,10 @@
 
 package io.shardingjdbc.core.routing.strategy.hint;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
+import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import lombok.Getter;
 
@@ -37,9 +39,10 @@ public final class HintShardingStrategy implements ShardingStrategy {
     
     private final HintShardingAlgorithm shardingAlgorithm;
     
-    public HintShardingStrategy(final HintShardingAlgorithm shardingAlgorithm) {
-        this.shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        this.shardingAlgorithm = shardingAlgorithm;
+    public HintShardingStrategy(final HintShardingStrategyConfiguration hintShardingStrategyConfig) {
+        Preconditions.checkNotNull(hintShardingStrategyConfig.getShardingAlgorithm(), "Sharding algorithm cannot be null.");
+        shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        shardingAlgorithm = hintShardingStrategyConfig.getShardingAlgorithm();
     }
     
     @Override

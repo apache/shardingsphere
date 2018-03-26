@@ -17,9 +17,6 @@
 
 package io.shardingjdbc.core.api.config.strategy;
 
-import com.google.common.base.Preconditions;
-import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
-import io.shardingjdbc.core.routing.strategy.inline.InlineShardingStrategy;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -35,11 +32,4 @@ public final class InlineShardingStrategyConfiguration implements ShardingStrate
     private final String shardingColumn;
     
     private final String algorithmExpression;
-    
-    @Override
-    public ShardingStrategy build() {
-        Preconditions.checkNotNull(shardingColumn, "Sharding column cannot be null.");
-        Preconditions.checkNotNull(algorithmExpression, "Algorithm inline expression cannot be null.");
-        return new InlineShardingStrategy(shardingColumn, algorithmExpression);
-    }
 }

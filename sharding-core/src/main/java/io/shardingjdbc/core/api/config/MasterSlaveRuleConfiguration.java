@@ -31,7 +31,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public class MasterSlaveRuleConfiguration {
+public final class MasterSlaveRuleConfiguration {
     
     private String name;
     

@@ -25,6 +25,7 @@ import groovy.util.Expando;
 import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 
 import java.util.ArrayList;
@@ -44,9 +45,11 @@ public final class InlineShardingStrategy implements ShardingStrategy {
     
     private final Closure<?> closure;
     
-    public InlineShardingStrategy(final String shardingColumn, final String inlineExpression) {
-        this.shardingColumn = shardingColumn;
-        closure = (Closure) new GroovyShell().evaluate(Joiner.on("").join("{it -> \"", inlineExpression.trim(), "\"}"));
+    public InlineShardingStrategy(final InlineShardingStrategyConfiguration inlineShardingStrategyConfig) {
+        Preconditions.checkNotNull(inlineShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
+        Preconditions.checkNotNull(inlineShardingStrategyConfig.getAlgorithmExpression(), "Sharding algorithm expression cannot be null.");
+        shardingColumn = inlineShardingStrategyConfig.getShardingColumn();
+        closure = (Closure) new GroovyShell().evaluate(Joiner.on("").join("{it -> \"", inlineShardingStrategyConfig.getAlgorithmExpression().trim(), "\"}"));
     }
     
     @Override

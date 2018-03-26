@@ -22,6 +22,10 @@ import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguratio
 import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingjdbc.core.fixture.ComplexOrderShardingAlgorithm;
+import io.shardingjdbc.core.fixture.OrderDatabaseHintShardingAlgorithm;
+import io.shardingjdbc.core.fixture.PreciseOrderShardingAlgorithm;
+import io.shardingjdbc.core.fixture.RangeOrderShardingAlgorithm;
 import io.shardingjdbc.core.yaml.sharding.strategy.YamlComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.yaml.sharding.strategy.YamlHintShardingStrategyConfiguration;
 import io.shardingjdbc.core.yaml.sharding.strategy.YamlInlineShardingStrategyConfiguration;
@@ -44,17 +48,18 @@ public final class YamlShardingStrategyConfigurationTest {
     private YamlShardingStrategyConfiguration createStandardShardingStrategyConfig() {
         YamlStandardShardingStrategyConfiguration standardShardingStrategyConfig = new YamlStandardShardingStrategyConfiguration();
         standardShardingStrategyConfig.setShardingColumn("order_id");
-        standardShardingStrategyConfig.setPreciseAlgorithmClassName("TestPreciseAlgorithmClass");
-        standardShardingStrategyConfig.setRangeAlgorithmClassName("TestRangeAlgorithmClass");
+        standardShardingStrategyConfig.setPreciseAlgorithmClassName(PreciseOrderShardingAlgorithm.class.getName());
+        standardShardingStrategyConfig.setRangeAlgorithmClassName(RangeOrderShardingAlgorithm.class.getName());
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         result.setStandard(standardShardingStrategyConfig);
         return result;
     }
     
     private void assertStandardShardingStrategyConfig(final StandardShardingStrategyConfiguration actual) {
+
         assertThat(actual.getShardingColumn(), is("order_id"));
-        assertThat(actual.getPreciseAlgorithmClassName(), is("TestPreciseAlgorithmClass"));
-        assertThat(actual.getRangeAlgorithmClassName(), is("TestRangeAlgorithmClass"));
+        assertThat(actual.getPreciseShardingAlgorithm(), instanceOf(PreciseOrderShardingAlgorithm.class));
+        assertThat(actual.getRangeShardingAlgorithm(), instanceOf(RangeOrderShardingAlgorithm.class));
     }
     
     @Test
@@ -65,7 +70,7 @@ public final class YamlShardingStrategyConfigurationTest {
     private YamlShardingStrategyConfiguration createComplexShardingStrategyConfig() {
         YamlComplexShardingStrategyConfiguration complexShardingStrategyConfig = new YamlComplexShardingStrategyConfiguration();
         complexShardingStrategyConfig.setShardingColumns("user_id, order_id");
-        complexShardingStrategyConfig.setAlgorithmClassName("TestAlgorithmClass");
+        complexShardingStrategyConfig.setAlgorithmClassName(ComplexOrderShardingAlgorithm.class.getName());
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         result.setComplex(complexShardingStrategyConfig);
         return result;
@@ -73,7 +78,7 @@ public final class YamlShardingStrategyConfigurationTest {
     
     private void assertComplexShardingStrategyConfig(final ComplexShardingStrategyConfiguration actual) {
         assertThat(actual.getShardingColumns(), is("user_id, order_id"));
-        assertThat(actual.getAlgorithmClassName(), is("TestAlgorithmClass"));
+        assertThat(actual.getShardingAlgorithm(), instanceOf(ComplexOrderShardingAlgorithm.class));
     }
     
     @Test
@@ -83,14 +88,14 @@ public final class YamlShardingStrategyConfigurationTest {
     
     private YamlShardingStrategyConfiguration createHintShardingStrategyConfig() {
         YamlHintShardingStrategyConfiguration hintShardingStrategyConfig = new YamlHintShardingStrategyConfiguration();
-        hintShardingStrategyConfig.setAlgorithmClassName("TestAlgorithmClass");
+        hintShardingStrategyConfig.setAlgorithmClassName(OrderDatabaseHintShardingAlgorithm.class.getName());
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         result.setHint(hintShardingStrategyConfig);
         return result;
     }
     
     private void assertHintShardingStrategyConfig(final HintShardingStrategyConfiguration actual) {
-        assertThat(actual.getAlgorithmClassName(), is("TestAlgorithmClass"));
+        assertThat(actual.getShardingAlgorithm(), instanceOf(OrderDatabaseHintShardingAlgorithm.class));
     }
     
     @Test
@@ -136,8 +141,11 @@ public final class YamlShardingStrategyConfigurationTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertBuildWithMultipleSHardingStrategies() {
         YamlShardingStrategyConfiguration actual = new YamlShardingStrategyConfiguration();
-        actual.setStandard(new YamlStandardShardingStrategyConfiguration());
-        actual.setComplex(new YamlComplexShardingStrategyConfiguration());
+        YamlInlineShardingStrategyConfiguration inlineShardingStrategyConfig = new YamlInlineShardingStrategyConfiguration();
+        inlineShardingStrategyConfig.setShardingColumn("order_id");
+        inlineShardingStrategyConfig.setAlgorithmExpression("t_order_${order_id % 2}");
+        actual.setInline(inlineShardingStrategyConfig);
+        actual.setNone(new YamlNoneShardingStrategyConfiguration());
         actual.build();
     }
 }

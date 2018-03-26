@@ -15,22 +15,17 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.config.strategy;
+package io.shardingjdbc.orchestration.internal.json.fixture;
 
-import io.shardingjdbc.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
 
-/**
- * Complex sharding strategy configuration.
- * 
- * @author zhangliang
- */
-@RequiredArgsConstructor
-@Getter
-public final class ComplexShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+import java.util.Collection;
+
+public final class TestHintShardingAlgorithm implements HintShardingAlgorithm {
     
-    private final String shardingColumns;
-    
-    private final ComplexKeysShardingAlgorithm shardingAlgorithm;
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
+        return null;
+    }
 }

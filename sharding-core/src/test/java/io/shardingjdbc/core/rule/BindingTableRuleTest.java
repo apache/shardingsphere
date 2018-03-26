@@ -51,6 +51,11 @@ public final class BindingTableRuleTest {
         createBindingTableRule().getBindingActualTable("no_ds", "Sub_Logic_Table", "table_1");
     }
     
+    @Test(expected = ShardingConfigurationException.class)
+    public void assertGetBindingActualTablesFailureWhenLogicTableNotFound() {
+        createBindingTableRule().getBindingActualTable("ds0", "No_Logic_Table", "table_1");
+    }
+    
     @Test
     public void assertGetAllLogicTables() {
         assertThat(createBindingTableRule().getAllLogicTables(), is((Collection<String>) Arrays.asList("logic_table", "sub_logic_table")));
@@ -73,14 +78,14 @@ public final class BindingTableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..1}");
-        return tableRuleConfig.build(createDataSourceNames());
+        return new TableRule(tableRuleConfig, createDataSourceNames());
     }
     
     private TableRule createSubTableRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("SUB_LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.sub_table_${0..1}");
-        return tableRuleConfig.build(createDataSourceNames());
+        return new TableRule(tableRuleConfig, createDataSourceNames());
     }
     
     private Collection<String> createDataSourceNames() {
