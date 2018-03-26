@@ -48,11 +48,7 @@ public class SelectControllerTests {
 //            String msg = "id=aa;pwd=33;";
 //            byte[] encontent = de1.Encrytor(msg);
 //            byte[] decontent = de1.Decryptor(encontent);
-//            System.out.println("明文是:" + msg);
-//            System.out.println("加密后:" + new String(encontent));
-//            System.out.println("解密后:" + new String(decontent));
 //        } catch (Exception e){
-//            System.out.println("aa");
 //        }
 //
 //
@@ -62,16 +58,12 @@ public class SelectControllerTests {
         UserSession userInfo = new UserSession("dev_user", "dev_ing_123", "172.25.63.243:3306/test");
         Connection conn = DBConnector.getConnection(userInfo.getUserName(),userInfo.getPassWord(),
                 userInfo.getTargetURL(),userInfo.getDriver());
-        System.out.println(conn);
 
 
     }
 //    @Test
 //    public void res(){
 //        RespCode aa = RespCode.SUCCESS;
-//        System.out.println(aa);
-//        System.out.println(aa.getCode());
-//        System.out.println(aa.getMsg());
 //
 //    }
 

@@ -30,10 +30,6 @@ public class ExecuteSQLController {
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
     public SqlResponseResult executeSql(final String sql, final @CookieValue(value = "userUUID", required = false,
             defaultValue = "") String userUUID) {
-        System.out.println("");
-        System.out.println(sql);
-        System.out.println(userUUID);
-        System.out.println("");
         Map<String, Connection> connectionMap = GlobalSessions.getSessionInfos();
         Connection connection = connectionMap.get(userUUID);
         return sqlServer.execute(sql, connection);
