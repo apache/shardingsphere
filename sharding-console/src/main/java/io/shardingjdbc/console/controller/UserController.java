@@ -1,7 +1,6 @@
 package io.shardingjdbc.console.controller;
 
 
-import com.sun.deploy.net.HttpResponse;
 import io.shardingjdbc.console.entity.DBConnector;
 import io.shardingjdbc.console.entity.GlobalSessions;
 import io.shardingjdbc.console.entity.RespObj;
@@ -12,9 +11,6 @@ import io.shardingjdbc.console.constant.RespCode;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
