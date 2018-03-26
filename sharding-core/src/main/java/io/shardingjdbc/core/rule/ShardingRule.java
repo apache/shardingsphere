@@ -19,6 +19,7 @@ package io.shardingjdbc.core.rule;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.exception.ShardingConfigurationException;
 import io.shardingjdbc.core.keygen.KeyGenerator;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
@@ -132,7 +133,9 @@ public final class ShardingRule {
     }
     
     private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
-        return new TableRule(logicTableName, null, Collections.singletonList(defaultDataSourceName), null, null, null, null, null);
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+        tableRuleConfig.setLogicTable(logicTableName);
+        return new TableRule(tableRuleConfig, Collections.singletonList(defaultDataSourceName));
     }
     
     /**

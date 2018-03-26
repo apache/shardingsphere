@@ -40,7 +40,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
-public class ShardingRuleConfiguration {
+public final class ShardingRuleConfiguration {
     
     private String defaultDataSourceName;
     
@@ -68,7 +68,7 @@ public class ShardingRuleConfiguration {
         Set<String> dataSourceNameSet = new LinkedHashSet<>(dataSourceNames);
         Collection<TableRule> tableRules = new LinkedList<>();
         for (TableRuleConfiguration each : tableRuleConfigs) {
-            tableRules.add(each.build(dataSourceNameSet));
+            tableRules.add(new TableRule(each, dataSourceNameSet));
         }
         ShardingStrategy defaultDatabaseShardingStrategy = null == defaultDatabaseShardingStrategyConfig ? null : defaultDatabaseShardingStrategyConfig.build();
         ShardingStrategy defaultTableShardingStrategy = null == defaultTableShardingStrategyConfig ? null : defaultTableShardingStrategyConfig.build();
