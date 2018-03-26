@@ -5,7 +5,10 @@ import io.shardingjdbc.console.entity.DBConnector;
 import io.shardingjdbc.console.entity.GlobalSessions;
 import io.shardingjdbc.console.entity.ResponseObject;
 import io.shardingjdbc.console.entity.UserSession;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.CookieValue;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +29,7 @@ public class UserController {
      */
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public ResponseObject login(final UserSession userSession, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID, final HttpServletResponse response) {
-        if (!userUUID.equals("")) {
+        if (!"".equals(userUUID)) {
             return new ResponseObject(ResponseCode.SUCCESS);
         }
         Connection connection = DBConnector.getConnection(userSession.getUserName(), userSession.getPassWord(), userSession.getTargetURL(), userSession.getDriver());
@@ -49,11 +52,11 @@ public class UserController {
      * @return ResponseObject
      */
     @RequestMapping(value = "/exit", method = RequestMethod.POST)
-    public ResponseObject exit(final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID, HttpServletResponse response) {
-        if (!userUUID.equals("")) {
+    public ResponseObject exit(final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID, final HttpServletResponse response) {
+        if (!"".equals(userUUID)) {
             Map<String, Connection> connectionMap = GlobalSessions.getSessionInfo();
             connectionMap.remove(userUUID);
-            Cookie cookie = new Cookie("userUUID",null);
+            Cookie cookie = new Cookie("userUUID", null);
             cookie.setMaxAge(0);
             cookie.setPath("/");
             response.addCookie(cookie);

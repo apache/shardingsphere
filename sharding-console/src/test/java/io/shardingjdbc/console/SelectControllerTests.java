@@ -25,15 +25,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.sql.Connection;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MockServletContext.class)
@@ -41,9 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SelectControllerTests {
     
     @Test
-    public  void conn(){
+    public void conn() {
         UserSession userSession = new UserSession("dev_user", "dev_ing_123", "172.25.63.243:3306/test");
-        Connection conn = DBConnector.getConnection(userSession.getUserName(),userSession.getPassWord(),
-                userSession.getTargetURL(),userSession.getDriver());
+        Connection conn = DBConnector.getConnection(userSession.getUserName(), userSession.getPassWord(),
+                userSession.getTargetURL(), userSession.getDriver());
     }
 }

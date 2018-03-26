@@ -37,11 +37,11 @@ public class EncDes {
 
     /**
      * encrypt.
-     * @param str
+     * @param str str
      * @return byte[]
-     * @throws InvalidKeyException
-     * @throws IllegalBlockSizeException
-     * @throws BadPaddingException
+     * @throws InvalidKeyException InvalidKeyException
+     * @throws IllegalBlockSizeException IllegalBlockSizeException
+     * @throws BadPaddingException BadPaddingException
      */
     public byte[] encrytor(final String str) throws InvalidKeyException,
             IllegalBlockSizeException, BadPaddingException {
