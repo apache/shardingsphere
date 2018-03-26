@@ -36,6 +36,7 @@ import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
 import io.shardingjdbc.dbtest.data.ColumnDefinition;
+import io.shardingjdbc.dbtest.init.InItCreateSchema;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import org.junit.Assert;
 import org.xml.sax.SAXException;
@@ -158,8 +159,36 @@ public class AssertEngine {
                     
                 }
             }
-    
-           
+            
+            // ddl run
+            for (AssertDDLDefinition each : assertsDefinition.getAssertDDL()) {
+                if (id.equals(each.getId())) {
+                    AssertDDLDefinition anAssert = each;
+                    String rootsql = anAssert.getSql();
+                    rootsql = SQLCasesLoader.getSql(rootsql);
+                    String initDataFile = PathUtil.getPath(anAssert.getInitDataFile(), rootPath);
+                    Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
+                    Map<String, String> sqls = new HashMap<>();
+                    getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
+                    
+                    if (mapDatasetDefinition.isEmpty()) {
+                        throw new DbTestException(path + "  Use cases cannot be parsed");
+                    }
+                    
+                    if (sqls.isEmpty()) {
+                        throw new DbTestException(path + "  The use case cannot initialize the data");
+                    }
+                    
+                    doUpdateUseStatementToExecuteUpdateDDL(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls);
+                    
+                    doUpdateUseStatementToExecuteDDL(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls);
+                    
+                    doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls);
+                    
+                    doUpdateUsePreparedStatementToExecuteDDL(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls);
+                    
+                }
+            }
             
         } catch (NoSuchFieldException | IllegalAccessException | ParseException | XPathExpressionException | SQLException | ParserConfigurationException | SAXException | IOException e) {
             throw new DbTestException(e);
@@ -189,6 +218,28 @@ public class AssertEngine {
         }
     }
     
+    private static void doUpdateUsePreparedStatementToExecuteDDL(final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDDLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+        try {
+            initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
+            try (Connection con = dataSource.getConnection()) {
+                InItCreateSchema.dropTable();
+                InItCreateSchema.createTable();
+                DatabaseUtil.updateUsePreparedStatementToExecute(con, rootsql,
+                        anAssert.getParameters());
+                String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                
+                String table = anAssert.getTable();
+                List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions,table);
+            }
+        } finally {
+            InItCreateSchema.dropTable();
+            InItCreateSchema.createTable();
+            clearTableData(dataSourceMaps, mapDatasetDefinition);
+        }
+    }
+    
     private static void doUpdateUsePreparedStatementToExecuteUpdate(final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDMLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
@@ -207,6 +258,29 @@ public class AssertEngine {
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
             }
         } finally {
+            clearTableData(dataSourceMaps, mapDatasetDefinition);
+        }
+    }
+    
+    private static void doUpdateUsePreparedStatementToExecuteUpdateDDL(final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDDLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+        try {
+            initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
+            try (Connection con = dataSource.getConnection()) {
+                InItCreateSchema.dropTable();
+                InItCreateSchema.createTable();
+                DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(con, rootsql,
+                        anAssert.getParameters());
+                String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                
+                
+                String table = anAssert.getTable();
+                List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions,table);
+            }
+        } finally {
+            InItCreateSchema.dropTable();
+            InItCreateSchema.createTable();
             clearTableData(dataSourceMaps, mapDatasetDefinition);
         }
     }
@@ -233,6 +307,28 @@ public class AssertEngine {
         }
     }
     
+    private static void doUpdateUseStatementToExecuteDDL(final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDDLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+        try {
+            initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
+            try (Connection con = dataSource.getConnection()) {
+                InItCreateSchema.dropTable();
+                InItCreateSchema.createTable();
+                DatabaseUtil.updateUseStatementToExecute(con, rootsql, anAssert.getParameters());
+                
+                String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                
+                String table = anAssert.getTable();
+                List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions,table);
+            }
+        } finally {
+            InItCreateSchema.dropTable();
+            InItCreateSchema.createTable();
+            clearTableData(dataSourceMaps, mapDatasetDefinition);
+        }
+    }
+    
     private static void doUpdateUseStatementToExecuteUpdate(final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDMLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
@@ -251,6 +347,27 @@ public class AssertEngine {
                 
             }
         } finally {
+            clearTableData(dataSourceMaps, mapDatasetDefinition);
+        }
+    }
+    
+    private static void doUpdateUseStatementToExecuteUpdateDDL(final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDDLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+        try {
+            initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
+            try (Connection con = dataSource.getConnection()) {
+                InItCreateSchema.dropTable();
+                InItCreateSchema.createTable();
+                DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootsql, anAssert.getParameters());
+                String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                
+                String table = anAssert.getTable();
+                List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions,table);
+            }
+        } finally {
+            InItCreateSchema.dropTable();
+            InItCreateSchema.createTable();
             clearTableData(dataSourceMaps, mapDatasetDefinition);
         }
     }
@@ -343,7 +460,7 @@ public class AssertEngine {
         for (Map.Entry<String, DataSource> eachDataSourceEntry : dataSourceMaps.entrySet()) {
             DataSource dataSource1 = eachDataSourceEntry.getValue();
             DatasetDefinition datasetDefinition = mapDatasetDefinition.get(eachDataSourceEntry.getKey());
-            Map<String,List<ColumnDefinition>> configs = datasetDefinition.getMetadatas();
+            Map<String, List<ColumnDefinition>> configs = datasetDefinition.getMetadatas();
             Map<String, List<Map<String, String>>> datas = datasetDefinition.getDatas();
             
             for (Map.Entry<String, List<Map<String, String>>> eachListEntry : datas.entrySet()) {

@@ -17,4 +17,6 @@ public class ColumnDefinition {
     
     private Integer nullAble;
     
+    private int isAutoincrement;
+    
 }

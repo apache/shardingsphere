@@ -19,14 +19,7 @@ package io.shardingjdbc.dbtest.common;
 
 import static org.junit.Assert.assertTrue;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
+import java.sql.*;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -607,6 +600,59 @@ public class DatabaseUtil {
      * @param expected expected
      * @param actual   actual
      */
+    public static void assertConfigs(final DatasetDefinition expected, final List<ColumnDefinition> actual, String table) {
+        Map<String, List<ColumnDefinition>> configs = expected.getMetadatas();
+        List<ColumnDefinition> columnDefinitions = configs.get(table);
+        for (ColumnDefinition each : columnDefinitions) {
+            boolean flag = false;
+            for (ColumnDefinition definition : actual) {
+                if (each.getName().equals(definition.getName())) {
+                    boolean flag2 = true;
+                    if (StringUtils.isNotEmpty(each.getType())) {
+                        if (!each.getType().equals(definition.getType())) {
+                            flag2 = false;
+                        }
+                    }
+                    if (flag2 && each.getDecimalDigits() != null) {
+                        if (!each.getDecimalDigits().equals(definition.getDecimalDigits())) {
+                            flag2 = false;
+                        }
+                    }
+                    if (flag2 && each.getNullAble() != null) {
+                        if (!each.getNullAble().equals(definition.getNullAble())) {
+                            flag2 = false;
+                        }
+                    }
+                    if (flag2 && each.getNumPrecRadix() != null) {
+                        if (!each.getNumPrecRadix().equals(definition.getNumPrecRadix())) {
+                            flag2 = false;
+                        }
+                    }
+                    if (flag2 && each.getSize() != null) {
+                        if (!each.getSize().equals(definition.getSize())) {
+                            flag2 = false;
+                        }
+                    }
+                    if (flag2 && each.getIsAutoincrement() != 0) {
+                        if (each.getIsAutoincrement() != definition.getIsAutoincrement()) {
+                            flag2 = false;
+                        }
+                    }
+                    if (flag2) {
+                        flag = true;
+                    }
+                }
+                assertTrue(flag);
+            }
+        }
+    }
+    
+    /**
+     * Comparative data set.
+     *
+     * @param expected expected
+     * @param actual   actual
+     */
     public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual) {
         Map<String, List<ColumnDefinition>> actualConfigs = actual.getMetadatas();
         Map<String, List<ColumnDefinition>> expectedConfigs = expected.getMetadatas();
@@ -643,5 +689,41 @@ public class DatabaseUtil {
         }
     }
     
-    
+    /**
+     * Use PreparedStatement Test sql select.
+     *
+     * @param conn  Jdbc connection
+     * @param table table
+     * @return Query result set
+     * @throws SQLException   SQL executes exceptions
+     * @throws ParseException ParseException
+     */
+    public static List<ColumnDefinition> getColumnDefinitions(final Connection conn, final String table) throws SQLException, ParseException {
+        DatabaseMetaData stmt = conn.getMetaData();
+        try (ResultSet rs = stmt.getColumns(conn.getCatalog(), null, table, null);) {
+            List<ColumnDefinition> cols = new ArrayList<ColumnDefinition>();
+            while (rs.next()) {
+                ColumnDefinition col = new ColumnDefinition();
+                String column = rs.getString("COLUMN_NAME");
+                int size = rs.getInt("COLUMN_SIZE");
+                String columnType = rs.getString("TYPE_NAME");
+                int decimalDigits = rs.getInt("DECIMAL_DIGITS");
+                int numPrecRadix = rs.getInt("NUM_PREC_RADIX");
+                int nullAble = rs.getInt("NULLABLE");
+                String isAutoincrement = rs.getString("IS_AUTOINCREMENT");
+                
+                col.setSize(size);
+                col.setDecimalDigits(decimalDigits);
+                col.setNumPrecRadix(numPrecRadix);
+                col.setNullAble(nullAble);
+                if (StringUtils.isNotEmpty(isAutoincrement)) {
+                    col.setIsAutoincrement(1);
+                }
+                col.setName(column);
+                col.setType(columnType);
+                cols.add(col);
+            }
+            return cols;
+        }
+    }
 }

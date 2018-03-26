@@ -27,6 +27,8 @@ import java.util.*;
 
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.tools.RunScript;
 
@@ -38,22 +40,41 @@ import javax.sql.DataSource;
 
 public class InItCreateSchema {
     
+    private static Set<DatabaseType> DATABASE_SCHEMAS;
+    
+    public static Set<DatabaseType> getDatabaseSchemas() {
+        return DATABASE_SCHEMAS;
+    }
+    
+    public static void setDatabaseSchemas(final Set<DatabaseType> databaseSchemas) {
+        DATABASE_SCHEMAS = databaseSchemas;
+    }
+    
     /**
      * Initialize the database table.
      */
-    public static synchronized void initTable(Set<DatabaseType> dbs) {
-        for (DatabaseType db : dbs) {
+    public static synchronized void createTable() {
+        for (DatabaseType db : DATABASE_SCHEMAS) {
             createSchema(db);
+        }
+    }
+    
+    /**
+     * Initialize the database table.
+     */
+    public static synchronized void dropTable() {
+        for (DatabaseType db : DATABASE_SCHEMAS) {
+            dropSchema(db);
         }
     }
     
     /**
      * Create a database.
      */
-    public static void createDatabase(Set<DatabaseType> dbs) {
+    public static void createDatabase() {
         Connection conn = null;
         try {
-            for (DatabaseType each : dbs) {
+            for (DatabaseType each : DATABASE_SCHEMAS) {
                 
                 conn = initialConnection(null, each);
                 String packing = "default";
@@ -81,10 +102,10 @@ public class InItCreateSchema {
     /**
      * drop the database table.
      */
-    public static synchronized void dropDatabase(Set<DatabaseType> dbs) {
+    public static synchronized void dropDatabase() {
         Connection conn = null;
         try {
-            for (DatabaseType each : dbs) {
+            for (DatabaseType each : DATABASE_SCHEMAS) {
                 
                 conn = initialConnection(null, each);
                 String packing = "default";
@@ -115,6 +136,12 @@ public class InItCreateSchema {
         createShardingSchema(dbType);
     }
     
+    private static void dropSchema(final DatabaseType dbType) {
+        dropJdbcSchema(dbType);
+        dropMasterSlaveOnlySchema(dbType);
+        dropShardingSchema(dbType);
+    }
+    
     private static void createShardingSchema(final DatabaseType dbType) {
         try {
             Connection conn;
@@ -122,13 +149,13 @@ public class InItCreateSchema {
                 for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
                     conn = initialConnection(database + "_" + i, dbType);
                     RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
-                            .getResourceAsStream("integrate/schema/table/" + database + ".sql")));
+                            .getResourceAsStream("integrate/schema/table/create/" + database + ".sql")));
                     conn.close();
                 }
             }
             conn = initialConnection("tbl", dbType);
             RunScript.execute(conn, new InputStreamReader(
-                    InItCreateSchema.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+                    InItCreateSchema.class.getClassLoader().getResourceAsStream("integrate/schema/table/create/tbl.sql")));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -141,7 +168,7 @@ public class InItCreateSchema {
             for (String database : Arrays.asList("master_only", "slave_only")) {
                 conn = initialConnection(database, dbType);
                 RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
-                        .getResourceAsStream("integrate/schema/table/" + database + ".sql")));
+                        .getResourceAsStream("integrate/schema/table/create/" + database + ".sql")));
                 conn.close();
             }
         } catch (final SQLException ex) {
@@ -155,7 +182,55 @@ public class InItCreateSchema {
             for (int i = 0; i < 2; i++) {
                 conn = initialConnection("jdbc_" + i, dbType);
                 RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
-                        .getResourceAsStream("integrate/schema/table/jdbc.sql")));
+                        .getResourceAsStream("integrate/schema/table/create/jdbc.sql")));
+                conn.close();
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    private static void dropShardingSchema(final DatabaseType dbType) {
+        try {
+            Connection conn;
+            for (int i = 0; i < 10; i++) {
+                for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
+                    conn = initialConnection(database + "_" + i, dbType);
+                    RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
+                            .getResourceAsStream("integrate/schema/table/drop/" + database + ".sql")));
+                    conn.close();
+                }
+            }
+            conn = initialConnection("tbl", dbType);
+            RunScript.execute(conn, new InputStreamReader(
+                    InItCreateSchema.class.getClassLoader().getResourceAsStream("integrate/schema/table/create/tbl.sql")));
+            conn.close();
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    private static void dropMasterSlaveOnlySchema(final DatabaseType dbType) {
+        try {
+            Connection conn;
+            for (String database : Arrays.asList("master_only", "slave_only")) {
+                conn = initialConnection(database, dbType);
+                RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
+                        .getResourceAsStream("integrate/schema/table/drop/" + database + ".sql")));
+                conn.close();
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    private static void dropJdbcSchema(final DatabaseType dbType) {
+        try {
+            Connection conn;
+            for (int i = 0; i < 2; i++) {
+                conn = initialConnection("jdbc_" + i, dbType);
+                RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
+                        .getResourceAsStream("integrate/schema/table/drop/jdbc.sql")));
                 conn.close();
             }
         } catch (final SQLException ex) {

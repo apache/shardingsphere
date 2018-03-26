@@ -137,9 +137,9 @@ public class StartTest {
                 assertPath = PathUtil.getPath(assertPath);
                 List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "t", "yaml");
                 Set<DatabaseType> databaseSchemas = InItCreateSchema.getDatabaseSchema(paths);
-                
-                InItCreateSchema.createDatabase(databaseSchemas);
-                InItCreateSchema.initTable(databaseSchemas);
+                InItCreateSchema.setDatabaseSchemas(databaseSchemas);
+                InItCreateSchema.createDatabase();
+                InItCreateSchema.createTable();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -153,15 +153,8 @@ public class StartTest {
     
     @AfterClass
     public static void afterClass() {
-        try {
-            if (isInitialized()) {
-                String assertPath = getAssertPath();
-                List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "", "yaml");
-                Set<DatabaseType> databaseSchemas = InItCreateSchema.getDatabaseSchema(paths);
-                InItCreateSchema.dropDatabase(databaseSchemas);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (isInitialized()) {
+            InItCreateSchema.dropDatabase();
         }
     }
     
