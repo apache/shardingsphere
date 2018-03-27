@@ -41,7 +41,7 @@ import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-public class ExecuteEventListenerTest {
+public final class ExecuteEventListenerTest {
     
     private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(),
             MockTracer.Propagator.TEXT_MAP);

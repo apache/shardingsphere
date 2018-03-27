@@ -30,7 +30,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(OpentracingConfigurationParser.class)
-public class ConfigurationLoaderTest {
+public final class ConfigurationLoaderTest {
     
     @Before
     public void setUp() {
