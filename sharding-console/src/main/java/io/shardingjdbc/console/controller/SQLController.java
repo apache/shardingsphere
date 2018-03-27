@@ -1,7 +1,7 @@
 package io.shardingjdbc.console.controller;
 
 import io.shardingjdbc.console.domain.SQLResponseResult;
-import io.shardingjdbc.console.entity.SessionRegistry;
+import io.shardingjdbc.console.domain.SessionRegistry;
 import io.shardingjdbc.console.service.SQLWorkbench;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +20,7 @@ import com.google.common.base.Optional;
  */
 
 @RestController
-public class ExecuteSQLController {
+public class SQLController {
     
     @Autowired
     private SQLWorkbench SQLWorkbench;
