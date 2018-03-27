@@ -23,6 +23,7 @@ import io.shardingjdbc.core.keygen.DefaultKeyGenerator;
 import io.shardingjdbc.core.keygen.KeyGenerator;
 import io.shardingjdbc.core.keygen.KeyGeneratorFactory;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
+import io.shardingjdbc.core.routing.strategy.ShardingStrategyFactory;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 import lombok.Getter;
@@ -40,7 +41,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
-public class ShardingRuleConfiguration {
+public final class ShardingRuleConfiguration {
     
     private String defaultDataSourceName;
     
@@ -68,10 +69,10 @@ public class ShardingRuleConfiguration {
         Set<String> dataSourceNameSet = new LinkedHashSet<>(dataSourceNames);
         Collection<TableRule> tableRules = new LinkedList<>();
         for (TableRuleConfiguration each : tableRuleConfigs) {
-            tableRules.add(each.build(dataSourceNameSet));
+            tableRules.add(new TableRule(each, dataSourceNameSet));
         }
-        ShardingStrategy defaultDatabaseShardingStrategy = null == defaultDatabaseShardingStrategyConfig ? null : defaultDatabaseShardingStrategyConfig.build();
-        ShardingStrategy defaultTableShardingStrategy = null == defaultTableShardingStrategyConfig ? null : defaultTableShardingStrategyConfig.build();
+        ShardingStrategy defaultDatabaseShardingStrategy = null == defaultDatabaseShardingStrategyConfig ? null : ShardingStrategyFactory.newInstance(defaultDatabaseShardingStrategyConfig);
+        ShardingStrategy defaultTableShardingStrategy = null == defaultTableShardingStrategyConfig ? null : ShardingStrategyFactory.newInstance(defaultTableShardingStrategyConfig);
         KeyGenerator keyGenerator = KeyGeneratorFactory.newInstance(null == defaultKeyGeneratorClass ? DefaultKeyGenerator.class.getName() : defaultKeyGeneratorClass);
         return new ShardingRule(dataSourceNameSet, defaultDataSourceName, tableRules, bindingTableGroups, defaultDatabaseShardingStrategy, defaultTableShardingStrategy, keyGenerator);
     }

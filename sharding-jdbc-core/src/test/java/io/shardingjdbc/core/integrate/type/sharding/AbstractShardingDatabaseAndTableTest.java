@@ -105,10 +105,10 @@ public abstract class AbstractShardingDatabaseAndTableTest extends AbstractSQLAs
             shardingRuleConfig.getTableRuleConfigs().add(tempLogTableRuleConfig);
             shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
-                    new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
-                    new StandardShardingStrategyConfiguration("order_id", PreciseModuloTableShardingAlgorithm.class.getName(), RangeModuloTableShardingAlgorithm.class.getName()));
+                    new StandardShardingStrategyConfiguration("order_id", new PreciseModuloTableShardingAlgorithm(), new RangeModuloTableShardingAlgorithm()));
+            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
+                    new StandardShardingStrategyConfiguration("user_id", new PreciseModuloDatabaseShardingAlgorithm(), new RangeModuloDatabaseShardingAlgorithm()));
             getShardingDataSources().put(entry.getKey(), new ShardingDataSource(entry.getValue(), shardingRuleConfig.build(entry.getValue().keySet())));
         }
         return getShardingDataSources();

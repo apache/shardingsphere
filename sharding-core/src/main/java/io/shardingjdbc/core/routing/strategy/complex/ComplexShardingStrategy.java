@@ -17,9 +17,12 @@
 
 package io.shardingjdbc.core.routing.strategy.complex;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
+import io.shardingjdbc.core.util.StringUtil;
 import lombok.Getter;
 
 import java.util.Collection;
@@ -37,10 +40,12 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
     
     private final ComplexKeysShardingAlgorithm shardingAlgorithm;
     
-    public ComplexShardingStrategy(final Collection<String> shardingColumns, final ComplexKeysShardingAlgorithm shardingAlgorithm) {
-        this.shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        this.shardingColumns.addAll(shardingColumns);
-        this.shardingAlgorithm = shardingAlgorithm;
+    public ComplexShardingStrategy(final ComplexShardingStrategyConfiguration complexShardingStrategyConfig) {
+        Preconditions.checkNotNull(complexShardingStrategyConfig.getShardingColumns(), "Sharding columns cannot be null.");
+        Preconditions.checkNotNull(complexShardingStrategyConfig.getShardingAlgorithm(), "Sharding algorithm cannot be null.");
+        shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        shardingColumns.addAll(StringUtil.splitWithComma(complexShardingStrategyConfig.getShardingColumns()));
+        shardingAlgorithm = complexShardingStrategyConfig.getShardingAlgorithm();
     }
     
     @Override

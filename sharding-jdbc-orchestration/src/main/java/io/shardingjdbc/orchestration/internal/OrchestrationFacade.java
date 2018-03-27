@@ -36,7 +36,7 @@ import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -128,7 +128,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     }
     
     private Map<String, DataSource> getActualDataSourceMapForMasterSlave(final Map<String, DataSource> dataSourceMap) {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (entry.getValue() instanceof MasterSlaveDataSource) {
                 MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) entry.getValue();

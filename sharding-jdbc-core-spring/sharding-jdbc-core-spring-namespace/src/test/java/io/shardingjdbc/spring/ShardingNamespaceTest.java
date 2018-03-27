@@ -30,6 +30,11 @@ import io.shardingjdbc.core.rule.BindingTableRule;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
+import io.shardingjdbc.spring.algorithm.DefaultComplexKeysShardingAlgorithm;
+import io.shardingjdbc.spring.algorithm.DefaultHintShardingAlgorithm;
+import io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm;
+import io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm;
+import io.shardingjdbc.spring.algorithm.RangeModuloTableShardingAlgorithm;
 import io.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import io.shardingjdbc.spring.util.FieldValueUtil;
 import org.junit.Test;
@@ -42,6 +47,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -55,22 +61,22 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertStandardStrategy() {
         StandardShardingStrategyConfiguration standardStrategy = this.applicationContext.getBean("standardStrategy", StandardShardingStrategyConfiguration.class);
         assertThat(standardStrategy.getShardingColumn(), is("user_id"));
-        assertThat(standardStrategy.getPreciseAlgorithmClassName(), is("io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm"));
+        assertThat(standardStrategy.getPreciseShardingAlgorithm(), instanceOf(PreciseModuloDatabaseShardingAlgorithm.class));
     }
     
     @Test
     public void assertRangeStandardStrategy() {
         StandardShardingStrategyConfiguration rangeStandardStrategy = this.applicationContext.getBean("rangeStandardStrategy", StandardShardingStrategyConfiguration.class);
         assertThat(rangeStandardStrategy.getShardingColumn(), is("order_id"));
-        assertThat(rangeStandardStrategy.getPreciseAlgorithmClassName(), is("io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm"));
-        assertThat(rangeStandardStrategy.getRangeAlgorithmClassName(), is("io.shardingjdbc.spring.algorithm.RangeModuloTableShardingAlgorithm"));
+        assertThat(rangeStandardStrategy.getPreciseShardingAlgorithm(), instanceOf(PreciseModuloTableShardingAlgorithm.class));
+        assertThat(rangeStandardStrategy.getRangeShardingAlgorithm(), instanceOf(RangeModuloTableShardingAlgorithm.class));
     }
     
     @Test
     public void assertComplexStrategy() {
         ComplexShardingStrategyConfiguration complexStrategy = this.applicationContext.getBean("complexStrategy", ComplexShardingStrategyConfiguration.class);
         assertThat(complexStrategy.getShardingColumns(), is("order_id,user_id"));
-        assertThat(complexStrategy.getAlgorithmClassName(), is("io.shardingjdbc.spring.algorithm.DefaultComplexKeysShardingAlgorithm"));
+        assertThat(complexStrategy.getShardingAlgorithm(), instanceOf(DefaultComplexKeysShardingAlgorithm.class));
     }
     
     @Test
@@ -83,7 +89,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertHintStrategy() {
         HintShardingStrategyConfiguration hintStrategy = this.applicationContext.getBean("hintStrategy", HintShardingStrategyConfiguration.class);
-        assertThat(hintStrategy.getAlgorithmClassName(), is("io.shardingjdbc.spring.algorithm.DefaultHintShardingAlgorithm"));
+        assertThat(hintStrategy.getShardingAlgorithm(), instanceOf(DefaultHintShardingAlgorithm.class));
     }
     
     @Test

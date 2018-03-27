@@ -17,19 +17,10 @@
 
 package io.shardingjdbc.core.api.config.strategy;
 
-import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
-
 /**
  * Sharding strategy configuration.
  * 
  * @author zhangliang
  */
 public interface ShardingStrategyConfiguration {
-    
-    /**
-     * Build sharding strategy.
-     * 
-     * @return sharding strategy
-     */
-    ShardingStrategy build();
 }

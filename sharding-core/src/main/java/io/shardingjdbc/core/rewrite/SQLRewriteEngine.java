@@ -233,26 +233,26 @@ public final class SQLRewriteEngine {
     
     private Map<String, String> getTableTokens(final TableUnit tableUnit) {
         String logicTableName = tableUnit.getLogicTableName().toLowerCase();
-        Map<String, String> tableTokens = new HashMap<>();
-        tableTokens.put(logicTableName, tableUnit.getActualTableName());
+        Map<String, String> result = new HashMap<>();
+        result.put(logicTableName, tableUnit.getActualTableName());
         Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
         if (bindingTableRule.isPresent()) {
-            tableTokens.putAll(getBindingTableTokens(tableUnit, bindingTableRule.get()));
+            result.putAll(getBindingTableTokens(tableUnit, bindingTableRule.get()));
         }
-        return tableTokens;
+        return result;
     }
     
     private Map<String, String> getTableTokens(final CartesianTableReference cartesianTableReference) {
-        Map<String, String> tableTokens = new HashMap<>();
+        Map<String, String> result = new HashMap<>();
         for (TableUnit each : cartesianTableReference.getTableUnits()) {
             String logicTableName = each.getLogicTableName().toLowerCase();
-            tableTokens.put(logicTableName, each.getActualTableName());
+            result.put(logicTableName, each.getActualTableName());
             Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
             if (bindingTableRule.isPresent()) {
-                tableTokens.putAll(getBindingTableTokens(each, bindingTableRule.get()));
+                result.putAll(getBindingTableTokens(each, bindingTableRule.get()));
             }
         }
-        return tableTokens;
+        return result;
     }
     
     private Map<String, String> getBindingTableTokens(final TableUnit tableUnit, final BindingTableRule bindingTableRule) {

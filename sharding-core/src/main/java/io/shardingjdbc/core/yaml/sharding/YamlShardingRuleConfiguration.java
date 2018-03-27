@@ -25,13 +25,12 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Sharding rule configuration for yaml.
@@ -44,7 +43,7 @@ public class YamlShardingRuleConfiguration {
     
     private String defaultDataSourceName;
     
-    private Map<String, YamlTableRuleConfiguration> tables = new HashMap<>();
+    private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
     private List<String> bindingTables = new ArrayList<>();
     
@@ -54,9 +53,9 @@ public class YamlShardingRuleConfiguration {
     
     private String defaultKeyGeneratorClass;
     
-    private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new HashMap<>();
+    private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
     
-    private Map<String, Object> configMap = new ConcurrentHashMap<>();
+    private Map<String, Object> configMap = new LinkedHashMap<>();
     
     private Properties props = new Properties();
     

@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -48,7 +48,7 @@ import java.util.Map;
 @EnableConfigurationProperties({SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class, SpringBootOrchestrationConfigurationProperties.class})
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
-    private final Map<String, DataSource> dataSourceMap = new HashMap<>();
+    private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
     @Autowired
     private SpringBootShardingRuleConfigurationProperties shardingProperties;
