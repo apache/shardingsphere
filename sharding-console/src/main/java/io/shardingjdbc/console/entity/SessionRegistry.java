@@ -37,7 +37,7 @@ public final class SessionRegistry {
      */
     public Optional<Connection> findSession(final String sessionId) {
         synchronized (SESSIONS) {
-            return Optional.of(SESSIONS.get(sessionId));
+            return Optional.fromNullable(SESSIONS.get(sessionId));
         }
     }
     
