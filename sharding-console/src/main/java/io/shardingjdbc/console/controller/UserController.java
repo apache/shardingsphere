@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +34,8 @@ public class UserController {
      * @return ResponseObject
      */
     @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public ResponseObject login(final UserSession userSession, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID, final HttpServletResponse response) {
+    public ResponseObject login(@RequestBody final UserSession userSession, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID,
+                                final HttpServletResponse response) {
         if (!"".equals(userUUID)) {
             return new ResponseObject(ResponseCode.SUCCESS);
         }
