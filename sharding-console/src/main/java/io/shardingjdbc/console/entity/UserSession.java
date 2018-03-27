@@ -1,6 +1,8 @@
 package io.shardingjdbc.console.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -10,9 +12,12 @@ import java.util.UUID;
  *
  * @author panjuan
  */
+@AllArgsConstructor
 @Getter
 @Setter
-public class UserSession {
+public final class UserSession {
+    
+    private String uuid;
     
     private String userName;
     
@@ -20,47 +25,10 @@ public class UserSession {
     
     private String targetURL;
     
-    private String driver = "MySQL";
-    
-    private String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+    private String driver;
     
     public UserSession() {
-    }
-    
-    public UserSession(final String userName, final String passWord, final String targetURL) {
-        
-        this.userName = userName;
-        
-        this.passWord = passWord;
-        
-        this.targetURL = targetURL;
-        
-        this.uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-    }
-    
-    public UserSession(final String userName, final String passWord, final String targetURL, final String driver) {
-        
-        this.userName = userName;
-        
-        this.passWord = passWord;
-        
-        this.targetURL = targetURL;
-        
-        this.driver = driver;
-        
-        this.uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-    }
-    
-    public UserSession(final String userName, final String passWord, final String targetURL, final String uuid, final String driver) {
-        
-        this.userName = userName;
-        
-        this.passWord = passWord;
-        
-        this.targetURL = targetURL;
-        
-        this.driver = driver;
-        
-        this.uuid = uuid;
+        uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        driver = "MySQL";
     }
 }

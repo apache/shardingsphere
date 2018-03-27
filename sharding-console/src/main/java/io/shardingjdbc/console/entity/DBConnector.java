@@ -1,35 +1,36 @@
 package io.shardingjdbc.console.entity;
 
 import io.shardingjdbc.console.constant.JdbcDriver;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * DBconnector.
+ * Database connector.
  *
  * @author panjuan
  */
-public class DBConnector {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DBConnector {
     
     /**
-     * get db connection.
+     * Get database connection.
+     * 
      * @param username username
-     * @param password pwd
-     * @param url db url
-     * @param driverDB driver
+     * @param password password
+     * @param url database url
+     * @param dbDriver database driver
      * @return Connection or null
+     * @throws ClassNotFoundException class not found exception
+     * @throws SQLException SQL exception
      */
-    public static Connection getConnection(final String username, final String password, final String url, final String driverDB) {
-        JdbcDriver driver = JdbcDriver.valueOf(driverDB + "Driver");
-        try {
-            Class.forName(driver.getDriverName());
-            DriverManager.setLoginTimeout(5);
-            Connection connection = DriverManager.getConnection("jdbc:" + driver.getDbName() + "://" + url, username, password);
-            return connection;
-        } catch (ClassNotFoundException | SQLException ex) {
-            return null;
-        }
+    public static Connection getConnection(final String username, final String password, final String url, final String dbDriver) throws ClassNotFoundException, SQLException {
+        JdbcDriver driver = JdbcDriver.valueOf(dbDriver + "Driver");
+        Class.forName(driver.getDriverName());
+        DriverManager.setLoginTimeout(5);
+        return DriverManager.getConnection("jdbc:" + driver.getDbName() + "://" + url, username, password);
     }
 }

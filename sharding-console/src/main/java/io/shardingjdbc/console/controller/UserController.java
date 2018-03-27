@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -39,8 +40,11 @@ public class UserController {
         if (!"".equals(userUUID)) {
             return new ResponseObject(ResponseCode.SUCCESS);
         }
-        Connection connection = DBConnector.getConnection(userSession.getUserName(), userSession.getPassWord(), userSession.getTargetURL(), userSession.getDriver());
-        if (null == connection) {
+        Connection connection = null;
+        try {
+            connection = DBConnector.getConnection(userSession.getUserName(), userSession.getPassWord(), userSession.getTargetURL(), userSession.getDriver());
+        } catch (final ClassNotFoundException | SQLException ex) {
+            ex.getMessage();// to do
             return new ResponseObject(ResponseCode.FAILURE);
         }
         Map<String, Connection> connectionMap = GlobalSessions.getSessionInfo();
