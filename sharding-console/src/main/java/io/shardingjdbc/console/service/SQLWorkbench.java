@@ -52,12 +52,12 @@ public class SQLWorkbench {
         List<SQLColumnInformation> sqlColumnInformationList = new ArrayList<>();
         List<SQLRowData> sqlRowDataList = new ArrayList<>();
         SQLResultData sqlResultData = new SQLResultData(0, 0L, sql, sqlColumnInformationList, sqlRowDataList);
-        SQLResponseResult sqlResponseResult = new SQLResponseResult(-1, "", sqlResultData);
+        SQLResponseResult result = new SQLResponseResult(-1, "", sqlResultData);
         Optional<Connection> connectionOptional = SessionRegistry.getInstance().findSession(userUUID);
     
         if (!connectionOptional.isPresent()) {
-            sqlResponseResult.setMessage("please login first.");
-            return sqlResponseResult;
+            result.setMessage("please login first.");
+            return result;
         }
         Connection connection = connectionOptional.get();
         
@@ -67,33 +67,33 @@ public class SQLWorkbench {
         ) {
             if (statement.execute(sql)) {
                 ResultSet resultSet = statement.getResultSet();
-                return setsFormatResult(sqlResponseResult, sqlResultData, resultSet, startTime);
+                return setsFormatResult(result, sqlResultData, resultSet, startTime);
             } else {
-                return countsFormatResult(sqlResponseResult, sqlResultData, statement, startTime);
+                return countsFormatResult(result, sqlResultData, statement, startTime);
             }
         } catch (final SQLException ex) {
-            sqlResponseResult.setMessage(ex.getMessage());
-            return sqlResponseResult;
+            result.setMessage(ex.getMessage());
+            return result;
         }
     }
     
-    private SQLResponseResult countsFormatResult(final SQLResponseResult sqlResponseResult, final SQLResultData sqlResultData, final Statement statement,
+    private SQLResponseResult countsFormatResult(final SQLResponseResult result, final SQLResultData sqlResultData, final Statement statement,
                                                  final long startTime) throws SQLException {
         sqlResultData.setAffectedRows(statement.getUpdateCount());
-        sqlResponseResult.setStatus(200);
+        result.setStatus(200);
         sqlResultData.setDurationMilliseconds(System.currentTimeMillis() - startTime);
-        return sqlResponseResult;
+        return result;
     }
     
-    private SQLResponseResult setsFormatResult(final SQLResponseResult sqlResponseResult, final SQLResultData sqlResultData, final ResultSet resultSet,
+    private SQLResponseResult setsFormatResult(final SQLResponseResult result, final SQLResultData sqlResultData, final ResultSet resultSet,
                                                final long startTime) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         List<SQLColumnInformation> sqlColumnInformationList = sqlResultData.getSqlColumnInformationList();
     
         getColumnInfo(resultSetMetaData, columnCount, sqlColumnInformationList);
-        getRowData(resultSetMetaData, sqlResponseResult, sqlResultData, resultSet, startTime, columnCount);
-        return sqlResponseResult;
+        getRowData(resultSetMetaData, result, sqlResultData, resultSet, startTime, columnCount);
+        return result;
     }
     
     private void getColumnInfo(final ResultSetMetaData resultSetMetaData, final int columnCount, final List<SQLColumnInformation> sqlColumnInformationList) throws SQLException {
