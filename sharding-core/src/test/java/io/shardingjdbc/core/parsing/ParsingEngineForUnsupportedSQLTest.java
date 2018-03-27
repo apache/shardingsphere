@@ -19,9 +19,10 @@ package io.shardingjdbc.core.parsing;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import io.shardingjdbc.core.api.fixture.ShardingRuleMockBuilder;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
+import io.shardingjdbc.core.rule.ShardingRule;
+import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import io.shardingjdbc.test.sql.SQLCase;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -79,7 +82,12 @@ public final class ParsingEngineForUnsupportedSQLTest {
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
-    public void assertUnsupportedSQL() {
-        new SQLParsingEngine(dbType, sql, new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addGenerateKeyColumn("t_order", "order_id").build()).parse();
+    public void assertUnsupportedSQL() throws IOException {
+        new SQLParsingEngine(dbType, sql, buildShardingRule()).parse();
+    }
+    
+    private ShardingRule buildShardingRule() throws IOException {
+        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(SQLParsingEngineTest.class.getClassLoader().getResource("yaml/parser-rule.yaml").getFile()));
+        return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
     }
 }

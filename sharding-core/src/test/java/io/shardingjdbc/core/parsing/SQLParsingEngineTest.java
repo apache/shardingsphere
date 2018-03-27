@@ -17,10 +17,6 @@
 
 package io.shardingjdbc.core.parsing;
 
-import io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
-import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
-import io.shardingjdbc.core.api.fixture.ShardingRuleMockBuilder;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.base.AbstractBaseParseSQLTest;
 import io.shardingjdbc.core.parsing.parser.base.AbstractBaseParseTest;
@@ -28,12 +24,15 @@ import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
 import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserJAXBHelper;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLPlaceholderUtil;
+import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -43,8 +42,7 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     
     private final String[] parameters;
     
-    public SQLParsingEngineTest(
-            final String testCaseName, final DatabaseType databaseType, final Assert assertObj) {
+    public SQLParsingEngineTest(final String testCaseName, final DatabaseType databaseType, final Assert assertObj) {
         super(testCaseName, databaseType, assertObj);
         parameters = ParserJAXBHelper.getParameters(assertObj.getParameters());
     }
@@ -55,28 +53,20 @@ public final class SQLParsingEngineTest extends AbstractBaseParseSQLTest {
     }
     
     @Test
-    public void assertStatement() {
+    public void assertStatement() throws IOException {
         assertStatement(new SQLParsingEngine(getDatabaseType(), SQLPlaceholderUtil.replaceStatement(SQLCasesLoader.getInstance().getSQL(getTestCaseName()), parameters), buildShardingRule()).parse());
     }
     
     @Test
-    public void assertPreparedStatement() {
+    public void assertPreparedStatement() throws IOException {
         for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(getTestCaseName()))) {
             assertPreparedStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLCasesLoader.getInstance().getSQL(getTestCaseName())), buildShardingRule()).parse());
         }
     }
     
-    private ShardingRule buildShardingRule() {
-        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-        orderTableRuleConfig.setLogicTable("t_order");
-        orderTableRuleConfig.setActualDataNodes("db0.t_order,db1.t_order");
-        orderTableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id, order_id", new TestComplexKeysShardingAlgorithm()));
-        TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
-        orderItemTableRuleConfig.setLogicTable("t_order_item");
-        orderItemTableRuleConfig.setActualDataNodes("db0.t_order_item,db1.t_order_item");
-        orderItemTableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id, order_id, item_id", new TestComplexKeysShardingAlgorithm()));
-        return new ShardingRuleMockBuilder().addTableRuleConfig(orderTableRuleConfig).addTableRuleConfig(orderItemTableRuleConfig)
-                .addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("item_id").addGenerateKeyColumn("t_order_item", "item_id").build();
+    private ShardingRule buildShardingRule() throws IOException {
+        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(SQLParsingEngineTest.class.getClassLoader().getResource("yaml/parser-rule.yaml").getFile()));
+        return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
     }
     
     private static Collection<DatabaseType> getDataBaseTypes(final Collection<String> databaseTypes) {
