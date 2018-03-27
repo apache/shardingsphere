@@ -69,7 +69,7 @@ public class SQLWorkbench {
             } else {
                 return countsFormatResult(sqlResponseResult, sqlResultData, statement, startTime);
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             sqlResponseResult.setMessage(ex.getMessage());
             return sqlResponseResult;
         }

@@ -29,7 +29,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class SQLResponseResult {
+public final class SQLResponseResult {
     
     private Integer status;
     

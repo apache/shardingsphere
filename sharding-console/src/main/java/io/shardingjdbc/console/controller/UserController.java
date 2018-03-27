@@ -65,10 +65,10 @@ public class UserController {
         if (!"".equals(userUUID)) {
             removeSession(userUUID, response);
         }
-        return new Response(200,"OK");
+        return new Response(200, "OK");
     }
 
-    private void removeSession(String userUUID, HttpServletResponse response) {
+    private void removeSession(final String userUUID, final HttpServletResponse response) {
         SessionRegistry.getInstance().removeSession(userUUID);
         
         Cookie cookie = new Cookie("userUUID", null);

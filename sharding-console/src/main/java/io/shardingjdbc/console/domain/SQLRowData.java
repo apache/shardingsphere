@@ -13,7 +13,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class SQLRowData {
+public final class SQLRowData {
     
     private Map<String, String> rowData;
     

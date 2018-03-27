@@ -33,7 +33,7 @@ public class SQLController {
      * @return sql response result
      */
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
-    public SQLResponseResult executeSql(@RequestBody final String sql, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID) {
+    public SQLResponseResult executeSql(final @RequestBody String sql, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID) {
         Optional<Connection> connectionOptional = SessionRegistry.getInstance().findSession(userUUID);
         return SQLWorkbench.execute(sql, connectionOptional);
     }

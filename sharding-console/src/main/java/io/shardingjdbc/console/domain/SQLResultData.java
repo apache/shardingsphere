@@ -15,7 +15,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Getter
 @Setter
-public class SQLResultData {
+public final class SQLResultData {
     
     private String affectedRows;
     

@@ -15,7 +15,9 @@ import lombok.Setter;
 public final class Response {
     
     private int status;
+    
     private String message;
+    
     private Object data;
 
     /**

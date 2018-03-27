@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class SQLColumnInformation {
+public final class SQLColumnInformation {
     
     private String columnName;
     
