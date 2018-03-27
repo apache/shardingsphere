@@ -15,7 +15,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ResultInfo {
+public class SQLResultData {
     
     private String affectedRows;
     
@@ -23,8 +23,7 @@ public class ResultInfo {
     
     private String sql;
     
-    private Map<String, String> types;
+    private List<SQLColumnInformation> sqlColumnInformationList;
     
-    //Todo
-    private List<Map<String, String>> data;
+    private List<SQLRowData> sqlRowDataList;
 }

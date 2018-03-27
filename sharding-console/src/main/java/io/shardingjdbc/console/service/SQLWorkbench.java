@@ -18,8 +18,10 @@
 package io.shardingjdbc.console.service;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.console.domain.ResultInfo;
+import io.shardingjdbc.console.domain.SQLColumnInformation;
+import io.shardingjdbc.console.domain.SQLResultData;
 import io.shardingjdbc.console.domain.SQLResponseResult;
+import io.shardingjdbc.console.domain.SQLRowData;
 import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
@@ -28,9 +30,7 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * SQL workbench.
@@ -43,70 +43,77 @@ public class SQLWorkbench {
     /**
      * Handle https for sqls.
      * 
-     * @param sql sqls
+     * @param sql sql
      * @param connectionOptional database connection optional
      * @return SQLResponseResult
      */
     public SQLResponseResult execute(final String sql, final Optional<Connection> connectionOptional) {
-        ResultInfo resultInfo = new ResultInfo("", 0L, "", null, null);
-        SQLResponseResult sqlResponseResult = new SQLResponseResult(-1, "", resultInfo);
+        List<SQLColumnInformation> sqlColumnInformationList = new ArrayList<>();
+        List<SQLRowData> sqlRowDataList = new ArrayList<>();
+        SQLResultData sqlResultData = new SQLResultData("", 0L, sql, sqlColumnInformationList, sqlRowDataList);
+        SQLResponseResult sqlResponseResult = new SQLResponseResult(-1, "", sqlResultData);
         
         if (!connectionOptional.isPresent()) {
-            sqlResponseResult.setErrMsg("please login first.");
+            sqlResponseResult.setMessage("please login first.");
             return sqlResponseResult;
         }
         Connection connection = connectionOptional.get();
-    
+        
         long startTime = System.currentTimeMillis();
         try (
                 Statement statement = connection.createStatement();
         ) {
             if (statement.execute(sql)) {
                 ResultSet resultSet = statement.getResultSet();
-                return setsFormatResult(sqlResponseResult, resultInfo, resultSet, startTime, sql);
+                return setsFormatResult(sqlResponseResult, sqlResultData, resultSet, startTime);
             } else {
-                return countsFormatResult(sqlResponseResult, resultInfo, statement, startTime, sql);
+                return countsFormatResult(sqlResponseResult, sqlResultData, statement, startTime);
             }
         } catch (SQLException ex) {
-            sqlResponseResult.setErrMsg(ex.getMessage());
+            sqlResponseResult.setMessage(ex.getMessage());
             return sqlResponseResult;
         }
     }
     
-    private SQLResponseResult countsFormatResult(final SQLResponseResult sqlResponseResult, final ResultInfo resultInfo, final Statement statement,
-                                                 final long startTime, final String sql) throws SQLException {
-        resultInfo.setAffectedRows(statement.getUpdateCount() + " rows affected");
-        resultInfo.setSql(sql);
-        sqlResponseResult.setStatusCode(0);
-        resultInfo.setDurationMilliseconds(System.currentTimeMillis() - startTime);
+    private SQLResponseResult countsFormatResult(final SQLResponseResult sqlResponseResult, final SQLResultData sqlResultData, final Statement statement,
+                                                 final long startTime) throws SQLException {
+        sqlResultData.setAffectedRows(statement.getUpdateCount() + " rows affected");
+        sqlResponseResult.setStatus(200);
+        sqlResultData.setDurationMilliseconds(System.currentTimeMillis() - startTime);
         return sqlResponseResult;
     }
     
-    private SQLResponseResult setsFormatResult(final SQLResponseResult sqlResponseResult, final ResultInfo resultInfo, final ResultSet resultSet,
-                                               final long startTime, final String sql) throws SQLException {
+    private SQLResponseResult setsFormatResult(final SQLResponseResult sqlResponseResult, final SQLResultData sqlResultData, final ResultSet resultSet,
+                                               final long startTime) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
-        Map<String, String> types = new LinkedHashMap<>();
-
+        List<SQLColumnInformation> sqlColumnInformationList = sqlResultData.getSqlColumnInformationList();
+    
+        getColumnInfo(resultSetMetaData, columnCount, sqlColumnInformationList);
+        getRowData(resultSetMetaData, sqlResponseResult, sqlResultData, resultSet, startTime, columnCount);
+        return sqlResponseResult;
+    }
+    
+    private void getColumnInfo(final ResultSetMetaData resultSetMetaData, final int columnCount, final List<SQLColumnInformation> sqlColumnInformationList) throws SQLException {
         for (int i = 1; i <= columnCount; i++) {
-            types.put(resultSetMetaData.getColumnName(i),
-                    resultSetMetaData.getColumnTypeName(i) + "(" + resultSetMetaData.getColumnDisplaySize(i) + ")");
+            sqlColumnInformationList.add(new SQLColumnInformation(resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnTypeName(i), resultSetMetaData.getColumnDisplaySize(i)));
         }
-        List<Map<String, String>> dataList = new ArrayList<>();
+    }
+    
+    private void getRowData(final ResultSetMetaData resultSetMetaData, final SQLResponseResult sqlResponseResult, final SQLResultData sqlResultData, final ResultSet resultSet, final long startTime, final int columnCount) throws SQLException {
+        List<SQLRowData> sqlRowDataList = sqlResultData.getSqlRowDataList();
+        Integer rowCount = 0;
         
         while (resultSet.next()) {
-            Map<String, String> data = new LinkedHashMap<>();
+            rowCount++;
+            SQLRowData sqlRowData = new SQLRowData();
             for (int i = 1; i <= columnCount; i++) {
-                data.put(resultSetMetaData.getColumnName(i), resultSet.getString(i));
+                sqlRowData.getRowData().put(resultSetMetaData.getColumnName(i), resultSet.getString(i));
             }
-            dataList.add(data);
-            resultInfo.setAffectedRows(resultSet.getRow() + " rows affected");
+            sqlRowDataList.add(sqlRowData);
         }
-        resultInfo.setSql(sql);
-        resultInfo.setTypes(types);
-        resultInfo.setData(dataList);
-        sqlResponseResult.setStatusCode(0);
-        resultInfo.setDurationMilliseconds(System.currentTimeMillis() - startTime);
-        return sqlResponseResult;
+        sqlResultData.setAffectedRows(rowCount + " rows affected");
+        sqlResponseResult.setStatus(200);
+        sqlResultData.setDurationMilliseconds(System.currentTimeMillis() - startTime);
     }
 }

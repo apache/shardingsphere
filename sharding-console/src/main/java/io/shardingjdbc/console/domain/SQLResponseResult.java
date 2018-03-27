@@ -31,9 +31,9 @@ import lombok.Setter;
 @Setter
 public class SQLResponseResult {
     
-    private Integer statusCode;
+    private Integer status;
     
-    private String errMsg;
+    private String message;
     
-    private ResultInfo resultInfo;
+    private SQLResultData sqlResultData;
 }
