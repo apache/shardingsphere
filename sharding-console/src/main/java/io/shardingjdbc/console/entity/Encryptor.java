@@ -16,7 +16,7 @@ import javax.crypto.SecretKey;
  * 
  * @author panjuan
  */
-public class EncDes {
+public class Encryptor {
     
     //KeyGenerator 提供对称密钥生成器的功能，支持各种算法
     private KeyGenerator keygen;
@@ -30,7 +30,7 @@ public class EncDes {
     //该字节数组负责保存加密的结果
     private byte[] cipherByte;
     
-    public EncDes() throws NoSuchAlgorithmException, NoSuchPaddingException {
+    public Encryptor() throws NoSuchAlgorithmException, NoSuchPaddingException {
         Security.addProvider(new com.sun.crypto.provider.SunJCE());
         //实例化支持DES算法的密钥生成器(算法名称命名需按规定，否则抛出异常)
         keygen = KeyGenerator.getInstance("DES");

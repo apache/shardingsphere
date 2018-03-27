@@ -46,6 +46,7 @@ public class SqlServer {
      * @return SqlResponseResult
      */
     public SqlResponseResult execute(final String sql, final Connection connection) {
+        //Todo constructor
         SqlResponseResult sqlResponseResult = new SqlResponseResult();
         ResultInfo resultInfo = sqlResponseResult.getResultInfo();
         if (null == connection) {
@@ -55,6 +56,7 @@ public class SqlServer {
         long startTime = System.currentTimeMillis();
         Statement statement = null;
         ResultSet resultSet = null;
+        //Todo try 
         try {
             statement = connection.createStatement();
 

@@ -11,7 +11,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ResponseObject {
+public final class ResponseObject {
     
     private int statusCode;
     
