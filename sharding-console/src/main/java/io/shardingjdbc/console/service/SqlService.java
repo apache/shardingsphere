@@ -84,10 +84,10 @@ public class SqlService {
     
     private SQLResponseResult countsFormatResult(final SQLResponseResult sqlResponseResult, final ResultInfo resultInfo, final Statement statement,
                                                  final long startTime, final String sql) throws SQLException {
-        resultInfo.setTip(statement.getUpdateCount() + " rows affected");
+        resultInfo.setAffectedRows(statement.getUpdateCount() + " rows affected");
         resultInfo.setSql(sql);
         sqlResponseResult.setStatusCode(0);
-        resultInfo.setDuration(System.currentTimeMillis() - startTime);
+        resultInfo.setDurationMilliseconds(System.currentTimeMillis() - startTime);
         return sqlResponseResult;
     }
     
@@ -109,13 +109,13 @@ public class SqlService {
                 data.put(resultSetMetaData.getColumnName(i), resultSet.getString(i));
             }
             dataList.add(data);
-            resultInfo.setTip(resultSet.getRow() + " rows affected");
+            resultInfo.setAffectedRows(resultSet.getRow() + " rows affected");
         }
         resultInfo.setSql(sql);
         resultInfo.setTypes(types);
         resultInfo.setData(dataList);
         sqlResponseResult.setStatusCode(0);
-        resultInfo.setDuration(System.currentTimeMillis() - startTime);
+        resultInfo.setDurationMilliseconds(System.currentTimeMillis() - startTime);
         return sqlResponseResult;
     }
     

@@ -16,14 +16,15 @@ import java.util.Map;
 @Getter
 @Setter
 public class ResultInfo {
-    //Todo affectedRows
-    private String tip;
-    //durationMileseconds
-    private Long duration;
+    
+    private String affectedRows;
+    
+    private Long durationMilliseconds;
     
     private String sql;
     
     private Map<String, String> types;
+    
     //Todo
     private List<Map<String, String>> data;
 }

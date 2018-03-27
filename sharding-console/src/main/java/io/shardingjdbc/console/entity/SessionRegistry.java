@@ -18,18 +18,18 @@ import com.google.common.base.Optional;
 public final class SessionRegistry {
     
     private static final SessionRegistry INSTANCE = new SessionRegistry();
-
+    
     private static final Map<String, Connection> SESSIONS = new HashMap<>(128, 1);
-
+    
     /**
+     * Get SessionRegistry instance.
      * 
-     * @return
+     * @return session registry
      */
     public static SessionRegistry getInstance() {
         return INSTANCE;
     }
-
-
+    
     /**
      * Create the map of id and connection.
      *
@@ -40,8 +40,9 @@ public final class SessionRegistry {
             return Optional.of(SESSIONS.get(sessionId));
         }
     }
-
+    
     /**
+     * Add session
      * 
      * @param sessionId
      * @param connection
@@ -52,6 +53,11 @@ public final class SessionRegistry {
         }
     }
 
+    /**
+     * Remove session
+     * 
+     * @param sessionId
+     */
     public void removeSession(final String sessionId) {
         synchronized (SESSIONS) {
             SESSIONS.remove(sessionId);

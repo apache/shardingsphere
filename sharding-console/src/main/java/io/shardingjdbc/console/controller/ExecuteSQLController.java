@@ -2,7 +2,7 @@ package io.shardingjdbc.console.controller;
 
 import io.shardingjdbc.console.domain.SQLResponseResult;
 import io.shardingjdbc.console.entity.SessionRegistry;
-import io.shardingjdbc.console.service.SqlServer;
+import io.shardingjdbc.console.service.SQLWorkbench;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +23,7 @@ import com.google.common.base.Optional;
 public class ExecuteSQLController {
     
     @Autowired
-    private SqlServer sqlServer;
+    private SQLWorkbench SQLWorkbench;
     
     /**
      * Execute sql.
@@ -36,7 +36,7 @@ public class ExecuteSQLController {
     public SQLResponseResult executeSql(@RequestBody final String sql, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID) {
         Optional<Connection> session = SessionRegistry.getInstance().findSession(userUUID);
         if (session.isPresent()) {
-            return sqlServer.execute(sql, session.get());
+            return SQLWorkbench.execute(sql, session.get());
         }
         //Todo
         return null;
