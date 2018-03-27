@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.console.controller;
 
-import io.shardingjdbc.console.domain.SqlResponseResult;
+import io.shardingjdbc.console.domain.SQLResponseResult;
 import io.shardingjdbc.console.service.SqlService;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,7 +48,7 @@ public class SQLController {
      * @return sql response result
      */
     @RequestMapping(value = "/sqlbak", method = RequestMethod.POST)
-    public SqlResponseResult executeSQL(@RequestBody final String sql, final ServletRequest servletRequest) {
+    public SQLResponseResult executeSQL(@RequestBody final String sql, final ServletRequest servletRequest) {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpSession httpSession = httpRequest.getSession();
         return sqlService.execute(sql, httpSession);

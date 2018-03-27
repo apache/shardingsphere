@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.console.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,19 +26,14 @@ import lombok.Setter;
  * 
  * @author zhangyonglun
  */
+@AllArgsConstructor
 @Getter
 @Setter
-public class SqlResponseResult {
+public class SQLResponseResult {
     
     private Integer statusCode;
     
     private String errMsg;
     
     private ResultInfo resultInfo;
-    
-    public SqlResponseResult() {
-        statusCode = -1;
-        errMsg = "";
-        resultInfo = new ResultInfo();
-    }
 }

@@ -18,7 +18,7 @@
 package io.shardingjdbc.console.service;
 
 import io.shardingjdbc.console.domain.ResultInfo;
-import io.shardingjdbc.console.domain.SqlResponseResult;
+import io.shardingjdbc.console.domain.SQLResponseResult;
 import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
@@ -43,12 +43,12 @@ public class SqlServer {
      * to handle https for sqls.
      * @param sql sqls
      * @param connection db connection
-     * @return SqlResponseResult
+     * @return SQLResponseResult
      */
-    public SqlResponseResult execute(final String sql, final Connection connection) {
-        //Todo constructor
-        SqlResponseResult sqlResponseResult = new SqlResponseResult();
-        ResultInfo resultInfo = sqlResponseResult.getResultInfo();
+    public SQLResponseResult execute(final String sql, final Connection connection) {
+        ResultInfo resultInfo = new ResultInfo("", 0L, "", null, null);
+        SQLResponseResult sqlResponseResult = new SQLResponseResult(-1, "", resultInfo);
+
         if (null == connection) {
             sqlResponseResult.setErrMsg("please login first.");
             return sqlResponseResult;
@@ -74,7 +74,7 @@ public class SqlServer {
         }
     }
     
-    private SqlResponseResult countsFormatResult(final SqlResponseResult sqlResponseResult, final ResultInfo resultInfo, final Statement statement,
+    private SQLResponseResult countsFormatResult(final SQLResponseResult sqlResponseResult, final ResultInfo resultInfo, final Statement statement,
                                                  final long startTime, final String sql) throws SQLException {
         resultInfo.setTip(statement.getUpdateCount() + " rows affected");
         resultInfo.setSql(sql);
@@ -83,7 +83,7 @@ public class SqlServer {
         return sqlResponseResult;
     }
     
-    private SqlResponseResult setsFormatResult(final SqlResponseResult sqlResponseResult, final ResultInfo resultInfo, final ResultSet resultSet,
+    private SQLResponseResult setsFormatResult(final SQLResponseResult sqlResponseResult, final ResultInfo resultInfo, final ResultSet resultSet,
                                                final long startTime, final String sql) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
