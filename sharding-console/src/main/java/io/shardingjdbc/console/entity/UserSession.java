@@ -37,7 +37,7 @@ public class UserSession {
         
         this.uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
     }
-
+    
     public UserSession(final String userName, final String passWord, final String targetURL, final String driver) {
         
         this.userName = userName;

@@ -38,7 +38,7 @@ import java.util.Map;
  */
 @Service
 public class SqlServer {
-
+    
     /**
      * to handle https for sqls.
      * @param sql sqls
@@ -71,7 +71,7 @@ public class SqlServer {
             closeQuietly(statement, resultSet);
         }
     }
-
+    
     private SqlResponseResult countsFormatResult(final SqlResponseResult sqlResponseResult, final ResultInfo resultInfo, final Statement statement,
                                                  final long startTime, final String sql) throws SQLException {
         resultInfo.setTip(statement.getUpdateCount() + " rows affected");
@@ -80,7 +80,7 @@ public class SqlServer {
         resultInfo.setDuration(System.currentTimeMillis() - startTime);
         return sqlResponseResult;
     }
-
+    
     private SqlResponseResult setsFormatResult(final SqlResponseResult sqlResponseResult, final ResultInfo resultInfo, final ResultSet resultSet,
                                                final long startTime, final String sql) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -92,7 +92,7 @@ public class SqlServer {
                     resultSetMetaData.getColumnTypeName(i) + "(" + resultSetMetaData.getColumnDisplaySize(i) + ")");
         }
         List<Map<String, String>> dataList = new ArrayList<>();
-
+        
         while (resultSet.next()) {
             Map<String, String> data = new LinkedHashMap<>();
             for (int i = 1; i <= columnCount; i++) {
@@ -108,7 +108,7 @@ public class SqlServer {
         resultInfo.setDuration(System.currentTimeMillis() - startTime);
         return sqlResponseResult;
     }
-
+    
     private void closeQuietly(final Statement statement, final ResultSet resultSet) {
         if (resultSet != null) {
             try {
@@ -116,7 +116,7 @@ public class SqlServer {
             } catch (SQLException ignore) {
             }
         }
-
+        
         if (statement != null) {
             try {
                 statement.close();

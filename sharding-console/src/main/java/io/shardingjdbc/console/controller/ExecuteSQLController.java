@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.RequestBody;
 import java.sql.Connection;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public class ExecuteSQLController {
      * @return SqlResponseResult
      */
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
-    public SqlResponseResult executeSql(final String sql, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID) {
+    public SqlResponseResult executeSql(@RequestBody final String sql, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID) {
         Map<String, Connection> connectionMap = GlobalSessions.getSessionInfo();
         Connection connection = connectionMap.get(userUUID);
         return sqlServer.execute(sql, connection);
