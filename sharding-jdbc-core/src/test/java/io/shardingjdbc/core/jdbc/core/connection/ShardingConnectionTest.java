@@ -24,6 +24,7 @@ import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.fixture.TestDataSource;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -67,7 +68,7 @@ public final class ShardingConnectionTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
-        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRuleConfig.build(dataSourceMap.keySet()), null, null, false);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), null, null, false);
         connection = new ShardingConnection(shardingContext);
     }
     

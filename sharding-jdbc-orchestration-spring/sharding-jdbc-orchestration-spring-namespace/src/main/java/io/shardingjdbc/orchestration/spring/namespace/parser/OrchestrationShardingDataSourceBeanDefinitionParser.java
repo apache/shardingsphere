@@ -86,7 +86,7 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
     private void parseKeyGenerator(final BeanDefinitionBuilder factory, final Element element) {
         String keyGeneratorClass = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.KEY_GENERATOR_CLASS);
         if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
-            factory.addPropertyValue("defaultKeyGeneratorClass", keyGeneratorClass);
+            factory.addPropertyValue("defaultKeyGenerator", KeyGeneratorFactory.newInstance(keyGeneratorClass));
         }
     }
     

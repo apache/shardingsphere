@@ -42,13 +42,13 @@ public final class MasterSlaveRule {
     private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
     
     public MasterSlaveRule(final MasterSlaveRuleConfiguration config) {
+        Preconditions.checkNotNull(config.getName(), "Master-slave rule name cannot be null.");
+        Preconditions.checkNotNull(config.getMasterDataSourceName(), "Master data source name cannot be null.");
+        Preconditions.checkNotNull(config.getSlaveDataSourceNames(), "Slave data source names cannot be null.");
+        Preconditions.checkState(!config.getSlaveDataSourceNames().isEmpty(), "Slave data source names cannot be empty.");
         name = config.getName();
         masterDataSourceName = config.getMasterDataSourceName();
         slaveDataSourceNames = config.getSlaveDataSourceNames();
         loadBalanceAlgorithm = null == config.getLoadBalanceAlgorithm() ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm() : config.getLoadBalanceAlgorithm();
-        Preconditions.checkNotNull(name);
-        Preconditions.checkNotNull(masterDataSourceName);
-        Preconditions.checkNotNull(slaveDataSourceNames);
-        Preconditions.checkState(!slaveDataSourceNames.isEmpty());
     }
 }

@@ -83,6 +83,6 @@ public class YamlShardingConfiguration {
      * @return sharding rule from yaml
      */
     public ShardingRule getShardingRule(final Collection<String> dataSourceNames) {
-        return shardingRule.getShardingRuleConfiguration().build(dataSourceNames.isEmpty() ? dataSources.keySet() : dataSourceNames);
+        return new ShardingRule(shardingRule.getShardingRuleConfiguration(), dataSourceNames.isEmpty() ? dataSources.keySet() : dataSourceNames);
     }
 }

@@ -56,6 +56,7 @@ public final class TableRule {
     private final String logicIndex;
     
     public TableRule(final TableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames) {
+        Preconditions.checkNotNull(tableRuleConfig.getLogicTable(), "Logic table cannot be null.");
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
         List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).evaluate();
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
@@ -64,7 +65,6 @@ public final class TableRule {
         generateKeyColumn = tableRuleConfig.getKeyGeneratorColumnName();
         keyGenerator = tableRuleConfig.getKeyGenerator();
         logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
-        Preconditions.checkNotNull(logicTable);
     }
     
     private boolean isEmptyDataNodes(final List<String> dataNodes) {

@@ -19,6 +19,7 @@ package io.shardingjdbc.core.yaml.sharding;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
+import io.shardingjdbc.core.keygen.KeyGeneratorFactory;
 import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
@@ -79,7 +80,9 @@ public class YamlShardingRuleConfiguration {
         if (null != defaultTableStrategy) {
             result.setDefaultTableShardingStrategyConfig(defaultTableStrategy.build());
         }
-        result.setDefaultKeyGeneratorClass(defaultKeyGeneratorClass);
+        if (null != defaultKeyGeneratorClass) {
+            result.setDefaultKeyGenerator(KeyGeneratorFactory.newInstance(defaultKeyGeneratorClass));
+        }
         Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
         for (Entry<String, YamlMasterSlaveRuleConfiguration> entry : masterSlaveRules.entrySet()) {
             YamlMasterSlaveRuleConfiguration each = entry.getValue();

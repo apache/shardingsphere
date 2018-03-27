@@ -31,6 +31,7 @@ import io.shardingjdbc.core.integrate.fixture.RangeModuloDatabaseShardingAlgorit
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.After;
 
 import javax.sql.DataSource;
@@ -123,7 +124,7 @@ public abstract class AbstractShardingMasterSlaveTest extends AbstractSQLAssertT
                     new StandardShardingStrategyConfiguration("t_order_item", new PreciseModuloDatabaseShardingAlgorithm(), new RangeModuloDatabaseShardingAlgorithm()));
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
                     new StandardShardingStrategyConfiguration("user_id", new PreciseModuloDatabaseShardingAlgorithm(), new RangeModuloDatabaseShardingAlgorithm()));
-            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(masterSlaveDataSourceMap, shardingRuleConfig.build(masterSlaveDataSourceMap.keySet())));
+            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(masterSlaveDataSourceMap, new ShardingRule(shardingRuleConfig, masterSlaveDataSourceMap.keySet())));
         }
         return getShardingDataSources();
     }

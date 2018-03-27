@@ -19,6 +19,7 @@ package io.shardingjdbc.orchestration.internal.state.instance;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
@@ -63,7 +64,7 @@ public final class InstanceListenerManager implements ListenerManager {
                             dataSourceMap.put(each, new CircuitBreakerDataSource());
                         }
                     }
-                    shardingDataSource.renew(dataSourceMap, configService.loadShardingRuleConfiguration().build(dataSourceMap.keySet()), configService.loadShardingProperties());
+                    shardingDataSource.renew(dataSourceMap, new ShardingRule(configService.loadShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadShardingProperties());
                 }
             }
         });

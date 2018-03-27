@@ -99,8 +99,8 @@ public class ShardingRuleMockBuilder {
             bindTables.add(each.getLogicTable());
         }
         shardingRuleConfig.getBindingTableGroups().add(Joiner.on(",").join(bindTables));
-        shardingRuleConfig.setDefaultKeyGeneratorClass(IncrementKeyGenerator.class.getName());
-        return shardingRuleConfig.build(Lists.newArrayList("db0", "db1"));
+        shardingRuleConfig.setDefaultKeyGenerator(new IncrementKeyGenerator());
+        return new ShardingRule(shardingRuleConfig, Lists.newArrayList("db0", "db1"));
     }
     
     private boolean existInTableRuleConfig(final String logicTableName) {

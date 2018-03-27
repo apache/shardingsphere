@@ -19,6 +19,7 @@ package io.shardingjdbc.spring.datasource;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -34,6 +35,6 @@ public class SpringShardingDataSource extends ShardingDataSource {
     
     public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
                                     final Map<String, Object> configMap, final Properties props) throws SQLException {
-        super(dataSourceMap, shardingRuleConfig.build(dataSourceMap.keySet()), configMap, props);
+        super(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
     }
 }

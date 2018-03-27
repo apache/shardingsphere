@@ -18,12 +18,16 @@
 package io.shardingjdbc.core.rule;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.exception.ShardingConfigurationException;
+import io.shardingjdbc.core.keygen.DefaultKeyGenerator;
 import io.shardingjdbc.core.keygen.KeyGenerator;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
+import io.shardingjdbc.core.routing.strategy.ShardingStrategyFactory;
 import io.shardingjdbc.core.routing.strategy.none.NoneShardingStrategy;
 import io.shardingjdbc.core.util.StringUtil;
 import lombok.Getter;
@@ -31,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
@@ -58,21 +63,27 @@ public final class ShardingRule {
     
     private final KeyGenerator defaultKeyGenerator;
     
-    public ShardingRule(final Collection<String> dataSourceNames, final String defaultDataSourceName, final Collection<TableRule> tableRules, final Collection<String> bindingTableGroups, 
-                        final ShardingStrategy defaultDatabaseShardingStrategy, final ShardingStrategy defaultTableShardingStrategy, final KeyGenerator defaultKeyGenerator) {
-        this.dataSourceNames = dataSourceNames;
-        this.defaultDataSourceName = getDefaultDataSourceName(dataSourceNames, defaultDataSourceName);
-        this.tableRules = tableRules;
-        for (String group : bindingTableGroups) {
+    public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
+        Preconditions.checkNotNull(dataSourceNames, "Data sources cannot be null.");
+        Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
+        this.dataSourceNames = new LinkedHashSet<>(dataSourceNames);
+        defaultDataSourceName = getDefaultDataSourceName(dataSourceNames, shardingRuleConfig.getDefaultDataSourceName());
+        tableRules = new LinkedList<>();
+        for (TableRuleConfiguration each : shardingRuleConfig.getTableRuleConfigs()) {
+            tableRules.add(new TableRule(each, dataSourceNames));
+        }
+        for (String group : shardingRuleConfig.getBindingTableGroups()) {
             List<TableRule> tableRulesForBinding = new LinkedList<>();
             for (String logicTableNameForBindingTable : StringUtil.splitWithComma(group)) {
                 tableRulesForBinding.add(getTableRule(logicTableNameForBindingTable));
             }
-            this.bindingTableRules.add(new BindingTableRule(tableRulesForBinding));
+            bindingTableRules.add(new BindingTableRule(tableRulesForBinding));
         }
-        this.defaultDatabaseShardingStrategy = null == defaultDatabaseShardingStrategy ? new NoneShardingStrategy() : defaultDatabaseShardingStrategy;
-        this.defaultTableShardingStrategy = null == defaultTableShardingStrategy ? new NoneShardingStrategy() : defaultTableShardingStrategy;
-        this.defaultKeyGenerator = defaultKeyGenerator;
+        defaultDatabaseShardingStrategy = null == shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig()
+                ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
+        defaultTableShardingStrategy = null == shardingRuleConfig.getDefaultTableShardingStrategyConfig()
+                ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
+        defaultKeyGenerator = null == shardingRuleConfig.getDefaultKeyGenerator() ? new DefaultKeyGenerator() : shardingRuleConfig.getDefaultKeyGenerator();
     }
     
     private String getDefaultDataSourceName(final Collection<String> dataSourceNames, final String defaultDataSourceName) {

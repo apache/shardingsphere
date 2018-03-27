@@ -52,7 +52,7 @@ public class DatabaseTest {
         dataSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
-        shardingRule = shardingRuleConfig.build(dataSourceMap.keySet());
+        shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
     }
     
     @Test

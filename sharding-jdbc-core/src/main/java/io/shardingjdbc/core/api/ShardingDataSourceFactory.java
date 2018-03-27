@@ -20,6 +20,7 @@ package io.shardingjdbc.core.api;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -54,7 +55,7 @@ public final class ShardingDataSourceFactory {
     public static DataSource createDataSource(
             final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) throws SQLException {
         processDataSourceMapWithMasterSlave(dataSourceMap, shardingRuleConfig);
-        return new ShardingDataSource(dataSourceMap, shardingRuleConfig.build(dataSourceMap.keySet()), configMap, props);
+        return new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
     }
     
     /**

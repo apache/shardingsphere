@@ -51,6 +51,6 @@ public abstract class AbstractStatementParserTest {
         tableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("field1, field2, field3, field4, field5, field6, field7", new TestComplexKeysShardingAlgorithm()));
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        return shardingRuleConfig.build(Lists.newArrayList("ds"));
+        return new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
     }
 }

@@ -91,7 +91,7 @@ public final class YamlShardingRuleConfigurationTest {
         assertThat(tableRuleConfigIterator.next().getLogicTable(), is("t_order_item"));
         assertThat(actual.getBindingTableGroups().size(), is(1));
         assertThat(actual.getBindingTableGroups().iterator().next(), is("t_order, t_order_item"));
-        assertThat(actual.getDefaultKeyGeneratorClass(), is(DefaultKeyGenerator.class.getName()));
+        assertThat(actual.getDefaultKeyGenerator(), instanceOf(DefaultKeyGenerator.class));
         assertMasterSlaveRuleConfig(actual.getMasterSlaveRuleConfigs().iterator().next());
     }
     
