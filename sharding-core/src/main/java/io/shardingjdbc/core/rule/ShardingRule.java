@@ -31,7 +31,6 @@ import io.shardingjdbc.core.routing.strategy.ShardingStrategyFactory;
 import io.shardingjdbc.core.routing.strategy.none.NoneShardingStrategy;
 import io.shardingjdbc.core.util.StringUtil;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,7 +44,6 @@ import java.util.TreeSet;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingRule {
     
