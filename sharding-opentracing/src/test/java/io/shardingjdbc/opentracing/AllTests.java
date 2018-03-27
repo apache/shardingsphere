@@ -22,7 +22,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ConfigurationLoaderTest.class,
+@Suite.SuiteClasses({
+        ConfigurationLoaderTest.class,
         ExecuteEventListenerTest.class,
         ShardingJDBCTracerTest.class
 })

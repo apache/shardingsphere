@@ -25,7 +25,7 @@ import com.google.common.base.Optional;
  * @author gaohongtao
  * @author wangkai
  */
-public class OpentracingConfigurationParser implements ConfigurationParser {
+public final class OpentracingConfigurationParser implements ConfigurationParser {
     
     private static final String PREFIX = "shardingjdbc.opentracing";
     

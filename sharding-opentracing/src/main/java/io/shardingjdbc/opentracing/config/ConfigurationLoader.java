@@ -27,7 +27,7 @@ import lombok.Getter;
  * @author gaohongtao
  * @author wangkai
  */
-public class ConfigurationLoader {
+public final class ConfigurationLoader {
     
     private static final ConfigurationParser[] PARSERS = new ConfigurationParser[]{new OpentracingConfigurationParser()};
     

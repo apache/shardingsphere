@@ -13,34 +13,33 @@
     
     <dependencies>
         <dependency>
+            <groupId>io.shardingjdbc</groupId>
+            <artifactId>sharding-jdbc-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.opentracing</groupId>
-            <artifactId>opentracing-util</artifactId>
-            <version>${opentracing.version}</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.shardingjdbc</groupId>
-            <artifactId>sharding-jdbc-core</artifactId>
-            <version>${project.parent.version}</version>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-util</artifactId>
         </dependency>
         <dependency>
             <groupId>io.opentracing</groupId>
             <artifactId>opentracing-mock</artifactId>
-            <version>${opentracing.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito2</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

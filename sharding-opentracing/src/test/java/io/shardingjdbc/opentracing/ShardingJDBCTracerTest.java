@@ -40,7 +40,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(OpentracingConfigurationParser.class)
-public class ShardingJDBCTracerTest {
+public final class ShardingJDBCTracerTest {
     
     @Before
     public void setUp() throws Exception {

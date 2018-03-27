@@ -23,7 +23,7 @@ import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 
-public class FooTracer implements Tracer {
+public final class FooTracer implements Tracer {
     
     @Override
     public SpanBuilder buildSpan(final String s) {
@@ -31,7 +31,8 @@ public class FooTracer implements Tracer {
     }
     
     @Override
-    public <C> void inject(final SpanContext spanContext, final Format<C> format, final C c) {}
+    public <C> void inject(final SpanContext spanContext, final Format<C> format, final C c) {
+    }
     
     @Override
     public <C> SpanContext extract(final Format<C> format, final C c) {
