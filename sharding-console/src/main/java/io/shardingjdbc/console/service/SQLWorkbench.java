@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.console.service;
 
+import com.google.common.base.Optional;
 import io.shardingjdbc.console.domain.ResultInfo;
 import io.shardingjdbc.console.domain.SQLResponseResult;
 import org.springframework.stereotype.Service;
@@ -43,17 +44,19 @@ public class SQLWorkbench {
      * Handle https for sqls.
      * 
      * @param sql sqls
-     * @param connection db connection
+     * @param connectionOptional database connection optional
      * @return SQLResponseResult
      */
-    public SQLResponseResult execute(final String sql, final Connection connection) {
+    public SQLResponseResult execute(final String sql, final Optional<Connection> connectionOptional) {
         ResultInfo resultInfo = new ResultInfo("", 0L, "", null, null);
         SQLResponseResult sqlResponseResult = new SQLResponseResult(-1, "", resultInfo);
         
-        if (null == connection) {
+        if (!connectionOptional.isPresent()) {
             sqlResponseResult.setErrMsg("please login first.");
             return sqlResponseResult;
         }
+        Connection connection = connectionOptional.get();
+    
         long startTime = System.currentTimeMillis();
         try (
                 Statement statement = connection.createStatement();

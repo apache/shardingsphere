@@ -4,10 +4,7 @@ import io.shardingjdbc.console.domain.DBConnector;
 import io.shardingjdbc.console.domain.SessionRegistry;
 import io.shardingjdbc.console.domain.Response;
 import io.shardingjdbc.console.domain.UserSession;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -32,8 +29,8 @@ public class UserController {
      * @return response object
      */
     @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public Response login(final UserSession userSession, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID,
-                                final HttpServletResponse response) {
+    public Response login(final @RequestBody UserSession userSession, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID,
+                          final HttpServletResponse response) {
         if (!"".equals(userUUID)) {
             return new Response(200, "OK");
         }

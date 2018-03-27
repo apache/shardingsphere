@@ -34,11 +34,7 @@ public class SQLController {
      */
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
     public SQLResponseResult executeSql(@RequestBody final String sql, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID) {
-        Optional<Connection> session = SessionRegistry.getInstance().findSession(userUUID);
-        if (session.isPresent()) {
-            return SQLWorkbench.execute(sql, session.get());
-        }
-        //Todo
-        return null;
+        Optional<Connection> connectionOptional = SessionRegistry.getInstance().findSession(userUUID);
+        return SQLWorkbench.execute(sql, connectionOptional);
     }
 }
