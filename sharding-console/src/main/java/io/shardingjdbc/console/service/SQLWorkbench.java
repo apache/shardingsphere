@@ -51,7 +51,7 @@ public class SQLWorkbench {
     public SQLResponseResult execute(final String sql, final String userUUID) {
         List<SQLColumnInformation> sqlColumnInformationList = new ArrayList<>();
         List<SQLRowData> sqlRowDataList = new ArrayList<>();
-        SQLResultData sqlResultData = new SQLResultData("", 0L, sql, sqlColumnInformationList, sqlRowDataList);
+        SQLResultData sqlResultData = new SQLResultData(0, 0L, sql, sqlColumnInformationList, sqlRowDataList);
         SQLResponseResult sqlResponseResult = new SQLResponseResult(-1, "", sqlResultData);
         Optional<Connection> connectionOptional = SessionRegistry.getInstance().findSession(userUUID);
     
@@ -79,7 +79,7 @@ public class SQLWorkbench {
     
     private SQLResponseResult countsFormatResult(final SQLResponseResult sqlResponseResult, final SQLResultData sqlResultData, final Statement statement,
                                                  final long startTime) throws SQLException {
-        sqlResultData.setAffectedRows(statement.getUpdateCount() + " rows affected");
+        sqlResultData.setAffectedRows(statement.getUpdateCount());
         sqlResponseResult.setStatus(200);
         sqlResultData.setDurationMilliseconds(System.currentTimeMillis() - startTime);
         return sqlResponseResult;
@@ -115,7 +115,7 @@ public class SQLWorkbench {
             }
             sqlRowDataList.add(sqlRowData);
         }
-        sqlResultData.setAffectedRows(rowCount + " rows affected");
+        sqlResultData.setAffectedRows(rowCount);
         sqlResponseResult.setStatus(200);
         sqlResultData.setDurationMilliseconds(System.currentTimeMillis() - startTime);
     }

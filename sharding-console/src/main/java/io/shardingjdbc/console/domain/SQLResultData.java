@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 public final class SQLResultData {
     
-    private String affectedRows;
+    private Integer affectedRows;
     
     private Long durationMilliseconds;
     
