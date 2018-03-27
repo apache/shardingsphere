@@ -18,9 +18,9 @@
 package io.shardingjdbc.core.rewrite;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.core.api.fixture.ShardingRuleMockBuilder;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.parsing.SQLParsingEngineTest;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.limit.LimitValue;
@@ -34,9 +34,12 @@ import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
 import io.shardingjdbc.core.rule.ShardingRule;
+import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,8 +57,9 @@ public final class SQLRewriteEngineTest {
     private Map<String, String> tableTokens;
     
     @Before
-    public void setUp() {
-        shardingRule = new ShardingRuleMockBuilder().addGenerateKeyColumn("table_x", "id").addBindingTable("table_y").build();
+    public void setUp() throws IOException {
+        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(SQLParsingEngineTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml").getFile()));
+        shardingRule = yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
         selectStatement = new SelectStatement();
         tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_1");
