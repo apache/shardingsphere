@@ -22,15 +22,14 @@ import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.opentracing.config.OpentracingConfigurationParser;
+import io.shardingjdbc.opentracing.fixture.FooTracer;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
 import java.lang.reflect.Field;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -60,7 +59,7 @@ public final class ShardingJDBCTracerTest {
     
     @Test
     public void assertTracer() {
-        when(System.getProperty("shardingjdbc.opentracing.tracer.class")).thenReturn("io.shardingjdbc.opentracing.fixture.FooTracer");
+        when(System.getProperty("shardingjdbc.opentracing.tracer.class")).thenReturn(FooTracer.class.getName());
         assertThat((GlobalTracer) ShardingJDBCTracer.get(), Is.isA(GlobalTracer.class));
         assertTrue(GlobalTracer.isRegistered());
         assertThat(ShardingJDBCTracer.get(), Is.is(ShardingJDBCTracer.get()));
