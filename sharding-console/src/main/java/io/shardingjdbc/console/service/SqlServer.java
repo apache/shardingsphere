@@ -40,7 +40,8 @@ import java.util.Map;
 public class SqlServer {
     
     /**
-     * to handle https for sqls.
+     * Handle https for sqls.
+     * 
      * @param sql sqls
      * @param connection db connection
      * @return SQLResponseResult
@@ -48,20 +49,17 @@ public class SqlServer {
     public SQLResponseResult execute(final String sql, final Connection connection) {
         ResultInfo resultInfo = new ResultInfo("", 0L, "", null, null);
         SQLResponseResult sqlResponseResult = new SQLResponseResult(-1, "", resultInfo);
-
+        
         if (null == connection) {
             sqlResponseResult.setErrMsg("please login first.");
             return sqlResponseResult;
         }
         long startTime = System.currentTimeMillis();
-        Statement statement = null;
-        ResultSet resultSet = null;
-        //Todo try 
-        try {
-            statement = connection.createStatement();
-
+        try (
+                Statement statement = connection.createStatement();
+        ) {
             if (statement.execute(sql)) {
-                resultSet = statement.getResultSet();
+                ResultSet resultSet = statement.getResultSet();
                 return setsFormatResult(sqlResponseResult, resultInfo, resultSet, startTime, sql);
             } else {
                 return countsFormatResult(sqlResponseResult, resultInfo, statement, startTime, sql);
@@ -69,8 +67,6 @@ public class SqlServer {
         } catch (SQLException ex) {
             sqlResponseResult.setErrMsg(ex.getMessage());
             return sqlResponseResult;
-        } finally {
-            closeQuietly(statement, resultSet);
         }
     }
     
@@ -109,21 +105,5 @@ public class SqlServer {
         sqlResponseResult.setStatusCode(0);
         resultInfo.setDuration(System.currentTimeMillis() - startTime);
         return sqlResponseResult;
-    }
-    
-    private void closeQuietly(final Statement statement, final ResultSet resultSet) {
-        if (resultSet != null) {
-            try {
-                resultSet.close();
-            } catch (SQLException ignore) {
-            }
-        }
-        
-        if (statement != null) {
-            try {
-                statement.close();
-            } catch (SQLException ignore) {
-            }
-        }
     }
 }
