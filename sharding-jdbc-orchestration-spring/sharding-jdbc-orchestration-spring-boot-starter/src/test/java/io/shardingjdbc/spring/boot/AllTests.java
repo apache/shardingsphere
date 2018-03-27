@@ -15,17 +15,18 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.spring;
+package io.shardingjdbc.spring.boot;
 
+import io.shardingjdbc.spring.boot.type.OrchestrationSpringBootMasterSlaveTest;
+import io.shardingjdbc.spring.boot.type.OrchestrationSpringBootShardingTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        OrchestrationMasterSlaveNamespaceTest.class,
-        OrchestrationShardingNamespaceTest.class,
-        OrchestrationShardingMasterSlaveNamespaceTest.class
+        OrchestrationSpringBootMasterSlaveTest.class,
+        OrchestrationSpringBootShardingTest.class 
     })
-public class AllOrchestrationSpringTests {
+public class AllTests {
 }

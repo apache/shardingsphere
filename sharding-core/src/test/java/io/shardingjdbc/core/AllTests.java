@@ -41,6 +41,6 @@ import org.junit.runners.Suite.SuiteClasses;
         AllMergerTests.class, 
         AllHintTests.class, 
         AllYamlTests.class
-})
-public class AllCoreTests {
+    })
+public class AllTests {
 }
