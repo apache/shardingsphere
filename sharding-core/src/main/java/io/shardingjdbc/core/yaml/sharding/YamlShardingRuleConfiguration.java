@@ -82,9 +82,9 @@ public class YamlShardingRuleConfiguration {
         result.setDefaultKeyGeneratorClass(defaultKeyGeneratorClass);
         Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
         for (Entry<String, YamlMasterSlaveRuleConfiguration> entry : masterSlaveRules.entrySet()) {
-            MasterSlaveRuleConfiguration each = entry.getValue().getMasterSlaveRuleConfiguration();
+            YamlMasterSlaveRuleConfiguration each = entry.getValue();
             each.setName(entry.getKey());
-            masterSlaveRuleConfigs.add(each);
+            masterSlaveRuleConfigs.add(entry.getValue().getMasterSlaveRuleConfiguration());
         }
         result.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);
         return result;

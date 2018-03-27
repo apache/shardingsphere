@@ -46,11 +46,6 @@ public class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
     
     private static MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration(
             final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames, final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm) {
-        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
-        result.setName(name);
-        result.setMasterDataSourceName(masterDataSourceName);
-        result.setSlaveDataSourceNames(slaveDataSourceNames);
-        result.setLoadBalanceAlgorithm(loadBalanceAlgorithm);
-        return result;
+        return new MasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, loadBalanceAlgorithm);
     }
 }

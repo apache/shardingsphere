@@ -18,26 +18,27 @@
 package io.shardingjdbc.core.api.config;
 
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Master-slave rule configuration.
  * 
  * @author zhangliang
  */
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class MasterSlaveRuleConfiguration {
     
-    private String name;
+    private final String name;
     
-    private String masterDataSourceName;
+    private final String masterDataSourceName;
     
-    private Collection<String> slaveDataSourceNames = new LinkedList<>();
+    private final Collection<String> slaveDataSourceNames;
     
     private MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
 }

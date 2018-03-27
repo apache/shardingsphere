@@ -103,15 +103,15 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     
     private BeanDefinition parseMasterSlaveRuleConfig(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
-        factory.addPropertyValue("name", parseId(element));
-        factory.addPropertyValue("masterDataSourceName", parseMasterDataSourceRef(element));
-        factory.addPropertyValue("slaveDataSourceNames", parseSlaveDataSources(element));
+        factory.addConstructorArgValue(parseId(element));
+        factory.addConstructorArgValue(parseMasterDataSourceRef(element));
+        factory.addConstructorArgValue(parseSlaveDataSources(element));
         String strategyRef = parseStrategyRef(element);
         MasterSlaveLoadBalanceAlgorithmType strategyType = parseStrategyType(element);
         if (!Strings.isNullOrEmpty(strategyRef)) {
-            factory.addPropertyReference("loadBalanceAlgorithm", strategyRef);
+            factory.addConstructorArgReference(strategyRef);
         } else if (null != strategyType) {
-            factory.addPropertyValue("loadBalanceAlgorithm", strategyType.getAlgorithm());
+            factory.addConstructorArgValue(strategyType.getAlgorithm());
         }
         return factory.getBeanDefinition();
     }

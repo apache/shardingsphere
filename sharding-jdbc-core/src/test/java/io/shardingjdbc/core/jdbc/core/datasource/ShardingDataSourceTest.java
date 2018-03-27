@@ -66,12 +66,8 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> masterSlaveDataSourceMap = new HashMap<>(2, 1);
         masterSlaveDataSourceMap.put("masterDataSource", masterDataSource);
         masterSlaveDataSourceMap.put("slaveDataSource", slaveDataSource);
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-        masterSlaveRuleConfig.setName("ds");
-        masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
-        masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slaveDataSource"));
         MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(
-                masterSlaveDataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap());
+                masterSlaveDataSourceMap, new MasterSlaveRuleConfiguration("ds", "masterDataSource", Collections.singletonList("slaveDataSource")), Collections.<String, Object>emptyMap());
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
@@ -99,11 +95,8 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> slaveDataSourceMap = new HashMap<>(2, 1);
         slaveDataSourceMap.put("masterDataSource", masterDataSource);
         slaveDataSourceMap.put("slaveDataSource", slaveDataSource);
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-        masterSlaveRuleConfig.setName("ds");
-        masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
-        masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slaveDataSource"));
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(slaveDataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap());
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(
+                slaveDataSourceMap, new MasterSlaveRuleConfiguration("ds", "masterDataSource", Collections.singletonList("slaveDataSource")), Collections.<String, Object>emptyMap());
         DataSource dataSource3 = mockDataSource("H2");
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
         dataSourceMap.put("ds1", dataSource1);

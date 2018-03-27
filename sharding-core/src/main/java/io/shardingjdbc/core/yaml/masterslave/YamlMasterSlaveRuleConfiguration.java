@@ -57,16 +57,13 @@ public class YamlMasterSlaveRuleConfiguration {
      * @return master-slave rule configuration from yaml
      */
     public MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
-        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
-        result.setName(name);
-        result.setMasterDataSourceName(masterDataSourceName);
-        result.setSlaveDataSourceNames(slaveDataSourceNames);
+        MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm = null;
         if (null != loadBalanceAlgorithmType) {
-            result.setLoadBalanceAlgorithm(loadBalanceAlgorithmType.getAlgorithm());
+            loadBalanceAlgorithm = loadBalanceAlgorithmType.getAlgorithm();
         } else if (!Strings.isNullOrEmpty(loadBalanceAlgorithmClassName)) {
-            result.setLoadBalanceAlgorithm(newInstance(loadBalanceAlgorithmClassName));
+            loadBalanceAlgorithm = newInstance(loadBalanceAlgorithmClassName);
         }
-        return result;
+        return new MasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, loadBalanceAlgorithm);
     }
     
     private MasterSlaveLoadBalanceAlgorithm newInstance(final String masterSlaveLoadBalanceAlgorithmClassName) {
