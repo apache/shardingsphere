@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * SqlService.
- *
+ * SQL workbench.
+ * 
  * @author zhangyonglun
  */
 @Service
