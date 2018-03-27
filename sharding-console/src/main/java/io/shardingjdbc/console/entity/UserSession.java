@@ -2,14 +2,13 @@ package io.shardingjdbc.console.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 /**
- * user session .
- *
+ * User session.
+ * 
  * @author panjuan
  */
 @AllArgsConstructor
@@ -17,7 +16,7 @@ import java.util.UUID;
 @Setter
 public final class UserSession {
     
-    private String uuid;
+    private String id;
     
     private String userName;
     
@@ -28,7 +27,7 @@ public final class UserSession {
     private String driver;
     
     public UserSession() {
-        uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        id = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         driver = "MySQL";
     }
 }

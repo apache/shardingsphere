@@ -13,8 +13,8 @@ import java.sql.Connection;
 import java.util.Map;
 
 /**
- * ExecuteSQLController.
- *
+ * Execute SQL controller.
+ * 
  * @author zhangyonglun
  */
 
@@ -25,10 +25,11 @@ public class ExecuteSQLController {
     private SqlServer sqlServer;
     
     /**
-     * execute sql.
+     * Execute sql.
+     * 
      * @param sql sql
-     * @param userUUID user uuid
-     * @return SqlResponseResult
+     * @param userUUID user id
+     * @return sql response result
      */
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
     public SqlResponseResult executeSql(@RequestBody final String sql, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID) {

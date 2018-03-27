@@ -14,7 +14,8 @@ public enum ResponseCode {
     }
     
     /**
-     * get code.
+     * Get code.
+     * 
      * @return code
      */
     public int getCode() {
@@ -22,7 +23,8 @@ public enum ResponseCode {
     }
     
     /**
-     * get msg.
+     * Get msg.
+     * 
      * @return msg
      */
     public String getMsg() {

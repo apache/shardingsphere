@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * SqlResponseResult.
- *
+ * Sql response result.
+ * 
  * @author zhangyonglun
  */
 @Getter

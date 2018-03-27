@@ -12,8 +12,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 /**
- * encrypt and decrypt.
- *
+ * Encrypt and decrypt.
+ * 
  * @author panjuan
  */
 public class EncDes {
@@ -41,7 +41,8 @@ public class EncDes {
     }
     
     /**
-     * encrypt.
+     * Encrypt.
+     * 
      * @param str str
      * @return byte[]
      * @throws InvalidKeyException InvalidKeyException
@@ -59,7 +60,8 @@ public class EncDes {
     }
     
     /**
-     * decrypt.
+     * Decrypt.
+     * 
      * @param buff buff
      * @return byte[]
      * @throws InvalidKeyException

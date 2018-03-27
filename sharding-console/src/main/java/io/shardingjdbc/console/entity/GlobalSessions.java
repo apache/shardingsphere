@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * global user session.
- *
+ * Global user session.
+ * 
  * @author panjuan
  */
 public class GlobalSessions {
@@ -15,7 +15,8 @@ public class GlobalSessions {
     private static Map<String, Connection> sessionInfo;
     
     /**
-     * create the map of uuid and connection .
+     * Create the map of id and connection.
+     * 
      * @return  user and connection info
      */
     public static Map<String, Connection> getSessionInfo() {

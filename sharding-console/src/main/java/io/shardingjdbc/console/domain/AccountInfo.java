@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * AccountInfo.
- *
+ * Account information.
+ * 
  * @author zhangyonglun
  */
 @Getter

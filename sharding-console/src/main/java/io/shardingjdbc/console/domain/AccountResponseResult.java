@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * AccountResponseResult.
- *
+ * Account response result.
+ * 
  * @author zhangyonglun
  */
 @Getter

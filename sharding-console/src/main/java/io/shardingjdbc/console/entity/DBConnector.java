@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 /**
  * Database connector.
- *
+ * 
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -23,7 +23,7 @@ public final class DBConnector {
      * @param password password
      * @param url database url
      * @param dbDriver database driver
-     * @return Connection or null
+     * @return connection or null
      * @throws ClassNotFoundException class not found exception
      * @throws SQLException SQL exception
      */

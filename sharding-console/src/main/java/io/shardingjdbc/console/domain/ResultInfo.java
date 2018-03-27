@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ResultInfo.
- *
+ * Result information.
+ * 
  * @author zhangyonglun
  */
 @Getter

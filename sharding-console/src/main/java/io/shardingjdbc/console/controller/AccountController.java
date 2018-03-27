@@ -32,8 +32,8 @@ import javax.servlet.http.HttpSession;
 
 
 /**
- * accountController.
- *
+ * Account controller.
+ * 
  * @author zhangyonglun
  */
 @RestController
@@ -43,8 +43,8 @@ public class AccountController {
     private AccountService accountService;
     
     /**
-     * login.
-     *
+     * Login.
+     * 
      * @param accountInfo account information
      * @param servletRequest servlet request
      * @return account response result
@@ -57,8 +57,8 @@ public class AccountController {
     }
     
     /**
-     * logout.
-     *
+     * Logout.
+     * 
      * @param servletRequest servlet request
      * @return account response result
      */

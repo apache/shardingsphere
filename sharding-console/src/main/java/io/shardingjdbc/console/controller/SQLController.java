@@ -30,19 +30,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
- * SqlController.
- *
+ * SQL controller.
+ * 
  * @author zhangyonglun
  */
 @RestController
-public class SqlController {
+public class SQLController {
     
     @Autowired
     private SqlService sqlService;
     
     /**
-     * execute SQL.
-     *
+     * Execute SQL.
+     * 
      * @param sql sql string
      * @param servletRequest servlet request
      * @return sql response result

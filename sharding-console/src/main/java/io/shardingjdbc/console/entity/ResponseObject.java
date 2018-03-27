@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * return format.
- *
+ * Return format.
+ * 
  * @author panjuan
  */
 @Getter

@@ -3,8 +3,8 @@ package io.shardingjdbc.console.constant;
 import lombok.Getter;
 
 /**
- * jdbcDriver.
- *
+ * JDBC driver.
+ * 
  * @author panjuan
  */
 @Getter

@@ -18,8 +18,8 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * UserController.
- *
+ * User controller.
+ * 
  * @author panjuan
  */
 @RestController
@@ -27,12 +27,12 @@ import java.util.Map;
 public class UserController {
     
     /**
-     * handle https for user login.
+     * Handle https for user login.
      * 
      * @param userSession user info
-     * @param userUUID uuid
+     * @param userUUID id
      * @param response response
-     * @return ResponseObject
+     * @return response object
      */
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public ResponseObject login(@RequestBody final UserSession userSession, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID,
@@ -44,12 +44,13 @@ public class UserController {
         try {
             connection = DBConnector.getConnection(userSession.getUserName(), userSession.getPassWord(), userSession.getTargetURL(), userSession.getDriver());
         } catch (final ClassNotFoundException | SQLException ex) {
-            ex.getMessage();// to do
+            // TODO
+            ex.getMessage();
             return new ResponseObject(ResponseCode.FAILURE);
         }
         Map<String, Connection> connectionMap = GlobalSessions.getSessionInfo();
-        connectionMap.put(userSession.getUuid(), connection);
-        Cookie cookie = new Cookie("userUUID", userSession.getUuid());
+        connectionMap.put(userSession.getId(), connection);
+        Cookie cookie = new Cookie("userUUID", userSession.getId());
         cookie.setMaxAge(120 * 60);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -57,10 +58,11 @@ public class UserController {
     }
     
     /**
-     * handle http for user's exiting.
+     * Handle http for user exiting.
+     * 
      * @param userUUID useruuid
      * @param response response
-     * @return ResponseObject
+     * @return response object
      */
     @RequestMapping(value = "/exit", method = RequestMethod.POST)
     public ResponseObject exit(final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID, final HttpServletResponse response) {
