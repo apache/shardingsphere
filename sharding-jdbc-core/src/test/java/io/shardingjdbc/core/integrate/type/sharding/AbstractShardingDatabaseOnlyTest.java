@@ -77,7 +77,7 @@ public abstract class AbstractShardingDatabaseOnlyTest extends AbstractSQLAssert
             orderTableRuleConfig.setLogicTable("t_order");
             orderTableRuleConfig.setLogicIndex("t_order_index");
             orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
-            orderTableRuleConfig.setKeyGeneratorClass(IncrementKeyGenerator.class.getName());
+            orderTableRuleConfig.setKeyGenerator(new IncrementKeyGenerator());
             shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
             TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
             orderItemTableRuleConfig.setLogicTable("t_order_item");

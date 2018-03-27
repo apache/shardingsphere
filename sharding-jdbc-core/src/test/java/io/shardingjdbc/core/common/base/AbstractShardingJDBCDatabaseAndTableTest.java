@@ -78,7 +78,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             }
             orderItemTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderItemActualDataNodes));
             orderItemTableRuleConfig.setKeyGeneratorColumnName("item_id");
-            orderItemTableRuleConfig.setKeyGeneratorClass(IncrementKeyGenerator.class.getName());
+            orderItemTableRuleConfig.setKeyGenerator(new IncrementKeyGenerator());
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             TableRuleConfiguration configTableRuleConfig = new TableRuleConfiguration();
             configTableRuleConfig.setLogicTable("t_config");

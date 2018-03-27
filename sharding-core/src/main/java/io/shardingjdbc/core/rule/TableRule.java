@@ -18,11 +18,9 @@
 package io.shardingjdbc.core.rule;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.keygen.KeyGenerator;
-import io.shardingjdbc.core.keygen.KeyGeneratorFactory;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategyFactory;
 import io.shardingjdbc.core.util.InlineExpressionParser;
@@ -64,7 +62,7 @@ public final class TableRule {
         databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         generateKeyColumn = tableRuleConfig.getKeyGeneratorColumnName();
-        keyGenerator = !hasKeyGenerator(tableRuleConfig) ? null : KeyGeneratorFactory.newInstance(tableRuleConfig.getKeyGeneratorClass());
+        keyGenerator = tableRuleConfig.getKeyGenerator();
         logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
         Preconditions.checkNotNull(logicTable);
     }
@@ -91,10 +89,6 @@ public final class TableRule {
             result.add(dataNode);
         }
         return result;
-    }
-    
-    private boolean hasKeyGenerator(final TableRuleConfiguration tableRuleConfig) {
-        return !Strings.isNullOrEmpty(generateKeyColumn) && !Strings.isNullOrEmpty(tableRuleConfig.getKeyGeneratorClass());
     }
     
     /**

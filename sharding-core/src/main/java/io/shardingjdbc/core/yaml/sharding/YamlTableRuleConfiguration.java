@@ -18,7 +18,9 @@
 package io.shardingjdbc.core.yaml.sharding;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
+import io.shardingjdbc.core.keygen.KeyGeneratorFactory;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -61,7 +63,9 @@ public class YamlTableRuleConfiguration {
         if (null != tableStrategy) {
             result.setTableShardingStrategyConfig(tableStrategy.build());
         }
-        result.setKeyGeneratorClass(keyGeneratorClass);
+        if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
+            result.setKeyGenerator(KeyGeneratorFactory.newInstance(keyGeneratorClass));
+        }
         result.setKeyGeneratorColumnName(keyGeneratorColumnName);
         result.setLogicIndex(logicIndex);
         return result;

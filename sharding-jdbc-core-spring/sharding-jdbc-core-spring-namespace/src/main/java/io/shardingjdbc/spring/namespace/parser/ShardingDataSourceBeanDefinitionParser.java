@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
+import io.shardingjdbc.core.keygen.KeyGeneratorFactory;
 import io.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import io.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -139,7 +140,7 @@ public class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDefiniti
         }
         String keyGeneratorClass = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.COLUMN_KEY_GENERATOR_CLASS);
         if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
-            factory.addPropertyValue("keyGeneratorClass", keyGeneratorClass);
+            factory.addPropertyValue("keyGenerator", KeyGeneratorFactory.newInstance(keyGeneratorClass));
         }
         String logicIndex = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.LOGIC_INDEX);
         if (!Strings.isNullOrEmpty(logicIndex)) {

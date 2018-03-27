@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.api.config;
 
 import io.shardingjdbc.core.api.config.strategy.ShardingStrategyConfiguration;
+import io.shardingjdbc.core.keygen.KeyGenerator;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,7 +41,7 @@ public final class TableRuleConfiguration {
     
     private String keyGeneratorColumnName;
     
-    private String keyGeneratorClass;
+    private KeyGenerator keyGenerator;
     
     private String logicIndex;
 }
