@@ -29,7 +29,6 @@ import io.shardingjdbc.core.executor.event.DMLExecutionEvent;
 import io.shardingjdbc.core.executor.event.DQLExecutionEvent;
 import io.shardingjdbc.core.executor.event.OverallExecutionEvent;
 import io.shardingjdbc.core.executor.threadlocal.ExecutorDataMap;
-
 import java.util.HashMap;
 import java.util.Map;
 

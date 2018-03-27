@@ -17,12 +17,12 @@
 
 package io.shardingjdbc.opentracing.config;
 
+import io.shardingjdbc.opentracing.fixture.FooTracer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -39,8 +39,8 @@ public final class ConfigurationLoaderTest {
     
     @Test
     public void assertLoadConfigFromProperty() {
-        when(System.getProperty("shardingjdbc.opentracing.tracer.class")).thenReturn("com.foo.fooClass");
-        assertThat(new ConfigurationLoader().getTracerClassName(), is("com.foo.fooClass"));
+        when(System.getProperty("shardingjdbc.opentracing.tracer.class")).thenReturn(FooTracer.class.getName());
+        assertThat(new ConfigurationLoader().getTracerClassName(), is(FooTracer.class.getName()));
     }
     
 }
