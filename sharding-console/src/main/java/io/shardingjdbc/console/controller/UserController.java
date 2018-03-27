@@ -4,7 +4,11 @@ import io.shardingjdbc.console.domain.DBConnector;
 import io.shardingjdbc.console.domain.SessionRegistry;
 import io.shardingjdbc.console.domain.Response;
 import io.shardingjdbc.console.domain.UserSession;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.CookieValue;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;

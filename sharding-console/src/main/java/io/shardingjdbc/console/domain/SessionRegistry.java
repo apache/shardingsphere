@@ -33,7 +33,8 @@ public final class SessionRegistry {
     /**
      * Create the map of id and connection.
      *
-     * @return  user and connection info
+     * @param sessionId session id
+     * @return user and connection info
      */
     public Optional<Connection> findSession(final String sessionId) {
         synchronized (SESSIONS) {
@@ -42,10 +43,10 @@ public final class SessionRegistry {
     }
     
     /**
-     * Add session
+     * Add session.
      * 
-     * @param sessionId
-     * @param connection
+     * @param sessionId session id
+     * @param connection connection
      */
     public void addSession(final String sessionId, final Connection connection) {
         synchronized (SESSIONS) {
@@ -54,9 +55,9 @@ public final class SessionRegistry {
     }
 
     /**
-     * Remove session
+     * Remove session.
      * 
-     * @param sessionId
+     * @param sessionId session id
      */
     public void removeSession(final String sessionId) {
         synchronized (SESSIONS) {

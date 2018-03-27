@@ -18,10 +18,11 @@
 package io.shardingjdbc.console.service;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.console.domain.SQLColumnInformation;
-import io.shardingjdbc.console.domain.SQLResultData;
 import io.shardingjdbc.console.domain.SQLResponseResult;
+import io.shardingjdbc.console.domain.SQLColumnInformation;
 import io.shardingjdbc.console.domain.SQLRowData;
+import io.shardingjdbc.console.domain.SQLResultData;
+import io.shardingjdbc.console.domain.SessionRegistry;
 import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
@@ -44,15 +45,16 @@ public class SQLWorkbench {
      * Handle https for sqls.
      * 
      * @param sql sql
-     * @param connectionOptional database connection optional
+     * @param userUUID user uuid
      * @return SQLResponseResult
      */
-    public SQLResponseResult execute(final String sql, final Optional<Connection> connectionOptional) {
+    public SQLResponseResult execute(final String sql, final String userUUID) {
         List<SQLColumnInformation> sqlColumnInformationList = new ArrayList<>();
         List<SQLRowData> sqlRowDataList = new ArrayList<>();
         SQLResultData sqlResultData = new SQLResultData("", 0L, sql, sqlColumnInformationList, sqlRowDataList);
         SQLResponseResult sqlResponseResult = new SQLResponseResult(-1, "", sqlResultData);
-        
+        Optional<Connection> connectionOptional = SessionRegistry.getInstance().findSession(userUUID);
+    
         if (!connectionOptional.isPresent()) {
             sqlResponseResult.setMessage("please login first.");
             return sqlResponseResult;
@@ -61,7 +63,7 @@ public class SQLWorkbench {
         
         long startTime = System.currentTimeMillis();
         try (
-                Statement statement = connection.createStatement();
+                Statement statement = connection.createStatement()
         ) {
             if (statement.execute(sql)) {
                 ResultSet resultSet = statement.getResultSet();
@@ -100,7 +102,8 @@ public class SQLWorkbench {
         }
     }
     
-    private void getRowData(final ResultSetMetaData resultSetMetaData, final SQLResponseResult sqlResponseResult, final SQLResultData sqlResultData, final ResultSet resultSet, final long startTime, final int columnCount) throws SQLException {
+    private void getRowData(final ResultSetMetaData resultSetMetaData, final SQLResponseResult sqlResponseResult, final SQLResultData sqlResultData,
+                            final ResultSet resultSet, final long startTime, final int columnCount) throws SQLException {
         List<SQLRowData> sqlRowDataList = sqlResultData.getSqlRowDataList();
         Integer rowCount = 0;
         
