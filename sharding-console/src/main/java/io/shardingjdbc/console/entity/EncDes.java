@@ -11,6 +11,11 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
+/**
+ * encrypt and decrypt.
+ *
+ * @author panjuan
+ */
 public class EncDes {
     
     //KeyGenerator 提供对称密钥生成器的功能，支持各种算法
@@ -55,8 +60,8 @@ public class EncDes {
     
     /**
      * decrypt.
-     * @param buff
-     * @return
+     * @param buff buff
+     * @return byte[]
      * @throws InvalidKeyException
      * @throws IllegalBlockSizeException
      * @throws BadPaddingException

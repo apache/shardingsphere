@@ -25,8 +25,8 @@ public class ExecuteSQLController {
     
     /**
      * execute sql.
-     * @param sql
-     * @param userUUID
+     * @param sql sql
+     * @param userUUID user uuid
      * @return SqlResponseResult
      */
     @RequestMapping(value = "/sql", method = RequestMethod.POST)

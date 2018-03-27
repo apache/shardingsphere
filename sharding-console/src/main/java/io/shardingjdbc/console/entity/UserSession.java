@@ -5,6 +5,11 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+/**
+ * user session .
+ *
+ * @author panjuan
+ */
 @Getter
 @Setter
 public class UserSession {

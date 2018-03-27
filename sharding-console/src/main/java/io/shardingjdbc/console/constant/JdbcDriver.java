@@ -2,6 +2,11 @@ package io.shardingjdbc.console.constant;
 
 import lombok.Getter;
 
+/**
+ * jdbcDriver.
+ *
+ * @author panjuan
+ */
 @Getter
 public enum JdbcDriver {
     

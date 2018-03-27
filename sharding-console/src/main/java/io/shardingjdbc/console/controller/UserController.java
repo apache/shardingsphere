@@ -15,6 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.util.Map;
 
+/**
+ * UserController.
+ *
+ * @author panjuan
+ */
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -47,8 +52,8 @@ public class UserController {
     
     /**
      * handle http for user's exiting.
-     * @param userUUID
-     * @param response
+     * @param userUUID useruuid
+     * @param response response
      * @return ResponseObject
      */
     @RequestMapping(value = "/exit", method = RequestMethod.POST)

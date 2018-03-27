@@ -4,6 +4,11 @@ import io.shardingjdbc.console.constant.ResponseCode;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * return format.
+ *
+ * @author panjuan
+ */
 @Getter
 @Setter
 public class ResponseObject {
