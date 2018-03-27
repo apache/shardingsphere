@@ -25,9 +25,9 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    SoftTransactionManagerTest.class,
-    BEDSoftTransactionTest.class,
-    SoftTransactionTest.class
+        SoftTransactionManagerTest.class,
+        BEDSoftTransactionTest.class,
+        SoftTransactionTest.class
     })
 public class AllTests {
 }
