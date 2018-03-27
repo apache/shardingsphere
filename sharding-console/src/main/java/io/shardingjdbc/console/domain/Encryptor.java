@@ -1,4 +1,4 @@
-package io.shardingjdbc.console.entity;
+package io.shardingjdbc.console.domain;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

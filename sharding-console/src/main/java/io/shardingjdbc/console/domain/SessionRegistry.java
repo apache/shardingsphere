@@ -1,4 +1,4 @@
-package io.shardingjdbc.console.entity;
+package io.shardingjdbc.console.domain;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

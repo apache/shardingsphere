@@ -1,9 +1,9 @@
 package io.shardingjdbc.console.controller;
 
-import io.shardingjdbc.console.entity.DBConnector;
-import io.shardingjdbc.console.entity.SessionRegistry;
-import io.shardingjdbc.console.entity.Response;
-import io.shardingjdbc.console.entity.UserSession;
+import io.shardingjdbc.console.domain.DBConnector;
+import io.shardingjdbc.console.domain.SessionRegistry;
+import io.shardingjdbc.console.domain.Response;
+import io.shardingjdbc.console.domain.UserSession;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
