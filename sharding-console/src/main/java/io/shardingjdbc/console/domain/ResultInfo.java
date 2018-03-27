@@ -1,5 +1,6 @@
 package io.shardingjdbc.console.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import java.util.Map;
  * 
  * @author zhangyonglun
  */
+@AllArgsConstructor
 @Getter
 @Setter
 public class ResultInfo {
@@ -24,12 +26,4 @@ public class ResultInfo {
     private Map<String, String> types;
     //Todo
     private List<Map<String, String>> data;
-    
-    ResultInfo() {
-        tip = "";
-        duration = 0L;
-        sql = "";
-        types = null;
-        data = null;
-    }
 }

@@ -1,6 +1,6 @@
 package io.shardingjdbc.console.controller;
 
-import io.shardingjdbc.console.domain.SqlResponseResult;
+import io.shardingjdbc.console.domain.SQLResponseResult;
 import io.shardingjdbc.console.entity.SessionRegistry;
 import io.shardingjdbc.console.service.SqlServer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class ExecuteSQLController {
      * @return sql response result
      */
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
-    public SqlResponseResult executeSql(@RequestBody final String sql, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID) {
+    public SQLResponseResult executeSql(@RequestBody final String sql, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID) {
         Optional<Connection> session = SessionRegistry.getInstance().findSession(userUUID);
         if (session.isPresent()) {
             return sqlServer.execute(sql, session.get());

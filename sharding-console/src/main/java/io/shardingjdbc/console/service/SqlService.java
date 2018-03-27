@@ -19,7 +19,7 @@ package io.shardingjdbc.console.service;
 
 import io.shardingjdbc.console.domain.AccountInfo;
 import io.shardingjdbc.console.domain.ResultInfo;
-import io.shardingjdbc.console.domain.SqlResponseResult;
+import io.shardingjdbc.console.domain.SQLResponseResult;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
@@ -49,9 +49,9 @@ public class SqlService {
      * @param httpSession httpSession
      * @return sql response result
      */
-    public SqlResponseResult execute(final String sql, final HttpSession httpSession) {
-        SqlResponseResult sqlResponseResult = new SqlResponseResult();
-        ResultInfo resultInfo = sqlResponseResult.getResultInfo();
+    public SQLResponseResult execute(final String sql, final HttpSession httpSession) {
+        ResultInfo resultInfo = new ResultInfo("", 0L, "", null, null);
+        SQLResponseResult sqlResponseResult = new SQLResponseResult(-1, "", resultInfo);
         AccountInfo accountInfo = (AccountInfo) httpSession.getAttribute("accountInfo");
         
         if (null == accountInfo) {
@@ -82,7 +82,7 @@ public class SqlService {
         }
     }
     
-    private SqlResponseResult countsFormatResult(final SqlResponseResult sqlResponseResult, final ResultInfo resultInfo, final Statement statement,
+    private SQLResponseResult countsFormatResult(final SQLResponseResult sqlResponseResult, final ResultInfo resultInfo, final Statement statement,
                                                  final long startTime, final String sql) throws SQLException {
         resultInfo.setTip(statement.getUpdateCount() + " rows affected");
         resultInfo.setSql(sql);
@@ -91,7 +91,7 @@ public class SqlService {
         return sqlResponseResult;
     }
     
-    private SqlResponseResult setsFormatResult(final SqlResponseResult sqlResponseResult, final ResultInfo resultInfo, final ResultSet resultSet,
+    private SQLResponseResult setsFormatResult(final SQLResponseResult sqlResponseResult, final ResultInfo resultInfo, final ResultSet resultSet,
                                                final long startTime, final String sql) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
