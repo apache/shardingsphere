@@ -41,6 +41,6 @@ public final class OrderByColumn {
     @XmlAttribute
     private String alias;
     
-    @XmlAttribute(name = "order-by-type") 
-    private String orderByType;
+    @XmlAttribute(name = "order-direction") 
+    private String orderDirection;
 }

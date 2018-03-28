@@ -8,8 +8,8 @@
             <table-token begin-position="14" original-literals="t_order" />
         </table-tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-by-type="ASC" />
-            <order-by-column index="2" order-by-type="DESC" />
+            <order-by-column owner="o" name="order_id" order-direction="ASC" />
+            <order-by-column index="2" order-direction="DESC" />
         </order-by-columns>
     </parser-assert>
     
@@ -28,8 +28,8 @@
             </items>
         </items-token>
         <order-by-columns>
-            <order-by-column owner="o" alias="ORDER_BY_DERIVED_0" name="order_id" order-by-type="DESC" />
-            <order-by-column index="1" order-by-type="ASC" />
+            <order-by-column owner="o" alias="ORDER_BY_DERIVED_0" name="order_id" order-direction="DESC" />
+            <order-by-column index="1" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     
@@ -41,7 +41,7 @@
             <table-token begin-position="40" original-literals="t_order" />
         </table-tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-by-type="ASC" />
+            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
 
@@ -62,9 +62,9 @@
             </items>
         </items-token>
         <order-by-columns>
-            <order-by-column owner="i" alias="ORDER_BY_DERIVED_0" name="c_date" order-by-type="DESC" />
-            <order-by-column owner="o" alias="ORDER_BY_DERIVED_1" name="order_id" order-by-type="DESC" />
-            <order-by-column owner="i" alias="ORDER_BY_DERIVED_2" name="item_id" order-by-type="ASC" />
+            <order-by-column owner="i" alias="ORDER_BY_DERIVED_0" name="c_date" order-direction="DESC" />
+            <order-by-column owner="o" alias="ORDER_BY_DERIVED_1" name="order_id" order-direction="DESC" />
+            <order-by-column owner="i" alias="ORDER_BY_DERIVED_2" name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     
@@ -77,7 +77,7 @@
             <table-token begin-position="40" original-literals="t_order" />
         </table-tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-by-type="ASC" />
+            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     
@@ -90,7 +90,7 @@
             <table-token begin-position="40" original-literals="t_order" />
         </table-tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-by-type="ASC" />
+            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
 </parser-asserts>

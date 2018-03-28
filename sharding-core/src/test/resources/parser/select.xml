@@ -10,7 +10,7 @@
             <table-token begin-position="14" original-literals="t_order_item" />
         </table-tokens>
         <order-by-columns>
-            <order-by-column name="item_id" order-by-type="ASC" />
+            <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     <parser-assert sql-case-id="assertSelectNotEqualsWithSingleTableForExclamationEqual" parameters="1">
@@ -21,7 +21,7 @@
             <table-token begin-position="14" original-literals="t_order_item" />
         </table-tokens>
         <order-by-columns>
-            <order-by-column name="item_id" order-by-type="ASC" />
+            <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     <parser-assert sql-case-id="assertSelectNotEqualsWithSingleTableForNotIn" parameters="1">
@@ -32,7 +32,7 @@
             <table-token begin-position="14" original-literals="t_order_item" />
         </table-tokens>
         <order-by-columns>
-            <order-by-column name="item_id" order-by-type="ASC" />
+            <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     <parser-assert sql-case-id="assertSelectEqualsWithSingleTable" parameters="1,1">
@@ -86,8 +86,8 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="user_id" order-by-type="ASC" />
-            <order-by-column name="order_id" order-by-type="ASC" />
+            <order-by-column name="user_id" order-direction="ASC" />
+            <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     <parser-assert sql-case-id="assertSelectInWithSingleTable" parameters="1,2,3,9,10">
@@ -109,8 +109,8 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="user_id" order-by-type="ASC" />
-            <order-by-column name="order_id" order-by-type="ASC" />
+            <order-by-column name="user_id" order-direction="ASC" />
+            <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     <!-- // TODO 目前对于IN多结果不同做到交集处理 仅仅是简单的加入 -->
@@ -132,7 +132,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="order_id" order-by-type="ASC" />
+            <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     <parser-assert sql-case-id="assertSelectIterator" parameters="1,2">
@@ -164,7 +164,7 @@
             </items>
         </items-token>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     <parser-assert sql-case-id="assertSelectLikeWithCount" parameters="'init',1,2,9,10">
@@ -213,7 +213,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     <parser-assert sql-case-id="assertSelectWithBindingTableAndConfigTable" parameters="1,2,9,10,'init'">
@@ -241,7 +241,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     
@@ -270,7 +270,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     <parser-assert sql-case-id="assertSelectWithUpperCaseBindingTableAndConfigTable" parameters="1,2,9,10,'init'">
@@ -298,7 +298,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     <parser-assert sql-case-id="assertSelectCountWithBindingTable" parameters="1,2,9,10">

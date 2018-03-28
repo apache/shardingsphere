@@ -26,7 +26,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="5" offset-index="4" />
     </parser-assert>
@@ -56,7 +56,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit row-count="5" row-count-index="4" />
     </parser-assert>
@@ -87,7 +87,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-assert>
@@ -106,7 +106,7 @@
         <offset-token begin-position="59" offset="5" />
         <row-count-token begin-position="62" row-count="3" />
         <order-by-columns>
-            <order-by-column name="order_id" owner="o" alias="ORDER_BY_DERIVED_0" order-by-type="DESC" />
+            <order-by-column name="order_id" owner="o" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
         </order-by-columns>
         <limit offset="5" offset-index="0" row-count="3" row-count-index="1" />
     </parser-assert>
@@ -131,7 +131,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-by-type="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit row-count="3" row-count-index="0" />
     </parser-assert>
@@ -162,7 +162,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-assert>
@@ -188,7 +188,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-by-type="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </parser-assert>
@@ -214,7 +214,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-by-type="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </parser-assert>
@@ -233,7 +233,7 @@
         <offset-token begin-position="197" offset="1" />
         <row-count-token begin-position="27" row-count="3" />
         <order-by-columns>
-            <order-by-column name="order_id" owner="o" alias="ORDER_BY_DERIVED_0" order-by-type="DESC" />
+            <order-by-column name="order_id" owner="o" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
         </order-by-columns>
         <limit offset="1" offset-index="1" row-count-index="0" row-count="3" />
     </parser-assert>
@@ -263,7 +263,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit row-count="3" row-count-index="4" />
     </parser-assert>
@@ -294,7 +294,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-assert>
@@ -325,7 +325,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-assert>
@@ -339,7 +339,7 @@
         <offset-token begin-position="140" offset="1" />
         <row-count-token begin-position="111" row-count="4" />
         <order-by-columns>
-            <order-by-column name="order_id" order-by-type="DESC" />
+            <order-by-column name="order_id" order-direction="DESC" />
         </order-by-columns>
         <limit offset="1" offset-index="1" row-count-index="0" row-count="4" />
     </parser-assert>
@@ -353,7 +353,7 @@
         <offset-token begin-position="165" offset="1" />
         <row-count-token begin-position="135" row-count="4" />
         <order-by-columns>
-            <order-by-column name="order_id" order-by-type="DESC" />
+            <order-by-column name="order_id" order-direction="DESC" />
         </order-by-columns>
         <limit offset="1" offset-index="2" row-count-index="1" row-count="4" />
     </parser-assert>
@@ -367,7 +367,7 @@
         <offset-token begin-position="165" offset="1" />
         <row-count-token begin-position="113" row-count="4" />
         <order-by-columns>
-            <order-by-column name="order_id" order-by-type="DESC" />
+            <order-by-column name="order_id" order-direction="DESC" />
         </order-by-columns>
         <limit offset="1" offset-index="2" row-count-index="0" row-count="4" />
     </parser-assert>
@@ -386,7 +386,7 @@
         <offset-token begin-position="198" offset="1" />
         <row-count-token begin-position="27" row-count="4" />
         <order-by-columns>
-            <order-by-column name="order_id" owner="o" alias="ORDER_BY_DERIVED_0" order-by-type="DESC" />
+            <order-by-column name="order_id" owner="o" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
         </order-by-columns>
         <limit offset="1" offset-index="1" row-count-index="0" row-count="4" />
     </parser-assert>
@@ -415,7 +415,7 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="ASC" />
+            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="ASC" />
         </order-by-columns>
         <limit offset="0" offset-index="2" row-count="20" row-count-index="3" />
     </parser-assert>

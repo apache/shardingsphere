@@ -13,7 +13,7 @@
             </items>
         </items-token>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
     <parser-assert sql-case-id="assertSelectDateFuncWithSingleTable">
@@ -24,7 +24,7 @@
             <table-token begin-position="37" original-literals="`t_order_item`" />
         </table-tokens>
         <order-by-columns>
-            <order-by-column name="DATE(i.c_date)" order-by-type="DESC" alias="c_date"/>
+            <order-by-column name="DATE(i.c_date)" order-direction="DESC" alias="c_date"/>
         </order-by-columns>
     </parser-assert>
     <parser-assert sql-case-id="assertSelectCountWithExpression">
