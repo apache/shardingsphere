@@ -1,5 +1,6 @@
 package io.shardingjdbc.console.controller;
 
+import com.google.common.base.Optional;
 import io.shardingjdbc.console.domain.DBConnector;
 import io.shardingjdbc.console.domain.SessionRegistry;
 import io.shardingjdbc.console.domain.Response;
@@ -33,10 +34,16 @@ public class UserController {
      * @return response object
      */
     @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public Response login(final @RequestBody UserSession userSession, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID,
+    public Response login(final UserSession userSession, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID,
                           final HttpServletResponse response) {
         if (!"".equals(userUUID)) {
-            return new Response(200, "OK");
+            Optional<Connection> connectionOptional = SessionRegistry.getInstance().findSession(userUUID);
+            if (connectionOptional.isPresent()) {
+                return new Response(200, "OK");
+            } else {
+                removeSession(userUUID, response);
+                return new Response(403, "Please login first.");
+            }
         }
         Connection connection;
         try {
