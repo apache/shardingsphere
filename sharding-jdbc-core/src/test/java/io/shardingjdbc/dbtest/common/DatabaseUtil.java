@@ -602,7 +602,7 @@ public class DatabaseUtil {
      * @param expected expected
      * @param actual   actual
      */
-    public static void assertConfigs(final DatasetDefinition expected, final List<ColumnDefinition> actual, String table) {
+    public static void assertConfigs(final DatasetDefinition expected, final List<ColumnDefinition> actual, String table, String msg) {
         Map<String, List<ColumnDefinition>> configs = expected.getMetadatas();
         List<ColumnDefinition> columnDefinitions = configs.get(table);
         for (ColumnDefinition each : columnDefinitions) {
@@ -641,7 +641,7 @@ public class DatabaseUtil {
                         }
                     }
                     if (!flag2) {
-                        assertTrue(false);
+                        assertTrue(msg, false);
                     }
                 }
             }
@@ -655,7 +655,7 @@ public class DatabaseUtil {
      * @param expected expected
      * @param actual   actual
      */
-    public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual) {
+    public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual, String msg) {
         Map<String, List<ColumnDefinition>> actualConfigs = actual.getMetadatas();
         Map<String, List<ColumnDefinition>> expectedConfigs = expected.getMetadatas();
         
@@ -670,7 +670,7 @@ public class DatabaseUtil {
                         flag = true;
                     }
                 }
-                assertTrue(flag);
+                assertTrue(msg, flag);
             }
         }
         
@@ -684,7 +684,7 @@ public class DatabaseUtil {
                 Map<String, String> expectData = data.get(i);
                 Map<String, String> actualData = actualDatas.get(i);
                 for (Map.Entry<String, String> stringStringEntry : expectData.entrySet()) {
-                    assertTrue(stringStringEntry.getValue().equals(actualData.get(stringStringEntry.getKey())));
+                    assertTrue(msg, stringStringEntry.getValue().equals(actualData.get(stringStringEntry.getKey())));
                 }
                 
             }
