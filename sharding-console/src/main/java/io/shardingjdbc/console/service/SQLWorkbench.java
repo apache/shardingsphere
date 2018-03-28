@@ -98,7 +98,7 @@ public class SQLWorkbench {
     private void getColumnInfo(final ResultSetMetaData resultSetMetaData, final int columnCount, final SQLResultData sqlResultData) throws SQLException {
         List<SQLColumnInformation> sqlColumnInformationList = sqlResultData.getSqlColumnInformationList();
         for (int i = 1; i <= columnCount; i++) {
-            sqlColumnInformationList.add(new SQLColumnInformation(resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnTypeName(i), resultSetMetaData.getColumnDisplaySize(i)));
+            sqlColumnInformationList.add(new SQLColumnInformation(resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnTypeName(i), resultSetMetaData.getColumnDisplaySize(i)));
         }
     }
     
@@ -111,7 +111,7 @@ public class SQLWorkbench {
             rowCount++;
             SQLRowData sqlRowData = new SQLRowData();
             for (int i = 1; i <= columnCount; i++) {
-                sqlRowData.getRowData().put(resultSetMetaData.getColumnName(i), resultSet.getString(i));
+                sqlRowData.getRowData().put(resultSetMetaData.getColumnLabel(i), resultSet.getString(i));
             }
             sqlRowDataList.add(sqlRowData);
         }

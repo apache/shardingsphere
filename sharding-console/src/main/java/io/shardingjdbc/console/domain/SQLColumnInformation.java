@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 public final class SQLColumnInformation {
     
-    private String columnName;
+    private String columnLabel;
     
     private String columnTypeName;
     
