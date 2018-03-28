@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing;
+package io.shardingjdbc.core.parsing.integrate;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class AbstractBaseSQLParsingEngineTest {
+public abstract class AbstractBaseIntegrateSQLParsingTest {
     
     @Getter(AccessLevel.PROTECTED)
     private static ShardingRule shardingRule;
@@ -45,7 +45,7 @@ public abstract class AbstractBaseSQLParsingEngineTest {
     }
     
     private static ShardingRule buildShardingRule() throws IOException {
-        URL url = SQLParsingEngineTest.class.getClassLoader().getResource("yaml/parser-rule.yaml");
+        URL url = IntegrateSupportedSQLParsingTest.class.getClassLoader().getResource("yaml/parser-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
         YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
         return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());

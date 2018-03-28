@@ -18,9 +18,10 @@
 package io.shardingjdbc.core.rewrite;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.OrderType;
-import io.shardingjdbc.core.parsing.SQLParsingEngineTest;
+import io.shardingjdbc.core.parsing.integrate.IntegrateSupportedSQLParsingTest;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.limit.LimitValue;
@@ -40,6 +41,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,7 +60,9 @@ public final class SQLRewriteEngineTest {
     
     @Before
     public void setUp() throws IOException {
-        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(SQLParsingEngineTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml").getFile()));
+        URL url = IntegrateSupportedSQLParsingTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml");
+        Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
+        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
         shardingRule = yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
         selectStatement = new SelectStatement();
         tableTokens = new HashMap<>(1, 1);

@@ -15,9 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing;
+package io.shardingjdbc.core.parsing.integrate;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingjdbc.test.sql.SQLCase;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
@@ -33,7 +34,7 @@ import java.util.LinkedList;
 
 @AllArgsConstructor
 @RunWith(Parameterized.class)
-public final class ParsingEngineForUnsupportedSQLTest extends AbstractBaseSQLParsingEngineTest {
+public final class IntegrateUnsupportedSQLParsingTest extends AbstractBaseIntegrateSQLParsingTest {
     
     private String testCaseName;
     

@@ -15,22 +15,15 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing;
+package io.shardingjdbc.core.parsing.integrate;
 
-import io.shardingjdbc.core.parsing.integrate.AllParsingIntegrateTests;
-import io.shardingjdbc.core.parsing.lexer.AllLexerTests;
-import io.shardingjdbc.core.parsing.parser.context.OrderItemTest;
-import io.shardingjdbc.core.parsing.parser.sql.AllStatementParserTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        AllLexerTests.class, 
-        AllStatementParserTests.class, 
-        SQLJudgeEngineTest.class, 
-        OrderItemTest.class, 
-        AllParsingIntegrateTests.class
+        IntegrateSupportedSQLParsingTest.class,
+        IntegrateUnsupportedSQLParsingTest.class
     })
-public class AllParsingTests {
+public class AllParsingIntegrateTests {
 }

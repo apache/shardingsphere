@@ -15,10 +15,11 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing;
+package io.shardingjdbc.core.parsing.integrate;
 
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.jaxb.ParserAssert;
 import io.shardingjdbc.core.parsing.parser.jaxb.ParserAsserts;
 import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserAssertHelper;
@@ -43,7 +44,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RunWith(Parameterized.class)
-public final class SQLParsingEngineTest extends AbstractBaseSQLParsingEngineTest {
+public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrateSQLParsingTest {
     
     private final String testCaseName;
     
@@ -54,7 +55,7 @@ public final class SQLParsingEngineTest extends AbstractBaseSQLParsingEngineTest
     @Parameters(name = "{0}In{1}")
     public static Collection<Object[]> getTestParameters() throws JAXBException {
         Collection<Object[]> result = new LinkedList<>();
-        URL url = SQLParsingEngineTest.class.getClassLoader().getResource("parser/");
+        URL url = IntegrateSupportedSQLParsingTest.class.getClassLoader().getResource("parser/");
         Preconditions.checkNotNull(url, "Cannot found parser test cases.");
         File[] files = new File(url.getPath()).listFiles();
         Preconditions.checkNotNull(files, "Cannot found parser test cases.");
