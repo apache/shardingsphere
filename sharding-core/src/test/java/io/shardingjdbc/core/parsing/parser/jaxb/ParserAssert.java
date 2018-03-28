@@ -31,10 +31,10 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Assert {
+public final class ParserAssert {
     
-    @XmlAttribute
-    private String id;
+    @XmlAttribute(name = "sql-case-id")
+    private String sqlCaseId;
     
     @XmlAttribute
     private String parameters;

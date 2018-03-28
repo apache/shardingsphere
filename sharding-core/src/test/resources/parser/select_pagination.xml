@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<asserts>
-    <assert id="assertSelectPaginationWithOffset" parameters="1,2,9,10,5">
+<parser-asserts>
+    <parser-assert sql-case-id="assertSelectPaginationWithOffset" parameters="1,2,9,10,5">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -29,8 +29,8 @@
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
         </order-by-columns>
         <limit offset="5" offset-index="4" />
-    </assert>
-    <assert id="assertSelectPaginationWithRowCount" parameters="1,2,9,10,5">
+    </parser-assert>
+    <parser-assert sql-case-id="assertSelectPaginationWithRowCount" parameters="1,2,9,10,5">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -59,8 +59,8 @@
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
         </order-by-columns>
         <limit row-count="5" row-count-index="4" />
-    </assert>
-    <assert id="assertSelectPaginationWithLimit" parameters="1,2,9,10,5,3">
+    </parser-assert>
+    <parser-assert sql-case-id="assertSelectPaginationWithLimit" parameters="1,2,9,10,5,3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -90,8 +90,8 @@
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
         </order-by-columns>
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
-    </assert>
-    <assert id="assertSelectPaginationWithTop" parameters="3,1,2,9,10">
+    </parser-assert>
+    <parser-assert sql-case-id="assertSelectPaginationWithTop" parameters="3,1,2,9,10">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -115,8 +115,8 @@
             <order-by-column name="item_id" owner="i" order-by-type="DESC" />
         </order-by-columns>
         <limit row-count="3" row-count-index="0" />
-    </assert>
-    <assert id="assertSelectPaginationWithOffsetAndLimit" parameters="1,2,9,10,5,3">
+    </parser-assert>
+    <parser-assert sql-case-id="assertSelectPaginationWithOffsetAndLimit" parameters="1,2,9,10,5,3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -146,8 +146,8 @@
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
         </order-by-columns>
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
-    </assert>
-    <assert id="assertSelectPaginationWithTopAndRange" parameters="3,1,2,9,10,6">
+    </parser-assert>
+    <parser-assert sql-case-id="assertSelectPaginationWithTopAndRange" parameters="3,1,2,9,10,6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -172,8 +172,8 @@
             <order-by-column name="item_id" owner="i" order-by-type="DESC" />
         </order-by-columns>
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
-    </assert>
-    <assert id="assertSelectSingleTablePaginationWithTopAndRange" parameters="3,1">
+    </parser-assert>
+    <parser-assert sql-case-id="assertSelectSingleTablePaginationWithTopAndRange" parameters="3,1">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
@@ -191,8 +191,8 @@
             <order-by-column name="order_id" owner="o" alias="ORDER_BY_DERIVED_0" order-by-type="DESC" />
         </order-by-columns>
         <limit offset="1" offset-index="1" row-count-index="0" row-count="3" />
-    </assert>
-    <assert id="assertSelectPaginationWithRowNumber" parameters="1,2,9,10,3">
+    </parser-assert>
+    <parser-assert sql-case-id="assertSelectPaginationWithRowNumber" parameters="1,2,9,10,3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
@@ -221,8 +221,8 @@
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
         </order-by-columns>
         <limit row-count="3" row-count-index="4" />
-    </assert>
-    <assert id="assertSelectPaginationWithRowNumberAndRange" parameters="1,2,9,10,5,3">
+    </parser-assert>
+    <parser-assert sql-case-id="assertSelectPaginationWithRowNumberAndRange" parameters="1,2,9,10,5,3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
@@ -252,8 +252,8 @@
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="DESC" />
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
-    </assert>
-    <assert id="assertSelectSingleTablePaginationWithRowNumberAndRange" parameters="4,1">
+    </parser-assert>
+    <parser-assert sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRange" parameters="4,1">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -266,8 +266,8 @@
             <order-by-column name="order_id" order-by-type="DESC" />
         </order-by-columns>
         <limit offset="1" offset-index="1" row-count-index="0" row-count="4" />
-    </assert>
-    <assert id="assertSelectLeftJoinAndLimit" parameters="10,1000,0,20">
+    </parser-assert>
+    <parser-assert sql-case-id="assertSelectLeftJoinAndLimit" parameters="10,1000,0,20">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -295,5 +295,5 @@
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-by-type="ASC" />
         </order-by-columns>
         <limit offset="0" offset-index="2" row-count="20" row-count-index="3" />
-    </assert>
-</asserts>
+    </parser-assert>
+</parser-asserts>

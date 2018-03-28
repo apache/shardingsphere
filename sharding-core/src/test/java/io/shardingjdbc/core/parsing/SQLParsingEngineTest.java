@@ -19,8 +19,8 @@ package io.shardingjdbc.core.parsing;
 
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
-import io.shardingjdbc.core.parsing.parser.jaxb.Asserts;
+import io.shardingjdbc.core.parsing.parser.jaxb.ParserAssert;
+import io.shardingjdbc.core.parsing.parser.jaxb.ParserAsserts;
 import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserAssertHelper;
 import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserJAXBHelper;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
@@ -49,7 +49,7 @@ public final class SQLParsingEngineTest extends AbstractBaseSQLParsingEngineTest
     
     private final DatabaseType databaseType;
     
-    private final Assert assertObj;
+    private final ParserAssert assertObj;
     
     @Parameters(name = "{0}In{1}")
     public static Collection<Object[]> getTestParameters() throws JAXBException {
@@ -66,24 +66,24 @@ public final class SQLParsingEngineTest extends AbstractBaseSQLParsingEngineTest
     
     private static Collection<Object[]> getTestParameters(final File file) throws JAXBException {
         List<Object[]> result = new LinkedList<>();
-        for (Assert each : ((Asserts) JAXBContext.newInstance(Asserts.class).createUnmarshaller().unmarshal(file)).getAsserts()) {
+        for (ParserAssert each : ((ParserAsserts) JAXBContext.newInstance(ParserAsserts.class).createUnmarshaller().unmarshal(file)).getParserAsserts()) {
             result.addAll(getTestParameters(each));
         }
         return result;
     }
     
-    private static List<Object[]> getTestParameters(final Assert assertObj) {
+    private static List<Object[]> getTestParameters(final ParserAssert assertObj) {
         List<Object[]> result = new LinkedList<>();
-        for (DatabaseType each : getDatabaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(assertObj.getId()))) {
+        for (DatabaseType each : getDatabaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(assertObj.getSqlCaseId()))) {
             result.add(getTestParameters(assertObj, each));
         }
         return result;
     }
     
-    private static Object[] getTestParameters(final Assert assertObj, final DatabaseType dbType) {
+    private static Object[] getTestParameters(final ParserAssert assertObj, final DatabaseType databaseType) {
         final Object[] result = new Object[3];
-        result[0] = assertObj.getId();
-        result[1] = dbType;
+        result[0] = assertObj.getSqlCaseId();
+        result[1] = databaseType;
         result[2] = assertObj;
         return result;
     }
