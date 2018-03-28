@@ -15,19 +15,29 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.parser.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb;
 
 import lombok.Getter;
+import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.LinkedList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
-@XmlRootElement(name = "parser-asserts")
 @Getter
-public final class ParserAsserts {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class Limit {
     
-    @XmlElement(name = "parser-assert")
-    private List<ParserAssert> parserAsserts = new LinkedList<>();
+    @XmlAttribute
+    private Integer offset;
+    
+    @XmlAttribute(name = "row-count")
+    private Integer rowCount;
+    
+    @XmlAttribute(name = "offset-index")
+    private Integer offsetParameterIndex;
+    
+    @XmlAttribute(name = "row-count-index")
+    private Integer rowCountParameterIndex;
 }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.parser.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,23 +23,12 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Condition {
+public class TableToken extends SQLToken {
     
-    @XmlAttribute(name = "column-name")
-    private String columnName;
-    
-    @XmlAttribute(name = "table-name")
-    private String tableName;
-    
-    @XmlAttribute
-    private String operator;
-    
-    @XmlElement(name = "value") 
-    private List<Value> values;
+    @XmlAttribute(name = "original-literals")
+    private String originalLiterals;
 }

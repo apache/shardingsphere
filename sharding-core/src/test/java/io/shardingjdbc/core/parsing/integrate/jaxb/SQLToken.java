@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.parser.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,17 +27,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Limit {
+public class SQLToken {
     
-    @XmlAttribute
-    private Integer offset;
-    
-    @XmlAttribute(name = "row-count")
-    private Integer rowCount;
-    
-    @XmlAttribute(name = "offset-index")
-    private Integer offsetParameterIndex;
-    
-    @XmlAttribute(name = "row-count-index")
-    private Integer rowCountParameterIndex;
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
 }

@@ -100,7 +100,7 @@ public final class SQLAssertJAXBHelper {
     private static Object[] getDataParameter(final SQLAssert sqlAssert, final DatabaseType dbType) {
         final Object[] result = new Object[4];
         result[0] = sqlAssert.getId();
-        result[1] = SQLCasesLoader.getInstance().getSQL(sqlAssert.getId());
+        result[1] = SQLCasesLoader.getInstance().getSupportedSQL(sqlAssert.getId());
         result[2] = dbType;
         result[3] = sqlAssert.getSqlShardingRules();
         return result;

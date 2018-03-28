@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.parser.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,8 +27,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class TableToken extends SQLToken {
+public final class OrderByToken extends SQLToken {
     
-    @XmlAttribute(name = "original-literals")
-    private String originalLiterals;
+    @XmlAttribute(name = "begin-position-of-statement")
+    private int beginPositionOfStatement;
+    
+    @XmlAttribute(name = "begin-position-of-prepared-statement")
+    private int beginPositionOfPreparedStatement;
 }

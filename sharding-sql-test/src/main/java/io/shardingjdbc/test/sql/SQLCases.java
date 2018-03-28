@@ -21,7 +21,7 @@ import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -34,5 +34,5 @@ import java.util.List;
 public final class SQLCases {
     
     @XmlElement(name = "sql-case")
-    private List<SQLCase> sqlCases = new ArrayList<>();
+    private List<SQLCase> sqlCases = new LinkedList<>();
 }

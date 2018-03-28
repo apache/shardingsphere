@@ -15,24 +15,19 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.parser.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.LinkedList;
 import java.util.List;
 
 @Getter
-@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class MultipleInsertValuesToken extends SQLToken {
+public final class Conditions {
     
-    @XmlElementWrapper(name = "values")
-    @XmlElement(name = "value")
-    private List<String> values = new LinkedList<>();
+    @XmlElement(name = "condition")
+    private List<Condition> conditions;
 }

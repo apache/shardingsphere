@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.parser.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,17 +27,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class GroupByColumn {
+public class OffsetToken extends SQLToken {
     
-    @XmlAttribute
-    private String owner;
-    
-    @XmlAttribute
-    private String name;
-    
-    @XmlAttribute
-    private String alias;
-    
-    @XmlAttribute(name = "order-by-type") 
-    private String orderByType;
+    @XmlAttribute(name = "offset")
+    private int offset;
 }

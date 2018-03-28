@@ -15,32 +15,24 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.parser.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class OrderByColumn {
+public class ItemsToken extends SQLToken {
     
-    @XmlAttribute
-    private String owner;
-    
-    @XmlAttribute
-    private String name;
-    
-    @XmlAttribute
-    private Integer index;
-    
-    @XmlAttribute
-    private String alias;
-    
-    @XmlAttribute(name = "order-by-type") 
-    private String orderByType;
+    @XmlElementWrapper(name = "items")
+    @XmlElement(name = "item")
+    private List<String> items = new LinkedList<>();
 }

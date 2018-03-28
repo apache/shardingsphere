@@ -15,19 +15,20 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.parser.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Conditions {
+public class RowCountToken extends SQLToken {
     
-    @XmlElement(name = "condition")
-    private List<Condition> conditions;
+    @XmlAttribute(name = "row-count")
+    private int rowCount;
 }

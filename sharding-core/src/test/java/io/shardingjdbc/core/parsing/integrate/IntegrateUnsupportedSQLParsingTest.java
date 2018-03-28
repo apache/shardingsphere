@@ -20,48 +20,30 @@ package io.shardingjdbc.core.parsing.integrate;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
-import io.shardingjdbc.test.sql.SQLCase;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 
-@AllArgsConstructor
-@RunWith(Parameterized.class)
+@RequiredArgsConstructor
 public final class IntegrateUnsupportedSQLParsingTest extends AbstractBaseIntegrateSQLParsingTest {
     
-    private String testCaseName;
+    private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
-    private DatabaseType databaseType;
+    private final String sqlCaseId;
+    
+    private final DatabaseType databaseType;
     
     @Parameters(name = "{0}In{1}")
     public static Collection<Object[]> getTestParameters() {
-        Collection<Object[]> result = new ArrayList<>();
-        for (SQLCase each : SQLCasesLoader.getInstance().getAllUnsupportedSQLCases()) {
-            result.addAll(getTestParameters(each));
-        }
-        return result;
-    }
-    
-    private static Collection<Object[]> getTestParameters(final SQLCase sqlCase) {
-        Collection<Object[]> result = new LinkedList<>();
-        for (DatabaseType each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
-            Object[] parameters = new Object[2];
-            parameters[0] = sqlCase.getId();
-            parameters[1] = each;
-            result.add(parameters);
-        }
-        return result;
+        return sqlCasesLoader.getUnsupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void assertUnsupportedSQL() {
-        new SQLParsingEngine(databaseType, SQLCasesLoader.getInstance().getUnsupportedSQL(testCaseName), getShardingRule()).parse();
+        new SQLParsingEngine(databaseType, sqlCasesLoader.getUnsupportedSQL(sqlCaseId), getShardingRule()).parse();
     }
 }

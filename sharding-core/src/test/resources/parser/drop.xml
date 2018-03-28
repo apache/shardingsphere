@@ -24,12 +24,11 @@
             <table-token begin-position="31" original-literals="t_temp_log" />
         </table-tokens>
     </parser-assert>
-    <!--// TODO verify sql-->
-    <!--<parser-assert sql-case-id="assertDropTableRestrict">-->
-        <!--<tables>-->
-            <!--<table name="t_log" />-->
-        <!--</tables>-->
-    <!--</parser-assert>-->
+    <parser-assert sql-case-id="assertDropTableRestrict">
+        <tables>
+            <table name="t_log" />
+        </tables>
+    </parser-assert>
     <parser-assert sql-case-id="assertDropTableCascade">
         <tables>
             <table name="t_log" />

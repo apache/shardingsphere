@@ -18,22 +18,19 @@
 package io.shardingjdbc.core.parsing.integrate;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
+@RunWith(Parameterized.class)
 public abstract class AbstractBaseIntegrateSQLParsingTest {
     
     @Getter(AccessLevel.PROTECTED)
@@ -45,20 +42,9 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
     }
     
     private static ShardingRule buildShardingRule() throws IOException {
-        URL url = IntegrateSupportedSQLParsingTest.class.getClassLoader().getResource("yaml/parser-rule.yaml");
+        URL url = AbstractBaseIntegrateSQLParsingTest.class.getClassLoader().getResource("yaml/parser-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
         YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
         return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
-    }
-    
-    protected static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
-        if (Strings.isNullOrEmpty(databaseTypes)) {
-            return Sets.newHashSet(DatabaseType.values());
-        }
-        Set<DatabaseType> result = new HashSet<>();
-        for (String each : databaseTypes.split(",")) {
-            result.add(DatabaseType.valueOf(each));
-        }
-        return result;
     }
 }

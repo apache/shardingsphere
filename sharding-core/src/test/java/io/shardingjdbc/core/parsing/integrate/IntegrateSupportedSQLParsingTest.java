@@ -17,102 +17,62 @@
 
 package io.shardingjdbc.core.parsing.integrate;
 
-import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
-import io.shardingjdbc.core.parsing.parser.jaxb.ParserAssert;
-import io.shardingjdbc.core.parsing.parser.jaxb.ParserAsserts;
-import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserAssertHelper;
-import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserJAXBHelper;
+import io.shardingjdbc.core.parsing.integrate.jaxb.ParserAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.ParserAssertsLoader;
+import io.shardingjdbc.core.parsing.integrate.jaxb.helper.ParserAssertHelper;
+import io.shardingjdbc.core.parsing.integrate.jaxb.helper.ParserJAXBHelper;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.util.SQLPlaceholderUtil;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 @RequiredArgsConstructor
-@RunWith(Parameterized.class)
 public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrateSQLParsingTest {
     
-    private final String testCaseName;
+    private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
+    
+    private static ParserAssertsLoader parserAssertsLoader = ParserAssertsLoader.getInstance();
+    
+    private final String sqlCaseId;
     
     private final DatabaseType databaseType;
     
-    private final ParserAssert assertObj;
-    
     @Parameters(name = "{0}In{1}")
-    public static Collection<Object[]> getTestParameters() throws JAXBException {
-        Collection<Object[]> result = new LinkedList<>();
-        URL url = IntegrateSupportedSQLParsingTest.class.getClassLoader().getResource("parser/");
-        Preconditions.checkNotNull(url, "Cannot found parser test cases.");
-        File[] files = new File(url.getPath()).listFiles();
-        Preconditions.checkNotNull(files, "Cannot found parser test cases.");
-        for (File each : files) {
-            result.addAll(getTestParameters(each));
-        }
-        return result;
-    }
-    
-    private static Collection<Object[]> getTestParameters(final File file) throws JAXBException {
-        List<Object[]> result = new LinkedList<>();
-        for (ParserAssert each : ((ParserAsserts) JAXBContext.newInstance(ParserAsserts.class).createUnmarshaller().unmarshal(file)).getParserAsserts()) {
-            result.addAll(getTestParameters(each));
-        }
-        return result;
-    }
-    
-    private static List<Object[]> getTestParameters(final ParserAssert assertObj) {
-        List<Object[]> result = new LinkedList<>();
-        for (DatabaseType each : getDatabaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(assertObj.getSqlCaseId()))) {
-            result.add(getTestParameters(assertObj, each));
-        }
-        return result;
-    }
-    
-    private static Object[] getTestParameters(final ParserAssert assertObj, final DatabaseType databaseType) {
-        final Object[] result = new Object[3];
-        result[0] = assertObj.getSqlCaseId();
-        result[1] = databaseType;
-        result[2] = assertObj;
-        return result;
+    public static Collection<Object[]> getTestParameters() {
+        return sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
     }
     
     @Test
     public void assertLiteralSQL() {
-        assertSQLStatement(new SQLParsingEngine(databaseType, SQLPlaceholderUtil.replaceStatement(
-                SQLCasesLoader.getInstance().getSQL(testCaseName), ParserJAXBHelper.getParameters(assertObj.getParameters())), getShardingRule()).parse(), false);
+        assertSQLStatement(new SQLParsingEngine(databaseType, SQLPlaceholderUtil.replaceStatement(sqlCasesLoader.getSupportedSQL(sqlCaseId), 
+                ParserJAXBHelper.getParameters(parserAssertsLoader.getParserAssert(sqlCaseId).getParameters())), getShardingRule()).parse(), false);
     }
     
     @Test
     public void assertPlaceholderSQL() {
-        for (DatabaseType each : getDatabaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(testCaseName))) {
-            assertSQLStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLCasesLoader.getInstance().getSQL(testCaseName)), getShardingRule()).parse(), true);
-        }
+        assertSQLStatement(new SQLParsingEngine(databaseType, SQLPlaceholderUtil.replacePreparedStatement(sqlCasesLoader.getSupportedSQL(sqlCaseId)), getShardingRule()).parse(), true);
     }
     
     private void assertSQLStatement(final SQLStatement actual, final boolean isPreparedStatement) {
-        ParserAssertHelper.assertTables(assertObj.getTables(), actual.getTables());
-        ParserAssertHelper.assertConditions(assertObj.getConditions(), actual.getConditions(), isPreparedStatement);
-        ParserAssertHelper.assertSqlTokens(assertObj.getSqlTokens(), actual.getSqlTokens(), isPreparedStatement);
+        ParserAssert parserAssert = parserAssertsLoader.getParserAssert(sqlCaseId);
+        ParserAssertHelper.assertTables(parserAssert.getTables(), actual.getTables());
+        ParserAssertHelper.assertConditions(parserAssert.getConditions(), actual.getConditions(), isPreparedStatement);
+        ParserAssertHelper.assertSqlTokens(parserAssert.getSqlTokens(), actual.getSqlTokens(), isPreparedStatement);
         if (actual instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) actual;
-            SelectStatement expectedSqlStatement = ParserJAXBHelper.getSelectStatement(assertObj);
+            SelectStatement expectedSqlStatement = ParserJAXBHelper.getSelectStatement(parserAssert);
             ParserAssertHelper.assertOrderBy(expectedSqlStatement.getOrderByItems(), selectStatement.getOrderByItems());
             ParserAssertHelper.assertGroupBy(expectedSqlStatement.getGroupByItems(), selectStatement.getGroupByItems());
             ParserAssertHelper.assertAggregationSelectItem(expectedSqlStatement.getAggregationSelectItems(), selectStatement.getAggregationSelectItems());
-            ParserAssertHelper.assertLimit(assertObj.getLimit(), selectStatement.getLimit(), isPreparedStatement);
+            ParserAssertHelper.assertLimit(parserAssert.getLimit(), selectStatement.getLimit(), isPreparedStatement);
         }
     }
 }

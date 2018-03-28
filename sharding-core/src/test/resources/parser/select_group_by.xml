@@ -234,6 +234,20 @@
         </order-by-columns>
         <limit row-count-index="0" row-count="5" />
     </parser-assert>
+    <parser-assert sql-case-id="assertSelectItemWithAliasAndMatchOrderByAndGroupByItems" parameters="5">
+        <tables>
+            <table name="t_order" alias="o" />
+        </tables>
+        <table-tokens>
+            <table-token begin-position="26" original-literals="t_order" />
+        </table-tokens>
+        <group-by-columns>
+            <group-by-column name="user_id" owner="o" alias="uid" order-by-type="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="user_id" owner="o" alias="uid" order-by-type="ASC" />
+        </order-by-columns>
+    </parser-assert>
     <parser-assert sql-case-id="assertSelectGroupByWithAliasIsKeyword">
         <tables>
             <table name="t_order" />

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.parser.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,15 +23,23 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class GeneratedKeyToken extends SQLToken {
+public final class Condition {
     
-    @XmlAttribute(name = "begin-position-of-statement")
-    private int beginPositionOfStatement;
+    @XmlAttribute(name = "column-name")
+    private String columnName;
     
-    @XmlAttribute(name = "begin-position-of-prepared-statement")
-    private int beginPositionOfPreparedStatement;
+    @XmlAttribute(name = "table-name")
+    private String tableName;
+    
+    @XmlAttribute
+    private String operator;
+    
+    @XmlElement(name = "value") 
+    private List<Value> values;
 }

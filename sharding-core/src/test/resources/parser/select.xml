@@ -301,7 +301,29 @@
             <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
         </order-by-columns>
     </parser-assert>
-    
+    <parser-assert sql-case-id="assertSelectCountWithBindingTable" parameters="1,2,9,10">
+        <tables>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <table-tokens>
+            <table-token begin-position="36" original-literals="t_order" />
+            <table-token begin-position="47" original-literals="t_order_item" />
+        </table-tokens>
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="2" literal="9" type="int" />
+                <value index="3" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="items_count"/>
+        </aggregation-select-items>
+    </parser-assert>
     <parser-assert sql-case-id="assertSelectCountWithBindingTableWithJoin" parameters="1,2,9,10">
         <tables>
             <table name="t_order" alias="o"/>
