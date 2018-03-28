@@ -17,52 +17,27 @@
 
 package io.shardingjdbc.core.parsing;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
-import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import io.shardingjdbc.test.sql.SQLCase;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.AllArgsConstructor;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
 
 @AllArgsConstructor
 @RunWith(Parameterized.class)
-public final class ParsingEngineForUnsupportedSQLTest {
-    
-    private static ShardingRule shardingRule;
+public final class ParsingEngineForUnsupportedSQLTest extends AbstractBaseSQLParsingEngineTest {
     
     private String testCaseName;
     
     private DatabaseType databaseType;
-    
-    @BeforeClass
-    public static void setUp() throws IOException {
-        shardingRule = buildShardingRule();
-    }
-    
-    private static ShardingRule buildShardingRule() throws IOException {
-        URL url = SQLParsingEngineTest.class.getClassLoader().getResource("yaml/parser-rule.yaml");
-        Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
-        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
-        return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
-    }
     
     @Parameters(name = "{0}In{1}")
     public static Collection<Object[]> getTestParameters() {
@@ -84,19 +59,8 @@ public final class ParsingEngineForUnsupportedSQLTest {
         return result;
     }
     
-    private static Set<DatabaseType> getDatabaseTypes(final String databaseTypes) {
-        if (Strings.isNullOrEmpty(databaseTypes)) {
-            return Sets.newHashSet(DatabaseType.values());
-        }
-        Set<DatabaseType> result = new HashSet<>();
-        for (String each : databaseTypes.split(",")) {
-            result.add(DatabaseType.valueOf(each));
-        }
-        return result;
-    }
-    
     @Test(expected = SQLParsingUnsupportedException.class)
     public void assertUnsupportedSQL() {
-        new SQLParsingEngine(databaseType, SQLCasesLoader.getInstance().getUnsupportedSQL(testCaseName), shardingRule).parse();
+        new SQLParsingEngine(databaseType, SQLCasesLoader.getInstance().getUnsupportedSQL(testCaseName), getShardingRule()).parse();
     }
 }

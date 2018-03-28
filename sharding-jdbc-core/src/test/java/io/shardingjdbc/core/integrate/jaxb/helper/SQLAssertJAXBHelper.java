@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.core.integrate.jaxb.helper;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.jaxb.SQLAssert;
@@ -28,11 +30,11 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class SQLAssertJAXBHelper {
     
@@ -80,7 +82,7 @@ public final class SQLAssertJAXBHelper {
         List<Object[]> result = new ArrayList<>();
         for (int i = 0; i < asserts.getSqlAsserts().size(); i++) {
             SQLAssert assertObj = asserts.getSqlAsserts().get(i);
-            for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(assertObj.getId()))) {
+            for (DatabaseType each : getDatabaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(assertObj.getId()))) {
                 result.add(getDataParameter(assertObj, each));
             }
         }
@@ -93,17 +95,6 @@ public final class SQLAssertJAXBHelper {
         } catch (final JAXBException ex) {
             throw new RuntimeException(ex);
         }
-    }
-    
-    private static Collection<DatabaseType> getDataBaseTypes(final Collection<String> databaseTypes) {
-        if (databaseTypes.isEmpty()) {
-            return Arrays.asList(DatabaseType.values());
-        }
-        Collection<DatabaseType> result = new LinkedHashSet<>(databaseTypes.size());
-        for (String each : databaseTypes) {
-            result.add(DatabaseType.valueOf(each));
-        }
-        return result;
     }
     
     private static Object[] getDataParameter(final SQLAssert sqlAssert, final DatabaseType dbType) {
@@ -125,5 +116,16 @@ public final class SQLAssertJAXBHelper {
                 return fileName.startsWith("select");
             default: return false;
         }
+    }
+    
+    private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
+        if (Strings.isNullOrEmpty(databaseTypes)) {
+            return Sets.newHashSet(DatabaseType.values());
+        }
+        Set<DatabaseType> result = new HashSet<>();
+        for (String each : databaseTypes.split(",")) {
+            result.add(DatabaseType.valueOf(each));
+        }
+        return result;
     }
 }

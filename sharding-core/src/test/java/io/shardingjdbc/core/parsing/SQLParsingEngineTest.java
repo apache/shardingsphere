@@ -25,12 +25,9 @@ import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserAssertHelper;
 import io.shardingjdbc.core.parsing.parser.jaxb.helper.ParserJAXBHelper;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLPlaceholderUtil;
-import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.RequiredArgsConstructor;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -39,37 +36,20 @@ import org.junit.runners.Parameterized.Parameters;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @RunWith(Parameterized.class)
-public final class SQLParsingEngineTest {
-    
-    private static ShardingRule shardingRule;
+public final class SQLParsingEngineTest extends AbstractBaseSQLParsingEngineTest {
     
     private final String testCaseName;
     
     private final DatabaseType databaseType;
     
     private final Assert assertObj;
-    
-    @BeforeClass
-    public static void setUp() throws IOException {
-        shardingRule = buildShardingRule();
-    }
-    
-    private static ShardingRule buildShardingRule() throws IOException {
-        URL url = SQLParsingEngineTest.class.getClassLoader().getResource("yaml/parser-rule.yaml");
-        Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
-        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
-        return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
-    }
     
     @Parameters(name = "{0}In{1}")
     public static Collection<Object[]> getTestParameters() throws JAXBException {
@@ -94,7 +74,7 @@ public final class SQLParsingEngineTest {
     
     private static List<Object[]> getTestParameters(final Assert assertObj) {
         List<Object[]> result = new LinkedList<>();
-        for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(assertObj.getId()))) {
+        for (DatabaseType each : getDatabaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(assertObj.getId()))) {
             result.add(getTestParameters(assertObj, each));
         }
         return result;
@@ -108,27 +88,16 @@ public final class SQLParsingEngineTest {
         return result;
     }
     
-    private static Collection<DatabaseType> getDataBaseTypes(final Collection<String> databaseTypes) {
-        if (databaseTypes.isEmpty()) {
-            return Arrays.asList(DatabaseType.values());
-        }
-        Collection<DatabaseType> result = new LinkedHashSet<>(databaseTypes.size());
-        for (String each : databaseTypes) {
-            result.add(DatabaseType.valueOf(each));
-        }
-        return result;
-    }
-    
     @Test
     public void assertLiteralSQL() {
         assertSQLStatement(new SQLParsingEngine(databaseType, SQLPlaceholderUtil.replaceStatement(
-                SQLCasesLoader.getInstance().getSQL(testCaseName), ParserJAXBHelper.getParameters(assertObj.getParameters())), shardingRule).parse(), false);
+                SQLCasesLoader.getInstance().getSQL(testCaseName), ParserJAXBHelper.getParameters(assertObj.getParameters())), getShardingRule()).parse(), false);
     }
     
     @Test
     public void assertPlaceholderSQL() {
-        for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(testCaseName))) {
-            assertSQLStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLCasesLoader.getInstance().getSQL(testCaseName)), shardingRule).parse(), true);
+        for (DatabaseType each : getDatabaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(testCaseName))) {
+            assertSQLStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLCasesLoader.getInstance().getSQL(testCaseName)), getShardingRule()).parse(), true);
         }
     }
     

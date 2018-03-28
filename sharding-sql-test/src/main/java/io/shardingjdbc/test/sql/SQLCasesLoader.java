@@ -18,8 +18,6 @@
 package io.shardingjdbc.test.sql;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -30,10 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -74,7 +71,7 @@ public final class SQLCasesLoader {
     }
     
     private static Map<String, SQLCase> loadSQLCasesFromJar(final String path, final File file) throws IOException, JAXBException {
-        Map<String, SQLCase> result = new HashMap<>(65536, 1);
+        Map<String, SQLCase> result = new TreeMap<>();
         try (JarFile jar = new JarFile(file)) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
@@ -88,7 +85,7 @@ public final class SQLCasesLoader {
     }
     
     private static Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) throws FileNotFoundException, JAXBException {
-        Map<String, SQLCase> result = new HashMap<>(65536, 1);
+        Map<String, SQLCase> result = new TreeMap<>();
         URL url = SQLCasesLoader.class.getClassLoader().getResource(path);
         if (null == url) {
             return result;
@@ -176,9 +173,8 @@ public final class SQLCasesLoader {
      * @param id SQL ID
      * @return database types
      */
-    public Collection<String> getDatabaseTypes(final String id) {
+    public String getDatabaseTypes(final String id) {
         Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of id: " + id);
-        String databaseTypes = sqlCaseMap.get(id).getDatabaseTypes();
-        return Strings.isNullOrEmpty(databaseTypes) ? Collections.<String>emptyList() : Splitter.on(',').trimResults().splitToList(databaseTypes);
+        return sqlCaseMap.get(id).getDatabaseTypes();
     }
 }
