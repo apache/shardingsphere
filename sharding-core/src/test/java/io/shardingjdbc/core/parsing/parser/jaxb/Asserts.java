@@ -21,7 +21,7 @@ import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @XmlRootElement(name = "asserts")
@@ -29,5 +29,5 @@ import java.util.List;
 public final class Asserts {
     
     @XmlElement(name = "assert")
-    private List<Assert> asserts = new ArrayList<>();
+    private List<Assert> asserts = new LinkedList<>();
 }
