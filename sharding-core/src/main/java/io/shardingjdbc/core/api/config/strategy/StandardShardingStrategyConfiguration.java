@@ -17,13 +17,9 @@
 
 package io.shardingjdbc.core.api.config.strategy;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 import io.shardingjdbc.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
-import io.shardingjdbc.core.routing.strategy.ShardingAlgorithmFactory;
-import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
-import io.shardingjdbc.core.routing.strategy.standard.StandardShardingStrategy;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,28 +28,14 @@ import lombok.RequiredArgsConstructor;
  * 
  * @author zhangliang
  */
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
 public final class StandardShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
     private final String shardingColumn;
     
-    private final String preciseAlgorithmClassName;
+    private final PreciseShardingAlgorithm preciseShardingAlgorithm;
     
-    private final String rangeAlgorithmClassName;
-    
-    public StandardShardingStrategyConfiguration(final String shardingColumn, final String preciseAlgorithmClassName) {
-        this(shardingColumn, preciseAlgorithmClassName, null);
-    }
-    
-    @Override
-    public ShardingStrategy build() {
-        Preconditions.checkNotNull(shardingColumn, "Sharding column cannot be null.");
-        Preconditions.checkNotNull(preciseAlgorithmClassName, "Precise algorithm class cannot be null.");
-        if (Strings.isNullOrEmpty(rangeAlgorithmClassName)) {
-            return new StandardShardingStrategy(shardingColumn, ShardingAlgorithmFactory.newInstance(preciseAlgorithmClassName, PreciseShardingAlgorithm.class));
-        }
-        return new StandardShardingStrategy(shardingColumn, ShardingAlgorithmFactory.newInstance(preciseAlgorithmClassName, PreciseShardingAlgorithm.class), 
-                ShardingAlgorithmFactory.newInstance(rangeAlgorithmClassName, RangeShardingAlgorithm.class));
-    }
+    private RangeShardingAlgorithm rangeShardingAlgorithm;
 }

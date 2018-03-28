@@ -28,6 +28,7 @@ import io.shardingjdbc.core.integrate.fixture.ComplexKeysModuloDatabaseShardingA
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.fixture.IncrementKeyGenerator;
+import io.shardingjdbc.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -77,7 +78,7 @@ public abstract class AbstractShardingDatabaseOnlyTest extends AbstractSQLAssert
             orderTableRuleConfig.setLogicTable("t_order");
             orderTableRuleConfig.setLogicIndex("t_order_index");
             orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
-            orderTableRuleConfig.setKeyGeneratorClass(IncrementKeyGenerator.class.getName());
+            orderTableRuleConfig.setKeyGenerator(new IncrementKeyGenerator());
             shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
             TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
             orderItemTableRuleConfig.setLogicTable("t_order_item");
@@ -90,9 +91,9 @@ public abstract class AbstractShardingDatabaseOnlyTest extends AbstractSQLAssert
             shardingRuleConfig.getTableRuleConfigs().add(tempLogTableRuleConfig);
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", ComplexKeysModuloDatabaseShardingAlgorithm.class.getName()));
+            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", new ComplexKeysModuloDatabaseShardingAlgorithm()));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-            getShardingDataSources().put(each.getKey(), new ShardingDataSource(each.getValue(), shardingRuleConfig.build(each.getValue().keySet())));
+            getShardingDataSources().put(each.getKey(), new ShardingDataSource(each.getValue(), new ShardingRule(shardingRuleConfig, each.getValue().keySet())));
         }
         return getShardingDataSources();
     }

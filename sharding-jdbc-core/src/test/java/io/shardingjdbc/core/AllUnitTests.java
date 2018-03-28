@@ -21,7 +21,7 @@ import io.shardingjdbc.core.api.AllApiTests;
 import io.shardingjdbc.core.executor.AllExecutorTests;
 import io.shardingjdbc.core.jdbc.AllJDBCTests;
 import io.shardingjdbc.core.util.AllUtilTests;
-import io.shardingjdbc.core.yaml.AllYamlTests;
+import io.shardingjdbc.core.integrate.api.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

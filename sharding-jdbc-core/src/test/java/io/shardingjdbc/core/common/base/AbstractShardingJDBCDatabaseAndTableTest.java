@@ -78,17 +78,15 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             }
             orderItemTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderItemActualDataNodes));
             orderItemTableRuleConfig.setKeyGeneratorColumnName("item_id");
-            orderItemTableRuleConfig.setKeyGeneratorClass(IncrementKeyGenerator.class.getName());
+            orderItemTableRuleConfig.setKeyGenerator(new IncrementKeyGenerator());
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             TableRuleConfiguration configTableRuleConfig = new TableRuleConfiguration();
             configTableRuleConfig.setLogicTable("t_config");
             shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
-                    new StandardShardingStrategyConfiguration("user_id", PreciseOrderShardingAlgorithm.class.getName(), RangeOrderShardingAlgorithm.class.getName()));
-            shardingRuleConfig.setDefaultTableShardingStrategyConfig(
-                    new StandardShardingStrategyConfiguration("order_id", PreciseOrderShardingAlgorithm.class.getName(), RangeOrderShardingAlgorithm.class.getName()));
-            ShardingRule shardingRule = shardingRuleConfig.build(entry.getValue().keySet());
+            shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()));
+            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()));
+            ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, entry.getValue().keySet());
             getShardingDataSources().put(entry.getKey(), new ShardingDataSource(entry.getValue(), shardingRule));
         }
     }

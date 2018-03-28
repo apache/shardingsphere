@@ -19,6 +19,7 @@ package io.shardingjdbc.orchestration.internal.config;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
@@ -65,7 +66,8 @@ public final class ConfigurationListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources();
-                    shardingDataSource.renew(dataSourceMap, dataSourceService.getAvailableShardingRuleConfiguration().build(dataSourceMap.keySet()), configService.loadShardingProperties());
+                    shardingDataSource.renew(
+                            dataSourceMap, new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadShardingProperties());
                 }
             }
         });
@@ -84,7 +86,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), dataSourceService.getAvailableMasterSlaveRuleConfiguration().build());
+                    masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), dataSourceService.getAvailableMasterSlaveRuleConfiguration());
                 }
             }
         });

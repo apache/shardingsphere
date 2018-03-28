@@ -17,12 +17,18 @@
 
 package io.shardingjdbc.spring.namespace.parser;
 
+import com.google.common.base.Strings;
+import io.shardingjdbc.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.routing.strategy.ShardingAlgorithmFactory;
 import io.shardingjdbc.spring.namespace.constants.ShardingStrategyBeanDefinitionParserTag;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -59,15 +65,20 @@ public class ShardingStrategyBeanDefinition {
     private static AbstractBeanDefinition getStandardShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(StandardShardingStrategyConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.SHARDING_COLUMN_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.PRECISE_ALGORITHM_CLASS_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.RANGE_ALGORITHM_CLASS_ATTRIBUTE));
+        factory.addConstructorArgValue(
+                ShardingAlgorithmFactory.newInstance(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.PRECISE_ALGORITHM_CLASS_ATTRIBUTE), PreciseShardingAlgorithm.class));
+        if (!Strings.isNullOrEmpty(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.RANGE_ALGORITHM_CLASS_ATTRIBUTE))) {
+            factory.addConstructorArgValue(
+                    ShardingAlgorithmFactory.newInstance(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.RANGE_ALGORITHM_CLASS_ATTRIBUTE), RangeShardingAlgorithm.class));
+        }
         return factory.getBeanDefinition();
     }
     
     private static AbstractBeanDefinition getComplexShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ComplexShardingStrategyConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.SHARDING_COLUMNS_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.ALGORITHM_CLASS_ATTRIBUTE));
+        factory.addConstructorArgValue(
+                ShardingAlgorithmFactory.newInstance(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.ALGORITHM_CLASS_ATTRIBUTE), ComplexKeysShardingAlgorithm.class));
         return factory.getBeanDefinition();
     }
     
@@ -80,7 +91,8 @@ public class ShardingStrategyBeanDefinition {
     
     private static AbstractBeanDefinition getHintShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(HintShardingStrategyConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.ALGORITHM_CLASS_ATTRIBUTE));
+        factory.addConstructorArgValue(
+                ShardingAlgorithmFactory.newInstance(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.ALGORITHM_CLASS_ATTRIBUTE), HintShardingAlgorithm.class));
         return factory.getBeanDefinition();
     }
     

@@ -19,6 +19,7 @@ package io.shardingjdbc.core.rule;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import io.shardingjdbc.core.exception.ShardingConfigurationException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -70,14 +71,14 @@ public final class BindingTableRule {
             }
         }
         if (-1 == index) {
-            throw new ShardingRuleException("Actual table [%s].[%s] is not in table config", dataSource, otherActualTable);
+            throw new ShardingConfigurationException("Actual table [%s].[%s] is not in table config", dataSource, otherActualTable);
         }
         for (TableRule each : tableRules) {
             if (each.getLogicTable().equals(logicTable.toLowerCase())) {
                 return each.getActualDataNodes().get(index).getTableName().toLowerCase();
             }
         }
-        throw new ShardingRuleException("Cannot find binding actual table, data source: %s, logic table: %s, other actual table: %s", dataSource, logicTable, otherActualTable);
+        throw new ShardingConfigurationException("Cannot find binding actual table, data source: %s, logic table: %s, other actual table: %s", dataSource, logicTable, otherActualTable);
     }
     
     Collection<String> getAllLogicTables() {

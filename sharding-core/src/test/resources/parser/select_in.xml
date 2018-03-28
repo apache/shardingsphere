@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<asserts>
-    <assert id="assertSelectInWithNullParameter" parameters="1,null">
+<parser-asserts>
+    <parser-assert sql-case-id="assertSelectInWithNullParameter" parameters="1,null">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -10,5 +10,5 @@
         <order-by-columns>
             <order-by-column name="order_id" order-by-type="ASC" />
         </order-by-columns>
-    </assert>
-</asserts>
+    </parser-assert>
+</parser-asserts>

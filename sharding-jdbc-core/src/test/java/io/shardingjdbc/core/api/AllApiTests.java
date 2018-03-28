@@ -23,8 +23,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         ShardingDataSourceFactoryTest.class, 
-        MasterSlaveDataSourceFactoryTest.class,
-        HintManagerTest.class
+        MasterSlaveDataSourceFactoryTest.class
     })
 public class AllApiTests {
 }

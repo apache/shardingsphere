@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.rule;
 
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
+import io.shardingjdbc.core.exception.ShardingConfigurationException;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -45,9 +46,14 @@ public final class BindingTableRuleTest {
         assertThat(createBindingTableRule().getBindingActualTable("ds1", "Sub_Logic_Table", "table_1"), is("sub_table_1"));
     }
     
-    @Test(expected = ShardingRuleException.class)
+    @Test(expected = ShardingConfigurationException.class)
     public void assertGetBindingActualTablesFailureWhenNotFound() {
         createBindingTableRule().getBindingActualTable("no_ds", "Sub_Logic_Table", "table_1");
+    }
+    
+    @Test(expected = ShardingConfigurationException.class)
+    public void assertGetBindingActualTablesFailureWhenLogicTableNotFound() {
+        createBindingTableRule().getBindingActualTable("ds0", "No_Logic_Table", "table_1");
     }
     
     @Test
@@ -72,14 +78,14 @@ public final class BindingTableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..1}");
-        return tableRuleConfig.build(createDataSourceNames());
+        return new TableRule(tableRuleConfig, createDataSourceNames());
     }
     
     private TableRule createSubTableRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("SUB_LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.sub_table_${0..1}");
-        return tableRuleConfig.build(createDataSourceNames());
+        return new TableRule(tableRuleConfig, createDataSourceNames());
     }
     
     private Collection<String> createDataSourceNames() {

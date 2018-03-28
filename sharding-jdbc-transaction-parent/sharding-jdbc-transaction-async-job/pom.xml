@@ -53,12 +53,12 @@
                     <finalName>${project.artifactId}-${project.parent.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptors>
-                        <descriptor>src/main/resources/assemblies/assembly.xml</descriptor>
+                        <descriptor>src/main/resources/assembly/assembly.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
+                        <id>assembly</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>

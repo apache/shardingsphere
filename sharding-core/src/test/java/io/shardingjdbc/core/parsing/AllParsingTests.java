@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing;
 
+import io.shardingjdbc.core.parsing.integrate.AllParsingIntegrateTests;
 import io.shardingjdbc.core.parsing.lexer.AllLexerTests;
 import io.shardingjdbc.core.parsing.parser.context.OrderItemTest;
 import io.shardingjdbc.core.parsing.parser.sql.AllStatementParserTests;
@@ -25,12 +26,11 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        AllLexerTests.class,
-        AllStatementParserTests.class,
-        SQLParsingEngineTest.class,
-        UnsupportedSQLParsingEngineTest.class,
-        SQLJudgeEngineTest.class,
-        OrderItemTest.class
+        AllLexerTests.class, 
+        AllStatementParserTests.class, 
+        SQLJudgeEngineTest.class, 
+        OrderItemTest.class, 
+        AllParsingIntegrateTests.class
     })
 public class AllParsingTests {
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<asserts>
-    <assert id="assertSelectWithOrderBy">
+<parser-asserts>
+    <parser-assert sql-case-id="assertSelectWithOrderBy">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
@@ -11,9 +11,9 @@
             <order-by-column owner="o" name="order_id" order-by-type="ASC" />
             <order-by-column index="2" order-by-type="DESC" />
         </order-by-columns>
-    </assert>
+    </parser-assert>
     
-    <assert id="assertSelectWithOrderByForIndex">
+    <parser-assert sql-case-id="assertSelectWithOrderByForIndex">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -31,9 +31,9 @@
             <order-by-column owner="o" alias="ORDER_BY_DERIVED_0" name="order_id" order-by-type="DESC" />
             <order-by-column index="1" order-by-type="ASC" />
         </order-by-columns>
-    </assert>
+    </parser-assert>
     
-    <assert id="assertSelectWithOrderByForAlias">
+    <parser-assert sql-case-id="assertSelectWithOrderByForAlias">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
@@ -43,9 +43,9 @@
         <order-by-columns>
             <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-by-type="ASC" />
         </order-by-columns>
-    </assert>
+    </parser-assert>
 
-    <assert id="assertSelectWithOrderByForDate">
+    <parser-assert sql-case-id="assertSelectWithOrderByForDate">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -66,10 +66,10 @@
             <order-by-column owner="o" alias="ORDER_BY_DERIVED_1" name="order_id" order-by-type="DESC" />
             <order-by-column owner="i" alias="ORDER_BY_DERIVED_2" name="item_id" order-by-type="ASC" />
         </order-by-columns>
-    </assert>
+    </parser-assert>
     
     <!-- //TODO add order-by-null-type -->
-    <assert id="assertSelectWithOrderByForNullsFirst">
+    <parser-assert sql-case-id="assertSelectWithOrderByForNullsFirst">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
@@ -79,10 +79,10 @@
         <order-by-columns>
             <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-by-type="ASC" />
         </order-by-columns>
-    </assert>
+    </parser-assert>
     
     <!-- //TODO add order-by-null-type -->
-    <assert id="assertSelectWithOrderByForNullsLast">
+    <parser-assert sql-case-id="assertSelectWithOrderByForNullsLast">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
@@ -92,5 +92,5 @@
         <order-by-columns>
             <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-by-type="ASC" />
         </order-by-columns>
-    </assert>
-</asserts>
+    </parser-assert>
+</parser-asserts>

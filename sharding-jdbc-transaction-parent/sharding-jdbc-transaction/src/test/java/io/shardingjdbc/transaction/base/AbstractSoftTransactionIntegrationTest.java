@@ -52,7 +52,7 @@ public abstract class AbstractSoftTransactionIntegrationTest {
         tableRuleConfig.setLogicTable("transaction_test");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        ShardingRule shardingRule = shardingRuleConfig.build(dataSourceMap.keySet());
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         shardingDataSource = new ShardingDataSource(dataSourceMap, shardingRule);
         createTable(shardingDataSource);
         transactionDataSource = createTransactionLogDataSource();

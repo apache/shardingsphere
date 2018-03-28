@@ -17,9 +17,13 @@
 
 package io.shardingjdbc.core.rule;
 
+import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.keygen.KeyGenerator;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
+import io.shardingjdbc.core.routing.strategy.ShardingStrategyFactory;
+import io.shardingjdbc.core.util.InlineExpressionParser;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -51,16 +55,20 @@ public final class TableRule {
     
     private final String logicIndex;
     
-    public TableRule(final String logicTable, final List<String> actualDataNodes, final Collection<String> dataSourceNames,
-                     final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy, 
-                     final String generateKeyColumn, final KeyGenerator keyGenerator, final String logicIndex) {
-        this.logicTable = logicTable.toLowerCase();
-        this.actualDataNodes = null == actualDataNodes || actualDataNodes.isEmpty() ? generateDataNodes(logicTable, dataSourceNames) : generateDataNodes(actualDataNodes, dataSourceNames);
-        this.databaseShardingStrategy = databaseShardingStrategy;
-        this.tableShardingStrategy = tableShardingStrategy;
-        this.generateKeyColumn = generateKeyColumn;
-        this.keyGenerator = keyGenerator;
-        this.logicIndex = null == logicIndex ? null : logicIndex.toLowerCase();
+    public TableRule(final TableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames) {
+        Preconditions.checkNotNull(tableRuleConfig.getLogicTable(), "Logic table cannot be null.");
+        logicTable = tableRuleConfig.getLogicTable().toLowerCase();
+        List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).evaluate();
+        actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
+        databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
+        tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
+        generateKeyColumn = tableRuleConfig.getKeyGeneratorColumnName();
+        keyGenerator = tableRuleConfig.getKeyGenerator();
+        logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
+    }
+    
+    private boolean isEmptyDataNodes(final List<String> dataNodes) {
+        return null == dataNodes || dataNodes.isEmpty();
     }
     
     private List<DataNode> generateDataNodes(final String logicTable, final Collection<String> dataSourceNames) {

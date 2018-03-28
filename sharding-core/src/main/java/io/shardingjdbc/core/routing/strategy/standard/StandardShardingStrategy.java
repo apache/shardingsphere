@@ -17,13 +17,14 @@
 
 package io.shardingjdbc.core.routing.strategy.standard;
 
-import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 import io.shardingjdbc.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
+import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 
 import java.util.ArrayList;
@@ -43,16 +44,14 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     
     private final PreciseShardingAlgorithm preciseShardingAlgorithm;
     
-    private final Optional<RangeShardingAlgorithm> rangeShardingAlgorithm;
+    private final RangeShardingAlgorithm rangeShardingAlgorithm;
     
-    public StandardShardingStrategy(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm) {
-        this(shardingColumn, preciseShardingAlgorithm, null);
-    }
-    
-    public StandardShardingStrategy(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm, final RangeShardingAlgorithm rangeShardingAlgorithm) {
-        this.shardingColumn = shardingColumn;
-        this.preciseShardingAlgorithm = preciseShardingAlgorithm;
-        this.rangeShardingAlgorithm = Optional.fromNullable(rangeShardingAlgorithm);
+    public StandardShardingStrategy(final StandardShardingStrategyConfiguration standardShardingStrategyConfig) {
+        Preconditions.checkNotNull(standardShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
+        Preconditions.checkNotNull(standardShardingStrategyConfig.getPreciseShardingAlgorithm(), "precise sharding algorithm cannot be null.");
+        shardingColumn = standardShardingStrategyConfig.getShardingColumn();
+        preciseShardingAlgorithm = standardShardingStrategyConfig.getPreciseShardingAlgorithm();
+        rangeShardingAlgorithm = standardShardingStrategyConfig.getRangeShardingAlgorithm();
     }
     
     @Override
@@ -67,10 +66,10 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     
     @SuppressWarnings("unchecked")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<?> shardingValue) {
-        if (!rangeShardingAlgorithm.isPresent()) {
+        if (null == rangeShardingAlgorithm) {
             throw new UnsupportedOperationException("Cannot find range sharding strategy in sharding rule.");
         }
-        return rangeShardingAlgorithm.get().doSharding(availableTargetNames, shardingValue);
+        return rangeShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
     }
     
     @SuppressWarnings("unchecked")

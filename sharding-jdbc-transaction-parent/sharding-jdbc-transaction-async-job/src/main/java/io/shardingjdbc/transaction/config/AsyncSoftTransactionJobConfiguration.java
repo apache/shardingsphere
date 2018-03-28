@@ -29,27 +29,27 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class AsyncSoftTransactionJobConfiguration {
-
+    
     /**
      * Job name.
      */
     private String name = "AsyncSoftTransaction";
-
+    
     /**
      * Cron expression for trigger job.
      */
     private String cron = "0/5 * * * * ?";
-
+    
     /**
      * Transaction logs fetch data count.
      */
     private int transactionLogFetchDataCount = 100;
-
+    
     /**
      * Max delivery try times.
      */
     private int maxDeliveryTryTimes = 3;
-
+    
     /**
      * Delay millis for asynchronized delivery.
      */

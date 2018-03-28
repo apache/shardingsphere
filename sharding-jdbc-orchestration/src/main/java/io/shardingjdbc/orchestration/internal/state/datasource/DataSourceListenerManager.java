@@ -21,6 +21,7 @@ import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingjdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingjdbc.orchestration.internal.state.StateNode;
@@ -61,7 +62,8 @@ public final class DataSourceListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
                     Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources();
-                    shardingDataSource.renew(dataSourceMap, dataSourceService.getAvailableShardingRuleConfiguration().build(dataSourceMap.keySet()), configService.loadShardingProperties());
+                    shardingDataSource.renew(
+                            dataSourceMap, new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadShardingProperties());
                 }
             }
         });
@@ -78,7 +80,7 @@ public final class DataSourceListenerManager implements ListenerManager {
                     if (masterSlaveRuleConfiguration.getSlaveDataSourceNames().isEmpty()) {
                         throw new ShardingJdbcException("No available slave datasource, can't apply the configuration!");
                     } 
-                    masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), masterSlaveRuleConfiguration.build());
+                    masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), masterSlaveRuleConfiguration);
                 }
             }
         });
