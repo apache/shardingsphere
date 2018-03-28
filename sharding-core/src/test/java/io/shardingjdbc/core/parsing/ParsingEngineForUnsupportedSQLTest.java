@@ -50,9 +50,7 @@ public final class ParsingEngineForUnsupportedSQLTest {
     
     private String testCaseName;
     
-    private String sql;
-    
-    private DatabaseType dbType;
+    private DatabaseType databaseType;
     
     @BeforeClass
     public static void setUp() throws IOException {
@@ -66,10 +64,10 @@ public final class ParsingEngineForUnsupportedSQLTest {
         return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
     }
     
-    @Parameters(name = "{0}In{2}")
+    @Parameters(name = "{0}In{1}")
     public static Collection<Object[]> getTestParameters() {
         Collection<Object[]> result = new ArrayList<>();
-        for (SQLCase each : SQLCasesLoader.getInstance().getUnsupportedSQLCaseMap().values()) {
+        for (SQLCase each : SQLCasesLoader.getInstance().getAllUnsupportedSQLCases()) {
             result.addAll(getTestParameters(each));
         }
         return result;
@@ -78,10 +76,9 @@ public final class ParsingEngineForUnsupportedSQLTest {
     private static Collection<Object[]> getTestParameters(final SQLCase sqlCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
-            Object[] parameters = new Object[3];
+            Object[] parameters = new Object[2];
             parameters[0] = sqlCase.getId();
-            parameters[1] = sqlCase.getValue();
-            parameters[2] = each;
+            parameters[1] = each;
             result.add(parameters);
         }
         return result;
@@ -99,7 +96,7 @@ public final class ParsingEngineForUnsupportedSQLTest {
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
-    public void assertUnsupportedSQL() throws IOException {
-        new SQLParsingEngine(dbType, sql, shardingRule).parse();
+    public void assertUnsupportedSQL() {
+        new SQLParsingEngine(databaseType, SQLCasesLoader.getInstance().getUnsupportedSQL(testCaseName), shardingRule).parse();
     }
 }

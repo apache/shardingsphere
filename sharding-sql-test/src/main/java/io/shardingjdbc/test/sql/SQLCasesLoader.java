@@ -20,7 +20,6 @@ package io.shardingjdbc.test.sql;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.Getter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -49,7 +48,6 @@ public final class SQLCasesLoader {
     
     private final Map<String, SQLCase> sqlCaseMap;
     
-    @Getter
     private final Map<String, SQLCase> unsupportedSQLCaseMap;
     
     private SQLCasesLoader() {
@@ -131,11 +129,42 @@ public final class SQLCasesLoader {
     }
     
     /**
+     * Get all SQL cases.
+     * 
+     * @return all SQL cases
+     */
+    public Collection<SQLCase> getAllSQLCases() {
+        return sqlCaseMap.values();
+    }
+    
+    /**
+     * Get all unsupported SQL cases.
+     *
+     * @return all unsupported SQL cases
+     */
+    public Collection<SQLCase> getAllUnsupportedSQLCases() {
+        return unsupportedSQLCaseMap.values();
+    }
+    
+    /**
      * Get SQL.
      * @param id SQL ID
      * @return SQL
      */
     public String getSQL(final String id) {
+        return getSQLFromMap(id, sqlCaseMap);
+    }
+    
+    /**
+     * Get unsupported SQL.
+     * @param id SQL ID
+     * @return SQL
+     */
+    public String getUnsupportedSQL(final String id) {
+        return getSQLFromMap(id, unsupportedSQLCaseMap);
+    }
+    
+    private String getSQLFromMap(final String id, final Map<String, SQLCase> sqlCaseMap) {
         Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of id: " + id);
         SQLCase statement = sqlCaseMap.get(id);
         return statement.getValue();
