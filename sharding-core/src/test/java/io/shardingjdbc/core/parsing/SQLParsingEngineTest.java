@@ -105,13 +105,13 @@ public final class SQLParsingEngineTest {
     }
     
     @Test
-    public void assertStatement() throws IOException {
+    public void assertLiteralSQL() throws IOException {
         assertSQLStatement(new SQLParsingEngine(databaseType, SQLPlaceholderUtil.replaceStatement(
                 SQLCasesLoader.getInstance().getSQL(testCaseName), ParserJAXBHelper.getParameters(assertObj.getParameters())), buildShardingRule()).parse(), false);
     }
     
     @Test
-    public void assertPreparedStatement() throws IOException {
+    public void assertPlaceholderSQL() throws IOException {
         for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(testCaseName))) {
             assertSQLStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLCasesLoader.getInstance().getSQL(testCaseName)), buildShardingRule()).parse(), true);
         }
