@@ -18,7 +18,7 @@
 package io.shardingjdbc.console.service;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.console.domain.SQLResponseResult;
+import io.shardingjdbc.console.domain.Response;
 import io.shardingjdbc.console.domain.SQLColumnInformation;
 import io.shardingjdbc.console.domain.SQLRowData;
 import io.shardingjdbc.console.domain.SQLResultData;
@@ -46,13 +46,13 @@ public class SQLWorkbench {
      * 
      * @param sql sql
      * @param userUUID user uuid
-     * @return SQLResponseResult
+     * @return response
      */
-    public SQLResponseResult execute(final String sql, final String userUUID) {
+    public Response execute(final String sql, final String userUUID) {
         List<SQLColumnInformation> sqlColumnInformationList = new ArrayList<>();
         List<SQLRowData> sqlRowDataList = new ArrayList<>();
         SQLResultData sqlResultData = new SQLResultData(0, 0L, sql, sqlColumnInformationList, sqlRowDataList);
-        SQLResponseResult result = new SQLResponseResult(-1, "", sqlResultData);
+        Response result = new Response(403, "", sqlResultData);
         Optional<Connection> connectionOptional = SessionRegistry.getInstance().findSession(userUUID);
     
         if (!connectionOptional.isPresent()) {
@@ -77,7 +77,7 @@ public class SQLWorkbench {
         }
     }
     
-    private SQLResponseResult countsFormatResult(final SQLResponseResult result, final SQLResultData sqlResultData, final Statement statement,
+    private Response countsFormatResult(final Response result, final SQLResultData sqlResultData, final Statement statement,
                                                  final long startTime) throws SQLException {
         sqlResultData.setAffectedRows(statement.getUpdateCount());
         result.setStatus(200);
@@ -85,7 +85,7 @@ public class SQLWorkbench {
         return result;
     }
     
-    private SQLResponseResult setsFormatResult(final SQLResponseResult result, final SQLResultData sqlResultData, final ResultSet resultSet,
+    private Response setsFormatResult(final Response result, final SQLResultData sqlResultData, final ResultSet resultSet,
                                                final long startTime) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
@@ -102,7 +102,7 @@ public class SQLWorkbench {
         }
     }
     
-    private void getRowData(final ResultSetMetaData resultSetMetaData, final SQLResponseResult sqlResponseResult, final SQLResultData sqlResultData,
+    private void getRowData(final ResultSetMetaData resultSetMetaData, final Response sqlResponseResult, final SQLResultData sqlResultData,
                             final ResultSet resultSet, final long startTime, final int columnCount) throws SQLException {
         List<SQLRowData> sqlRowDataList = sqlResultData.getSqlRowDataList();
         Integer rowCount = 0;

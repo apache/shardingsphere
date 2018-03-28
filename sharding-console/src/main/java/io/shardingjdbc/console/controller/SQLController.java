@@ -1,6 +1,6 @@
 package io.shardingjdbc.console.controller;
 
-import io.shardingjdbc.console.domain.SQLResponseResult;
+import io.shardingjdbc.console.domain.Response;
 import io.shardingjdbc.console.service.SQLWorkbench;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +29,7 @@ public class SQLController {
      * @return sql response result
      */
     @RequestMapping(value = "/sql", method = RequestMethod.POST)
-    public SQLResponseResult executeSql(final @RequestBody String sql, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID) {
+    public Response executeSql(final @RequestBody String sql, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID) {
         return sqlWorkbench.execute(sql, userUUID);
     }
 }
