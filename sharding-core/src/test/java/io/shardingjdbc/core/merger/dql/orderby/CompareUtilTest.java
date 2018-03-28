@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.dql.orderby;
 
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,56 +27,56 @@ public final class CompareUtilTest {
     
     @Test
     public void assertCompareToWhenBothNull() {
-        assertThat(CompareUtil.compareTo(null, null, OrderType.DESC, OrderType.ASC), is(0));
+        assertThat(CompareUtil.compareTo(null, null, OrderDirection.DESC, OrderDirection.ASC), is(0));
     }
     
     @Test
     public void assertCompareToWhenFirstValueIsNullForOrderByAscAndNullOrderByAsc() {
-        assertThat(CompareUtil.compareTo(null, 1, OrderType.ASC, OrderType.ASC), is(-1));
+        assertThat(CompareUtil.compareTo(null, 1, OrderDirection.ASC, OrderDirection.ASC), is(-1));
     }
     
     @Test
     public void assertCompareToWhenFirstValueIsNullForOrderByAscAndNullOrderByDesc() {
-        assertThat(CompareUtil.compareTo(null, 1, OrderType.ASC, OrderType.DESC), is(1));
+        assertThat(CompareUtil.compareTo(null, 1, OrderDirection.ASC, OrderDirection.DESC), is(1));
     }
     
     @Test
     public void assertCompareToWhenFirstValueIsNullForOrderByDescAndNullOrderByAsc() {
-        assertThat(CompareUtil.compareTo(null, 1, OrderType.DESC, OrderType.ASC), is(1));
+        assertThat(CompareUtil.compareTo(null, 1, OrderDirection.DESC, OrderDirection.ASC), is(1));
     }
     
     @Test
     public void assertCompareToWhenFirstValueIsNullForOrderByDescAndNullOrderByDesc() {
-        assertThat(CompareUtil.compareTo(null, 1, OrderType.DESC, OrderType.DESC), is(-1));
+        assertThat(CompareUtil.compareTo(null, 1, OrderDirection.DESC, OrderDirection.DESC), is(-1));
     }
     
     @Test
     public void assertCompareToWhenSecondValueIsNullForOrderByAscAndNullOrderByAsc() {
-        assertThat(CompareUtil.compareTo(1, null, OrderType.ASC, OrderType.ASC), is(1));
+        assertThat(CompareUtil.compareTo(1, null, OrderDirection.ASC, OrderDirection.ASC), is(1));
     }
     
     @Test
     public void assertCompareToWhenSecondValueIsNullForOrderByAscAndNullOrderByDesc() {
-        assertThat(CompareUtil.compareTo(1, null, OrderType.ASC, OrderType.DESC), is(-1));
+        assertThat(CompareUtil.compareTo(1, null, OrderDirection.ASC, OrderDirection.DESC), is(-1));
     }
     
     @Test
     public void assertCompareToWhenSecondValueIsNullForOrderByDescAndNullOrderByAsc() {
-        assertThat(CompareUtil.compareTo(1, null, OrderType.DESC, OrderType.ASC), is(-1));
+        assertThat(CompareUtil.compareTo(1, null, OrderDirection.DESC, OrderDirection.ASC), is(-1));
     }
     
     @Test
     public void assertCompareToWhenSecondValueIsNullForOrderByDescAndNullOrderByDesc() {
-        assertThat(CompareUtil.compareTo(1, null, OrderType.DESC, OrderType.DESC), is(1));
+        assertThat(CompareUtil.compareTo(1, null, OrderDirection.DESC, OrderDirection.DESC), is(1));
     }
     
     @Test
     public void assertCompareToWhenAsc() {
-        assertThat(CompareUtil.compareTo(1, 2, OrderType.ASC, OrderType.ASC), is(-1));
+        assertThat(CompareUtil.compareTo(1, 2, OrderDirection.ASC, OrderDirection.ASC), is(-1));
     }
     
     @Test
     public void assertCompareToWhenDesc() {
-        assertThat(CompareUtil.compareTo(1, 2, OrderType.DESC, OrderType.ASC), is(1));
+        assertThat(CompareUtil.compareTo(1, 2, OrderDirection.DESC, OrderDirection.ASC), is(1));
     }
 }

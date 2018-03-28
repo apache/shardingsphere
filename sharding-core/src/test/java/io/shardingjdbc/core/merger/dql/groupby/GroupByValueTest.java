@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.dql.groupby;
 
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import io.shardingjdbc.core.merger.fixture.TestQueryResult;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import org.junit.Before;
@@ -49,7 +49,7 @@ public final class GroupByValueTest {
     @Test
     public void assertGetGroupByValues() throws SQLException {
         List<?> actual = new GroupByValue(
-                new TestQueryResult(resultSet), Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(3, OrderType.DESC, OrderType.ASC))).getGroupValues();
+                new TestQueryResult(resultSet), Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(3, OrderDirection.DESC, OrderDirection.ASC))).getGroupValues();
         List<?> expected = Arrays.asList("1", "3");
         assertTrue(actual.equals(expected));
     }

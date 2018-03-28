@@ -192,9 +192,9 @@ public final class SQLRewriteEngine {
         for (OrderItem each : selectStatement.getOrderByItems()) {
             String columnLabel = SQLUtil.getOriginalValue(each.getColumnLabel(), databaseType);
             if (0 == i) {
-                orderByLiterals.append(columnLabel).append(" ").append(each.getType().name());
+                orderByLiterals.append(columnLabel).append(" ").append(each.getOrderDirection().name());
             } else {
-                orderByLiterals.append(",").append(columnLabel).append(" ").append(each.getType().name());
+                orderByLiterals.append(",").append(columnLabel).append(" ").append(each.getOrderDirection().name());
             }
             i++;
         }

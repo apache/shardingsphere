@@ -212,7 +212,7 @@ public class ParserAssertHelper {
         for (OrderItem each : actual) {
             OrderItem expectedOrderItem = orderByColumns.next();
             // TODO assert nullOrderType
-            assertTrue(EqualsBuilder.reflectionEquals(expectedOrderItem, each, "nullOrderType"));
+            assertTrue(EqualsBuilder.reflectionEquals(expectedOrderItem, each, "nullOrderDirection"));
         }
         assertFalse(orderByColumns.hasNext());
     }
@@ -222,7 +222,7 @@ public class ParserAssertHelper {
         for (OrderItem each : actual) {
             OrderItem groupByColumn = groupByColumns.next();
             // TODO assert nullOrderType
-            assertTrue(EqualsBuilder.reflectionEquals(groupByColumn, each, "nullOrderType"));
+            assertTrue(EqualsBuilder.reflectionEquals(groupByColumn, each, "nullOrderDirection"));
         }
         assertFalse(groupByColumns.hasNext());
     }

@@ -22,7 +22,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import io.shardingjdbc.core.constant.AggregationType;
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
@@ -81,14 +81,14 @@ public final class ParserJAXBHelper {
                 public OrderItem apply(final OrderByColumn input) {
                     if (Strings.isNullOrEmpty(input.getName())) {
                         // TODO nullOrderType should config in xml
-                        return new OrderItem(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase()), OrderType.ASC);
+                        return new OrderItem(input.getIndex(), OrderDirection.valueOf(input.getOrderByType().toUpperCase()), OrderDirection.ASC);
                     }
                     if (Strings.isNullOrEmpty(input.getOwner())) {
                         // TODO nullOrderType should config in xml
-                        return new OrderItem(input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), OrderType.ASC, Optional.fromNullable(input.getAlias()));
+                        return new OrderItem(input.getName(), OrderDirection.valueOf(input.getOrderByType().toUpperCase()), OrderDirection.ASC, Optional.fromNullable(input.getAlias()));
                     }
                     // TODO nullOrderType should config in xml
-                    return new OrderItem(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), OrderType.ASC, Optional.fromNullable(input.getAlias()));
+                    return new OrderItem(input.getOwner(), input.getName(), OrderDirection.valueOf(input.getOrderByType().toUpperCase()), OrderDirection.ASC, Optional.fromNullable(input.getAlias()));
                 }
             });
             result.getOrderByItems().addAll(orderItems);
@@ -100,10 +100,10 @@ public final class ParserJAXBHelper {
                 public OrderItem apply(final GroupByColumn input) {
                     if (null == input.getOwner()) {
                         // TODO nullOrderType should config in xml
-                        return new OrderItem(input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), OrderType.ASC, Optional.fromNullable(input.getAlias()));
+                        return new OrderItem(input.getName(), OrderDirection.valueOf(input.getOrderByType().toUpperCase()), OrderDirection.ASC, Optional.fromNullable(input.getAlias()));
                     }
                     // TODO nullOrderType should config in xml
-                    return new OrderItem(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), OrderType.ASC, Optional.fromNullable(input.getAlias()));
+                    return new OrderItem(input.getOwner(), input.getName(), OrderDirection.valueOf(input.getOrderByType().toUpperCase()), OrderDirection.ASC, Optional.fromNullable(input.getAlias()));
                 }
             }));
         }

@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.parsing.parser.context;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -38,36 +38,36 @@ public final class OrderItem {
     
     private final Optional<String> name;
     
-    private final OrderType type;
+    private final OrderDirection orderDirection;
     
-    private final OrderType nullOrderType;
+    private final OrderDirection nullOrderDirection;
     
     private int index = -1;
     
     private Optional<String> alias;
     
-    public OrderItem(final String name, final OrderType type, final OrderType nullOrderType, final Optional<String> alias) {
+    public OrderItem(final String name, final OrderDirection orderDirection, final OrderDirection nullOrderDirection, final Optional<String> alias) {
         this.owner = Optional.absent();
         this.name = Optional.of(name);
-        this.type = type;
-        this.nullOrderType = nullOrderType;
+        this.orderDirection = orderDirection;
+        this.nullOrderDirection = nullOrderDirection;
         this.alias = alias;
     }
     
-    public OrderItem(final String owner, final String name, final OrderType type, final OrderType nullOrderType, final Optional<String> alias) {
+    public OrderItem(final String owner, final String name, final OrderDirection orderDirection, final OrderDirection nullOrderDirection, final Optional<String> alias) {
         this.owner = Optional.of(owner);
         this.name = Optional.of(name);
-        this.type = type;
-        this.nullOrderType = nullOrderType;
+        this.orderDirection = orderDirection;
+        this.nullOrderDirection = nullOrderDirection;
         this.alias = alias;
     }
     
-    public OrderItem(final int index, final OrderType type, final OrderType nullOrderType) {
+    public OrderItem(final int index, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         owner = Optional.absent();
         name = Optional.absent();
         this.index = index;
-        this.type = type;
-        this.nullOrderType = nullOrderType;
+        this.orderDirection = orderDirection;
+        this.nullOrderDirection = nullOrderDirection;
         alias = Optional.absent();
     }
     
@@ -98,7 +98,7 @@ public final class OrderItem {
             return false;
         }
         OrderItem orderItem = (OrderItem) obj;
-        return type == orderItem.getType() && (columnLabelEquals(orderItem) || qualifiedNameEquals(orderItem) || indexEquals(orderItem));
+        return orderDirection == orderItem.getOrderDirection() && (columnLabelEquals(orderItem) || qualifiedNameEquals(orderItem) || indexEquals(orderItem));
     }
     
     private boolean columnLabelEquals(final OrderItem orderItem) {

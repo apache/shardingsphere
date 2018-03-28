@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.clause;
 
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
@@ -71,24 +71,24 @@ public class GroupByClauseParser implements SQLClauseParser {
     
     private void addGroupByItem(final SQLExpression sqlExpression, final SelectStatement selectStatement) {
         lexerEngine.unsupportedIfEqual(getUnsupportedKeywordBeforeGroupByItem());
-        OrderType orderByType = OrderType.ASC;
+        OrderDirection orderDirection = OrderDirection.ASC;
         if (lexerEngine.equalAny(DefaultKeyword.ASC)) {
             lexerEngine.nextToken();
         } else if (lexerEngine.skipIfEqual(DefaultKeyword.DESC)) {
-            orderByType = OrderType.DESC;
+            orderDirection = OrderDirection.DESC;
         }
         OrderItem orderItem;
         if (sqlExpression instanceof SQLPropertyExpression) {
             SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-            orderItem = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, OrderType.ASC,
+            orderItem = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderDirection, OrderDirection.ASC,
                     selectStatement.getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName() + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName()))));
         } else if (sqlExpression instanceof SQLIdentifierExpression) {
             SQLIdentifierExpression sqlIdentifierExpression = (SQLIdentifierExpression) sqlExpression;
-            orderItem = new OrderItem(
-                    SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), orderByType, OrderType.ASC, selectStatement.getAlias(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName())));
+            orderItem = new OrderItem(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), 
+                    orderDirection, OrderDirection.ASC, selectStatement.getAlias(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName())));
         } else if (sqlExpression instanceof SQLIgnoreExpression) {
             SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
-            orderItem = new OrderItem(sqlIgnoreExpression.getExpression(), orderByType, OrderType.ASC, selectStatement.getAlias(sqlIgnoreExpression.getExpression()));
+            orderItem = new OrderItem(sqlIgnoreExpression.getExpression(), orderDirection, OrderDirection.ASC, selectStatement.getAlias(sqlIgnoreExpression.getExpression()));
         } else {
             return;
         }
