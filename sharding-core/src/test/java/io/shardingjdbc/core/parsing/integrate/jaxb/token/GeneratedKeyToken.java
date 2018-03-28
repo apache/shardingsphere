@@ -15,24 +15,23 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.LinkedList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class MultipleInsertValuesToken extends SQLToken {
+public final class GeneratedKeyToken extends SQLToken {
     
-    @XmlElementWrapper(name = "values")
-    @XmlElement(name = "value")
-    private List<String> values = new LinkedList<>();
+    @XmlAttribute(name = "begin-position-of-statement")
+    private int beginPositionOfStatement;
+    
+    @XmlAttribute(name = "begin-position-of-prepared-statement")
+    private int beginPositionOfPreparedStatement;
 }

@@ -15,23 +15,19 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb.root;
 
 import lombok.Getter;
-import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.LinkedList;
+import java.util.List;
 
+@XmlRootElement(name = "parser-asserts")
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public class IndexToken extends SQLToken {
+public final class ParserAsserts {
     
-    @XmlAttribute(name = "original-literals")
-    private String originalLiterals;
-    
-    @XmlAttribute(name = "table-name")
-    private String tableName;
+    @XmlElement(name = "parser-assert")
+    private List<ParserAssert> parserAsserts = new LinkedList<>();
 }

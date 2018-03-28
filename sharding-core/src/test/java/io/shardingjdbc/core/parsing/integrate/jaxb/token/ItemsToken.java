@@ -15,31 +15,24 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Condition {
+public class ItemsToken extends SQLToken {
     
-    @XmlAttribute(name = "column-name")
-    private String columnName;
-    
-    @XmlAttribute(name = "table-name")
-    private String tableName;
-    
-    @XmlAttribute
-    private String operator;
-    
-    @XmlElement(name = "value") 
-    private List<Value> values;
+    @XmlElementWrapper(name = "items")
+    @XmlElement(name = "item")
+    private List<String> items = new LinkedList<>();
 }

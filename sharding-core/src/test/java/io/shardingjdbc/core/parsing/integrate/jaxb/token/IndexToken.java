@@ -15,19 +15,23 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Conditions {
+public class IndexToken extends SQLToken {
     
-    @XmlElement(name = "condition")
-    private List<Condition> conditions;
+    @XmlAttribute(name = "original-literals")
+    private String originalLiterals;
+    
+    @XmlAttribute(name = "table-name")
+    private String tableName;
 }

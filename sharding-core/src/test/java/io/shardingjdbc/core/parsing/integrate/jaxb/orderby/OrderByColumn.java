@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb.orderby;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,14 +24,23 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class Table {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class OrderByColumn {
+    
+    @XmlAttribute
+    private String owner;
     
     @XmlAttribute
     private String name;
     
     @XmlAttribute
+    private Integer index;
+    
+    @XmlAttribute
     private String alias;
+    
+    @XmlAttribute(name = "order-by-type") 
+    private String orderByType;
 }

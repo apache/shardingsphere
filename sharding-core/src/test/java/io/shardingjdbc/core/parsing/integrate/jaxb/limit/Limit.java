@@ -15,19 +15,29 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb.limit;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Tables {
+public final class Limit {
     
-    @XmlElement(name = "table")
-    private List<Table> tables;
+    @XmlAttribute
+    private Integer offset;
+    
+    @XmlAttribute(name = "row-count")
+    private Integer rowCount;
+    
+    @XmlAttribute(name = "offset-index")
+    private Integer offsetParameterIndex;
+    
+    @XmlAttribute(name = "row-count-index")
+    private Integer rowCountParameterIndex;
 }

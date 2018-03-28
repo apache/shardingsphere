@@ -15,9 +15,11 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb;
+package io.shardingjdbc.core.parsing.integrate.tests;
 
 import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAsserts;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.helper;
+package io.shardingjdbc.core.parsing.integrate.asserts;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -27,9 +27,9 @@ import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
 import io.shardingjdbc.core.parsing.parser.context.table.Tables;
-import io.shardingjdbc.core.parsing.integrate.jaxb.ParserAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.GroupByColumn;
-import io.shardingjdbc.core.parsing.integrate.jaxb.OrderByColumn;
+import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumn;
+import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumn;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 
 import java.util.List;
@@ -54,12 +54,12 @@ public final class ParserJAXBHelper {
      * @param tables tables
      * @return tables
      */
-    public static Tables getTables(final io.shardingjdbc.core.parsing.integrate.jaxb.Tables tables) {
+    public static Tables getTables(final io.shardingjdbc.core.parsing.integrate.jaxb.table.Tables tables) {
         Tables result = new Tables();
         if (null == tables) {
             return result;
         }
-        for (io.shardingjdbc.core.parsing.integrate.jaxb.Table each : tables.getTables()) {
+        for (io.shardingjdbc.core.parsing.integrate.jaxb.table.Table each : tables.getTables()) {
             Table table = new Table(each.getName(), Optional.fromNullable(each.getAlias()));
             result.add(table);
         }
@@ -109,13 +109,13 @@ public final class ParserJAXBHelper {
         }
         if (null != assertObj.getAggregationSelectItems()) {
             List<AggregationSelectItem> selectItems = Lists.transform(assertObj.getAggregationSelectItems(),
-                    new Function<io.shardingjdbc.core.parsing.integrate.jaxb.AggregationSelectItem, AggregationSelectItem>() {
+                    new Function<io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItem, AggregationSelectItem>() {
                         
                         @Override
-                        public AggregationSelectItem apply(final io.shardingjdbc.core.parsing.integrate.jaxb.AggregationSelectItem input) {
+                        public AggregationSelectItem apply(final io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItem input) {
                             AggregationSelectItem result = new AggregationSelectItem(
                                     AggregationType.valueOf(input.getAggregationType().toUpperCase()), input.getInnerExpression(), Optional.fromNullable(input.getAlias()));
-                            for (io.shardingjdbc.core.parsing.integrate.jaxb.AggregationSelectItem each : input.getDerivedColumns()) {
+                            for (io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItem each : input.getDerivedColumns()) {
                                 result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(
                                         AggregationType.valueOf(each.getAggregationType().toUpperCase()), each.getInnerExpression(), Optional.fromNullable(each.getAlias())));
                             }

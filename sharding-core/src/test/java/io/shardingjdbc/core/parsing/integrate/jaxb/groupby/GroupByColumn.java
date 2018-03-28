@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb.groupby;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,17 +27,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Limit {
+public final class GroupByColumn {
     
     @XmlAttribute
-    private Integer offset;
+    private String owner;
     
-    @XmlAttribute(name = "row-count")
-    private Integer rowCount;
+    @XmlAttribute
+    private String name;
     
-    @XmlAttribute(name = "offset-index")
-    private Integer offsetParameterIndex;
+    @XmlAttribute
+    private String alias;
     
-    @XmlAttribute(name = "row-count-index")
-    private Integer rowCountParameterIndex;
+    @XmlAttribute(name = "order-by-type") 
+    private String orderByType;
 }

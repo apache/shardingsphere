@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate;
+package io.shardingjdbc.core.parsing.integrate.tests;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;

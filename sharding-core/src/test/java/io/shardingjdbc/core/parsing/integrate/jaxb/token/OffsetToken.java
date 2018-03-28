@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,11 +27,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class GeneratedKeyToken extends SQLToken {
+public class OffsetToken extends SQLToken {
     
-    @XmlAttribute(name = "begin-position-of-statement")
-    private int beginPositionOfStatement;
-    
-    @XmlAttribute(name = "begin-position-of-prepared-statement")
-    private int beginPositionOfPreparedStatement;
+    @XmlAttribute(name = "offset")
+    private int offset;
 }

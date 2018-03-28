@@ -15,14 +15,13 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate;
+package io.shardingjdbc.core.parsing.integrate.tests;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
-import io.shardingjdbc.core.parsing.integrate.jaxb.ParserAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.ParserAssertsLoader;
-import io.shardingjdbc.core.parsing.integrate.jaxb.helper.ParserAssertHelper;
-import io.shardingjdbc.core.parsing.integrate.jaxb.helper.ParserJAXBHelper;
+import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
+import io.shardingjdbc.core.parsing.integrate.asserts.ParserAssertHelper;
+import io.shardingjdbc.core.parsing.integrate.asserts.ParserJAXBHelper;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.util.SQLPlaceholderUtil;

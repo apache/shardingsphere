@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.core.parsing.integrate;
 
+import io.shardingjdbc.core.parsing.integrate.tests.IntegrateSupportedSQLParsingTest;
+import io.shardingjdbc.core.parsing.integrate.tests.IntegrateUnsupportedSQLParsingTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

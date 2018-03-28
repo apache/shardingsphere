@@ -15,29 +15,24 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb;
+package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class GroupByColumn {
+public class MultipleInsertValuesToken extends SQLToken {
     
-    @XmlAttribute
-    private String owner;
-    
-    @XmlAttribute
-    private String name;
-    
-    @XmlAttribute
-    private String alias;
-    
-    @XmlAttribute(name = "order-by-type") 
-    private String orderByType;
+    @XmlElementWrapper(name = "values")
+    @XmlElement(name = "value")
+    private List<String> values = new LinkedList<>();
 }

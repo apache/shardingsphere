@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate;
+package io.shardingjdbc.core.parsing.integrate.tests;
 
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.rule.ShardingRule;
