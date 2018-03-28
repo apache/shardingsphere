@@ -30,6 +30,7 @@ import io.shardingjdbc.core.util.SQLPlaceholderUtil;
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.RequiredArgsConstructor;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -50,11 +51,25 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public final class SQLParsingEngineTest {
     
+    private static ShardingRule shardingRule;
+    
     private final String testCaseName;
     
     private final DatabaseType databaseType;
     
     private final Assert assertObj;
+    
+    @BeforeClass
+    public static void setUp() throws IOException {
+        shardingRule = buildShardingRule();
+    }
+    
+    private static ShardingRule buildShardingRule() throws IOException {
+        URL url = SQLParsingEngineTest.class.getClassLoader().getResource("yaml/parser-rule.yaml");
+        Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
+        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
+        return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
+    }
     
     @Parameters(name = "{0}In{1}")
     public static Collection<Object[]> getTestParameters() throws JAXBException {
@@ -105,15 +120,15 @@ public final class SQLParsingEngineTest {
     }
     
     @Test
-    public void assertLiteralSQL() throws IOException {
+    public void assertLiteralSQL() {
         assertSQLStatement(new SQLParsingEngine(databaseType, SQLPlaceholderUtil.replaceStatement(
-                SQLCasesLoader.getInstance().getSQL(testCaseName), ParserJAXBHelper.getParameters(assertObj.getParameters())), buildShardingRule()).parse(), false);
+                SQLCasesLoader.getInstance().getSQL(testCaseName), ParserJAXBHelper.getParameters(assertObj.getParameters())), shardingRule).parse(), false);
     }
     
     @Test
-    public void assertPlaceholderSQL() throws IOException {
+    public void assertPlaceholderSQL() {
         for (DatabaseType each : getDataBaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(testCaseName))) {
-            assertSQLStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLCasesLoader.getInstance().getSQL(testCaseName)), buildShardingRule()).parse(), true);
+            assertSQLStatement(new SQLParsingEngine(each, SQLPlaceholderUtil.replacePreparedStatement(SQLCasesLoader.getInstance().getSQL(testCaseName)), shardingRule).parse(), true);
         }
     }
     
@@ -129,12 +144,5 @@ public final class SQLParsingEngineTest {
             ParserAssertHelper.assertAggregationSelectItem(expectedSqlStatement.getAggregationSelectItems(), selectStatement.getAggregationSelectItems());
             ParserAssertHelper.assertLimit(assertObj.getLimit(), selectStatement.getLimit(), isPreparedStatement);
         }
-    }
-    
-    private ShardingRule buildShardingRule() throws IOException {
-        URL url = SQLParsingEngineTest.class.getClassLoader().getResource("yaml/parser-rule.yaml");
-        Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
-        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
-        return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
     }
 }
