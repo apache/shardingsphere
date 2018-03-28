@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public final class Response {
+public final class WorkbenchResponse {
     
     private int status;
     
@@ -25,7 +25,7 @@ public final class Response {
      * @param responseCode  response code. 
      * @param responseMsg response message.
      */
-    public Response(final int responseCode, final String responseMsg) {
+    public WorkbenchResponse(final int responseCode, final String responseMsg) {
         status = responseCode;
         message = responseMsg;
     }

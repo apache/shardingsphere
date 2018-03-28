@@ -18,5 +18,5 @@ public final class SQLColumnInformation {
     
     private String columnTypeName;
     
-    private Integer columnSize;
+    private int columnSize;
 }
