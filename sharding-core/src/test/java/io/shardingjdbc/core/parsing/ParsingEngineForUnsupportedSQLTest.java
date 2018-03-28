@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import io.shardingjdbc.core.constant.DatabaseType;
@@ -26,6 +27,7 @@ import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import io.shardingjdbc.test.sql.SQLCase;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.AllArgsConstructor;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -33,6 +35,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -43,11 +46,25 @@ import java.util.Set;
 @RunWith(Parameterized.class)
 public final class ParsingEngineForUnsupportedSQLTest {
     
+    private static ShardingRule shardingRule;
+    
     private String testCaseName;
     
     private String sql;
     
     private DatabaseType dbType;
+    
+    @BeforeClass
+    public static void setUp() throws IOException {
+        shardingRule = buildShardingRule();
+    }
+    
+    private static ShardingRule buildShardingRule() throws IOException {
+        URL url = SQLParsingEngineTest.class.getClassLoader().getResource("yaml/parser-rule.yaml");
+        Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
+        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
+        return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
+    }
     
     @Parameters(name = "{0}In{2}")
     public static Collection<Object[]> getTestParameters() {
@@ -83,11 +100,6 @@ public final class ParsingEngineForUnsupportedSQLTest {
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void assertUnsupportedSQL() throws IOException {
-        new SQLParsingEngine(dbType, sql, buildShardingRule()).parse();
-    }
-    
-    private ShardingRule buildShardingRule() throws IOException {
-        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(SQLParsingEngineTest.class.getClassLoader().getResource("yaml/parser-rule.yaml").getFile()));
-        return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
+        new SQLParsingEngine(dbType, sql, shardingRule).parse();
     }
 }
