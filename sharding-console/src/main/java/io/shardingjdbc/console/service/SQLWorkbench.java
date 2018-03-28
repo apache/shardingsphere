@@ -97,21 +97,34 @@ public class SQLWorkbench {
     
     private void getColumnInfo(final ResultSetMetaData resultSetMetaData, final int columnCount, final SQLResultData sqlResultData) throws SQLException {
         List<SQLColumnInformation> sqlColumnInformationList = sqlResultData.getSqlColumnInformationList();
+        SQLColumnInformation sqlColumnInformation;
         for (int i = 1; i <= columnCount; i++) {
-            sqlColumnInformationList.add(new SQLColumnInformation(resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnTypeName(i), resultSetMetaData.getColumnDisplaySize(i)));
+            sqlColumnInformation = new SQLColumnInformation(resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnTypeName(i), resultSetMetaData.getColumnDisplaySize(i));
+            int maxTryTimes = 32;
+            while (sqlColumnInformationList.contains(sqlColumnInformation) && maxTryTimes > 0) {
+                changeColumnLabel(sqlColumnInformation);
+                maxTryTimes--;
+            }
+            sqlColumnInformationList.add(sqlColumnInformation);
         }
+    }
+    
+    private void changeColumnLabel(final SQLColumnInformation sqlColumnInformation) {
+        sqlColumnInformation.setColumnLabel(sqlColumnInformation.getColumnLabel() + "1");
     }
     
     private void getRowData(final ResultSetMetaData resultSetMetaData, final SQLResultData sqlResultData, final ResultSet resultSet,
                             final long startTime, final int columnCount) throws SQLException {
+        List<SQLColumnInformation> sqlColumnInformationList = sqlResultData.getSqlColumnInformationList();
         List<SQLRowData> sqlRowDataList = sqlResultData.getSqlRowDataList();
-        Integer rowCount = 0;
+        int rowCount = 0;
         
         while (resultSet.next()) {
             rowCount++;
             SQLRowData sqlRowData = new SQLRowData();
             for (int i = 1; i <= columnCount; i++) {
                 sqlRowData.getRowData().put(resultSetMetaData.getColumnLabel(i), resultSet.getString(i));
+                sqlRowData.getRowData().put(sqlColumnInformationList.get(i - 1).getColumnLabel(), resultSet.getString(i));
             }
             sqlRowDataList.add(sqlRowData);
         }
