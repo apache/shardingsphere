@@ -19,7 +19,7 @@ public final class SessionRegistry {
     
     private static final SessionRegistry INSTANCE = new SessionRegistry();
     
-    private static final Map<String, Connection> SESSIONS = new HashMap<>(128, 1);
+    private final Map<String, Connection> session = new HashMap<>(128, 1);
     
     /**
      * Get SessionRegistry instance.
@@ -36,10 +36,8 @@ public final class SessionRegistry {
      * @param sessionId session id
      * @return user and connection info
      */
-    public Optional<Connection> findSession(final String sessionId) {
-        synchronized (SESSIONS) {
-            return Optional.fromNullable(SESSIONS.get(sessionId));
-        }
+    public synchronized Optional<Connection> findSession(final String sessionId) {
+        return Optional.fromNullable(session.get(sessionId));
     }
     
     /**
@@ -48,10 +46,8 @@ public final class SessionRegistry {
      * @param sessionId session id
      * @param connection connection
      */
-    public void addSession(final String sessionId, final Connection connection) {
-        synchronized (SESSIONS) {
-            SESSIONS.put(sessionId, connection);
-        }
+    public synchronized void addSession(final String sessionId, final Connection connection) {
+        session.put(sessionId, connection);
     }
 
     /**
@@ -59,9 +55,7 @@ public final class SessionRegistry {
      * 
      * @param sessionId session id
      */
-    public void removeSession(final String sessionId) {
-        synchronized (SESSIONS) {
-            SESSIONS.remove(sessionId);
-        }
+    public synchronized void removeSession(final String sessionId) {
+        session.remove(sessionId);
     }
 }
