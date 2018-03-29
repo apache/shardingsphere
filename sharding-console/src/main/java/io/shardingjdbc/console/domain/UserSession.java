@@ -39,4 +39,7 @@ public final class UserSession {
     public void addWindowID(String windowID) {
         windowIDList.add(windowID);
     }
+    public void delWindowID(String windowID) {
+        windowIDList.remove(windowID);
+    }
 }

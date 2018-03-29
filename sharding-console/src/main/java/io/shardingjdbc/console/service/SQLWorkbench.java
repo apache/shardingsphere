@@ -49,12 +49,12 @@ public class SQLWorkbench {
      * @param userUUID user uuid
      * @return response
      */
-    public WorkbenchResponse execute(final String sql, final String userUUID) throws SQLExecuteException {
+    public WorkbenchResponse execute(final String sql, final String windowID) throws SQLExecuteException {
         List<SQLColumnInformation> sqlColumnInformationList = new ArrayList<>();
         List<SQLRowData> sqlRowDataList = new ArrayList<>();
         SQLResultData sqlResultData = new SQLResultData(0, 0L, sql, sqlColumnInformationList, sqlRowDataList);
         WorkbenchResponse result = new WorkbenchResponse(sqlResultData);
-        Optional<Connection> connectionOptional = WindowSessionRegistry.getInstance().findSession(userUUID);
+        Optional<Connection> connectionOptional = WindowSessionRegistry.getInstance().findSession(windowID);
 
         if (!connectionOptional.isPresent()) {
             throw new SQLExecuteException("The SQL execute window does not exist.");
