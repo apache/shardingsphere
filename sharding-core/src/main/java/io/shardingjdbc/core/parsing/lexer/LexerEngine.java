@@ -106,11 +106,10 @@ public final class LexerEngine {
      * skip all tokens that inside parentheses.
      */
     public void skipParentheses() {
-        int count = 0;
         if (Symbol.LEFT_PAREN == lexer.getCurrentToken().getType()) {
             lexer.nextToken();
             while (true) {
-                if (Assist.END == lexer.getCurrentToken().getType() || (Symbol.RIGHT_PAREN == lexer.getCurrentToken().getType() && 0 == count)) {
+                if (Assist.END == lexer.getCurrentToken().getType() || (Symbol.RIGHT_PAREN == lexer.getCurrentToken().getType())) {
                     break;
                 }
                 lexer.nextToken();
