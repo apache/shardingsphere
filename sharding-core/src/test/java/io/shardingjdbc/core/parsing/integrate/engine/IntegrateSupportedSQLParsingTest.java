@@ -38,9 +38,11 @@ import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -63,17 +65,17 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     }
     
     @Test
-    public void assertLiteralSQL() {
+    public void assertLiteralSQL() throws NoSuchFieldException, IllegalAccessException {
         assertSQLStatement(new SQLParsingEngine(
                 databaseType, sqlCasesLoader.getSupportedLiteralSQL(sqlCaseId, parserAssertsLoader.getParserAssert(sqlCaseId).getParameters()), getShardingRule()).parse(), false);
     }
     
     @Test
-    public void assertPlaceholderSQL() {
+    public void assertPlaceholderSQL() throws NoSuchFieldException, IllegalAccessException {
         assertSQLStatement(new SQLParsingEngine(databaseType, sqlCasesLoader.getSupportedPlaceholderSQL(sqlCaseId), getShardingRule()).parse(), true);
     }
     
-    private void assertSQLStatement(final SQLStatement actual, final boolean isPreparedStatement) {
+    private void assertSQLStatement(final SQLStatement actual, final boolean isPreparedStatement) throws NoSuchFieldException, IllegalAccessException {
         ParserAssert parserAssert = parserAssertsLoader.getParserAssert(sqlCaseId);
         assertTables(actual.getTables(), parserAssert.getTables());
         assertConditions(actual.getConditions(), parserAssert.getConditions());
@@ -109,7 +111,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         assertThat(actual.getAlias().orNull(), is(expected.getAlias()));
     }
     
-    private void assertConditions(final Conditions actual, final List<ConditionAssert> expected) {
+    private void assertConditions(final Conditions actual, final List<ConditionAssert> expected) throws NoSuchFieldException, IllegalAccessException {
         assertThat(actual.getConditions().size(), is(expected.size()));
         for (ConditionAssert each : expected) {
             Optional<Condition> conditionOptional = actual.find(new Column(each.getColumnName(), each.getTableName()));
@@ -118,18 +120,27 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertCondition(final Condition actual, final ConditionAssert expected) {
+    @SuppressWarnings("unchecked")
+    private void assertCondition(final Condition actual, final ConditionAssert expected) throws NoSuchFieldException, IllegalAccessException {
         assertThat(actual.getColumn().getName().toUpperCase(), is(expected.getColumnName().toUpperCase()));
         assertThat(actual.getColumn().getTableName().toUpperCase(), is(expected.getTableName().toUpperCase()));
         assertThat(actual.getOperator().name(), is(expected.getOperator()));
         int count = 0;
         for (Value each : expected.getValues()) {
-            if (!actual.getPositionValueMap().isEmpty()) {
-                assertThat(actual.getPositionValueMap().get(count), is((Comparable) each.getLiteralForAccurateType()));
-            } else if (!actual.getPositionIndexMap().isEmpty()) {
-                assertThat(actual.getPositionIndexMap().get(count), is(each.getIndex()));
+            Map<Integer, Comparable<?>> positionValueMap = (Map<Integer, Comparable<?>>) getField(actual, "positionValueMap");
+            Map<Integer, Integer> positionIndexMap = (Map<Integer, Integer>) getField(actual, "positionIndexMap");
+            if (!positionValueMap.isEmpty()) {
+                assertThat(positionValueMap.get(count), is((Comparable) each.getLiteralForAccurateType()));
+            } else if (!positionIndexMap.isEmpty()) {
+                assertThat(positionIndexMap.get(count), is(each.getIndex()));
             }
             count++;
         }
+    }
+    
+    private Object getField(final Object actual, final String fieldName) throws NoSuchFieldException, IllegalAccessException {
+        Field field = actual.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(actual);
     }
 }
