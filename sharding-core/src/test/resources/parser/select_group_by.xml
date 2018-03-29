@@ -6,7 +6,7 @@
         </tables>
         <tokens>
             <table-token begin-position="76" original-literals="`t_order_item`" />
-            <order-by-token begin-position-of-statement="162" begin-position-of-prepared-statement="156"/>
+            <order-by-token begin-position-with-placeholder="156" begin-position-without-placeholder="162" />
         </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order_item" operator="IN">
@@ -155,7 +155,7 @@
                     <item>o.user_id AS GROUP_BY_DERIVED_0 </item>
                 </items>
             </items-token>
-            <order-by-token begin-position-of-statement="195" begin-position-of-prepared-statement="194" />
+            <order-by-token begin-position-with-placeholder="194" begin-position-without-placeholder="195" />
         </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -266,7 +266,7 @@
         </tables>
         <tokens>
             <table-token begin-position="58" original-literals="t_order" />
-            <order-by-token begin-position-of-statement="80" begin-position-of-prepared-statement="80"/>
+            <order-by-token begin-position-with-placeholder="80" begin-position-without-placeholder="80" />
         </tokens>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM" alias="orders_sum" />

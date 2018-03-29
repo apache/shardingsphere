@@ -17,18 +17,6 @@
 
 package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public abstract class SQLTokenAssert {
+public interface SQLTokenAssert {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
 }

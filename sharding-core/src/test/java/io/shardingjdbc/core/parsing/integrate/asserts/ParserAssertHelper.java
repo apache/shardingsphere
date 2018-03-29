@@ -19,31 +19,12 @@ package io.shardingjdbc.core.parsing.integrate.asserts;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.integrate.jaxb.limit.LimitAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.GeneratedKeyTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.IndexTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.ItemsTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.MultipleInsertValuesTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.OffsetTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.OrderByTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.RowCountTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.SQLTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.TableTokenAssert;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.limit.LimitValue;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
-import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
-import io.shardingjdbc.core.parsing.parser.token.IndexToken;
-import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
-import io.shardingjdbc.core.parsing.parser.token.MultipleInsertValuesToken;
-import io.shardingjdbc.core.parsing.parser.token.OffsetToken;
-import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
-import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
-import io.shardingjdbc.core.parsing.parser.token.SQLToken;
-import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,72 +33,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class ParserAssertHelper {
-    
-    public static void assertSqlTokens(final List<SQLTokenAssert> expected, final List<SQLToken> actual, final boolean isPreparedStatement) {
-        if (null == expected || expected.size() == 0) {
-            return;
-        }
-        List<SQLToken> expectedSqlTokens = buildExpectedSqlTokens(expected, isPreparedStatement);
-        assertTrue(expectedSqlTokens.size() == actual.size());
-        for (SQLToken each : actual) {
-            boolean hasData = false;
-            for (SQLToken sqlToken : expectedSqlTokens) {
-                if (each.getBeginPosition() == sqlToken.getBeginPosition()) {
-                    hasData = true;
-                    assertTrue(EqualsBuilder.reflectionEquals(sqlToken, each));
-                }
-            }
-            assertTrue(hasData);
-        }
-    }
-    
-    private static List<SQLToken> buildExpectedSqlTokens(final List<SQLTokenAssert> sqlTokens,
-            final boolean isPreparedStatement) {
-        List<SQLToken> result = new ArrayList<>(sqlTokens.size());
-        for (SQLTokenAssert each : sqlTokens) {
-            if (isPreparedStatement && (each instanceof OffsetTokenAssert 
-                    || each instanceof RowCountTokenAssert)) {
-                continue;
-            }
-            result.add(buildExpectedSQLToken(each, isPreparedStatement));
-        }
-        return result;
-    }
-    
-    private static SQLToken buildExpectedSQLToken(final SQLTokenAssert sqlToken, final boolean isPreparedStatement) {
-        if (sqlToken instanceof TableTokenAssert) {
-            return new TableToken(sqlToken.getBeginPosition(), ((TableTokenAssert) sqlToken).getOriginalLiterals());
-        }
-        if (sqlToken instanceof IndexTokenAssert) {
-            return new IndexToken(sqlToken.getBeginPosition(), ((IndexTokenAssert) sqlToken).getOriginalLiterals(), 
-                    ((IndexTokenAssert) sqlToken).getTableName());
-        } else if (sqlToken instanceof ItemsTokenAssert) {
-            ItemsToken itemsToken = new ItemsToken(sqlToken.getBeginPosition());
-            itemsToken.getItems().addAll(((ItemsTokenAssert) sqlToken).getItems());
-            return itemsToken;
-        } else if (sqlToken instanceof GeneratedKeyTokenAssert) {
-            if (isPreparedStatement) {
-                return new GeneratedKeyToken(((GeneratedKeyTokenAssert) sqlToken).getBeginPositionOfPreparedStatement());
-            } else {
-                return new GeneratedKeyToken(((GeneratedKeyTokenAssert) sqlToken).getBeginPositionOfStatement());
-            }
-        } else if (sqlToken instanceof MultipleInsertValuesTokenAssert) {
-            MultipleInsertValuesToken multipleInsertValuesToken = new MultipleInsertValuesToken(sqlToken.getBeginPosition());
-            multipleInsertValuesToken.getValues().addAll(((MultipleInsertValuesTokenAssert) sqlToken).getValues());
-            return multipleInsertValuesToken;
-        } else if (sqlToken instanceof RowCountTokenAssert) {
-            return new RowCountToken(sqlToken.getBeginPosition(), ((RowCountTokenAssert) sqlToken).getRowCount());
-        } else if (sqlToken instanceof OrderByTokenAssert) {
-            if (isPreparedStatement) {
-                return new OrderByToken(((OrderByTokenAssert) sqlToken).getBeginPositionOfPreparedStatement());
-            } else {
-                return new OrderByToken(((OrderByTokenAssert) sqlToken).getBeginPositionOfStatement());
-            }
-        } else if (sqlToken instanceof OffsetTokenAssert) {
-            return new OffsetToken(sqlToken.getBeginPosition(), ((OffsetTokenAssert) sqlToken).getOffset());
-        }
-        return null;
-    }
     
     public static void assertLimit(final LimitAssert limit, final Limit actual, final boolean isPreparedStatement) {
         Limit expected = buildExpectedLimit(limit, isPreparedStatement);

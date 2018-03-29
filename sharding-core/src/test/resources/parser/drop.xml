@@ -31,6 +31,9 @@
         <tables>
             <table name="t_log" />
         </tables>
+        <tokens>
+            <table-token begin-position="11" original-literals="t_log" />
+        </tokens>
     </parser-assert>
     
     <parser-assert sql-case-id="assertDropTableCascade">

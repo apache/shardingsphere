@@ -27,11 +27,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class OrderByTokenAssert extends SQLTokenAssert {
+public final class OrderByTokenAssert implements SQLTokenAssert {
     
-    @XmlAttribute(name = "begin-position-of-statement")
-    private int beginPositionOfStatement;
+    @XmlAttribute(name = "begin-position-with-placeholder")
+    private int beginPositionWithPlaceholder;
     
-    @XmlAttribute(name = "begin-position-of-prepared-statement")
-    private int beginPositionOfPreparedStatement;
+    @XmlAttribute(name = "begin-position-without-placeholder")
+    private int beginPositionWithoutPlaceholder;
 }

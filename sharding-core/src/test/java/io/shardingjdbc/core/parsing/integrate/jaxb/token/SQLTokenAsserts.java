@@ -32,7 +32,7 @@ import java.util.List;
 public final class SQLTokenAsserts {
     
     @XmlElement(name = "table-token")
-    private List<TableTokenAssert> tableTokens;
+    private List<TableTokenAssert> tableTokens = new LinkedList<>();
     
     @XmlElement(name = "index-token")
     private IndexTokenAssert indexToken;
@@ -54,38 +54,4 @@ public final class SQLTokenAsserts {
     
     @XmlElement(name = "row-count-token")
     private RowCountTokenAssert rowCountToken;
-    
-    /**
-     * Get all SQL token asserts.
-     *
-     * @return all SQL token asserts
-     */
-    public List<SQLTokenAssert> getTokenAsserts() {
-        List<SQLTokenAssert> result = new LinkedList<>();
-        if (null != tableTokens) {
-            result.addAll(tableTokens);
-        }
-        if (null != indexToken) {
-            result.add(indexToken);
-        }
-        if (null != offsetToken) {
-            result.add(offsetToken);
-        }
-        if (null != rowCountToken) {
-            result.add(rowCountToken);
-        }
-        if (null != itemsToken) {
-            result.add(itemsToken);
-        }
-        if (null != generatedKeyToken) {
-            result.add(generatedKeyToken);
-        }
-        if (null != multipleInsertValuesToken) {
-            result.add(multipleInsertValuesToken);
-        }
-        if (null != orderByToken) {
-            result.add(orderByToken);
-        }
-        return result;
-    }
 }
