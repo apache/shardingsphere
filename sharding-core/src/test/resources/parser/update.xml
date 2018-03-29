@@ -5,9 +5,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="7" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="7" original-literals="t_order" />
         </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -24,9 +22,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="7" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="7" original-literals="t_order" />
         </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="EQUAL">

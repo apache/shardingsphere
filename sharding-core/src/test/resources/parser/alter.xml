@@ -5,9 +5,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="12" original-literals="t_log" />
-            </table-tokens>
+            <table-token begin-position="12" original-literals="t_log" />
         </tokens>
     </parser-assert>
     
@@ -16,9 +14,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="27" original-literals="t_log" />
-            </table-tokens>
+            <table-token begin-position="27" original-literals="t_log" />
         </tokens>
     </parser-assert>
 </parser-asserts>

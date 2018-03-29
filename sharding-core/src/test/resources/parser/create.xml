@@ -5,9 +5,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="13" original-literals="t_log" />
-            </table-tokens>
+            <table-token begin-position="13" original-literals="t_log" />
         </tokens>
     </parser-assert>
     
@@ -16,9 +14,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="27" original-literals="t_log" />
-            </table-tokens>
+            <table-token begin-position="27" original-literals="t_log" />
         </tokens>
     </parser-assert>
     
@@ -27,9 +23,7 @@
             <table name="t_temp_log" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="37" original-literals="t_temp_log" />
-            </table-tokens>
+            <table-token begin-position="37" original-literals="t_temp_log" />
         </tokens>
     </parser-assert>
     
@@ -38,9 +32,7 @@
             <table name="t_temp_log" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="30" original-literals="t_temp_log" />
-            </table-tokens>
+            <table-token begin-position="30" original-literals="t_temp_log" />
         </tokens>
     </parser-assert>
     
@@ -49,9 +41,7 @@
             <table name="t_temp_log" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="24" original-literals="t_temp_log" />
-            </table-tokens>
+            <table-token begin-position="24" original-literals="t_temp_log" />
         </tokens>
     </parser-assert>
     
@@ -60,9 +50,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="22" original-literals="t_log" />
-            </table-tokens>
+            <table-token begin-position="22" original-literals="t_log" />
         </tokens>
     </parser-assert>
     
@@ -72,9 +60,7 @@
         </tables>
         <tokens>
             <index-token begin-position="13" original-literals="t_log_index" table-name="t_log" />
-            <table-tokens>
-                <table-token begin-position="28" original-literals="t_log" />
-            </table-tokens>
+            <table-token begin-position="28" original-literals="t_log" />
         </tokens>
     </parser-assert>
     
@@ -84,9 +70,7 @@
         </tables>
         <tokens>
             <index-token begin-position="20" original-literals="t_log_index" table-name="t_log" />
-            <table-tokens>
-                <table-token begin-position="35" original-literals="t_log" />
-            </table-tokens>
+            <table-token begin-position="35" original-literals="t_log" />
         </tokens>
     </parser-assert>
 </parser-asserts>

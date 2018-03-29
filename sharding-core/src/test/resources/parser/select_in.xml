@@ -5,9 +5,7 @@
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="14" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="14" original-literals="t_order" />
         </tokens>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />

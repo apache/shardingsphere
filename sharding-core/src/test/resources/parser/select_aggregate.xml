@@ -5,9 +5,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="40" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="40" original-literals="t_order" />
         </tokens>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(user_id)" aggregation-type="SUM" alias="user_id_sum" />
@@ -19,9 +17,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="37" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="37" original-literals="t_order" />
         </tokens>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="orders_count" />
@@ -33,9 +29,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="40" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="40" original-literals="t_order" />
         </tokens>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(user_id)" aggregation-type="MAX" alias="max_user_id" />
@@ -47,9 +41,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="40" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="40" original-literals="t_order" />
         </tokens>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(user_id)" aggregation-type="MIN" alias="min_user_id" />
@@ -61,9 +53,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="40" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="40" original-literals="t_order" />
             <items-token begin-position="35">
                 <items>
                     <item>COUNT(user_id) AS AVG_DERIVED_COUNT_0 </item>
@@ -84,9 +74,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="46" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="46" original-literals="t_order" />
         </tokens>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(`order_id`)" aggregation-type="COUNT" alias="orders_count" />

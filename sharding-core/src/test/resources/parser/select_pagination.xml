@@ -6,10 +6,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="t_order" />
-                <table-token begin-position="31" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
             <items-token begin-position="11">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
@@ -39,10 +37,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="t_order" />
-                <table-token begin-position="31" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
             <items-token begin-position="11">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
@@ -72,10 +68,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="`t_order`" />
-                <table-token begin-position="33" original-literals="`t_order_item`" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="`t_order`" />
+            <table-token begin-position="33" original-literals="`t_order_item`" />
             <items-token begin-position="11">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
@@ -105,9 +99,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="`t_order`" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="`t_order`" />
             <items-token begin-position="11">
                 <items>
                     <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
@@ -128,10 +120,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="167" original-literals="t_order" />
-                <table-token begin-position="182" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="167" original-literals="t_order" />
+            <table-token begin-position="182" original-literals="t_order_item" />
             <row-count-token begin-position="27" row-count="3" />
         </tokens>
         <conditions>
@@ -156,10 +146,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="t_order" />
-                <table-token begin-position="31" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
             <items-token begin-position="11">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
@@ -190,10 +178,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="167" original-literals="t_order" />
-                <table-token begin-position="182" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="167" original-literals="t_order" />
+            <table-token begin-position="182" original-literals="t_order_item" />
             <offset-token begin-position="338" offset="6" />
             <row-count-token begin-position="27" row-count="3" />
         </tokens>
@@ -219,10 +205,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="167" original-literals="t_order" />
-                <table-token begin-position="182" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="167" original-literals="t_order" />
+            <table-token begin-position="182" original-literals="t_order_item" />
             <offset-token begin-position="339" offset="6" />
             <row-count-token begin-position="27" row-count="3" />
         </tokens>
@@ -247,9 +231,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="157" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="157" original-literals="t_order" />
             <items-token begin-position="152">
                 <items>
                     <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
@@ -270,10 +252,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="146" original-literals="t_order" />
-                <table-token begin-position="167" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="146" original-literals="t_order" />
+            <table-token begin-position="167" original-literals="t_order_item" />
             <items-token begin-position="141">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
@@ -303,10 +283,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="146" original-literals="t_order" />
-                <table-token begin-position="167" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="146" original-literals="t_order" />
+            <table-token begin-position="167" original-literals="t_order_item" />
             <items-token begin-position="141">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
@@ -337,10 +315,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="146" original-literals="t_order" />
-                <table-token begin-position="167" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="146" original-literals="t_order" />
+            <table-token begin-position="167" original-literals="t_order_item" />
             <items-token begin-position="141">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
@@ -370,9 +346,7 @@
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="62" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="62" original-literals="t_order" />
             <offset-token begin-position="140" offset="1" />
             <row-count-token begin-position="111" row-count="4" />
         </tokens>
@@ -387,9 +361,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="62" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="62" original-literals="t_order" />
             <offset-token begin-position="165" offset="1" />
             <row-count-token begin-position="135" row-count="4" />
         </tokens>
@@ -404,9 +376,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="62" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="62" original-literals="t_order" />
             <offset-token begin-position="165" offset="1" />
             <row-count-token begin-position="113" row-count="4" />
         </tokens>
@@ -421,9 +391,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="157" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="157" original-literals="t_order" />
             <items-token begin-position="152">
                 <items>
                     <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
@@ -444,10 +412,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="t_order" />
-                <table-token begin-position="36" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="36" original-literals="t_order_item" />
             <items-token begin-position="11">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>

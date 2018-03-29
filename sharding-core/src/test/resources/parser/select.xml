@@ -7,9 +7,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="14" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="14" original-literals="t_order_item" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -21,9 +19,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="14" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="14" original-literals="t_order_item" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -35,9 +31,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="14" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="14" original-literals="t_order_item" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -49,9 +43,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="14" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="14" original-literals="t_order" />
         </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="EQUAL">
@@ -69,9 +61,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="14" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="14" original-literals="t_order" />
         </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -88,9 +78,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="14" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="14" original-literals="t_order" />
         </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="BETWEEN">
@@ -113,9 +101,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="14" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="14" original-literals="t_order" />
         </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -140,9 +126,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="14" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="14" original-literals="t_order" />
         </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="IN">
@@ -164,9 +148,7 @@
             <table name="t_order_item" alias="t"/>
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="t_order_item" />
         </tokens>
         <conditions>
             <condition column-name="item_id" table-name="t_order_item" operator="IN">
@@ -182,10 +164,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="t_order" />
-                <table-token begin-position="31" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
             <items-token begin-position="11">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
@@ -202,9 +182,7 @@
             <table name="t_order" alias="o"/>
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="37" original-literals="`t_order`" />
-            </table-tokens>
+            <table-token begin-position="37" original-literals="`t_order`" />
         </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -227,10 +205,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="t_order" />
-                <table-token begin-position="31" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
             <items-token begin-position="11">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
@@ -258,10 +234,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="t_order" />
-                <table-token begin-position="31" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
             <items-token begin-position="11">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
@@ -289,10 +263,8 @@
             <table name="T_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="T_ORDER" />
-                <table-token begin-position="31" original-literals="T_order_item" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="T_ORDER" />
+            <table-token begin-position="31" original-literals="T_order_item" />
             <items-token begin-position="11">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
@@ -320,10 +292,8 @@
             <table name="T_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="34" original-literals="T_ORDER" />
-                <table-token begin-position="49" original-literals="T_order_item" />
-            </table-tokens>
+            <table-token begin-position="34" original-literals="T_ORDER" />
+            <table-token begin-position="49" original-literals="T_order_item" />
             <items-token begin-position="29">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
@@ -351,10 +321,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="36" original-literals="t_order" />
-                <table-token begin-position="47" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="36" original-literals="t_order" />
+            <table-token begin-position="47" original-literals="t_order_item" />
         </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -377,10 +345,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="36" original-literals="t_order" />
-                <table-token begin-position="51" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="36" original-literals="t_order" />
+            <table-token begin-position="51" original-literals="t_order_item" />
         </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -402,9 +368,7 @@
             <table name="t_order_item" alias="length" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="36" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="36" original-literals="t_order_item" />
         </tokens>
         <conditions>
             <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">

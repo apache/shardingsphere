@@ -6,10 +6,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="t_order" />
-                <table-token begin-position="37" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="37" original-literals="t_order_item" />
         </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -24,14 +22,12 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="7" original-literals="t_order_item" />
-                <table-token begin-position="27" original-literals="t_order" />
-                <table-token begin-position="40" original-literals="t_order_item" />
-                <table-token begin-position="56" original-literals="t_order" />
-                <table-token begin-position="75" original-literals="t_order_item" />
-                <table-token begin-position="103" original-literals="t_order" />
-            </table-tokens>
+            <table-token begin-position="7" original-literals="t_order_item" />
+            <table-token begin-position="27" original-literals="t_order" />
+            <table-token begin-position="40" original-literals="t_order_item" />
+            <table-token begin-position="56" original-literals="t_order" />
+            <table-token begin-position="75" original-literals="t_order_item" />
+            <table-token begin-position="103" original-literals="t_order" />
         </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -46,10 +42,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-tokens>
-                <table-token begin-position="16" original-literals="t_order" />
-                <table-token begin-position="31" original-literals="t_order_item" />
-            </table-tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
         </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="EQUAL">
