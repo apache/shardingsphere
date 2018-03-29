@@ -20,8 +20,8 @@ package io.shardingjdbc.core.parsing.integrate.asserts;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Condition;
-import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Conditions;
-import io.shardingjdbc.core.parsing.integrate.jaxb.table.Tables;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Value;
+import io.shardingjdbc.core.parsing.integrate.jaxb.table.Table;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
@@ -31,7 +31,6 @@ import io.shardingjdbc.core.parsing.parser.expression.SQLExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLPlaceholderExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLTextExpression;
-import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Value;
 import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
@@ -54,22 +53,21 @@ import static org.junit.Assert.assertTrue;
 
 public class ParserAssertHelper {
     
-    public static void assertTables(final Tables expected, final io.shardingjdbc.core.parsing.parser.context.table.Tables actual) {
+    public static void assertTables(final List<Table> expected, final io.shardingjdbc.core.parsing.parser.context.table.Tables actual) {
         assertTrue(EqualsBuilder.reflectionEquals(ParserJAXBHelper.getTables(expected), actual));
     }
     
     public static void assertConditions(
-            final Conditions expected, final io.shardingjdbc.core.parsing.parser.context.condition.Conditions actual, final boolean isPreparedStatement) {
+            final List<Condition> expected, final io.shardingjdbc.core.parsing.parser.context.condition.Conditions actual, final boolean isPreparedStatement) {
         assertTrue(EqualsBuilder.reflectionEquals(buildExpectedConditions(expected, isPreparedStatement), actual));
     }
     
-    private static io.shardingjdbc.core.parsing.parser.context.condition.Conditions buildExpectedConditions(
-            final Conditions conditions, final boolean isPreparedStatement) {
+    private static io.shardingjdbc.core.parsing.parser.context.condition.Conditions buildExpectedConditions(final List<Condition> conditions, final boolean isPreparedStatement) {
         io.shardingjdbc.core.parsing.parser.context.condition.Conditions result = new io.shardingjdbc.core.parsing.parser.context.condition.Conditions();
         if (null == conditions) {
             return result;
         }
-        for (Condition each : conditions.getConditions()) {
+        for (Condition each : conditions) {
             List<SQLExpression> sqlExpressions = new LinkedList<>();
             for (Value value : each.getValues()) {
                 if (isPreparedStatement) {

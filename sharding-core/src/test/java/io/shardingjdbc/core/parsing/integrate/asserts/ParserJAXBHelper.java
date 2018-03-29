@@ -42,12 +42,12 @@ public final class ParserJAXBHelper {
      * @param tables tables
      * @return tables
      */
-    public static Tables getTables(final io.shardingjdbc.core.parsing.integrate.jaxb.table.Tables tables) {
+    public static Tables getTables(final List<io.shardingjdbc.core.parsing.integrate.jaxb.table.Table> tables) {
         Tables result = new Tables();
         if (null == tables) {
             return result;
         }
-        for (io.shardingjdbc.core.parsing.integrate.jaxb.table.Table each : tables.getTables()) {
+        for (io.shardingjdbc.core.parsing.integrate.jaxb.table.Table each : tables) {
             Table table = new Table(each.getName(), Optional.fromNullable(each.getAlias()));
             result.add(table);
         }

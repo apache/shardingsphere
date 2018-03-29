@@ -17,21 +17,21 @@
 
 package io.shardingjdbc.core.parsing.integrate.jaxb.root;
 
-import io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItem;
-import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Conditions;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.GeneratedKeyToken;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Condition;
 import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumn;
+import io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItem;
+import io.shardingjdbc.core.parsing.integrate.jaxb.limit.Limit;
+import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumn;
+import io.shardingjdbc.core.parsing.integrate.jaxb.table.Table;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.GeneratedKeyToken;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.IndexToken;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.ItemsToken;
-import io.shardingjdbc.core.parsing.integrate.jaxb.limit.Limit;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.MultipleInsertValuesToken;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.OffsetToken;
-import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumn;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.OrderByToken;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.RowCountToken;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.SQLToken;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.TableToken;
-import io.shardingjdbc.core.parsing.integrate.jaxb.table.Tables;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -56,11 +56,13 @@ public final class ParserAssert {
     @XmlList
     private List<String> parameters;
     
-    @XmlElement(name = "tables") 
-    private Tables tables;
+    @XmlElementWrapper
+    @XmlElement(name = "table")
+    private List<Table> tables;
     
-    @XmlElement(name = "conditions") 
-    private Conditions conditions;
+    @XmlElementWrapper
+    @XmlElement(name = "condition") 
+    private List<Condition> conditions;
     
     @XmlElementWrapper(name = "table-tokens")
     @XmlElement(name = "table-token")
