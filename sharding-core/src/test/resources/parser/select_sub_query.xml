@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-asserts>
-    <parser-assert sql-case-id="assertSelectSubQuerySingleTableWithParentheses" parameters="1,2">
+    <parser-assert sql-case-id="assertSelectSubQuerySingleTableWithParentheses" parameters="1 2">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
@@ -15,7 +15,7 @@
         </conditions>
     </parser-assert>
     <!-- TODO cannot pass,add later 
-    <parser-assert sql-case-id="assertSelectSubQueryMultiTableWithParentheses" parameters="1,2">
+    <parser-assert sql-case-id="assertSelectSubQueryMultiTableWithParentheses" parameters="1 2">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />

@@ -51,8 +51,8 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     @Test
     public void assertLiteralSQL() {
-        assertSQLStatement(new SQLParsingEngine(databaseType, SQLPlaceholderUtil.replaceStatement(sqlCasesLoader.getSupportedSQL(sqlCaseId), 
-                ParserJAXBHelper.getParameters(parserAssertsLoader.getParserAssert(sqlCaseId).getParameters())), getShardingRule()).parse(), false);
+        assertSQLStatement(new SQLParsingEngine(databaseType, 
+                SQLPlaceholderUtil.replaceStatement(sqlCasesLoader.getSupportedSQL(sqlCaseId), parserAssertsLoader.getParserAssert(sqlCaseId).getParameters()), getShardingRule()).parse(), false);
     }
     
     @Test

@@ -37,18 +37,6 @@ import java.util.List;
 public final class ParserJAXBHelper {
     
     /**
-     * get parameters.
-     * @param parameters parameters
-     * @return parameters
-     */
-    public static String[] getParameters(final String parameters) {
-        if (Strings.isNullOrEmpty(parameters)) {
-            return new String[]{};
-        }
-        return parameters.split(",");
-    }
-    
-    /**
      * Get tables.
      * 
      * @param tables tables

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-asserts>
-    <parser-assert sql-case-id="assertInsertWithAllPlaceholders" parameters="1,1,'init'">
+    <parser-assert sql-case-id="assertInsertWithAllPlaceholders" parameters="1 1 'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -16,7 +16,7 @@
             </condition>
         </conditions>
     </parser-assert>
-    <parser-assert sql-case-id="assertInsertWithPartialPlaceholder" parameters="1,1">
+    <parser-assert sql-case-id="assertInsertWithPartialPlaceholder" parameters="1 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -32,7 +32,7 @@
             </condition>
         </conditions>
     </parser-assert>
-    <parser-assert sql-case-id="assertInsertWithGenerateKeyColumn" parameters="10000,1000,10">
+    <parser-assert sql-case-id="assertInsertWithGenerateKeyColumn" parameters="10000 1000 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -51,7 +51,7 @@
             </condition>
         </conditions>
     </parser-assert>
-    <parser-assert sql-case-id="assertInsertWithoutGenerateKeyColumn" parameters="1000,10">
+    <parser-assert sql-case-id="assertInsertWithoutGenerateKeyColumn" parameters="1000 10">
         <tables>
             <table name="t_order_item" />
         </tables>

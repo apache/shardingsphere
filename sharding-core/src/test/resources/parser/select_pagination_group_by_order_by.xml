@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-asserts>
-    <parser-assert sql-case-id="assertSelectPaginationWithGroupByAndOrderBy" parameters="1,2,9,10,5,3">
+    <parser-assert sql-case-id="assertSelectPaginationWithGroupByAndOrderBy" parameters="1 2 9 10 5 3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -35,7 +35,7 @@
         </order-by-columns>
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-assert>
-    <parser-assert sql-case-id="assertSelectPaginationWithDiffGroupByAndOrderBy" parameters="1,2,9,10,5,3">
+    <parser-assert sql-case-id="assertSelectPaginationWithDiffGroupByAndOrderBy" parameters="1 2 9 10 5 3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -69,7 +69,7 @@
         </order-by-columns>
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-assert>
-    <parser-assert sql-case-id="assertSelectPaginationWithTopAndGroupByAndOrderBy" parameters="3,1,2,9,10,6">
+    <parser-assert sql-case-id="assertSelectPaginationWithTopAndGroupByAndOrderBy" parameters="3 1 2 9 10 6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -98,7 +98,7 @@
         </order-by-columns>
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </parser-assert>
-    <parser-assert sql-case-id="assertSelectPaginationWithTopAndGroupByAndOrderByAndParentheses" parameters="3,1,2,9,10,6">
+    <parser-assert sql-case-id="assertSelectPaginationWithTopAndGroupByAndOrderByAndParentheses" parameters="3 1 2 9 10 6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -127,7 +127,7 @@
         </order-by-columns>
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </parser-assert>
-    <parser-assert sql-case-id="assertSelectPaginationWithTopAndDiffGroupByAndOrderBy" parameters="3,1,2,9,10,6">
+    <parser-assert sql-case-id="assertSelectPaginationWithTopAndDiffGroupByAndOrderBy" parameters="3 1 2 9 10 6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -161,7 +161,7 @@
         </order-by-columns>
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </parser-assert>
-    <parser-assert sql-case-id="assertSelectPaginationWithTopAndDiffGroupByAndOrderByAndParentheses" parameters="3,1,2,9,10,6">
+    <parser-assert sql-case-id="assertSelectPaginationWithTopAndDiffGroupByAndOrderByAndParentheses" parameters="3 1 2 9 10 6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -195,7 +195,7 @@
         </order-by-columns>
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </parser-assert>
-    <parser-assert sql-case-id="assertSelectPaginationWithRowNumberAndGroupByAndOrderBy" parameters="1,2,9,10,5,3">
+    <parser-assert sql-case-id="assertSelectPaginationWithRowNumberAndGroupByAndOrderBy" parameters="1 2 9 10 5 3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
@@ -230,7 +230,7 @@
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-assert>
-    <parser-assert sql-case-id="assertSelectPaginationWithRowNumberAndDiffGroupByAndOrderBy" parameters="1,2,9,10,5,3">
+    <parser-assert sql-case-id="assertSelectPaginationWithRowNumberAndDiffGroupByAndOrderBy" parameters="1 2 9 10 5 3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />

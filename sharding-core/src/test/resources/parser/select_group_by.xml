@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-asserts>
-    <parser-assert sql-case-id="assertSelectDateFuncWithGroupBy" parameters="1000,1100">
+    <parser-assert sql-case-id="assertSelectDateFuncWithGroupBy" parameters="1000 1100">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -135,7 +135,7 @@
             <order-by-column name="orders_sum" alias="orders_sum" order-direction="DESC" />
         </order-by-columns>
     </parser-assert>
-    <parser-assert sql-case-id="assertSelectCountWithoutGroupedColumn" parameters="1,2,9,10">
+    <parser-assert sql-case-id="assertSelectCountWithoutGroupedColumn" parameters="1 2 9 10">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -170,7 +170,7 @@
             <order-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="o" order-direction="ASC" />
         </order-by-columns>
     </parser-assert>
-    <parser-assert sql-case-id="assertSelectCountWithGroupByBindingTable" parameters="1,2,9,10">
+    <parser-assert sql-case-id="assertSelectCountWithGroupByBindingTable" parameters="1 2 9 10">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />

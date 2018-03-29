@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlList;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +53,8 @@ public final class ParserAssert {
     private String sqlCaseId;
     
     @XmlAttribute
-    private String parameters;
+    @XmlList
+    private List<String> parameters;
     
     @XmlElement(name = "tables") 
     private Tables tables;

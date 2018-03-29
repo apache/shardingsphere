@@ -38,7 +38,7 @@
             <aggregation-select-item aggregation-type="COUNT" inner-expression="(o.order_id)" />
         </aggregation-select-items>
     </parser-assert>
-    <parser-assert sql-case-id="assertSelectRegexpWithSingleTable" parameters="'init',1,2">
+    <parser-assert sql-case-id="assertSelectRegexpWithSingleTable" parameters="'init' 1 2">
         <tables>
             <table name="t_order_item" alias="t"/>
         </tables>
