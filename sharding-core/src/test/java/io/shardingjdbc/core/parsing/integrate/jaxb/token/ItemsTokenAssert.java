@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ItemsTokenAssert extends SQLTokenAssert {
+public final class ItemsTokenAssert extends SQLTokenAssert {
     
     @XmlElementWrapper(name = "items")
     @XmlElement(name = "item")

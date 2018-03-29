@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SQLTokenAssert {
+public abstract class SQLTokenAssert {
     
     @XmlAttribute(name = "begin-position")
     private int beginPosition;

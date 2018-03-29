@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class OffsetTokenAssert extends SQLTokenAssert {
+public final class OffsetTokenAssert extends SQLTokenAssert {
     
     @XmlAttribute(name = "offset")
     private int offset;
