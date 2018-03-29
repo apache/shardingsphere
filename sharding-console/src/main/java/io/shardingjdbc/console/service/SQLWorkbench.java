@@ -22,7 +22,8 @@ import io.shardingjdbc.console.domain.WorkbenchResponse;
 import io.shardingjdbc.console.domain.SQLColumnInformation;
 import io.shardingjdbc.console.domain.SQLRowData;
 import io.shardingjdbc.console.domain.SQLResultData;
-import io.shardingjdbc.console.domain.SessionRegistry;
+import io.shardingjdbc.console.domain.WindowSessionRegistry;
+import io.shardingjdbc.console.domain.SQLExecuteException;
 import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
@@ -48,19 +49,18 @@ public class SQLWorkbench {
      * @param userUUID user uuid
      * @return response
      */
-    public WorkbenchResponse execute(final String sql, final String userUUID) {
+    public WorkbenchResponse execute(final String sql, final String userUUID) throws SQLExecuteException {
         List<SQLColumnInformation> sqlColumnInformationList = new ArrayList<>();
         List<SQLRowData> sqlRowDataList = new ArrayList<>();
         SQLResultData sqlResultData = new SQLResultData(0, 0L, sql, sqlColumnInformationList, sqlRowDataList);
-        WorkbenchResponse result = new WorkbenchResponse(403, "", sqlResultData);
-        Optional<Connection> connectionOptional = SessionRegistry.getInstance().findSession(userUUID);
-    
+        WorkbenchResponse result = new WorkbenchResponse(sqlResultData);
+        Optional<Connection> connectionOptional = WindowSessionRegistry.getInstance().findSession(userUUID);
+
         if (!connectionOptional.isPresent()) {
-            result.setMessage("please login first.");
-            return result;
+            throw new SQLExecuteException("The SQL execute window does not exist.");
         }
         Connection connection = connectionOptional.get();
-        
+
         long startTime = System.currentTimeMillis();
         try (
                 Statement statement = connection.createStatement()
@@ -76,37 +76,35 @@ public class SQLWorkbench {
             return result;
         }
     }
-    
+
     private WorkbenchResponse countsFormatResult(final WorkbenchResponse result, final SQLResultData sqlResultData, final Statement statement,
                                                  final long startTime) throws SQLException {
         sqlResultData.setAffectedRows(statement.getUpdateCount());
-        result.setStatus(200);
         sqlResultData.setDurationMilliseconds(System.currentTimeMillis() - startTime);
         return result;
     }
-    
+
     private WorkbenchResponse setsFormatResult(final WorkbenchResponse result, final SQLResultData sqlResultData, final ResultSet resultSet,
                                                final long startTime) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         getColumnInfo(resultSetMetaData, columnCount, sqlResultData);
         getRowData(resultSetMetaData, sqlResultData, resultSet, startTime, columnCount);
-        result.setStatus(200);
         return result;
     }
-    
+
     private void getColumnInfo(final ResultSetMetaData resultSetMetaData, final int columnCount, final SQLResultData sqlResultData) throws SQLException {
         List<SQLColumnInformation> sqlColumnInformationList = sqlResultData.getSqlColumnInformationList();
         for (int i = 1; i <= columnCount; i++) {
             sqlColumnInformationList.add(new SQLColumnInformation(resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnTypeName(i), resultSetMetaData.getColumnDisplaySize(i)));
         }
     }
-    
+
     private void getRowData(final ResultSetMetaData resultSetMetaData, final SQLResultData sqlResultData, final ResultSet resultSet,
                             final long startTime, final int columnCount) throws SQLException {
         List<SQLRowData> sqlRowDataList = sqlResultData.getSqlRowDataList();
         Integer rowCount = 0;
-        
+
         while (resultSet.next()) {
             rowCount++;
             SQLRowData sqlRowData = new SQLRowData();
