@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.token;
+package io.shardingjdbc.core.parsing.integrate.jaxb.condition;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,12 +23,23 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class OffsetToken extends SQLToken {
+public final class ConditionAssert {
     
-    @XmlAttribute(name = "offset")
-    private int offset;
+    @XmlAttribute(name = "column-name")
+    private String columnName;
+    
+    @XmlAttribute(name = "table-name")
+    private String tableName;
+    
+    @XmlAttribute
+    private String operator;
+    
+    @XmlElement(name = "value") 
+    private List<Value> values;
 }

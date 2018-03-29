@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.token;
+package io.shardingjdbc.core.parsing.integrate.jaxb.table;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,11 +24,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public class RowCountToken extends SQLToken {
+public final class TableAssert {
     
-    @XmlAttribute(name = "row-count")
-    private int rowCount;
+    @XmlAttribute
+    private String name;
+    
+    @XmlAttribute
+    private String alias;
 }

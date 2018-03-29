@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.token;
+package io.shardingjdbc.core.parsing.integrate.jaxb.groupby;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,11 +27,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class OrderByToken extends SQLToken {
+public final class GroupByColumnAssert {
     
-    @XmlAttribute(name = "begin-position-of-statement")
-    private int beginPositionOfStatement;
+    @XmlAttribute
+    private String owner;
     
-    @XmlAttribute(name = "begin-position-of-prepared-statement")
-    private int beginPositionOfPreparedStatement;
+    @XmlAttribute
+    private String name;
+    
+    @XmlAttribute
+    private String alias;
+    
+    @XmlAttribute(name = "order-direction") 
+    private String orderDirection;
 }

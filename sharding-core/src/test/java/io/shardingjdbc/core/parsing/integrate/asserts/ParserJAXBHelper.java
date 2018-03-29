@@ -23,13 +23,15 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import io.shardingjdbc.core.constant.AggregationType;
 import io.shardingjdbc.core.constant.OrderDirection;
+import io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItemAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.table.TableAssert;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
 import io.shardingjdbc.core.parsing.parser.context.table.Tables;
 import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumn;
-import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumn;
+import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumnAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumnAssert;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 
 import java.util.List;
@@ -42,12 +44,12 @@ public final class ParserJAXBHelper {
      * @param tables tables
      * @return tables
      */
-    public static Tables getTables(final List<io.shardingjdbc.core.parsing.integrate.jaxb.table.Table> tables) {
+    public static Tables getTables(final List<TableAssert> tables) {
         Tables result = new Tables();
         if (null == tables) {
             return result;
         }
-        for (io.shardingjdbc.core.parsing.integrate.jaxb.table.Table each : tables) {
+        for (TableAssert each : tables) {
             Table table = new Table(each.getName(), Optional.fromNullable(each.getAlias()));
             result.add(table);
         }
@@ -63,10 +65,10 @@ public final class ParserJAXBHelper {
     public static SelectStatement getSelectStatement(final ParserAssert assertObj) {
         final SelectStatement result = new SelectStatement();
         if (null != assertObj.getOrderByColumns()) {
-            List<OrderItem> orderItems = Lists.transform(assertObj.getOrderByColumns(), new Function<OrderByColumn, OrderItem>() {
+            List<OrderItem> orderItems = Lists.transform(assertObj.getOrderByColumns(), new Function<OrderByColumnAssert, OrderItem>() {
                 
                 @Override
-                public OrderItem apply(final OrderByColumn input) {
+                public OrderItem apply(final OrderByColumnAssert input) {
                     if (Strings.isNullOrEmpty(input.getName())) {
                         // TODO nullOrderType should config in xml
                         return new OrderItem(input.getIndex(), OrderDirection.valueOf(input.getOrderDirection().toUpperCase()), OrderDirection.ASC);
@@ -83,10 +85,10 @@ public final class ParserJAXBHelper {
             result.getOrderByItems().addAll(orderItems);
         }
         if (null != assertObj.getGroupByColumns()) {
-            result.getGroupByItems().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<GroupByColumn, OrderItem>() {
+            result.getGroupByItems().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<GroupByColumnAssert, OrderItem>() {
                 
                 @Override
-                public OrderItem apply(final GroupByColumn input) {
+                public OrderItem apply(final GroupByColumnAssert input) {
                     if (null == input.getOwner()) {
                         // TODO nullOrderType should config in xml
                         return new OrderItem(input.getName(), OrderDirection.valueOf(input.getOrderDirection().toUpperCase()), OrderDirection.ASC, Optional.fromNullable(input.getAlias()));
@@ -99,13 +101,13 @@ public final class ParserJAXBHelper {
         }
         if (null != assertObj.getAggregationSelectItems()) {
             List<AggregationSelectItem> selectItems = Lists.transform(assertObj.getAggregationSelectItems(),
-                    new Function<io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItem, AggregationSelectItem>() {
+                    new Function<AggregationSelectItemAssert, AggregationSelectItem>() {
                         
                         @Override
-                        public AggregationSelectItem apply(final io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItem input) {
+                        public AggregationSelectItem apply(final AggregationSelectItemAssert input) {
                             AggregationSelectItem result = new AggregationSelectItem(
                                     AggregationType.valueOf(input.getAggregationType().toUpperCase()), input.getInnerExpression(), Optional.fromNullable(input.getAlias()));
-                            for (io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItem each : input.getDerivedColumns()) {
+                            for (AggregationSelectItemAssert each : input.getDerivedColumns()) {
                                 result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(
                                         AggregationType.valueOf(each.getAggregationType().toUpperCase()), each.getInnerExpression(), Optional.fromNullable(each.getAlias())));
                             }

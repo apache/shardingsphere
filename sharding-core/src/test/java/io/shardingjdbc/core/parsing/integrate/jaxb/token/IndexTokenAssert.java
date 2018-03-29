@@ -27,11 +27,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class GeneratedKeyToken extends SQLToken {
+public class IndexTokenAssert extends SQLTokenAssert {
     
-    @XmlAttribute(name = "begin-position-of-statement")
-    private int beginPositionOfStatement;
+    @XmlAttribute(name = "original-literals")
+    private String originalLiterals;
     
-    @XmlAttribute(name = "begin-position-of-prepared-statement")
-    private int beginPositionOfPreparedStatement;
+    @XmlAttribute(name = "table-name")
+    private String tableName;
 }

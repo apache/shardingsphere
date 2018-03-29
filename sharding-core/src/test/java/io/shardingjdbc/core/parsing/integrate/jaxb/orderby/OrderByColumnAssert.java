@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.condition;
+package io.shardingjdbc.core.parsing.integrate.jaxb.orderby;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,23 +23,24 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Condition {
-    
-    @XmlAttribute(name = "column-name")
-    private String columnName;
-    
-    @XmlAttribute(name = "table-name")
-    private String tableName;
+public final class OrderByColumnAssert {
     
     @XmlAttribute
-    private String operator;
+    private String owner;
     
-    @XmlElement(name = "value") 
-    private List<Value> values;
+    @XmlAttribute
+    private String name;
+    
+    @XmlAttribute
+    private Integer index;
+    
+    @XmlAttribute
+    private String alias;
+    
+    @XmlAttribute(name = "order-direction") 
+    private String orderDirection;
 }

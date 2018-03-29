@@ -17,21 +17,21 @@
 
 package io.shardingjdbc.core.parsing.integrate.jaxb.root;
 
-import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Condition;
-import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumn;
-import io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItem;
-import io.shardingjdbc.core.parsing.integrate.jaxb.limit.Limit;
-import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumn;
-import io.shardingjdbc.core.parsing.integrate.jaxb.table.Table;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.GeneratedKeyToken;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.IndexToken;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.ItemsToken;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.MultipleInsertValuesToken;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.OffsetToken;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.OrderByToken;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.RowCountToken;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.SQLToken;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.TableToken;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ConditionAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumnAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItemAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.limit.LimitAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumnAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.table.TableAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.GeneratedKeyTokenAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.IndexTokenAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ItemsTokenAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.MultipleInsertValuesTokenAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.OffsetTokenAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.OrderByTokenAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.RowCountTokenAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.SQLTokenAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.TableTokenAssert;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -58,59 +58,59 @@ public final class ParserAssert {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
-    private List<Table> tables;
+    private List<TableAssert> tables;
     
     @XmlElementWrapper
     @XmlElement(name = "condition") 
-    private List<Condition> conditions;
+    private List<ConditionAssert> conditions;
     
     @XmlElementWrapper(name = "table-tokens")
     @XmlElement(name = "table-token")
-    private List<TableToken> tableTokens;
+    private List<TableTokenAssert> tableTokens;
     
     @XmlElement(name = "index-token")
-    private IndexToken indexToken;
+    private IndexTokenAssert indexToken;
     
     @XmlElement(name = "items-token")
-    private ItemsToken itemsToken;
+    private ItemsTokenAssert itemsToken;
     
     @XmlElement(name = "generated-key-token")
-    private GeneratedKeyToken generatedKeyToken;
+    private GeneratedKeyTokenAssert generatedKeyToken;
     
     @XmlElement(name = "multiple-insert-values-token")
-    private MultipleInsertValuesToken multipleInsertValuesToken;
+    private MultipleInsertValuesTokenAssert multipleInsertValuesToken;
     
     @XmlElement(name = "order-by-token")
-    private OrderByToken orderByToken;
+    private OrderByTokenAssert orderByToken;
     
     @XmlElement(name = "offset-token")
-    private OffsetToken offsetToken;
+    private OffsetTokenAssert offsetToken;
     
     @XmlElement(name = "row-count-token")
-    private RowCountToken rowCountToken;
+    private RowCountTokenAssert rowCountToken;
     
     @XmlElementWrapper(name = "order-by-columns")
     @XmlElement(name = "order-by-column") 
-    private List<OrderByColumn> orderByColumns;
+    private List<OrderByColumnAssert> orderByColumns;
     
     @XmlElementWrapper(name = "group-by-columns")
     @XmlElement(name = "group-by-column") 
-    private List<GroupByColumn> groupByColumns;
+    private List<GroupByColumnAssert> groupByColumns;
     
     @XmlElementWrapper(name = "aggregation-select-items")
     @XmlElement(name = "aggregation-select-item") 
-    private List<AggregationSelectItem> aggregationSelectItems;
+    private List<AggregationSelectItemAssert> aggregationSelectItems;
     
     @XmlElement 
-    private Limit limit;
+    private LimitAssert limit;
     
     /**
      * Get SQL tokens.
      * 
      * @return SQL tokens
      */
-    public List<SQLToken> getSqlTokens() {
-        List<SQLToken> result = new ArrayList<>(7);
+    public List<SQLTokenAssert> getSqlTokens() {
+        List<SQLTokenAssert> result = new ArrayList<>(7);
         if (null != tableTokens) {
             result.addAll(tableTokens);
         }

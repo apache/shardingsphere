@@ -27,8 +27,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SQLToken {
+public class RowCountTokenAssert extends SQLTokenAssert {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
+    @XmlAttribute(name = "row-count")
+    private int rowCount;
 }

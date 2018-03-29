@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.token;
+package io.shardingjdbc.core.parsing.integrate.jaxb.item;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,15 +23,30 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class IndexToken extends SQLToken {
+public final class AggregationSelectItemAssert {
     
-    @XmlAttribute(name = "original-literals")
-    private String originalLiterals;
+    @XmlAttribute(name = "inner-expression")
+    private String innerExpression;
     
-    @XmlAttribute(name = "table-name")
-    private String tableName;
+    @XmlAttribute(name = "aggregation-type")
+    private String aggregationType;
+    
+    @XmlAttribute
+    private String alias;
+    
+    @XmlAttribute 
+    private String option;
+    
+    @XmlAttribute 
+    private Integer index;
+    
+    @XmlElement(name = "derived-column") 
+    private List<AggregationSelectItemAssert> derivedColumns = new ArrayList<>(2);
 }

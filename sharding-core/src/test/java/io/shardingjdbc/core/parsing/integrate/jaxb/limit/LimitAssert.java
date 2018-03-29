@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Limit {
+public final class LimitAssert {
     
     @XmlAttribute
     private Integer offset;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.orderby;
+package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,20 +27,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class OrderByColumn {
+public class SQLTokenAssert {
     
-    @XmlAttribute
-    private String owner;
-    
-    @XmlAttribute
-    private String name;
-    
-    @XmlAttribute
-    private Integer index;
-    
-    @XmlAttribute
-    private String alias;
-    
-    @XmlAttribute(name = "order-direction") 
-    private String orderDirection;
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
 }

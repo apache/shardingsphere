@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.table;
+package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,14 +24,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class Table {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class OrderByTokenAssert extends SQLTokenAssert {
     
-    @XmlAttribute
-    private String name;
+    @XmlAttribute(name = "begin-position-of-statement")
+    private int beginPositionOfStatement;
     
-    @XmlAttribute
-    private String alias;
+    @XmlAttribute(name = "begin-position-of-prepared-statement")
+    private int beginPositionOfPreparedStatement;
 }
