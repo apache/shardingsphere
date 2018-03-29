@@ -17,11 +17,15 @@
 
 package io.shardingjdbc.core.parsing.integrate.tests;
 
+import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.integrate.asserts.ParserAssertHelper;
 import io.shardingjdbc.core.parsing.integrate.asserts.ParserJAXBHelper;
 import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.table.TableAssert;
+import io.shardingjdbc.core.parsing.parser.context.table.Table;
+import io.shardingjdbc.core.parsing.parser.context.table.Tables;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
@@ -31,6 +35,11 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RequiredArgsConstructor
 public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrateSQLParsingTest {
@@ -61,7 +70,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     private void assertSQLStatement(final SQLStatement actual, final boolean isPreparedStatement) {
         ParserAssert parserAssert = parserAssertsLoader.getParserAssert(sqlCaseId);
-        ParserAssertHelper.assertTables(parserAssert.getTables(), actual.getTables());
+        assertTables(actual.getTables(), parserAssert.getTables());
         ParserAssertHelper.assertConditions(parserAssert.getConditions(), actual.getConditions(), isPreparedStatement);
         ParserAssertHelper.assertSqlTokens(parserAssert.getTokens().getTokenAsserts(), actual.getSqlTokens(), isPreparedStatement);
         if (actual instanceof SelectStatement) {
@@ -72,5 +81,24 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
             ParserAssertHelper.assertAggregationSelectItem(expectedSqlStatement.getAggregationSelectItems(), selectStatement.getAggregationSelectItems());
             ParserAssertHelper.assertLimit(parserAssert.getLimit(), selectStatement.getLimit(), isPreparedStatement);
         }
+    }
+    
+    private void assertTables(final Tables actual, final List<TableAssert> expected) {
+        assertThat(actual.getTableNames().size(), is(expected.size()));
+        for (TableAssert each : expected) {
+            Optional<Table> tableOptional;
+            if (null != each.getAlias()) {
+                tableOptional = actual.find(each.getAlias());
+            } else {
+                tableOptional = actual.find(each.getName());
+            }
+            assertTrue(tableOptional.isPresent());
+            assertTable(tableOptional.get(), each);
+        }
+    }
+    
+    private void assertTable(final Table actual, final TableAssert expected) {
+        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getAlias().orNull(), is(expected.getAlias()));
     }
 }

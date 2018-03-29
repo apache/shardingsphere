@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter
@@ -49,7 +50,7 @@ public final class ParserAssert {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
-    private List<TableAssert> tables;
+    private List<TableAssert> tables = new LinkedList<>();
     
     @XmlElementWrapper
     @XmlElement(name = "condition") 

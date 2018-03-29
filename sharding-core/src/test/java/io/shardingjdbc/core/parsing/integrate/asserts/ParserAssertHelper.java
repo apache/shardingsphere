@@ -22,7 +22,6 @@ import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ConditionAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Value;
 import io.shardingjdbc.core.parsing.integrate.jaxb.limit.LimitAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.table.TableAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.GeneratedKeyTokenAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.IndexTokenAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.ItemsTokenAssert;
@@ -39,7 +38,6 @@ import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.limit.LimitValue;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
-import io.shardingjdbc.core.parsing.parser.context.table.Tables;
 import io.shardingjdbc.core.parsing.parser.expression.SQLExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLPlaceholderExpression;
@@ -65,10 +63,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class ParserAssertHelper {
-    
-    public static void assertTables(final List<TableAssert> expected, final Tables actual) {
-        assertTrue(EqualsBuilder.reflectionEquals(ParserJAXBHelper.getTables(expected), actual));
-    }
     
     public static void assertConditions(
             final List<ConditionAssert> expected, final Conditions actual, final boolean isPreparedStatement) {

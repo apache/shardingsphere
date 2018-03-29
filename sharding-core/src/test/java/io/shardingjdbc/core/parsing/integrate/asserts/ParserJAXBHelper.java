@@ -23,38 +23,17 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import io.shardingjdbc.core.constant.AggregationType;
 import io.shardingjdbc.core.constant.OrderDirection;
+import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumnAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItemAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.table.TableAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumnAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
-import io.shardingjdbc.core.parsing.parser.context.table.Table;
-import io.shardingjdbc.core.parsing.parser.context.table.Tables;
-import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumnAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumnAssert;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 
 import java.util.List;
 
 public final class ParserJAXBHelper {
-    
-    /**
-     * Get tables.
-     * 
-     * @param tables tables
-     * @return tables
-     */
-    public static Tables getTables(final List<TableAssert> tables) {
-        Tables result = new Tables();
-        if (null == tables) {
-            return result;
-        }
-        for (TableAssert each : tables) {
-            Table table = new Table(each.getName(), Optional.fromNullable(each.getAlias()));
-            result.add(table);
-        }
-        return result;
-    }
     
     /**
      * Get select statement.
