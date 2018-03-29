@@ -22,8 +22,13 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.integrate.asserts.ParserAssertHelper;
 import io.shardingjdbc.core.parsing.integrate.asserts.ParserJAXBHelper;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ConditionAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Value;
 import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.table.TableAssert;
+import io.shardingjdbc.core.parsing.parser.context.condition.Column;
+import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
+import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
 import io.shardingjdbc.core.parsing.parser.context.table.Tables;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
@@ -71,7 +76,9 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     private void assertSQLStatement(final SQLStatement actual, final boolean isPreparedStatement) {
         ParserAssert parserAssert = parserAssertsLoader.getParserAssert(sqlCaseId);
         assertTables(actual.getTables(), parserAssert.getTables());
-        ParserAssertHelper.assertConditions(parserAssert.getConditions(), actual.getConditions(), isPreparedStatement);
+        assertConditions(actual.getConditions(), parserAssert.getConditions());
+        
+        
         ParserAssertHelper.assertSqlTokens(parserAssert.getTokens().getTokenAsserts(), actual.getSqlTokens(), isPreparedStatement);
         if (actual instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) actual;
@@ -100,5 +107,29 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     private void assertTable(final Table actual, final TableAssert expected) {
         assertThat(actual.getName(), is(expected.getName()));
         assertThat(actual.getAlias().orNull(), is(expected.getAlias()));
+    }
+    
+    private void assertConditions(final Conditions actual, final List<ConditionAssert> expected) {
+        assertThat(actual.getConditions().size(), is(expected.size()));
+        for (ConditionAssert each : expected) {
+            Optional<Condition> conditionOptional = actual.find(new Column(each.getColumnName(), each.getTableName()));
+            assertTrue(conditionOptional.isPresent());
+            assertCondition(conditionOptional.get(), each);
+        }
+    }
+    
+    private void assertCondition(final Condition actual, final ConditionAssert expected) {
+        assertThat(actual.getColumn().getName().toUpperCase(), is(expected.getColumnName().toUpperCase()));
+        assertThat(actual.getColumn().getTableName().toUpperCase(), is(expected.getTableName().toUpperCase()));
+        assertThat(actual.getOperator().name(), is(expected.getOperator()));
+        int count = 0;
+        for (Value each : expected.getValues()) {
+            if (!actual.getPositionValueMap().isEmpty()) {
+                assertThat(actual.getPositionValueMap().get(count), is((Comparable) each.getLiteralForAccurateType()));
+            } else if (!actual.getPositionIndexMap().isEmpty()) {
+                assertThat(actual.getPositionIndexMap().get(count), is(each.getIndex()));
+            }
+            count++;
+        }
     }
 }

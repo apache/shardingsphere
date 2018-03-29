@@ -39,11 +39,11 @@ public final class Value {
     private String type;
     
     /**
-     * Get value with type.
+     * Get literal for accurate type.
      * 
-     * @return value with type
+     * @return literal for accurate type
      */
-    public Comparable<?> getValueWithType() {
+    public Comparable<?> getLiteralForAccurateType() {
         if (boolean.class.getName().equals(type) || Boolean.class.getName().equals(type)) {
             return Boolean.valueOf(literal);
         }

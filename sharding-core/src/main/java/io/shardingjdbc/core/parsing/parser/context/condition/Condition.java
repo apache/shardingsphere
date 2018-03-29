@@ -46,14 +46,13 @@ import java.util.Map.Entry;
  * @author zhangliang
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 @EqualsAndHashCode
 @ToString
 public final class Condition {
     
-    @Getter
     private final Column column;
     
-    @Getter
     private final ShardingOperator operator;
     
     private final Map<Integer, Comparable<?>> positionValueMap = new LinkedHashMap<>();
@@ -96,7 +95,7 @@ public final class Condition {
      * @param parameters parameters
      * @return sharding value
      */
-    public ShardingValue getShardingValue(final List<Object> parameters) {
+    public ShardingValue getShardingValue(final List<?> parameters) {
         List<Comparable<?>> conditionValues = getValues(parameters);
         switch (operator) {
             case EQUAL:
@@ -109,7 +108,7 @@ public final class Condition {
         }
     }
     
-    private List<Comparable<?>> getValues(final List<Object> parameters) {
+    private List<Comparable<?>> getValues(final List<?> parameters) {
         List<Comparable<?>> result = new LinkedList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
             Object parameter = parameters.get(entry.getValue());

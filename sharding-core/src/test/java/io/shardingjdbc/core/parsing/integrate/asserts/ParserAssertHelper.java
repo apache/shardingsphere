@@ -18,9 +18,6 @@
 package io.shardingjdbc.core.parsing.integrate.asserts;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.constant.ShardingOperator;
-import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ConditionAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Value;
 import io.shardingjdbc.core.parsing.integrate.jaxb.limit.LimitAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.GeneratedKeyTokenAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.IndexTokenAssert;
@@ -32,16 +29,9 @@ import io.shardingjdbc.core.parsing.integrate.jaxb.token.RowCountTokenAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.SQLTokenAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.TableTokenAssert;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
-import io.shardingjdbc.core.parsing.parser.context.condition.Column;
-import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
-import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.limit.LimitValue;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
-import io.shardingjdbc.core.parsing.parser.expression.SQLExpression;
-import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
-import io.shardingjdbc.core.parsing.parser.expression.SQLPlaceholderExpression;
-import io.shardingjdbc.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
@@ -55,7 +45,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
@@ -63,49 +52,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class ParserAssertHelper {
-    
-    public static void assertConditions(
-            final List<ConditionAssert> expected, final Conditions actual, final boolean isPreparedStatement) {
-        assertTrue(EqualsBuilder.reflectionEquals(buildExpectedConditions(expected, isPreparedStatement), actual));
-    }
-    
-    private static Conditions buildExpectedConditions(final List<ConditionAssert> conditions, final boolean isPreparedStatement) {
-        Conditions result = new Conditions();
-        if (null == conditions) {
-            return result;
-        }
-        for (ConditionAssert each : conditions) {
-            List<SQLExpression> sqlExpressions = new LinkedList<>();
-            for (Value value : each.getValues()) {
-                if (isPreparedStatement) {
-                    sqlExpressions.add(new SQLPlaceholderExpression(value.getIndex()));
-                } else {
-                    Comparable<?> valueWithType = value.getValueWithType();
-                    if (valueWithType instanceof Number) {
-                        sqlExpressions.add(new SQLNumberExpression((Number) valueWithType));
-                    } else {
-                        sqlExpressions.add(new SQLTextExpression(null == valueWithType ? "" : valueWithType.toString()));
-                    }
-                }
-            }
-            Condition condition;
-            switch (ShardingOperator.valueOf(each.getOperator().toUpperCase())) {
-                case EQUAL:
-                    condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0));
-                    break;
-                case BETWEEN:
-                    condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0), sqlExpressions.get(1));
-                    break;
-                case IN:
-                    condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions);
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-            result.add(condition);
-        }
-        return result;
-    }
     
     public static void assertSqlTokens(final List<SQLTokenAssert> expected, final List<SQLToken> actual, final boolean isPreparedStatement) {
         if (null == expected || expected.size() == 0) {

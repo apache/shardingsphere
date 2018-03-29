@@ -46,7 +46,7 @@ public final class ParserAssert {
     
     @XmlAttribute
     @XmlList
-    private List<String> parameters;
+    private List<String> parameters = new LinkedList<>();
     
     @XmlElementWrapper
     @XmlElement(name = "table")
@@ -54,22 +54,22 @@ public final class ParserAssert {
     
     @XmlElementWrapper
     @XmlElement(name = "condition") 
-    private List<ConditionAssert> conditions;
+    private List<ConditionAssert> conditions = new LinkedList<>();
     
     @XmlElement
     private SQLTokenAsserts tokens = new SQLTokenAsserts();
     
     @XmlElementWrapper(name = "order-by-columns")
     @XmlElement(name = "order-by-column") 
-    private List<OrderByColumnAssert> orderByColumns;
+    private List<OrderByColumnAssert> orderByColumns = new LinkedList<>();
     
     @XmlElementWrapper(name = "group-by-columns")
     @XmlElement(name = "group-by-column") 
-    private List<GroupByColumnAssert> groupByColumns;
+    private List<GroupByColumnAssert> groupByColumns = new LinkedList<>();
     
     @XmlElementWrapper(name = "aggregation-select-items")
     @XmlElement(name = "aggregation-select-item") 
-    private List<AggregationSelectItemAssert> aggregationSelectItems;
+    private List<AggregationSelectItemAssert> aggregationSelectItems = new LinkedList<>();
     
     @XmlElement 
     private LimitAssert limit;
