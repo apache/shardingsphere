@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.tests;
+package io.shardingjdbc.core.parsing.integrate.engine;
 
 import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.DatabaseType;
