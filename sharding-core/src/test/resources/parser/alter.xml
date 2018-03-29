@@ -4,16 +4,21 @@
         <tables>
             <table name="t_log" />
         </tables>
-        <table-tokens>
-            <table-token begin-position="12" original-literals="t_log" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="12" original-literals="t_log" />
+            </table-tokens>
+        </tokens>
     </parser-assert>
+    
     <parser-assert sql-case-id="assertAlterTableIfExistAndOnly">
         <tables>
             <table name="t_log" />
         </tables>
-        <table-tokens>
-            <table-token begin-position="27" original-literals="t_log" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="27" original-literals="t_log" />
+            </table-tokens>
+        </tokens>
     </parser-assert>
 </parser-asserts>

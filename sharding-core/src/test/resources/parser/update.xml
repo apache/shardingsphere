@@ -4,9 +4,11 @@
         <tables>
             <table name="t_order" alias="o" />
         </tables>
-        <table-tokens>
-            <table-token begin-position="7" original-literals="t_order" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="7" original-literals="t_order" />
+            </table-tokens>
+        </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                 <value index="1" literal="1" type="int" />
@@ -16,13 +18,16 @@
             </condition>
         </conditions>
     </parser-assert>
+    
     <parser-assert sql-case-id="assertUpdateWithoutAlias" parameters="'update' 1 1">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
-            <table-token begin-position="7" original-literals="t_order" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="7" original-literals="t_order" />
+            </table-tokens>
+        </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                 <value index="1" literal="1" type="int" />

@@ -4,60 +4,84 @@
         <tables>
             <table name="t_log" />
         </tables>
-        <table-tokens>
-            <table-token begin-position="11" original-literals="t_log" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="11" original-literals="t_log" />
+            </table-tokens>
+        </tokens>
     </parser-assert>
+    
     <parser-assert sql-case-id="assertDropTableIfExists">
         <tables>
             <table name="t_log" />
         </tables>
-        <table-tokens>
-            <table-token begin-position="21" original-literals="t_log" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="21" original-literals="t_log" />
+            </table-tokens>
+        </tokens>
     </parser-assert>
+    
     <parser-assert sql-case-id="assertDropTemporaryTable">
         <tables>
             <table name="t_temp_log" />
         </tables>
-        <table-tokens>
-            <table-token begin-position="31" original-literals="t_temp_log" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="31" original-literals="t_temp_log" />
+            </table-tokens>
+        </tokens>
     </parser-assert>
+    
     <parser-assert sql-case-id="assertDropTableRestrict">
         <tables>
             <table name="t_log" />
         </tables>
     </parser-assert>
+    
     <parser-assert sql-case-id="assertDropTableCascade">
         <tables>
             <table name="t_log" />
         </tables>
-        <table-tokens>
-            <table-token begin-position="11" original-literals="t_log" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="11" original-literals="t_log" />
+            </table-tokens>
+        </tokens>
     </parser-assert>
+    
     <parser-assert sql-case-id="assertDropTableCascadeConstraintsAndPurge">
         <tables>
             <table name="t_log" />
         </tables>
-        <table-tokens>
-            <table-token begin-position="11" original-literals="t_log" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="11" original-literals="t_log" />
+            </table-tokens>
+        </tokens>
     </parser-assert>
+    
     <parser-assert sql-case-id="assertDropIndex">
         <tables>
             <table name="t_log" />
         </tables>
-        <index-token begin-position="11" original-literals="t_log_index" table-name="t_log" />
-        <table-tokens>
-            <table-token begin-position="26" original-literals="t_log" />
-        </table-tokens>
+        <tokens>
+            <index-token begin-position="11" original-literals="t_log_index" table-name="t_log" />
+            <table-tokens>
+                <table-token begin-position="26" original-literals="t_log" />
+            </table-tokens>
+        </tokens>
     </parser-assert>
+    
     <parser-assert sql-case-id="assertDropIndexWithoutOn">
-        <index-token begin-position="11" original-literals="t_log_index" table-name="" />
+        <tokens>
+            <index-token begin-position="11" original-literals="t_log_index" table-name="" />
+        </tokens>
     </parser-assert>
+    
     <parser-assert sql-case-id="assertDropIndexIfExists">
-        <index-token begin-position="21" original-literals="t_order_index" table-name="" />
+        <tokens>
+            <index-token begin-position="21" original-literals="t_order_index" table-name="" />
+        </tokens>
     </parser-assert>
 </parser-asserts>

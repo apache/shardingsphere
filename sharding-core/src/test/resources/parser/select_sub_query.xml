@@ -4,9 +4,11 @@
         <tables>
             <table name="t_order" alias="o" />
         </tables>
-        <table-tokens>
-            <table-token begin-position="33" original-literals="t_order" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="33" original-literals="t_order" />
+            </table-tokens>
+        </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -14,16 +16,19 @@
             </condition>
         </conditions>
     </parser-assert>
+    
     <!-- TODO cannot pass,add later 
     <parser-assert sql-case-id="assertSelectSubQueryMultiTableWithParentheses" parameters="1 2">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
         </tables>
-        <table-tokens>
-            <table-token begin-position="33" original-literals="t_order" />
-            <table-token begin-position="44" original-literals="t_order_item" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="33" original-literals="t_order" />
+                <table-token begin-position="44" original-literals="t_order_item" />
+            </table-tokens>
+        </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -32,24 +37,30 @@
         </conditions>
     </parser-assert>
     -->
+    
     <parser-assert sql-case-id="assertSelectSubQueryWithOrderBy">
         <tables>
             <table name="t_order"/>
         </tables>
-        <table-tokens>
-            <table-token begin-position="52" original-literals="t_order" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="52" original-literals="t_order" />
+            </table-tokens>
+        </tokens>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="orders_count" />
         </aggregation-select-items>
     </parser-assert>
+    
     <parser-assert sql-case-id="assertSelectSubQueryWithGroupBy">
         <tables>
             <table name="t_order_item"/>
         </tables>
-        <table-tokens>
-            <table-token begin-position="64" original-literals="t_order_item" />
-        </table-tokens>
+        <tokens>
+            <table-tokens>
+                <table-token begin-position="64" original-literals="t_order_item" />
+            </table-tokens>
+        </tokens>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="order_items_count" />
         </aggregation-select-items>

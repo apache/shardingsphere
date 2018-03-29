@@ -64,7 +64,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         ParserAssert parserAssert = parserAssertsLoader.getParserAssert(sqlCaseId);
         ParserAssertHelper.assertTables(parserAssert.getTables(), actual.getTables());
         ParserAssertHelper.assertConditions(parserAssert.getConditions(), actual.getConditions(), isPreparedStatement);
-        ParserAssertHelper.assertSqlTokens(parserAssert.getSqlTokens(), actual.getSqlTokens(), isPreparedStatement);
+        ParserAssertHelper.assertSqlTokens(parserAssert.getTokens().getTokenAsserts(), actual.getSqlTokens(), isPreparedStatement);
         if (actual instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) actual;
             SelectStatement expectedSqlStatement = ParserJAXBHelper.getSelectStatement(parserAssert);
