@@ -20,9 +20,11 @@ package io.shardingjdbc.core.parsing.parser.clause;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
+import io.shardingjdbc.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
+import io.shardingjdbc.core.parsing.lexer.token.TokenType;
 import io.shardingjdbc.core.parsing.parser.clause.expression.AliasExpressionParser;
 import io.shardingjdbc.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
@@ -115,6 +117,13 @@ public class TableReferencesClauseParser implements SQLClauseParser {
                 DefaultKeyword.INNER, DefaultKeyword.OUTER, DefaultKeyword.LEFT, DefaultKeyword.RIGHT, DefaultKeyword.FULL, DefaultKeyword.CROSS, DefaultKeyword.NATURAL, DefaultKeyword.JOIN));
         joinTypeKeywords.addAll(Arrays.asList(getKeywordsForJoinType()));
         Keyword[] joinTypeKeywordArrays = joinTypeKeywords.toArray(new Keyword[joinTypeKeywords.size()]);
+    
+        boolean skipIfForce = this.lexerEngine.skipIfEqual(new TokenType[]{MySQLKeyword.FORCE})
+                && this.lexerEngine.skipIfEqual(new TokenType[]{DefaultKeyword.INDEX});
+        if (skipIfForce) {
+            this.lexerEngine.skipParentheses();
+        }
+        
         if (!lexerEngine.equalAny(joinTypeKeywordArrays)) {
             return false;
         }
