@@ -14,19 +14,22 @@ import lombok.Setter;
 @Setter
 public final class WorkbenchResponse {
     
-    private int status;
-    
     private String message;
     
     private Object data;
-
+    
     /**
-     * Generate response object.
-     * @param responseCode  response code. 
-     * @param responseMsg response message.
+     * Response object.
+     *
+     * @param responseData response data.
      */
-    public WorkbenchResponse(final int responseCode, final String responseMsg) {
-        status = responseCode;
-        message = responseMsg;
+    public WorkbenchResponse(final Object responseData) {
+        message = "";
+        data = responseData;
+    }
+    
+    public WorkbenchResponse(final String msg) {
+        message = msg;
+        data = null;
     }
 }

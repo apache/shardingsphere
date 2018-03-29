@@ -9,24 +9,26 @@ import java.util.HashMap;
 import java.util.Map;
 import com.google.common.base.Optional;
 
+import javax.jws.soap.SOAPBinding;
+
 /**
- * Global user session.
+ * Define user session.
  * 
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SessionRegistry {
+public final class UserSessionRegistry {
     
-    private static final SessionRegistry INSTANCE = new SessionRegistry();
+    private static final UserSessionRegistry INSTANCE = new UserSessionRegistry();
     
-    private final Map<String, Connection> session = new HashMap<>(128, 1);
+    private final Map<String, UserSession> userSessions = new HashMap<>(128, 1);
     
     /**
-     * Get SessionRegistry instance.
+     * Get UserSessionRegistry instance.
      * 
      * @return session registry
      */
-    public static SessionRegistry getInstance() {
+    public static UserSessionRegistry getInstance() {
         return INSTANCE;
     }
     
@@ -36,18 +38,18 @@ public final class SessionRegistry {
      * @param sessionId session id
      * @return user and connection info
      */
-    public synchronized Optional<Connection> findSession(final String sessionId) {
-        return Optional.fromNullable(session.get(sessionId));
+    public synchronized Optional<UserSession> findSession(final String sessionId) {
+        return Optional.fromNullable(userSessions.get(sessionId));
     }
     
     /**
      * Add session.
      * 
      * @param sessionId session id
-     * @param connection connection
+     * @param userSession user session
      */
-    public synchronized void addSession(final String sessionId, final Connection connection) {
-        session.put(sessionId, connection);
+    public synchronized void addSession(final String sessionId, final UserSession userSession) {
+        userSessions.put(sessionId, userSession);
     }
 
     /**
@@ -56,6 +58,6 @@ public final class SessionRegistry {
      * @param sessionId session id
      */
     public synchronized void removeSession(final String sessionId) {
-        session.remove(sessionId);
+        userSessions.remove(sessionId);
     }
 }

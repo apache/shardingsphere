@@ -1,19 +1,16 @@
 package io.shardingjdbc.console.controller;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.console.domain.DBConnector;
-import io.shardingjdbc.console.domain.SessionRegistry;
-import io.shardingjdbc.console.domain.WorkbenchResponse;
-import io.shardingjdbc.console.domain.UserSession;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.CookieValue;
+import io.shardingjdbc.console.domain.*;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * User controller.
@@ -32,32 +29,42 @@ public class UserController {
      * @param response response
      * @return response object
      */
-    @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public WorkbenchResponse login(final UserSession userSession, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID,
-                                   final HttpServletResponse response) {
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public WorkbenchResponse login(@RequestBody final UserSession userSession, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID,
+                                   final HttpServletResponse response) throws UserException {
         if (!"".equals(userUUID)) {
-            Optional<Connection> connectionOptional = SessionRegistry.getInstance().findSession(userUUID);
-            if (connectionOptional.isPresent()) {
-                return new WorkbenchResponse(200, "OK");
+            Optional<UserSession> userSessionOptional = UserSessionRegistry.getInstance().findSession(userUUID);
+            if (userSessionOptional.isPresent()) {
+                return new WorkbenchResponse("Logged in.");
             } else {
                 removeSession(userUUID, response);
-                return new WorkbenchResponse(403, "Please login first.");
+                throw new UserException("Please login first.");
             }
         }
         Connection connection;
         try {
             connection = DBConnector.getConnection(userSession.getUserName(), userSession.getPassWord(), userSession.getTargetURL(), userSession.getDriver());
         } catch (final ClassNotFoundException | SQLException ex) {
-            return new WorkbenchResponse(403, "Authorization failed");
+            throw new UserException("Login failed.");
         }
-        setSession(userSession.getId(), response, connection);
-        
-        return new WorkbenchResponse(200, "Authorization succeeded");
+        WindowSession windowSession = new WindowSession(connection);
+        setSession(userSession, windowSession, response, connection);
+    
+    
+        Map<String, String> result = new HashMap<>();
+        result.put("windowID", windowSession.getId());
+        return new WorkbenchResponse("Login succeeded", result);
     }
     
-    private void setSession(final String uuid, final HttpServletResponse response, final Connection connection) {
-        SessionRegistry.getInstance().addSession(uuid, connection);
-        Cookie cookie = new Cookie("userUUID", uuid);
+    private void setSession(final UserSession userSession, final WindowSession windowSession,
+                            final HttpServletResponse response, final Connection connection) {
+        
+        userSession.addWindowID(windowSession.getId());
+        
+        UserSessionRegistry.getInstance().addSession(userSession.getId(), userSession);
+        WindowSessionRegistry.getInstance().addSession(windowSession.getId(), windowSession.getConnection());
+        
+        Cookie cookie = new Cookie("userUUID", userSession.getId());
         cookie.setMaxAge(120 * 60);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -75,15 +82,32 @@ public class UserController {
         if (!"".equals(userUUID)) {
             removeSession(userUUID, response);
         }
-        return new WorkbenchResponse(200, "OK");
+        return new WorkbenchResponse("Logout succeeded");
     }
 
     private void removeSession(final String userUUID, final HttpServletResponse response) {
-        SessionRegistry.getInstance().removeSession(userUUID);
+        Optional<UserSession> userSessionOptional = UserSessionRegistry.getInstance().findSession(userUUID);
+        if(userSessionOptional.isPresent()) {
+            List<String> windowIDList = userSessionOptional.get().getWindowIDList();
+            for(String windowID : windowIDList){
+                WindowSessionRegistry.getInstance().removeSession(windowID);
+            }
+        }
+        UserSessionRegistry.getInstance().removeSession(userUUID);
         
         Cookie cookie = new Cookie("userUUID", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
+    }
+    
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public WorkbenchResponse getUser(@RequestParam("para") String para) throws Exception {
+        if ("1".equals(para)) {
+            return new WorkbenchResponse("OK GO");
+        }else {
+            throw new UserException("my error");
+        }
+        
     }
 }
