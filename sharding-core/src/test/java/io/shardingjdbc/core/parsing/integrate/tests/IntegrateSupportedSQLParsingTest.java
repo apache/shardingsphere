@@ -19,12 +19,11 @@ package io.shardingjdbc.core.parsing.integrate.tests;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
-import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
 import io.shardingjdbc.core.parsing.integrate.asserts.ParserAssertHelper;
 import io.shardingjdbc.core.parsing.integrate.asserts.ParserJAXBHelper;
+import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingjdbc.core.util.SQLPlaceholderUtil;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
@@ -51,13 +50,13 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     @Test
     public void assertLiteralSQL() {
-        assertSQLStatement(new SQLParsingEngine(databaseType, 
-                SQLPlaceholderUtil.replaceStatement(sqlCasesLoader.getSupportedSQL(sqlCaseId), parserAssertsLoader.getParserAssert(sqlCaseId).getParameters()), getShardingRule()).parse(), false);
+        assertSQLStatement(new SQLParsingEngine(
+                databaseType, sqlCasesLoader.getSupportedLiteralSQL(sqlCaseId, parserAssertsLoader.getParserAssert(sqlCaseId).getParameters()), getShardingRule()).parse(), false);
     }
     
     @Test
     public void assertPlaceholderSQL() {
-        assertSQLStatement(new SQLParsingEngine(databaseType, SQLPlaceholderUtil.replacePreparedStatement(sqlCasesLoader.getSupportedSQL(sqlCaseId)), getShardingRule()).parse(), true);
+        assertSQLStatement(new SQLParsingEngine(databaseType, sqlCasesLoader.getSupportedPlaceholderSQL(sqlCaseId), getShardingRule()).parse(), true);
     }
     
     private void assertSQLStatement(final SQLStatement actual, final boolean isPreparedStatement) {

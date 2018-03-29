@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -131,11 +132,37 @@ public final class SQLCasesLoader {
     
     /**
      * Get supported SQL.
+     * 
      * @param sqlCaseId SQL case ID
      * @return SQL
      */
     public String getSupportedSQL(final String sqlCaseId) {
         return getSQLFromMap(sqlCaseId, supportedSQLCaseMap);
+    }
+    
+    /**
+     * Get supported SQL with literal.
+     * 
+     * @param sqlCaseId SQL case ID
+     * @param parameters SQL parameters
+     * @return SQL
+     */
+    public String getSupportedLiteralSQL(final String sqlCaseId, final List<?> parameters) {
+        String sql = getSQLFromMap(sqlCaseId, supportedSQLCaseMap);
+        if (null == parameters || parameters.isEmpty()) {
+            return sql;
+        }
+        return String.format(sql, parameters.toArray()).replace("%%", "%");
+    }
+    
+    /**
+     * Get supported SQL with placeholder.
+     * 
+     * @param sqlCaseId SQL case ID
+     * @return SQL
+     */
+    public String getSupportedPlaceholderSQL(final String sqlCaseId) {
+        return getSQLFromMap(sqlCaseId, supportedSQLCaseMap).replace("%s", "?").replace("%%", "%");
     }
     
     /**
