@@ -109,7 +109,7 @@ public final class LexerEngine {
         if (Symbol.LEFT_PAREN == lexer.getCurrentToken().getType()) {
             lexer.nextToken();
             while (true) {
-                if (Assist.END == lexer.getCurrentToken().getType() || (Symbol.RIGHT_PAREN == lexer.getCurrentToken().getType())) {
+                if (Assist.END == lexer.getCurrentToken().getType() || Symbol.RIGHT_PAREN == lexer.getCurrentToken().getType()) {
                     break;
                 }
                 lexer.nextToken();
