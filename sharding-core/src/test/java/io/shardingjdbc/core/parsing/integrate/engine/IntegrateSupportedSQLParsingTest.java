@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -167,9 +168,8 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         assertGeneratedKeyToken(actual, expected);
         assertMultipleInsertValuesToken(actual, expected);
         assertOrderByToken(actual, expected);
-        // TODO fix offset and row count
-//        assertOffsetToken(actual, expected);
-//        assertRowCountToken(actual, expected);
+        assertOffsetToken(actual, expected);
+        assertRowCountToken(actual, expected);
     }
     
     private void assertTableTokens(final List<SQLToken> actual, final SQLTokenAsserts expected) {
@@ -321,6 +321,10 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     private void assertOffsetToken(final List<SQLToken> actual, final SQLTokenAsserts expected) {
         Optional<OffsetToken> offsetToken = getOffsetToken(actual);
+        if (SQLCaseType.Placeholder == sqlCaseType) {
+            assertFalse(getFullAssertMessage("Offset token should not exist: "), offsetToken.isPresent());
+            return;
+        }
         if (offsetToken.isPresent()) {
             assertOffsetToken(offsetToken.get(), expected.getOffsetToken());
         } else {
@@ -344,6 +348,10 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     private void assertRowCountToken(final List<SQLToken> actual, final SQLTokenAsserts expected) {
         Optional<RowCountToken> rowCountToken = getRowCountToken(actual);
+        if (SQLCaseType.Placeholder == sqlCaseType) {
+            assertFalse(getFullAssertMessage("Row count token should not exist: "), rowCountToken.isPresent());
+            return;
+        }
         if (rowCountToken.isPresent()) {
             assertRowCountToken(rowCountToken.get(), expected.getRowCountToken());
         } else {
