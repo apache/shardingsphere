@@ -45,7 +45,7 @@ chapter = true
 * [海尔消费金融](https://www.haiercash.com/)
 * [我爱卡](http://www.51credit.com/)
 * [随手记](https://www.sui.com/)
-* [美丽金融](https://www.mljr.com/)
+* [美利金融](https://www.mljr.com/)
 * [团贷网](https://www.tuandai.com/)
 * [京东金融](http://jr.jd.com/)
 
