@@ -32,20 +32,17 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class AggregationSelectItemAssert {
     
-    @XmlAttribute(name = "inner-expression")
-    private String innerExpression;
-    
     @XmlAttribute(name = "aggregation-type")
     private String aggregationType;
+    
+    @XmlAttribute(name = "inner-expression")
+    private String innerExpression;
     
     @XmlAttribute
     private String alias;
     
     @XmlAttribute 
-    private String option;
-    
-    @XmlAttribute 
-    private Integer index;
+    private Integer index = -1;
     
     @XmlElement(name = "derived-column") 
     private List<AggregationSelectItemAssert> derivedColumns = new ArrayList<>(2);

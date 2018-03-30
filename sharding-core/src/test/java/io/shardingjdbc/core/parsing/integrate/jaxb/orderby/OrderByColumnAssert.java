@@ -36,7 +36,7 @@ public final class OrderByColumnAssert {
     private String name;
     
     @XmlAttribute
-    private Integer index;
+    private Integer index = -1;
     
     @XmlAttribute
     private String alias;
