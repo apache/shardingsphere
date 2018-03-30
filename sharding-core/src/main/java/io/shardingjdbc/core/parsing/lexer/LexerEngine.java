@@ -103,22 +103,6 @@ public final class LexerEngine {
     }
     
     /**
-     * skip all tokens that inside parentheses.
-     */
-    public void skipParentheses() {
-        if (Symbol.LEFT_PAREN == lexer.getCurrentToken().getType()) {
-            lexer.nextToken();
-            while (true) {
-                if (Assist.END == lexer.getCurrentToken().getType() || Symbol.RIGHT_PAREN == lexer.getCurrentToken().getType()) {
-                    break;
-                }
-                lexer.nextToken();
-            }
-            lexer.nextToken();
-        }
-    }
-    
-    /**
      * Assert current token type should equals input token and go to next token type.
      *
      * @param tokenType token type

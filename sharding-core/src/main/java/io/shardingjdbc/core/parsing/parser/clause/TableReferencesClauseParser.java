@@ -95,6 +95,13 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
             sqlStatement.getTables().add(new Table(tableName, alias));
         }
+    
+        boolean skipIfForce = this.lexerEngine.skipIfEqual(new TokenType[]{MySQLKeyword.FORCE})
+                && this.lexerEngine.skipIfEqual(new TokenType[]{DefaultKeyword.INDEX});
+        if (skipIfForce) {
+            this.lexerEngine.skipParentheses(sqlStatement);
+        }
+        
         parseJoinTable(sqlStatement);
         if (isSingleTableOnly && !sqlStatement.getTables().isSingleTable()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
@@ -117,12 +124,6 @@ public class TableReferencesClauseParser implements SQLClauseParser {
                 DefaultKeyword.INNER, DefaultKeyword.OUTER, DefaultKeyword.LEFT, DefaultKeyword.RIGHT, DefaultKeyword.FULL, DefaultKeyword.CROSS, DefaultKeyword.NATURAL, DefaultKeyword.JOIN));
         joinTypeKeywords.addAll(Arrays.asList(getKeywordsForJoinType()));
         Keyword[] joinTypeKeywordArrays = joinTypeKeywords.toArray(new Keyword[joinTypeKeywords.size()]);
-    
-        boolean skipIfForce = this.lexerEngine.skipIfEqual(new TokenType[]{MySQLKeyword.FORCE})
-                && this.lexerEngine.skipIfEqual(new TokenType[]{DefaultKeyword.INDEX});
-        if (skipIfForce) {
-            this.lexerEngine.skipParentheses();
-        }
         
         if (!lexerEngine.equalAny(joinTypeKeywordArrays)) {
             return false;
