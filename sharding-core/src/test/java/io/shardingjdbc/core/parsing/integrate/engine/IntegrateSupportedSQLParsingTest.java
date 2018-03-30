@@ -24,6 +24,7 @@ import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ConditionAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Value;
 import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumnAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItemAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.limit.LimitAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumnAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.table.TableAssert;
@@ -40,6 +41,7 @@ import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
+import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
@@ -109,6 +111,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
             assertItems(selectStatement.getItems(), parserAssert.getAggregationSelectItems());
             assertGroupByItems(selectStatement.getGroupByItems(), parserAssert.getGroupByColumns());
             assertOrderByItems(selectStatement.getOrderByItems(), parserAssert.getOrderByColumns());
+            assertLimit(selectStatement.getLimit(), parserAssert.getLimit());
         }
         
         
@@ -439,11 +442,11 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     }
     
     private void assertGroupByItem(final OrderItem actual, final GroupByColumnAssert expected) {
-        assertThat(actual.getOwner().orNull(), is(expected.getOwner()));
-        assertThat(actual.getName().orNull(), is(expected.getName()));
-        assertThat(actual.getOrderDirection().name(), is(expected.getOrderDirection()));
+        assertThat(getFullAssertMessage("Group by item owner assertion error: "), actual.getOwner().orNull(), is(expected.getOwner()));
+        assertThat(getFullAssertMessage("Group by item name assertion error: "), actual.getName().orNull(), is(expected.getName()));
+        assertThat(getFullAssertMessage("Group by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
         // TODO assert nullOrderDirection
-        assertThat(actual.getAlias().orNull(), is(expected.getAlias()));
+        assertThat(getFullAssertMessage("Group by item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
     }
     
     private void assertOrderByItems(final List<OrderItem> actual, final List<OrderByColumnAssert> expected) {
@@ -456,14 +459,35 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     }
     
     private void assertOrderByItem(final OrderItem actual, final OrderByColumnAssert expected) {
-        assertThat(actual.getOwner().orNull(), is(expected.getOwner()));
-        assertThat(actual.getName().orNull(), is(expected.getName()));
-        assertThat(actual.getOrderDirection().name(), is(expected.getOrderDirection()));
+        assertThat(getFullAssertMessage("Order by item owner assertion error: "), actual.getOwner().orNull(), is(expected.getOwner()));
+        assertThat(getFullAssertMessage("Order by item name assertion error: "), actual.getName().orNull(), is(expected.getName()));
+        assertThat(getFullAssertMessage("Order by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
         // TODO assert nullOrderDirection
-        assertThat(actual.getIndex(), is(expected.getIndex()));
-        assertThat(actual.getAlias().orNull(), is(expected.getAlias()));
+        assertThat(getFullAssertMessage("Order by item index assertion error: "), actual.getIndex(), is(expected.getIndex()));
+        assertThat(getFullAssertMessage("Order by item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
     }
     
+    private void assertLimit(final Limit actual, final LimitAssert expected) {
+        if (null == actual) {
+            assertNull(getFullAssertMessage("Limit should not exist: "), expected);
+            return;
+        }
+        if (SQLCaseType.Placeholder == sqlCaseType) {
+            if (null != actual.getOffset()) {
+                assertThat(getFullAssertMessage("Limit offset index assertion error: "), actual.getOffset().getIndex(), is(expected.getOffsetParameterIndex()));
+            }
+            if (null != actual.getRowCount()) {
+                assertThat(getFullAssertMessage("Limit row count index assertion error: "), actual.getRowCount().getIndex(), is(expected.getRowCountParameterIndex()));
+            }
+        } else {
+            if (null != actual.getOffset()) {
+                assertThat(getFullAssertMessage("Limit offset value assertion error: "), actual.getOffset().getValue(), is(expected.getOffset()));
+            }
+            if (null != actual.getRowCount()) {
+                assertThat(getFullAssertMessage("Limit row count value assertion error: "), actual.getRowCount().getValue(), is(expected.getRowCount()));
+            }
+        }
+    }
     
     private String getFullAssertMessage(final String assertMessage) {
         StringBuilder result = new StringBuilder(System.getProperty("line.separator"));
