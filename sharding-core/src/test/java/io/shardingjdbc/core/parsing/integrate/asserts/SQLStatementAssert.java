@@ -55,10 +55,10 @@ public final class SQLStatementAssert {
     private final LimitAssert limitAssert;
     
     public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         this.actual = actual;
         final ParserResultSetLoader parserResultSetLoader = ParserResultSetLoader.getInstance();
         expected = parserResultSetLoader.getParserResult(sqlCaseId);
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);
         tokenAssert = new TokenAssert(sqlCaseType, assertMessage);
