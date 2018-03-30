@@ -145,14 +145,4 @@ public class UserController {
         userSession.delWindowID(windowInfo.get("windowID"));
         WindowSessionRegistry.getInstance().removeSession(windowInfo.get("windowID"));
         }
-    
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public WorkbenchResponse getUser(@RequestParam("para") String para) throws Exception {
-        if ("1".equals(para)) {
-            return new WorkbenchResponse("OK GO");
-        }else {
-            throw new UserException("my error");
-        }
-        
-    }
 }
