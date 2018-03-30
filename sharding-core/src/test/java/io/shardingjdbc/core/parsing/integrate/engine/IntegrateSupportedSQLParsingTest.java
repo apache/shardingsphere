@@ -20,14 +20,14 @@ package io.shardingjdbc.core.parsing.integrate.engine;
 import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
-import io.shardingjdbc.core.parsing.integrate.asserts.ParserAssertsLoader;
+import io.shardingjdbc.core.parsing.integrate.asserts.ParserResultSetLoader;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ConditionAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Value;
 import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumnAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItemAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.limit.LimitAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumnAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserResult;
 import io.shardingjdbc.core.parsing.integrate.jaxb.table.TableAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.GeneratedKeyTokenAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.IndexTokenAssert;
@@ -83,7 +83,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
-    private static ParserAssertsLoader parserAssertsLoader = ParserAssertsLoader.getInstance();
+    private static ParserResultSetLoader parserResultSetLoader = ParserResultSetLoader.getInstance();
     
     private final String sqlCaseId;
     
@@ -98,21 +98,21 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     @Test
     public void assertSupportedSQL() throws NoSuchFieldException, IllegalAccessException {
-        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserAssertsLoader.getParserAssert(sqlCaseId).getParameters());
+        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.getParserResult(sqlCaseId).getParameters());
         assertSQLStatement(new SQLParsingEngine(databaseType, sql, getShardingRule()).parse());
     }
     
     private void assertSQLStatement(final SQLStatement actual) throws NoSuchFieldException, IllegalAccessException {
-        ParserAssert parserAssert = parserAssertsLoader.getParserAssert(sqlCaseId);
-        assertTables(actual.getTables(), parserAssert.getTables());
-        assertConditions(actual.getConditions(), parserAssert.getConditions());
-        assertSQLTokens(actual.getSqlTokens(), parserAssert.getTokens());
+        ParserResult parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
+        assertTables(actual.getTables(), parserResult.getTables());
+        assertConditions(actual.getConditions(), parserResult.getConditions());
+        assertSQLTokens(actual.getSqlTokens(), parserResult.getTokens());
         if (actual instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) actual;
-            assertItems(selectStatement.getItems(), parserAssert.getAggregationSelectItems());
-            assertGroupByItems(selectStatement.getGroupByItems(), parserAssert.getGroupByColumns());
-            assertOrderByItems(selectStatement.getOrderByItems(), parserAssert.getOrderByColumns());
-            assertLimit(selectStatement.getLimit(), parserAssert.getLimit());
+            assertItems(selectStatement.getItems(), parserResult.getAggregationSelectItems());
+            assertGroupByItems(selectStatement.getGroupByItems(), parserResult.getGroupByColumns());
+            assertOrderByItems(selectStatement.getOrderByItems(), parserResult.getOrderByColumns());
+            assertLimit(selectStatement.getLimit(), parserResult.getLimit());
         }
     }
     
@@ -488,10 +488,10 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
             result.append(SQLCasesLoader.getInstance().getSupportedPlaceholderSQL(sqlCaseId));
             result.append(System.getProperty("line.separator"));
             result.append("SQL Params  : ");
-            result.append(parserAssertsLoader.getParserAssert(sqlCaseId).getParameters());
+            result.append(parserResultSetLoader.getParserResult(sqlCaseId).getParameters());
             result.append(System.getProperty("line.separator"));
         } else {
-            result.append(SQLCasesLoader.getInstance().getSupportedLiteralSQL(sqlCaseId, parserAssertsLoader.getParserAssert(sqlCaseId).getParameters()));
+            result.append(SQLCasesLoader.getInstance().getSupportedLiteralSQL(sqlCaseId, parserResultSetLoader.getParserResult(sqlCaseId).getParameters()));
         }
         result.append(System.getProperty("line.separator"));
         result.append(assertMessage);

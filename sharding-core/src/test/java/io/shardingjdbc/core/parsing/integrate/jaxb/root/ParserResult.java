@@ -39,7 +39,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ParserAssert {
+public final class ParserResult {
     
     @XmlAttribute(name = "sql-case-id")
     private String sqlCaseId;

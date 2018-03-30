@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser-asserts>
-    <parser-assert sql-case-id="assertSelectOne" />
+<parser-result-sets>
+    <parser-result sql-case-id="assertSelectOne" />
     
-    <parser-assert sql-case-id="assertSelectNotEqualsWithSingleTable" parameters="1">
+    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTable" parameters="1">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -12,9 +12,9 @@
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectNotEqualsWithSingleTableForExclamationEqual" parameters="1">
+    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTableForExclamationEqual" parameters="1">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -24,9 +24,9 @@
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectNotEqualsWithSingleTableForNotIn" parameters="1">
+    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTableForNotIn" parameters="1">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -36,9 +36,9 @@
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectEqualsWithSingleTable" parameters="1 1">
+    <parser-result sql-case-id="assertSelectEqualsWithSingleTable" parameters="1 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -53,10 +53,10 @@
                 <value index="1" literal="1" type="int" />
             </condition>
         </conditions>
-    </parser-assert>
+    </parser-result>
 
     <!-- // TODO 这里可优化，将两个字段AND = 替换为永false, 目前因为condition是map，同样的column会覆盖 -->
-    <parser-assert sql-case-id="assertSelectEqualsWithSameShardingColumns" parameters="1 2">
+    <parser-result sql-case-id="assertSelectEqualsWithSameShardingColumns" parameters="1 2">
         <tables>
             <table name="t_order" />
         </tables>
@@ -68,9 +68,9 @@
                 <value index="1" literal="2" type="int" />
             </condition>
         </conditions>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectBetweenWithSingleTable" parameters="1 10 2 5">
+    <parser-result sql-case-id="assertSelectBetweenWithSingleTable" parameters="1 10 2 5">
         <tables>
             <table name="t_order" />
         </tables>
@@ -91,9 +91,9 @@
             <order-by-column name="user_id" order-direction="ASC" />
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectInWithSingleTable" parameters="1 2 3 9 10">
+    <parser-result sql-case-id="assertSelectInWithSingleTable" parameters="1 2 3 9 10">
         <tables>
             <table name="t_order" />
         </tables>
@@ -115,10 +115,10 @@
             <order-by-column name="user_id" order-direction="ASC" />
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
     <!-- // TODO 目前对于IN多结果不同做到交集处理 仅仅是简单的加入, 目前因为condition是map，同样的column会覆盖 -->
-    <parser-assert sql-case-id="assertSelectInWithSameShardingColumns" parameters="100 1001 1001 1002">
+    <parser-result sql-case-id="assertSelectInWithSameShardingColumns" parameters="100 1001 1001 1002">
         <tables>
             <table name="t_order" />
         </tables>
@@ -134,9 +134,9 @@
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectIterator" parameters="1 2">
+    <parser-result sql-case-id="assertSelectIterator" parameters="1 2">
         <tables>
             <table name="t_order_item" alias="t"/>
         </tables>
@@ -149,9 +149,9 @@
                 <value index="1" literal="2" type="int" />
             </condition>
         </conditions>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectNoShardingTable">
+    <parser-result sql-case-id="assertSelectNoShardingTable">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -168,9 +168,9 @@
         <order-by-columns>
             <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectLikeWithCount" parameters="'init' 1 2 9 10">
+    <parser-result sql-case-id="assertSelectLikeWithCount" parameters="'init' 1 2 9 10">
         <tables>
             <table name="t_order" alias="o"/>
         </tables>
@@ -190,9 +190,9 @@
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(0)" alias="orders_count"/>
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectWithBindingTable" parameters="1 2 9 10">
+    <parser-result sql-case-id="assertSelectWithBindingTable" parameters="1 2 9 10">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -219,9 +219,9 @@
         <order-by-columns>
             <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectWithBindingTableAndConfigTable" parameters="1 2 9 10 'init'">
+    <parser-result sql-case-id="assertSelectWithBindingTableAndConfigTable" parameters="1 2 9 10 'init'">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -248,9 +248,9 @@
         <order-by-columns>
             <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectWithUpperCaseBindingTable" parameters="1 2 9 10">
+    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTable" parameters="1 2 9 10">
         <tables>
             <table name="T_ORDER" alias="o"/>
             <table name="T_order_item" alias="i"/>
@@ -277,9 +277,9 @@
         <order-by-columns>
             <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectWithUpperCaseBindingTableAndConfigTable" parameters="1 2 9 10 'init'">
+    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTableAndConfigTable" parameters="1 2 9 10 'init'">
         <tables>
             <table name="T_ORDER" alias="o"/>
             <table name="T_order_item" alias="i"/>
@@ -306,9 +306,9 @@
         <order-by-columns>
             <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectCountWithBindingTable" parameters="1 2 9 10">
+    <parser-result sql-case-id="assertSelectCountWithBindingTable" parameters="1 2 9 10">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -330,9 +330,9 @@
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectCountWithBindingTableWithJoin" parameters="1 2 9 10">
+    <parser-result sql-case-id="assertSelectCountWithBindingTableWithJoin" parameters="1 2 9 10">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -354,9 +354,9 @@
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectAliasWithKeyword" parameters="1">
+    <parser-result sql-case-id="assertSelectAliasWithKeyword" parameters="1">
         <tables>
             <table name="t_order_item" alias="length" />
         </tables>
@@ -368,5 +368,5 @@
                 <value index="0" literal="1" type="int" />
             </condition>
         </conditions>
-    </parser-assert>
-</parser-asserts>
+    </parser-result>
+</parser-result-sets>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser-asserts>
-    <parser-assert sql-case-id="assertDeleteWithShardingValue" parameters="1000 1001 'init'">
+<parser-result-sets>
+    <parser-result sql-case-id="assertDeleteWithShardingValue" parameters="1000 1001 'init'">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -15,14 +15,14 @@
                 <value index="1" literal="1001" type="int" />
             </condition>
         </conditions>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertDeleteWithoutShardingValue" parameters="'init'">
+    <parser-result sql-case-id="assertDeleteWithoutShardingValue" parameters="'init'">
         <tables>
             <table name="t_order" />
         </tables>
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-    </parser-assert>
-</parser-asserts>
+    </parser-result>
+</parser-result-sets>

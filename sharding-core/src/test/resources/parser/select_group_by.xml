@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser-asserts>
-    <parser-assert sql-case-id="assertSelectDateFuncWithGroupBy" parameters="1000 1100">
+<parser-result-sets>
+    <parser-result sql-case-id="assertSelectDateFuncWithGroupBy" parameters="1000 1100">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -23,9 +23,9 @@
         <order-by-columns>
             <order-by-column name="date_format(c_date, '%y-%m-%d')" order-direction="ASC" alias="c_date" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectSumWithGroupBy">
+    <parser-result sql-case-id="assertSelectSumWithGroupBy">
         <tables>
             <table name="t_order" />
         </tables>
@@ -41,9 +41,9 @@
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectCountWithGroupBy">
+    <parser-result sql-case-id="assertSelectCountWithGroupBy">
         <tables>
             <table name="t_order" />
         </tables>
@@ -59,9 +59,9 @@
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectMaxWithGroupBy">
+    <parser-result sql-case-id="assertSelectMaxWithGroupBy">
         <tables>
             <table name="t_order" />
         </tables>
@@ -77,9 +77,9 @@
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectMinWithGroupBy">
+    <parser-result sql-case-id="assertSelectMinWithGroupBy">
         <tables>
             <table name="t_order" />
         </tables>
@@ -95,9 +95,9 @@
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectAvgWithGroupBy">
+    <parser-result sql-case-id="assertSelectAvgWithGroupBy">
         <tables>
             <table name="t_order" />
         </tables>
@@ -122,9 +122,9 @@
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectOrderByDescWithGroupBy">
+    <parser-result sql-case-id="assertSelectOrderByDescWithGroupBy">
         <tables>
             <table name="t_order" />
         </tables>
@@ -140,9 +140,9 @@
         <order-by-columns>
             <order-by-column name="orders_sum" alias="orders_sum" order-direction="DESC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectCountWithoutGroupedColumn" parameters="1 2 9 10">
+    <parser-result sql-case-id="assertSelectCountWithoutGroupedColumn" parameters="1 2 9 10">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -176,9 +176,9 @@
         <order-by-columns>
             <order-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="o" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectCountWithGroupByBindingTable" parameters="1 2 9 10">
+    <parser-result sql-case-id="assertSelectCountWithGroupByBindingTable" parameters="1 2 9 10">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -206,9 +206,9 @@
         <order-by-columns>
             <order-by-column name="user_id" owner="o" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectWithGroupByAndLimit" parameters="5">
+    <parser-result sql-case-id="assertSelectWithGroupByAndLimit" parameters="5">
         <tables>
             <table name="t_order" />
         </tables>
@@ -223,9 +223,9 @@
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
         <limit row-count-index="0" row-count="5" />
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectWithGroupByAndOrderByAndLimit" parameters="5">
+    <parser-result sql-case-id="assertSelectWithGroupByAndOrderByAndLimit" parameters="5">
         <tables>
             <table name="t_order" />
         </tables>
@@ -243,9 +243,9 @@
             <order-by-column name="SUM(order_id)" order-direction="ASC" />
         </order-by-columns>
         <limit row-count-index="0" row-count="5" />
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectItemWithAliasAndMatchOrderByAndGroupByItems" parameters="5">
+    <parser-result sql-case-id="assertSelectItemWithAliasAndMatchOrderByAndGroupByItems" parameters="5">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
@@ -258,9 +258,9 @@
         <order-by-columns>
             <order-by-column name="user_id" owner="o" alias="uid" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectGroupByWithAliasIsKeyword">
+    <parser-result sql-case-id="assertSelectGroupByWithAliasIsKeyword">
         <tables>
             <table name="t_order" />
         </tables>
@@ -277,5 +277,5 @@
         <order-by-columns>
             <order-by-column name="key" alias="key" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
-</parser-asserts>
+    </parser-result>
+</parser-result-sets>

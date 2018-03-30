@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser-asserts>
-    <parser-assert sql-case-id="assertSelectSum">
+<parser-result-sets>
+    <parser-result sql-case-id="assertSelectSum">
         <tables>
             <table name="t_order" />
         </tables>
@@ -10,9 +10,9 @@
         <aggregation-select-items>
             <aggregation-select-item type="SUM" inner-expression="(user_id)" alias="user_id_sum" />
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectCount">
+    <parser-result sql-case-id="assertSelectCount">
         <tables>
             <table name="t_order" />
         </tables>
@@ -22,9 +22,9 @@
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(*)" alias="orders_count" />
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectMax">
+    <parser-result sql-case-id="assertSelectMax">
         <tables>
             <table name="t_order" />
         </tables>
@@ -34,9 +34,9 @@
         <aggregation-select-items>
             <aggregation-select-item type="MAX" inner-expression="(user_id)" alias="max_user_id" />
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectMin">
+    <parser-result sql-case-id="assertSelectMin">
         <tables>
             <table name="t_order" />
         </tables>
@@ -46,9 +46,9 @@
         <aggregation-select-items>
             <aggregation-select-item type="MIN" inner-expression="(user_id)" alias="min_user_id" />
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectAvg">
+    <parser-result sql-case-id="assertSelectAvg">
         <tables>
             <table name="t_order" />
         </tables>
@@ -67,9 +67,9 @@
                 <derived-column type="SUM" inner-expression="(user_id)" alias="AVG_DERIVED_SUM_0" />
             </aggregation-select-item>
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectCountForSpecialSymbol">
+    <parser-result sql-case-id="assertSelectCountForSpecialSymbol">
         <tables>
             <table name="t_order" />
         </tables>
@@ -79,5 +79,5 @@
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(`order_id`)" alias="orders_count" />
         </aggregation-select-items>
-    </parser-assert>
-</parser-asserts>
+    </parser-result>
+</parser-result-sets>

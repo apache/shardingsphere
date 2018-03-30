@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser-asserts>
-    <parser-assert sql-case-id="assertInsertWithAllPlaceholders" parameters="1 1 'init'">
+<parser-result-sets>
+    <parser-result sql-case-id="assertInsertWithAllPlaceholders" parameters="1 1 'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -15,9 +15,9 @@
                 <value index="1" literal="1" type="int" />
             </condition>
         </conditions>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertInsertWithPartialPlaceholder" parameters="1 1">
+    <parser-result sql-case-id="assertInsertWithPartialPlaceholder" parameters="1 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -32,9 +32,9 @@
                 <value index="1" literal="1" type="int" />
             </condition>
         </conditions>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertInsertWithGenerateKeyColumn" parameters="10000 1000 10">
+    <parser-result sql-case-id="assertInsertWithGenerateKeyColumn" parameters="10000 1000 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -52,9 +52,9 @@
                 <value index="2" literal="10" type="int" />
             </condition>
         </conditions>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertInsertWithoutGenerateKeyColumn" parameters="1000 10">
+    <parser-result sql-case-id="assertInsertWithoutGenerateKeyColumn" parameters="1000 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -75,16 +75,16 @@
                 <value index="1" literal="10" type="int" />
             </condition>
         </conditions>
-    </parser-assert>
+    </parser-result>
     
     <!-- // TODO
-    <parser-assert sql-case-id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )"">
+    <parser-result sql-case-id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )"">
         <tables>
             <table name="order" />
         </tables>
         <condition-contexts>
            <condition-context/>
         </condition-contexts>
-    </parser-assert>
+    </parser-result>
     -->
-</parser-asserts>
+</parser-result-sets>

@@ -24,10 +24,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
 import java.util.List;
 
-@XmlRootElement(name = "parser-asserts")
+@XmlRootElement(name = "parser-result-sets")
 @Getter
-public final class ParserAsserts {
+public final class ParserResultSet {
     
-    @XmlElement(name = "parser-assert")
-    private List<ParserAssert> parserAsserts = new LinkedList<>();
+    @XmlElement(name = "parser-result")
+    private List<ParserResult> parserResults = new LinkedList<>();
 }
