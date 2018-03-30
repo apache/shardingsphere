@@ -8,7 +8,7 @@ import lombok.Getter;
  * @author panjuan
  */
 @Getter
-public enum JdbcDriver {
+public enum JDBCDriver {
     
     MySQLDriver("mysql", "com.mysql.jdbc.Driver"),
     OracleDriver("oracle", "oracle.jdbc.driver.OracleDriver");
@@ -16,7 +16,7 @@ public enum JdbcDriver {
     private String dbName;
     private String driverName;
     
-    JdbcDriver(final String dbName, final String driverName) {
+    JDBCDriver(final String dbName, final String driverName) {
         this.dbName = dbName;
         this.driverName = driverName;
     }

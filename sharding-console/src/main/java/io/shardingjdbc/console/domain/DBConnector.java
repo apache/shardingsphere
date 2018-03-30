@@ -1,6 +1,6 @@
 package io.shardingjdbc.console.domain;
 
-import io.shardingjdbc.console.constant.JdbcDriver;
+import io.shardingjdbc.console.constant.JDBCDriver;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -28,7 +28,7 @@ public final class DBConnector {
      * @throws SQLException SQL exception
      */
     public static Connection getConnection(final String username, final String password, final String url, final String dbDriver) throws ClassNotFoundException, SQLException {
-        JdbcDriver driver = JdbcDriver.valueOf(dbDriver + "Driver");
+        JDBCDriver driver = JDBCDriver.valueOf(dbDriver + "Driver");
         Class.forName(driver.getDriverName());
         DriverManager.setLoginTimeout(5);
         return DriverManager.getConnection("jdbc:" + driver.getDbName() + "://" + url, username, password);

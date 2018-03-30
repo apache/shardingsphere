@@ -22,7 +22,7 @@ import io.shardingjdbc.console.domain.WorkbenchResponse;
 import io.shardingjdbc.console.domain.SQLColumnInformation;
 import io.shardingjdbc.console.domain.SQLRowData;
 import io.shardingjdbc.console.domain.SQLResultData;
-import io.shardingjdbc.console.domain.WindowSessionRegistry;
+import io.shardingjdbc.console.domain.WindowRegistry;
 import io.shardingjdbc.console.domain.SQLExecuteException;
 import org.springframework.stereotype.Service;
 import java.sql.Connection;
@@ -54,7 +54,7 @@ public class SQLWorkbench {
         List<SQLRowData> sqlRowDataList = new ArrayList<>();
         SQLResultData sqlResultData = new SQLResultData(0, 0L, sql, sqlColumnInformationList, sqlRowDataList);
         WorkbenchResponse result = new WorkbenchResponse(sqlResultData);
-        Optional<Connection> connectionOptional = WindowSessionRegistry.getInstance().findSession(windowID);
+        Optional<Connection> connectionOptional = WindowRegistry.getInstance().findSession(windowID);
 
         if (!connectionOptional.isPresent()) {
             throw new SQLExecuteException("The SQL execute window does not exist.");

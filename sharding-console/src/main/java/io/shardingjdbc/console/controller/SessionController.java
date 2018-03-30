@@ -22,48 +22,48 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class SessionController {
     
     /**
      * Handle https for user login.
      * 
-     * @param userSession user info
+     * @param session user info
      * @param userUUID user uuid
      * @param response response
      * @return response object
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public WorkbenchResponse login(@RequestBody final UserSession userSession, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID,
+    public WorkbenchResponse login(@RequestBody final Session session, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID,
                                    final HttpServletResponse response) throws UserException {
         if (!"".equals(userUUID)) {
-            if (UserSessionRegistry.getInstance().findSession(userUUID).isPresent()) {
+            if (SessionRegistry.getInstance().findSession(userUUID).isPresent()) {
                 return new WorkbenchResponse("Logged in.");
             }
             removeSession(userUUID, response);
             throw new UserException("Please login first.");
         }
-        WindowSession windowSession = createWindow(userSession);
-        setSession(userSession, windowSession, response);
+        Window window = createWindow(session);
+        setSession(session, window, response);
         Map<String, String> result = new HashMap<>(1, 1);
-        result.put("windowID", windowSession.getId());
+        result.put("windowID", window.getId());
         return new WorkbenchResponse("Login succeeded", result);
     }
     
-    private WindowSession createWindow(final UserSession userSession) throws UserException {
+    private Window createWindow(final Session session) throws UserException {
         try {
-            Connection connection = DBConnector.getConnection(userSession.getUserName(), userSession.getPassWord(), userSession.getTargetURL(), userSession.getDriver());
-            return new WindowSession(connection);
+            Connection connection = DBConnector.getConnection(session.getUserName(), session.getPassWord(), session.getTargetURL(), session.getDriver());
+            return new Window(connection);
         } catch (final ClassNotFoundException | SQLException ex) {
             throw new UserException("Login failed.");
         }
     }
 
-    private void setSession(final UserSession userSession, final WindowSession windowSession,
+    private void setSession(final Session session, final Window window,
                             final HttpServletResponse response) {
-        userSession.addWindowID(windowSession.getId());
-        UserSessionRegistry.getInstance().addSession(userSession.getId(), userSession);
-        WindowSessionRegistry.getInstance().addSession(windowSession.getId(), windowSession.getConnection());
-        Cookie cookie = new Cookie("userUUID", userSession.getId());
+        session.addWindowID(window.getId());
+        SessionRegistry.getInstance().addSession(session.getId(), session);
+        WindowRegistry.getInstance().addSession(window.getId(), window.getConnection());
+        Cookie cookie = new Cookie("userUUID", session.getId());
         cookie.setMaxAge(120 * 60);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -85,14 +85,14 @@ public class UserController {
     }
 
     private void removeSession(final String userUUID, final HttpServletResponse response) {
-        Optional<UserSession> userSessionOptional = UserSessionRegistry.getInstance().findSession(userUUID);
+        Optional<Session> userSessionOptional = SessionRegistry.getInstance().findSession(userUUID);
         if (userSessionOptional.isPresent()) {
             List<String> windowIDList = userSessionOptional.get().getWindowIDList();
             for (String windowID : windowIDList) {
-                WindowSessionRegistry.getInstance().removeSession(windowID);
+                WindowRegistry.getInstance().removeSession(windowID);
             }
         }
-        UserSessionRegistry.getInstance().removeSession(userUUID);
+        SessionRegistry.getInstance().removeSession(userUUID);
         Cookie cookie = new Cookie("userUUID", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
@@ -102,39 +102,39 @@ public class UserController {
     @RequestMapping(value = "/addWindow", method = RequestMethod.POST)
     public WorkbenchResponse addWindow(final @CookieValue(value = "userUUID",
         required = false, defaultValue = "") String userUUID) throws UserException {
-        Optional<UserSession> userSessionOptional = UserSessionRegistry.getInstance().findSession(userUUID);
+        Optional<Session> userSessionOptional = SessionRegistry.getInstance().findSession(userUUID);
         if (!userSessionOptional.isPresent()) {
             throw new UserException("Please login first.");
         }
         
-        UserSession userSession = userSessionOptional.get();
-        WindowSession windowSession = createWindow(userSession);
-        setWindow(userSession, windowSession);
+        Session session = userSessionOptional.get();
+        Window window = createWindow(session);
+        setWindow(session, window);
         
         Map<String, String> result = new HashMap<>();
-        result.put("windowID", windowSession.getId());
+        result.put("windowID", window.getId());
         return new WorkbenchResponse("Open new window OK.", result);
     }
     
-    private void setWindow(final UserSession userSession, final WindowSession windowSession) {
-        userSession.addWindowID(windowSession.getId());
-        WindowSessionRegistry.getInstance().addSession(windowSession.getId(), windowSession.getConnection());
+    private void setWindow(final Session session, final Window window) {
+        session.addWindowID(window.getId());
+        WindowRegistry.getInstance().addSession(window.getId(), window.getConnection());
     }
     
     @RequestMapping(value = "/delWindow", method = RequestMethod.POST)
     public WorkbenchResponse delWindow(@RequestBody final Map<String, String> windowInfo, final @CookieValue(value = "userUUID",
         required = false, defaultValue = "") String userUUID) throws UserException {
-        Optional<UserSession> userSessionOptional = UserSessionRegistry.getInstance().findSession(userUUID);
+        Optional<Session> userSessionOptional = SessionRegistry.getInstance().findSession(userUUID);
         if (!userSessionOptional.isPresent()) {
             throw new UserException("Please login first.");
         }
         
-        UserSession userSession = userSessionOptional.get();
-        removeWindow(userSession, windowInfo);
+        Session session = userSessionOptional.get();
+        removeWindow(session, windowInfo);
         return new WorkbenchResponse("Close window OK.");
     }
     
-    private void removeWindow(final UserSession userSession, final Map<String, String> windowInfo) {
-        userSession.delWindowID(windowInfo.get("windowID"));
-        WindowSessionRegistry.getInstance().removeSession(windowInfo.get("windowID")); }
+    private void removeWindow(final Session session, final Map<String, String> windowInfo) {
+        session.delWindowID(windowInfo.get("windowID"));
+        WindowRegistry.getInstance().removeSession(windowInfo.get("windowID")); }
 }
