@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedOrderByToken implements ExpectedSQLToken {
+public final class ExpectedOrderByToken {
     
     @XmlAttribute(name = "placeholder-begin-position")
     private int placeholderBeginPosition;

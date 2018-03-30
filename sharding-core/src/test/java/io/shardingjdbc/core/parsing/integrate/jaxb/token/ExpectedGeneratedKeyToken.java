@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedGeneratedKeyToken implements ExpectedSQLToken {
+public final class ExpectedGeneratedKeyToken {
     
     @XmlAttribute(name = "placeholder-begin-position")
     private int placeholderBeginPosition;

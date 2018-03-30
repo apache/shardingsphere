@@ -36,7 +36,7 @@ import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedMultipleInsertV
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedOffsetToken;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedOrderByToken;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedRowCountToken;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedSQLTokens;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedTokens;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedTableToken;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
@@ -168,7 +168,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return field.get(actual);
     }
     
-    private void assertSQLTokens(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
+    private void assertSQLTokens(final List<SQLToken> actual, final ExpectedTokens expected) {
         assertTableTokens(actual, expected);
         assertIndexToken(actual, expected);
         assertItemsToken(actual, expected);
@@ -179,7 +179,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         assertRowCountToken(actual, expected);
     }
     
-    private void assertTableTokens(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
+    private void assertTableTokens(final List<SQLToken> actual, final ExpectedTokens expected) {
         List<TableToken> tableTokens = getTableTokens(actual);
         assertThat(getFullAssertMessage("Table tokens size error: "), tableTokens.size(), is(expected.getTableTokens().size()));
         int count = 0;
@@ -204,7 +204,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return result;
     }
     
-    private void assertIndexToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
+    private void assertIndexToken(final List<SQLToken> actual, final ExpectedTokens expected) {
         Optional<IndexToken> indexToken = getIndexToken(actual);
         if (indexToken.isPresent()) {
             assertIndexToken(indexToken.get(), expected.getIndexToken());
@@ -228,7 +228,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertItemsToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
+    private void assertItemsToken(final List<SQLToken> actual, final ExpectedTokens expected) {
         Optional<ItemsToken> itemsToken = getItemsToken(actual);
         if (itemsToken.isPresent()) {
             assertItemsToken(itemsToken.get(), expected.getItemsToken());
@@ -251,7 +251,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertGeneratedKeyToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
+    private void assertGeneratedKeyToken(final List<SQLToken> actual, final ExpectedTokens expected) {
         Optional<GeneratedKeyToken> generatedKeyToken = getGeneratedKeyToken(actual);
         if (generatedKeyToken.isPresent()) {
             assertGeneratedKeyToken(generatedKeyToken.get(), expected.getGeneratedKeyToken());
@@ -277,7 +277,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertMultipleInsertValuesToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
+    private void assertMultipleInsertValuesToken(final List<SQLToken> actual, final ExpectedTokens expected) {
         Optional<MultipleInsertValuesToken> multipleInsertValuesToken = getMultipleInsertValuesToken(actual);
         if (multipleInsertValuesToken.isPresent()) {
             assertMultipleInsertValuesToken(multipleInsertValuesToken.get(), expected.getMultipleInsertValuesToken());
@@ -300,7 +300,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertOrderByToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
+    private void assertOrderByToken(final List<SQLToken> actual, final ExpectedTokens expected) {
         Optional<OrderByToken> orderByToken = getOrderByToken(actual);
         if (orderByToken.isPresent()) {
             assertOrderByToken(orderByToken.get(), expected.getOrderByToken());
@@ -326,7 +326,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertOffsetToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
+    private void assertOffsetToken(final List<SQLToken> actual, final ExpectedTokens expected) {
         Optional<OffsetToken> offsetToken = getOffsetToken(actual);
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertFalse(getFullAssertMessage("Offset token should not exist: "), offsetToken.isPresent());
@@ -353,7 +353,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertRowCountToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
+    private void assertRowCountToken(final List<SQLToken> actual, final ExpectedTokens expected) {
         Optional<RowCountToken> rowCountToken = getRowCountToken(actual);
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertFalse(getFullAssertMessage("Row count token should not exist: "), rowCountToken.isPresent());

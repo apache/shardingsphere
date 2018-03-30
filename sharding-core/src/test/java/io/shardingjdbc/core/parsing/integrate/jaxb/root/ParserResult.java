@@ -23,7 +23,7 @@ import io.shardingjdbc.core.parsing.integrate.jaxb.item.ExpectedAggregationSelec
 import io.shardingjdbc.core.parsing.integrate.jaxb.limit.ExpectedLimit;
 import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.ExpectedOrderByColumn;
 import io.shardingjdbc.core.parsing.integrate.jaxb.table.ExpectedTable;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedSQLTokens;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedTokens;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -57,7 +57,7 @@ public final class ParserResult {
     private List<ExpectedCondition> conditions = new LinkedList<>();
     
     @XmlElement
-    private ExpectedSQLTokens tokens = new ExpectedSQLTokens();
+    private ExpectedTokens tokens = new ExpectedTokens();
     
     @XmlElementWrapper(name = "order-by-columns")
     @XmlElement(name = "order-by-column") 

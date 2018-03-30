@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedItemsToken implements ExpectedSQLToken {
+public final class ExpectedItemsToken {
     
     @XmlAttribute(name = "begin-position")
     private int beginPosition;

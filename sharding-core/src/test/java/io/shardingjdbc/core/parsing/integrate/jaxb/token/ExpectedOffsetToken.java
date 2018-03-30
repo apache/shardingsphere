@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedOffsetToken implements ExpectedSQLToken {
+public final class ExpectedOffsetToken {
     
     @XmlAttribute(name = "begin-position")
     private int beginPosition;

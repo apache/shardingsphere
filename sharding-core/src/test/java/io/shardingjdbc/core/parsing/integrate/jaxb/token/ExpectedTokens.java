@@ -29,7 +29,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedSQLTokens {
+public final class ExpectedTokens {
     
     @XmlElement(name = "table-token")
     private List<ExpectedTableToken> tableTokens = new LinkedList<>();

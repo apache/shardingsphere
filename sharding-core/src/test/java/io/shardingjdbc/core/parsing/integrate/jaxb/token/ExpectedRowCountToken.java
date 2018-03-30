@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedRowCountToken implements ExpectedSQLToken {
+public final class ExpectedRowCountToken {
     
     @XmlAttribute(name = "begin-position")
     private int beginPosition;
