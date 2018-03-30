@@ -65,7 +65,7 @@
                     <item>item_id</item>
                 </items>
             </items-token>
-            <generated-key-token begin-position-with-placeholder="73" begin-position-without-placeholder="77" />
+            <generated-key-token placeholder-begin-position="73" literal-begin-position="77" />
         </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">

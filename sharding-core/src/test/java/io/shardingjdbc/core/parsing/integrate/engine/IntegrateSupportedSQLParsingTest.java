@@ -262,9 +262,9 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     private void assertGeneratedKeyToken(final GeneratedKeyToken actual, final GeneratedKeyTokenAssert expected) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(getFullAssertMessage("Generated key token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPositionWithPlaceholder()));
+            assertThat(getFullAssertMessage("Generated key token begin position assertion error: "), actual.getBeginPosition(), is(expected.getPlaceholderBeginPosition()));
         } else {
-            assertThat(getFullAssertMessage("Generated key token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPositionWithoutPlaceholder()));
+            assertThat(getFullAssertMessage("Generated key token begin position assertion error: "), actual.getBeginPosition(), is(expected.getLiteralBeginPosition()));
         }
     }
     
@@ -311,9 +311,9 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     private void assertOrderByToken(final OrderByToken actual, final OrderByTokenAssert expected) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(getFullAssertMessage("Order by token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPositionWithPlaceholder()));
+            assertThat(getFullAssertMessage("Order by token begin position assertion error: "), actual.getBeginPosition(), is(expected.getPlaceholderBeginPosition()));
         } else {
-            assertThat(getFullAssertMessage("Order by token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPositionWithoutPlaceholder()));
+            assertThat(getFullAssertMessage("Order by token begin position assertion error: "), actual.getBeginPosition(), is(expected.getLiteralBeginPosition()));
         }
     }
     

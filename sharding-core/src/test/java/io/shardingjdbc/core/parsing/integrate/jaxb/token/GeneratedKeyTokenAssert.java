@@ -29,9 +29,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class GeneratedKeyTokenAssert implements SQLTokenAssert {
     
-    @XmlAttribute(name = "begin-position-with-placeholder")
-    private int beginPositionWithPlaceholder;
+    @XmlAttribute(name = "placeholder-begin-position")
+    private int placeholderBeginPosition;
     
-    @XmlAttribute(name = "begin-position-without-placeholder")
-    private int beginPositionWithoutPlaceholder;
+    @XmlAttribute(name = "literal-begin-position")
+    private int literalBeginPosition;
 }
