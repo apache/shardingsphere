@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.asserts;
+package io.shardingjdbc.core.parsing.integrate.asserts.item;
 
+import io.shardingjdbc.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingjdbc.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.SelectItem;
@@ -35,11 +36,17 @@ import static org.junit.Assert.assertThat;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-final class ItemAssert {
+public final class ItemAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertItems(final Set<SelectItem> actual, final List<ExpectedAggregationSelectItem> expected) {
+    /**
+     * Assert items.
+     * 
+     * @param actual actual items
+     * @param expected expected items
+     */
+    public void assertItems(final Set<SelectItem> actual, final List<ExpectedAggregationSelectItem> expected) {
         // TODO assert SelectItems total size
         // TODO assert StarSelectItem
         // TODO assert CommonSelectItem

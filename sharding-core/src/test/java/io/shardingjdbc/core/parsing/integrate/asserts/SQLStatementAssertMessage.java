@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-final class SQLStatementAssertMessage {
+public final class SQLStatementAssertMessage {
     
     private final SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
@@ -37,7 +37,13 @@ final class SQLStatementAssertMessage {
     
     private final SQLCaseType sqlCaseType;
     
-    String getFullAssertMessage(final String assertMessage) {
+    /**
+     * Get full assert message.
+     * 
+     * @param assertMessage assert message
+     * @return full assert message
+     */
+    public String getFullAssertMessage(final String assertMessage) {
         StringBuilder result = new StringBuilder(System.getProperty("line.separator"));
         result.append("SQL Case ID : ");
         result.append(sqlCaseId);

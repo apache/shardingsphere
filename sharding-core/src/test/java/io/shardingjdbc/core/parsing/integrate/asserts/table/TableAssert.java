@@ -15,9 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.asserts;
+package io.shardingjdbc.core.parsing.integrate.asserts.table;
 
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingjdbc.core.parsing.integrate.jaxb.table.ExpectedTable;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
 import io.shardingjdbc.core.parsing.parser.context.table.Tables;
@@ -35,11 +36,17 @@ import static org.junit.Assert.assertTrue;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-final class TableAssert {
+public final class TableAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertTables(final Tables actual, final List<ExpectedTable> expected) {
+    /**
+     * Assert tables.
+     * 
+     * @param actual actual tables
+     * @param expected expected tables
+     */
+    public void assertTables(final Tables actual, final List<ExpectedTable> expected) {
         assertThat(assertMessage.getFullAssertMessage("Tables size assertion error: "), actual.getTableNames().size(), is(expected.size()));
         for (ExpectedTable each : expected) {
             Optional<Table> table;

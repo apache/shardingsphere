@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.asserts;
+package io.shardingjdbc.core.parsing.integrate.asserts.groupby;
 
+import io.shardingjdbc.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.ExpectedGroupByColumn;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import lombok.RequiredArgsConstructor;
@@ -32,11 +33,17 @@ import static org.junit.Assert.assertThat;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-final class GroupByAssert {
+public final class GroupByAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertGroupByItems(final List<OrderItem> actual, final List<ExpectedGroupByColumn> expected) {
+    /**
+     * Assert group by items.
+     * 
+     * @param actual actual group by items
+     * @param expected expected group by items
+     */
+    public void assertGroupByItems(final List<OrderItem> actual, final List<ExpectedGroupByColumn> expected) {
         assertThat(assertMessage.getFullAssertMessage("Group by items size error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (OrderItem each : actual) {

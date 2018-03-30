@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.asserts;
+package io.shardingjdbc.core.parsing.integrate.asserts.orderby;
 
+import io.shardingjdbc.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.ExpectedOrderByColumn;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import lombok.RequiredArgsConstructor;
@@ -32,11 +33,17 @@ import static org.junit.Assert.assertThat;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-final class OrderByAssert {
+public final class OrderByAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertOrderByItems(final List<OrderItem> actual, final List<ExpectedOrderByColumn> expected) {
+    /**
+     * Assert order by items.
+     *
+     * @param actual actual order by items
+     * @param expected expected order by items
+     */
+    public void assertOrderByItems(final List<OrderItem> actual, final List<ExpectedOrderByColumn> expected) {
         assertThat(assertMessage.getFullAssertMessage("Order by items size error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (OrderItem each : actual) {

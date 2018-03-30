@@ -15,9 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.asserts;
+package io.shardingjdbc.core.parsing.integrate.asserts.condition;
 
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedCondition;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedValue;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
@@ -39,11 +40,17 @@ import static org.junit.Assert.assertTrue;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-final class ConditionAssert {
+public final class ConditionAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertConditions(final Conditions actual, final List<ExpectedCondition> expected) {
+    /**
+     * Assert conditions.
+     * 
+     * @param actual actual conditions
+     * @param expected expected conditions
+     */
+    public void assertConditions(final Conditions actual, final List<ExpectedCondition> expected) {
         assertThat(assertMessage.getFullAssertMessage("Conditions size assertion error: "), actual.getConditions().size(), is(expected.size()));
         for (ExpectedCondition each : expected) {
             Optional<Condition> condition = actual.find(new Column(each.getColumnName(), each.getTableName()));

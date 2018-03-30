@@ -17,6 +17,13 @@
 
 package io.shardingjdbc.core.parsing.integrate.asserts;
 
+import io.shardingjdbc.core.parsing.integrate.asserts.condition.ConditionAssert;
+import io.shardingjdbc.core.parsing.integrate.asserts.groupby.GroupByAssert;
+import io.shardingjdbc.core.parsing.integrate.asserts.item.ItemAssert;
+import io.shardingjdbc.core.parsing.integrate.asserts.limit.LimitAssert;
+import io.shardingjdbc.core.parsing.integrate.asserts.orderby.OrderByAssert;
+import io.shardingjdbc.core.parsing.integrate.asserts.table.TableAssert;
+import io.shardingjdbc.core.parsing.integrate.asserts.token.TokenAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserResult;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -28,8 +35,6 @@ import io.shardingjdbc.test.sql.SQLCaseType;
  * @author zhangliang
  */
 public final class SQLStatementAssert {
-    
-    private final ParserResultSetLoader parserResultSetLoader = ParserResultSetLoader.getInstance();
     
     private final SQLStatement actual;
     
@@ -51,6 +56,7 @@ public final class SQLStatementAssert {
     
     public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
         this.actual = actual;
+        final ParserResultSetLoader parserResultSetLoader = ParserResultSetLoader.getInstance();
         expected = parserResultSetLoader.getParserResult(sqlCaseId);
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         tableAssert = new TableAssert(assertMessage);

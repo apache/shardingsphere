@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.asserts;
+package io.shardingjdbc.core.parsing.integrate.asserts.limit;
 
+import io.shardingjdbc.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingjdbc.core.parsing.integrate.jaxb.limit.ExpectedLimit;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.test.sql.SQLCaseType;
@@ -32,13 +33,19 @@ import static org.junit.Assert.assertThat;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-final class LimitAssert {
+public final class LimitAssert {
     
     private final SQLCaseType sqlCaseType;
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertLimit(final Limit actual, final ExpectedLimit expected) {
+    /**
+     * Assert limit.
+     * 
+     * @param actual actual limit
+     * @param expected expected limit
+     */
+    public void assertLimit(final Limit actual, final ExpectedLimit expected) {
         if (null == actual) {
             assertNull(assertMessage.getFullAssertMessage("Limit should not exist: "), expected);
             return;

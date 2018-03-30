@@ -15,9 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.asserts;
+package io.shardingjdbc.core.parsing.integrate.asserts.token;
 
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedGeneratedKeyToken;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedIndexToken;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedItemsToken;
@@ -53,13 +54,19 @@ import static org.junit.Assert.assertThat;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-final class TokenAssert {
+public final class TokenAssert {
     
     private final SQLCaseType sqlCaseType;
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertTokens(final List<SQLToken> actual, final ExpectedTokens expected) {
+    /**
+     * Assert tokens.
+     * 
+     * @param actual actual tokens
+     * @param expected expected tokens
+     */
+    public void assertTokens(final List<SQLToken> actual, final ExpectedTokens expected) {
         assertTableTokens(actual, expected);
         assertIndexToken(actual, expected);
         assertItemsToken(actual, expected);
