@@ -41,7 +41,7 @@ public final class IntegrateUnsupportedSQLParsingTest extends AbstractBaseIntegr
     
     private final SQLCaseType sqlCaseType;
     
-    @Parameters(name = "{0}_in_{1}_for_{2}")
+    @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         return sqlCasesLoader.getUnsupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
     }
