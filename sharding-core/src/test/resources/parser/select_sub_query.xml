@@ -42,7 +42,7 @@
             <table-token begin-position="52" original-literals="t_order" />
         </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="orders_count" />
+            <aggregation-select-item type="COUNT" inner-expression="(1)" alias="orders_count" />
         </aggregation-select-items>
     </parser-assert>
     
@@ -54,7 +54,7 @@
             <table-token begin-position="64" original-literals="t_order_item" />
         </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="order_items_count" />
+            <aggregation-select-item type="COUNT" inner-expression="(1)" alias="order_items_count" />
         </aggregation-select-items>
     </parser-assert>
 </parser-asserts>

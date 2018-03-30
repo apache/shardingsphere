@@ -32,8 +32,8 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class AggregationSelectItemAssert {
     
-    @XmlAttribute(name = "aggregation-type")
-    private String aggregationType;
+    @XmlAttribute(name = "type")
+    private String type;
     
     @XmlAttribute(name = "inner-expression")
     private String innerExpression;

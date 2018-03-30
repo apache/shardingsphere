@@ -20,6 +20,7 @@ package io.shardingjdbc.core.parsing.integrate.engine;
 import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
+import io.shardingjdbc.core.parsing.integrate.asserts.ParserAssertsLoader;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ConditionAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Value;
 import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumnAssert;
@@ -397,7 +398,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     }
     
     private void assertAggregationSelectItem(final AggregationSelectItem actual, final AggregationSelectItemAssert expected) {
-        assertThat(getFullAssertMessage("Aggregation select item aggregation type assertion error: "), actual.getType().name(), is(expected.getAggregationType()));
+        assertThat(getFullAssertMessage("Aggregation select item aggregation type assertion error: "), actual.getType().name(), is(expected.getType()));
         assertThat(getFullAssertMessage("Aggregation select item inner expression assertion error: "), actual.getInnerExpression(), is(expected.getInnerExpression()));
         assertThat(getFullAssertMessage("Aggregation select item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
         assertThat(getFullAssertMessage("Aggregation select item index assertion error: "), actual.getIndex(), is(expected.getIndex()));

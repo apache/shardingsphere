@@ -37,7 +37,7 @@
             <table-token begin-position="36" original-literals="t_order" />
         </tokens>
         <aggregation-select-items>
-            <aggregation-select-item aggregation-type="COUNT" inner-expression="(o.order_id)" />
+            <aggregation-select-item type="COUNT" inner-expression="(o.order_id)" />
         </aggregation-select-items>
     </parser-assert>
     

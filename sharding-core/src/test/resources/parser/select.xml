@@ -188,7 +188,7 @@
             </condition>
         </conditions>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(0)" aggregation-type="COUNT" alias="orders_count"/>
+            <aggregation-select-item type="COUNT" inner-expression="(0)" alias="orders_count"/>
         </aggregation-select-items>
     </parser-assert>
     
@@ -328,7 +328,7 @@
             </condition>
         </conditions>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="items_count"/>
+            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
         </aggregation-select-items>
     </parser-assert>
     
@@ -352,7 +352,7 @@
             </condition>
         </conditions>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="items_count"/>
+            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
         </aggregation-select-items>
     </parser-assert>
     

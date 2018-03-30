@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.engine;
+package io.shardingjdbc.core.parsing.integrate.asserts;
 
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
