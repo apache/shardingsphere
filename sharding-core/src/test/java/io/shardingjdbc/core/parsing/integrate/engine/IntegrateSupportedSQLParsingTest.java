@@ -22,7 +22,9 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ConditionAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Value;
+import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumnAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItemAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumnAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.table.TableAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.GeneratedKeyTokenAssert;
@@ -34,6 +36,7 @@ import io.shardingjdbc.core.parsing.integrate.jaxb.token.OrderByTokenAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.RowCountTokenAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.SQLTokenAsserts;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.TableTokenAssert;
+import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
@@ -104,7 +107,11 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         if (actual instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) actual;
             assertItems(selectStatement.getItems(), parserAssert.getAggregationSelectItems());
+            assertGroupByItems(selectStatement.getGroupByItems(), parserAssert.getGroupByColumns());
+            assertOrderByItems(selectStatement.getOrderByItems(), parserAssert.getOrderByColumns());
         }
+        
+        
         
         
 //        if (actual instanceof SelectStatement) {
@@ -422,18 +429,40 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return result;
     }
     
+    private void assertGroupByItems(final List<OrderItem> actual, final List<GroupByColumnAssert> expected) {
+        assertThat(getFullAssertMessage("Group by items size error: "), actual.size(), is(expected.size()));
+        int count = 0;
+        for (OrderItem each : actual) {
+            assertGroupByItem(each, expected.get(count));
+            count++;
+        }
+    }
     
+    private void assertGroupByItem(final OrderItem actual, final GroupByColumnAssert expected) {
+        assertThat(actual.getOwner().orNull(), is(expected.getOwner()));
+        assertThat(actual.getName().orNull(), is(expected.getName()));
+        assertThat(actual.getOrderDirection().name(), is(expected.getOrderDirection()));
+        // TODO assert nullOrderDirection
+        assertThat(actual.getAlias().orNull(), is(expected.getAlias()));
+    }
     
+    private void assertOrderByItems(final List<OrderItem> actual, final List<OrderByColumnAssert> expected) {
+        assertThat(getFullAssertMessage("Order by items size error: "), actual.size(), is(expected.size()));
+        int count = 0;
+        for (OrderItem each : actual) {
+            assertOrderByItem(each, expected.get(count));
+            count++;
+        }
+    }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    private void assertOrderByItem(final OrderItem actual, final OrderByColumnAssert expected) {
+        assertThat(actual.getOwner().orNull(), is(expected.getOwner()));
+        assertThat(actual.getName().orNull(), is(expected.getName()));
+        assertThat(actual.getOrderDirection().name(), is(expected.getOrderDirection()));
+        // TODO assert nullOrderDirection
+        assertThat(actual.getIndex(), is(expected.getIndex()));
+        assertThat(actual.getAlias().orNull(), is(expected.getAlias()));
+    }
     
     
     private String getFullAssertMessage(final String assertMessage) {
