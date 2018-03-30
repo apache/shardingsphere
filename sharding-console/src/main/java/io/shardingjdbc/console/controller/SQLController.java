@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import java.sql.Connection;
 import java.util.Map;
 
 /**
@@ -37,7 +35,7 @@ public class SQLController {
         required = false, defaultValue = "") String userUUID) throws SQLExecuteException, UserException {
         String sql = sqlInfo.get("sql");
         String windowID = sqlInfo.get("windowID");
-        Optional<UserSession> userSessionOptional = UserSessionRegistry.getInstance().findSession(userUUID);
+        Optional<Session> userSessionOptional = SessionRegistry.getInstance().findSession(userUUID);
     
         if (!userSessionOptional.isPresent()) {
             throw new UserException("Please login first.");

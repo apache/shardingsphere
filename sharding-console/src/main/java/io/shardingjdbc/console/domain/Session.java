@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-public final class UserSession {
+public final class Session {
     
     private String id;
     
@@ -30,16 +30,17 @@ public final class UserSession {
     
     private List<String> windowIDList;
     
-    public UserSession() {
+    public Session() {
         id = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         driver = "MySQL";
         windowIDList = new ArrayList<>(128);
     }
     
-    public void addWindowID(String windowID) {
+    public void addWindowID(final String windowID) {
         windowIDList.add(windowID);
     }
-    public void delWindowID(String windowID) {
+    
+    public void delWindowID(final String windowID) {
         windowIDList.remove(windowID);
     }
 }

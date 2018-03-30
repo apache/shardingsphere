@@ -22,7 +22,7 @@ import io.shardingjdbc.console.domain.WorkbenchResponse;
 import io.shardingjdbc.console.domain.SQLColumnInformation;
 import io.shardingjdbc.console.domain.SQLRowData;
 import io.shardingjdbc.console.domain.SQLResultData;
-import io.shardingjdbc.console.domain.WindowSessionRegistry;
+import io.shardingjdbc.console.domain.WindowRegistry;
 import io.shardingjdbc.console.domain.SQLExecuteException;
 import org.springframework.stereotype.Service;
 import java.sql.Connection;
@@ -46,7 +46,7 @@ public class SQLWorkbench {
      * Handle https for sqls.
      * 
      * @param sql sql
-     * @param userUUID user uuid
+     * @param windowID window uuid
      * @return response
      */
     public WorkbenchResponse execute(final String sql, final String windowID) throws SQLExecuteException {
@@ -54,7 +54,7 @@ public class SQLWorkbench {
         List<SQLRowData> sqlRowDataList = new ArrayList<>();
         SQLResultData sqlResultData = new SQLResultData(0, 0L, sql, sqlColumnInformationList, sqlRowDataList);
         WorkbenchResponse result = new WorkbenchResponse(sqlResultData);
-        Optional<Connection> connectionOptional = WindowSessionRegistry.getInstance().findSession(windowID);
+        Optional<Connection> connectionOptional = WindowRegistry.getInstance().findSession(windowID);
 
         if (!connectionOptional.isPresent()) {
             throw new SQLExecuteException("The SQL execute window does not exist.");
@@ -92,24 +92,37 @@ public class SQLWorkbench {
         getRowData(resultSetMetaData, sqlResultData, resultSet, startTime, columnCount);
         return result;
     }
-
+    
     private void getColumnInfo(final ResultSetMetaData resultSetMetaData, final int columnCount, final SQLResultData sqlResultData) throws SQLException {
         List<SQLColumnInformation> sqlColumnInformationList = sqlResultData.getSqlColumnInformationList();
+        SQLColumnInformation sqlColumnInformation;
         for (int i = 1; i <= columnCount; i++) {
-            sqlColumnInformationList.add(new SQLColumnInformation(resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnTypeName(i), resultSetMetaData.getColumnDisplaySize(i)));
+            sqlColumnInformation = new SQLColumnInformation(resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnTypeName(i), resultSetMetaData.getColumnDisplaySize(i));
+            int maxTryTimes = 32;
+            while (sqlColumnInformationList.contains(sqlColumnInformation) && maxTryTimes > 0) {
+                changeColumnLabel(sqlColumnInformation);
+                maxTryTimes--;
+            }
+            sqlColumnInformationList.add(sqlColumnInformation);
         }
     }
-
+    
+    private void changeColumnLabel(final SQLColumnInformation sqlColumnInformation) {
+        sqlColumnInformation.setColumnLabel(sqlColumnInformation.getColumnLabel() + "1");
+    }
+    
     private void getRowData(final ResultSetMetaData resultSetMetaData, final SQLResultData sqlResultData, final ResultSet resultSet,
                             final long startTime, final int columnCount) throws SQLException {
+        List<SQLColumnInformation> sqlColumnInformationList = sqlResultData.getSqlColumnInformationList();
         List<SQLRowData> sqlRowDataList = sqlResultData.getSqlRowDataList();
-        Integer rowCount = 0;
-
+        int rowCount = 0;
+        
         while (resultSet.next()) {
             rowCount++;
             SQLRowData sqlRowData = new SQLRowData();
             for (int i = 1; i <= columnCount; i++) {
-                sqlRowData.getRowData().put(resultSetMetaData.getColumnName(i), resultSet.getString(i));
+                sqlRowData.getRowData().put(resultSetMetaData.getColumnLabel(i), resultSet.getString(i));
+                sqlRowData.getRowData().put(sqlColumnInformationList.get(i - 1).getColumnLabel(), resultSet.getString(i));
             }
             sqlRowDataList.add(sqlRowData);
         }

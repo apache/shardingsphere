@@ -2,14 +2,9 @@ package io.shardingjdbc.console.domain;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.sql.Connection;
-
 import java.util.HashMap;
 import java.util.Map;
 import com.google.common.base.Optional;
-
-import javax.jws.soap.SOAPBinding;
 
 /**
  * Define user session.
@@ -17,18 +12,18 @@ import javax.jws.soap.SOAPBinding;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UserSessionRegistry {
+public final class SessionRegistry {
     
-    private static final UserSessionRegistry INSTANCE = new UserSessionRegistry();
+    private static final SessionRegistry INSTANCE = new SessionRegistry();
     
-    private final Map<String, UserSession> userSessions = new HashMap<>(128, 1);
+    private final Map<String, Session> userSessions = new HashMap<>(128, 1);
     
     /**
-     * Get UserSessionRegistry instance.
+     * Get SessionRegistry instance.
      * 
      * @return session registry
      */
-    public static UserSessionRegistry getInstance() {
+    public static SessionRegistry getInstance() {
         return INSTANCE;
     }
     
@@ -38,7 +33,7 @@ public final class UserSessionRegistry {
      * @param sessionId session id
      * @return user and connection info
      */
-    public synchronized Optional<UserSession> findSession(final String sessionId) {
+    public synchronized Optional<Session> findSession(final String sessionId) {
         return Optional.fromNullable(userSessions.get(sessionId));
     }
     
@@ -46,10 +41,10 @@ public final class UserSessionRegistry {
      * Add session.
      * 
      * @param sessionId session id
-     * @param userSession user session
+     * @param session user session
      */
-    public synchronized void addSession(final String sessionId, final UserSession userSession) {
-        userSessions.put(sessionId, userSession);
+    public synchronized void addSession(final String sessionId, final Session session) {
+        userSessions.put(sessionId, session);
     }
 
     /**
