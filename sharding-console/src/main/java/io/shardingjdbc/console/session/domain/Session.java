@@ -1,4 +1,4 @@
-package io.shardingjdbc.console.domain;
+package io.shardingjdbc.console.session.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,15 +1,9 @@
-package io.shardingjdbc.console.domain;
+package io.shardingjdbc.console.session.domain;
 
+import javax.crypto.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 
 /**
  * Encrypt and decrypt.

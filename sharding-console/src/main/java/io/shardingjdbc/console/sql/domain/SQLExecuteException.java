@@ -1,4 +1,4 @@
-package io.shardingjdbc.console.domain;
+package io.shardingjdbc.console.sql.domain;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

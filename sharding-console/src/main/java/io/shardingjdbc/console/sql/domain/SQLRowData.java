@@ -1,4 +1,4 @@
-package io.shardingjdbc.console.domain;
+package io.shardingjdbc.console.sql.domain;
 
 import lombok.Getter;
 import lombok.Setter;

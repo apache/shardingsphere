@@ -15,22 +15,15 @@
  * </p>
  */
 
-package io.shardingjdbc.console.service;
+package io.shardingjdbc.console.sql.service;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.console.domain.WorkbenchResponse;
-import io.shardingjdbc.console.domain.SQLColumnInformation;
-import io.shardingjdbc.console.domain.SQLRowData;
-import io.shardingjdbc.console.domain.SQLResultData;
-import io.shardingjdbc.console.domain.WindowRegistry;
-import io.shardingjdbc.console.domain.SQLExecuteException;
+import io.shardingjdbc.console.session.domain.Window;
+import io.shardingjdbc.console.sql.domain.*;
+import io.shardingjdbc.console.session.domain.WindowRegistry;
 import org.springframework.stereotype.Service;
-import java.sql.Connection;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.ResultSet;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +39,7 @@ public class SQLWorkbench {
      * Handle https for sqls.
      * 
      * @param sql sql
-     * @param windowID window uuid
+     * @param windowID common uuid
      * @return response
      */
     public WorkbenchResponse execute(final String sql, final String windowID) throws SQLExecuteException {
@@ -54,12 +47,13 @@ public class SQLWorkbench {
         List<SQLRowData> sqlRowDataList = new ArrayList<>();
         SQLResultData sqlResultData = new SQLResultData(0, 0L, sql, sqlColumnInformationList, sqlRowDataList);
         WorkbenchResponse result = new WorkbenchResponse(sqlResultData);
-        Optional<Connection> connectionOptional = WindowRegistry.getInstance().findSession(windowID);
+        Optional<Window> windowOptional = WindowRegistry.getInstance().findWindow(windowID);
 
-        if (!connectionOptional.isPresent()) {
+        if (!windowOptional.isPresent()) {
             throw new SQLExecuteException("The SQL execute window does not exist.");
         }
-        Connection connection = connectionOptional.get();
+        
+        Connection connection = windowOptional.get().getConnection();
 
         long startTime = System.currentTimeMillis();
         try (

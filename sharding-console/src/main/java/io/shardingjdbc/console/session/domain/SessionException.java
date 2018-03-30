@@ -1,4 +1,4 @@
-package io.shardingjdbc.console.domain;
+package io.shardingjdbc.console.session.domain;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 
 @ResponseStatus(HttpStatus.FORBIDDEN)
-public class UserException extends Exception {
-    public UserException(final String errorMessage) {
+public class SessionException extends Exception {
+    public SessionException(final String errorMessage) {
         super(errorMessage);
     }
 }

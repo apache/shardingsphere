@@ -1,4 +1,4 @@
-package io.shardingjdbc.console.constant;
+package io.shardingjdbc.console.session.constant;
 
 import lombok.Getter;
 

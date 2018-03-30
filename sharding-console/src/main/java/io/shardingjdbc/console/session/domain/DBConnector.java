@@ -1,6 +1,6 @@
-package io.shardingjdbc.console.domain;
+package io.shardingjdbc.console.session.domain;
 
-import io.shardingjdbc.console.constant.JDBCDriver;
+import io.shardingjdbc.console.session.constant.JDBCDriver;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

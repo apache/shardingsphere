@@ -1,10 +1,11 @@
-package io.shardingjdbc.console.domain;
+package io.shardingjdbc.console.session.domain;
 
+import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
-import com.google.common.base.Optional;
 
 /**
  * Define user session.
@@ -16,11 +17,11 @@ public final class SessionRegistry {
     
     private static final SessionRegistry INSTANCE = new SessionRegistry();
     
-    private final Map<String, Session> userSessions = new HashMap<>(128, 1);
+    private final Map<String, Session> sessions = new HashMap<>(128, 1);
     
     /**
      * Get SessionRegistry instance.
-     * 
+     *
      * @return session registry
      */
     public static SessionRegistry getInstance() {
@@ -34,7 +35,7 @@ public final class SessionRegistry {
      * @return user and connection info
      */
     public synchronized Optional<Session> findSession(final String sessionId) {
-        return Optional.fromNullable(userSessions.get(sessionId));
+        return Optional.fromNullable(sessions.get(sessionId));
     }
     
     /**
@@ -44,7 +45,7 @@ public final class SessionRegistry {
      * @param session user session
      */
     public synchronized void addSession(final String sessionId, final Session session) {
-        userSessions.put(sessionId, session);
+        sessions.put(sessionId, session);
     }
 
     /**
@@ -53,6 +54,6 @@ public final class SessionRegistry {
      * @param sessionId session id
      */
     public synchronized void removeSession(final String sessionId) {
-        userSessions.remove(sessionId);
+        sessions.remove(sessionId);
     }
 }
