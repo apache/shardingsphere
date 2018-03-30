@@ -248,6 +248,32 @@ public final class ShardingRuleTest {
         assertFalse(new ShardingRule(shardingRuleConfig, createDataSourceNames()).isShardingColumn(new Column("column", "other_Table")));
     }
     
+    @Test
+    public void assertDataSourceNameFromDefaultDataSourceName() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.setDefaultDataSourceName("ds3");
+        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
+        assertThat(actual.getDefaultDataSourceName(), is("ds3"));
+    }
+    
+    @Test
+    public void assertDataSourceNameFromDataSourceNames() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.setDefaultDataSourceName("ds3");
+        ShardingRule actual = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0"));
+        assertThat(actual.getDefaultDataSourceName(), is("ds0"));
+    }
+    
+    @Test
+    public void assertFindTableRuleByActualTable() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
+        assertTrue(actual.tryFindTableRuleByActualTable("table_0").isPresent());
+        assertFalse(actual.tryFindTableRuleByActualTable("table_3").isPresent());
+    }
+    
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
