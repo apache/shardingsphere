@@ -21,23 +21,23 @@ import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.integrate.asserts.ParserResultSetLoader;
-import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ConditionAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Value;
-import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumnAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItemAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.limit.LimitAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumnAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedCondition;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedValue;
+import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.ExpectedGroupByColumn;
+import io.shardingjdbc.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
+import io.shardingjdbc.core.parsing.integrate.jaxb.limit.ExpectedLimit;
+import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.ExpectedOrderByColumn;
 import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserResult;
-import io.shardingjdbc.core.parsing.integrate.jaxb.table.TableAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.GeneratedKeyTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.IndexTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.ItemsTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.MultipleInsertValuesTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.OffsetTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.OrderByTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.RowCountTokenAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.SQLTokenAsserts;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.TableTokenAssert;
+import io.shardingjdbc.core.parsing.integrate.jaxb.table.ExpectedTable;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedGeneratedKeyToken;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedIndexToken;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedItemsToken;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedMultipleInsertValuesToken;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedOffsetToken;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedOrderByToken;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedRowCountToken;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedSQLTokens;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedTableToken;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
@@ -116,9 +116,9 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertTables(final Tables actual, final List<TableAssert> expected) {
+    private void assertTables(final Tables actual, final List<ExpectedTable> expected) {
         assertThat(getFullAssertMessage("Tables size assertion error: "), actual.getTableNames().size(), is(expected.size()));
-        for (TableAssert each : expected) {
+        for (ExpectedTable each : expected) {
             Optional<Table> table;
             if (null != each.getAlias()) {
                 table = actual.find(each.getAlias());
@@ -130,14 +130,14 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertTable(final Table actual, final TableAssert expected) {
+    private void assertTable(final Table actual, final ExpectedTable expected) {
         assertThat(getFullAssertMessage("Table name assertion error: "), actual.getName(), is(expected.getName()));
         assertThat(getFullAssertMessage("Table alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
     }
     
-    private void assertConditions(final Conditions actual, final List<ConditionAssert> expected) throws NoSuchFieldException, IllegalAccessException {
+    private void assertConditions(final Conditions actual, final List<ExpectedCondition> expected) throws NoSuchFieldException, IllegalAccessException {
         assertThat(getFullAssertMessage("Conditions size assertion error: "), actual.getConditions().size(), is(expected.size()));
-        for (ConditionAssert each : expected) {
+        for (ExpectedCondition each : expected) {
             Optional<Condition> condition = actual.find(new Column(each.getColumnName(), each.getTableName()));
             assertTrue(getFullAssertMessage("Table should exist: "), condition.isPresent());
             assertCondition(condition.get(), each);
@@ -145,12 +145,12 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     }
     
     @SuppressWarnings("unchecked")
-    private void assertCondition(final Condition actual, final ConditionAssert expected) throws NoSuchFieldException, IllegalAccessException {
+    private void assertCondition(final Condition actual, final ExpectedCondition expected) throws NoSuchFieldException, IllegalAccessException {
         assertThat(getFullAssertMessage("Condition column name assertion error: "), actual.getColumn().getName().toUpperCase(), is(expected.getColumnName().toUpperCase()));
         assertThat(getFullAssertMessage("Condition table name assertion error: "), actual.getColumn().getTableName().toUpperCase(), is(expected.getTableName().toUpperCase()));
         assertThat(getFullAssertMessage("Condition operator assertion error: "), actual.getOperator().name(), is(expected.getOperator()));
         int count = 0;
-        for (Value each : expected.getValues()) {
+        for (ExpectedValue each : expected.getValues()) {
             Map<Integer, Comparable<?>> positionValueMap = (Map<Integer, Comparable<?>>) getField(actual, "positionValueMap");
             Map<Integer, Integer> positionIndexMap = (Map<Integer, Integer>) getField(actual, "positionIndexMap");
             if (!positionValueMap.isEmpty()) {
@@ -168,7 +168,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return field.get(actual);
     }
     
-    private void assertSQLTokens(final List<SQLToken> actual, final SQLTokenAsserts expected) {
+    private void assertSQLTokens(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
         assertTableTokens(actual, expected);
         assertIndexToken(actual, expected);
         assertItemsToken(actual, expected);
@@ -179,17 +179,17 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         assertRowCountToken(actual, expected);
     }
     
-    private void assertTableTokens(final List<SQLToken> actual, final SQLTokenAsserts expected) {
+    private void assertTableTokens(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
         List<TableToken> tableTokens = getTableTokens(actual);
         assertThat(getFullAssertMessage("Table tokens size error: "), tableTokens.size(), is(expected.getTableTokens().size()));
         int count = 0;
-        for (TableTokenAssert each : expected.getTableTokens()) {
+        for (ExpectedTableToken each : expected.getTableTokens()) {
             assertTableToken(tableTokens.get(count), each);
             count++;
         }
     }
     
-    private void assertTableToken(final TableToken actual, final TableTokenAssert expected) {
+    private void assertTableToken(final TableToken actual, final ExpectedTableToken expected) {
         assertThat(getFullAssertMessage("Table tokens begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
         assertThat(getFullAssertMessage("Table tokens original literals assertion error: "), actual.getOriginalLiterals(), is(expected.getOriginalLiterals()));
     }
@@ -204,7 +204,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return result;
     }
     
-    private void assertIndexToken(final List<SQLToken> actual, final SQLTokenAsserts expected) {
+    private void assertIndexToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
         Optional<IndexToken> indexToken = getIndexToken(actual);
         if (indexToken.isPresent()) {
             assertIndexToken(indexToken.get(), expected.getIndexToken());
@@ -213,7 +213,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertIndexToken(final IndexToken actual, final IndexTokenAssert expected) {
+    private void assertIndexToken(final IndexToken actual, final ExpectedIndexToken expected) {
         assertThat(getFullAssertMessage("Index token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
         assertThat(getFullAssertMessage("Index token original literals assertion error: "), actual.getOriginalLiterals(), is(expected.getOriginalLiterals()));
         assertThat(getFullAssertMessage("Index token table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
@@ -228,7 +228,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertItemsToken(final List<SQLToken> actual, final SQLTokenAsserts expected) {
+    private void assertItemsToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
         Optional<ItemsToken> itemsToken = getItemsToken(actual);
         if (itemsToken.isPresent()) {
             assertItemsToken(itemsToken.get(), expected.getItemsToken());
@@ -237,7 +237,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertItemsToken(final ItemsToken actual, final ItemsTokenAssert expected) {
+    private void assertItemsToken(final ItemsToken actual, final ExpectedItemsToken expected) {
         assertThat(getFullAssertMessage("Items token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
         assertThat(getFullAssertMessage("Items token items assertion error: "), actual.getItems(), is(expected.getItems()));
     }
@@ -251,7 +251,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertGeneratedKeyToken(final List<SQLToken> actual, final SQLTokenAsserts expected) {
+    private void assertGeneratedKeyToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
         Optional<GeneratedKeyToken> generatedKeyToken = getGeneratedKeyToken(actual);
         if (generatedKeyToken.isPresent()) {
             assertGeneratedKeyToken(generatedKeyToken.get(), expected.getGeneratedKeyToken());
@@ -260,7 +260,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertGeneratedKeyToken(final GeneratedKeyToken actual, final GeneratedKeyTokenAssert expected) {
+    private void assertGeneratedKeyToken(final GeneratedKeyToken actual, final ExpectedGeneratedKeyToken expected) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertThat(getFullAssertMessage("Generated key token begin position assertion error: "), actual.getBeginPosition(), is(expected.getPlaceholderBeginPosition()));
         } else {
@@ -277,7 +277,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertMultipleInsertValuesToken(final List<SQLToken> actual, final SQLTokenAsserts expected) {
+    private void assertMultipleInsertValuesToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
         Optional<MultipleInsertValuesToken> multipleInsertValuesToken = getMultipleInsertValuesToken(actual);
         if (multipleInsertValuesToken.isPresent()) {
             assertMultipleInsertValuesToken(multipleInsertValuesToken.get(), expected.getMultipleInsertValuesToken());
@@ -286,7 +286,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertMultipleInsertValuesToken(final MultipleInsertValuesToken actual, final MultipleInsertValuesTokenAssert expected) {
+    private void assertMultipleInsertValuesToken(final MultipleInsertValuesToken actual, final ExpectedMultipleInsertValuesToken expected) {
         assertThat(getFullAssertMessage("Multiple insert values token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
         assertThat(getFullAssertMessage("Multiple insert values token values assertion error: "), actual.getValues(), is(expected.getValues()));
     }
@@ -300,7 +300,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertOrderByToken(final List<SQLToken> actual, final SQLTokenAsserts expected) {
+    private void assertOrderByToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
         Optional<OrderByToken> orderByToken = getOrderByToken(actual);
         if (orderByToken.isPresent()) {
             assertOrderByToken(orderByToken.get(), expected.getOrderByToken());
@@ -309,7 +309,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertOrderByToken(final OrderByToken actual, final OrderByTokenAssert expected) {
+    private void assertOrderByToken(final OrderByToken actual, final ExpectedOrderByToken expected) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertThat(getFullAssertMessage("Order by token begin position assertion error: "), actual.getBeginPosition(), is(expected.getPlaceholderBeginPosition()));
         } else {
@@ -326,7 +326,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertOffsetToken(final List<SQLToken> actual, final SQLTokenAsserts expected) {
+    private void assertOffsetToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
         Optional<OffsetToken> offsetToken = getOffsetToken(actual);
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertFalse(getFullAssertMessage("Offset token should not exist: "), offsetToken.isPresent());
@@ -339,7 +339,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertOffsetToken(final OffsetToken actual, final OffsetTokenAssert expected) {
+    private void assertOffsetToken(final OffsetToken actual, final ExpectedOffsetToken expected) {
         assertThat(getFullAssertMessage("Offset token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
         assertThat(getFullAssertMessage("Offset token offset assertion error: "), actual.getOffset(), is(expected.getOffset()));
     }
@@ -353,7 +353,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertRowCountToken(final List<SQLToken> actual, final SQLTokenAsserts expected) {
+    private void assertRowCountToken(final List<SQLToken> actual, final ExpectedSQLTokens expected) {
         Optional<RowCountToken> rowCountToken = getRowCountToken(actual);
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertFalse(getFullAssertMessage("Row count token should not exist: "), rowCountToken.isPresent());
@@ -366,7 +366,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertRowCountToken(final RowCountToken actual, final RowCountTokenAssert expected) {
+    private void assertRowCountToken(final RowCountToken actual, final ExpectedRowCountToken expected) {
         assertThat(getFullAssertMessage("Row count token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
         assertThat(getFullAssertMessage("Row count token row count assertion error: "), actual.getRowCount(), is(expected.getRowCount()));
     }
@@ -380,14 +380,14 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return Optional.absent();
     }
     
-    private void assertItems(final Set<SelectItem> actual, final List<AggregationSelectItemAssert> expected) {
+    private void assertItems(final Set<SelectItem> actual, final List<ExpectedAggregationSelectItem> expected) {
         // TODO assert SelectItems total size
         // TODO assert StarSelectItem
         // TODO assert CommonSelectItem
         assertAggregationSelectItems(actual, expected);
     }
     
-    private void assertAggregationSelectItems(final Set<SelectItem> actual, final List<AggregationSelectItemAssert> expected) {
+    private void assertAggregationSelectItems(final Set<SelectItem> actual, final List<ExpectedAggregationSelectItem> expected) {
         List<AggregationSelectItem> aggregationSelectItems = getAggregationSelectItems(actual);
         assertThat(getFullAssertMessage("Table tokens size error: "), aggregationSelectItems.size(), is(expected.size()));
         int count = 0;
@@ -397,7 +397,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertAggregationSelectItem(final AggregationSelectItem actual, final AggregationSelectItemAssert expected) {
+    private void assertAggregationSelectItem(final AggregationSelectItem actual, final ExpectedAggregationSelectItem expected) {
         assertThat(getFullAssertMessage("Aggregation select item aggregation type assertion error: "), actual.getType().name(), is(expected.getType()));
         assertThat(getFullAssertMessage("Aggregation select item inner expression assertion error: "), actual.getInnerExpression(), is(expected.getInnerExpression()));
         assertThat(getFullAssertMessage("Aggregation select item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
@@ -421,7 +421,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         return result;
     }
     
-    private void assertGroupByItems(final List<OrderItem> actual, final List<GroupByColumnAssert> expected) {
+    private void assertGroupByItems(final List<OrderItem> actual, final List<ExpectedGroupByColumn> expected) {
         assertThat(getFullAssertMessage("Group by items size error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (OrderItem each : actual) {
@@ -430,7 +430,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertGroupByItem(final OrderItem actual, final GroupByColumnAssert expected) {
+    private void assertGroupByItem(final OrderItem actual, final ExpectedGroupByColumn expected) {
         assertThat(getFullAssertMessage("Group by item owner assertion error: "), actual.getOwner().orNull(), is(expected.getOwner()));
         assertThat(getFullAssertMessage("Group by item name assertion error: "), actual.getName().orNull(), is(expected.getName()));
         assertThat(getFullAssertMessage("Group by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
@@ -438,7 +438,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         assertThat(getFullAssertMessage("Group by item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
     }
     
-    private void assertOrderByItems(final List<OrderItem> actual, final List<OrderByColumnAssert> expected) {
+    private void assertOrderByItems(final List<OrderItem> actual, final List<ExpectedOrderByColumn> expected) {
         assertThat(getFullAssertMessage("Order by items size error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (OrderItem each : actual) {
@@ -447,7 +447,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
     }
     
-    private void assertOrderByItem(final OrderItem actual, final OrderByColumnAssert expected) {
+    private void assertOrderByItem(final OrderItem actual, final ExpectedOrderByColumn expected) {
         assertThat(getFullAssertMessage("Order by item owner assertion error: "), actual.getOwner().orNull(), is(expected.getOwner()));
         assertThat(getFullAssertMessage("Order by item name assertion error: "), actual.getName().orNull(), is(expected.getName()));
         assertThat(getFullAssertMessage("Order by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
@@ -456,7 +456,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         assertThat(getFullAssertMessage("Order by item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
     }
     
-    private void assertLimit(final Limit actual, final LimitAssert expected) {
+    private void assertLimit(final Limit actual, final ExpectedLimit expected) {
         if (null == actual) {
             assertNull(getFullAssertMessage("Limit should not exist: "), expected);
             return;

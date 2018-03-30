@@ -22,36 +22,21 @@ import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class SQLTokenAsserts {
+public final class ExpectedItemsToken implements ExpectedSQLToken {
     
-    @XmlElement(name = "table-token")
-    private List<TableTokenAssert> tableTokens = new LinkedList<>();
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
     
-    @XmlElement(name = "index-token")
-    private IndexTokenAssert indexToken;
-    
-    @XmlElement(name = "items-token")
-    private ItemsTokenAssert itemsToken;
-    
-    @XmlElement(name = "generated-key-token")
-    private GeneratedKeyTokenAssert generatedKeyToken;
-    
-    @XmlElement(name = "multiple-insert-values-token")
-    private MultipleInsertValuesTokenAssert multipleInsertValuesToken;
-    
-    @XmlElement(name = "order-by-token")
-    private OrderByTokenAssert orderByToken;
-    
-    @XmlElement(name = "offset-token")
-    private OffsetTokenAssert offsetToken;
-    
-    @XmlElement(name = "row-count-token")
-    private RowCountTokenAssert rowCountToken;
+    @XmlElementWrapper(name = "items")
+    @XmlElement(name = "item")
+    private List<String> items = new LinkedList<>();
 }

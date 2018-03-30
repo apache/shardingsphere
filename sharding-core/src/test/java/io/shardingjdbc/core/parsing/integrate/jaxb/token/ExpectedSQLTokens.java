@@ -22,21 +22,36 @@ import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ItemsTokenAssert implements SQLTokenAssert {
+public final class ExpectedSQLTokens {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
+    @XmlElement(name = "table-token")
+    private List<ExpectedTableToken> tableTokens = new LinkedList<>();
     
-    @XmlElementWrapper(name = "items")
-    @XmlElement(name = "item")
-    private List<String> items = new LinkedList<>();
+    @XmlElement(name = "index-token")
+    private ExpectedIndexToken indexToken;
+    
+    @XmlElement(name = "items-token")
+    private ExpectedItemsToken itemsToken;
+    
+    @XmlElement(name = "generated-key-token")
+    private ExpectedGeneratedKeyToken generatedKeyToken;
+    
+    @XmlElement(name = "multiple-insert-values-token")
+    private ExpectedMultipleInsertValuesToken multipleInsertValuesToken;
+    
+    @XmlElement(name = "order-by-token")
+    private ExpectedOrderByToken orderByToken;
+    
+    @XmlElement(name = "offset-token")
+    private ExpectedOffsetToken offsetToken;
+    
+    @XmlElement(name = "row-count-token")
+    private ExpectedRowCountToken rowCountToken;
 }

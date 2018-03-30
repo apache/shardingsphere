@@ -27,11 +27,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class OffsetTokenAssert implements SQLTokenAssert {
+public final class ExpectedTableToken implements ExpectedSQLToken {
     
     @XmlAttribute(name = "begin-position")
     private int beginPosition;
     
-    @XmlAttribute(name = "offset")
-    private int offset;
+    @XmlAttribute(name = "original-literals")
+    private String originalLiterals;
 }

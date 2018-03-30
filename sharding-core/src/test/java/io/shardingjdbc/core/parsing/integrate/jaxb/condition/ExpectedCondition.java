@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.token;
+package io.shardingjdbc.core.parsing.integrate.jaxb.condition;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,15 +23,23 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class RowCountTokenAssert implements SQLTokenAssert {
+public final class ExpectedCondition {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
+    @XmlAttribute(name = "column-name")
+    private String columnName;
     
-    @XmlAttribute(name = "row-count")
-    private int rowCount;
+    @XmlAttribute(name = "table-name")
+    private String tableName;
+    
+    @XmlAttribute
+    private String operator;
+    
+    @XmlElement(name = "value") 
+    private List<ExpectedValue> values;
 }

@@ -23,15 +23,20 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class OrderByTokenAssert implements SQLTokenAssert {
+public final class ExpectedMultipleInsertValuesToken implements ExpectedSQLToken {
     
-    @XmlAttribute(name = "placeholder-begin-position")
-    private int placeholderBeginPosition;
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
     
-    @XmlAttribute(name = "literal-begin-position")
-    private int literalBeginPosition;
+    @XmlElementWrapper(name = "values")
+    @XmlElement(name = "value")
+    private List<String> values = new LinkedList<>();
 }

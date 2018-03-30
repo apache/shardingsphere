@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.token;
+package io.shardingjdbc.core.parsing.integrate.jaxb.limit;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,11 +27,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class GeneratedKeyTokenAssert implements SQLTokenAssert {
+public final class ExpectedLimit {
     
-    @XmlAttribute(name = "placeholder-begin-position")
-    private int placeholderBeginPosition;
+    @XmlAttribute
+    private Integer offset;
     
-    @XmlAttribute(name = "literal-begin-position")
-    private int literalBeginPosition;
+    @XmlAttribute(name = "row-count")
+    private Integer rowCount;
+    
+    @XmlAttribute(name = "offset-index")
+    private Integer offsetParameterIndex;
+    
+    @XmlAttribute(name = "row-count-index")
+    private Integer rowCountParameterIndex;
 }

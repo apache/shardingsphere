@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.table;
+package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,14 +24,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class TableAssert {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedRowCountToken implements ExpectedSQLToken {
     
-    @XmlAttribute
-    private String name;
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
     
-    @XmlAttribute
-    private String alias;
+    @XmlAttribute(name = "row-count")
+    private int rowCount;
 }

@@ -17,6 +17,24 @@
 
 package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
-public interface SQLTokenAssert {
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedIndexToken implements ExpectedSQLToken {
     
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
+    
+    @XmlAttribute(name = "original-literals")
+    private String originalLiterals;
+    
+    @XmlAttribute(name = "table-name")
+    private String tableName;
 }
