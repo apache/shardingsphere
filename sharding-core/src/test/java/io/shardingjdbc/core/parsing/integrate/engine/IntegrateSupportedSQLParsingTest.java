@@ -113,18 +113,6 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
             assertOrderByItems(selectStatement.getOrderByItems(), parserAssert.getOrderByColumns());
             assertLimit(selectStatement.getLimit(), parserAssert.getLimit());
         }
-        
-        
-        
-        
-//        if (actual instanceof SelectStatement) {
-//            SelectStatement selectStatement = (SelectStatement) actual;
-//            SelectStatement expectedSqlStatement = ParserJAXBHelper.getSelectStatement(parserAssert);
-//            ParserAssertHelper.assertOrderBy(expectedSqlStatement.getOrderByItems(), selectStatement.getOrderByItems());
-//            ParserAssertHelper.assertGroupBy(expectedSqlStatement.getGroupByItems(), selectStatement.getGroupByItems());
-//            ParserAssertHelper.assertAggregationSelectItem(expectedSqlStatement.getAggregationSelectItems(), selectStatement.getAggregationSelectItems());
-//            ParserAssertHelper.assertLimit(parserAssert.getLimit(), selectStatement.getLimit(), withPlaceholder);
-//        }
     }
     
     private void assertTables(final Tables actual, final List<TableAssert> expected) {
