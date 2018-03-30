@@ -22,6 +22,7 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ConditionAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.Value;
+import io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItemAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.table.TableAssert;
 import io.shardingjdbc.core.parsing.integrate.jaxb.token.GeneratedKeyTokenAssert;
@@ -36,9 +37,12 @@ import io.shardingjdbc.core.parsing.integrate.jaxb.token.TableTokenAssert;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
+import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
+import io.shardingjdbc.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
 import io.shardingjdbc.core.parsing.parser.context.table.Tables;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
@@ -60,6 +64,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -96,7 +101,10 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         assertTables(actual.getTables(), parserAssert.getTables());
         assertConditions(actual.getConditions(), parserAssert.getConditions());
         assertSQLTokens(actual.getSqlTokens(), parserAssert.getTokens());
-        
+        if (actual instanceof SelectStatement) {
+            SelectStatement selectStatement = (SelectStatement) actual;
+            assertItems(selectStatement.getItems(), parserAssert.getAggregationSelectItems());
+        }
         
         
 //        if (actual instanceof SelectStatement) {
@@ -372,6 +380,61 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         }
         return Optional.absent();
     }
+    
+    private void assertItems(final Set<SelectItem> actual, final List<AggregationSelectItemAssert> expected) {
+        // TODO assert SelectItems total size
+        // TODO assert StarSelectItem
+        // TODO assert CommonSelectItem
+        assertAggregationSelectItems(actual, expected);
+    }
+    
+    private void assertAggregationSelectItems(final Set<SelectItem> actual, final List<AggregationSelectItemAssert> expected) {
+        List<AggregationSelectItem> aggregationSelectItems = getAggregationSelectItems(actual);
+        assertThat(getFullAssertMessage("Table tokens size error: "), aggregationSelectItems.size(), is(expected.size()));
+        int count = 0;
+        for (AggregationSelectItem each : aggregationSelectItems) {
+            assertAggregationSelectItem(each, expected.get(count));
+            count++;
+        }
+    }
+    
+    private void assertAggregationSelectItem(final AggregationSelectItem actual, final AggregationSelectItemAssert expected) {
+        assertThat(getFullAssertMessage("Aggregation select item aggregation type assertion error: "), actual.getType().name(), is(expected.getAggregationType()));
+        assertThat(getFullAssertMessage("Aggregation select item inner expression assertion error: "), actual.getInnerExpression(), is(expected.getInnerExpression()));
+        assertThat(getFullAssertMessage("Aggregation select item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
+        assertThat(getFullAssertMessage("Aggregation select item index assertion error: "), actual.getIndex(), is(expected.getIndex()));
+        assertThat(getFullAssertMessage("Aggregation select item derived aggregation select items assertion error: "), 
+                actual.getDerivedAggregationSelectItems().size(), is(expected.getDerivedColumns().size()));
+        int count = 0;
+        for (AggregationSelectItem each : actual.getDerivedAggregationSelectItems()) {
+            assertAggregationSelectItem(each, expected.getDerivedColumns().get(count));
+            count++;
+        }
+    }
+    
+    private List<AggregationSelectItem> getAggregationSelectItems(final Set<SelectItem> actual) {
+        List<AggregationSelectItem> result = new ArrayList<>(actual.size());
+        for (SelectItem each : actual) {
+            if (each instanceof AggregationSelectItem) {
+                result.add((AggregationSelectItem) each);
+            }
+        }
+        return result;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     private String getFullAssertMessage(final String assertMessage) {
         StringBuilder result = new StringBuilder(System.getProperty("line.separator"));
