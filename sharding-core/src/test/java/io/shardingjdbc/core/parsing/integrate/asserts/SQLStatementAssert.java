@@ -76,11 +76,14 @@ public final class SQLStatementAssert {
         conditionAssert.assertConditions(actual.getConditions(), expected.getConditions());
         tokenAssert.assertTokens(actual.getSqlTokens(), expected.getTokens());
         if (actual instanceof SelectStatement) {
-            SelectStatement selectStatement = (SelectStatement) actual;
-            itemAssert.assertItems(selectStatement.getItems(), expected.getAggregationSelectItems());
-            groupByAssert.assertGroupByItems(selectStatement.getGroupByItems(), expected.getGroupByColumns());
-            orderByAssert.assertOrderByItems(selectStatement.getOrderByItems(), expected.getOrderByColumns());
-            limitAssert.assertLimit(selectStatement.getLimit(), expected.getLimit());
+            assertSelectStatement((SelectStatement) actual);
         }
+    }
+    
+    private void assertSelectStatement(final SelectStatement actual) {
+        itemAssert.assertItems(actual.getItems(), expected.getAggregationSelectItems());
+        groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
+        orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
+        limitAssert.assertLimit(actual.getLimit(), expected.getLimit());
     }
 }
