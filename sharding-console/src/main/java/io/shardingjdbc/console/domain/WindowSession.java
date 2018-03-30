@@ -12,10 +12,12 @@ import java.util.UUID;
  */
 @Getter
 public class WindowSession {
+    
     private String id;
+    
     private Connection connection;
     
-    public WindowSession(Connection conn) {
+    public WindowSession(final Connection conn) {
         id = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         connection = conn;
     }

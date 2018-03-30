@@ -36,10 +36,11 @@ public final class UserSession {
         windowIDList = new ArrayList<>(128);
     }
     
-    public void addWindowID(String windowID) {
+    public void addWindowID(final String windowID) {
         windowIDList.add(windowID);
     }
-    public void delWindowID(String windowID) {
+    
+    public void delWindowID(final String windowID) {
         windowIDList.remove(windowID);
     }
 }

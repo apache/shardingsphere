@@ -16,7 +16,8 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WindowSessionRegistry {
     
-    private final static WindowSessionRegistry INSTANCE = new WindowSessionRegistry();
+    private static final WindowSessionRegistry INSTANCE = new WindowSessionRegistry();
+    
     private final Map<String, Connection> windowSessions = new HashMap<>(128, 1);
     
     /**
@@ -56,7 +57,4 @@ public class WindowSessionRegistry {
     public synchronized void removeSession(final String windowID) {
         windowSessions.remove(windowID);
     }
-    
-    
-    
 }

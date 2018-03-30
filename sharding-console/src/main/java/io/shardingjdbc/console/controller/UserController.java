@@ -2,8 +2,11 @@ package io.shardingjdbc.console.controller;
 
 import com.google.common.base.Optional;
 import io.shardingjdbc.console.domain.*;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.CookieValue;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
@@ -33,41 +36,33 @@ public class UserController {
     public WorkbenchResponse login(@RequestBody final UserSession userSession, final @CookieValue(value = "userUUID", required = false, defaultValue = "") String userUUID,
                                    final HttpServletResponse response) throws UserException {
         if (!"".equals(userUUID)) {
-            Optional<UserSession> userSessionOptional = UserSessionRegistry.getInstance().findSession(userUUID);
-            if (userSessionOptional.isPresent()) {
+            if (UserSessionRegistry.getInstance().findSession(userUUID).isPresent()) {
                 return new WorkbenchResponse("Logged in.");
-            } else {
-                removeSession(userUUID, response);
-                throw new UserException("Please login first.");
             }
+            removeSession(userUUID, response);
+            throw new UserException("Please login first.");
         }
-        WindowSession windowSession;
-        try {
-            windowSession = createWindow(userSession);
-        } catch (UserException ex) {
-            throw ex;
-        }
+        WindowSession windowSession = createWindow(userSession);
         setSession(userSession, windowSession, response);
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new HashMap<>(1, 1);
         result.put("windowID", windowSession.getId());
         return new WorkbenchResponse("Login succeeded", result);
     }
     
-    private WindowSession createWindow(UserSession userSession) throws UserException {
+    private WindowSession createWindow(final UserSession userSession) throws UserException {
         try {
             Connection connection = DBConnector.getConnection(userSession.getUserName(), userSession.getPassWord(), userSession.getTargetURL(), userSession.getDriver());
             return new WindowSession(connection);
         } catch (final ClassNotFoundException | SQLException ex) {
             throw new UserException("Login failed.");
         }
-        
     }
+
     private void setSession(final UserSession userSession, final WindowSession windowSession,
                             final HttpServletResponse response) {
         userSession.addWindowID(windowSession.getId());
         UserSessionRegistry.getInstance().addSession(userSession.getId(), userSession);
         WindowSessionRegistry.getInstance().addSession(windowSession.getId(), windowSession.getConnection());
-        
         Cookie cookie = new Cookie("userUUID", userSession.getId());
         cookie.setMaxAge(120 * 60);
         cookie.setPath("/");
@@ -91,9 +86,9 @@ public class UserController {
 
     private void removeSession(final String userUUID, final HttpServletResponse response) {
         Optional<UserSession> userSessionOptional = UserSessionRegistry.getInstance().findSession(userUUID);
-        if(userSessionOptional.isPresent()) {
+        if (userSessionOptional.isPresent()) {
             List<String> windowIDList = userSessionOptional.get().getWindowIDList();
-            for(String windowID : windowIDList){
+            for (String windowID : windowIDList) {
                 WindowSessionRegistry.getInstance().removeSession(windowID);
             }
         }
@@ -107,8 +102,8 @@ public class UserController {
     @RequestMapping(value = "/addWindow", method = RequestMethod.POST)
     public WorkbenchResponse addWindow(final @CookieValue(value = "userUUID",
         required = false, defaultValue = "") String userUUID) throws UserException {
-        Optional<UserSession> userSessionOptional  = UserSessionRegistry.getInstance().findSession(userUUID);
-        if(!userSessionOptional.isPresent()) {
+        Optional<UserSession> userSessionOptional = UserSessionRegistry.getInstance().findSession(userUUID);
+        if (!userSessionOptional.isPresent()) {
             throw new UserException("Please login first.");
         }
         
@@ -116,10 +111,9 @@ public class UserController {
         WindowSession windowSession = createWindow(userSession);
         setWindow(userSession, windowSession);
         
-        
         Map<String, String> result = new HashMap<>();
         result.put("windowID", windowSession.getId());
-        return new WorkbenchResponse("Open new window OK.",result);
+        return new WorkbenchResponse("Open new window OK.", result);
     }
     
     private void setWindow(final UserSession userSession, final WindowSession windowSession) {
@@ -130,19 +124,17 @@ public class UserController {
     @RequestMapping(value = "/delWindow", method = RequestMethod.POST)
     public WorkbenchResponse delWindow(@RequestBody final Map<String, String> windowInfo, final @CookieValue(value = "userUUID",
         required = false, defaultValue = "") String userUUID) throws UserException {
-        Optional<UserSession> userSessionOptional  = UserSessionRegistry.getInstance().findSession(userUUID);
-        if(!userSessionOptional.isPresent()) {
+        Optional<UserSession> userSessionOptional = UserSessionRegistry.getInstance().findSession(userUUID);
+        if (!userSessionOptional.isPresent()) {
             throw new UserException("Please login first.");
         }
         
         UserSession userSession = userSessionOptional.get();
         removeWindow(userSession, windowInfo);
-        
         return new WorkbenchResponse("Close window OK.");
     }
     
     private void removeWindow(final UserSession userSession, final Map<String, String> windowInfo) {
         userSession.delWindowID(windowInfo.get("windowID"));
-        WindowSessionRegistry.getInstance().removeSession(windowInfo.get("windowID"));
-        }
+        WindowSessionRegistry.getInstance().removeSession(windowInfo.get("windowID")); }
 }

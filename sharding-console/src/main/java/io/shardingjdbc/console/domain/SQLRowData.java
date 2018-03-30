@@ -15,5 +15,5 @@ import java.util.Map;
 @Setter
 public final class SQLRowData {
     
-    private Map<String, String> rowData = new LinkedHashMap<>(100,1);
+    private Map<String, String> rowData = new LinkedHashMap<>(100, 1);
 }

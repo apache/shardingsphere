@@ -2,14 +2,9 @@ package io.shardingjdbc.console.domain;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.sql.Connection;
-
 import java.util.HashMap;
 import java.util.Map;
 import com.google.common.base.Optional;
-
-import javax.jws.soap.SOAPBinding;
 
 /**
  * Define user session.
