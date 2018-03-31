@@ -71,6 +71,19 @@ public class TopAndRowNumberDecoratorMergedResultTest {
     }
     
     @Test
+    public void assertNextWithOffsetWithoutRowCount() throws SQLException {
+        Limit limit = new Limit(DatabaseType.SQLServer);
+        limit.setOffset(new LimitValue(2, -1, true));
+        selectStatement.setLimit(limit);
+        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        MergedResult actual = mergeEngine.merge();
+        for (int i = 0; i < 7; i++) {
+            assertTrue(actual.next());
+        }
+        assertFalse(actual.next());
+    }
+    
+    @Test
     public void assertNextWithOffsetBoundOpendedFalse() throws SQLException {
         Limit limit = new Limit(DatabaseType.SQLServer);
         limit.setOffset(new LimitValue(2, -1, false));
