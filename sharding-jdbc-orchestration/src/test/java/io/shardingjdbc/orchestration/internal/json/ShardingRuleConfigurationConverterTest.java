@@ -41,10 +41,12 @@ import static org.junit.Assert.assertThat;
 public final class ShardingRuleConfigurationConverterTest {
     
     private final String commonShardingRuleConfigJson = "{\"tableRuleConfigs\":[{\"logicTable\":\"t_order\",\"actualDataNodes\":\"t_order_${[0, 1]}\","
-            + "\"databaseShardingStrategyConfig\":{},\"tableShardingStrategyConfig\":{}},"
+            + "\"databaseShardingStrategyConfig\":{},\"tableShardingStrategyConfig\":{},\"keyGenerator\":{}},"
             + "{\"logicTable\":\"t_order_item\",\"actualDataNodes\":\"t_order_item_${[0, 1]}\","
-            + "\"databaseShardingStrategyConfig\":{},\"tableShardingStrategyConfig\":{}}"
+            + "\"databaseShardingStrategyConfig\":{},\"tableShardingStrategyConfig\":{},\"keyGenerator\":{}}"
             + "],\"bindingTableGroups\":[\"t_order, t_order_item\"],\"defaultDatabaseShardingStrategyConfig\":{},";
+    
+    private final String defaultKeyGenerator = ",\"defaultKeyGenerator\":{}";
     
     private final String masterSlaveRuleConfigJson = ",\"masterSlaveRuleConfigs\":[]}";
     
@@ -149,27 +151,27 @@ public final class ShardingRuleConfigurationConverterTest {
                 + "\"defaultTableShardingStrategyConfig\":{\"type\":\"STANDARD\",\"shardingColumn\":\"order_id\","
                 + "\"preciseAlgorithmClassName\":\"io.shardingjdbc.orchestration.internal.json.fixture.TestPreciseShardingAlgorithm\","
                 + "\"rangeAlgorithmClassName\":\"io.shardingjdbc.orchestration.internal.json.fixture.TestRangeShardingAlgorithm\"}"
-                + masterSlaveRuleConfigJson;
+                + defaultKeyGenerator + masterSlaveRuleConfigJson;
     }
     
     private String getJsonForComplexStrategy() {
         return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"COMPLEX\",\"shardingColumns\":\"order_id,item_id\","
                 + "\"algorithmClassName\":\"io.shardingjdbc.orchestration.internal.json.fixture.TestComplexKeysShardingAlgorithm\"}"
-                + masterSlaveRuleConfigJson;
+                + defaultKeyGenerator + masterSlaveRuleConfigJson;
     }
     
     private String getJsonForInlineStrategy() {
         return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"INLINE\",\"shardingColumn\":\"order_id\",\"algorithmExpression\":\"order_${user_id % 2}\"}"
-                + masterSlaveRuleConfigJson;
+                + defaultKeyGenerator + masterSlaveRuleConfigJson;
     }
     
     private String getJsonForHintStrategy() {
         return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"HINT\","
-                + "\"algorithmClassName\":\"io.shardingjdbc.orchestration.internal.json.fixture.TestHintShardingAlgorithm\"}" + masterSlaveRuleConfigJson;
+                + "\"algorithmClassName\":\"io.shardingjdbc.orchestration.internal.json.fixture.TestHintShardingAlgorithm\"}" + defaultKeyGenerator + masterSlaveRuleConfigJson;
     }
     
     private String getJsonForNoneStrategy() {
-        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"NONE\"}" + masterSlaveRuleConfigJson;
+        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"NONE\"}" + defaultKeyGenerator + masterSlaveRuleConfigJson;
     }
     
     private void assertCommon(final ShardingRuleConfiguration actual) {
