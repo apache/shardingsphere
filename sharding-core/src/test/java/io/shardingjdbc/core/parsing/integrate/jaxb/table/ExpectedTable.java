@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.token;
+package io.shardingjdbc.core.parsing.integrate.jaxb.table;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,20 +23,15 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.LinkedList;
-import java.util.List;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ItemsTokenAssert implements SQLTokenAssert {
+public final class ExpectedTable {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
+    @XmlAttribute
+    private String name;
     
-    @XmlElementWrapper(name = "items")
-    @XmlElement(name = "item")
-    private List<String> items = new LinkedList<>();
+    @XmlAttribute
+    private String alias;
 }

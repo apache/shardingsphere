@@ -17,13 +17,13 @@
 
 package io.shardingjdbc.core.parsing.integrate.jaxb.root;
 
-import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ConditionAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.GroupByColumnAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.item.AggregationSelectItemAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.limit.LimitAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.OrderByColumnAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.table.TableAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.token.SQLTokenAsserts;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedCondition;
+import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.ExpectedGroupByColumn;
+import io.shardingjdbc.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
+import io.shardingjdbc.core.parsing.integrate.jaxb.limit.ExpectedLimit;
+import io.shardingjdbc.core.parsing.integrate.jaxb.orderby.ExpectedOrderByColumn;
+import io.shardingjdbc.core.parsing.integrate.jaxb.table.ExpectedTable;
+import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedTokens;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,7 +39,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ParserAssert {
+public final class ParserResult {
     
     @XmlAttribute(name = "sql-case-id")
     private String sqlCaseId;
@@ -50,27 +50,27 @@ public final class ParserAssert {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
-    private List<TableAssert> tables = new LinkedList<>();
+    private List<ExpectedTable> tables = new LinkedList<>();
     
     @XmlElementWrapper
     @XmlElement(name = "condition") 
-    private List<ConditionAssert> conditions = new LinkedList<>();
+    private List<ExpectedCondition> conditions = new LinkedList<>();
     
     @XmlElement
-    private SQLTokenAsserts tokens = new SQLTokenAsserts();
+    private ExpectedTokens tokens = new ExpectedTokens();
     
     @XmlElementWrapper(name = "order-by-columns")
     @XmlElement(name = "order-by-column") 
-    private List<OrderByColumnAssert> orderByColumns = new LinkedList<>();
+    private List<ExpectedOrderByColumn> orderByColumns = new LinkedList<>();
     
     @XmlElementWrapper(name = "group-by-columns")
     @XmlElement(name = "group-by-column") 
-    private List<GroupByColumnAssert> groupByColumns = new LinkedList<>();
+    private List<ExpectedGroupByColumn> groupByColumns = new LinkedList<>();
     
     @XmlElementWrapper(name = "aggregation-select-items")
     @XmlElement(name = "aggregation-select-item") 
-    private List<AggregationSelectItemAssert> aggregationSelectItems = new LinkedList<>();
+    private List<ExpectedAggregationSelectItem> aggregationSelectItems = new LinkedList<>();
     
     @XmlElement 
-    private LimitAssert limit;
+    private ExpectedLimit limit;
 }

@@ -29,29 +29,29 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class SQLTokenAsserts {
+public final class ExpectedTokens {
     
     @XmlElement(name = "table-token")
-    private List<TableTokenAssert> tableTokens = new LinkedList<>();
+    private List<ExpectedTableToken> tableTokens = new LinkedList<>();
     
     @XmlElement(name = "index-token")
-    private IndexTokenAssert indexToken;
+    private ExpectedIndexToken indexToken;
     
     @XmlElement(name = "items-token")
-    private ItemsTokenAssert itemsToken;
+    private ExpectedItemsToken itemsToken;
     
     @XmlElement(name = "generated-key-token")
-    private GeneratedKeyTokenAssert generatedKeyToken;
+    private ExpectedGeneratedKeyToken generatedKeyToken;
     
     @XmlElement(name = "multiple-insert-values-token")
-    private MultipleInsertValuesTokenAssert multipleInsertValuesToken;
+    private ExpectedMultipleInsertValuesToken multipleInsertValuesToken;
     
     @XmlElement(name = "order-by-token")
-    private OrderByTokenAssert orderByToken;
+    private ExpectedOrderByToken orderByToken;
     
     @XmlElement(name = "offset-token")
-    private OffsetTokenAssert offsetToken;
+    private ExpectedOffsetToken offsetToken;
     
     @XmlElement(name = "row-count-token")
-    private RowCountTokenAssert rowCountToken;
+    private ExpectedRowCountToken rowCountToken;
 }

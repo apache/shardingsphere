@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.orderby;
+package io.shardingjdbc.core.parsing.integrate.jaxb.limit;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,20 +27,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class OrderByColumnAssert {
+public final class ExpectedLimit {
     
     @XmlAttribute
-    private String owner;
+    private Integer offset;
     
-    @XmlAttribute
-    private String name;
+    @XmlAttribute(name = "row-count")
+    private Integer rowCount;
     
-    @XmlAttribute
-    private Integer index = -1;
+    @XmlAttribute(name = "offset-index")
+    private Integer offsetParameterIndex;
     
-    @XmlAttribute
-    private String alias;
-    
-    @XmlAttribute(name = "order-direction") 
-    private String orderDirection;
+    @XmlAttribute(name = "row-count-index")
+    private Integer rowCountParameterIndex;
 }

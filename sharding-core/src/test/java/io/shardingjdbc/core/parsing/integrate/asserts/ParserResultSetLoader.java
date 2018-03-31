@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.engine;
+package io.shardingjdbc.core.parsing.integrate.asserts;
 
 import com.google.common.base.Preconditions;
-import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAssert;
-import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserAsserts;
+import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserResult;
+import io.shardingjdbc.core.parsing.integrate.jaxb.root.ParserResultSet;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -29,18 +29,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Parser asserts loader.
+ * Parser result set loader.
  *
  * @author zhangliang
  */
-public final class ParserAssertsLoader {
+public final class ParserResultSetLoader {
     
-    private static final ParserAssertsLoader INSTANCE = new ParserAssertsLoader();
+    private static final ParserResultSetLoader INSTANCE = new ParserResultSetLoader();
     
-    private final Map<String, ParserAssert> parserAssertMap;
+    private final Map<String, ParserResult> parserResultMap;
     
-    private ParserAssertsLoader() {
-        parserAssertMap = loadParserAsserts();
+    private ParserResultSetLoader() {
+        parserResultMap = loadParserResultSet();
     }
     
     /**
@@ -48,26 +48,26 @@ public final class ParserAssertsLoader {
      *
      * @return singleton instance
      */
-    public static ParserAssertsLoader getInstance() {
+    public static ParserResultSetLoader getInstance() {
         return INSTANCE;
     }
     
-    private Map<String, ParserAssert> loadParserAsserts() {
-        URL url = ParserAssertsLoader.class.getClassLoader().getResource("parser/");
+    private Map<String, ParserResult> loadParserResultSet() {
+        URL url = ParserResultSetLoader.class.getClassLoader().getResource("parser/");
         Preconditions.checkNotNull(url, "Cannot found parser test cases.");
         File[] files = new File(url.getPath()).listFiles();
         Preconditions.checkNotNull(files, "Cannot found parser test cases.");
-        Map<String, ParserAssert> result = new HashMap<>(Short.MAX_VALUE, 1);
+        Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (File each : files) {
-            result.putAll(loadParserAsserts(each));
+            result.putAll(loadParserResultSet(each));
         }
         return result;
     }
     
-    private Map<String, ParserAssert> loadParserAsserts(final File file) {
-        Map<String, ParserAssert> result = new HashMap<>(Short.MAX_VALUE, 1);
+    private Map<String, ParserResult> loadParserResultSet(final File file) {
+        Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
         try {
-            for (ParserAssert each : ((ParserAsserts) JAXBContext.newInstance(ParserAsserts.class).createUnmarshaller().unmarshal(file)).getParserAsserts()) {
+            for (ParserResult each : ((ParserResultSet) JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file)).getParserResults()) {
                 result.put(each.getSqlCaseId(), each);
             }
         } catch (JAXBException ex) {
@@ -82,8 +82,8 @@ public final class ParserAssertsLoader {
      * @param sqlCaseId SQL case ID
      * @return parser assert
      */
-    public ParserAssert getParserAssert(final String sqlCaseId) {
-        Preconditions.checkState(parserAssertMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
-        return parserAssertMap.get(sqlCaseId);
+    public ParserResult getParserResult(final String sqlCaseId) {
+        Preconditions.checkState(parserResultMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
+        return parserResultMap.get(sqlCaseId);
     }
 }

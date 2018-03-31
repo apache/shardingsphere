@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser-asserts>
-    <parser-assert sql-case-id="assertUpdateWithAlias" parameters="'update' 1 1">
+<parser-result-sets>
+    <parser-result sql-case-id="assertUpdateWithAlias" parameters="'update' 1 1">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
@@ -15,9 +15,9 @@
                 <value index="2" literal="1" type="int" />
             </condition>
         </conditions>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertUpdateWithoutAlias" parameters="'update' 1 1">
+    <parser-result sql-case-id="assertUpdateWithoutAlias" parameters="'update' 1 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -32,5 +32,5 @@
                 <value index="2" literal="1" type="int" />
             </condition>
         </conditions>
-    </parser-assert>
-</parser-asserts>
+    </parser-result>
+</parser-result-sets>

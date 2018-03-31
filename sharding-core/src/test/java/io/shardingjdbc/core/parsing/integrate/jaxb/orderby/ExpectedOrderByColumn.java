@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.groupby;
+package io.shardingjdbc.core.parsing.integrate.jaxb.orderby;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,13 +27,16 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class GroupByColumnAssert {
+public final class ExpectedOrderByColumn {
     
     @XmlAttribute
     private String owner;
     
     @XmlAttribute
     private String name;
+    
+    @XmlAttribute
+    private Integer index = -1;
     
     @XmlAttribute
     private String alias;

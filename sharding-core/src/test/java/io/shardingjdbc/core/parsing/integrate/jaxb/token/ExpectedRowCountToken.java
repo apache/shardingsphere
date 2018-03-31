@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.limit;
+package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,17 +27,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class LimitAssert {
+public final class ExpectedRowCountToken {
     
-    @XmlAttribute
-    private Integer offset;
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
     
     @XmlAttribute(name = "row-count")
-    private Integer rowCount;
-    
-    @XmlAttribute(name = "offset-index")
-    private Integer offsetParameterIndex;
-    
-    @XmlAttribute(name = "row-count-index")
-    private Integer rowCountParameterIndex;
+    private int rowCount;
 }

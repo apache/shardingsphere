@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.token;
+package io.shardingjdbc.core.parsing.integrate.jaxb.condition;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,19 +24,22 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.LinkedList;
 import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class MultipleInsertValuesTokenAssert implements SQLTokenAssert {
+public final class ExpectedCondition {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
+    @XmlAttribute(name = "column-name")
+    private String columnName;
     
-    @XmlElementWrapper(name = "values")
-    @XmlElement(name = "value")
-    private List<String> values = new LinkedList<>();
+    @XmlAttribute(name = "table-name")
+    private String tableName;
+    
+    @XmlAttribute
+    private String operator;
+    
+    @XmlElement(name = "value") 
+    private List<ExpectedValue> values;
 }

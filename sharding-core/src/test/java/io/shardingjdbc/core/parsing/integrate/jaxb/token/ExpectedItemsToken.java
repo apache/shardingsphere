@@ -15,19 +15,28 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.root;
+package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
 import lombok.Getter;
+import lombok.Setter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
-@XmlRootElement(name = "parser-asserts")
 @Getter
-public final class ParserAsserts {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedItemsToken {
     
-    @XmlElement(name = "parser-assert")
-    private List<ParserAssert> parserAsserts = new LinkedList<>();
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
+    
+    @XmlElementWrapper(name = "items")
+    @XmlElement(name = "item")
+    private List<String> items = new LinkedList<>();
 }

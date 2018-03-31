@@ -17,6 +17,21 @@
 
 package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
-public interface SQLTokenAssert {
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedOrderByToken {
     
+    @XmlAttribute(name = "placeholder-begin-position")
+    private int placeholderBeginPosition;
+    
+    @XmlAttribute(name = "literal-begin-position")
+    private int literalBeginPosition;
 }
