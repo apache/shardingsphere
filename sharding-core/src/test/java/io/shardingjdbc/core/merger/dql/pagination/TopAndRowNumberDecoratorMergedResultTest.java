@@ -1,27 +1,10 @@
-/*
- * Copyright 1999-2015 dangdang.com.
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * </p>
- */
-
 package io.shardingjdbc.core.merger.dql.pagination;
 
 import com.google.common.collect.Lists;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.merger.dql.DQLMergeEngine;
-import io.shardingjdbc.core.merger.QueryResult;
 import io.shardingjdbc.core.merger.MergedResult;
+import io.shardingjdbc.core.merger.QueryResult;
+import io.shardingjdbc.core.merger.dql.DQLMergeEngine;
 import io.shardingjdbc.core.merger.fixture.TestQueryResult;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.limit.LimitValue;
@@ -40,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class LimitDecoratorMergedResultTest {
+public class TopAndRowNumberDecoratorMergedResultTest {
     
     private DQLMergeEngine mergeEngine;
     
@@ -66,7 +49,7 @@ public final class LimitDecoratorMergedResultTest {
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        Limit limit = new Limit(DatabaseType.MySQL);
+        Limit limit = new Limit(DatabaseType.SQLServer);
         limit.setOffset(new LimitValue(Integer.MAX_VALUE, -1, true));
         selectStatement.setLimit(limit);
         mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
@@ -75,26 +58,40 @@ public final class LimitDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextWithoutRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.MySQL);
-        limit.setOffset(new LimitValue(2, -1, true));
+    public void assertNextWithoutOffsetWithRowCount() throws SQLException {
+        Limit limit = new Limit(DatabaseType.SQLServer);
+        limit.setRowCount(new LimitValue(5, -1, false));
         selectStatement.setLimit(limit);
         mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
         MergedResult actual = mergeEngine.merge();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 5; i++) {
             assertTrue(actual.next());
         }
         assertFalse(actual.next());
     }
     
     @Test
-    public void assertNextWithRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.MySQL);
-        limit.setOffset(new LimitValue(2, -1, true));
-        limit.setRowCount(new LimitValue(2, -1, false));
+    public void assertNextWithOffsetBoundOpendedFalse() throws SQLException {
+        Limit limit = new Limit(DatabaseType.SQLServer);
+        limit.setOffset(new LimitValue(2, -1, false));
+        limit.setRowCount(new LimitValue(4, -1, false));
         selectStatement.setLimit(limit);
         mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
         MergedResult actual = mergeEngine.merge();
+        assertTrue(actual.next());
+        assertTrue(actual.next());
+        assertFalse(actual.next());
+    }
+
+    @Test
+    public void assertNextWithOffsetBoundOpendedTrue() throws SQLException {
+        Limit limit = new Limit(DatabaseType.SQLServer);
+        limit.setOffset(new LimitValue(2, -1, true));
+        limit.setRowCount(new LimitValue(4, -1, false));
+        selectStatement.setLimit(limit);
+        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        MergedResult actual = mergeEngine.merge();
+        assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertFalse(actual.next());
