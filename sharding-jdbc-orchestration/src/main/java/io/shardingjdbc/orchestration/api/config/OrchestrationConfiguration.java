@@ -35,4 +35,7 @@ public final class OrchestrationConfiguration {
     private final RegistryCenterConfiguration regCenterConfig;
     
     private final boolean overwrite;
+
+    private final String type;
+
 }

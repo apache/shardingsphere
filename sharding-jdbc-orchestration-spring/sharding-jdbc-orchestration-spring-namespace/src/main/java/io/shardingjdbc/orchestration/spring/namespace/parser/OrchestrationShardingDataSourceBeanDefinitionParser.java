@@ -21,8 +21,11 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
+import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.keygen.KeyGeneratorFactory;
 import io.shardingjdbc.orchestration.internal.OrchestrationShardingDataSource;
+import io.shardingjdbc.orchestration.spring.datasource.OrchestrationShardingDataSourceFacoryBean;
+import io.shardingjdbc.orchestration.spring.datasource.SpringShardingDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -47,17 +50,35 @@ import java.util.Properties;
  * @author zhangliang
  */
 public class OrchestrationShardingDataSourceBeanDefinitionParser extends AbstractOrchestrationBeanDefinitionParser {
-    
+
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationShardingDataSource.class);
+        String regCenter = parseRegistryCenterRef(element);
+        if (Strings.isNullOrEmpty(regCenter)) {
+            return getSpringShardingDataSourceBean(element, parserContext);
+        }
+        return getOrchestrationSpringShardingDataSourceBean(element, parserContext);
+    }
+
+    protected AbstractBeanDefinition getSpringShardingDataSourceBean(final Element element, final ParserContext parserContext) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseShardingRuleConfig(element));
         factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
-        factory.addConstructorArgValue(parseOrchestrationConfiguration(element));
-        factory.setInitMethodName("init");
         factory.setDestroyMethodName("close");
+        return factory.getBeanDefinition();
+    }
+
+    protected AbstractBeanDefinition getOrchestrationSpringShardingDataSourceBean(final Element element, final ParserContext parserContext) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationShardingDataSourceFacoryBean.class);
+        if (element.hasChildNodes()) {
+            factory.addConstructorArgValue(parseDataSources(element));
+            factory.addConstructorArgValue(parseShardingRuleConfig(element));
+            factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
+            factory.addConstructorArgValue(parseProperties(element, parserContext));
+        }
+        factory.addConstructorArgValue(parseOrchestrationConfiguration(element, "sharding"));
         return factory.getBeanDefinition();
     }
     

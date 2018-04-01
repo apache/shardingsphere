@@ -67,11 +67,11 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
      */
     @Bean
     public DataSource dataSource() throws SQLException {
-        return null == masterSlaveProperties.getMasterDataSourceName() 
-                ? OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, 
-                        shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(), shardingProperties.getProps(), orchestrationProperties.getOrchestrationConfiguration())
-                : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
-                        masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), orchestrationProperties.getOrchestrationConfiguration());
+        return "sharding".equals(orchestrationProperties.getType())
+                ? OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap,
+                shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(), shardingProperties.getProps(), orchestrationProperties.getOrchestrationConfiguration())
+                : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap,
+                masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), orchestrationProperties.getOrchestrationConfiguration());
     }
     
     @Override
@@ -82,7 +82,9 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     private void setDataSourceMap(final Environment environment) {
         RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "sharding.jdbc.datasource.");
         String dataSources = propertyResolver.getProperty("names");
-        Preconditions.checkState(!StringUtils.isEmpty(dataSources), "Wrong datasource properties, empty datasource !");
+        if (StringUtils.isEmpty(dataSources)) {
+            return;
+        }
         dataSources = dataSources.trim();
         for (String each : dataSources.split(",")) {
             try {

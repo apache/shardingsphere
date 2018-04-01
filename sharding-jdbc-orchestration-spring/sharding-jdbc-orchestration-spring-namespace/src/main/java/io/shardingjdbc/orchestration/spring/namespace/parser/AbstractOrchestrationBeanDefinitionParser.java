@@ -29,12 +29,17 @@ import org.w3c.dom.Element;
  * @author caohao
  */
 public abstract class AbstractOrchestrationBeanDefinitionParser extends AbstractBeanDefinitionParser {
+
+    protected String parseRegistryCenterRef(final Element element) {
+        return element.getAttribute("registry-center-ref");
+    }
     
-    protected BeanDefinition parseOrchestrationConfiguration(final Element element) {
+    protected BeanDefinition parseOrchestrationConfiguration(final Element element, String type) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute("id"));
         factory.addConstructorArgReference(element.getAttribute("registry-center-ref"));
         factory.addConstructorArgValue(Boolean.parseBoolean(element.getAttribute("overwrite")));
+        factory.addConstructorArgValue(type);
         return factory.getBeanDefinition();
     }
 }
