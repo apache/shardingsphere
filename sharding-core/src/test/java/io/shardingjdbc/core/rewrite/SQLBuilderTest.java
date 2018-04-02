@@ -26,7 +26,6 @@ import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Test;
 
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
