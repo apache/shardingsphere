@@ -49,7 +49,7 @@ public final class KeyGeneratorFactory {
         }
 
         if(null == keyGenerator){
-            throw new IllegalArgumentException(String.format("Class %s should have public privilege and no argument constructor", keyGeneratorClassName));
+            throw new IllegalArgumentException(String.format("there is no Class %s defined in corresponding SPI file", keyGeneratorClassName));
         }
 
         return keyGenerator;
