@@ -28,29 +28,27 @@ import io.shardingjdbc.core.exception.ShardingJdbcException;
 
 public class PropertyUtil {
 
-    private static final int SPRING_BOOT_VERSION;
+    private static int springBootVersion = 1;
 
     static {
-        int springBootVersion = 1;
         try {
             Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
         } catch (ClassNotFoundException e) {
             springBootVersion = 2;
         }
-        SPRING_BOOT_VERSION = springBootVersion;
     }
 
     /**
      * Spring Boot 1.x is compatible with Spring Boot 2.x by Using Java Reflect.
-     * @param environment not null
-     * @param prefix not null
-     * @param targetClass not null
-     * @param <T> not null
-     * @return not null
+     * @param environment : the environment context
+     * @param prefix : the prefix part of property key
+     * @param targetClass : the target class type of result
+     * @param <T> : refer to @param targetClass
+     * @return T
      */
     @SuppressWarnings("unchecked")
     public static <T> T handle(final Environment environment, final String prefix, final Class<T> targetClass) {
-        switch (SPRING_BOOT_VERSION) {
+        switch (springBootVersion) {
             case 1:
                 return (T) v1(environment, prefix, targetClass);
             default:
@@ -58,13 +56,6 @@ public class PropertyUtil {
         }
     }
 
-    /**
-     * Spring Boot 1.x.
-     * @code {
-     *     RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment);
-     *     return resolver.getSubProperties(prefix);
-     *     }
-     */
     private static Object v1(final Environment environment, final String prefix, final Class<?> targetClass) {
         try {
             Class<?> resolverClass = Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
@@ -73,18 +64,11 @@ public class PropertyUtil {
             Object resolverObject = resolverConstructor.newInstance(environment);
             String prefixParam = prefix.endsWith(".") ? prefix : prefix + ".";
             return getSubPropertiesMethod.invoke(resolverObject, prefixParam);
-        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            throw new ShardingJdbcException(e.getMessage(), e);
+        } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            throw new ShardingJdbcException(ex.getMessage(), ex);
         }
     }
 
-    /**
-     * Spring Boot 2.x.
-     * @code {
-     *     Binder binder = Binder.get(environment);
-     *     return binder.bind(prefix, targetClass).get();
-     *     }
-     */
     private static Object v2(final Environment environment, final String prefix, final Class<?> targetClass) {
         try {
             Class<?> binderClass = Class.forName("org.springframework.boot.context.properties.bind.Binder");
@@ -95,8 +79,8 @@ public class PropertyUtil {
             Object bindResultObject = bindMethod.invoke(binderObject, prefixParam, targetClass);
             Method resultGetMethod = bindResultObject.getClass().getDeclaredMethod("get");
             return resultGetMethod.invoke(bindResultObject);
-        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            throw new ShardingJdbcException(e.getMessage(), e);
+        } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            throw new ShardingJdbcException(ex.getMessage(), ex);
         }
     }
 }
