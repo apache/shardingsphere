@@ -30,6 +30,7 @@ import io.shardingjdbc.core.parsing.parser.clause.expression.BasicExpressionPars
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
 import io.shardingjdbc.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLUtil;
@@ -96,15 +97,28 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             sqlStatement.getTables().add(new Table(tableName, alias));
         }
     
-        boolean skipIfForce = this.lexerEngine.skipIfEqual(new TokenType[]{MySQLKeyword.FORCE})
-                && this.lexerEngine.skipIfEqual(new TokenType[]{DefaultKeyword.INDEX});
-        if (skipIfForce) {
-            this.lexerEngine.skipParentheses(sqlStatement);
-        }
+        parseForceIndex(tableName, sqlStatement);
         
         parseJoinTable(sqlStatement);
         if (isSingleTableOnly && !sqlStatement.getTables().isSingleTable()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
+        }
+    }
+    
+    private void parseForceIndex(final String tableName, final SQLStatement sqlStatement){
+        boolean skipIfForce = this.lexerEngine.skipIfEqual(new TokenType[]{MySQLKeyword.FORCE})
+                && this.lexerEngine.skipIfEqual(new TokenType[]{DefaultKeyword.INDEX});
+        if (skipIfForce) {
+            lexerEngine.accept(Symbol.LEFT_PAREN);
+            do {
+                String literals = this.lexerEngine.getCurrentToken().getLiterals();
+                if (shardingRule.isLogicIndex(literals, tableName)) {
+                    int beginPosition = this.lexerEngine.getCurrentToken().getEndPosition() - literals.length();
+                    sqlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
+                }
+                lexerEngine.nextToken();
+            } while (lexerEngine.skipIfEqual(Symbol.COMMA));
+            lexerEngine.accept(Symbol.RIGHT_PAREN);
         }
     }
     

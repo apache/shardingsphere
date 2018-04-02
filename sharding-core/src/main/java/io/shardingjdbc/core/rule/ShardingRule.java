@@ -320,4 +320,19 @@ public final class ShardingRule {
         }
         throw new ShardingConfigurationException("Cannot find actual data node for logic table name: '%s'", tableRule.getLogicTable());
     }
+    
+    /**
+     * Adjust is logic index or not.
+     *
+     * @param logicIndexName logic index name
+     * @param logicTableName logic table name
+     * @return is logic index or not
+     */
+    public boolean isLogicIndex(final String logicIndexName, final String logicTableName) {
+        String logicIndexPrx = this.getTableRule(logicTableName).getLogicIndex();
+        if (logicIndexName.equals(logicIndexPrx)){
+            return true;
+        }
+        return false;
+    }
 }
