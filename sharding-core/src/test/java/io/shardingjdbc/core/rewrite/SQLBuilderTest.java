@@ -19,7 +19,6 @@ package io.shardingjdbc.core.rewrite;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
@@ -27,7 +26,11 @@ import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -76,8 +79,8 @@ public final class SQLBuilderTest {
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x"));
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x"));
-        sqlBuilder.appendLiterals(" ('cloumn')");
-        assertThat(sqlBuilder.toSQL(Collections.<String, String>emptyMap(), null), is("CREATE INDEX index_name ON table_x ('cloumn')"));
+        sqlBuilder.appendLiterals(" ('column')");
+        assertThat(sqlBuilder.toSQL(Collections.<String, String>emptyMap(), null), is("CREATE INDEX index_name ON table_x ('column')"));
     }
     
     @Test
@@ -87,10 +90,10 @@ public final class SQLBuilderTest {
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x"));
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x"));
-        sqlBuilder.appendLiterals(" ('cloumn')");
+        sqlBuilder.appendLiterals(" ('column')");
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
-        assertThat(sqlBuilder.toSQL(tableTokens, null), is("CREATE INDEX index_name_table_x_1 ON table_x_1 ('cloumn')"));
+        assertThat(sqlBuilder.toSQL(tableTokens, null), is("CREATE INDEX index_name_table_x_1 ON table_x_1 ('column')"));
     }
     
     @Test(expected = ShardingJdbcException.class)
@@ -121,8 +124,7 @@ public final class SQLBuilderTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
-        return actual;
+        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     private Collection<String> createDataSourceNames() {
