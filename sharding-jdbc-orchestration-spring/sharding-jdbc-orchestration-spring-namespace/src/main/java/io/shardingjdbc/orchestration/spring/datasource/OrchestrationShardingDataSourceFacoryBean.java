@@ -1,13 +1,9 @@
 package io.shardingjdbc.orchestration.spring.datasource;
 
-import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.OrchestrationFacade;
-import io.shardingjdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.internal.OrchestrationShardingDataSource;
-import io.shardingjdbc.orchestration.internal.config.ConfigurationService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;

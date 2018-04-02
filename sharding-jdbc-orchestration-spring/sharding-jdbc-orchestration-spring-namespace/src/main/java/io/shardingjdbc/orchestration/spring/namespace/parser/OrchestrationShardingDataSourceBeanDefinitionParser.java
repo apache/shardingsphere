@@ -23,6 +23,7 @@ import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.keygen.KeyGeneratorFactory;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.OrchestrationShardingDataSource;
 import io.shardingjdbc.orchestration.spring.datasource.OrchestrationShardingDataSourceFacoryBean;
 import io.shardingjdbc.orchestration.spring.datasource.SpringShardingDataSource;
@@ -60,7 +61,7 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
         return getOrchestrationSpringShardingDataSourceBean(element, parserContext);
     }
 
-    protected AbstractBeanDefinition getSpringShardingDataSourceBean(final Element element, final ParserContext parserContext) {
+    private AbstractBeanDefinition getSpringShardingDataSourceBean(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseShardingRuleConfig(element));
@@ -70,15 +71,16 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
         return factory.getBeanDefinition();
     }
 
-    protected AbstractBeanDefinition getOrchestrationSpringShardingDataSourceBean(final Element element, final ParserContext parserContext) {
+    private AbstractBeanDefinition getOrchestrationSpringShardingDataSourceBean(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationShardingDataSourceFacoryBean.class);
-        if (element.hasChildNodes()) {
+        Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
+        if (null != shardingRuleElement) {
             factory.addConstructorArgValue(parseDataSources(element));
-            factory.addConstructorArgValue(parseShardingRuleConfig(element));
+            factory.addConstructorArgValue(parseShardingRuleConfig(shardingRuleElement));
             factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
             factory.addConstructorArgValue(parseProperties(element, parserContext));
         }
-        factory.addConstructorArgValue(parseOrchestrationConfiguration(element, "sharding"));
+        factory.addConstructorArgValue(parseOrchestrationConfiguration(element, OrchestrationConfiguration.SHARDING));
         return factory.getBeanDefinition();
     }
     
@@ -93,14 +95,13 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
     }
     
     private BeanDefinition parseShardingRuleConfig(final Element element) {
-        Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfiguration.class);
-        parseDefaultDataSource(factory, shardingRuleElement);
-        parseDefaultDatabaseShardingStrategy(factory, shardingRuleElement);
-        parseDefaultTableShardingStrategy(factory, shardingRuleElement);
-        factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfig(shardingRuleElement));
-        factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfig(shardingRuleElement));
-        parseKeyGenerator(factory, shardingRuleElement);
+        parseDefaultDataSource(factory, element);
+        parseDefaultDatabaseShardingStrategy(factory, element);
+        parseDefaultTableShardingStrategy(factory, element);
+        factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfig(element));
+        factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfig(element));
+        parseKeyGenerator(factory, element);
         return factory.getBeanDefinition();
     }
     

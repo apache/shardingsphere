@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingjdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.spring.datasource.OrchestrationMasterSlaveDataSourceFacoryBean;
 import io.shardingjdbc.orchestration.spring.datasource.SpringMasterSlaveDataSource;
@@ -72,18 +73,19 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         }
         return factory.getBeanDefinition();
     }
-    
+
     private AbstractBeanDefinition getOrchestrationSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationMasterSlaveDataSourceFacoryBean.class);
-        if (element.hasAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.MASTER_DATA_SOURCE_NAME_ATTRIBUTE)) {
+        String masterDataSourceRef = parseMasterDataSourceRef(element);
+        if (!Strings.isNullOrEmpty(masterDataSourceRef)) {
             factory.addConstructorArgValue(parseDataSources(element));
             factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element));
             factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         }
-        factory.addConstructorArgValue(parseOrchestrationConfiguration(element, "masterslave"));
+        factory.addConstructorArgValue(parseOrchestrationConfiguration(element, OrchestrationConfiguration.MASTER_SLAVE));
         return factory.getBeanDefinition();
     }
-    
+
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
         String masterDataSource = parseMasterDataSourceRef(element);
         Map<String, RuntimeBeanReference> result = new ManagedMap<>();

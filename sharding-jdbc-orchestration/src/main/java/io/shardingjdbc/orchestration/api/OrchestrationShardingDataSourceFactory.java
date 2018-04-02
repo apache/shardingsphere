@@ -51,26 +51,6 @@ import java.util.Properties;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrchestrationShardingDataSourceFactory {
-    
-    /**
-     * Create sharding data source.
-     *
-     * @param dataSourceMap data source map
-     * @param shardingRuleConfig sharding rule configuration
-     * @param orchestrationFacade orchestration facade
-     * @param configMap config map
-     * @param props properties for data source
-     * @return sharding data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSource(
-            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
-            final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
-        processDataSourceMapWithMasterSlave(dataSourceMap, shardingRuleConfig);
-        OrchestrationShardingDataSource result = new OrchestrationShardingDataSource(dataSourceMap, shardingRuleConfig, configMap, props, orchestrationFacade);
-        result.init();
-        return result;
-    }
 
     /**
      * Create sharding data source.
@@ -87,7 +67,7 @@ public final class OrchestrationShardingDataSourceFactory {
             final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
             final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationConfig);
-        if (dataSourceMap == null || dataSourceMap.isEmpty()) {
+        if (null == shardingRuleConfig) {
             ConfigurationService configService = orchestrationFacade.getConfigService();
             return createDataSource(configService.loadDataSourceMap(), configService.loadShardingRuleConfiguration(), configService.loadShardingConfigMap(), configService.loadShardingProperties(), orchestrationFacade);
         } else {
@@ -107,12 +87,32 @@ public final class OrchestrationShardingDataSourceFactory {
     public static DataSource createDataSource(
             final Map<String, DataSource> dataSourceMap, final YamlShardingRuleConfiguration yamlShardingRuleConfig, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationConfig);
-        if (dataSourceMap == null || dataSourceMap.isEmpty()) {
+        if (null == yamlShardingRuleConfig) {
             ConfigurationService configService = orchestrationFacade.getConfigService();
             return createDataSource(configService.loadDataSourceMap(), configService.loadShardingRuleConfiguration(), configService.loadShardingConfigMap(), configService.loadShardingProperties(), orchestrationFacade);
         } else {
             return createDataSource(dataSourceMap, yamlShardingRuleConfig.getShardingRuleConfiguration(), yamlShardingRuleConfig.getConfigMap(), yamlShardingRuleConfig.getProps(), orchestrationFacade);
         }
+    }
+
+    /**
+     * Create sharding data source.
+     *
+     * @param dataSourceMap data source map
+     * @param shardingRuleConfig sharding rule configuration
+     * @param orchestrationFacade orchestration facade
+     * @param configMap config map
+     * @param props properties for data source
+     * @return sharding data source
+     * @throws SQLException SQL exception
+     */
+    private static DataSource createDataSource(
+            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
+            final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
+        processDataSourceMapWithMasterSlave(dataSourceMap, shardingRuleConfig);
+        OrchestrationShardingDataSource result = new OrchestrationShardingDataSource(dataSourceMap, shardingRuleConfig, configMap, props, orchestrationFacade);
+        result.init();
+        return result;
     }
     
     /**

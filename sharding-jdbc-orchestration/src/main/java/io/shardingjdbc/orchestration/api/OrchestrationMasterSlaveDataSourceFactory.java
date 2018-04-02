@@ -52,24 +52,6 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      *
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param orchestrationFacade orchestration facade
-     * @param configMap config map
-     * @return master-slave data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSource(
-            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
-            final Map<String, Object> configMap, final OrchestrationFacade orchestrationFacade) throws SQLException {
-        OrchestrationMasterSlaveDataSource result = new OrchestrationMasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, orchestrationFacade);
-        result.init();
-        return result;
-    }
-
-    /**
-     * Create master-slave data source.
-     *
-     * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig master-slave rule configuration
      * @param orchestrationConfig orchestration master-slave configuration
      * @param configMap config map
      * @return master-slave data source
@@ -79,7 +61,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
             final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
             final Map<String, Object> configMap, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationConfig);
-        if (dataSourceMap == null || dataSourceMap.isEmpty()) {
+        if (null == masterSlaveRuleConfig) {
             ConfigurationService configService = orchestrationFacade.getConfigService();
             return createDataSource(configService.loadDataSourceMap(), configService.loadMasterSlaveRuleConfiguration(), configService.loadMasterSlaveConfigMap(), orchestrationFacade);
         } else {
@@ -99,12 +81,30 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
     public static DataSource createDataSource(
             final Map<String, DataSource> dataSourceMap, final YamlMasterSlaveRuleConfiguration yamlMasterSlaveRuleConfig, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationConfig);
-        if (dataSourceMap == null || dataSourceMap.isEmpty()) {
+        if (null == yamlMasterSlaveRuleConfig) {
             ConfigurationService configService = orchestrationFacade.getConfigService();
             return createDataSource(configService.loadDataSourceMap(), configService.loadMasterSlaveRuleConfiguration(), configService.loadMasterSlaveConfigMap(), orchestrationFacade);
         } else {
             return createDataSource(dataSourceMap, yamlMasterSlaveRuleConfig.getMasterSlaveRuleConfiguration(), yamlMasterSlaveRuleConfig.getConfigMap(), orchestrationFacade);
         }
+    }
+
+    /**
+     * Create master-slave data source.
+     *
+     * @param dataSourceMap data source map
+     * @param masterSlaveRuleConfig master-slave rule configuration
+     * @param orchestrationFacade orchestration facade
+     * @param configMap config map
+     * @return master-slave data source
+     * @throws SQLException SQL exception
+     */
+    private static DataSource createDataSource(
+            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
+            final Map<String, Object> configMap, final OrchestrationFacade orchestrationFacade) throws SQLException {
+        OrchestrationMasterSlaveDataSource result = new OrchestrationMasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, orchestrationFacade);
+        result.init();
+        return result;
     }
 
     /**
