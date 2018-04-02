@@ -95,7 +95,7 @@ public final class OrchestrationEtcdShardingMain {
         result.getTableRuleConfigs().add(orderItemTableRuleConfig);
         result.getBindingTableGroups().add("t_order, t_order_item");
         result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
-        result.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", ModuloTableShardingAlgorithm.class.getName()));
+        result.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloTableShardingAlgorithm()));
         return result;
     }
     

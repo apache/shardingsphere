@@ -107,23 +107,15 @@ public final class OrchestrationShardingMasterSlaveMain {
         result.getTableRuleConfigs().add(orderItemTableRuleConfig);
         result.getBindingTableGroups().add("t_order, t_order_item");
         result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
-        result.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", ModuloTableShardingAlgorithm.class.getName()));
+        result.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloTableShardingAlgorithm()));
         result.setMasterSlaveRuleConfigs(crateMasterSlaveRuleConfigs());
         return result;
     }
     
-    private static List<MasterSlaveRuleConfiguration> crateMasterSlaveRuleConfigs() throws SQLException {
-        final MasterSlaveRuleConfiguration config1 = new MasterSlaveRuleConfiguration();
-        config1.setName("demo_ds_0");
-        config1.setMasterDataSourceName("demo_ds_master_0");
-        config1.setSlaveDataSourceNames(Lists.newArrayList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
-        List<MasterSlaveRuleConfiguration> result = new ArrayList<>();
-        result.add(config1);
-        final MasterSlaveRuleConfiguration config2 = new MasterSlaveRuleConfiguration();
-        config2.setName("demo_ds_1");
-        config2.setMasterDataSourceName("demo_ds_master_1");
-        config2.setSlaveDataSourceNames(Lists.newArrayList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
-        result.add(config2);
+    private static List<MasterSlaveRuleConfiguration> crateMasterSlaveRuleConfigs() {
+        List<MasterSlaveRuleConfiguration> result = new ArrayList<>(2);
+        result.add(new MasterSlaveRuleConfiguration("demo_ds_0", "demo_ds_master_0", Lists.newArrayList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1")));
+        result.add(new MasterSlaveRuleConfiguration("demo_ds_1", "demo_ds_master_1", Lists.newArrayList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1")));
         return result;
     }
     

@@ -82,12 +82,8 @@ public final class OrchestrationMasterSlaveMain {
         return result;
     }
     
-    private static MasterSlaveRuleConfiguration crateMasterSlaveRuleConfig() throws SQLException {
-        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
-        result.setName("demo_master_slave");
-        result.setMasterDataSourceName("demo_ds_master");
-        result.setSlaveDataSourceNames(Lists.newArrayList("demo_ds_slave_0", "demo_ds_slave_1"));
-        return result;
+    private static MasterSlaveRuleConfiguration crateMasterSlaveRuleConfig() {
+        return new MasterSlaveRuleConfiguration("demo_master_slave", "demo_ds_master", Lists.newArrayList("demo_ds_slave_0", "demo_ds_slave_1"));
     }
     
     private static void createTable(final DataSource dataSource) throws SQLException {

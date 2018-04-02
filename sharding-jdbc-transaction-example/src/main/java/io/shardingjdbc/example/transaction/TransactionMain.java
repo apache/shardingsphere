@@ -17,12 +17,12 @@
 
 package io.shardingjdbc.example.transaction;
 
-import io.shardingjdbc.example.transaction.algorithm.ModuloShardingAlgorithm;
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.example.transaction.algorithm.ModuloShardingAlgorithm;
 import io.shardingjdbc.transaction.api.SoftTransactionManager;
 import io.shardingjdbc.transaction.api.config.NestedBestEffortsDeliveryJobConfiguration;
 import io.shardingjdbc.transaction.api.config.SoftTransactionConfiguration;
@@ -36,6 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 public final class TransactionMain {
     
@@ -117,9 +118,9 @@ public final class TransactionMain {
         
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", ModuloShardingAlgorithm.class.getName()));
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", ModuloShardingAlgorithm.class.getName()));
-        return new ShardingDataSource(shardingRuleConfig.build(createDataSourceMap()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingAlgorithm()));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingAlgorithm()));
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
