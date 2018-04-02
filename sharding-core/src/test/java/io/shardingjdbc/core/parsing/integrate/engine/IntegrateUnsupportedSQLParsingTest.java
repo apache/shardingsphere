@@ -20,6 +20,7 @@ package io.shardingjdbc.core.parsing.integrate.engine;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
+import io.shardingjdbc.test.sql.SQLCaseType;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 @RequiredArgsConstructor
 public final class IntegrateUnsupportedSQLParsingTest extends AbstractBaseIntegrateSQLParsingTest {
@@ -37,13 +39,15 @@ public final class IntegrateUnsupportedSQLParsingTest extends AbstractBaseIntegr
     
     private final DatabaseType databaseType;
     
-    @Parameters(name = "{0}In{1}")
+    private final SQLCaseType sqlCaseType;
+    
+    @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         return sqlCasesLoader.getUnsupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void assertUnsupportedSQL() {
-        new SQLParsingEngine(databaseType, sqlCasesLoader.getUnsupportedSQL(sqlCaseId), getShardingRule()).parse();
+        new SQLParsingEngine(databaseType, sqlCasesLoader.getUnsupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList()), getShardingRule()).parse();
     }
 }

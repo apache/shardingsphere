@@ -166,12 +166,49 @@ public final class SQLCasesLoader {
     }
     
     /**
-     * Get unsupported SQL.
+     * Get supported SQL.
+     *
      * @param sqlCaseId SQL case ID
+     * @param sqlCaseType SQL case type
+     * @param parameters SQL parameters
      * @return SQL
      */
-    public String getUnsupportedSQL(final String sqlCaseId) {
-        return getSQLFromMap(sqlCaseId, unsupportedSQLCaseMap);
+    public String getSupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
+        return getSQL(supportedSQLCaseMap, sqlCaseId, sqlCaseType, parameters);
+    }
+    
+    /**
+     * Get unsupported SQL.
+     * 
+     * @param sqlCaseId SQL case ID
+     * @param sqlCaseType SQL case type
+     * @param parameters SQL parameters
+     * @return SQL
+     */
+    public String getUnsupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
+        return getSQL(unsupportedSQLCaseMap, sqlCaseId, sqlCaseType, parameters);
+    }
+    
+    private String getSQL(final Map<String, SQLCase> sqlCaseMap, final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
+        switch (sqlCaseType) {
+            case Literal:
+                return getLiteralSQL(getSQLFromMap(sqlCaseId, sqlCaseMap), parameters);
+            case Placeholder:
+                return getPlaceholderSQL(getSQLFromMap(sqlCaseId, sqlCaseMap));
+            default:
+                throw new UnsupportedOperationException(sqlCaseType.name());
+        }
+    }
+    
+    private String getPlaceholderSQL(final String sql) {
+        return sql.replace("%s", "?").replace("%%", "%");
+    }
+    
+    private String getLiteralSQL(final String sql, final List<?> parameters) {
+        if (null == parameters || parameters.isEmpty()) {
+            return sql;
+        }
+        return String.format(sql, parameters.toArray()).replace("%%", "%");
     }
     
     private String getSQLFromMap(final String id, final Map<String, SQLCase> sqlCaseMap) {
@@ -205,17 +242,27 @@ public final class SQLCasesLoader {
     private Collection<Object[]> getTestParameters(final Map<String, SQLCase> sqlCaseMap, final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCase each : sqlCaseMap.values()) {
-            result.addAll(getTestParameters(each, allDatabaseTypes, enumType));
+            result.addAll(getTestParameters(allDatabaseTypes, enumType, each));
         }
         return result;
     }
     
-    private static Collection<Object[]> getTestParameters(final SQLCase sqlCase, final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
+    private Collection<Object[]> getTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType, final SQLCase sqlCase) {
+        Collection<Object[]> result = new LinkedList<>();
+        for (final SQLCaseType each : SQLCaseType.values()) {
+            result.addAll(getTestParameters(sqlCase, allDatabaseTypes, enumType, each));
+        }
+        return result;
+    }
+    
+    private static Collection<Object[]> getTestParameters(
+            final SQLCase sqlCase, final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType, final SQLCaseType sqlCaseType) {
         Collection<Object[]> result = new LinkedList<>();
         for (Enum each : getDatabaseTypes(sqlCase.getDatabaseTypes(), allDatabaseTypes, enumType)) {
-            Object[] parameters = new Object[2];
+            Object[] parameters = new Object[3];
             parameters[0] = sqlCase.getId();
             parameters[1] = each;
+            parameters[2] = sqlCaseType;
             result.add(parameters);
         }
         return result;

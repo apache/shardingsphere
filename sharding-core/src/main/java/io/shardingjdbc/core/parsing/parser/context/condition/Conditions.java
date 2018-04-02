@@ -59,12 +59,6 @@ public final class Conditions {
         }
     }
     
-    // TODO should remove, use mockito to replace this method
-    @Deprecated
-    public void add(final Condition condition) {
-        conditions.put(condition.getColumn(), condition);
-    }
-    
     /**
      * Adjust condition is empty or not.
      * 
