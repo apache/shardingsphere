@@ -39,7 +39,7 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowTablesMergedResultTest {
+public final class ShowCreateTableMergedResultTest {
     
     private ShardingRule shardingRule;
     
@@ -56,11 +56,11 @@ public final class ShowTablesMergedResultTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRule = new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
-        
+    
         resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSetMetaData.getColumnCount()).thenReturn(2);
         List<ResultSet> resultSets = Lists.newArrayList(resultSet);
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, false);
@@ -73,21 +73,44 @@ public final class ShowTablesMergedResultTest {
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, new ArrayList<QueryResult>());
-        assertFalse(showTablesMergedResult.next());
+        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, new ArrayList<QueryResult>());
+        assertFalse(showCreateTableMergedResult.next());
     }
     
     @Test
-    public void assertNextForActualTableNameInTableRule() throws SQLException {
+    public void assertNextForTableRuleIsPresentForBackQuotes() throws SQLException {
         when(resultSet.getObject(1)).thenReturn("table_0");
-        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults);
-        assertTrue(showTablesMergedResult.next());
+        when(resultSet.getObject(2)).thenReturn("CREATE TABLE `t_order` (\n"
+            + "  `id` int(11) NOT NULL AUTO_INCREMENT,\n"
+            + "  `order_id` int(11) NOT NULL COMMENT,\n"
+            + "  `user_id` int(11) NOT NULL COMMENT,\n"
+            + "  `status` tinyint(4) NOT NULL DEFAULT '1',\n"
+            + "  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
+            + "  PRIMARY KEY (`id`)\n"
+            + ") ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8 COLLATE=utf8_bin");
+        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults);
+        assertTrue(showCreateTableMergedResult.next());
     }
     
     @Test
-    public void assertNextForActualTableNameNotInTableRule() throws SQLException {
+    public void assertNextForTableRuleIsPresentForNoBackQuotes() throws SQLException {
+        when(resultSet.getObject(1)).thenReturn("table_0");
+        when(resultSet.getObject(2)).thenReturn("CREATE TABLE t_order (\n"
+            + "  `id` int(11) NOT NULL AUTO_INCREMENT,\n"
+            + "  `order_id` int(11) NOT NULL COMMENT,\n"
+            + "  `user_id` int(11) NOT NULL COMMENT,\n"
+            + "  `status` tinyint(4) NOT NULL DEFAULT '1',\n"
+            + "  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
+            + "  PRIMARY KEY (`id`)\n"
+            + ") ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8 COLLATE=utf8_bin");
+        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults);
+        assertTrue(showCreateTableMergedResult.next());
+    }
+    
+    @Test
+    public void assertNextForTableRuleIsNotPresent() throws SQLException {
         when(resultSet.getObject(1)).thenReturn("table_3");
-        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults);
-        assertTrue(showTablesMergedResult.next());
+        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults);
+        assertFalse(showCreateTableMergedResult.next());
     }
 }

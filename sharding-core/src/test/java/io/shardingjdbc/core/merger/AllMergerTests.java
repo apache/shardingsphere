@@ -17,6 +17,11 @@
 
 package io.shardingjdbc.core.merger;
 
+import io.shardingjdbc.core.merger.dal.DALMergeEngineTest;
+import io.shardingjdbc.core.merger.dal.show.ShowCreateTableMergedResultTest;
+import io.shardingjdbc.core.merger.dal.show.ShowDatabasesMergedResultTest;
+import io.shardingjdbc.core.merger.dal.show.ShowOtherMergedResultTest;
+import io.shardingjdbc.core.merger.dal.show.ShowTablesMergedResultTest;
 import io.shardingjdbc.core.merger.dql.DQLMergeEngineTest;
 import io.shardingjdbc.core.merger.dql.common.DecoratorMergedResultTest;
 import io.shardingjdbc.core.merger.dql.common.MemoryMergedResultTest;
@@ -55,7 +60,13 @@ import org.junit.runners.Suite;
         AllAggregationTests.class, 
         LimitDecoratorMergedResultTest.class,
         RowNumberDecoratorMergedResultTest.class,
-        TopAndRowNumberDecoratorMergedResultTest.class
+        TopAndRowNumberDecoratorMergedResultTest.class,
+        DALMergeEngineTest.class,
+        ShowCreateTableMergedResultTest.class,
+        ShowDatabasesMergedResultTest.class,
+        ShowOtherMergedResultTest.class,
+        ShowTablesMergedResultTest.class,
+        MergeEngineFactoryTest.class
     })
 public class AllMergerTests {
 }
