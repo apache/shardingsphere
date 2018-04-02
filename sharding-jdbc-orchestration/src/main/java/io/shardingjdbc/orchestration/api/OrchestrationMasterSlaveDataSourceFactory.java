@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.orchestration.api;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
@@ -30,11 +31,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -52,7 +49,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      *
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param orchestrationConfig orchestration master-slave configuration
+     * @param orchestrationConfig orchestration configuration
      * @param configMap config map
      * @return master-slave data source
      * @throws SQLException SQL exception
@@ -61,9 +58,11 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
             final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
             final Map<String, Object> configMap, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationConfig);
-        if (null == masterSlaveRuleConfig) {
+        if (null == masterSlaveRuleConfig || null == masterSlaveRuleConfig.getMasterDataSourceName()) {
             ConfigurationService configService = orchestrationFacade.getConfigService();
-            return createDataSource(configService.loadDataSourceMap(), configService.loadMasterSlaveRuleConfiguration(), configService.loadMasterSlaveConfigMap(), orchestrationFacade);
+            final MasterSlaveRuleConfiguration cloudMasterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
+            Preconditions.checkState(null != cloudMasterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
+            return createDataSource(configService.loadDataSourceMap(), cloudMasterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), orchestrationFacade);
         } else {
             return createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, orchestrationFacade);
         }
@@ -74,7 +73,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      *
      * @param dataSourceMap data source map
      * @param yamlMasterSlaveRuleConfig yaml master-slave rule configuration
-     * @param orchestrationConfig orchestration master-slave configuration
+     * @param orchestrationConfig orchestration configuration
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
@@ -83,7 +82,9 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationConfig);
         if (null == yamlMasterSlaveRuleConfig) {
             ConfigurationService configService = orchestrationFacade.getConfigService();
-            return createDataSource(configService.loadDataSourceMap(), configService.loadMasterSlaveRuleConfiguration(), configService.loadMasterSlaveConfigMap(), orchestrationFacade);
+            final MasterSlaveRuleConfiguration cloudMasterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
+            Preconditions.checkState(null != cloudMasterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
+            return createDataSource(configService.loadDataSourceMap(), cloudMasterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), orchestrationFacade);
         } else {
             return createDataSource(dataSourceMap, yamlMasterSlaveRuleConfig.getMasterSlaveRuleConfiguration(), yamlMasterSlaveRuleConfig.getConfigMap(), orchestrationFacade);
         }

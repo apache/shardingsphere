@@ -68,7 +68,9 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
      */
     @Bean
     public DataSource dataSource() throws SQLException {
-        return OrchestrationConfiguration.SHARDING.equals(orchestrationProperties.getType())
+        String type = orchestrationProperties.getType();
+        Preconditions.checkState(null != type, "Missing the type of datasource configuration in orchestration configuration");
+        return OrchestrationConfiguration.SHARDING.equals(type)
                 ? OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap,
                 shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(), shardingProperties.getProps(), orchestrationProperties.getOrchestrationConfiguration())
                 : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap,

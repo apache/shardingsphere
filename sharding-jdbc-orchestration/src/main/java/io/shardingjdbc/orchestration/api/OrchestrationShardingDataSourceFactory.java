@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.orchestration.api;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
@@ -57,7 +58,7 @@ public final class OrchestrationShardingDataSourceFactory {
      *
      * @param dataSourceMap data source map
      * @param shardingRuleConfig sharding rule configuration
-     * @param orchestrationConfig orchestration master-slave configuration
+     * @param orchestrationConfig orchestration configuration
      * @param configMap config map
      * @param props properties for data source
      * @return sharding data source
@@ -67,9 +68,11 @@ public final class OrchestrationShardingDataSourceFactory {
             final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
             final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationConfig);
-        if (null == shardingRuleConfig) {
+        if (null == shardingRuleConfig || shardingRuleConfig.getTableRuleConfigs().isEmpty()) {
             ConfigurationService configService = orchestrationFacade.getConfigService();
-            return createDataSource(configService.loadDataSourceMap(), configService.loadShardingRuleConfiguration(), configService.loadShardingConfigMap(), configService.loadShardingProperties(), orchestrationFacade);
+            final ShardingRuleConfiguration cloudShardingRuleConfig = configService.loadShardingRuleConfiguration();
+            Preconditions.checkState(null != cloudShardingRuleConfig, "Missing the sharding rule configuration on register center");
+            return createDataSource(configService.loadDataSourceMap(), cloudShardingRuleConfig, configService.loadShardingConfigMap(), configService.loadShardingProperties(), orchestrationFacade);
         } else {
             return createDataSource(dataSourceMap, shardingRuleConfig, configMap, props, orchestrationFacade);
         }
@@ -80,7 +83,7 @@ public final class OrchestrationShardingDataSourceFactory {
      *
      * @param dataSourceMap data source map
      * @param yamlShardingRuleConfig yaml sharding rule configuration
-     * @param orchestrationConfig orchestration master-slave configuration
+     * @param orchestrationConfig orchestration configuration
      * @return sharding data source
      * @throws SQLException SQL exception
      */
@@ -89,7 +92,9 @@ public final class OrchestrationShardingDataSourceFactory {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationConfig);
         if (null == yamlShardingRuleConfig) {
             ConfigurationService configService = orchestrationFacade.getConfigService();
-            return createDataSource(configService.loadDataSourceMap(), configService.loadShardingRuleConfiguration(), configService.loadShardingConfigMap(), configService.loadShardingProperties(), orchestrationFacade);
+            final ShardingRuleConfiguration cloudShardingRuleConfig = configService.loadShardingRuleConfiguration();
+            Preconditions.checkState(null != cloudShardingRuleConfig, "Missing the sharding rule configuration on register center");
+            return createDataSource(configService.loadDataSourceMap(), cloudShardingRuleConfig, configService.loadShardingConfigMap(), configService.loadShardingProperties(), orchestrationFacade);
         } else {
             return createDataSource(dataSourceMap, yamlShardingRuleConfig.getShardingRuleConfiguration(), yamlShardingRuleConfig.getConfigMap(), yamlShardingRuleConfig.getProps(), orchestrationFacade);
         }
