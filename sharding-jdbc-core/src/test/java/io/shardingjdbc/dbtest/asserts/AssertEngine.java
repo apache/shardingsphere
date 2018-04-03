@@ -317,7 +317,7 @@ public class AssertEngine {
                 String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
                 
-                Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), actual);
+                Assert.assertEquals("Update row number error"+msg, anAssert.getExpectedUpdate().intValue(), actual);
                 
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getSql(checksql);
