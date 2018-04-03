@@ -96,9 +96,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
             sqlStatement.getTables().add(new Table(tableName, alias));
         }
-    
         parseForceIndex(tableName, sqlStatement);
-        
         parseJoinTable(sqlStatement);
         if (isSingleTableOnly && !sqlStatement.getTables().isSingleTable()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
@@ -106,14 +104,13 @@ public class TableReferencesClauseParser implements SQLClauseParser {
     }
     
     private void parseForceIndex(final String tableName, final SQLStatement sqlStatement){
-        boolean skipIfForce = this.lexerEngine.skipIfEqual(new TokenType[]{MySQLKeyword.FORCE})
-                && this.lexerEngine.skipIfEqual(new TokenType[]{DefaultKeyword.INDEX});
+        boolean skipIfForce = lexerEngine.skipIfEqual(MySQLKeyword.FORCE) && this.lexerEngine.skipIfEqual(DefaultKeyword.INDEX);
         if (skipIfForce) {
             lexerEngine.accept(Symbol.LEFT_PAREN);
             do {
-                String literals = this.lexerEngine.getCurrentToken().getLiterals();
+                String literals = lexerEngine.getCurrentToken().getLiterals();
                 if (shardingRule.isLogicIndex(literals, tableName)) {
-                    int beginPosition = this.lexerEngine.getCurrentToken().getEndPosition() - literals.length();
+                    int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - literals.length();
                     sqlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
                 }
                 lexerEngine.nextToken();
@@ -138,7 +135,6 @@ public class TableReferencesClauseParser implements SQLClauseParser {
                 DefaultKeyword.INNER, DefaultKeyword.OUTER, DefaultKeyword.LEFT, DefaultKeyword.RIGHT, DefaultKeyword.FULL, DefaultKeyword.CROSS, DefaultKeyword.NATURAL, DefaultKeyword.JOIN));
         joinTypeKeywords.addAll(Arrays.asList(getKeywordsForJoinType()));
         Keyword[] joinTypeKeywordArrays = joinTypeKeywords.toArray(new Keyword[joinTypeKeywords.size()]);
-        
         if (!lexerEngine.equalAny(joinTypeKeywordArrays)) {
             return false;
         }

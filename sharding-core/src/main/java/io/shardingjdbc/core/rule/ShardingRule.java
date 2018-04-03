@@ -329,10 +329,6 @@ public final class ShardingRule {
      * @return is logic index or not
      */
     public boolean isLogicIndex(final String logicIndexName, final String logicTableName) {
-        String logicIndexPrx = this.getTableRule(logicTableName).getLogicIndex();
-        if (logicIndexName.equals(logicIndexPrx)){
-            return true;
-        }
-        return false;
+        return logicIndexName.equals(getTableRule(logicTableName).getLogicIndex());
     }
 }
