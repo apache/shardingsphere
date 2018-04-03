@@ -29,6 +29,7 @@ import io.shardingjdbc.core.integrate.fixture.PreciseModuloTableShardingAlgorith
 import io.shardingjdbc.core.integrate.fixture.RangeModuloTableShardingAlgorithm;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -81,7 +82,7 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
             }
             orderItemTableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderItemActualDataNodes));
             orderItemTableRuleConfig.setLogicTable("t_order_item");
-            orderItemTableRuleConfig.setKeyGeneratorClass("item_id");
+            orderItemTableRuleConfig.setKeyGeneratorColumnName("item_id");
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             TableRuleConfiguration logTableRuleConfig = new TableRuleConfiguration();
             logTableRuleConfig.setLogicIndex("t_log_index");
@@ -93,8 +94,8 @@ public abstract class AbstractShardingTableOnlyTest extends AbstractSQLAssertTes
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
-                    new StandardShardingStrategyConfiguration("order_id", PreciseModuloTableShardingAlgorithm.class.getName(), RangeModuloTableShardingAlgorithm.class.getName()));
-            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(entry.getValue(), shardingRuleConfig.build(entry.getValue().keySet())));
+                    new StandardShardingStrategyConfiguration("order_id", new PreciseModuloTableShardingAlgorithm(), new RangeModuloTableShardingAlgorithm()));
+            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(entry.getValue(), new ShardingRule(shardingRuleConfig, entry.getValue().keySet())));
         }
         return getShardingDataSources();
     }

@@ -20,7 +20,7 @@ package io.shardingjdbc.core.executor.threadlocal;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -35,7 +35,7 @@ public final class ExecutorDataMap {
         
         @Override
         protected Map<String, Object> initialValue() {
-            return new HashMap<>();
+            return new LinkedHashMap<>();
         }
     };
     

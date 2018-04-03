@@ -17,11 +17,7 @@
 
 package io.shardingjdbc.core.api.config.strategy;
 
-import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
-import io.shardingjdbc.core.routing.strategy.ShardingAlgorithmFactory;
-import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
-import io.shardingjdbc.core.routing.strategy.hint.HintShardingStrategy;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -34,11 +30,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class HintShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
-    private final String algorithmClassName;
-    
-    @Override
-    public ShardingStrategy build() {
-        Preconditions.checkNotNull(algorithmClassName, "Algorithm class cannot be null.");
-        return new HintShardingStrategy(ShardingAlgorithmFactory.newInstance(algorithmClassName, HintShardingAlgorithm.class));
-    }
+    private final HintShardingAlgorithm shardingAlgorithm;
 }

@@ -25,6 +25,10 @@ import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfigurat
 import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingjdbc.orchestration.internal.json.fixture.TestComplexKeysShardingAlgorithm;
+import io.shardingjdbc.orchestration.internal.json.fixture.TestHintShardingAlgorithm;
+import io.shardingjdbc.orchestration.internal.json.fixture.TestPreciseShardingAlgorithm;
+import io.shardingjdbc.orchestration.internal.json.fixture.TestRangeShardingAlgorithm;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -46,13 +50,13 @@ public final class ShardingRuleConfigurationConverterTest {
     
     @Test
     public void assertToJsonForStandardStrategy() {
-        StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration("order_id", "xxx.XXXPreciseAlgorithm", "xxx.XXXRangeAlgorithm");
+        StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration("order_id", new TestPreciseShardingAlgorithm(), new TestRangeShardingAlgorithm());
         assertThat(ShardingRuleConfigurationConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForStandardStrategy()));
     }
     
     @Test
     public void assertToJsonForComplexStrategy() {
-        ComplexShardingStrategyConfiguration actual = new ComplexShardingStrategyConfiguration("order_id,item_id", "xxx.XXXAlgorithm");
+        ComplexShardingStrategyConfiguration actual = new ComplexShardingStrategyConfiguration("order_id,item_id", new TestComplexKeysShardingAlgorithm());
         assertThat(ShardingRuleConfigurationConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForComplexStrategy()));
     }
     
@@ -64,7 +68,7 @@ public final class ShardingRuleConfigurationConverterTest {
     
     @Test
     public void assertToJsonForHintStrategy() {
-        HintShardingStrategyConfiguration actual = new HintShardingStrategyConfiguration("xxx.XXXAlgorithm");
+        HintShardingStrategyConfiguration actual = new HintShardingStrategyConfiguration(new TestHintShardingAlgorithm());
         assertThat(ShardingRuleConfigurationConverter.toJson(getCommonShardingRuleConfig(actual)), is(getJsonForHintStrategy()));
     }
     
@@ -95,8 +99,8 @@ public final class ShardingRuleConfigurationConverterTest {
         assertCommon(actual);
         StandardShardingStrategyConfiguration actualShardingStrategy = (StandardShardingStrategyConfiguration) actual.getDefaultTableShardingStrategyConfig();
         assertThat(actualShardingStrategy.getShardingColumn(), is("order_id"));
-        assertThat(actualShardingStrategy.getPreciseAlgorithmClassName(), is("xxx.XXXPreciseAlgorithm"));
-        assertThat(actualShardingStrategy.getRangeAlgorithmClassName(), is("xxx.XXXRangeAlgorithm"));
+        assertThat(actualShardingStrategy.getPreciseShardingAlgorithm(), instanceOf(TestPreciseShardingAlgorithm.class));
+        assertThat(actualShardingStrategy.getRangeShardingAlgorithm(), instanceOf(TestRangeShardingAlgorithm.class));
     }
     
     @Test
@@ -105,7 +109,7 @@ public final class ShardingRuleConfigurationConverterTest {
         assertCommon(actual);
         ComplexShardingStrategyConfiguration actualShardingStrategy = (ComplexShardingStrategyConfiguration) actual.getDefaultTableShardingStrategyConfig();
         assertThat(actualShardingStrategy.getShardingColumns(), is("order_id,item_id"));
-        assertThat(actualShardingStrategy.getAlgorithmClassName(), is("xxx.XXXAlgorithm"));
+        assertThat(actualShardingStrategy.getShardingAlgorithm(), instanceOf(TestComplexKeysShardingAlgorithm.class));
     }
     
     @Test
@@ -122,7 +126,7 @@ public final class ShardingRuleConfigurationConverterTest {
         ShardingRuleConfiguration actual = ShardingRuleConfigurationConverter.fromJson(getJsonForHintStrategy());
         assertCommon(actual);
         HintShardingStrategyConfiguration actualShardingStrategy = (HintShardingStrategyConfiguration) actual.getDefaultTableShardingStrategyConfig();
-        assertThat(actualShardingStrategy.getAlgorithmClassName(), is("xxx.XXXAlgorithm"));
+        assertThat(actualShardingStrategy.getShardingAlgorithm(), instanceOf(TestHintShardingAlgorithm.class));
     }
     
     @Test
@@ -143,12 +147,14 @@ public final class ShardingRuleConfigurationConverterTest {
     private String getJsonForStandardStrategy() {
         return commonShardingRuleConfigJson
                 + "\"defaultTableShardingStrategyConfig\":{\"type\":\"STANDARD\",\"shardingColumn\":\"order_id\","
-                + "\"preciseAlgorithmClassName\":\"xxx.XXXPreciseAlgorithm\",\"rangeAlgorithmClassName\":\"xxx.XXXRangeAlgorithm\"}"
+                + "\"preciseAlgorithmClassName\":\"io.shardingjdbc.orchestration.internal.json.fixture.TestPreciseShardingAlgorithm\","
+                + "\"rangeAlgorithmClassName\":\"io.shardingjdbc.orchestration.internal.json.fixture.TestRangeShardingAlgorithm\"}"
                 + masterSlaveRuleConfigJson;
     }
     
     private String getJsonForComplexStrategy() {
-        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"COMPLEX\",\"shardingColumns\":\"order_id,item_id\",\"algorithmClassName\":\"xxx.XXXAlgorithm\"}"
+        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"COMPLEX\",\"shardingColumns\":\"order_id,item_id\","
+                + "\"algorithmClassName\":\"io.shardingjdbc.orchestration.internal.json.fixture.TestComplexKeysShardingAlgorithm\"}"
                 + masterSlaveRuleConfigJson;
     }
     
@@ -158,7 +164,8 @@ public final class ShardingRuleConfigurationConverterTest {
     }
     
     private String getJsonForHintStrategy() {
-        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"HINT\",\"algorithmClassName\":\"xxx.XXXAlgorithm\"}" + masterSlaveRuleConfigJson;
+        return commonShardingRuleConfigJson + "\"defaultTableShardingStrategyConfig\":{\"type\":\"HINT\","
+                + "\"algorithmClassName\":\"io.shardingjdbc.orchestration.internal.json.fixture.TestHintShardingAlgorithm\"}" + masterSlaveRuleConfigJson;
     }
     
     private String getJsonForNoneStrategy() {

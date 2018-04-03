@@ -40,8 +40,8 @@ public abstract class AbstractShardingDatabaseOnlyWithHintTest extends AbstractH
         orderItemTableRuleConfig.setLogicTable("t_order_item");
         shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", ComplexKeysModuloDatabaseShardingAlgorithm.class.getName()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new ComplexShardingStrategyConfiguration("user_id", new ComplexKeysModuloDatabaseShardingAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-        return shardingRuleConfig.build(dataSourceEntry.getValue().keySet());
+        return new ShardingRule(shardingRuleConfig, dataSourceEntry.getValue().keySet());
     }
 }

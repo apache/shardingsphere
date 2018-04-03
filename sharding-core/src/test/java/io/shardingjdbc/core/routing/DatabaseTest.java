@@ -48,11 +48,11 @@ public class DatabaseTest {
     @Before
     public void setRouteRuleContext() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(OrderDatabaseHintShardingAlgorithm.class.getName()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(new OrderDatabaseHintShardingAlgorithm()));
         dataSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
-        shardingRule = shardingRuleConfig.build(dataSourceMap.keySet());
+        shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
     }
     
     @Test

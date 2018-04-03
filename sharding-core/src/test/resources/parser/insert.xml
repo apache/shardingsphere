@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<asserts>
-    <assert id="assertInsertWithAllPlaceholders" parameters="1,1,'init'">
+<parser-asserts>
+    <parser-assert sql-case-id="assertInsertWithAllPlaceholders" parameters="1,1,'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -15,8 +15,8 @@
                 <value index="1" literal="1" type="int" />
             </condition>
         </conditions>
-    </assert>
-    <assert id="assertInsertWithPartialPlaceholder" parameters="1,1">
+    </parser-assert>
+    <parser-assert sql-case-id="assertInsertWithPartialPlaceholder" parameters="1,1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -31,8 +31,8 @@
                 <value index="1" literal="1" type="int" />
             </condition>
         </conditions>
-    </assert>
-    <assert id="assertInsertWithGenerateKeyColumn" parameters="10000,1000,10">
+    </parser-assert>
+    <parser-assert sql-case-id="assertInsertWithGenerateKeyColumn" parameters="10000,1000,10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -50,8 +50,8 @@
                 <value index="2" literal="10" type="int" />
             </condition>
         </conditions>
-    </assert>
-    <assert id="assertInsertWithoutGenerateKeyColumn" parameters="1000,10">
+    </parser-assert>
+    <parser-assert sql-case-id="assertInsertWithoutGenerateKeyColumn" parameters="1000,10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -72,15 +72,15 @@
                 <value index="1" literal="10" type="int" />
             </condition>
         </conditions>
-    </assert>
+    </parser-assert>
     <!-- // TODO
-    <assert id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )"">
+    <parser-assert sql-case-id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )"">
         <tables>
             <table name="order" />
         </tables>
         <condition-contexts>
            <condition-context/>
         </condition-contexts>
-    </assert>
+    </parser-assert>
     -->
-</asserts>
+</parser-asserts>

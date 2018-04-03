@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.integrate;
 
+import io.shardingjdbc.core.integrate.api.AllAPIIntegrateTests;
 import io.shardingjdbc.core.integrate.type.ms.MasterSlaveOnlyDMLAndDDLTest;
 import io.shardingjdbc.core.integrate.type.ms.MasterSlaveOnlyDQLTest;
 import io.shardingjdbc.core.integrate.type.sharding.NullableShardingTableOnlyDMLAndDDLTest;
@@ -36,19 +37,20 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ShardingDatabaseOnlyDQLTest.class,
-        ShardingDatabaseOnlyDMLAndDDLTest.class,
-        ShardingTableOnlyDQLTest.class,
-        ShardingTableOnlyDMLAndDDLTest.class,
-        ShardingMasterSlaveDQLTest.class,
-        ShardingMasterSlaveDMLAndDDLTest.class,
-        MasterSlaveOnlyDQLTest.class,
-        MasterSlaveOnlyDMLAndDDLTest.class,
-        ShardingDatabaseAndTableDQLTest.class,
-        ShardingDatabaseAndTableDMLAndDDLTest.class,
-        NullableShardingTableOnlyDQLTest.class,
-        NullableShardingTableOnlyDMLAndDDLTest.class,
-        AllHintDatabaseOnlyTests.class
+        ShardingDatabaseOnlyDQLTest.class, 
+        ShardingDatabaseOnlyDMLAndDDLTest.class, 
+        ShardingTableOnlyDQLTest.class, 
+        ShardingTableOnlyDMLAndDDLTest.class, 
+        ShardingMasterSlaveDQLTest.class, 
+        ShardingMasterSlaveDMLAndDDLTest.class, 
+        MasterSlaveOnlyDQLTest.class, 
+        MasterSlaveOnlyDMLAndDDLTest.class, 
+        ShardingDatabaseAndTableDQLTest.class, 
+        ShardingDatabaseAndTableDMLAndDDLTest.class, 
+        NullableShardingTableOnlyDQLTest.class, 
+        NullableShardingTableOnlyDMLAndDDLTest.class, 
+        AllHintDatabaseOnlyTests.class, 
+        AllAPIIntegrateTests.class
     })
 public class AllIntegrateTests {
 }

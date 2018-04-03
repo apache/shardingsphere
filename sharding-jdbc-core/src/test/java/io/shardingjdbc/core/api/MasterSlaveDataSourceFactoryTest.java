@@ -42,13 +42,10 @@ public final class MasterSlaveDataSourceFactoryTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("master_ds", new TestDataSource("master_ds"));
         dataSourceMap.put("slave_ds", new TestDataSource("slave_ds"));
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-        masterSlaveRuleConfig.setName("logic_ds");
-        masterSlaveRuleConfig.setMasterDataSourceName("master_ds");
-        masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("slave_ds"));
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
-        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap), instanceOf(MasterSlaveDataSource.class));
+        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
+                new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds")), configMap), instanceOf(MasterSlaveDataSource.class));
         MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
     }
     
@@ -58,13 +55,10 @@ public final class MasterSlaveDataSourceFactoryTest {
         dataSourceMap.put("master_ds", new TestDataSource("master_ds"));
         dataSourceMap.put("slave_ds_0", new TestDataSource("slave_ds_0"));
         dataSourceMap.put("slave_ds_1", new TestDataSource("slave_ds_1"));
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-        masterSlaveRuleConfig.setName("logic_ds");
-        masterSlaveRuleConfig.setMasterDataSourceName("master_ds");
-        masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("slave_ds_0", "slave_ds_1"));
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
-        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap), instanceOf(MasterSlaveDataSource.class));
+        assertThat(MasterSlaveDataSourceFactory.createDataSource(
+                dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1")), configMap), instanceOf(MasterSlaveDataSource.class));
         MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
     }
 }

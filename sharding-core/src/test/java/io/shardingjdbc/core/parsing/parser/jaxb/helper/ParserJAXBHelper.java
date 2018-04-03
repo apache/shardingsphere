@@ -27,7 +27,7 @@ import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
 import io.shardingjdbc.core.parsing.parser.context.table.Tables;
-import io.shardingjdbc.core.parsing.parser.jaxb.Assert;
+import io.shardingjdbc.core.parsing.parser.jaxb.ParserAssert;
 import io.shardingjdbc.core.parsing.parser.jaxb.GroupByColumn;
 import io.shardingjdbc.core.parsing.parser.jaxb.OrderByColumn;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -72,7 +72,7 @@ public final class ParserJAXBHelper {
      * @param assertObj assert object
      * @return select statement
      */
-    public static SelectStatement getSelectStatement(final Assert assertObj) {
+    public static SelectStatement getSelectStatement(final ParserAssert assertObj) {
         final SelectStatement result = new SelectStatement();
         if (null != assertObj.getOrderByColumns()) {
             List<OrderItem> orderItems = Lists.transform(assertObj.getOrderByColumns(), new Function<OrderByColumn, OrderItem>() {

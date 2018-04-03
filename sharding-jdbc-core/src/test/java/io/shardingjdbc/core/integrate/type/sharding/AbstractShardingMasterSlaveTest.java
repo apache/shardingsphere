@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.integrate.type.sharding;
 
 import com.google.common.base.Joiner;
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
@@ -30,7 +31,7 @@ import io.shardingjdbc.core.integrate.fixture.RangeModuloDatabaseShardingAlgorit
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.core.rule.MasterSlaveRule;
+import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.After;
 
 import javax.sql.DataSource;
@@ -120,10 +121,10 @@ public abstract class AbstractShardingMasterSlaveTest extends AbstractSQLAssertT
             shardingRuleConfig.getTableRuleConfigs().add(tempLogTableRuleConfig);
             shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(
-                    new StandardShardingStrategyConfiguration("t_order_item", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
+                    new StandardShardingStrategyConfiguration("t_order_item", new PreciseModuloDatabaseShardingAlgorithm(), new RangeModuloDatabaseShardingAlgorithm()));
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
-                    new StandardShardingStrategyConfiguration("user_id", PreciseModuloDatabaseShardingAlgorithm.class.getName(), RangeModuloDatabaseShardingAlgorithm.class.getName()));
-            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(masterSlaveDataSourceMap, shardingRuleConfig.build(masterSlaveDataSourceMap.keySet())));
+                    new StandardShardingStrategyConfiguration("user_id", new PreciseModuloDatabaseShardingAlgorithm(), new RangeModuloDatabaseShardingAlgorithm()));
+            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(masterSlaveDataSourceMap, new ShardingRule(shardingRuleConfig, masterSlaveDataSourceMap.keySet())));
         }
         return getShardingDataSources();
     }
@@ -155,10 +156,10 @@ public abstract class AbstractShardingMasterSlaveTest extends AbstractSQLAssertT
         return result;
     }
     
-    private MasterSlaveDataSource getMasterSlaveDataSource(final Map<String, DataSource> masterSlaveDataSourceMap, 
-                                                           final String name, final String masterDataSourceName, final String slaveDataSourceName) throws SQLException {
+    private MasterSlaveDataSource getMasterSlaveDataSource(
+            final Map<String, DataSource> masterSlaveDataSourceMap, final String name, final String masterDataSourceName, final String slaveDataSourceName) throws SQLException {
         return new MasterSlaveDataSource(
-                masterSlaveDataSourceMap, new MasterSlaveRule(name, masterDataSourceName, Collections.singleton(slaveDataSourceName)), Collections.<String, Object>emptyMap());
+                masterSlaveDataSourceMap, new MasterSlaveRuleConfiguration(name, masterDataSourceName, Collections.singleton(slaveDataSourceName)), Collections.<String, Object>emptyMap());
     }
     
     @After

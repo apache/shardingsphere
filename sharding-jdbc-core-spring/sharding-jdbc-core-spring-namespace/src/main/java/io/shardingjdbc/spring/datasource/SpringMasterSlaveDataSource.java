@@ -19,8 +19,8 @@ package io.shardingjdbc.spring.datasource;
 
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.rule.MasterSlaveRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -36,11 +36,16 @@ public class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
     
     public SpringMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames, 
                                        final MasterSlaveLoadBalanceAlgorithm strategy, final Map<String, Object> configMap) throws SQLException {
-        super(dataSourceMap, new MasterSlaveRule(name, masterDataSourceName, slaveDataSourceNames, strategy), configMap);
+        super(dataSourceMap, getMasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, strategy), configMap);
     }
     
     public SpringMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames, 
                                        final MasterSlaveLoadBalanceAlgorithmType strategyType, final Map<String, Object> configMap) throws SQLException {
-        super(dataSourceMap, new MasterSlaveRule(name, masterDataSourceName, slaveDataSourceNames, strategyType.getAlgorithm()), configMap);
+        super(dataSourceMap, getMasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, null == strategyType ? null : strategyType.getAlgorithm()), configMap);
+    }
+    
+    private static MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration(
+            final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames, final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm) {
+        return new MasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, loadBalanceAlgorithm);
     }
 }

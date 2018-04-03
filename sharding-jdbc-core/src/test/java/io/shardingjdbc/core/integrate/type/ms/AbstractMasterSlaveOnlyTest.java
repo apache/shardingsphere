@@ -86,11 +86,8 @@ public abstract class AbstractMasterSlaveOnlyTest extends AbstractSQLAssertTest 
     }
     
     private MasterSlaveDataSource getMasterSlaveDataSource(final Map<String, DataSource> masterSlaveDataSourceMap) throws SQLException {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-        masterSlaveRuleConfig.setName("ds_ms");
-        masterSlaveRuleConfig.setMasterDataSourceName("dataSource_master_only");
-        masterSlaveRuleConfig.setSlaveDataSourceNames(Collections.singletonList("dataSource_slave_only"));
-        return (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap());
+        return (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, 
+                new MasterSlaveRuleConfiguration("ds_ms", "dataSource_master_only", Collections.singletonList("dataSource_slave_only")), Collections.<String, Object>emptyMap());
     }
     
     @After
