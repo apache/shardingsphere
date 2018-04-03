@@ -58,6 +58,7 @@ public final class UpdateSetItemsClauseParser implements SQLClauseParser {
         parseSetColumn(updateStatement);
         lexerEngine.skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
         parseSetValue(updateStatement);
+        skipsDoubleColon();
     }
     
     private void parseSetColumn(final DMLStatement updateStatement) {
@@ -78,5 +79,11 @@ public final class UpdateSetItemsClauseParser implements SQLClauseParser {
     
     private void parseSetValue(final DMLStatement updateStatement) {
         basicExpressionParser.parse(updateStatement);
+    }
+    
+    private void skipsDoubleColon() {
+        if (lexerEngine.skipIfEqual(Symbol.DOUBLE_COLON)) {
+            lexerEngine.nextToken();
+        }
     }
 }

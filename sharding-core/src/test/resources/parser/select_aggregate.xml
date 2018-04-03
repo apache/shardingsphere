@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser-asserts>
-    <parser-assert sql-case-id="assertSelectSum">
+<parser-result-sets>
+    <parser-result sql-case-id="assertSelectSum">
         <tables>
             <table name="t_order" />
         </tables>
@@ -8,11 +8,11 @@
             <table-token begin-position="40" original-literals="t_order" />
         </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(user_id)" aggregation-type="SUM" alias="user_id_sum" />
+            <aggregation-select-item type="SUM" inner-expression="(user_id)" alias="user_id_sum" />
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectCount">
+    <parser-result sql-case-id="assertSelectCount">
         <tables>
             <table name="t_order" />
         </tables>
@@ -20,11 +20,11 @@
             <table-token begin-position="37" original-literals="t_order" />
         </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="orders_count" />
+            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="orders_count" />
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectMax">
+    <parser-result sql-case-id="assertSelectMax">
         <tables>
             <table name="t_order" />
         </tables>
@@ -32,11 +32,11 @@
             <table-token begin-position="40" original-literals="t_order" />
         </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(user_id)" aggregation-type="MAX" alias="max_user_id" />
+            <aggregation-select-item type="MAX" inner-expression="(user_id)" alias="max_user_id" />
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectMin">
+    <parser-result sql-case-id="assertSelectMin">
         <tables>
             <table name="t_order" />
         </tables>
@@ -44,11 +44,11 @@
             <table-token begin-position="40" original-literals="t_order" />
         </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(user_id)" aggregation-type="MIN" alias="min_user_id" />
+            <aggregation-select-item type="MIN" inner-expression="(user_id)" alias="min_user_id" />
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectAvg">
+    <parser-result sql-case-id="assertSelectAvg">
         <tables>
             <table name="t_order" />
         </tables>
@@ -62,14 +62,14 @@
             </items-token>
         </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(user_id)" aggregation-type="AVG" alias="user_id_avg">
-                <derived-column inner-expression="(user_id)" aggregation-type="COUNT" alias="AVG_DERIVED_COUNT_0" />
-                <derived-column inner-expression="(user_id)" aggregation-type="SUM" alias="AVG_DERIVED_SUM_0" />
+            <aggregation-select-item type="AVG" inner-expression="(user_id)" alias="user_id_avg">
+                <derived-column type="COUNT" inner-expression="(user_id)" alias="AVG_DERIVED_COUNT_0" />
+                <derived-column type="SUM" inner-expression="(user_id)" alias="AVG_DERIVED_SUM_0" />
             </aggregation-select-item>
         </aggregation-select-items>
-    </parser-assert>
+    </parser-result>
     
-    <parser-assert sql-case-id="assertSelectCountForSpecialSymbol">
+    <parser-result sql-case-id="assertSelectCountForSpecialSymbol">
         <tables>
             <table name="t_order" />
         </tables>
@@ -77,7 +77,7 @@
             <table-token begin-position="46" original-literals="t_order" />
         </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(`order_id`)" aggregation-type="COUNT" alias="orders_count" />
+            <aggregation-select-item type="COUNT" inner-expression="(`order_id`)" alias="orders_count" />
         </aggregation-select-items>
-    </parser-assert>
-</parser-asserts>
+    </parser-result>
+</parser-result-sets>

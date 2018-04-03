@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.orchestration.internal.json;
 
+import com.google.common.base.Strings;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -88,9 +89,12 @@ public final class ShardingStrategyConfigurationGsonTypeAdapter extends TypeAdap
                                                          final String algorithmClassName, final String preciseAlgorithmClassName, final String rangeAlgorithmClassName,
                                                          final String algorithmInlineExpression) {
         if (type.equals(ShardingStrategyType.STANDARD.name())) {
-            return new StandardShardingStrategyConfiguration(shardingColumn, 
-                    ShardingAlgorithmFactory.newInstance(preciseAlgorithmClassName, PreciseShardingAlgorithm.class), 
-                    ShardingAlgorithmFactory.newInstance(rangeAlgorithmClassName, RangeShardingAlgorithm.class));
+            if (Strings.isNullOrEmpty(rangeAlgorithmClassName)) {
+                return new StandardShardingStrategyConfiguration(shardingColumn, ShardingAlgorithmFactory.newInstance(preciseAlgorithmClassName, PreciseShardingAlgorithm.class));
+            } else {
+                return new StandardShardingStrategyConfiguration(shardingColumn, ShardingAlgorithmFactory.newInstance(preciseAlgorithmClassName, PreciseShardingAlgorithm.class),
+                        ShardingAlgorithmFactory.newInstance(rangeAlgorithmClassName, RangeShardingAlgorithm.class));
+            }
         }
         if (type.equals(ShardingStrategyType.COMPLEX.name())) {
             return new ComplexShardingStrategyConfiguration(shardingColumns, ShardingAlgorithmFactory.newInstance(algorithmClassName, ComplexKeysShardingAlgorithm.class));
