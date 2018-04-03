@@ -120,40 +120,4 @@ public enum ColumnType {
                 throw new IllegalArgumentException(String.format("Cannot find JDBC type '%s' in column type", jdbcType));
         }
     }
-    
-    /**
-     * Value of description.
-     *
-     * @param description description
-     * @return column type enum
-     */
-    // TODO need to check
-    public static ColumnType valueOfDescription(final String description) {
-        switch (description) {
-            case "bit":
-                return MYSQL_TYPE_BIT;
-            case "tiny":
-                return MYSQL_TYPE_TINY;
-            case "int":
-                return MYSQL_TYPE_INT24;
-            case "bigint":
-                return MYSQL_TYPE_LONG;
-            case "decimal":
-                return MYSQL_TYPE_DOUBLE;
-            case "char":
-                return MYSQL_TYPE_STRING;
-            case "varchar":
-                return MYSQL_TYPE_VARCHAR;
-            case "date":
-                return MYSQL_TYPE_DATE;
-            case "time":
-                return MYSQL_TYPE_TIME;
-            case "timestamp":
-                return MYSQL_TYPE_TIMESTAMP;
-            case "blob":
-                return MYSQL_TYPE_BLOB;
-            default:
-                throw new IllegalArgumentException(String.format("Cannot find description '%s' in column type", description));
-        }
-    }
 }
