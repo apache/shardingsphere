@@ -64,7 +64,8 @@ public class PropertyUtil {
             Object resolverObject = resolverConstructor.newInstance(environment);
             String prefixParam = prefix.endsWith(".") ? prefix : prefix + ".";
             return getSubPropertiesMethod.invoke(resolverObject, prefixParam);
-        } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+        } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
+                | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             throw new ShardingJdbcException(ex.getMessage(), ex);
         }
     }
@@ -79,7 +80,8 @@ public class PropertyUtil {
             Object bindResultObject = bindMethod.invoke(binderObject, prefixParam, targetClass);
             Method resultGetMethod = bindResultObject.getClass().getDeclaredMethod("get");
             return resultGetMethod.invoke(bindResultObject);
-        } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+        } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException ex) {
             throw new ShardingJdbcException(ex.getMessage(), ex);
         }
     }
