@@ -87,7 +87,7 @@ public final class RowNumberDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextForRowCountBoundOpendedFalse() throws SQLException {
+    public void assertNextForRowCountBoundOpenedFalse() throws SQLException {
         Limit limit = new Limit(DatabaseType.Oracle);
         limit.setOffset(new LimitValue(2, -1, true));
         limit.setRowCount(new LimitValue(4, -1, false));
@@ -100,7 +100,7 @@ public final class RowNumberDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextForRowCountBoundOpendedTrue() throws SQLException {
+    public void assertNextForRowCountBoundOpenedTrue() throws SQLException {
         Limit limit = new Limit(DatabaseType.Oracle);
         limit.setOffset(new LimitValue(2, -1, true));
         limit.setRowCount(new LimitValue(4, -1, true));

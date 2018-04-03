@@ -17,18 +17,6 @@
 
 package io.shardingjdbc.spring.boot;
 
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
@@ -37,6 +25,13 @@ import io.shardingjdbc.core.util.DataSourceUtil;
 import io.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingjdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
 import io.shardingjdbc.spring.boot.util.PropertyUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;

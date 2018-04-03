@@ -28,13 +28,15 @@ import io.shardingjdbc.core.routing.SQLExecutionUnit;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import static org.hamcrest.core.Is.is;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
