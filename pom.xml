@@ -7,12 +7,15 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>sharding-core</module>
         <module>sharding-jdbc-core</module>
         <module>sharding-jdbc-core-spring</module>
         <module>sharding-jdbc-transaction-parent</module>
         <module>sharding-jdbc-orchestration</module>
         <module>sharding-jdbc-orchestration-spring</module>
+        <module>sharding-opentracing</module>
         <module>sharding-proxy</module>
+        <module>sharding-sql-test</module>
     </modules>
     
     <properties>
@@ -25,7 +28,7 @@
         <guava.version>18.0</guava.version>
         <common-lang3>3.6</common-lang3>
         <commons-pool.version>1.6</commons-pool.version>
-        <commons-dbcp.version>1.4</commons-dbcp.version>
+        <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
         <gson.version>2.6.1</gson.version>
         <curator.version>2.10.0</curator.version>
         <logback.version>1.1.2</logback.version>
@@ -47,6 +50,9 @@
         <grpc.version>1.7.0</grpc.version>
         <protobuf.version>3.4.0</protobuf.version>
         <guava-retrying.version>2.0.0</guava-retrying.version>
+        <quartz.version>2.3.0</quartz.version>
+        <opentracing.version>0.30.0</opentracing.version>
+        <powermock.version>1.7.1</powermock.version>
         
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
@@ -71,6 +77,7 @@
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <protobuf-maven-plugin.version>0.5.0</protobuf-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
+        <coveralls-maven-plugin.version>4.1.0</coveralls-maven-plugin.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
@@ -91,6 +98,11 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
@@ -156,6 +168,11 @@
                 <version>${guava-retrying.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-util</artifactId>
+                <version>${opentracing.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-test</artifactId>
                 <version>${curator.version}</version>
@@ -204,9 +221,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>commons-dbcp</groupId>
-                <artifactId>commons-dbcp</artifactId>
-                <version>${commons-dbcp.version}</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-dbcp2</artifactId>
+                <version>${commons-dbcp2.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-pool</groupId>
@@ -290,6 +307,24 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring-boot.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-junit4</artifactId>
+                <version>${powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito2</artifactId>
+                <version>${powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-mock</artifactId>
+                <version>${opentracing.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

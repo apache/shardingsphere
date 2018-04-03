@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.PreparedStatement;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -40,7 +40,7 @@ public final class BatchPreparedStatementUnit implements BaseStatementUnit {
     
     private final PreparedStatement statement;
     
-    private final Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = new HashMap<>();
+    private final Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = new LinkedHashMap<>();
     
     @Getter(AccessLevel.NONE)
     private int actualCallAddBatchTimes;

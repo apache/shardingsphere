@@ -18,8 +18,7 @@
 package io.shardingjdbc.core.jdbc.core.resultset;
 
 import io.shardingjdbc.core.jdbc.adapter.AbstractResultSetAdapter;
-import io.shardingjdbc.core.merger.ResultSetMerger;
-import io.shardingjdbc.core.merger.util.ResultSetUtil;
+import io.shardingjdbc.core.merger.MergedResult;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -44,9 +43,9 @@ import java.util.List;
  */
 public final class ShardingResultSet extends AbstractResultSetAdapter {
     
-    private final ResultSetMerger mergeResultSet;
+    private final MergedResult mergeResultSet;
     
-    public ShardingResultSet(final List<ResultSet> resultSets, final ResultSetMerger mergeResultSet, final Statement statement) {
+    public ShardingResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement) {
         super(resultSets, statement);
         this.mergeResultSet = mergeResultSet;
     }

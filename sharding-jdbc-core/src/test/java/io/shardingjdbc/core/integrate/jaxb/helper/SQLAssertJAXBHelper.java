@@ -17,11 +17,13 @@
 
 package io.shardingjdbc.core.integrate.jaxb.helper;
 
-import io.shardingjdbc.core.common.jaxb.helper.SQLStatementHelper;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.jaxb.SQLAssert;
 import io.shardingjdbc.core.integrate.jaxb.SQLAsserts;
+import io.shardingjdbc.test.sql.SQLCasesLoader;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -30,7 +32,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class SQLAssertJAXBHelper {
     
@@ -78,7 +82,7 @@ public final class SQLAssertJAXBHelper {
         List<Object[]> result = new ArrayList<>();
         for (int i = 0; i < asserts.getSqlAsserts().size(); i++) {
             SQLAssert assertObj = asserts.getSqlAsserts().get(i);
-            for (DatabaseType each : SQLStatementHelper.getTypes(assertObj.getId())) {
+            for (DatabaseType each : getDatabaseTypes(SQLCasesLoader.getInstance().getDatabaseTypes(assertObj.getId()))) {
                 result.add(getDataParameter(assertObj, each));
             }
         }
@@ -96,7 +100,7 @@ public final class SQLAssertJAXBHelper {
     private static Object[] getDataParameter(final SQLAssert sqlAssert, final DatabaseType dbType) {
         final Object[] result = new Object[4];
         result[0] = sqlAssert.getId();
-        result[1] = SQLStatementHelper.getSql(sqlAssert.getId());
+        result[1] = SQLCasesLoader.getInstance().getSupportedSQL(sqlAssert.getId());
         result[2] = dbType;
         result[3] = sqlAssert.getSqlShardingRules();
         return result;
@@ -112,5 +116,16 @@ public final class SQLAssertJAXBHelper {
                 return fileName.startsWith("select");
             default: return false;
         }
+    }
+    
+    private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
+        if (Strings.isNullOrEmpty(databaseTypes)) {
+            return Sets.newHashSet(DatabaseType.values());
+        }
+        Set<DatabaseType> result = new HashSet<>();
+        for (String each : databaseTypes.split(",")) {
+            result.add(DatabaseType.valueOf(each));
+        }
+        return result;
     }
 }

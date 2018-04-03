@@ -19,7 +19,7 @@ package io.shardingjdbc.transaction.integrate.storage;
 
 import io.shardingjdbc.transaction.storage.TransactionLogStorage;
 import io.shardingjdbc.transaction.storage.impl.RdbTransactionLogStorage;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;

@@ -22,7 +22,7 @@ import io.shardingjdbc.core.constant.ShardingProperties;
 import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -56,7 +56,7 @@ public class SpringBootShardingTest {
         field.setAccessible(true);
         ShardingContext shardingContext = (ShardingContext) field.get(dataSource);
         for (DataSource each : shardingContext.getDataSourceMap().values()) {
-            assertThat(((BasicDataSource) each).getMaxActive(), is(16));
+            assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
         assertTrue(shardingContext.isShowSQL());
         Map<String, Object> configMap = new ConcurrentHashMap<>();

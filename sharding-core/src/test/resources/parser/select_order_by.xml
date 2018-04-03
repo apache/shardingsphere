@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets>
+    <parser-result sql-case-id="assertSelectWithOrderBy">
+        <tables>
+            <table name="t_order" alias="o" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_order" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column owner="o" name="order_id" order-direction="ASC" />
+            <order-by-column index="2" order-direction="DESC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectWithOrderByForIndex">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="27" original-literals="t_order_item" />
+            <items-token begin-position="11">
+                <items>
+                    <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
+                </items>
+            </items-token>
+        </tokens>
+        <order-by-columns>
+            <order-by-column owner="o" alias="ORDER_BY_DERIVED_0" name="order_id" order-direction="DESC" />
+            <order-by-column index="1" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectWithOrderByForAlias">
+        <tables>
+            <table name="t_order" alias="o" />
+        </tables>
+        <tokens>
+            <table-token begin-position="40" original-literals="t_order" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+
+    <parser-result sql-case-id="assertSelectWithOrderByForDate">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="27" original-literals="t_order_item" />
+            <items-token begin-position="11">
+                <items>
+                    <item>i.c_date AS ORDER_BY_DERIVED_0 </item>
+                    <item>o.order_id AS ORDER_BY_DERIVED_1 </item>
+                    <item>i.item_id AS ORDER_BY_DERIVED_2 </item>
+                </items>
+            </items-token>
+        </tokens>
+        <order-by-columns>
+            <order-by-column owner="i" alias="ORDER_BY_DERIVED_0" name="c_date" order-direction="DESC" />
+            <order-by-column owner="o" alias="ORDER_BY_DERIVED_1" name="order_id" order-direction="DESC" />
+            <order-by-column owner="i" alias="ORDER_BY_DERIVED_2" name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <!-- //TODO add order-by-null-type -->
+    <parser-result sql-case-id="assertSelectWithOrderByForNullsFirst">
+        <tables>
+            <table name="t_order" alias="o" />
+        </tables>
+        <tokens>
+            <table-token begin-position="40" original-literals="t_order" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <!-- //TODO add order-by-null-type -->
+    <parser-result sql-case-id="assertSelectWithOrderByForNullsLast">
+        <tables>
+            <table name="t_order" alias="o" />
+        </tables>
+        <tokens>
+            <table-token begin-position="40" original-literals="t_order" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+</parser-result-sets>

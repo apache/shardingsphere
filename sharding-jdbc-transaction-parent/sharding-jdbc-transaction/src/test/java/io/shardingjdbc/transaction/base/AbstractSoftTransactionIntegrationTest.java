@@ -24,7 +24,7 @@ import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Before;
 
 import javax.sql.DataSource;
@@ -52,7 +52,7 @@ public abstract class AbstractSoftTransactionIntegrationTest {
         tableRuleConfig.setLogicTable("transaction_test");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        ShardingRule shardingRule = shardingRuleConfig.build(dataSourceMap.keySet());
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         shardingDataSource = new ShardingDataSource(dataSourceMap, shardingRule);
         createTable(shardingDataSource);
         transactionDataSource = createTransactionLogDataSource();

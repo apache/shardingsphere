@@ -29,9 +29,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-
 import com.google.common.base.Preconditions;
-
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
@@ -39,6 +37,10 @@ import io.shardingjdbc.core.util.DataSourceUtil;
 import io.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingjdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
 import io.shardingjdbc.spring.boot.util.PropertyUtil;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Spring boot sharding and master-slave configuration.
@@ -55,7 +57,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
     @Autowired
     private SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
     
-    private final Map<String, DataSource> dataSourceMap = new HashMap<>();
+    private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
     /**
      * Get data source bean.

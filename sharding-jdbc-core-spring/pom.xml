@@ -31,8 +31,8 @@
             <artifactId>hamcrest-library</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-pool</groupId>

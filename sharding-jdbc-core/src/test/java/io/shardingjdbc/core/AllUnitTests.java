@@ -18,35 +18,19 @@
 package io.shardingjdbc.core;
 
 import io.shardingjdbc.core.api.AllApiTests;
-import io.shardingjdbc.core.constant.AllConstantsTests;
 import io.shardingjdbc.core.executor.AllExecutorTests;
-import io.shardingjdbc.core.hint.AllHintTests;
 import io.shardingjdbc.core.jdbc.AllJDBCTests;
-import io.shardingjdbc.core.keygen.AllKeygenTests;
-import io.shardingjdbc.core.merger.AllMergerTests;
-import io.shardingjdbc.core.parsing.AllParsingTests;
-import io.shardingjdbc.core.rewrite.AllRewriteTests;
-import io.shardingjdbc.core.routing.AllRoutingTests;
-import io.shardingjdbc.core.rule.AllRuleTests;
 import io.shardingjdbc.core.util.AllUtilTests;
-import io.shardingjdbc.core.yaml.AllYamlTests;
+import io.shardingjdbc.core.integrate.api.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllConstantsTests.class, 
         AllApiTests.class,
-        AllRuleTests.class,
-        AllParsingTests.class, 
-        AllRewriteTests.class, 
-        AllRoutingTests.class, 
-        AllMergerTests.class, 
         AllExecutorTests.class, 
-        AllJDBCTests.class, 
-        AllHintTests.class, 
-        AllKeygenTests.class, 
+        AllJDBCTests.class,
         AllUtilTests.class,
         AllYamlTests.class
     })

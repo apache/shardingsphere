@@ -75,7 +75,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     private AbstractBeanDefinition getOrchestrationSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationMasterSlaveDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element));
-        factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element, parserContext));
+        factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element));
         factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         factory.addConstructorArgValue(parseOrchestrationConfiguration(element));
         factory.setInitMethodName("init");
@@ -101,16 +101,17 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         return element.getAttribute("registry-center-ref");
     }
     
-    private BeanDefinition parseMasterSlaveRuleConfig(final Element element, final ParserContext parserContext) {
+    private BeanDefinition parseMasterSlaveRuleConfig(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
-        factory.addPropertyValue("name", parseId(element));
-        factory.addPropertyValue("masterDataSourceName", parseMasterDataSourceRef(element));
-        factory.addPropertyValue("slaveDataSourceNames", parseSlaveDataSources(element));
+        factory.addConstructorArgValue(parseId(element));
+        factory.addConstructorArgValue(parseMasterDataSourceRef(element));
+        factory.addConstructorArgValue(parseSlaveDataSources(element));
         String strategyRef = parseStrategyRef(element);
+        MasterSlaveLoadBalanceAlgorithmType strategyType = parseStrategyType(element);
         if (!Strings.isNullOrEmpty(strategyRef)) {
-            factory.addPropertyValue("loadBalanceAlgorithmClassName", parserContext.getRegistry().getBeanDefinition(strategyRef).getBeanClassName());
-        } else {
-            factory.addPropertyValue("loadBalanceAlgorithmType", parseStrategyType(element));
+            factory.addConstructorArgReference(strategyRef);
+        } else if (null != strategyType) {
+            factory.addConstructorArgValue(strategyType.getAlgorithm());
         }
         return factory.getBeanDefinition();
     }
@@ -136,7 +137,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     
     private MasterSlaveLoadBalanceAlgorithmType parseStrategyType(final Element element) {
         String result = element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.STRATEGY_TYPE_ATTRIBUTE);
-        return Strings.isNullOrEmpty(result) ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType() : MasterSlaveLoadBalanceAlgorithmType.valueOf(result);
+        return Strings.isNullOrEmpty(result) ? null : MasterSlaveLoadBalanceAlgorithmType.valueOf(result);
     }
     
     private Map parseConfigMap(final Element element, final ParserContext parserContext, final BeanDefinition beanDefinition) {

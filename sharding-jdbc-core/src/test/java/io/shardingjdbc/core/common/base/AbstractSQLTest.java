@@ -27,7 +27,7 @@ import io.shardingjdbc.core.integrate.jaxb.helper.SQLAssertJAXBHelper;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -178,7 +178,7 @@ public abstract class AbstractSQLTest {
         result.setUrl(dbEnv.getURL(dbName));
         result.setUsername(dbEnv.getUsername());
         result.setPassword(dbEnv.getPassword());
-        result.setMaxActive(1);
+        result.setMaxTotal(1);
         if (DatabaseType.Oracle == dbEnv.getDatabaseType()) {
             result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dbName));
         }

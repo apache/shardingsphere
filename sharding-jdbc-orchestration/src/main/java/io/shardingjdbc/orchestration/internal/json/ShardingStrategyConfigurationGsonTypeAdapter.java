@@ -17,6 +17,14 @@
 
 package io.shardingjdbc.orchestration.internal.json;
 
+import com.google.common.base.Strings;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import io.shardingjdbc.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import io.shardingjdbc.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
@@ -24,9 +32,7 @@ import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguratio
 import io.shardingjdbc.core.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import io.shardingjdbc.core.routing.strategy.ShardingAlgorithmFactory;
 
 import java.io.IOException;
 
@@ -76,23 +82,28 @@ public final class ShardingStrategyConfigurationGsonTypeAdapter extends TypeAdap
             }
         }
         in.endObject();
-        return createStrategy(type, shardingColumn, shardingColumns, algorithmClassName, preciseAlgorithmClassName, rangeAlgorithmClassName, algorithmExpression); 
+        return createStrategy(type, shardingColumn, shardingColumns, algorithmClassName, preciseAlgorithmClassName, rangeAlgorithmClassName, algorithmExpression);
     }
     
     private ShardingStrategyConfiguration createStrategy(final String type, final String shardingColumn, final String shardingColumns,
                                                          final String algorithmClassName, final String preciseAlgorithmClassName, final String rangeAlgorithmClassName,
                                                          final String algorithmInlineExpression) {
         if (type.equals(ShardingStrategyType.STANDARD.name())) {
-            return new StandardShardingStrategyConfiguration(shardingColumn, preciseAlgorithmClassName, rangeAlgorithmClassName);
+            if (Strings.isNullOrEmpty(rangeAlgorithmClassName)) {
+                return new StandardShardingStrategyConfiguration(shardingColumn, ShardingAlgorithmFactory.newInstance(preciseAlgorithmClassName, PreciseShardingAlgorithm.class));
+            } else {
+                return new StandardShardingStrategyConfiguration(shardingColumn, ShardingAlgorithmFactory.newInstance(preciseAlgorithmClassName, PreciseShardingAlgorithm.class),
+                        ShardingAlgorithmFactory.newInstance(rangeAlgorithmClassName, RangeShardingAlgorithm.class));
+            }
         }
         if (type.equals(ShardingStrategyType.COMPLEX.name())) {
-            return new ComplexShardingStrategyConfiguration(shardingColumns, algorithmClassName);
+            return new ComplexShardingStrategyConfiguration(shardingColumns, ShardingAlgorithmFactory.newInstance(algorithmClassName, ComplexKeysShardingAlgorithm.class));
         }
         if (type.equals(ShardingStrategyType.INLINE.name())) {
             return new InlineShardingStrategyConfiguration(shardingColumn, algorithmInlineExpression);
         }
         if (type.equals(ShardingStrategyType.HINT.name())) {
-            return new HintShardingStrategyConfiguration(algorithmClassName);
+            return new HintShardingStrategyConfiguration(ShardingAlgorithmFactory.newInstance(algorithmClassName, HintShardingAlgorithm.class));
         }
         if (type.equals(ShardingStrategyType.NONE.name())) {
             return new NoneShardingStrategyConfiguration();
@@ -107,13 +118,15 @@ public final class ShardingStrategyConfigurationGsonTypeAdapter extends TypeAdap
             out.name("type").value(ShardingStrategyType.STANDARD.name());
             StandardShardingStrategyConfiguration shardingStrategyConfig = (StandardShardingStrategyConfiguration) value;
             out.name("shardingColumn").value(shardingStrategyConfig.getShardingColumn());
-            out.name("preciseAlgorithmClassName").value(shardingStrategyConfig.getPreciseAlgorithmClassName());
-            out.name("rangeAlgorithmClassName").value(shardingStrategyConfig.getRangeAlgorithmClassName());
+            out.name("preciseAlgorithmClassName").value(shardingStrategyConfig.getPreciseShardingAlgorithm().getClass().getName());
+            if (null != shardingStrategyConfig.getRangeShardingAlgorithm()) {
+                out.name("rangeAlgorithmClassName").value(shardingStrategyConfig.getRangeShardingAlgorithm().getClass().getName());
+            }
         } else if (value instanceof ComplexShardingStrategyConfiguration) {
             out.name("type").value(ShardingStrategyType.COMPLEX.name());
             ComplexShardingStrategyConfiguration shardingStrategyConfig = (ComplexShardingStrategyConfiguration) value;
             out.name("shardingColumns").value(shardingStrategyConfig.getShardingColumns());
-            out.name("algorithmClassName").value(shardingStrategyConfig.getAlgorithmClassName());
+            out.name("algorithmClassName").value(shardingStrategyConfig.getShardingAlgorithm().getClass().getName());
         } else if (value instanceof InlineShardingStrategyConfiguration) {
             out.name("type").value(ShardingStrategyType.INLINE.name());
             InlineShardingStrategyConfiguration shardingStrategyConfig = (InlineShardingStrategyConfiguration) value;
@@ -122,7 +135,7 @@ public final class ShardingStrategyConfigurationGsonTypeAdapter extends TypeAdap
         } else if (value instanceof HintShardingStrategyConfiguration) {
             out.name("type").value(ShardingStrategyType.HINT.name());
             HintShardingStrategyConfiguration shardingStrategyConfig = (HintShardingStrategyConfiguration) value;
-            out.name("algorithmClassName").value(shardingStrategyConfig.getAlgorithmClassName());
+            out.name("algorithmClassName").value(shardingStrategyConfig.getShardingAlgorithm().getClass().getName());
         } else if (value instanceof NoneShardingStrategyConfiguration) {
             out.name("type").value(ShardingStrategyType.NONE.name());
         }

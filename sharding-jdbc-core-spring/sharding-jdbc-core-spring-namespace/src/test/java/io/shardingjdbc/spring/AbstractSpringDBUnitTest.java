@@ -19,7 +19,7 @@ package io.shardingjdbc.spring;
 
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import lombok.Getter;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.tools.RunScript;
 import org.junit.Before;
 import org.springframework.test.context.TestExecutionListeners;
@@ -58,7 +58,7 @@ public abstract class AbstractSpringDBUnitTest extends AbstractJUnit4SpringConte
         result.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", getFileName(dataSetFile)));
         result.setUsername("sa");
         result.setPassword("");
-        result.setMaxActive(100);
+        result.setMaxTotal(100);
         return result;
     }
     

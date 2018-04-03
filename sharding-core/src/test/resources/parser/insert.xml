@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets>
+    <parser-result sql-case-id="assertInsertWithAllPlaceholders" parameters="1 1 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        <conditions>
+            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="1" type="int" /> 
+            </condition>
+            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                <value index="1" literal="1" type="int" />
+            </condition>
+        </conditions>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertInsertWithPartialPlaceholder" parameters="1 1">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        <conditions>
+            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="1" type="int" />
+            </condition>
+            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                <value index="1" literal="1" type="int" />
+            </condition>
+        </conditions>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertInsertWithGenerateKeyColumn" parameters="10000 1000 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+        </tokens>
+        <conditions>
+            <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                <value index="0" literal="10000" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                <value index="1" literal="1000" type="int" />
+            </condition>
+            <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                <value index="2" literal="10" type="int" />
+            </condition>
+        </conditions>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertInsertWithoutGenerateKeyColumn" parameters="1000 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+            <items-token begin-position="50">
+                <items>
+                    <item>item_id</item>
+                </items>
+            </items-token>
+            <generated-key-token placeholder-begin-position="73" literal-begin-position="77" />
+        </tokens>
+        <conditions>
+            <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                <value index="0" literal="1000" type="int" />
+            </condition>
+            <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                <value index="1" literal="10" type="int" />
+            </condition>
+        </conditions>
+    </parser-result>
+    
+    <!-- // TODO
+    <parser-result sql-case-id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )"">
+        <tables>
+            <table name="order" />
+        </tables>
+        <condition-contexts>
+           <condition-context/>
+        </condition-contexts>
+    </parser-result>
+    -->
+</parser-result-sets>
