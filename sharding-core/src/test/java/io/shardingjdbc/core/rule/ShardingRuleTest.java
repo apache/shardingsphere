@@ -328,7 +328,7 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        assertThat(new ShardingRule(shardingRuleConfig, createDataSourceNames()).generateKey("logic_table"), instanceOf(Number.class));
+        assertThat(new ShardingRule(shardingRuleConfig, createDataSourceNames()).generateKey("logic_table"), instanceOf(Long.class));
     }
      
     @Test
@@ -337,7 +337,7 @@ public final class ShardingRuleTest {
         TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
         tableRuleConfig.setKeyGenerator(new IncrementKeyGenerator());
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        assertThat(new ShardingRule(shardingRuleConfig, createDataSourceNames()).generateKey("logic_table"), instanceOf(Number.class));
+        assertThat(new ShardingRule(shardingRuleConfig, createDataSourceNames()).generateKey("logic_table"), instanceOf(Integer.class));
     
     }
     
