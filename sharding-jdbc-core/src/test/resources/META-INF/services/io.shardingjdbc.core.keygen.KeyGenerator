@@ -1,0 +1,8 @@
+# default key generator
+io.shardingjdbc.core.keygen.DefaultKeyGenerator
+
+# increment key generator
+io.shardingjdbc.core.fixture.IncrementKeyGenerator
+
+# second increment key generator
+io.shardingjdbc.core.integrate.api.yaml.fixture.IncrementKeyGenerator

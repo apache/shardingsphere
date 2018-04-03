@@ -1,0 +1,2 @@
+# default key generator
+io.shardingjdbc.core.keygen.DefaultKeyGenerator

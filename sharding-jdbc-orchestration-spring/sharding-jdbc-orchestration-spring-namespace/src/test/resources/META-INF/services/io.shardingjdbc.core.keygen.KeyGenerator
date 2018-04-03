@@ -1,0 +1,5 @@
+# default key generator
+io.shardingjdbc.core.keygen.DefaultKeyGenerator
+
+# increment key generator
+io.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator
