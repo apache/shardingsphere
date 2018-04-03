@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport;
+package io.shardingjdbc.proxy.frontend;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -27,7 +27,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.proxy.transport.common.codec.PacketCodecFactory;
-import io.shardingjdbc.proxy.transport.common.handler.DatabaseProxyHandlerFactory;
+import io.shardingjdbc.proxy.frontend.common.handler.FrontendHandlerFactory;
 
 /**
  * Sharding-Proxy.
@@ -55,7 +55,7 @@ public final class ShardingProxy {
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             // TODO load database type from yaml or startup arguments
                             pipeline.addLast(PacketCodecFactory.createPacketCodecInstance(DatabaseType.MySQL));
-                            pipeline.addLast(DatabaseProxyHandlerFactory.createDatabaseProxyHandlerInstance(DatabaseType.MySQL));
+                            pipeline.addLast(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL));
                         }
                     });
             ChannelFuture future = bootstrap.bind(port).sync();
