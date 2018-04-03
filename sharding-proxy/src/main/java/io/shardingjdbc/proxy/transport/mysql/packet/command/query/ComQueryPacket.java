@@ -46,6 +46,7 @@ public final class ComQueryPacket extends CommandPacket {
     
     @Override
     public List<DatabaseProtocolPacket> execute() {
+        // TODO use common database type
         return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
     }
 }
