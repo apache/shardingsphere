@@ -21,6 +21,8 @@ import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLPlaceholderUtil {
     
@@ -31,11 +33,11 @@ public final class SQLPlaceholderUtil {
      * @param args arguments
      * @return replaced string
      */
-    public static String replaceStatement(final String str, final Object[] args) {
-        if (args.length == 0) {
+    public static String replaceStatement(final String str, final List<?> args) {
+        if (null == args || args.isEmpty()) {
             return str;
         }
-        return String.format(str, args).replace("%%", "%");
+        return String.format(str, args.toArray()).replace("%%", "%");
     }
     
     /**

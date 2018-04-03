@@ -17,6 +17,11 @@
 
 package io.shardingjdbc.core.merger;
 
+import io.shardingjdbc.core.merger.dal.DALMergeEngineTest;
+import io.shardingjdbc.core.merger.dal.show.ShowCreateTableMergedResultTest;
+import io.shardingjdbc.core.merger.dal.show.ShowDatabasesMergedResultTest;
+import io.shardingjdbc.core.merger.dal.show.ShowOtherMergedResultTest;
+import io.shardingjdbc.core.merger.dal.show.ShowTablesMergedResultTest;
 import io.shardingjdbc.core.merger.dql.DQLMergeEngineTest;
 import io.shardingjdbc.core.merger.dql.common.DecoratorMergedResultTest;
 import io.shardingjdbc.core.merger.dql.common.MemoryMergedResultTest;
@@ -32,6 +37,8 @@ import io.shardingjdbc.core.merger.dql.orderby.CompareUtilTest;
 import io.shardingjdbc.core.merger.dql.orderby.OrderByStreamMergedResultTest;
 import io.shardingjdbc.core.merger.dql.orderby.OrderByValueTest;
 import io.shardingjdbc.core.merger.dql.pagination.LimitDecoratorMergedResultTest;
+import io.shardingjdbc.core.merger.dql.pagination.RowNumberDecoratorMergedResultTest;
+import io.shardingjdbc.core.merger.dql.pagination.TopAndRowNumberDecoratorMergedResultTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -51,7 +58,15 @@ import org.junit.runners.Suite;
         GroupByStreamMergedResultTest.class, 
         GroupByMemoryMergedResultTest.class, 
         AllAggregationTests.class, 
-        LimitDecoratorMergedResultTest.class 
+        LimitDecoratorMergedResultTest.class,
+        RowNumberDecoratorMergedResultTest.class,
+        TopAndRowNumberDecoratorMergedResultTest.class,
+        DALMergeEngineTest.class,
+        ShowCreateTableMergedResultTest.class,
+        ShowDatabasesMergedResultTest.class,
+        ShowOtherMergedResultTest.class,
+        ShowTablesMergedResultTest.class,
+        MergeEngineFactoryTest.class
     })
 public class AllMergerTests {
 }

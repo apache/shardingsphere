@@ -19,6 +19,7 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.query;
 
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
+import lombok.Getter;
 
 /**
  * COM_QUERY response field count packet.
@@ -26,11 +27,12 @@ import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
  *
  * @author zhangliang
  */
+@Getter
 public final class FieldCountPacket extends MySQLSentPacket {
     
-    private final long columnCount;
+    private final int columnCount;
     
-    public FieldCountPacket(final int sequenceId, final long columnCount) {
+    public FieldCountPacket(final int sequenceId, final int columnCount) {
         setSequenceId(sequenceId);
         this.columnCount = columnCount;
     }

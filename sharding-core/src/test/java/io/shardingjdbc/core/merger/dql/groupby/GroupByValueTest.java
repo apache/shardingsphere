@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.dql.groupby;
 
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import io.shardingjdbc.core.merger.fixture.TestQueryResult;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import org.junit.Before;
@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -49,8 +50,29 @@ public final class GroupByValueTest {
     @Test
     public void assertGetGroupByValues() throws SQLException {
         List<?> actual = new GroupByValue(
-                new TestQueryResult(resultSet), Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(3, OrderType.DESC, OrderType.ASC))).getGroupValues();
+                new TestQueryResult(resultSet), Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(3, OrderDirection.DESC, OrderDirection.ASC))).getGroupValues();
         List<?> expected = Arrays.asList("1", "3");
         assertTrue(actual.equals(expected));
+    }
+    
+    @Test
+    public void assertGroupByValueEquals() throws SQLException {
+        GroupByValue groupByValue1 = new GroupByValue(new TestQueryResult(resultSet),
+            Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(3, OrderDirection.DESC, OrderDirection.ASC)));
+        GroupByValue groupByValue2 = new GroupByValue(new TestQueryResult(resultSet),
+            Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(3, OrderDirection.DESC, OrderDirection.ASC)));
+        assertTrue(groupByValue1.equals(groupByValue2));
+        assertTrue(groupByValue2.equals(groupByValue1));
+        assertTrue(groupByValue1.hashCode() == groupByValue2.hashCode());
+    }
+    
+    @Test
+    public void assertGroupByValueNotEquals() throws SQLException {
+        GroupByValue groupByValue1 = new GroupByValue(new TestQueryResult(resultSet),
+            Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(3, OrderDirection.DESC, OrderDirection.ASC)));
+        GroupByValue groupByValue2 = new GroupByValue(new TestQueryResult(resultSet),
+            Arrays.asList(new OrderItem(3, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(1, OrderDirection.DESC, OrderDirection.ASC)));
+        assertFalse(groupByValue1.equals(groupByValue2));
+        assertFalse(groupByValue1.hashCode() == groupByValue2.hashCode());
     }
 }

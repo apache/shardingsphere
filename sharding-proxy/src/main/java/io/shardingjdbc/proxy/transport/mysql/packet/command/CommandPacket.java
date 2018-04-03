@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLReceivedPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 
 import java.util.List;
 
@@ -34,5 +34,5 @@ public abstract class CommandPacket extends MySQLReceivedPacket {
      * 
      * @return result packets to be sent
      */
-    public abstract List<MySQLSentPacket> execute();
+    public abstract List<DatabaseProtocolPacket> execute();
 }

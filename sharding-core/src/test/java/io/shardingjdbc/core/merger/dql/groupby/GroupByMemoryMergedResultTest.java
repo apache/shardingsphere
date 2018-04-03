@@ -20,7 +20,7 @@ package io.shardingjdbc.core.merger.dql.groupby;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import io.shardingjdbc.core.constant.AggregationType;
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import io.shardingjdbc.core.merger.dql.DQLMergeEngine;
 import io.shardingjdbc.core.merger.QueryResult;
 import io.shardingjdbc.core.merger.MergedResult;
@@ -75,8 +75,8 @@ public final class GroupByMemoryMergedResultTest {
         aggregationSelectItem2.getDerivedAggregationSelectItems().add(derivedAggregationSelectItem2);
         selectStatement.getItems().add(aggregationSelectItem1);
         selectStatement.getItems().add(aggregationSelectItem2);
-        selectStatement.getGroupByItems().add(new OrderItem(3, OrderType.ASC, OrderType.ASC));
-        selectStatement.getOrderByItems().add(new OrderItem(3, OrderType.DESC, OrderType.ASC));
+        selectStatement.getGroupByItems().add(new OrderItem(3, OrderDirection.ASC, OrderDirection.ASC));
+        selectStatement.getOrderByItems().add(new OrderItem(3, OrderDirection.DESC, OrderDirection.ASC));
     }
     
     private ResultSet mockResultSet() throws SQLException {

@@ -83,8 +83,8 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         final int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         String literals = lexerEngine.getCurrentToken().getLiterals();
         lexerEngine.nextToken();
-        if (lexerEngine.equalAny(Symbol.DOT)) {
-            throw new UnsupportedOperationException("Cannot support SQL for `schema.table`");
+        if (lexerEngine.skipIfEqual(Symbol.DOT)) {
+            literals = lexerEngine.getCurrentToken().getLiterals();
         }
         String tableName = SQLUtil.getExactlyValue(literals);
         if (Strings.isNullOrEmpty(tableName)) {

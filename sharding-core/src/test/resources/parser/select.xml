@@ -1,47 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<asserts>
-    <assert id="assertSelectOne">
-    </assert>
-    <assert id="assertSelectNotEqualsWithSingleTable" parameters="1">
+<parser-result-sets>
+    <parser-result sql-case-id="assertSelectOne" />
+    
+    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTable" parameters="1">
         <tables>
             <table name="t_order_item" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="14" original-literals="t_order_item" />
-        </table-tokens>
+        </tokens>
         <order-by-columns>
-            <order-by-column name="item_id" order-by-type="ASC" />
+            <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-    </assert>
-    <assert id="assertSelectNotEqualsWithSingleTableForExclamationEqual" parameters="1">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTableForExclamationEqual" parameters="1">
         <tables>
             <table name="t_order_item" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="14" original-literals="t_order_item" />
-        </table-tokens>
+        </tokens>
         <order-by-columns>
-            <order-by-column name="item_id" order-by-type="ASC" />
+            <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-    </assert>
-    <assert id="assertSelectNotEqualsWithSingleTableForNotIn" parameters="1">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTableForNotIn" parameters="1">
         <tables>
             <table name="t_order_item" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="14" original-literals="t_order_item" />
-        </table-tokens>
+        </tokens>
         <order-by-columns>
-            <order-by-column name="item_id" order-by-type="ASC" />
+            <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-    </assert>
-    <assert id="assertSelectEqualsWithSingleTable" parameters="1,1">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectEqualsWithSingleTable" parameters="1 1">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="14" original-literals="t_order" />
-        </table-tokens>
+        </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="EQUAL">
                 <value index="0" literal="1" type="int" />
@@ -50,31 +53,30 @@
                 <value index="1" literal="1" type="int" />
             </condition>
         </conditions>
-    </assert>
-    <!-- // TODO 这里可优化，将两个字段AND = 替换为永false -->
-    <assert id="assertSelectEqualsWithSameShardingColumns" parameters="1,2">
+    </parser-result>
+
+    <!-- // TODO 这里可优化，将两个字段AND = 替换为永false, 目前因为condition是map，同样的column会覆盖 -->
+    <parser-result sql-case-id="assertSelectEqualsWithSameShardingColumns" parameters="1 2">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="14" original-literals="t_order" />
-        </table-tokens>
+        </tokens>
         <conditions>
-            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="1" type="int" />
-            </condition>
             <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                 <value index="1" literal="2" type="int" />
             </condition>
         </conditions>
-    </assert>
-    <assert id="assertSelectBetweenWithSingleTable" parameters="1,10,2,5">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectBetweenWithSingleTable" parameters="1 10 2 5">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="14" original-literals="t_order" />
-        </table-tokens>
+        </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="BETWEEN">
                 <value index="0" literal="1" type="int" />
@@ -86,17 +88,18 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="user_id" order-by-type="ASC" />
-            <order-by-column name="order_id" order-by-type="ASC" />
+            <order-by-column name="user_id" order-direction="ASC" />
+            <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-    </assert>
-    <assert id="assertSelectInWithSingleTable" parameters="1,2,3,9,10">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectInWithSingleTable" parameters="1 2 3 9 10">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="14" original-literals="t_order" />
-        </table-tokens>
+        </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -109,71 +112,71 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="user_id" order-by-type="ASC" />
-            <order-by-column name="order_id" order-by-type="ASC" />
+            <order-by-column name="user_id" order-direction="ASC" />
+            <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-    </assert>
-    <!-- // TODO 目前对于IN多结果不同做到交集处理 仅仅是简单的加入 -->
-    <assert id="assertSelectInWithSameShardingColumns" parameters="100,1001,1001,1002">
+    </parser-result>
+    
+    <!-- // TODO 目前对于IN多结果不同做到交集处理 仅仅是简单的加入, 目前因为condition是map，同样的column会覆盖 -->
+    <parser-result sql-case-id="assertSelectInWithSameShardingColumns" parameters="100 1001 1001 1002">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="14" original-literals="t_order" />
-        </table-tokens>
+        </tokens>
         <conditions>
-            <condition column-name="order_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1000" type="int" />
-                <value index="1" literal="1001" type="int" />
-            </condition>
             <condition column-name="order_id" table-name="t_order" operator="IN">
                 <value index="2" literal="1001" type="int" />
                 <value index="3" literal="1002" type="int" />
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column name="order_id" order-by-type="ASC" />
+            <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-    </assert>
-    <assert id="assertSelectIterator" parameters="1,2">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectIterator" parameters="1 2">
         <tables>
             <table name="t_order_item" alias="t"/>
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="16" original-literals="t_order_item" />
-        </table-tokens>
+        </tokens>
         <conditions>
             <condition column-name="item_id" table-name="t_order_item" operator="IN">
                 <value index="0" literal="1" type="int" />
                 <value index="1" literal="2" type="int" />
             </condition>
         </conditions>
-    </assert>
-    <assert id="assertSelectNoShardingTable">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectNoShardingTable">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="31" original-literals="t_order_item" />
-        </table-tokens>
-        <items-token begin-position="11">
-            <items>
-                <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-            </items>
-        </items-token>
+            <items-token begin-position="11">
+                <items>
+                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
+                </items>
+            </items-token>
+        </tokens>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
-    </assert>
-    <assert id="assertSelectLikeWithCount" parameters="'init',1,2,9,10">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectLikeWithCount" parameters="'init' 1 2 9 10">
         <tables>
             <table name="t_order" alias="o"/>
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="37" original-literals="`t_order`" />
-        </table-tokens>
+        </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="1" literal="1" type="int" />
@@ -185,80 +188,82 @@
             </condition>
         </conditions>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(0)" aggregation-type="COUNT" alias="orders_count"/>
+            <aggregation-select-item type="COUNT" inner-expression="(0)" alias="orders_count"/>
         </aggregation-select-items>
-    </assert>
-    <assert id="assertSelectWithBindingTable" parameters="1,2,9,10">
-        <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
-        </tables>
-        <table-tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
-        </table-tokens>
-        <items-token begin-position="11">
-            <items>
-                <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-            </items>
-        </items-token>
-        <conditions>
-            <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
-            </condition>
-            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="2" literal="9" type="int" />
-                <value index="3" literal="10" type="int" />
-            </condition>
-        </conditions>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
-        </order-by-columns>
-    </assert>
-    <assert id="assertSelectWithBindingTableAndConfigTable" parameters="1,2,9,10,'init'">
-        <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
-        </tables>
-        <table-tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
-        </table-tokens>
-        <items-token begin-position="11">
-            <items>
-                <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-            </items>
-        </items-token>
-        <conditions>
-            <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
-            </condition>
-            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="2" literal="9" type="int" />
-                <value index="3" literal="10" type="int" />
-            </condition>
-        </conditions>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
-        </order-by-columns>
-    </assert>
+    </parser-result>
     
-    <assert id="assertSelectWithUpperCaseBindingTable" parameters="1,2,9,10">
+    <parser-result sql-case-id="assertSelectWithBindingTable" parameters="1 2 9 10">
+        <tables>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
+            <items-token begin-position="11">
+                <items>
+                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
+                </items>
+            </items-token>
+        </tokens>
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="2" literal="9" type="int" />
+                <value index="3" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectWithBindingTableAndConfigTable" parameters="1 2 9 10 'init'">
+        <tables>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
+            <items-token begin-position="11">
+                <items>
+                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
+                </items>
+            </items-token>
+        </tokens>
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="2" literal="9" type="int" />
+                <value index="3" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTable" parameters="1 2 9 10">
         <tables>
             <table name="T_ORDER" alias="o"/>
             <table name="T_order_item" alias="i"/>
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="16" original-literals="T_ORDER" />
             <table-token begin-position="31" original-literals="T_order_item" />
-        </table-tokens>
-        <items-token begin-position="11">
-            <items>
-                <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-            </items>
-        </items-token>
+            <items-token begin-position="11">
+                <items>
+                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
+                </items>
+            </items-token>
+        </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -270,23 +275,24 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
-    </assert>
-    <assert id="assertSelectWithUpperCaseBindingTableAndConfigTable" parameters="1,2,9,10,'init'">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTableAndConfigTable" parameters="1 2 9 10 'init'">
         <tables>
             <table name="T_ORDER" alias="o"/>
             <table name="T_order_item" alias="i"/>
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="34" original-literals="T_ORDER" />
             <table-token begin-position="49" original-literals="T_order_item" />
-        </table-tokens>
-        <items-token begin-position="29">
-            <items>
-                <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-            </items>
-        </items-token>
+            <items-token begin-position="29">
+                <items>
+                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
+                </items>
+            </items-token>
+        </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -298,19 +304,19 @@
             </condition>
         </conditions>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
         </order-by-columns>
-    </assert>
+    </parser-result>
     
-    <assert id="assertSelectCountWithBindingTableWithJoin" parameters="1,2,9,10">
+    <parser-result sql-case-id="assertSelectCountWithBindingTable" parameters="1 2 9 10">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="36" original-literals="t_order" />
-            <table-token begin-position="51" original-literals="t_order_item" />
-        </table-tokens>
+            <table-token begin-position="47" original-literals="t_order_item" />
+        </tokens>
         <conditions>
             <condition column-name="user_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -322,36 +328,62 @@
             </condition>
         </conditions>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="items_count"/>
+            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
         </aggregation-select-items>
-    </assert>
-    <assert id="assertSelectAliasWithKeyword" parameters="1">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectCountWithBindingTableWithJoin" parameters="1 2 9 10">
+        <tables>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="36" original-literals="t_order" />
+            <table-token begin-position="51" original-literals="t_order_item" />
+        </tokens>
+        <conditions>
+            <condition column-name="user_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                <value index="2" literal="9" type="int" />
+                <value index="3" literal="10" type="int" />
+            </condition>
+        </conditions>
+        <aggregation-select-items>
+            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
+        </aggregation-select-items>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectAliasWithKeyword" parameters="1">
         <tables>
             <table name="t_order_item" alias="length" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="36" original-literals="t_order_item" />
-        </table-tokens>
+        </tokens>
         <conditions>
             <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
                 <value index="0" literal="1" type="int" />
             </condition>
         </conditions>
-    </assert>
-    <assert id="assertSelectWithJoinForceIndex" parameters="1000">
+    </parser-result>
+    
+    <parser-result id="assertSelectWithJoinForceIndex" parameters="1000">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i"/>
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="20" original-literals="t_order" />
             <table-token begin-position="60" original-literals="t_order_item" />
-        </table-tokens>
-        <index-token begin-position="42" original-literals="order_index" table-name="t_order" />
+            <index-token begin-position="42" original-literals="order_index" table-name="t_order" />
+        </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                 <value index="0" literal="1000" type="int" />
             </condition>
         </conditions>
-    </assert>
-</asserts>
+    </parser-result>
+</parser-result-sets>

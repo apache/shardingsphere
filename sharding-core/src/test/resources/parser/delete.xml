@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<asserts>
-    <assert id="assertDeleteWithShardingValue" parameters="1000,1001,'init'">
+<parser-result-sets>
+    <parser-result sql-case-id="assertDeleteWithShardingValue" parameters="1000 1001 'init'">
         <tables>
             <table name="t_order"/>
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="12" original-literals="t_order" />
-        </table-tokens>
+        </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                 <value index="0" literal="1000" type="int" />
@@ -15,13 +15,14 @@
                 <value index="1" literal="1001" type="int" />
             </condition>
         </conditions>
-    </assert>
-    <assert id="assertDeleteWithoutShardingValue" parameters="'init'">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertDeleteWithoutShardingValue" parameters="'init'">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="12" original-literals="t_order" />
-        </table-tokens>
-    </assert>
-</asserts>
+        </tokens>
+    </parser-result>
+</parser-result-sets>

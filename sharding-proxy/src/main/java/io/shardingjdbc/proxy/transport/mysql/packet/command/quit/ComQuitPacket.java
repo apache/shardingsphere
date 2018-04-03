@@ -18,7 +18,7 @@
 package io.shardingjdbc.proxy.transport.mysql.packet.command.quit;
 
 import io.shardingjdbc.proxy.constant.StatusFlag;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
@@ -40,7 +40,7 @@ public final class ComQuitPacket extends CommandPacket {
     }
     
     @Override
-    public List<MySQLSentPacket> execute() {
-        return Collections.<MySQLSentPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+    public List<DatabaseProtocolPacket> execute() {
+        return Collections.<DatabaseProtocolPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
     }
 }

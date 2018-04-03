@@ -38,6 +38,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -138,5 +139,10 @@ public final class MemoryMergedResultTest {
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetInputStreamWithColumnLabel() throws SQLException {
         memoryMergedResult.getInputStream("label", "ascii");
+    }
+    
+    @Test
+    public void assertWasNull() {
+        assertFalse(memoryMergedResult.wasNull());
     }
 }

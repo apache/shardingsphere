@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.dql.orderby;
 
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import io.shardingjdbc.core.merger.fixture.TestQueryResult;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import org.junit.Before;
@@ -56,12 +56,12 @@ public final class OrderByValueTest {
     @Test
     public void assertCompareToForAsc() throws SQLException {
         OrderByValue orderByValue1 = new OrderByValue(
-                new TestQueryResult(resultSet1), Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(2, OrderType.ASC, OrderType.ASC)));
+                new TestQueryResult(resultSet1), Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(2, OrderDirection.ASC, OrderDirection.ASC)));
         assertTrue(orderByValue1.next());
         when(resultSet2.getObject(1)).thenReturn("3");
         when(resultSet2.getObject(2)).thenReturn("4");
         OrderByValue orderByValue2 = new OrderByValue(
-                new TestQueryResult(resultSet2), Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(2, OrderType.ASC, OrderType.ASC)));
+                new TestQueryResult(resultSet2), Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(2, OrderDirection.ASC, OrderDirection.ASC)));
         assertTrue(orderByValue2.next());
         assertTrue(orderByValue1.compareTo(orderByValue2) < 0);
         assertFalse(orderByValue1.getQueryResult().next());
@@ -71,12 +71,12 @@ public final class OrderByValueTest {
     @Test
     public void assertCompareToForDesc() throws SQLException {
         OrderByValue orderByValue1 = new OrderByValue(
-                new TestQueryResult(resultSet1), Arrays.asList(new OrderItem(1, OrderType.DESC, OrderType.ASC), new OrderItem(2, OrderType.DESC, OrderType.ASC)));
+                new TestQueryResult(resultSet1), Arrays.asList(new OrderItem(1, OrderDirection.DESC, OrderDirection.ASC), new OrderItem(2, OrderDirection.DESC, OrderDirection.ASC)));
         assertTrue(orderByValue1.next());
         when(resultSet2.getObject(1)).thenReturn("3");
         when(resultSet2.getObject(2)).thenReturn("4");
         OrderByValue orderByValue2 = new OrderByValue(
-                new TestQueryResult(resultSet2), Arrays.asList(new OrderItem(1, OrderType.DESC, OrderType.ASC), new OrderItem(2, OrderType.DESC, OrderType.ASC)));
+                new TestQueryResult(resultSet2), Arrays.asList(new OrderItem(1, OrderDirection.DESC, OrderDirection.ASC), new OrderItem(2, OrderDirection.DESC, OrderDirection.ASC)));
         assertTrue(orderByValue2.next());
         assertTrue(orderByValue1.compareTo(orderByValue2) > 0);
         assertFalse(orderByValue1.getQueryResult().next());
@@ -86,12 +86,12 @@ public final class OrderByValueTest {
     @Test
     public void assertCompareToWhenEqual() throws SQLException {
         OrderByValue orderByValue1 = new OrderByValue(
-                new TestQueryResult(resultSet1), Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(2, OrderType.DESC, OrderType.ASC)));
+                new TestQueryResult(resultSet1), Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(2, OrderDirection.DESC, OrderDirection.ASC)));
         assertTrue(orderByValue1.next());
         when(resultSet2.getObject(1)).thenReturn("1");
         when(resultSet2.getObject(2)).thenReturn("2");
         OrderByValue orderByValue2 = new OrderByValue(
-                new TestQueryResult(resultSet2), Arrays.asList(new OrderItem(1, OrderType.ASC, OrderType.ASC), new OrderItem(2, OrderType.DESC, OrderType.ASC)));
+                new TestQueryResult(resultSet2), Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(2, OrderDirection.DESC, OrderDirection.ASC)));
         assertTrue(orderByValue2.next());
         assertThat(orderByValue1.compareTo(orderByValue2), is(0));
         assertFalse(orderByValue1.getQueryResult().next());

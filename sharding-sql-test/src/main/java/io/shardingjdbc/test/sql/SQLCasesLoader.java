@@ -18,9 +18,7 @@
 package io.shardingjdbc.test.sql;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.Getter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -31,10 +29,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -47,13 +48,12 @@ public final class SQLCasesLoader {
     
     private static final SQLCasesLoader INSTANCE = new SQLCasesLoader();
     
-    private final Map<String, SQLCase> sqlCaseMap;
+    private final Map<String, SQLCase> supportedSQLCaseMap;
     
-    @Getter
     private final Map<String, SQLCase> unsupportedSQLCaseMap;
     
     private SQLCasesLoader() {
-        sqlCaseMap = loadSQLCases("sql");
+        supportedSQLCaseMap = loadSQLCases("sql");
         unsupportedSQLCaseMap = loadSQLCases("unsupported_sql");
     }
     
@@ -76,7 +76,7 @@ public final class SQLCasesLoader {
     }
     
     private static Map<String, SQLCase> loadSQLCasesFromJar(final String path, final File file) throws IOException, JAXBException {
-        Map<String, SQLCase> result = new HashMap<>(65536, 1);
+        Map<String, SQLCase> result = new TreeMap<>();
         try (JarFile jar = new JarFile(file)) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
@@ -90,7 +90,7 @@ public final class SQLCasesLoader {
     }
     
     private static Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) throws FileNotFoundException, JAXBException {
-        Map<String, SQLCase> result = new HashMap<>(65536, 1);
+        Map<String, SQLCase> result = new TreeMap<>();
         URL url = SQLCasesLoader.class.getClassLoader().getResource(path);
         if (null == url) {
             return result;
@@ -131,25 +131,162 @@ public final class SQLCasesLoader {
     }
     
     /**
-     * Get SQL.
-     * @param id SQL ID
+     * Get supported SQL.
+     * 
+     * @param sqlCaseId SQL case ID
      * @return SQL
      */
-    public String getSQL(final String id) {
+    public String getSupportedSQL(final String sqlCaseId) {
+        return getSQLFromMap(sqlCaseId, supportedSQLCaseMap);
+    }
+    
+    /**
+     * Get supported SQL with literal.
+     * 
+     * @param sqlCaseId SQL case ID
+     * @param parameters SQL parameters
+     * @return SQL
+     */
+    public String getSupportedLiteralSQL(final String sqlCaseId, final List<?> parameters) {
+        String sql = getSQLFromMap(sqlCaseId, supportedSQLCaseMap);
+        if (null == parameters || parameters.isEmpty()) {
+            return sql;
+        }
+        return String.format(sql, parameters.toArray()).replace("%%", "%");
+    }
+    
+    /**
+     * Get supported SQL with placeholder.
+     * 
+     * @param sqlCaseId SQL case ID
+     * @return SQL
+     */
+    public String getSupportedPlaceholderSQL(final String sqlCaseId) {
+        return getSQLFromMap(sqlCaseId, supportedSQLCaseMap).replace("%s", "?").replace("%%", "%");
+    }
+    
+    /**
+     * Get supported SQL.
+     *
+     * @param sqlCaseId SQL case ID
+     * @param sqlCaseType SQL case type
+     * @param parameters SQL parameters
+     * @return SQL
+     */
+    public String getSupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
+        return getSQL(supportedSQLCaseMap, sqlCaseId, sqlCaseType, parameters);
+    }
+    
+    /**
+     * Get unsupported SQL.
+     * 
+     * @param sqlCaseId SQL case ID
+     * @param sqlCaseType SQL case type
+     * @param parameters SQL parameters
+     * @return SQL
+     */
+    public String getUnsupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
+        return getSQL(unsupportedSQLCaseMap, sqlCaseId, sqlCaseType, parameters);
+    }
+    
+    private String getSQL(final Map<String, SQLCase> sqlCaseMap, final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
+        switch (sqlCaseType) {
+            case Literal:
+                return getLiteralSQL(getSQLFromMap(sqlCaseId, sqlCaseMap), parameters);
+            case Placeholder:
+                return getPlaceholderSQL(getSQLFromMap(sqlCaseId, sqlCaseMap));
+            default:
+                throw new UnsupportedOperationException(sqlCaseType.name());
+        }
+    }
+    
+    private String getPlaceholderSQL(final String sql) {
+        return sql.replace("%s", "?").replace("%%", "%");
+    }
+    
+    private String getLiteralSQL(final String sql, final List<?> parameters) {
+        if (null == parameters || parameters.isEmpty()) {
+            return sql;
+        }
+        return String.format(sql, parameters.toArray()).replace("%%", "%");
+    }
+    
+    private String getSQLFromMap(final String id, final Map<String, SQLCase> sqlCaseMap) {
         Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of id: " + id);
         SQLCase statement = sqlCaseMap.get(id);
         return statement.getValue();
     }
     
     /**
+     * Get test parameters for junit parameterized test case for supported SQL.
+     *
+     * @param allDatabaseTypes all database types
+     * @param enumType enum type
+     * @return test parameters for junit parameterized test case for supported SQL
+     */
+    public Collection<Object[]> getSupportedSQLTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
+        return getTestParameters(supportedSQLCaseMap, allDatabaseTypes, enumType);
+    }
+    
+    /**
+     * Get test parameters for junit parameterized test case for unsupported SQL.
+     *
+     * @param allDatabaseTypes all database types
+     * @param enumType enum type
+     * @return test parameters for junit parameterized test case for unsupported SQL
+     */
+    public Collection<Object[]> getUnsupportedSQLTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
+        return getTestParameters(unsupportedSQLCaseMap, allDatabaseTypes, enumType);
+    }
+    
+    private Collection<Object[]> getTestParameters(final Map<String, SQLCase> sqlCaseMap, final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
+        Collection<Object[]> result = new LinkedList<>();
+        for (SQLCase each : sqlCaseMap.values()) {
+            result.addAll(getTestParameters(allDatabaseTypes, enumType, each));
+        }
+        return result;
+    }
+    
+    private Collection<Object[]> getTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType, final SQLCase sqlCase) {
+        Collection<Object[]> result = new LinkedList<>();
+        for (final SQLCaseType each : SQLCaseType.values()) {
+            result.addAll(getTestParameters(sqlCase, allDatabaseTypes, enumType, each));
+        }
+        return result;
+    }
+    
+    private static Collection<Object[]> getTestParameters(
+            final SQLCase sqlCase, final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType, final SQLCaseType sqlCaseType) {
+        Collection<Object[]> result = new LinkedList<>();
+        for (Enum each : getDatabaseTypes(sqlCase.getDatabaseTypes(), allDatabaseTypes, enumType)) {
+            Object[] parameters = new Object[3];
+            parameters[0] = sqlCase.getId();
+            parameters[1] = each;
+            parameters[2] = sqlCaseType;
+            result.add(parameters);
+        }
+        return result;
+    }
+    
+    private static Collection<? extends Enum> getDatabaseTypes(final String databaseTypes, final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
+        if (Strings.isNullOrEmpty(databaseTypes)) {
+            return allDatabaseTypes;
+        }
+        Set<Enum> result = new HashSet<>(allDatabaseTypes.size());
+        for (String each : databaseTypes.split(",")) {
+            result.add(Enum.valueOf(enumType, each));
+        }
+        return result;
+    }
+    
+    /**
      * Get database types.
-     * 
-     * @param id SQL ID
+     *
+     * @param sqlCaseId SQL case ID
      * @return database types
      */
-    public Collection<String> getDatabaseTypes(final String id) {
-        Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of id: " + id);
-        String databaseTypes = sqlCaseMap.get(id).getDatabaseTypes();
-        return Strings.isNullOrEmpty(databaseTypes) ? Collections.<String>emptyList() : Splitter.on(',').trimResults().splitToList(databaseTypes);
+    public String getDatabaseTypes(final String sqlCaseId) {
+        Preconditions.checkState(supportedSQLCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
+        return supportedSQLCaseMap.get(sqlCaseId).getDatabaseTypes();
     }
 }

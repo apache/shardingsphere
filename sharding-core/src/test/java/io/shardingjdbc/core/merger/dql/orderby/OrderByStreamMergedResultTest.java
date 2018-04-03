@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.merger.dql.orderby;
 
 import com.google.common.collect.Lists;
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import io.shardingjdbc.core.merger.dql.DQLMergeEngine;
 import io.shardingjdbc.core.merger.QueryResult;
 import io.shardingjdbc.core.merger.MergedResult;
@@ -56,7 +56,7 @@ public final class OrderByStreamMergedResultTest {
         queryResults = Lists.<QueryResult>newArrayList(
                 new TestQueryResult(resultSet), new TestQueryResult(mock(ResultSet.class)), new TestQueryResult(mock(ResultSet.class)));
         selectStatement = new SelectStatement();
-        selectStatement.getOrderByItems().add(new OrderItem(1, OrderType.ASC, OrderType.ASC));
+        selectStatement.getOrderByItems().add(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC));
     }
     
     @Test
