@@ -173,7 +173,7 @@
     </sql>
     <sql id="assertSelectWithJoinForceIndex">
         <sharding-rule value="tbl">
-            <data parameter="100000" expected="select/SelectWithJoinForceIndex.xml" />
+            <data parameter="1000" expected="select/SelectWithJoinForceIndex.xml" />
         </sharding-rule>
     </sql>
 </sqls>
