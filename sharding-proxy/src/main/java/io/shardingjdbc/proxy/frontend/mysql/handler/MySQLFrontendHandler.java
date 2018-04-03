@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.mysql.handler;
+package io.shardingjdbc.proxy.frontend.mysql.handler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingjdbc.proxy.constant.StatusFlag;
-import io.shardingjdbc.proxy.transport.common.handler.DatabaseProxyHandler;
+import io.shardingjdbc.proxy.frontend.common.handler.FrontendHandler;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
@@ -32,11 +32,11 @@ import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakeResponse4
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
 
 /**
- * MySQL proxy handler.
+ * MySQL frontend handler.
  * 
  * @author zhangliang 
  */
-public final class MySQLProxyHandler extends DatabaseProxyHandler {
+public final class MySQLFrontendHandler extends FrontendHandler {
     
     private AuthPluginData authPluginData;
     

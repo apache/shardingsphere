@@ -15,18 +15,18 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.common.handler;
+package io.shardingjdbc.proxy.frontend.common.handler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 /**
- * Database proxy handler.
+ * Frontend handler.
  * 
  * @author zhangliang 
  */
-public abstract class DatabaseProxyHandler extends ChannelInboundHandlerAdapter {
+public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
     private boolean authorized;
     

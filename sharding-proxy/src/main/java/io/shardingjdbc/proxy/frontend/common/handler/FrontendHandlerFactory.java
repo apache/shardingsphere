@@ -15,31 +15,31 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.common.handler;
+package io.shardingjdbc.proxy.frontend.common.handler;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.proxy.transport.mysql.handler.MySQLProxyHandler;
+import io.shardingjdbc.proxy.frontend.mysql.handler.MySQLFrontendHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Database proxy handler factory.
+ * Frontend handler factory.
  * 
  * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseProxyHandlerFactory {
+public final class FrontendHandlerFactory {
     
     /**
-     * Create database proxy handler instance.
+     * Create frontend handler instance.
      *
      * @param databaseType database type
-     * @return database proxy handler instance
+     * @return frontend handler instance
      */
-    public static DatabaseProxyHandler createDatabaseProxyHandlerInstance(final DatabaseType databaseType) {
+    public static FrontendHandler createFrontendHandlerInstance(final DatabaseType databaseType) {
         switch (databaseType) {
             case MySQL:
-                return new MySQLProxyHandler();
+                return new MySQLFrontendHandler();
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
         }
