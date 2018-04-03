@@ -17,27 +17,13 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command.query;
 
-import io.shardingjdbc.core.parsing.SQLJudgeEngine;
-import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
-import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingjdbc.proxy.backend.DataSourceManager;
-import io.shardingjdbc.proxy.constant.ColumnType;
-import io.shardingjdbc.proxy.constant.StatusFlag;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
+import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.proxy.backend.common.SQLExecuteBackendHandler;
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.generic.ColumnDefinition41Packet;
-import io.shardingjdbc.proxy.transport.mysql.packet.generic.EofPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -59,87 +45,7 @@ public final class ComQueryPacket extends CommandPacket {
     }
     
     @Override
-    public List<MySQLSentPacket> execute() {
-        List<MySQLSentPacket> result = new LinkedList<>();
-        int currentSequenceId = getSequenceId();
-        try (
-                Connection conn = DataSourceManager.getInstance().getDataSource().getConnection();
-                Statement statement = conn.createStatement()) {
-            SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-            ResultSet resultSet;
-            int affectedRows = 0;
-            long lastInsertId = 0;
-            switch (sqlStatement.getType()) {
-                case DQL:
-                    resultSet = statement.executeQuery(sql);
-                    break;
-                case DML:
-                case DDL:
-                    if (isNeedGeneratedKey(sqlStatement)) {
-                        affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-                        lastInsertId = getGeneratedKey(statement);
-                    } else {
-                        affectedRows = statement.executeUpdate(sql);
-                    }
-                    resultSet = statement.getResultSet();
-                    break;
-                default:
-                    statement.execute(sql);
-                    resultSet = statement.getResultSet();
-                    break;
-            }
-            if (null == resultSet) {
-                result.add(new OKPacket(++currentSequenceId, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-                return result;
-            }
-            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-            int columnCount = resultSetMetaData.getColumnCount();
-            if (0 == columnCount) {
-                result.add(new OKPacket(++currentSequenceId, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-                return result;
-            }
-            result.add(new FieldCountPacket(++currentSequenceId, columnCount));
-            for (int i = 1; i <= columnCount; i++) {
-                result.add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
-                        resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
-                        resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
-            }
-            result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-            while (resultSet.next()) {
-                List<Object> data = new LinkedList<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    data.add(resultSet.getObject(i));
-                }
-                result.add(new TextResultSetRowPacket(++currentSequenceId, data));
-            }
-            result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-        } catch (final SQLException ex) {
-            result.add(new ErrPacket(++currentSequenceId, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-            return result;
-        } catch (final Exception ex) {
-            if (ex.getCause() instanceof SQLException) {
-                SQLException cause = (SQLException) ex.getCause();
-                result.add(new ErrPacket(++currentSequenceId, cause.getErrorCode(), "", cause.getSQLState(), cause.getMessage()));
-            } else {
-                // TODO standard ShardingJdbcException
-                result.add(new ErrPacket(++currentSequenceId, 99, "", "unknown", ex.getMessage()));
-            }
-            return result;
-        }
-        return result;
-    }
-    
-    private boolean isNeedGeneratedKey(final SQLStatement statement) {
-        // TODO justify based on the request protocol
-        return statement instanceof InsertStatement;
-    }
-
-    private long getGeneratedKey(final Statement statement) throws SQLException {
-        long result = -1;
-        ResultSet resultSet = statement.getGeneratedKeys();
-        if (resultSet.next()) {
-            result = resultSet.getLong(1);
-        }
-        return result;
+    public List<DatabaseProtocolPacket> execute() {
+        return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
     }
 }

@@ -15,24 +15,23 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.mysql.packet.command;
+package io.shardingjdbc.proxy.backend.common;
 
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLReceivedPacket;
 
 import java.util.List;
 
 /**
- * Command packet.
+ * Backend handler.
  *
  * @author zhangliang
  */
-public abstract class CommandPacket extends MySQLReceivedPacket {
+public interface BackendHandler {
     
     /**
      * Execute command.
-     * 
+     *
      * @return result packets to be sent
      */
-    public abstract List<DatabaseProtocolPacket> execute();
+    List<DatabaseProtocolPacket> execute();
 }

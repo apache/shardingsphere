@@ -21,6 +21,7 @@ import io.shardingjdbc.proxy.constant.ColumnType;
 import io.shardingjdbc.proxy.constant.ServerInfo;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
+import lombok.Getter;
 
 /**
  * Column definition above MySQL 4.1 packet protocol.
@@ -28,6 +29,7 @@ import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
  *
  * @author zhangliang
  */
+@Getter
 public final class ColumnDefinition41Packet extends MySQLSentPacket {
     
     private final String catalog = "def";

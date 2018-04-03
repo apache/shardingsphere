@@ -21,15 +21,15 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingjdbc.proxy.constant.StatusFlag;
 import io.shardingjdbc.proxy.frontend.common.handler.FrontendHandler;
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketFactory;
+import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.AuthPluginData;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
-import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
 
 /**
  * MySQL frontend handler.
@@ -61,7 +61,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(mysqlPacketPayload.readInt1());
         commandPacket.setSequenceId(sequenceId);
         commandPacket.read(mysqlPacketPayload);
-        for (MySQLSentPacket each : commandPacket.execute()) {
+        for (DatabaseProtocolPacket each : commandPacket.execute()) {
             context.write(each);
         }
         context.flush();

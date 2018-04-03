@@ -19,7 +19,7 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.initdb;
 
 import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.proxy.constant.StatusFlag;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
@@ -48,10 +48,10 @@ public final class ComInitDbPacket extends CommandPacket {
     }
     
     @Override
-    public List<MySQLSentPacket> execute() {
+    public List<DatabaseProtocolPacket> execute() {
         if (ShardingConstant.LOGIC_SCHEMA_NAME.equalsIgnoreCase(schemaName)) {
-            return Collections.<MySQLSentPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            return Collections.<DatabaseProtocolPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
-        return Collections.<MySQLSentPacket>singletonList(new ErrPacket(getSequenceId() + 1, 1049, "", "", String.format("Unknown database '%s'", schemaName)));
+        return Collections.<DatabaseProtocolPacket>singletonList(new ErrPacket(getSequenceId() + 1, 1049, "", "", String.format("Unknown database '%s'", schemaName)));
     }
 }
