@@ -338,4 +338,20 @@
             </condition>
         </conditions>
     </assert>
+    <assert id="assertSelectWithJoinForceIndex" parameters="1">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <table-tokens>
+            <table-token begin-position="20" original-literals="t_order" />
+            <table-token begin-position="60" original-literals="t_order_item" />
+        </table-tokens>
+        <index-token begin-position="42" original-literals="order_index" table-name="t_order" />
+        <conditions>
+            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="1000" type="int" />
+            </condition>
+        </conditions>
+    </assert>
 </asserts>
