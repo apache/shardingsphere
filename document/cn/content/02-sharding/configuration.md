@@ -2,8 +2,6 @@
 toc = true
 title = "配置手册"
 weight = 4
-prev = "/02-sharding/scenario/"
-next = "/02-sharding/hint/"
 +++
 
 ![配置领域模型类图](http://ovfotjrsi.bkt.clouddn.com/docs/img/config_domain.png)

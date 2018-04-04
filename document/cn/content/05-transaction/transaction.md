@@ -2,8 +2,6 @@
 toc = true
 title = "事务支持"
 weight = 1
-prev = "/05-transaction/"
-next = "/06-user-guide/"
 +++
 
 Sharding-JDBC由于性能方面的考量，决定不支持强一致性分布式事务。我们已明确规划线路图，未来会支持最终一致性的柔性事务。

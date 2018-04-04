@@ -2,8 +2,6 @@
 toc = true
 title = "编排治理"
 weight = 1
-prev = "/04-orchestration/"
-next = "/04-orchestration/apm/"
 +++
 
 2.x版本开始，Sharding-JDBC提供了数据库治理功能，主要包括：

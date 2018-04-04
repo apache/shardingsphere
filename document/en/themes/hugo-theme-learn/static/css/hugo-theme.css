@@ -82,14 +82,6 @@ body {
   margin-right: 1rem !important;
 }
 
-#top-bar {
-  z-index: 1000;
-}
-
-#top-bar.is_stuck {
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-}
-
 .btn {
   display: inline-block !important;
   padding: 6px 12px !important;
@@ -172,7 +164,6 @@ h2 {
   font-size: 2.5rem;
   line-height: 110% !important;
   margin: 2.5rem 0 1.5rem 0;
-  text-transform: none;
 }
 
 h3 {
@@ -209,4 +200,55 @@ figcaption h4 {
     font-size: 1em;
     text-align: center;
     margin-top: -1.5em;
+}
+
+.select-style {
+    border: 0;
+    width: 150px;
+    border-radius: 0px;
+    overflow: hidden;
+    display: inline-flex;
+}
+
+.select-style svg {
+    fill: #ccc;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    margin: auto;
+}
+
+.select-style svg:hover {
+  fill: #e6e6e6;
+}
+
+.select-style select {
+    padding: 0;
+    width: 130%;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    background-image: none;
+    -webkit-appearance: none;
+    margin: auto;
+    margin-left: 0px;
+    margin-right: -20px;
+}
+
+.select-style select:focus {
+    outline: none;
+}
+
+.select-style :hover {
+    cursor:  pointer;
+}
+
+@media only all and (max-width: 47.938em) {
+  #breadcrumbs .links, #top-github-link-text {
+      display: none;
+  }
+}
+
+.is-sticky #top-bar {
+  box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.1); 
 }

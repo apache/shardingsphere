@@ -2,8 +2,6 @@
 toc = true
 title = "使用场景"
 weight = 3
-prev = "/02-sharding/workflow/"
-next = "/02-sharding/configuration/"
 +++
 
 ## 数据库模式

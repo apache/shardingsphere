@@ -3,7 +3,7 @@ toc = true
 title = "Configuration"
 weight = 4
 prev = "/02-sharding/scenario/"
-next = "/02-sharding/hint/"
+next = "/02-sharding/sql-supported/"
 +++
 
 This section explains configuration domain models in Sharding-JDBC. The following class diagram is about those domain models in Sharding-JDBC.
@@ -363,86 +363,86 @@ slaveDataSourceNames：Datasource name for Slave datasource, multiple datasource
 
 To define the data source for sharding-jdbc 
 
-| *Name*                         | *Type*       | *DataType*  | *Required* |    *Info*       |
-| -----------------------------  | ------------ |  ---------  | ---------- | --------------  |
-| id                             | Property     |  String     |   Y        | Spring Bean ID  |
-| sharding-rule                  | Label        |   -         |   Y        | Sharding Rule   |
-| binding-table-rules?           | Label        |   -         |   N        | Blinding Rule   |
-| props?                         | Label        |   -         |   N        | Property Config |
+| *Name*               | *Type*   | *DataType* | *Required* | *Info*          |
+| -------------------- | -------- | ---------- | ---------- | --------------- |
+| id                   | Property | String     | Y          | Spring Bean ID  |
+| sharding-rule        | Label    | -          | Y          | Sharding Rule   |
+| binding-table-rules? | Label    | -          | N          | Blinding Rule   |
+| props?               | Label    | -          | N          | Property Config |
 
 #### \<sharding:sharding-rule/>
 
-| *Name*                        | *Type*      | *DataType*  | *Required* | *Info*                                                                |
-| ----------------------------- | ----------- | ----------  | ------     | --------------------------------------------------------------------- |
-| data-source-names             | Property    | String      |   Y        | The bean list of data sources, all the BEAN IDs of data sources (including the default data source) needed to be managed by Sharding-JDBC must be configured. Multiple bean IDs are separated by commas.|
-| default-data-source-name      | Property    | String      |   N        | The default name for data source. Tables without sharding rules will be considered in this data source.                        |
-| default-database-strategy-ref | Property    | String      |   N        | The default strategy for sharding databases, which is also the strategy ID in \<sharding:xxx-strategy>. If this property is not set, the strategy of none sharding will be applied.|
-| default-table-strategy-ref    | Property    | String      |   N        | The default strategy for sharding tables which is also the strategy ID in \<sharding:xxx-strategy>. If this property is not set, the strategy of none sharding will be applied. |
-| table-rules                   | Label       |   -         |   Y        | The list of sharding rules.                                             |
+| *Name*                        | *Type*   | *DataType* | *Required* | *Info*                                   |
+| ----------------------------- | -------- | ---------- | ---------- | ---------------------------------------- |
+| data-source-names             | Property | String     | Y          | The bean list of data sources, all the BEAN IDs of data sources (including the default data source) needed to be managed by Sharding-JDBC must be configured. Multiple bean IDs are separated by commas. |
+| default-data-source-name      | Property | String     | N          | The default name for data source. Tables without sharding rules will be considered in this data source. |
+| default-database-strategy-ref | Property | String     | N          | The default strategy for sharding databases, which is also the strategy ID in \<sharding:xxx-strategy>. If this property is not set, the strategy of none sharding will be applied. |
+| default-table-strategy-ref    | Property | String     | N          | The default strategy for sharding tables which is also the strategy ID in \<sharding:xxx-strategy>. If this property is not set, the strategy of none sharding will be applied. |
+| table-rules                   | Label    | -          | Y          | The list of sharding rules.              |
 
 #### \<sharding:table-rules/>
 
-| *Name*                        | *Type*      | *DataType* |  *Required* | *Info*  |
-| ----------------------------- | ----------- | ---------- | ----------- | ------- |
-| table-rule+                   | Label       |   -        |   Y         | sharding rules |
+| *Name*      | *Type* | *DataType* | *Required* | *Info*         |
+| ----------- | ------ | ---------- | ---------- | -------------- |
+| table-rule+ | Label  | -          | Y          | sharding rules |
 
 #### \<sharding:table-rule/>
 
-| *Name*                | *Type*       | *DataType* | *Required* | *Info*  |
-| --------------------- | ------------ | ---------- | ------     | ------- |
-| logic-table           | Property     |  String    |   Y        | LogicTables |
-| actual-data-nodes     | Property     |  String    |   N        | Actual data nodes configured in the format of *datasource_name.table_name*, multiple configs separated with commas, supporting the inline expression. The default value is composed of configured data sources and logic table. This default config is to generate broadcast table (*The same table existed in every DB for cascade query.*) or to split the database without splitting the table.|
-| database-strategy-ref | Property     |  String    |   N        | The strategy for sharding database.Its strategy ID is in \<sharding:xxx-strategy>. The default is default-database-strategy-ref configured in \<sharding:sharding-rule/>    |
-| table-strategy-ref    | Property     |  String    |   N        | The strategy for sharding table. Its strategy ID is in \<sharding:xxx-strategy>. The default is default-table-strategy-ref in \<sharding:sharding-rule/>       |
-| logic-index           | Property     |  String    |   N        | The Logic index name. If you want to use *DROP INDEX XXX* SQL in Oracle/PostgreSQL，This property needs to be set for finding the actual tables.   |
+| *Name*                | *Type*   | *DataType* | *Required* | *Info*                                   |
+| --------------------- | -------- | ---------- | ---------- | ---------------------------------------- |
+| logic-table           | Property | String     | Y          | LogicTables                              |
+| actual-data-nodes     | Property | String     | N          | Actual data nodes configured in the format of *datasource_name.table_name*, multiple configs separated with commas, supporting the inline expression. The default value is composed of configured data sources and logic table. This default config is to generate broadcast table (*The same table existed in every DB for cascade query.*) or to split the database without splitting the table. |
+| database-strategy-ref | Property | String     | N          | The strategy for sharding database.Its strategy ID is in \<sharding:xxx-strategy>. The default is default-database-strategy-ref configured in \<sharding:sharding-rule/> |
+| table-strategy-ref    | Property | String     | N          | The strategy for sharding table. Its strategy ID is in \<sharding:xxx-strategy>. The default is default-table-strategy-ref in \<sharding:sharding-rule/> |
+| logic-index           | Property | String     | N          | The Logic index name. If you want to use *DROP INDEX XXX* SQL in Oracle/PostgreSQL，This property needs to be set for finding the actual tables. |
 
 #### \<sharding:binding-table-rules/>
 
-| *Name*                        | *Type*      | *DataType* |  *Required* | *Info*  |
-| ----------------------------- | ----------- |  --------- | ------      | ------- |
-| binding-table-rule            | Label       |   -        |   Y         | The rule for binding tables. |
+| *Name*             | *Type* | *DataType* | *Required* | *Info*                       |
+| ------------------ | ------ | ---------- | ---------- | ---------------------------- |
+| binding-table-rule | Label  | -          | Y          | The rule for binding tables. |
 
 #### \<sharding:binding-table-rule/>
 
-| *Name*                        | *Type*       | *DataType* |  *Required* | *Info*                   |
-| ----------------------------- | ------------ | ---------- | ------      | ------------------------ |
-| logic-tables                  | Property     |  String    |   Y         | The name of Logic tables, multiple tables are separated by commas.|
+| *Name*       | *Type*   | *DataType* | *Required* | *Info*                                   |
+| ------------ | -------- | ---------- | ---------- | ---------------------------------------- |
+| logic-tables | Property | String     | Y          | The name of Logic tables, multiple tables are separated by commas. |
 
 #### \<sharding:standard-strategy/>
 
 The standard sharding strategy for single sharding column.
 
-| *Name*                        | *Type*       | *DataType* |  *Required* | *Info*                                                                |
-| ----------------------------- | ------------ | ---------- | ------      | --------------------------------------------------------------------- |
-| sharding-column               | Property     |  String    |   Y         | The name of sharding column.                                                       |
-| precise-algorithm-class       | Property     |  String    |   Y         | The class name for precise-sharding-algorithm used for = and IN. The default constructor or on-parametric constructor is needed.   |
-| range-algorithm-class         | Property     |  String    |   N         | The class name for range-sharding-algorithm used for BETWEEN. The default constructor or on-parametric constructor is needed. |
+| *Name*                  | *Type*   | *DataType* | *Required* | *Info*                                   |
+| ----------------------- | -------- | ---------- | ---------- | ---------------------------------------- |
+| sharding-column         | Property | String     | Y          | The name of sharding column.             |
+| precise-algorithm-class | Property | String     | Y          | The class name for precise-sharding-algorithm used for = and IN. The default constructor or on-parametric constructor is needed. |
+| range-algorithm-class   | Property | String     | N          | The class name for range-sharding-algorithm used for BETWEEN. The default constructor or on-parametric constructor is needed. |
 
 #### \<sharding:complex-strategy/>
 
 The complex sharding strategy for multiple sharding columns.
 
-| *Name*                        | *Type*       | *DataType*  |  *Required* | *Info*                                              |
-| ----------------------------- | ------------ | ----------  | ------      | --------------------------------------------------- |
-| sharding-columns              | Property     |  String     |   Y         | The name of sharding column. Multiple names separated with commas.                              |
-| algorithm-class               | Property     |  String     |   Y         | # The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
+| *Name*           | *Type*   | *DataType* | *Required* | *Info*                                   |
+| ---------------- | -------- | ---------- | ---------- | ---------------------------------------- |
+| sharding-columns | Property | String     | Y          | The name of sharding column. Multiple names separated with commas. |
+| algorithm-class  | Property | String     | Y          | # The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
 
 #### \<sharding:inline-strategy/>
 
 The inline-expression sharding strategy.
 
-| *Name*                        | *Type*       | *DataType* |  *Required* | *Info*       |
-| ----------------------------- | ------------ | ---------- | ------      | ------------ |
-| sharding-column               | Property     |  String    |   Y         | the  name of sharding column.      |
-| algorithm-expression          | Property     |  String    |   Y         | The expression for sharding algorithm. |
+| *Name*               | *Type*   | *DataType* | *Required* | *Info*                                 |
+| -------------------- | -------- | ---------- | ---------- | -------------------------------------- |
+| sharding-column      | Property | String     | Y          | the  name of sharding column.          |
+| algorithm-expression | Property | String     | Y          | The expression for sharding algorithm. |
 
 #### \<sharding:hint-database-strategy/>
 
 The Hint-method sharding strategy.
 
-| *Name*                        | *Type*       | *DataType* |  *Required* | *Info*                                              |
-| ----------------------------- | ------------ | ---------- | ------      | --------------------------------------------------- |
-| algorithm-class               | Property     |  String    |   Y         | The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
+| *Name*          | *Type*   | *DataType* | *Required* | *Info*                                   |
+| --------------- | -------- | ---------- | ---------- | ---------------------------------------- |
+| algorithm-class | Property | String     | Y          | The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
 
 #### \<sharding:none-strategy/>
 
@@ -450,22 +450,22 @@ The none sharding strategy.
 
 #### \<sharding:props/\>
 
-| *Name*                               | *Type*       | *DataType* | *Required* | *Info*                              |
-| ------------------------------------ | ------------ | ---------- | -----      | ----------------------------------- |
-| sql.show                             | Property     |  boolean   |   Y        | To show SQLS or not, the default is false.     |
-| executor.size                        | Property     |  int       |   N        | The number of running threads.                      |
+| *Name*        | *Type*   | *DataType* | *Required* | *Info*                                   |
+| ------------- | -------- | ---------- | ---------- | ---------------------------------------- |
+| sql.show      | Property | boolean    | Y          | To show SQLS or not, the default is false. |
+| executor.size | Property | int        | N          | The number of running threads.           |
 
 #### \<master-slave:data-source/\>
 
 Define datasorce for Reading-writing spliting.
 
-| *Name*                        | *Type*       | *DataType* |  *Required* | *Info*                                   |
-| ----------------------------- | ------------ |  --------- | ------      | ---------------------------------------- |
-| id                            | Property     |  String    |   Y         | The spring Bean ID                           |
-| master-data-source-name       | Label        |   -        |   Y         | The Bean ID of Master database.                         |
-| slave-data-source-names       | Label        |   -        |   Y         | The list of Slave databases, multiple items are separated by commas.  |
-| strategy-ref?                 | Label        |   -        |   N         | The Bean ID for complex strategy of Master-Slaves. User-defined complex strategy is allowed.|
-| strategy-type?                | Label        |  String    |   N         | The complex strategy type of Master-Slaves. <br />The options: ROUND_ROBIN, RANDOM<br />. The default: ROUND_ROBIN |
+| *Name*                  | *Type*   | *DataType* | *Required* | *Info*                                   |
+| ----------------------- | -------- | ---------- | ---------- | ---------------------------------------- |
+| id                      | Property | String     | Y          | The spring Bean ID                       |
+| master-data-source-name | Label    | -          | Y          | The Bean ID of Master database.          |
+| slave-data-source-names | Label    | -          | Y          | The list of Slave databases, multiple items are separated by commas. |
+| strategy-ref?           | Label    | -          | N          | The Bean ID for complex strategy of Master-Slaves. User-defined complex strategy is allowed. |
+| strategy-type?          | Label    | String     | N          | The complex strategy type of Master-Slaves. <br />The options: ROUND_ROBIN, RANDOM<br />. The default: ROUND_ROBIN |
 
 #### More details on Spring Configuration
 

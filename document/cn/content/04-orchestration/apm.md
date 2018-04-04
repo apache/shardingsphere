@@ -2,8 +2,6 @@
 toc = true
 title = "应用性能监控"
 weight = 2
-prev = "/04-orchestration/orchestration/"
-next = "/05-transaction/"
 +++
 
 ## 简介

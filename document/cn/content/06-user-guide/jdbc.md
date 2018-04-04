@@ -2,8 +2,6 @@
 toc = true
 title = "JDBC"
 weight = 1
-prev = "/06-user-guide/"
-next = "/06-user-guide/proxy/"
 +++
 
 ## 使用API配置

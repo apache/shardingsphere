@@ -2,8 +2,6 @@
 toc = true
 title = "核心概念"
 weight = 1
-prev = "/02-sharding/"
-next = "/02-sharding/workflow/"
 +++
 
 ## LogicTable

@@ -1,11 +1,13 @@
----
-title: "Some Chapter title"
-weight: 0
-icon: "<b>X. </b>" # HTML code as prefix in the menu
----
++++
+title = "{{ replace .TranslationBaseName "-" " " | title }}"
+date = {{ .Date }}
+weight = 5
+chapter = true
+pre = "<b>X. </b>"
++++
 
 ### Chapter X
 
 # Some Chapter title
 
-Lorem ipsum
+Lorem Ipsum.

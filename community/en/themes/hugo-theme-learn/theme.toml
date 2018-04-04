@@ -5,10 +5,11 @@ name = "Learn"
 license = "MIT"
 licenselink = "https://github.com/matcornic/hugo-theme-learn/blob/master/LICENSE.md"
 description = "Documentation theme for Hugo, based on Grav Learn theme"
-homepage = "https://matcornic.github.io/hugo-learn-doc/basics/what-is-this-hugo-theme/"
-tags = ["documentation", "grav", "learn", "doc"]
-features = ["documentation"]
-min_version = 0.19
+homepage = "https://github.com/matcornic/hugo-theme-learn/"
+repo = "https://github.com/matcornic/hugo-theme-learn"
+tags = ["documentation", "grav", "learn", "doc", "search"]
+features = ["documentation", "menu", "nested sections", "search", "mermaid"]
+min_version = 0.25
 
 [author]
   name = "Mathieu Cornic"
@@ -18,3 +19,4 @@ min_version = 0.19
   name = "Grav Learn"
   homepage = "http://learn.getgrav.org/"
   repo = "https://github.com/getgrav/grav-learn"
+

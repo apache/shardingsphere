@@ -83,9 +83,14 @@ $(window).resize(function() {
 
 
 jQuery(document).ready(function() {
+    jQuery('#sidebar .category-icon').on('click', function() {
+        $( this ).toggleClass("fa-angle-down fa-angle-right") ;
+        $( this ).parent().parent().children('ul').toggle() ;
+        return false;
+    });
+
     var sidebarStatus = searchStatus = 'open';
     $('#sidebar .highlightable').perfectScrollbar();
-    // set the menu height
     setMenuHeight();
 
     jQuery('#overlay').on('click', function() {
@@ -139,20 +144,7 @@ jQuery(document).ready(function() {
         $(".highlightable").unhighlight({ element: 'mark' }).highlight(value, { element: 'mark' });
 
         if (ajax && ajax.abort) ajax.abort();
-        ajax = jQuery.ajax({
-            url: input.data('search-input') + ':' + value
-        }).done(function(data) {
-            if (data && data.results && data.results.length) {
-                items.css('display', 'none');
-                $('ul.topics').addClass('searched');
-                data.results.forEach(function(navitem) {
-                    jQuery('[data-nav-id="' + navitem + '"]').css('display', 'block').addClass('search-match');
-                    jQuery('[data-nav-id="' + navitem + '"]').parents('li').css('display', 'block');
-                });
-            }
-            ;
 
-        });
         jQuery('[data-search-clear]').on('click', function() {
             jQuery('[data-search-input]').val('').trigger('input');
             sessionStorage.removeItem('search-input');
@@ -160,10 +152,25 @@ jQuery(document).ready(function() {
         });
     });
 
+    $.expr[":"].contains = $.expr.createPseudo(function(arg) {
+        return function( elem ) {
+            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+        };
+    });
+
     if (sessionStorage.getItem('search-value')) {
-        jQuery(document.body).removeClass('searchbox-hidden');
-        jQuery('[data-search-input]').val(sessionStorage.getItem('search-value'));
-        jQuery('[data-search-input]').trigger('input');
+        var searchValue = sessionStorage.getItem('search-value')
+        $(document.body).removeClass('searchbox-hidden');
+        $('[data-search-input]').val(searchValue);
+        $('[data-search-input]').trigger('input');
+        var searchedElem = $('#body-inner').find(':contains(' + searchValue + ')').get(0);
+        if (searchedElem) {
+            searchedElem.scrollIntoView(true);
+            var scrolledY = window.scrollY;
+            if(scrolledY){
+                window.scroll(0, scrolledY - 125);
+            }
+        }
     }
 
     // clipboard
@@ -229,15 +236,110 @@ jQuery(document).ready(function() {
     });
 
     $('#top-bar a:not(:has(img)):not(.btn)').addClass('highlight');
-    $('#body-inner a:not(:has(img)):not(.btn)').addClass('highlight');
+    $('#body-inner a:not(:has(img)):not(.btn):not(a[rel="footnote"])').addClass('highlight');
 
-    $('#toc-menu').hover(function() {
-        $('.progress').stop(true, false, true).fadeToggle(100);
-    });
+    var touchsupport = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)
+    if (!touchsupport){ // browser doesn't support touch
+        $('#toc-menu').hover(function() {
+            $('.progress').stop(true, false, true).fadeToggle(100);
+        });
 
-    $('.progress').hover(function() {
-        $('.progress').stop(true, false, true).fadeToggle(100);
-    });
+        $('.progress').hover(function() {
+            $('.progress').stop(true, false, true).fadeToggle(100);
+        });
+    }
+    if (touchsupport){ // browser does support touch
+        $('#toc-menu').click(function() {
+            $('.progress').stop(true, false, true).fadeToggle(100);
+        });
+        $('.progress').click(function() {
+            $('.progress').stop(true, false, true).fadeToggle(100);
+        });
+    }
+
+    /** 
+    * Fix anchor scrolling that hides behind top nav bar
+    * Courtesy of https://stackoverflow.com/a/13067009/28106
+    *
+    * We could use pure css for this if only heading anchors were
+    * involved, but this works for any anchor, including footnotes
+    **/
+    (function (document, history, location) {
+        var HISTORY_SUPPORT = !!(history && history.pushState);
+
+        var anchorScrolls = {
+            ANCHOR_REGEX: /^#[^ ]+$/,
+            OFFSET_HEIGHT_PX: 50,
+
+            /**
+             * Establish events, and fix initial scroll position if a hash is provided.
+             */
+            init: function () {
+                this.scrollToCurrent();
+                $(window).on('hashchange', $.proxy(this, 'scrollToCurrent'));
+                $('body').on('click', 'a', $.proxy(this, 'delegateAnchors'));
+            },
+
+            /**
+             * Return the offset amount to deduct from the normal scroll position.
+             * Modify as appropriate to allow for dynamic calculations
+             */
+            getFixedOffset: function () {
+                return this.OFFSET_HEIGHT_PX;
+            },
+
+            /**
+             * If the provided href is an anchor which resolves to an element on the
+             * page, scroll to it.
+             * @param  {String} href
+             * @return {Boolean} - Was the href an anchor.
+             */
+            scrollIfAnchor: function (href, pushToHistory) {
+                var match, anchorOffset;
+
+                if (!this.ANCHOR_REGEX.test(href)) {
+                    return false;
+                }
+
+                match = document.getElementById(href.slice(1));
+
+                if (match) {
+                    anchorOffset = $(match).offset().top - this.getFixedOffset();
+                    $('html, body').animate({ scrollTop: anchorOffset });
+
+                    // Add the state to history as-per normal anchor links
+                    if (HISTORY_SUPPORT && pushToHistory) {
+                        history.pushState({}, document.title, location.pathname + href);
+                    }
+                }
+
+                return !!match;
+            },
+
+            /**
+             * Attempt to scroll to the current location's hash.
+             */
+            scrollToCurrent: function (e) {
+                if (this.scrollIfAnchor(window.location.hash) && e) {
+                    e.preventDefault();
+                }
+            },
+
+            /**
+             * If the click event's target was an anchor, fix the scroll position.
+             */
+            delegateAnchors: function (e) {
+                var elem = e.target;
+
+                if (this.scrollIfAnchor(elem.getAttribute('href'), true)) {
+                    e.preventDefault();
+                }
+            }
+        };
+
+        $(document).ready($.proxy(anchorScrolls, 'init'));
+    })(window.document, window.history, window.location);
+    
 });
 
 jQuery(window).on('load', function() {

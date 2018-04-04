@@ -59,6 +59,7 @@ a:hover {
 }
 pre {
     position: relative;
+    color: #ffffff;
 }
 .bg {
     background: #fff;
@@ -458,7 +459,7 @@ h2, h3, h4, h5, h6 {
 h1 {
     font-family: "Novacento Sans Wide", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
     text-align: center;
-    text-transform: none;
+    text-transform: uppercase;
     color: #222;
     font-weight: 200;
 }
@@ -529,6 +530,94 @@ div.notices.tip p {
 div.notices.tip p:first-child:after {
     content: 'Tip';
 }
+
+/* attachments shortcode */
+
+section.attachments {
+    margin: 2rem 0;
+    position: relative;
+}
+
+section.attachments label {
+    font-weight: 400;
+    padding-left: 0.5em;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+    margin: 0;
+}
+
+section.attachments .attachments-files {
+    padding: 15px;
+    display: block;
+    font-size: 1rem;
+    margin-top: 0rem;
+    margin-bottom: 0rem;
+    color: #666;
+}
+
+section.attachments.orange label {
+    color: #fff;
+    background: #F0B37E;
+}
+
+section.attachments.orange .attachments-files {
+    background: #FFF2DB;
+}
+
+section.attachments.green label {
+    color: #fff;
+    background: rgba(92, 184, 92, 0.8);
+}
+
+section.attachments.green .attachments-files {
+    background: #E6F9E6;
+}
+
+section.attachments.blue label {
+    color: #fff;
+    background: #6AB0DE;
+}
+
+section.attachments.blue .attachments-files {
+    background: #E7F2FA;
+}
+
+section.attachments.grey label {
+    color: #fff;
+    background: #505d65;
+}
+
+section.attachments.grey .attachments-files {
+    background: #f4f4f4;
+}
+
+/* Children shortcode */
+
+/* Children shortcode */
+.children p {
+    font-size: small;
+    margin-top: 0px;
+    padding-top: 0px;
+    margin-bottom:  0px;
+    padding-bottom: 0px;
+}
+.children-li p {
+    font-size: small;
+    font-style: italic;
+
+}
+.children-h2 p, .children-h3 p {
+    font-size: small;
+    margin-top: 0px;
+    padding-top: 0px;
+    margin-bottom:  0px;
+    padding-bottom: 0px;
+}
+.children h3,.children h2 {
+    margin-bottom: 0px;
+    margin-top: 5px;
+}
+
 code, kbd, pre, samp {
     font-family: "Consolas", menlo, monospace;
     font-size: 92%;
@@ -558,7 +647,7 @@ pre {
     line-height: 1.15;
 }
 pre code {
-    color: #237794;
+    color: whitesmoke;
     background: inherit;
     white-space: inherit;
     border: 0;
@@ -588,7 +677,7 @@ hr {
 }
 #body-inner .tabs-wrapper.ui-theme-badges .tabs-nav li {
     font-size: 0.9rem;
-    text-transform: none;
+    text-transform: uppercase;
 }
 #body-inner .tabs-wrapper.ui-theme-badges .tabs-nav li a {
     background: #35393c;
@@ -812,6 +901,9 @@ td {
     overflow: auto;
     position: relative;
 }
+.hljs::selection, .hljs span::selection {
+    background: #b7b7b7;
+}
 .lightbox-active #body {
     overflow: visible;
 }
@@ -893,7 +985,6 @@ td {
 #top-bar {
     background: #F6F6F6;
     border-radius: 2px;
-    margin: 0rem -1rem 2rem;
     padding: 0 1rem;
     height: 0;
     min-height: 3rem;
@@ -999,6 +1090,18 @@ pre .copy-to-clipboard:hover {
 #sidebar ul.topics > li > a .read-icon {
     margin-top: 9px;
 }
+
+#sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#sidebar #shortcuts li {
+    padding: 2px 0;
+    list-style: none;
+}
+
 #sidebar ul li .read-icon {
     display: none;
     float: right;
@@ -1010,6 +1113,13 @@ pre .copy-to-clipboard:hover {
 #sidebar ul li.visited > a .read-icon {
     color: #00bdf3;
     display: inline;
+}
+
+#sidebar #shortcuts h3 {
+    font-family: "Novacento Sans Wide", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
+    color: white ;
+    margin-top:1rem;
+    padding-left: 1rem;
 }
 
 #searchResults {

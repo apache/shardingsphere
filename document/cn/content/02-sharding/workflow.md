@@ -2,8 +2,6 @@
 toc = true
 title = "核心流程"
 weight = 2
-prev = "/02-sharding/concept/"
-next = "/02-sharding/scenario/"
 +++
 
 Sharding-JDBC是一个具有分库分表功能的数据库中间件。它通过JDBC扩展 => SQL解析 => SQL路由 => SQL改写 => SQL执行 => 结果归并的流程，在SQL通过使用逻辑表，配合用户配置的分片规则，将对数据库访问的真实SQL完全屏蔽。

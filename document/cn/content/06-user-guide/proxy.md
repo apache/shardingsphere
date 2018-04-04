@@ -2,8 +2,6 @@
 toc = true
 title = "Proxy"
 weight = 2
-prev = "/06-user-guide/jdbc/"
-next = "/06-user-guide/sidecar/"
 +++
 
 ## 简介

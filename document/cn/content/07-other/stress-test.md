@@ -2,8 +2,6 @@
 toc = true
 title = "性能测试报告"
 weight = 3
-prev = "/07-other/module/"
-next = "/07-other/test-engine/"
 +++
 
 ## 测试结果概述

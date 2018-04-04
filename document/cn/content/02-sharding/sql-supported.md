@@ -1,9 +1,7 @@
 +++
 toc = true
-title = "SQL支持详细列表"
-weight = 7
-prev = "/02-sharding/key-generator/"
-next = "/02-sharding/subquery/"
+title = "使用规范"
+weight = 5
 +++
 
 由于SQL语法灵活复杂，分布式数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的SQL出现。
@@ -13,7 +11,23 @@ next = "/02-sharding/subquery/"
 ## 全局不支持项
 
 ### 有限支持子查询
-子查询支持详情请参考[分页及子查询](/02-sharding/subquery/)。
+Sharding-JDBC除了分页子查询的支持之外(详情请参考[分页](/02-sharding/subquery/))，也支持同等模式的子查询。无论嵌套多少层，Sharding-JDBC都可以解析至第一个包含数据表的子查询，一旦在下层嵌套中再次找到包含数据表的子查询将直接抛出解析异常。
+
+例如，以下子查询可以支持：
+
+```sql
+SELECT COUNT(*) FROM (SELECT * FROM t_order o)
+```
+
+以下子查询不支持：
+
+```sql
+SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_order WHERE status = ?))
+```
+
+简单来说，通过子查询进行非功能需求，在大部分情况下是可以支持的。比如分页、统计总数等；而通过子查询实现业务查询当前并不能支持。
+
+由于归并的限制，子查询中包含聚合函数目前无法支持。
 
 ### 不支持包含冗余括号的SQL
 
@@ -55,44 +69,44 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 ### DQL
 
-| SQL                                                                                                     | 无条件支持 | 必要条件 |
-| ------------------------------------------------------------------------------------------------------- | --------- | ------- |
-| SELECT * FROM tbl_name                                                                                  | 是        |         |
-| SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit                                 | 是        |         |
-| SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1             | 是        |         |
-| SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit | 是        |         |
+| SQL                                      | 无条件支持 | 必要条件 |
+| ---------------------------------------- | ----- | ---- |
+| SELECT * FROM tbl_name                   | 是     |      |
+| SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit | 是     |      |
+| SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1 | 是     |      |
+| SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit | 是     |      |
 
 ### DML
 
-| SQL                                                           | 无条件支持 | 必要条件            |
-| ------------------------------------------------------------- | --------- | ------------------ |
-| INSERT INTO tbl_name (col1, col2,...) VALUES (val1, val2,....)| 否        | 插入列需要包含分片键  |
-| INSERT INTO tbl_name VALUES (val1, val2,....)                 | 否        | 通过Hint注入分片键   |
-| UPDATE tbl_name SET col1 = val1 WHERE col2 = val2             | 是        |                    |
-| DELETE FROM tbl_name WHERE col1 = val1                        | 是        |                    |
+| SQL                                      | 无条件支持 | 必要条件        |
+| ---------------------------------------- | ----- | ----------- |
+| INSERT INTO tbl_name (col1, col2,...) VALUES (val1, val2,....) | 否     | 插入列需要包含分片键  |
+| INSERT INTO tbl_name VALUES (val1, val2,....) | 否     | 通过Hint注入分片键 |
+| UPDATE tbl_name SET col1 = val1 WHERE col2 = val2 | 是     |             |
+| DELETE FROM tbl_name WHERE col1 = val1   | 是     |             |
 
 ### DDL
 
-| SQL                                                           | 无条件支持 | 必要条件            |
-| ------------------------------------------------------------- | --------- | ------------------ |
-| CREATE TABLE tbl_name (col1 int,...)                          | 是        |                    |
-| ALTER TABLE tbl_name ADD col1 varchar(10)                     | 是        |                    |
-| DROP TABLE tbl_name                                           | 是        |                    |
-| TRUNCATE TABLE tbl_name                                       | 是        |                    |
-| CREATE INDEX idx_name ON tbl_name                             | 是        |                    |
-| DROP INDEX idx_name ON tbl_name                               | 是        |                    |
-| DROP INDEX idx_name                                           | 是        | tableRule中配置logic-index|
+| SQL                                      | 无条件支持 | 必要条件                    |
+| ---------------------------------------- | ----- | ----------------------- |
+| CREATE TABLE tbl_name (col1 int,...)     | 是     |                         |
+| ALTER TABLE tbl_name ADD col1 varchar(10) | 是     |                         |
+| DROP TABLE tbl_name                      | 是     |                         |
+| TRUNCATE TABLE tbl_name                  | 是     |                         |
+| CREATE INDEX idx_name ON tbl_name        | 是     |                         |
+| DROP INDEX idx_name ON tbl_name          | 是     |                         |
+| DROP INDEX idx_name                      | 是     | tableRule中配置logic-index |
 
 ## 不支持的SQL
 
-| SQL                                                                                           |
-| --------------------------------------------------------------------------------------------- |
-| INSERT INTO tbl_name (col1, col2, ...) VALUES (val1, val2,....), (val3, val4,....)            |
+| SQL                                      |
+| ---------------------------------------- |
+| INSERT INTO tbl_name (col1, col2, ...) VALUES (val1, val2,....), (val3, val4,....) |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = val3 |
-| INSERT INTO tbl_name SET col1 = val1                                                          |
-| SELECT DISTINCT * FROM tbl_name WHERE column1 = value1                                        |
-| SELECT * FROM tbl_name WHERE column1 = value1 OR column1 = value2                             |
-| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > val1       |
-| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                         |
-| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                     |
-| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                           |
+| INSERT INTO tbl_name SET col1 = val1     |
+| SELECT DISTINCT * FROM tbl_name WHERE column1 = value1 |
+| SELECT * FROM tbl_name WHERE column1 = value1 OR column1 = value2 |
+| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > val1 |
+| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2 |
+| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2 |
+| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?) |

@@ -2,8 +2,6 @@
 toc = true
 title = "读写分离"
 weight = 1
-prev = "/03-read-write-split/"
-next = "/04-orchestration/"
 +++
 
 ## 支持项
