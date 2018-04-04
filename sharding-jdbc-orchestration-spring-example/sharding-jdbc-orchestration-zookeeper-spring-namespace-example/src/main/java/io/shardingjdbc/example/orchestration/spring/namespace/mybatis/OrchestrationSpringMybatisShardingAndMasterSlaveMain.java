@@ -28,7 +28,8 @@ public final class OrchestrationSpringMybatisShardingAndMasterSlaveMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingAndMasterSlaveContext.xml");
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingAndMasterSlaveByLocalConfigContext.xml");
+//        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingAndMasterSlaveByCloudConfigContext.xml");
         DemoService demo = applicationContext.getBean(DemoService.class);
         demo.demo();
         OrchestrationDataSourceCloseableUtil.closeQuietly(applicationContext.getBean(OrchestrationShardingDataSource.class));

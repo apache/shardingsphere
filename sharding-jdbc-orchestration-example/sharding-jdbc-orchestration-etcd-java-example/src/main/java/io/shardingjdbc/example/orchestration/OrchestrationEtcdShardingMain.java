@@ -48,8 +48,8 @@ public final class OrchestrationEtcdShardingMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException, SQLException {
     // CHECKSTYLE:ON
-        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-            createDataSourceMap(), createShardingRuleConfig(), new ConcurrentHashMap<String, Object>(), new Properties(), new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
+        DataSource dataSource = getDataSourceByLocalConfig();
+//        DataSource dataSource = getDataSourceByCloudConfig();
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);
@@ -59,6 +59,16 @@ public final class OrchestrationEtcdShardingMain {
         printHintSimpleSelect(dataSource);
         dropTable(dataSource);
         OrchestrationDataSourceCloseableUtil.closeQuietly(dataSource);
+    }
+    
+    private static DataSource getDataSourceByLocalConfig() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                createDataSourceMap(), createShardingRuleConfig(), new ConcurrentHashMap<String, Object>(), new Properties(), new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), true, OrchestrationConfiguration.SHARDING));
+    }
+    
+    private static DataSource getDataSourceByCloudConfig() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                null, null, null, null, new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationConfiguration.SHARDING));
     }
     
     private static RegistryCenterConfiguration getRegistryCenterConfiguration() {

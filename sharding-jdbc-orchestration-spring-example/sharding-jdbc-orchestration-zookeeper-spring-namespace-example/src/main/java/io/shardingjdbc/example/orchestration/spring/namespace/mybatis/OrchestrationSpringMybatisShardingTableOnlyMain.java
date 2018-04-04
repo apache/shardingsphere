@@ -28,7 +28,8 @@ public final class OrchestrationSpringMybatisShardingTableOnlyMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingTableOnlyContext.xml");
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingTableOnlyByLocalConfigContext.xml");
+//        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingTableOnlyByCloudConfigContext.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
         OrchestrationDataSourceCloseableUtil.closeQuietly(applicationContext.getBean(OrchestrationShardingDataSource.class));

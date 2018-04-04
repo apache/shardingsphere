@@ -44,8 +44,8 @@ public final class OrchestrationEtcdMasterSlaveMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException, SQLException {
     // CHECKSTYLE:ON
-        DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                createDataSourceMap(), crateMasterSlaveRuleConfig(), new ConcurrentHashMap<String, Object>(), new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false));
+        DataSource dataSource = getDataSourceByLocalConfig();
+//        DataSource dataSource = getDataSourceByCloudConfig();
         createTable(dataSource);
         insertData(dataSource);
         printSimpleSelect(dataSource);
@@ -55,6 +55,16 @@ public final class OrchestrationEtcdMasterSlaveMain {
         printHintSimpleSelect(dataSource);
         dropTable(dataSource);
         OrchestrationDataSourceCloseableUtil.closeQuietly(dataSource);
+    }
+    
+    private static DataSource getDataSourceByLocalConfig() throws SQLException {
+        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(
+                createDataSourceMap(), crateMasterSlaveRuleConfig(), new ConcurrentHashMap<String, Object>(), new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true, OrchestrationConfiguration.MASTER_SLAVE));
+    }
+    
+    private static DataSource getDataSourceByCloudConfig() throws SQLException {
+        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(
+                null, null, null, new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false, OrchestrationConfiguration.MASTER_SLAVE));
     }
     
     private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
