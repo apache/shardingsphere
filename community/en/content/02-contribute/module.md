@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "Module structure"
-weight = 2
+weight = 5
 prev = "/07-other/faq/"
 next = "/07-other/stress-test/"
 +++

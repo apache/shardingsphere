@@ -36,8 +36,6 @@ The current Project Management Committee is as follows (in chronological order):
 
 In various situations the Sharding shall hold a vote. These votes can happen on the phone, email, or via a voting service, when appropriate. Voters can either respond "agree, yes, +1", "disagree, no, -1", or "abstain". A vote passes with two-thirds vote of votes cast. An abstain vote equals not voting at all.
 
-张亮 [@terrymanu](https://github.com/terrymanu) has a special veto power: override the voting result, default: not use.
-
 ## Committer
 
 * 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java Expert, Antfin

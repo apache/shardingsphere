@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "性能测试报告"
-weight = 3
+weight = 2
 +++
 
 ## 测试结果概述

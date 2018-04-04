@@ -36,8 +36,6 @@ chapter = true
 
 Sharding在很多情况下需要投票。选票可以视情况通过手机、电子邮件或某个投票系统产生。投票人可以回复“agree, yes, +1”，“disagree, no, -1”或“弃权”。赞成票占总票数的三分之二即可通过本次投票。弃权票等同于未投票。
 
-张亮 [@terrymanu](https://github.com/terrymanu) 拥有特别否决权：推翻投票结果，默认：不使用。
-
 ## Committer
 
 * 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java技术专家, 蚂蚁金服

@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "目录结构"
-weight = 2
+weight = 5
 +++
 
 您可以在Sharding-JDBC的github[官方仓库](https://github.com/shardingjdbc)找到源码。

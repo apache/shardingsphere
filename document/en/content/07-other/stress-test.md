@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "Performance test"
-weight = 3
+weight = 2
 prev = "/07-other/module/"
 next = "/07-other/test-engine/"
 +++
