@@ -30,7 +30,9 @@ public final class OrchestrationEtcdYamlMasterSlaveMain {
     public static void main(final String[] args) throws Exception {
     // CHECKSTYLE:ON
         DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(new File(
-                OrchestrationEtcdYamlMasterSlaveMain.class.getResource("/META-INF/yamlMasterSlave.yaml").getFile()));
+                OrchestrationEtcdYamlMasterSlaveMain.class.getResource("/META-INF/yamlMasterSlaveByLocalConfig.yaml").getFile()));
+//        DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(new File(
+//                OrchestrationEtcdYamlMasterSlaveMain.class.getResource("/META-INF/yamlMasterSlaveByCloudConfig.yaml").getFile()));
         new OrchestrationYamlRepository(dataSource).demo();
         OrchestrationDataSourceCloseableUtil.closeQuietly(dataSource);
     }

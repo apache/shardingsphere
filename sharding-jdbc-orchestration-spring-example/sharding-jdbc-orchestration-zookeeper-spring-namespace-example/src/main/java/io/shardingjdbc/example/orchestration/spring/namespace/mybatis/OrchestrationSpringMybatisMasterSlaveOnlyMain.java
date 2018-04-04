@@ -28,7 +28,8 @@ public final class OrchestrationSpringMybatisMasterSlaveOnlyMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisMasterSlaveOnlyContext.xml");
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisMasterSlaveOnlyByLocalConfigContext.xml");
+//        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisMasterSlaveOnlyByCloudConfigContext.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
         OrchestrationDataSourceCloseableUtil.closeQuietly(applicationContext.getBean(OrchestrationMasterSlaveDataSource.class));

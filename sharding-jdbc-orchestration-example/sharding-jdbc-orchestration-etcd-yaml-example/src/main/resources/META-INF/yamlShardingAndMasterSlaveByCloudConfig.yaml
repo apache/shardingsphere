@@ -1,0 +1,6 @@
+orchestration:
+  name: demo_yaml_ds_sharding_ms
+  type: sharding
+  overwrite: false
+  etcd:
+    serverLists: http://localhost:2379

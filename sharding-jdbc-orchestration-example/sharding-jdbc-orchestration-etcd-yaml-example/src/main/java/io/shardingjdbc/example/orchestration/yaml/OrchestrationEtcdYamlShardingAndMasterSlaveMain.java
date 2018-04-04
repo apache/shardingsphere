@@ -29,8 +29,10 @@ public final class OrchestrationEtcdYamlShardingAndMasterSlaveMain {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {
     // CHECKSTYLE:ON
+//        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(new File(
+//                OrchestrationEtcdYamlShardingAndMasterSlaveMain.class.getResource("/META-INF/yamlShardingAndMasterSlaveByLocalConfig.yaml").getFile()));
         DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(new File(
-                OrchestrationEtcdYamlShardingAndMasterSlaveMain.class.getResource("/META-INF/yamlShardingAndMasterSlave.yaml").getFile()));
+                OrchestrationEtcdYamlShardingAndMasterSlaveMain.class.getResource("/META-INF/yamlShardingAndMasterSlaveByCloudConfig.yaml").getFile()));
         new OrchestrationYamlRepository(dataSource).demo();
         OrchestrationDataSourceCloseableUtil.closeQuietly(dataSource);
     }
