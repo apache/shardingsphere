@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.frontend.common.handler;
+package io.shardingjdbc.proxy.frontend.common;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

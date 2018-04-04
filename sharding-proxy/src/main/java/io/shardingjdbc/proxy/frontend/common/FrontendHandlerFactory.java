@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.frontend.common.handler;
+package io.shardingjdbc.proxy.frontend.common;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.proxy.frontend.mysql.handler.MySQLFrontendHandler;
+import io.shardingjdbc.proxy.frontend.mysql.MySQLFrontendHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

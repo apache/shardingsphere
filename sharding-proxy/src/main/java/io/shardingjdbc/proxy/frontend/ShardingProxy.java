@@ -27,7 +27,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.proxy.transport.common.codec.PacketCodecFactory;
-import io.shardingjdbc.proxy.frontend.common.handler.FrontendHandlerFactory;
+import io.shardingjdbc.proxy.frontend.common.FrontendHandlerFactory;
 
 /**
  * Sharding-Proxy.
