@@ -10,7 +10,7 @@ next = "/02-sharding/configuration/config-overview"
 
 This section focuses on configuration overview, and various configuration methods, including:
 
-* Configuration overview
+* Overview
 
 * Java configuration
 

@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "Configuration overview"
+title = "Overview"
 weight = 1
 prev = "/02-sharding/configuration/"
 next = "/02-sharding/configuration/config-java/"
