@@ -103,7 +103,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         }
     }
     
-    private void parseForceIndex(final String tableName, final SQLStatement sqlStatement){
+    private void parseForceIndex(final String tableName, final SQLStatement sqlStatement) {
         boolean skipIfForce = lexerEngine.skipIfEqual(MySQLKeyword.FORCE) && this.lexerEngine.skipIfEqual(DefaultKeyword.INDEX);
         if (skipIfForce) {
             lexerEngine.accept(Symbol.LEFT_PAREN);
