@@ -24,7 +24,6 @@ import io.shardingjdbc.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
-import io.shardingjdbc.core.parsing.lexer.token.TokenType;
 import io.shardingjdbc.core.parsing.parser.clause.expression.AliasExpressionParser;
 import io.shardingjdbc.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
