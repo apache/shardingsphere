@@ -52,7 +52,7 @@ import java.util.Properties;
 public final class OrchestrationFacade implements AutoCloseable {
     
     private final boolean isOverwrite;
-
+    
     @Getter
     private final ConfigurationService configService;
     
@@ -83,7 +83,7 @@ public final class OrchestrationFacade implements AutoCloseable {
         }
         throw new UnsupportedOperationException(regCenterConfig.getClass().getName());
     }
-
+    
     /**
      * Initialize for sharding orchestration.
      *

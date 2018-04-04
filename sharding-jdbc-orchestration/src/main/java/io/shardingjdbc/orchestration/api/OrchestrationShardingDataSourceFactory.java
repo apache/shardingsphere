@@ -52,7 +52,7 @@ import java.util.Properties;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrchestrationShardingDataSourceFactory {
-
+    
     /**
      * Create sharding data source.
      *
@@ -77,7 +77,7 @@ public final class OrchestrationShardingDataSourceFactory {
             return createDataSource(dataSourceMap, shardingRuleConfig, configMap, props, orchestrationFacade);
         }
     }
-
+    
     /**
      * Create sharding data source.
      *
@@ -99,7 +99,7 @@ public final class OrchestrationShardingDataSourceFactory {
             return createDataSource(dataSourceMap, yamlShardingRuleConfig.getShardingRuleConfiguration(), yamlShardingRuleConfig.getConfigMap(), yamlShardingRuleConfig.getProps(), orchestrationFacade);
         }
     }
-
+    
     /**
      * Create sharding data source.
      *

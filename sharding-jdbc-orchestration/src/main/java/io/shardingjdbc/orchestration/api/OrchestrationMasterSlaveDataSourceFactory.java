@@ -43,7 +43,7 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrchestrationMasterSlaveDataSourceFactory {
-
+    
     /**
      * Create master-slave data source.
      *
@@ -67,7 +67,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
             return createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, orchestrationFacade);
         }
     }
-
+    
     /**
      * Create master-slave data source.
      *
@@ -89,7 +89,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
             return createDataSource(dataSourceMap, yamlMasterSlaveRuleConfig.getMasterSlaveRuleConfiguration(), yamlMasterSlaveRuleConfig.getConfigMap(), orchestrationFacade);
         }
     }
-
+    
     /**
      * Create master-slave data source.
      *
@@ -107,7 +107,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         result.init();
         return result;
     }
-
+    
     /**
      * Create master-slave data source.
      *
@@ -122,7 +122,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlFile);
         return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getOrchestration().getOrchestrationConfiguration());
     }
-
+    
     /**
      * Create master-slave data source.
      *
@@ -138,7 +138,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlFile);
         return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getOrchestration().getOrchestrationConfiguration());
     }
-
+    
     /**
      * Create master-slave data source.
      *
@@ -152,7 +152,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlByteArray);
         return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getOrchestration().getOrchestrationConfiguration());
     }
-
+    
     /**
      * Create master-slave data source.
      *
@@ -167,7 +167,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlByteArray);
         return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getOrchestration().getOrchestrationConfiguration());
     }
-
+    
     private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
@@ -176,7 +176,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
             return new Yaml(new Constructor(YamlOrchestrationMasterSlaveRuleConfiguration.class)).loadAs(inputStreamReader, YamlOrchestrationMasterSlaveRuleConfiguration.class);
         }
     }
-
+    
     private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final byte[] yamlByteArray) {
         return new Yaml(new Constructor(YamlOrchestrationMasterSlaveRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlOrchestrationMasterSlaveRuleConfiguration.class);
     }

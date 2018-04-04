@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
  * @author caohao
  */
 public abstract class AbstractOrchestrationBeanDefinitionParser extends AbstractBeanDefinitionParser {
-
+    
     protected String parseRegistryCenterRef(final Element element) {
         return element.getAttribute("registry-center-ref");
     }

@@ -51,7 +51,7 @@ import java.util.Properties;
  * @author zhangliang
  */
 public class OrchestrationShardingDataSourceBeanDefinitionParser extends AbstractOrchestrationBeanDefinitionParser {
-
+    
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         String regCenter = parseRegistryCenterRef(element);
@@ -60,7 +60,7 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
         }
         return getOrchestrationSpringShardingDataSourceBean(element, parserContext);
     }
-
+    
     private AbstractBeanDefinition getSpringShardingDataSourceBean(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element));
@@ -70,7 +70,7 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
     }
-
+    
     private AbstractBeanDefinition getOrchestrationSpringShardingDataSourceBean(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationShardingDataSourceFacoryBean.class);
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);

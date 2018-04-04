@@ -39,7 +39,7 @@ public class YamlOrchestrationConfiguration {
     private ZookeeperConfiguration zookeeper;
     
     private boolean overwrite;
-
+    
     private String type;
     
     /**
