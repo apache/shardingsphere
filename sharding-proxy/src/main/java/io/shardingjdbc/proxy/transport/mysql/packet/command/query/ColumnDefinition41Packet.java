@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.mysql.packet.generic;
+package io.shardingjdbc.proxy.transport.mysql.packet.command.query;
 
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.proxy.constant.ColumnType;

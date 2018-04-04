@@ -21,7 +21,7 @@ import io.shardingjdbc.core.merger.QueryResult;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.query.FieldCountPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.query.TextResultSetRowPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.generic.ColumnDefinition41Packet;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import lombok.RequiredArgsConstructor;
 
 import java.io.InputStream;
