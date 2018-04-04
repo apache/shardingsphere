@@ -44,12 +44,11 @@ public final class UnsupportedCommandPacket extends CommandPacket {
     private final CommandPacketType type;
     
     @Override
-    public UnsupportedCommandPacket read(final MySQLPacketPayload mysqlPacketPayload) {
-        return this;
+    public List<DatabaseProtocolPacket> execute() {
+        return Collections.<DatabaseProtocolPacket>singletonList(new ErrPacket(getSequenceId() + 1, ERROR_CODE, SQL_STATE_MARKER, SQL_STATE, String.format(ERROR_MESSAGE, type)));
     }
     
     @Override
-    public List<DatabaseProtocolPacket> execute() {
-        return Collections.<DatabaseProtocolPacket>singletonList(new ErrPacket(getSequenceId() + 1, ERROR_CODE, SQL_STATE_MARKER, SQL_STATE, String.format(ERROR_MESSAGE, type)));
+    public void write(final MySQLPacketPayload mysqlPacketPayload) {
     }
 }

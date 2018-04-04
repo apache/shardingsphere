@@ -22,6 +22,7 @@ import io.shardingjdbc.proxy.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.extern.slf4j.Slf4j;
@@ -38,17 +39,21 @@ import java.util.List;
 @Slf4j
 public final class ComInitDbPacket extends CommandPacket {
     
-    private String schemaName;
+    private final String schemaName;
+    
+    public ComInitDbPacket(final MySQLPacketPayload mysqlPacketPayload) {
+        schemaName = mysqlPacketPayload.readStringEOF();
+    }
     
     @Override
-    public ComInitDbPacket read(final MySQLPacketPayload mysqlPacketPayload) {
-        schemaName = mysqlPacketPayload.readStringEOF();
-        log.debug("Schema name received for Sharding-Proxy: {}", schemaName);
-        return this;
+    public void write(final MySQLPacketPayload mysqlPacketPayload) {
+        mysqlPacketPayload.writeInt1(CommandPacketType.COM_INIT_DB.getValue());
+        mysqlPacketPayload.writeStringEOF(schemaName);
     }
     
     @Override
     public List<DatabaseProtocolPacket> execute() {
+        log.debug("Schema name received for Sharding-Proxy: {}", schemaName);
         if (ShardingConstant.LOGIC_SCHEMA_NAME.equalsIgnoreCase(schemaName)) {
             return Collections.<DatabaseProtocolPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }

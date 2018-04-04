@@ -35,4 +35,11 @@ public abstract class MySQLPacket implements DatabaseProtocolPacket {
     public static final int SEQUENCE_LENGTH = 1;
     
     private int sequenceId;
+    
+    /**
+     * Write packet to byte buffer.
+     *
+     * @param mysqlPacketPayload packet payload to be write
+     */
+    public abstract void write(MySQLPacketPayload mysqlPacketPayload);
 }

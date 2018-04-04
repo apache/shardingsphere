@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
+import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.fieldlist.ComFieldListPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.initdb.ComInitDbPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.query.ComQueryPacket;
@@ -32,20 +33,21 @@ public final class CommandPacketFactory {
     /**
      * Get command Packet.
      * 
-     * @param commandPacketTypeValue command packet type value
+     * @param mysqlPacketPayload MySQL packet payload
      * @return Command packet
      */
-    public static CommandPacket getCommandPacket(final int commandPacketTypeValue) {
+    public static CommandPacket getCommandPacket(final MySQLPacketPayload mysqlPacketPayload) {
+        int commandPacketTypeValue = mysqlPacketPayload.readInt1();
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
             case COM_QUIT:
                 return new ComQuitPacket();
             case COM_INIT_DB:
-                return new ComInitDbPacket();
+                return new ComInitDbPacket(mysqlPacketPayload);
             case COM_FIELD_LIST:
-                return new ComFieldListPacket();
+                return new ComFieldListPacket(mysqlPacketPayload);
             case COM_QUERY:
-                return new ComQueryPacket();
+                return new ComQueryPacket(mysqlPacketPayload);
             case COM_SLEEP:
             case COM_CREATE_DB:
             case COM_DROP_DB:

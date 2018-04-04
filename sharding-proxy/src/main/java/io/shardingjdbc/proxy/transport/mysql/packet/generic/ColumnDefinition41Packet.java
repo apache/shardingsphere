@@ -17,10 +17,11 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.generic;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.proxy.constant.ColumnType;
 import io.shardingjdbc.proxy.constant.ServerInfo;
+import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 import lombok.Getter;
 
 /**
@@ -30,7 +31,7 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter
-public final class ColumnDefinition41Packet extends MySQLSentPacket {
+public final class ColumnDefinition41Packet extends MySQLPacket {
     
     private final String catalog = "def";
     
@@ -67,6 +68,23 @@ public final class ColumnDefinition41Packet extends MySQLSentPacket {
         this.columnLength = columnLength;
         this.columnType = columnType;
         this.decimals = decimals;
+    }
+    
+    public ColumnDefinition41Packet(final MySQLPacketPayload mysqlPacketPayload) {
+        setSequenceId(mysqlPacketPayload.readInt1());
+        Preconditions.checkArgument(catalog.equals(mysqlPacketPayload.readStringLenenc()));
+        schema = mysqlPacketPayload.readStringLenenc();
+        table = mysqlPacketPayload.readStringLenenc();
+        orgTable = mysqlPacketPayload.readStringLenenc();
+        name = mysqlPacketPayload.readStringLenenc();
+        orgName = mysqlPacketPayload.readStringLenenc();
+        Preconditions.checkArgument(nextLength == mysqlPacketPayload.readIntLenenc());
+        Preconditions.checkArgument(characterSet == mysqlPacketPayload.readInt2());
+        columnLength = mysqlPacketPayload.readInt4();
+        columnType = ColumnType.valueOf(mysqlPacketPayload.readInt1());
+        Preconditions.checkArgument(flags == mysqlPacketPayload.readInt2());
+        decimals = mysqlPacketPayload.readInt1();
+        mysqlPacketPayload.skipReserved(2);
     }
     
     @Override

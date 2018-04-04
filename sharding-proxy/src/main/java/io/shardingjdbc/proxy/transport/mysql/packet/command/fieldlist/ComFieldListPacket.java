@@ -23,6 +23,7 @@ import io.shardingjdbc.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -36,21 +37,26 @@ import java.util.List;
 @Slf4j
 public final class ComFieldListPacket extends CommandPacket {
     
-    private String table;
+    private final String table;
     
-    private String fieldWildcard;
+    private final String fieldWildcard;
     
-    @Override
-    public ComFieldListPacket read(final MySQLPacketPayload mysqlPacketPayload) {
+    public ComFieldListPacket(final MySQLPacketPayload mysqlPacketPayload) {
         table = mysqlPacketPayload.readStringNul();
         fieldWildcard = mysqlPacketPayload.readStringEOF();
-        log.debug("table name received for Sharding-Proxy: {}", table);
-        log.debug("field wildcard received for Sharding-Proxy: {}", fieldWildcard);
-        return this;
+    }
+    
+    @Override
+    public void write(final MySQLPacketPayload mysqlPacketPayload) {
+        mysqlPacketPayload.writeInt1(CommandPacketType.COM_FIELD_LIST.getValue());
+        mysqlPacketPayload.writeStringNul(table);
+        mysqlPacketPayload.writeStringEOF(fieldWildcard);
     }
     
     @Override
     public List<DatabaseProtocolPacket> execute() {
+        log.debug("table name received for Sharding-Proxy: {}", table);
+        log.debug("field wildcard received for Sharding-Proxy: {}", fieldWildcard);
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
         return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();

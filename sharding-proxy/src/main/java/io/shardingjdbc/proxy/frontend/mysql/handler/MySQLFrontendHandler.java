@@ -50,7 +50,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
         // TODO use authPluginData to auth
-        HandshakeResponse41Packet response41 = new HandshakeResponse41Packet().read(mysqlPacketPayload);
+        HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
         context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
     }
     
@@ -58,9 +58,8 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
         int sequenceId = mysqlPacketPayload.readInt1();
-        CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(mysqlPacketPayload.readInt1());
+        CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(mysqlPacketPayload);
         commandPacket.setSequenceId(sequenceId);
-        commandPacket.read(mysqlPacketPayload);
         for (DatabaseProtocolPacket each : commandPacket.execute()) {
             context.write(each);
         }

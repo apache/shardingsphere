@@ -120,4 +120,19 @@ public enum ColumnType {
                 throw new IllegalArgumentException(String.format("Cannot find JDBC type '%s' in column type", jdbcType));
         }
     }
+    
+    /**
+     * Value of.
+     * 
+     * @param value value
+     * @return column type
+     */
+    public static ColumnType valueOf(final int value) {
+        for (ColumnType each : ColumnType.values()) {
+            if (value == each.value) {
+                return each;
+            }
+        }
+        throw new IllegalArgumentException(String.format("Cannot find value '%s' in column type", value));
+    }
 }

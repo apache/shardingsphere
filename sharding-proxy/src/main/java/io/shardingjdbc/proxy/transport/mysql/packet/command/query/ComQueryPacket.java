@@ -35,17 +35,20 @@ import java.util.List;
 @Slf4j
 public final class ComQueryPacket extends CommandPacket {
     
-    private String sql;
+    private final String sql;
+    
+    public ComQueryPacket(final MySQLPacketPayload mysqlPacketPayload) {
+        sql = mysqlPacketPayload.readStringEOF();
+    }
     
     @Override
-    public ComQueryPacket read(final MySQLPacketPayload mysqlPacketPayload) {
-        sql = mysqlPacketPayload.readStringEOF();
-        log.debug("SQL received for Sharding-Proxy: {}", sql);
-        return this;
+    public void write(final MySQLPacketPayload mysqlPacketPayload) {
+        mysqlPacketPayload.writeStringEOF(sql);
     }
     
     @Override
     public List<DatabaseProtocolPacket> execute() {
+        log.debug("SQL received for Sharding-Proxy: {}", sql);
         // TODO use common database type
         return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
     }
