@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.constant;
+package io.shardingjdbc.proxy.transport.mysql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

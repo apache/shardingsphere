@@ -18,8 +18,8 @@
 package io.shardingjdbc.proxy.transport.mysql.packet.command.query;
 
 import com.google.common.base.Preconditions;
-import io.shardingjdbc.proxy.constant.ColumnType;
-import io.shardingjdbc.proxy.constant.ServerInfo;
+import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
+import io.shardingjdbc.proxy.transport.mysql.constant.ServerInfo;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;

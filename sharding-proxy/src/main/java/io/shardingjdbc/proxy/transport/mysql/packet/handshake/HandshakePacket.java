@@ -17,9 +17,9 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.handshake;
 
-import io.shardingjdbc.proxy.constant.CapabilityFlag;
-import io.shardingjdbc.proxy.constant.ServerInfo;
-import io.shardingjdbc.proxy.constant.StatusFlag;
+import io.shardingjdbc.proxy.transport.mysql.constant.CapabilityFlag;
+import io.shardingjdbc.proxy.transport.mysql.constant.ServerInfo;
+import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;

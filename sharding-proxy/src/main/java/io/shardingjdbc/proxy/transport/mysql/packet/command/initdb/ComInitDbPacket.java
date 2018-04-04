@@ -18,7 +18,7 @@
 package io.shardingjdbc.proxy.transport.mysql.packet.command.initdb;
 
 import io.shardingjdbc.core.constant.ShardingConstant;
-import io.shardingjdbc.proxy.constant.StatusFlag;
+import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;

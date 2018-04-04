@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.constant;
+package io.shardingjdbc.proxy.transport.mysql.constant;
 
 /**
  * Sharding-Proxy's information.
