@@ -24,7 +24,6 @@ import io.shardingjdbc.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
-import io.shardingjdbc.core.parsing.lexer.token.TokenType;
 import io.shardingjdbc.core.parsing.parser.clause.expression.AliasExpressionParser;
 import io.shardingjdbc.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
@@ -103,7 +102,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         }
     }
     
-    private void parseForceIndex(final String tableName, final SQLStatement sqlStatement){
+    private void parseForceIndex(final String tableName, final SQLStatement sqlStatement) {
         boolean skipIfForce = lexerEngine.skipIfEqual(MySQLKeyword.FORCE) && this.lexerEngine.skipIfEqual(DefaultKeyword.INDEX);
         if (skipIfForce) {
             lexerEngine.accept(Symbol.LEFT_PAREN);
