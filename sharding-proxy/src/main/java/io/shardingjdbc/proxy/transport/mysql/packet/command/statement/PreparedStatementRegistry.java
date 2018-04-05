@@ -34,7 +34,7 @@ public final class PreparedStatementRegistry {
     
     private static final PreparedStatementRegistry INSTANCE = new PreparedStatementRegistry();
     
-    private final ConcurrentMap<String, Integer> sqlAndStatementIdMap = new ConcurrentHashMap<>(Integer.MAX_VALUE, 1);
+    private final ConcurrentMap<String, Integer> sqlAndStatementIdMap = new ConcurrentHashMap<>(65535, 1);
     
     private final AtomicInteger sequence = new AtomicInteger();
     
