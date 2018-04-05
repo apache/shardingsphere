@@ -177,6 +177,7 @@ public final class SelectStatement extends DQLStatement {
         SelectStatement result = processLimitForSubQuery();
         processItems(result);
         processOrderByItems(result);
+        result.setParametersIndex(getParametersIndex());
         return result;
     }
     
