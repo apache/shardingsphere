@@ -33,10 +33,9 @@ public interface SQLRouter {
      * Parse SQL.
      * 
      * @param logicSQL logic SQL
-     * @param parametersSize parameters size
      * @return parse result
      */
-    SQLStatement parse(String logicSQL, int parametersSize);
+    SQLStatement parse(String logicSQL);
     
     /**
      * Route SQL.

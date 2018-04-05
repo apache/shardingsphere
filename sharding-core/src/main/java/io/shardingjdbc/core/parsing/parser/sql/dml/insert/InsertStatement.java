@@ -67,9 +67,8 @@ public final class InsertStatement extends DMLStatement {
      * Append generate key token.
      *
      * @param shardingRule databases and tables sharding rule
-     * @param parametersSize parameters size
      */
-    public void appendGenerateKeyToken(final ShardingRule shardingRule, final int parametersSize) {
+    public void appendGenerateKeyToken(final ShardingRule shardingRule) {
         if (null != generatedKey) {
             return;
         }
@@ -82,26 +81,22 @@ public final class InsertStatement extends DMLStatement {
             return;
         }
         ItemsToken valuesToken = new ItemsToken(generatedKeysToken.get().getBeginPosition());
-        if (0 == parametersSize) {
-            appendGenerateKeyToken(shardingRule, tableRule.get(), valuesToken);
-        } else {
-            appendGenerateKeyToken(shardingRule, tableRule.get(), valuesToken, parametersSize);
-        }
+        appendGenerateKeyToken(shardingRule, tableRule.get(), valuesToken);
         getSqlTokens().remove(generatedKeysToken.get());
         getSqlTokens().add(valuesToken);
     }
     
     private void appendGenerateKeyToken(final ShardingRule shardingRule, final TableRule tableRule, final ItemsToken valuesToken) {
-        Number generatedKey = shardingRule.generateKey(tableRule.getLogicTable());
-        valuesToken.getItems().add(generatedKey.toString());
-        getConditions().add(new Condition(new Column(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLNumberExpression(generatedKey)), shardingRule);
-        this.generatedKey = new GeneratedKey(tableRule.getLogicTable(), -1, generatedKey);
-    }
-    
-    private void appendGenerateKeyToken(final ShardingRule shardingRule, final TableRule tableRule, final ItemsToken valuesToken, final int parametersSize) {
-        valuesToken.getItems().add(Symbol.QUESTION.getLiterals());
-        getConditions().add(new Condition(new Column(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLPlaceholderExpression(parametersSize)), shardingRule);
-        generatedKey = new GeneratedKey(tableRule.getGenerateKeyColumn(), parametersSize, null);
+        if (0 == getParametersIndex()) {
+            Number generatedKey = shardingRule.generateKey(tableRule.getLogicTable());
+            valuesToken.getItems().add(generatedKey.toString());
+            getConditions().add(new Condition(new Column(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLNumberExpression(generatedKey)), shardingRule);
+            this.generatedKey = new GeneratedKey(tableRule.getLogicTable(), -1, generatedKey);
+        } else {
+            valuesToken.getItems().add(Symbol.QUESTION.getLiterals());
+            getConditions().add(new Condition(new Column(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLPlaceholderExpression(getParametersIndex())), shardingRule);
+            generatedKey = new GeneratedKey(tableRule.getGenerateKeyColumn(), getParametersIndex(), null);
+        }
     }
     
     private Optional<GeneratedKeyToken> findGeneratedKeyToken() {
