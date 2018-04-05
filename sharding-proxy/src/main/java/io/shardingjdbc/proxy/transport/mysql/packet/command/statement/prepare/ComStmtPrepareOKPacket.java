@@ -19,6 +19,7 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.statement.prepare;
 
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
+@Getter
 public final class ComStmtPrepareOKPacket extends MySQLPacket {
     
     private final int status = 0x00;
