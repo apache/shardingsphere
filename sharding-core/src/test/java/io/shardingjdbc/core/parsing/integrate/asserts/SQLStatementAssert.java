@@ -19,6 +19,7 @@ package io.shardingjdbc.core.parsing.integrate.asserts;
 
 import io.shardingjdbc.core.parsing.integrate.asserts.condition.ConditionAssert;
 import io.shardingjdbc.core.parsing.integrate.asserts.groupby.GroupByAssert;
+import io.shardingjdbc.core.parsing.integrate.asserts.index.IndexAssert;
 import io.shardingjdbc.core.parsing.integrate.asserts.item.ItemAssert;
 import io.shardingjdbc.core.parsing.integrate.asserts.limit.LimitAssert;
 import io.shardingjdbc.core.parsing.integrate.asserts.orderby.OrderByAssert;
@@ -46,6 +47,8 @@ public final class SQLStatementAssert {
     
     private final TokenAssert tokenAssert;
     
+    private final IndexAssert indexAssert;
+    
     private final ItemAssert itemAssert;
     
     private final GroupByAssert groupByAssert;
@@ -62,6 +65,7 @@ public final class SQLStatementAssert {
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);
         tokenAssert = new TokenAssert(sqlCaseType, assertMessage);
+        indexAssert = new IndexAssert(sqlCaseType, assertMessage);
         itemAssert = new ItemAssert(assertMessage);
         groupByAssert = new GroupByAssert(assertMessage);
         orderByAssert = new OrderByAssert(assertMessage);
@@ -75,6 +79,7 @@ public final class SQLStatementAssert {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
         conditionAssert.assertConditions(actual.getConditions(), expected.getConditions());
         tokenAssert.assertTokens(actual.getSqlTokens(), expected.getTokens());
+        indexAssert.assertParametersIndex(actual.getParametersIndex(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
             assertSelectStatement((SelectStatement) actual);
         }
