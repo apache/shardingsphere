@@ -20,7 +20,6 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.statement.prepare;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * COM_STMT_PREPARE_OK packet.
@@ -28,7 +27,6 @@ import lombok.RequiredArgsConstructor;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public final class ComStmtPrepareOKPacket extends MySQLPacket {
     
@@ -41,6 +39,14 @@ public final class ComStmtPrepareOKPacket extends MySQLPacket {
     private final int numParams;
     
     private final int warningCount;
+    
+    public ComStmtPrepareOKPacket(final int sequenceId, final int statementId, final int numColumns, final int numParams, final int warningCount) {
+        setSequenceId(sequenceId);
+        this.statementId = statementId;
+        this.numColumns = numColumns;
+        this.numParams = numParams;
+        this.warningCount = warningCount;
+    }
     
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
