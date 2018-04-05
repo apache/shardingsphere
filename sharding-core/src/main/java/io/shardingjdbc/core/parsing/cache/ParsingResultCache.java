@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing;
+package io.shardingjdbc.core.parsing.cache;
 
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import lombok.AccessLevel;

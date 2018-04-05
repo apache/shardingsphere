@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.parsing;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.parsing.cache.ParsingResultCache;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.LexerEngineFactory;
 import io.shardingjdbc.core.parsing.parser.sql.SQLParserFactory;
