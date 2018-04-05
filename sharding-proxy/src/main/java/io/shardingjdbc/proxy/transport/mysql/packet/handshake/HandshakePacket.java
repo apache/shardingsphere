@@ -51,7 +51,7 @@ public class HandshakePacket extends MySQLPacket {
     private final AuthPluginData authPluginData;
     
     public HandshakePacket(final int connectionId, final AuthPluginData authPluginData) {
-        setSequenceId(0);
+        super(0);
         this.connectionId = connectionId;
         this.authPluginData = authPluginData;
     }

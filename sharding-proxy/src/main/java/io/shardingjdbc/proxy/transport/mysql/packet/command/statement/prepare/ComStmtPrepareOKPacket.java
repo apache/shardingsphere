@@ -41,7 +41,7 @@ public final class ComStmtPrepareOKPacket extends MySQLPacket {
     private final int warningCount;
     
     public ComStmtPrepareOKPacket(final int sequenceId, final int statementId, final int numColumns, final int numParams, final int warningCount) {
-        setSequenceId(sequenceId);
+        super(sequenceId);
         this.statementId = statementId;
         this.numColumns = numColumns;
         this.numParams = numParams;

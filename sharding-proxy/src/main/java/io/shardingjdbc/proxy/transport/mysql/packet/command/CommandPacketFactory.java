@@ -34,21 +34,22 @@ public final class CommandPacketFactory {
     /**
      * Get command Packet.
      * 
+     * @param sequenceId sequence ID
      * @param mysqlPacketPayload MySQL packet payload
      * @return Command packet
      */
-    public static CommandPacket getCommandPacket(final MySQLPacketPayload mysqlPacketPayload) {
+    public static CommandPacket getCommandPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
         int commandPacketTypeValue = mysqlPacketPayload.readInt1();
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
             case COM_QUIT:
-                return new ComQuitPacket();
+                return new ComQuitPacket(sequenceId);
             case COM_INIT_DB:
-                return new ComInitDbPacket(mysqlPacketPayload);
+                return new ComInitDbPacket(sequenceId, mysqlPacketPayload);
             case COM_FIELD_LIST:
-                return new ComFieldListPacket(mysqlPacketPayload);
+                return new ComFieldListPacket(sequenceId, mysqlPacketPayload);
             case COM_QUERY:
-                return new ComQueryPacket(mysqlPacketPayload);
+                return new ComQueryPacket(sequenceId, mysqlPacketPayload);
             case COM_SLEEP:
             case COM_CREATE_DB:
             case COM_DROP_DB:
@@ -68,7 +69,7 @@ public final class CommandPacketFactory {
             case COM_CONNECT_OUT:
             case COM_REGISTER_SLAVE:
             case COM_STMT_PREPARE:
-                return new ComStmtPreparePacket(mysqlPacketPayload);
+                return new ComStmtPreparePacket(sequenceId, mysqlPacketPayload);
             case COM_STMT_EXECUTE:
             case COM_STMT_SEND_LONG_DATA:
             case COM_STMT_CLOSE:
@@ -78,9 +79,9 @@ public final class CommandPacketFactory {
             case COM_DAEMON:
             case COM_BINLOG_DUMP_GTID:
             case COM_RESET_CONNECTION:
-                return new UnsupportedCommandPacket(type);
+                return new UnsupportedCommandPacket(sequenceId, type);
             default:
-                return new UnsupportedCommandPacket(type);
+                return new UnsupportedCommandPacket(sequenceId, type);
         }
     }
 }

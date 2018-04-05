@@ -44,7 +44,7 @@ public class OKPacket extends MySQLPacket {
     private final String info;
     
     public OKPacket(final int sequenceId, final long affectedRows, final long lastInsertId, final int statusFlags, final int warnings, final String info) {
-        setSequenceId(sequenceId);
+        super(sequenceId);
         this.affectedRows = affectedRows;
         this.lastInsertId = lastInsertId;
         this.statusFlags = statusFlags;
@@ -53,7 +53,7 @@ public class OKPacket extends MySQLPacket {
     }
     
     public OKPacket(final MySQLPacketPayload mysqlPacketPayload) {
-        setSequenceId(mysqlPacketPayload.readInt1());
+        super(mysqlPacketPayload.readInt1());
         Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
         affectedRows = mysqlPacketPayload.readIntLenenc();
         lastInsertId = mysqlPacketPayload.readIntLenenc();

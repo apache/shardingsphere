@@ -37,7 +37,8 @@ public final class ComQueryPacket extends CommandPacket {
     
     private final String sql;
     
-    public ComQueryPacket(final MySQLPacketPayload mysqlPacketPayload) {
+    public ComQueryPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+        super(sequenceId);
         sql = mysqlPacketPayload.readStringEOF();
     }
     

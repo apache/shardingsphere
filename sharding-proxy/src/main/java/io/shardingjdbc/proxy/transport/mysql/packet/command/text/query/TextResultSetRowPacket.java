@@ -37,7 +37,7 @@ public final class TextResultSetRowPacket extends MySQLPacket {
     private final List<Object> data;
     
     public TextResultSetRowPacket(final int sequenceId, final List<Object> data) {
-        setSequenceId(sequenceId);
+        super(sequenceId);
         this.data = data;
     }
     

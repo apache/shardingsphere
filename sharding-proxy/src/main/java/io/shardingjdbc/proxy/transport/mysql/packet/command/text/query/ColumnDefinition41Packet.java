@@ -59,7 +59,7 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
     
     public ColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable, 
                                     final String name, final String orgName, final int columnLength, final ColumnType columnType, final int decimals) {
-        setSequenceId(sequenceId);
+        super(sequenceId);
         this.schema = schema;
         this.table = table;
         this.orgTable = orgTable;
@@ -71,7 +71,7 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
     }
     
     public ColumnDefinition41Packet(final MySQLPacketPayload mysqlPacketPayload) {
-        setSequenceId(mysqlPacketPayload.readInt1());
+        super(mysqlPacketPayload.readInt1());
         Preconditions.checkArgument(catalog.equals(mysqlPacketPayload.readStringLenenc()));
         schema = mysqlPacketPayload.readStringLenenc();
         table = mysqlPacketPayload.readStringLenenc();

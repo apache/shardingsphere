@@ -33,7 +33,7 @@ public final class FieldCountPacket extends MySQLPacket {
     private final int columnCount;
     
     public FieldCountPacket(final int sequenceId, final int columnCount) {
-        setSequenceId(sequenceId);
+        super(sequenceId);
         this.columnCount = columnCount;
     }
     

@@ -41,7 +41,8 @@ public final class ComFieldListPacket extends CommandPacket {
     
     private final String fieldWildcard;
     
-    public ComFieldListPacket(final MySQLPacketPayload mysqlPacketPayload) {
+    public ComFieldListPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+        super(sequenceId);
         table = mysqlPacketPayload.readStringNul();
         fieldWildcard = mysqlPacketPayload.readStringEOF();
     }

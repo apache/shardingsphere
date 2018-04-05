@@ -48,7 +48,8 @@ public final class ComStmtPreparePacket extends CommandPacket {
     
     private final String sql;
     
-    public ComStmtPreparePacket(final MySQLPacketPayload mysqlPacketPayload) {
+    public ComStmtPreparePacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+        super(sequenceId);
         sql = mysqlPacketPayload.readStringEOF();
     }
     

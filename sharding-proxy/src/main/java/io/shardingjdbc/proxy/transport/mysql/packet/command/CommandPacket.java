@@ -29,6 +29,10 @@ import java.util.List;
  */
 public abstract class CommandPacket extends MySQLPacket {
     
+    public CommandPacket(final int sequenceId) {
+        super(sequenceId);
+    }
+    
     /**
      * Execute command.
      * 

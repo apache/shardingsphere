@@ -42,7 +42,7 @@ public class ErrPacket extends MySQLPacket {
     private final String errorMessage;
     
     public ErrPacket(final int sequenceId, final int errorCode, final String sqlStateMarker, final String sqlState, final String errorMessage) {
-        setSequenceId(sequenceId);
+        super(sequenceId);
         this.errorCode = errorCode;
         this.sqlStateMarker = sqlStateMarker;
         this.sqlState = sqlState;
@@ -50,7 +50,7 @@ public class ErrPacket extends MySQLPacket {
     }
     
     public ErrPacket(final MySQLPacketPayload mysqlPacketPayload) {
-        setSequenceId(mysqlPacketPayload.readInt1());
+        super(mysqlPacketPayload.readInt1());
         Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
         errorCode = mysqlPacketPayload.readInt2();
         sqlStateMarker = mysqlPacketPayload.readStringFix(1);

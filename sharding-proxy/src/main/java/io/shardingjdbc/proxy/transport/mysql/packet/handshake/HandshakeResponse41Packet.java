@@ -44,7 +44,7 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
     private String database;
     
     public HandshakeResponse41Packet(final MySQLPacketPayload mysqlPacketPayload) {
-        setSequenceId(mysqlPacketPayload.readInt1());
+        super(mysqlPacketPayload.readInt1());
         capabilityFlags = mysqlPacketPayload.readInt4();
         maxPacketSize = mysqlPacketPayload.readInt4();
         characterSet = mysqlPacketPayload.readInt1();

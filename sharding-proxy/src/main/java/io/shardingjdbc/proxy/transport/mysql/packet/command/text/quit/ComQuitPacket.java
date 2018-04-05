@@ -35,6 +35,10 @@ import java.util.List;
  */
 public final class ComQuitPacket extends CommandPacket {
     
+    public ComQuitPacket(final int sequenceId) {
+        super(sequenceId);
+    }
+    
     @Override
     public List<DatabaseProtocolPacket> execute() {
         return Collections.<DatabaseProtocolPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));

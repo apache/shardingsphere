@@ -20,7 +20,6 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class UnsupportedCommandPacket extends CommandPacket {
     
     private static final int ERROR_CODE = 0xcc;
@@ -42,6 +40,11 @@ public final class UnsupportedCommandPacket extends CommandPacket {
     private static final String ERROR_MESSAGE = "Unsupported command packet '%s'.";
     
     private final CommandPacketType type;
+    
+    public UnsupportedCommandPacket(final int sequenceId, final CommandPacketType type) {
+        super(sequenceId);
+        this.type = type;
+    }
     
     @Override
     public List<DatabaseProtocolPacket> execute() {
