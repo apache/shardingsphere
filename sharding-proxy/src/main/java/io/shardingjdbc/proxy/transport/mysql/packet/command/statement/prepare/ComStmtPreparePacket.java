@@ -15,29 +15,29 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.mysql.packet.command.query;
+package io.shardingjdbc.proxy.transport.mysql.packet.command.statement.prepare;
 
-import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * COM_QUERY command packet.
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
+ * COM_STMT_PREPARE command packet.
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-prepare.html">COM_STMT_PREPARE</a>
  *
  * @author zhangliang
  */
 @Slf4j
-public final class ComQueryPacket extends CommandPacket {
+public final class ComStmtPreparePacket extends CommandPacket {
     
     private final String sql;
     
-    public ComQueryPacket(final MySQLPacketPayload mysqlPacketPayload) {
+    public ComStmtPreparePacket(final MySQLPacketPayload mysqlPacketPayload) {
         sql = mysqlPacketPayload.readStringEOF();
     }
     
@@ -48,8 +48,12 @@ public final class ComQueryPacket extends CommandPacket {
     
     @Override
     public List<DatabaseProtocolPacket> execute() {
-        log.debug("SQL received for Sharding-Proxy: {}", sql);
-        // TODO use common database type
-        return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
+        log.debug("COM_STMT_PREPARE received for Sharding-Proxy: {}", sql);
+        List<DatabaseProtocolPacket> result = new LinkedList<>();
+        // TODO write correct numColumns and numParams
+        result.add(new ComStmtPrepareOKPacket(PreparedStatementRegistry.getInstance().register(sql), 0, 0, 0));
+        // TODO add If num_params > 0
+        // TODO add If numColumns > 0
+        return result;
     }
 }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.mysql.packet.command.fieldlist;
+package io.shardingjdbc.proxy.transport.mysql.packet.command.text.fieldlist;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingConstant;

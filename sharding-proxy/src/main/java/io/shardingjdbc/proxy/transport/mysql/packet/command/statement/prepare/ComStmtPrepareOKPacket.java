@@ -15,30 +15,38 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.mysql.packet.command.query;
+package io.shardingjdbc.proxy.transport.mysql.packet.command.statement.prepare;
 
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * COM_QUERY response field count packet.
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html">COM_QUERY field count</a>
+ * COM_STMT_PREPARE_OK packet.
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-prepare-response.html#packet-COM_STMT_PREPARE_OK">COM_STMT_PREPARE_OK</a>
  *
  * @author zhangliang
  */
-@Getter
-public final class FieldCountPacket extends MySQLPacket {
+@RequiredArgsConstructor
+public final class ComStmtPrepareOKPacket extends MySQLPacket {
     
-    private final int columnCount;
+    private final int status = 0x00;
     
-    public FieldCountPacket(final int sequenceId, final int columnCount) {
-        setSequenceId(sequenceId);
-        this.columnCount = columnCount;
-    }
+    private final int statementId;
+    
+    private final int numColumns;
+    
+    private final int numParams;
+    
+    private final int warningCount;
     
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeIntLenenc(columnCount);
+        mysqlPacketPayload.writeInt1(status);
+        mysqlPacketPayload.writeInt4(statementId);
+        mysqlPacketPayload.writeInt2(numColumns);
+        mysqlPacketPayload.writeInt2(numParams);
+        mysqlPacketPayload.writeReserved(1);
+        mysqlPacketPayload.writeInt2(warningCount);
     }
 }

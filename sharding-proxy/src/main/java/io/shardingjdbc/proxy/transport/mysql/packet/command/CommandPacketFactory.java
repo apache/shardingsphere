@@ -18,10 +18,11 @@
 package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.transport.mysql.packet.command.fieldlist.ComFieldListPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.command.initdb.ComInitDbPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.command.query.ComQueryPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.command.quit.ComQuitPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.text.fieldlist.ComFieldListPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.text.initdb.ComInitDbPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.prepare.ComStmtPreparePacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.text.quit.ComQuitPacket;
 
 /**
  * Command packet factory.
@@ -67,6 +68,7 @@ public final class CommandPacketFactory {
             case COM_CONNECT_OUT:
             case COM_REGISTER_SLAVE:
             case COM_STMT_PREPARE:
+                return new ComStmtPreparePacket(mysqlPacketPayload);
             case COM_STMT_EXECUTE:
             case COM_STMT_SEND_LONG_DATA:
             case COM_STMT_CLOSE:

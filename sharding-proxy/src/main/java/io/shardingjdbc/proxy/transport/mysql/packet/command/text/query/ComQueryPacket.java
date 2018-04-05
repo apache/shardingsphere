@@ -15,33 +15,40 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.mysql.packet.command.quit;
+package io.shardingjdbc.proxy.transport.mysql.packet.command.text.query;
 
-import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
+import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketType;
-import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
- * COM_QUIT command packet.
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-quit.html">COM_QUIT</a>
+ * COM_QUERY command packet.
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  *
  * @author zhangliang
  */
-public final class ComQuitPacket extends CommandPacket {
+@Slf4j
+public final class ComQueryPacket extends CommandPacket {
     
-    @Override
-    public List<DatabaseProtocolPacket> execute() {
-        return Collections.<DatabaseProtocolPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+    private final String sql;
+    
+    public ComQueryPacket(final MySQLPacketPayload mysqlPacketPayload) {
+        sql = mysqlPacketPayload.readStringEOF();
     }
     
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(CommandPacketType.COM_QUIT.getValue());
+        mysqlPacketPayload.writeStringEOF(sql);
+    }
+    
+    @Override
+    public List<DatabaseProtocolPacket> execute() {
+        log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
+        return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
     }
 }
