@@ -22,7 +22,6 @@ import io.shardingjdbc.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedCondition;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedConditions;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedValue;
-import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
 import lombok.RequiredArgsConstructor;
@@ -51,19 +50,22 @@ public final class ConditionAssert {
      * @param actual actual conditions
      * @param expected expected conditions
      */
-    public void assertConditions(final Conditions actual, final List<ExpectedConditions> expected) {
+    public void assertOrConditions(final Conditions actual, final List<ExpectedConditions> expected) {
         assertThat(assertMessage.getFullAssertMessage("Or conditions size assertion error: "), actual.getOrConditions().size(), is(expected.size()));
-        int andConditionsIndex = 0;
+        int count = 0;
         for (ExpectedConditions andConditions : expected) {
-            assertThat(assertMessage.getFullAssertMessage("And conditions size assertion error: "), actual.getOrConditions().get(andConditionsIndex).size(), is(andConditions.getConditions().size()));
-            int conditionIndex = 0;
-            for (ExpectedCondition each : andConditions.getConditions()) {
-                Optional<Condition> condition = actual.get(andConditionsIndex, conditionIndex);
-                assertTrue(assertMessage.getFullAssertMessage("Table should exist: "), condition.isPresent());
-                assertCondition(condition.get(), each);
-                conditionIndex++;
-            }
-            andConditionsIndex++;
+            assertAndConditions(actual.getOrConditions().get(count), andConditions.getConditions());
+            count++;
+        }
+    }
+    
+    public void assertAndConditions(final List<Condition> actual, final List<ExpectedCondition> expected) {
+        assertThat(assertMessage.getFullAssertMessage("And conditions size assertion error: "), actual.size(), is(expected.size()));
+        int count = 0;
+        for (ExpectedCondition each : expected) {
+            Condition condition = actual.get(count);
+            assertCondition(condition, each);
+            count++;
         }
     }
     
