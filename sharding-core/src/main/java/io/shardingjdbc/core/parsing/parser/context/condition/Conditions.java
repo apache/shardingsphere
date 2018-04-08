@@ -65,24 +65,6 @@ public final class Conditions {
     }
     
     /**
-     * Find condition via column.
-     *
-     * @param andConditionsIndex index of and conditions
-     * @param conditionsIndex index of condition
-     * @return found condition
-     */
-    public Optional<Condition> get(final int andConditionsIndex, final int conditionsIndex) {
-        Condition result = null;
-        if (orConditions.size() > andConditionsIndex) {
-            List<Condition> andConditions = orConditions.get(andConditionsIndex);
-            if (null != andConditions && andConditions.size() > conditionsIndex) {
-                result = andConditions.get(conditionsIndex);
-            }
-        }
-        return Optional.fromNullable(result);
-    }
-    
-    /**
      * Find condition via column in first and conditions.
      *
      * @param column column
