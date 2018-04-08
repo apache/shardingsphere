@@ -7,12 +7,14 @@
         <tokens>
             <table-token begin-position="33" original-literals="t_order" />
         </tokens>
-        <conditions>
-            <condition column-name="order_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
-            </condition>
-        </conditions>
+        <or-conditions>
+            <and-conditions>
+                <condition column-name="order_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+            </and-conditions>
+        </or-conditions>
     </parser-result>
     
     <!-- TODO cannot pass,add later 

@@ -20,6 +20,7 @@ package io.shardingjdbc.core.parsing.integrate.asserts.condition;
 import com.google.common.base.Optional;
 import io.shardingjdbc.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedCondition;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedConditions;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedValue;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
@@ -50,12 +51,19 @@ public final class ConditionAssert {
      * @param actual actual conditions
      * @param expected expected conditions
      */
-    public void assertConditions(final Conditions actual, final List<ExpectedCondition> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Conditions size assertion error: "), actual.getConditions().size(), is(expected.size()));
-        for (ExpectedCondition each : expected) {
-            Optional<Condition> condition = actual.find(new Column(each.getColumnName(), each.getTableName()));
-            assertTrue(assertMessage.getFullAssertMessage("Table should exist: "), condition.isPresent());
-            assertCondition(condition.get(), each);
+    public void assertConditions(final Conditions actual, final List<ExpectedConditions> expected) {
+        assertThat(assertMessage.getFullAssertMessage("Or conditions size assertion error: "), actual.getOrConditions().size(), is(expected.size()));
+        int andConditionsIndex = 0;
+        for (ExpectedConditions andConditions : expected) {
+            assertThat(assertMessage.getFullAssertMessage("And conditions size assertion error: "), actual.getOrConditions().get(andConditionsIndex).size(), is(andConditions.getConditions().size()));
+            int conditionIndex = 0;
+            for (ExpectedCondition each : andConditions.getConditions()) {
+                Optional<Condition> condition = actual.get(andConditionsIndex, conditionIndex);
+                assertTrue(assertMessage.getFullAssertMessage("Table should exist: "), condition.isPresent());
+                assertCondition(condition.get(), each);
+                conditionIndex++;
+            }
+            andConditionsIndex++;
         }
     }
     

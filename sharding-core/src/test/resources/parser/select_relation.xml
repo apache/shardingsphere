@@ -9,11 +9,13 @@
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="37" original-literals="t_order_item" />
         </tokens>
-        <conditions>
-            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="1000" type="int" />
-            </condition>
-        </conditions>
+        <or-conditions>
+            <and-conditions>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1000" type="int" />
+                </condition>
+            </and-conditions>
+        </or-conditions>
     </parser-result>
     
     <parser-result sql-case-id="assertSelectWithInnerJoinAndRelatedWithTableName" parameters="1000">
@@ -29,11 +31,13 @@
             <table-token begin-position="75" original-literals="t_order_item" />
             <table-token begin-position="103" original-literals="t_order" />
         </tokens>
-        <conditions>
-            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="1000" type="int" />
-            </condition>
-        </conditions>
+        <or-conditions>
+            <and-conditions>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1000" type="int" />
+                </condition>
+            </and-conditions>
+        </or-conditions>
     </parser-result>
     
     <parser-result sql-case-id="assertSelectWithJoinUsing" parameters="1000">
@@ -45,10 +49,12 @@
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="31" original-literals="t_order_item" />
         </tokens>
-        <conditions>
-            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="1000" type="int" />
-            </condition>
-        </conditions>
+        <or-conditions>
+            <and-conditions>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1000" type="int" />
+                </condition>
+            </and-conditions>
+        </or-conditions>
     </parser-result>
 </parser-result-sets>

@@ -48,11 +48,13 @@
         <tokens>
             <table-token begin-position="14" original-literals="t_order_item" />
         </tokens>
-        <conditions>
-            <condition column-name="item_id" table-name="t_order_item" operator="IN">
-                <value index="1" literal="1" type="int" />
-                <value index="2" literal="2" type="int" />
-            </condition>
-        </conditions>
+        <or-conditions>
+            <and-conditions>
+                <condition column-name="item_id" table-name="t_order_item" operator="IN">
+                    <value index="1" literal="1" type="int" />
+                    <value index="2" literal="2" type="int" />
+                </condition>
+            </and-conditions>
+        </or-conditions>
     </parser-result>
 </parser-result-sets>

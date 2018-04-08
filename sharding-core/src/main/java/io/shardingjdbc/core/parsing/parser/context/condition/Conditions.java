@@ -17,15 +17,15 @@
 
 package io.shardingjdbc.core.parsing.parser.context.condition;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Conditions collection.
@@ -37,12 +37,10 @@ import java.util.Map.Entry;
 @ToString
 public final class Conditions {
     
-    private final Map<Column, Condition> conditions = new LinkedHashMap<>();
+    private final List<List<Condition>> orConditions = new LinkedList<>();
     
     public Conditions(final Conditions conditions) {
-        for (Entry<Column, Condition> entry : conditions.conditions.entrySet()) {
-            this.conditions.put(entry.getKey(), entry.getValue());
-        }
+        orConditions.addAll(conditions.orConditions);
     }
     
     /**
@@ -55,26 +53,62 @@ public final class Conditions {
     public void add(final Condition condition, final ShardingRule shardingRule) {
         // TODO self-join has problem, table name maybe use alias
         if (shardingRule.isShardingColumn(condition.getColumn())) {
-            conditions.put(condition.getColumn(), condition);
+            List<Condition> firstAndConditions;
+            if (orConditions.isEmpty()) {
+                firstAndConditions = new LinkedList<>();
+                orConditions.add(firstAndConditions);
+            } else {
+                firstAndConditions = orConditions.get(0);
+            }
+            firstAndConditions.add(condition);
         }
-    }
-    
-    /**
-     * Adjust condition is empty or not.
-     * 
-     * @return condition is empty or not
-     */
-    public boolean isEmpty() {
-        return conditions.isEmpty();
     }
     
     /**
      * Find condition via column.
      *
+     * @param andConditionsIndex index of and conditions
+     * @param conditionsIndex index of condition
+     * @return found condition
+     */
+    public Optional<Condition> get(final int andConditionsIndex, final int conditionsIndex) {
+        Condition result = null;
+        if (orConditions.size() > andConditionsIndex) {
+            List<Condition> andConditions = orConditions.get(andConditionsIndex);
+            if (null != andConditions && andConditions.size() > conditionsIndex) {
+                result = andConditions.get(conditionsIndex);
+            }
+        }
+        return Optional.fromNullable(result);
+    }
+    
+    /**
+     * Find condition via column in first and conditions.
+     *
      * @param column column
      * @return found condition
      */
     public Optional<Condition> find(final Column column) {
-        return Optional.fromNullable(conditions.get(column));
+        return find(column, 0);
+    }
+    
+    /**
+     * Find condition via column in index and conditions.
+     *
+     * @param column column
+     * @param index index of and conditions
+     * @return found condition
+     */
+    public Optional<Condition> find(final Column column, int index) {
+        Condition result = null;
+        if (orConditions.size() > index) {
+            List<Condition> andConditions = orConditions.get(index);
+            for (Condition each : andConditions) {
+                if (Objects.equal(each.getColumn(), column)) {
+                    result = each;
+                }
+            }
+        }
+        return Optional.fromNullable(result);
     }
 }
