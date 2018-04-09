@@ -7,14 +7,16 @@
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-        <conditions>
-            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="1000" type="int" />
-            </condition>
-            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                <value index="1" literal="1001" type="int" />
-            </condition>
-        </conditions>
+        <or-conditions>
+            <and-conditions>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1001" type="int" />
+                </condition>
+            </and-conditions>
+        </or-conditions>
     </parser-result>
     
     <parser-result sql-case-id="assertDeleteWithoutShardingValue" parameters="'init'">

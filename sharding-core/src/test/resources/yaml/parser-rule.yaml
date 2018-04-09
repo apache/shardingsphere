@@ -18,6 +18,7 @@ shardingRule:
         complex:
           shardingColumns: user_id, order_id
           algorithmClassName: io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm
+      logicIndex: order_index
     t_order_item:
       actualDataNodes: db${0..1}.t_order_item
       tableStrategy: 

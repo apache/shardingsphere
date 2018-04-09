@@ -28,6 +28,7 @@ import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowOtherStat
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dal.show.AbstractShowParser;
+import io.shardingjdbc.core.parsing.parser.token.RemoveToken;
 import io.shardingjdbc.core.parsing.parser.token.SchemaToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
@@ -56,8 +57,15 @@ public final class MySQLShowParser extends AbstractShowParser {
         if (lexerEngine.equalAny(MySQLKeyword.DATABASES)) {
             return new ShowDatabasesStatement();
         }
-        if (lexerEngine.equalAny(MySQLKeyword.TABLES)) {
-            return new ShowTablesStatement();
+        if (lexerEngine.skipIfEqual(MySQLKeyword.TABLES)) {
+            DALStatement result = new ShowTablesStatement();
+            if (lexerEngine.equalAny(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+                int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+                lexerEngine.nextToken();
+                lexerEngine.nextToken();
+                result.getSqlTokens().add(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition()));
+            }
+            return result;
         }
         if (lexerEngine.skipIfEqual(MySQLKeyword.COLUMNS, MySQLKeyword.FIELDS)) {
             DALStatement result = new ShowColumnsStatement();

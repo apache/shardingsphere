@@ -42,8 +42,7 @@ public class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
     
     public SpringMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final String name, 
                                        final String masterDataSourceName, final Collection<String> slaveDataSourceNames, final MasterSlaveLoadBalanceAlgorithmType strategyType) throws SQLException {
-        super(dataSourceMap, 
-                getMasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, null == strategyType ? null : strategyType.getAlgorithm()), Collections.<String, Object>emptyMap());
+        super(dataSourceMap, getMasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, null == strategyType ? null : strategyType.getAlgorithm()), Collections.<String, Object>emptyMap());
     }
     
     private static MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration(

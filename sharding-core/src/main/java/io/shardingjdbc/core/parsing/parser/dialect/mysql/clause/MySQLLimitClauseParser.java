@@ -74,7 +74,9 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
             selectStatement.setLimit(getLimitWithOffset(valueIndex, valueBeginPosition, value, isParameterForValue, selectStatement));
             return;
         }
-        if (!isParameterForValue) {
+        if (isParameterForValue) {
+            selectStatement.increaseParametersIndex();
+        } else {
             selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
         Limit limit = new Limit(DatabaseType.MySQL);
@@ -99,10 +101,14 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
             throw new SQLParsingException(lexerEngine);
         }
         lexerEngine.nextToken();
-        if (!isParameterForValue) {
+        if (isParameterForValue) {
+            selectStatement.increaseParametersIndex();
+        } else {
             selectStatement.getSqlTokens().add(new OffsetToken(valueBeginPosition, value));
         }
-        if (!isParameterForRowCount) {
+        if (isParameterForRowCount) {
+            selectStatement.increaseParametersIndex();
+        } else {
             selectStatement.getSqlTokens().add(new RowCountToken(rowCountBeginPosition, rowCountValue));
         }
         Limit result = new Limit(DatabaseType.MySQL);
@@ -127,10 +133,14 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
             throw new SQLParsingException(lexerEngine);
         }
         lexerEngine.nextToken();
-        if (!isParameterForOffset) {
+        if (isParameterForOffset) {
+            selectStatement.increaseParametersIndex();
+        } else {
             selectStatement.getSqlTokens().add(new OffsetToken(offsetBeginPosition, offsetValue));
         }
-        if (!isParameterForValue) {
+        if (isParameterForValue) {
+            selectStatement.increaseParametersIndex();
+        } else {
             selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
         Limit result = new Limit(DatabaseType.MySQL);

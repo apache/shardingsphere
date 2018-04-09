@@ -19,20 +19,27 @@ package io.shardingjdbc.proxy.transport.mysql.packet;
 
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * MySQL packet.
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public abstract class MySQLPacket implements DatabaseProtocolPacket {
     
     public static final int PAYLOAD_LENGTH = 3;
     
     public static final int SEQUENCE_LENGTH = 1;
     
-    private int sequenceId;
+    private final int sequenceId;
+    
+    /**
+     * Write packet to byte buffer.
+     *
+     * @param mysqlPacketPayload packet payload to be write
+     */
+    public abstract void write(MySQLPacketPayload mysqlPacketPayload);
 }

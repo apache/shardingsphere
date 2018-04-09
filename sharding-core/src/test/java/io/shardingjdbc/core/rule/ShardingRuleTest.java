@@ -140,7 +140,7 @@ public final class ShardingRuleTest {
         TableRuleConfiguration tableRuleConfig = createTableRuleConfigWithDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
-        assertThat(actual.getDatabaseShardingStrategy(actual.getTableRule("other_Table")), instanceOf(NoneShardingStrategy.class));
+        actual.getDatabaseShardingStrategy(actual.getTableRule("other_Table"));
     }
     
     @Test
@@ -442,5 +442,4 @@ public final class ShardingRuleTest {
         result.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new TestPreciseShardingAlgorithm()));
         return result;
     }
-    
 }
