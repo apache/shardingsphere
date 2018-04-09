@@ -69,9 +69,9 @@ public final class ParsingSQLRouter implements SQLRouter {
     private final List<Number> generatedKeys = new LinkedList<>();
     
     @Override
-    public SQLStatement parse(final String logicSQL) {
+    public SQLStatement parse(final String logicSQL, final boolean useCache) {
         SQLParsingEngine parsingEngine = new SQLParsingEngine(databaseType, logicSQL, shardingRule);
-        SQLStatement result = parsingEngine.parse();
+        SQLStatement result = parsingEngine.parse(useCache);
         if (result instanceof InsertStatement) {
             ((InsertStatement) result).appendGenerateKeyToken(shardingRule);
         }

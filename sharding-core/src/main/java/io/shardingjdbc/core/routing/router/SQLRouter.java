@@ -33,9 +33,10 @@ public interface SQLRouter {
      * Parse SQL.
      * 
      * @param logicSQL logic SQL
+     * @param useCache use cache to save SQL parse result or not
      * @return parse result
      */
-    SQLStatement parse(String logicSQL);
+    SQLStatement parse(String logicSQL, boolean useCache);
     
     /**
      * Route SQL.
