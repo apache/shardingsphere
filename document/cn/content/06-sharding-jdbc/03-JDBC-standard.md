@@ -1,7 +1,7 @@
 +++
 toc = true
-title = "JDBC"
-weight = 1
+title = "使用规范"
+weight = 3
 +++
 
 ## JDBC支持列表
