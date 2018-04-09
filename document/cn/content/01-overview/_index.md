@@ -54,7 +54,8 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 * 支持客户端熔断和失效转移
 * 支持Open Tracing协议
 
-## 部署架构
+## Sharding-Sphere
+TODO
 
 ### Sharding-JDBC
 
@@ -81,41 +82,3 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 
 ![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_v2_cn.png)
 
-## 快速入门
-
-### Sharding-JDBC
-
-#### 1. 引入maven依赖
-
-```xml
-<!-- 引入sharding-jdbc核心模块 -->
-<dependency>
-    <groupId>io.shardingjdbc</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
-    <version>${latest.release.version}</version>
-</dependency>
-```
-
-#### 2. 规则配置
-
-Sharding-JDBC可以通过`Java`，`YAML`，`Spring命名空间`和`Spring Boot Starter`四种方式配置，开发者可根据场景选择适合的配置方式。
-
-#### 3. 创建DataSource
-
-通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后即可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
-
-```java
-DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
-```
-
-### Sharding-Proxy
-
-#### 1. 规则配置
-
-编辑`${sharding-proxy}\conf\sharding-config.yaml`。配置规则同Sharding-JDBC-Driver的`YAML`格式。 
-
-#### 2. 启动服务
-
-```sh
-${sharding-proxy}\bin\start.sh ${port}
-```

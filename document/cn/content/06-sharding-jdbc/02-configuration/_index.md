@@ -1,12 +1,13 @@
 +++
+toc = true
 title = "配置手册"
-weight = 4
+weight = 2
 chapter = true
 +++
 
 ## 背景
 
-本小节主要介绍配置概况，以及各种配置方式，主要包括：
+本小节主要介绍Sharding-JDBC的配置概览，以及各种配置方式，主要包括：
 
 * 概览
 * Java配置
