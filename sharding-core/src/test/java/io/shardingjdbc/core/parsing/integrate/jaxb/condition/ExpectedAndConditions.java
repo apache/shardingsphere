@@ -34,7 +34,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedConditions {
+public final class ExpectedAndConditions {
     
     @XmlElement(name = "condition")
     private List<ExpectedCondition> conditions = new LinkedList<>();

@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.parsing.integrate.jaxb.root;
 
-import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedConditions;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedOrConditions;
 import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.ExpectedGroupByColumn;
 import io.shardingjdbc.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
 import io.shardingjdbc.core.parsing.integrate.jaxb.limit.ExpectedLimit;
@@ -27,12 +27,7 @@ import io.shardingjdbc.core.parsing.integrate.jaxb.token.ExpectedTokens;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlList;
+import javax.xml.bind.annotation.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,9 +47,8 @@ public final class ParserResult {
     @XmlElement(name = "table")
     private List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlElementWrapper(name = "or-conditions")
-    @XmlElement(name = "and-conditions")
-    private List<ExpectedConditions> orConditions = new LinkedList<>();
+    @XmlElement(name = "or-conditions")
+    private ExpectedOrConditions orConditions = new ExpectedOrConditions();
     
     @XmlElement
     private ExpectedTokens tokens = new ExpectedTokens();

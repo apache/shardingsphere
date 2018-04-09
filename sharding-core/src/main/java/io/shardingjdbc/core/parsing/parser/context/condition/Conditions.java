@@ -17,15 +17,11 @@
 
 package io.shardingjdbc.core.parsing.parser.context.condition;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Conditions collection.
@@ -37,10 +33,10 @@ import java.util.List;
 @ToString
 public final class Conditions {
     
-    private final List<List<Condition>> orConditions = new LinkedList<>();
+    private final OrConditions orConditions = new OrConditions();
     
     public Conditions(final Conditions conditions) {
-        orConditions.addAll(conditions.orConditions);
+        orConditions.getAndConditions().addAll(conditions.orConditions.getAndConditions());
     }
     
     /**
@@ -49,18 +45,10 @@ public final class Conditions {
      * @param condition condition
      * @param shardingRule databases and tables sharding rule
      */
-    // TODO adjust before add condition, eg: if condition exist = operator and include same column, should remove condition (tow equal condition should found nothing)
     public void add(final Condition condition, final ShardingRule shardingRule) {
         // TODO self-join has problem, table name maybe use alias
         if (shardingRule.isShardingColumn(condition.getColumn())) {
-            List<Condition> firstAndConditions;
-            if (orConditions.isEmpty()) {
-                firstAndConditions = new LinkedList<>();
-                orConditions.add(firstAndConditions);
-            } else {
-                firstAndConditions = orConditions.get(0);
-            }
-            firstAndConditions.add(condition);
+            orConditions.add(condition);
         }
     }
     
@@ -82,15 +70,6 @@ public final class Conditions {
      * @return found condition
      */
     public Optional<Condition> find(final Column column, int index) {
-        Condition result = null;
-        if (orConditions.size() > index) {
-            List<Condition> andConditions = orConditions.get(index);
-            for (Condition each : andConditions) {
-                if (Objects.equal(each.getColumn(), column)) {
-                    result = each;
-                }
-            }
-        }
-        return Optional.fromNullable(result);
+        return orConditions.find(column, index);
     }
 }
