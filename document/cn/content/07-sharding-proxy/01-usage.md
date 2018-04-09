@@ -1,7 +1,7 @@
 +++
 toc = true
-title = "Proxy"
-weight = 2
+title = "使用手册"
+weight = 1
 +++
 
 ## 简介
