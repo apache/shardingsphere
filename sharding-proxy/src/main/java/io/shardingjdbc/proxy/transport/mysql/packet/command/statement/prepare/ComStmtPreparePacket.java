@@ -64,7 +64,8 @@ public final class ComStmtPreparePacket extends CommandPacket {
         List<DatabaseProtocolPacket> result = new LinkedList<>();
         int currentSequenceId = 0;
         SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, sql, ShardingRuleRegistry.getInstance().getShardingRule()).parse(true);
-        result.add(new ComStmtPrepareOKPacket(++currentSequenceId, PreparedStatementRegistry.getInstance().register(sql), getNumColumns(sqlStatement), sqlStatement.getParametersIndex(), 0));
+        int numColumns = getNumColumns(sqlStatement);
+        result.add(new ComStmtPrepareOKPacket(++currentSequenceId, PreparedStatementRegistry.getInstance().register(sql, numColumns), numColumns, sqlStatement.getParametersIndex(), 0));
         for (int i = 0; i < sqlStatement.getParametersIndex(); i++) {
             // TODO add column name
             result.add(new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, 

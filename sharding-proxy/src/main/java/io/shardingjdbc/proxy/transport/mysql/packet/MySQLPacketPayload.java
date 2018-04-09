@@ -36,6 +36,15 @@ public final class MySQLPacketPayload {
     private final ByteBuf byteBuf;
     
     /**
+     * Is readable.
+     *
+     * @return is readable
+     */
+    public boolean isReadable() {
+        return byteBuf.isReadable();
+    }
+    
+    /**
      * Read 1 byte fixed length integer from byte buffers.
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      * 
