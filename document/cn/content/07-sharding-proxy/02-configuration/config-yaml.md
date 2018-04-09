@@ -1,21 +1,11 @@
 +++
 toc = true
 title = "YAML配置"
-weight = 3
+weight = 1
 +++
 
 
 ## YAML配置
-
-### 引入maven依赖
-
-```xml
-<dependency>
-    <groupId>io.shardingjdbc</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
-    <version>${latest.release.version}</version>
-</dependency>
-```
 
 ### 配置示例
 
@@ -118,12 +108,6 @@ props: 属性配置(可选)
     executor.size: 工作线程数量，默认值: CPU核数
 ```
 
-#### 分库分表数据源构建方式
-
-```java
-    DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
-```
-
 #### 读写分离
 ```yaml
 dataSources:
@@ -164,12 +148,6 @@ name: 分库分表数据源名称
 masterDataSourceName: master数据源名称
 
 slaveDataSourceNames：slave数据源名称，用数组表示多个
-```
-
-#### 读写分离数据源构建方式
-
-```java
-    DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
 ```
 
 ### YAML格式特别说明
