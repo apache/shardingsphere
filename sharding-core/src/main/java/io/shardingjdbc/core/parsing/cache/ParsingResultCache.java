@@ -64,4 +64,11 @@ public final class ParsingResultCache {
     public SQLStatement getSQLStatement(final String sql) {
         return cache.get(sql);
     }
+    
+    /**
+     * Clear cache.
+     */
+    public synchronized void clear() {
+        cache.clear();
+    }
 }

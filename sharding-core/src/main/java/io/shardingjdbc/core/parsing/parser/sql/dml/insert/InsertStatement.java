@@ -46,7 +46,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class InsertStatement extends DMLStatement {
     
     private final Collection<Column> columns = new LinkedList<>();
