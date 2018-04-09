@@ -69,7 +69,7 @@ public final class ShowCreateTableMergedResult extends MemoryMergedResult {
                     memoryResultSetRow.setCell(1, logicTableName);
                     String createTableDDL = memoryResultSetRow.getCell(2).toString();
                     SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, createTableDDL, shardingRule);
-                    String actualTableName = sqlParsingEngine.parse().getTables().getSingleTableName();
+                    String actualTableName = sqlParsingEngine.parse(true).getTables().getSingleTableName();
                     if (actualTableName.startsWith("`")) {
                         logicTableName = "`" + logicTableName + "`";
                     }

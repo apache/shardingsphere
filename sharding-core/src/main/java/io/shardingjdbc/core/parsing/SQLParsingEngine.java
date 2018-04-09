@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing;
 
+import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.cache.ParsingResultCache;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
@@ -45,21 +46,26 @@ public final class SQLParsingEngine {
     /**
      * Parse SQL.
      * 
+     * @param useCache use cache or not
      * @return parsed SQL statement
      */
-    public SQLStatement parse() {
-        SQLStatement cachedSQLStatement = ParsingResultCache.getInstance().getSQLStatement(sql);
-        if (null != cachedSQLStatement) {
-            return cachedSQLStatement;
+    public SQLStatement parse(final boolean useCache) {
+        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(useCache);
+        if (cachedSQLStatement.isPresent()) {
+            return cachedSQLStatement.get();
         }
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
         lexerEngine.nextToken();
         SQLStatement result = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine).parse();
         // TODO cannot cache InsertStatement here by generate key, should not modify original InsertStatement on router.  
-        if (!findGeneratedKeyToken(result)) {
+        if (useCache && !findGeneratedKeyToken(result)) {
             ParsingResultCache.getInstance().put(sql, result);
         }
         return result;
+    }
+    
+    private Optional<SQLStatement> getSQLStatementFromCache(final boolean useCache) {
+        return useCache ? Optional.fromNullable(ParsingResultCache.getInstance().getSQLStatement(sql)) : Optional.<SQLStatement>absent();
     }
     
     private boolean findGeneratedKeyToken(final SQLStatement sqlStatement) {
