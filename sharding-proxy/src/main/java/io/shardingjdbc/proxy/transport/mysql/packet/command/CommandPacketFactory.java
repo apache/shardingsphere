@@ -50,6 +50,9 @@ public final class CommandPacketFactory {
                 return new ComFieldListPacket(sequenceId, mysqlPacketPayload);
             case COM_QUERY:
                 return new ComQueryPacket(sequenceId, mysqlPacketPayload);
+            case COM_STMT_PREPARE:
+                return new ComStmtPreparePacket(sequenceId, mysqlPacketPayload);
+            case COM_STMT_EXECUTE:
             case COM_SLEEP:
             case COM_CREATE_DB:
             case COM_DROP_DB:
@@ -68,9 +71,6 @@ public final class CommandPacketFactory {
             case COM_TABLE_DUMP:
             case COM_CONNECT_OUT:
             case COM_REGISTER_SLAVE:
-            case COM_STMT_PREPARE:
-                return new ComStmtPreparePacket(sequenceId, mysqlPacketPayload);
-            case COM_STMT_EXECUTE:
             case COM_STMT_SEND_LONG_DATA:
             case COM_STMT_CLOSE:
             case COM_STMT_RESET:

@@ -34,7 +34,9 @@ public final class PreparedStatementRegistry {
     
     private static final PreparedStatementRegistry INSTANCE = new PreparedStatementRegistry();
     
-    private final ConcurrentMap<String, Integer> sqlAndStatementIdMap = new ConcurrentHashMap<>(65535, 1);
+    private final ConcurrentMap<String, Integer> sqlToStatementIdMap = new ConcurrentHashMap<>(65535, 1);
+    
+    private final ConcurrentMap<Integer, String> statementIdtoSqlMap = new ConcurrentHashMap<>(65535, 1);
     
     private final AtomicInteger sequence = new AtomicInteger();
     
@@ -54,9 +56,16 @@ public final class PreparedStatementRegistry {
      * @return statement ID
      */
     public int register(final String sql) {
-        int statementId = sequence.incrementAndGet();
-        Integer result = sqlAndStatementIdMap.putIfAbsent(sql, statementId);
-        return null == result ? statementId : result;
+        Integer result = sqlToStatementIdMap.get(sql);
+        if (null != result) {
+            return result;
+        }
+        int statementId;
+        do {
+            statementId = sequence.incrementAndGet();
+        } while (null != statementIdtoSqlMap.putIfAbsent(statementId, sql));
+        sqlToStatementIdMap.putIfAbsent(sql, statementId);
+        return statementId;
     }
     
     /**
@@ -66,6 +75,16 @@ public final class PreparedStatementRegistry {
      * @return statement ID
      */
     public int getStatementId(final String sql) {
-        return sqlAndStatementIdMap.get(sql);
+        return sqlToStatementIdMap.get(sql);
+    }
+    
+    /**
+     * Get SQL.
+     *
+     * @param statementId statement ID
+     * @return SQL
+     */
+    public String getSql(final int statementId) {
+        return statementIdtoSqlMap.get(statementId);
     }
 }
