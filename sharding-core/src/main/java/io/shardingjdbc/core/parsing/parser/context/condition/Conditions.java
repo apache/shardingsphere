@@ -20,7 +20,7 @@ package io.shardingjdbc.core.parsing.parser.context.condition;
 import com.google.common.base.Optional;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -28,7 +28,7 @@ import lombok.ToString;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @ToString
 public final class Conditions {
@@ -69,7 +69,7 @@ public final class Conditions {
      * @param index index of and conditions
      * @return found condition
      */
-    public Optional<Condition> find(final Column column, int index) {
+    public Optional<Condition> find(final Column column, final int index) {
         return orConditions.find(column, index);
     }
 }
