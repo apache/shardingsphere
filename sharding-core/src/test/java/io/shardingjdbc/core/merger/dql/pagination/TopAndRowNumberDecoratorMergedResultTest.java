@@ -101,7 +101,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextWithOffsetBoundOpendedFalse() throws SQLException {
+    public void assertNextWithOffsetBoundOpenedFalse() throws SQLException {
         Limit limit = new Limit(DatabaseType.SQLServer);
         limit.setOffset(new LimitValue(2, -1, false));
         limit.setRowCount(new LimitValue(4, -1, false));
@@ -114,7 +114,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     }
 
     @Test
-    public void assertNextWithOffsetBoundOpendedTrue() throws SQLException {
+    public void assertNextWithOffsetBoundOpenedTrue() throws SQLException {
         Limit limit = new Limit(DatabaseType.SQLServer);
         limit.setOffset(new LimitValue(2, -1, true));
         limit.setRowCount(new LimitValue(4, -1, false));

@@ -9,12 +9,12 @@
     <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:all>
-                <xsd:element ref="sharding-rule" minOccurs="1" maxOccurs="1" />
+                <xsd:element ref="sharding-rule" minOccurs="0" maxOccurs="1" />
                 <xsd:element ref="config-map" minOccurs="0" maxOccurs="1" />
                 <xsd:element ref="props" minOccurs="0" maxOccurs="1" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="registry-center-ref" type="xsd:string" use="optional" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false"/>
         </xsd:complexType>
     </xsd:element>

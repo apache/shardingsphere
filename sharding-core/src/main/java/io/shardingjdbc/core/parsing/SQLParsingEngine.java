@@ -18,10 +18,13 @@
 package io.shardingjdbc.core.parsing;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.parsing.cache.ParsingResultCache;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.LexerEngineFactory;
 import io.shardingjdbc.core.parsing.parser.sql.SQLParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
+import io.shardingjdbc.core.parsing.parser.token.SQLToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
@@ -45,8 +48,26 @@ public final class SQLParsingEngine {
      * @return parsed SQL statement
      */
     public SQLStatement parse() {
+        SQLStatement cachedSQLStatement = ParsingResultCache.getInstance().getSQLStatement(sql);
+        if (null != cachedSQLStatement) {
+            return cachedSQLStatement;
+        }
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
         lexerEngine.nextToken();
-        return SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine).parse();
+        SQLStatement result = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine).parse();
+        // TODO cannot cache InsertStatement here by generate key, should not modify original InsertStatement on router.  
+        if (!findGeneratedKeyToken(result)) {
+            ParsingResultCache.getInstance().put(sql, result);
+        }
+        return result;
+    }
+    
+    private boolean findGeneratedKeyToken(final SQLStatement sqlStatement) {
+        for (SQLToken each : sqlStatement.getSqlTokens()) {
+            if (each instanceof GeneratedKeyToken) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -369,4 +369,21 @@
             </condition>
         </conditions>
     </parser-result>
+    
+    <parser-result sql-case-id="assertSelectWithJoinForceIndex" parameters="1000">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="20" original-literals="t_order" />
+            <table-token begin-position="60" original-literals="t_order_item" />
+            <index-token begin-position="42" original-literals="order_index" table-name="t_order" />
+        </tokens>
+        <conditions>
+            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="1000" type="int" />
+            </condition>
+        </conditions>
+    </parser-result>
 </parser-result-sets>

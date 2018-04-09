@@ -44,7 +44,7 @@ public final class DatabaseHintSQLRouter implements SQLRouter {
     private final boolean showSQL;
     
     @Override
-    public SQLStatement parse(final String logicSQL, final int parametersSize) {
+    public SQLStatement parse(final String logicSQL) {
         return new SQLJudgeEngine(logicSQL).judge();
     }
     
