@@ -27,9 +27,9 @@ import org.springframework.core.env.PropertyResolver;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 
 public class PropertyUtil {
-
+    
     private static int springBootVersion = 1;
-
+    
     static {
         try {
             Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
@@ -37,7 +37,7 @@ public class PropertyUtil {
             springBootVersion = 2;
         }
     }
-
+    
     /**
      * Spring Boot 1.x is compatible with Spring Boot 2.x by Using Java Reflect.
      * @param environment : the environment context
@@ -50,13 +50,13 @@ public class PropertyUtil {
     public static <T> T handle(final Environment environment, final String prefix, final Class<T> targetClass) {
         switch (springBootVersion) {
             case 1:
-                return (T) v1(environment, prefix, targetClass);
+                return (T) v1(environment, prefix);
             default:
                 return (T) v2(environment, prefix, targetClass);
         }
     }
-
-    private static Object v1(final Environment environment, final String prefix, final Class<?> targetClass) {
+    
+    private static Object v1(final Environment environment, final String prefix) {
         try {
             Class<?> resolverClass = Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
             Constructor<?> resolverConstructor = resolverClass.getDeclaredConstructor(PropertyResolver.class);
@@ -69,7 +69,7 @@ public class PropertyUtil {
             throw new ShardingJdbcException(ex.getMessage(), ex);
         }
     }
-
+    
     private static Object v2(final Environment environment, final String prefix, final Class<?> targetClass) {
         try {
             Class<?> binderClass = Class.forName("org.springframework.boot.context.properties.bind.Binder");
