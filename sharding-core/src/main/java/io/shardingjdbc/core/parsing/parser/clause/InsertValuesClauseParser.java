@@ -86,6 +86,7 @@ public class InsertValuesClauseParser implements SQLClauseParser {
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         do {
             sqlExpressions.add(basicExpressionParser.parse(insertStatement));
+            skipsDoubleColon();
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         insertStatement.setValuesListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
         int count = 0;
@@ -126,5 +127,11 @@ public class InsertValuesClauseParser implements SQLClauseParser {
             valuesToken.getValues().add(lexerEngine.getInput().substring(beginPosition, endPosition));
         }
         insertStatement.getSqlTokens().add(valuesToken);
+    }
+    
+    private void skipsDoubleColon() {
+        if (lexerEngine.skipIfEqual(Symbol.DOUBLE_COLON)) {
+            lexerEngine.nextToken();
+        }
     }
 }
