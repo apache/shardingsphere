@@ -23,10 +23,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.sql.DataSource;
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,7 +32,7 @@ import javax.xml.xpath.XPathExpressionException;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
-import io.shardingjdbc.dbtest.data.ColumnDefinition;
+import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import io.shardingjdbc.dbtest.init.InItCreateSchema;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import org.junit.Assert;
@@ -48,9 +45,9 @@ import io.shardingjdbc.dbtest.common.DatabaseUtil;
 import io.shardingjdbc.dbtest.common.PathUtil;
 import io.shardingjdbc.dbtest.config.bean.AssertDQLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
-import io.shardingjdbc.dbtest.data.AnalyzeDataset;
-import io.shardingjdbc.dbtest.data.DatasetDatabase;
-import io.shardingjdbc.dbtest.data.DatasetDefinition;
+import io.shardingjdbc.dbtest.config.AnalyzeDataset;
+import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
+import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
 
 public class AssertEngine {
@@ -94,92 +91,104 @@ public class AssertEngine {
             }
             
             // dql run
-            for (AssertDQLDefinition each : assertsDefinition.getAssertDQL()) {
-                if (id.equals(each.getId())) {
-                    AssertDQLDefinition anAssert = each;
-                    
-                    String rootsql = anAssert.getSql();
-                    rootsql = SQLCasesLoader.getSql(rootsql);
-                    String initDataFile = PathUtil.getPath(anAssert.getInitDataFile(), rootPath);
-                    Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
-                    Map<String, String> sqls = new HashMap<>();
-                    getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
-                    
-                    if (mapDatasetDefinition.isEmpty()) {
-                        throw new DbTestException(path + "  Use cases cannot be parsed");
-                    }
-                    
-                    if (sqls.isEmpty()) {
-                        throw new DbTestException(path + "  The use case cannot initialize the data");
-                    }
-                    
-                    try {
-                        initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
-                        
-                        doSelectUsePreparedStatement(rootPath, dataSource, anAssert, rootsql, msg);
-                        doSelectUsePreparedStatementToExecuteSelect(rootPath, dataSource, anAssert, rootsql, msg);
-                        
-                        doSelectUseStatement(rootPath, dataSource, anAssert, rootsql, msg);
-                        doSelectUseStatementToExecuteSelect(rootPath, dataSource, anAssert, rootsql, msg);
-                    } finally {
-                        clearTableData(dataSourceMaps, mapDatasetDefinition);
-                    }
-                    
-                }
-            }
+            dqlRun(path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
             
             // dml run
-            for (AssertDMLDefinition each : assertsDefinition.getAssertDML()) {
-                if (id.equals(each.getId())) {
-                    AssertDMLDefinition anAssert = each;
-                    String rootsql = anAssert.getSql();
-                    rootsql = SQLCasesLoader.getSql(rootsql);
-                    String initDataFile = PathUtil.getPath(anAssert.getInitDataFile(), rootPath);
-                    Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
-                    Map<String, String> sqls = new HashMap<>();
-                    getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
-                    
-                    if (mapDatasetDefinition.isEmpty()) {
-                        throw new DbTestException(path + "  Use cases cannot be parsed");
-                    }
-                    
-                    if (sqls.isEmpty()) {
-                        throw new DbTestException(path + "  The use case cannot initialize the data");
-                    }
-                    
-                    doUpdateUseStatementToExecuteUpdate(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
-                    
-                    doUpdateUseStatementToExecute(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
-                    
-                    doUpdateUsePreparedStatementToExecuteUpdate(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
-                    
-                    doUpdateUsePreparedStatementToExecute(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
-                    
-                }
-            }
+            dmlRun(path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
             
             // ddl run
-            for (AssertDDLDefinition each : assertsDefinition.getAssertDDL()) {
-                if (id.equals(each.getId())) {
-                    AssertDDLDefinition anAssert = each;
-                    String rootsql = anAssert.getSql();
-                    rootsql = SQLCasesLoader.getSql(rootsql);
-                    
-                    doUpdateUseStatementToExecuteUpdateDDL(rootPath, dataSource, anAssert, rootsql, msg);
-                    
-                    doUpdateUseStatementToExecuteDDL(rootPath, dataSource, anAssert, rootsql, msg);
-                    
-                    doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, dataSource, anAssert, rootsql, msg);
-                    
-                    doUpdateUsePreparedStatementToExecuteDDL(rootPath, dataSource, anAssert, rootsql, msg);
-                    
-                }
-            }
+            ddlRun(id, assertsDefinition, rootPath, msg, dataSource);
             
         } catch (NoSuchFieldException | IllegalAccessException | ParseException | XPathExpressionException | SQLException | ParserConfigurationException | SAXException | IOException e) {
             throw new DbTestException(e);
         }
         return true;
+    }
+    
+    private static void ddlRun(final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+        for (AssertDDLDefinition each : assertsDefinition.getAssertDDL()) {
+            if (id.equals(each.getId())) {
+                AssertDDLDefinition anAssert = each;
+                String rootsql = anAssert.getSql();
+                rootsql = SQLCasesLoader.getInstance().getSQL(rootsql);
+                
+                doUpdateUseStatementToExecuteUpdateDDL(rootPath, dataSource, anAssert, rootsql, msg);
+                
+                doUpdateUseStatementToExecuteDDL(rootPath, dataSource, anAssert, rootsql, msg);
+                
+                doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, dataSource, anAssert, rootsql, msg);
+                
+                doUpdateUsePreparedStatementToExecuteDDL(rootPath, dataSource, anAssert, rootsql, msg);
+                
+            }
+        }
+    }
+    
+    private static void dmlRun(final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+        for (AssertDMLDefinition each : assertsDefinition.getAssertDML()) {
+            if (id.equals(each.getId())) {
+                AssertDMLDefinition anAssert = each;
+                String rootsql = anAssert.getSql();
+                rootsql = SQLCasesLoader.getInstance().getSQL(rootsql);
+                String initDataFile = PathUtil.getPath(anAssert.getInitDataFile(), rootPath);
+                Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
+                Map<String, String> sqls = new HashMap<>();
+                getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
+                
+                if (mapDatasetDefinition.isEmpty()) {
+                    throw new DbTestException(path + "  Use cases cannot be parsed");
+                }
+                
+                if (sqls.isEmpty()) {
+                    throw new DbTestException(path + "  The use case cannot initialize the data");
+                }
+                
+                doUpdateUseStatementToExecuteUpdate(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                
+                doUpdateUseStatementToExecute(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                
+                doUpdateUsePreparedStatementToExecuteUpdate(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                
+                doUpdateUsePreparedStatementToExecute(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                
+            }
+        }
+    }
+    
+    private static void dqlRun(final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+        for (AssertDQLDefinition each : assertsDefinition.getAssertDQL()) {
+            if (id.equals(each.getId())) {
+                AssertDQLDefinition anAssert = each;
+                
+                String rootsql = anAssert.getSql();
+                rootsql = SQLCasesLoader.getInstance().getSQL(rootsql);
+                String initDataFile = PathUtil.getPath(anAssert.getInitDataFile(), rootPath);
+                Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
+                Map<String, String> sqls = new HashMap<>();
+                getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
+                
+                if (mapDatasetDefinition.isEmpty()) {
+                    throw new DbTestException(path + "  Use cases cannot be parsed");
+                }
+                
+                if (sqls.isEmpty()) {
+                    throw new DbTestException(path + "  The use case cannot initialize the data");
+                }
+                
+                try {
+                    initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
+                    
+                    doSelectUsePreparedStatement(rootPath, dataSource, anAssert, rootsql, msg);
+                    doSelectUsePreparedStatementToExecuteSelect(rootPath, dataSource, anAssert, rootsql, msg);
+                    
+                    doSelectUseStatement(rootPath, dataSource, anAssert, rootsql, msg);
+                    doSelectUseStatementToExecuteSelect(rootPath, dataSource, anAssert, rootsql, msg);
+                } finally {
+                    clearTableData(dataSourceMaps, mapDatasetDefinition);
+                }
+                
+            }
+        }
     }
     
     private static void doUpdateUsePreparedStatementToExecute(final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDMLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
@@ -194,7 +203,7 @@ public class AssertEngine {
                 Assert.assertEquals(msg + " Update error", false, actual);
                 
                 String checksql = anAssert.getExpectedSql();
-                checksql = SQLCasesLoader.getSql(checksql);
+                checksql = SQLCasesLoader.getInstance().getSQL(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
                         anAssert.getExpectedParameters());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
@@ -236,7 +245,7 @@ public class AssertEngine {
                 Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), actual);
                 
                 String checksql = anAssert.getExpectedSql();
-                checksql = SQLCasesLoader.getSql(checksql);
+                checksql = SQLCasesLoader.getInstance().getSQL(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
                         anAssert.getExpectedParameters());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
@@ -279,7 +288,7 @@ public class AssertEngine {
                 Assert.assertEquals("Update error", false, actual);
                 
                 String checksql = anAssert.getExpectedSql();
-                checksql = SQLCasesLoader.getSql(checksql);
+                checksql = SQLCasesLoader.getInstance().getSQL(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
                         anAssert.getExpectedParameters());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
@@ -317,10 +326,10 @@ public class AssertEngine {
                 String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
                 
-                Assert.assertEquals("Update row number error"+msg, anAssert.getExpectedUpdate().intValue(), actual);
+                Assert.assertEquals("Update row number error" + msg, anAssert.getExpectedUpdate().intValue(), actual);
                 
                 String checksql = anAssert.getExpectedSql();
-                checksql = SQLCasesLoader.getSql(checksql);
+                checksql = SQLCasesLoader.getInstance().getSQL(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
                         anAssert.getExpectedParameters());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
@@ -461,6 +470,10 @@ public class AssertEngine {
      */
     public static DataSource getDataSource(final String path) throws IOException, SQLException {
         return ShardingDataSourceFactory.createDataSource(new File(path));
+    }
+    
+    public static DataSource getDataSource(final Map<String, DataSource> dataSourceMap, final String path) throws IOException, SQLException {
+        return ShardingDataSourceFactory.createDataSource(dataSourceMap, new File(path));
     }
     
     /**

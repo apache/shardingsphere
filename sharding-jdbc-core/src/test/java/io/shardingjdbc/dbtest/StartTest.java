@@ -48,8 +48,9 @@ public class StartTest {
     
     private String id;
     
-    
     private static Properties config = new Properties();
+    
+    private static final List<String[]> RESULT_ASSERT = new ArrayList<>();
     
     static {
         try {
@@ -94,26 +95,28 @@ public class StartTest {
         String assertPath = getAssertPath();
         assertPath = PathUtil.getPath(assertPath);
         List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "assert-", "xml");
-        List<String[]> result = new ArrayList<>();
         
         try {
             for (String each : paths) {
                 AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
+            
+                InItCreateSchema.addDatabase(assertsDefinition.getBaseConfig());
+            
                 List<AssertDQLDefinition> assertDQLs = assertsDefinition.getAssertDQL();
-                collateData(result, each, assertDQLs);
-                
+                collateData(RESULT_ASSERT, each, assertDQLs);
+            
                 List<AssertDMLDefinition> assertDMLs = assertsDefinition.getAssertDML();
-                collateData(result, each, assertDMLs);
-                
+                collateData(RESULT_ASSERT, each, assertDMLs);
+            
                 List<AssertDDLDefinition> assertDDLs = assertsDefinition.getAssertDDL();
-                collateData(result, each, assertDDLs);
-                
+                collateData(RESULT_ASSERT, each, assertDDLs);
+            
                 AssertEngine.addAssertDefinition(each, assertsDefinition);
             }
         } catch (JAXBException | IOException e) {
             e.printStackTrace();
         }
-        return result;
+        return RESULT_ASSERT;
     }
     
     private static <T extends AssertDefinition> void collateData(final List<String[]> result, final String path, final List<T> asserts) {
@@ -125,12 +128,14 @@ public class StartTest {
             if (assertDefinitions.contains(each.getId())) {
                 throw new DbTestException("ID can't be repeated");
             }
+            assertDefinitions.add(each.getId());
             result.add(new String[]{path, each.getId()});
         }
     }
     
     @BeforeClass
     public static void beforeClass() {
+        
         if (isInitialized()) {
             InItCreateSchema.createDatabase();
             InItCreateSchema.createTable();

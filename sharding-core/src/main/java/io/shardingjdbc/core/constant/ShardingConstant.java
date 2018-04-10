@@ -25,10 +25,10 @@ package io.shardingjdbc.core.constant;
 public interface ShardingConstant {
     
     /**
-     * Logic database schema name.
+     * Logic database table name.
      * 
      * <p>
-     * Sharding-JDBC just have one logic database schema. 
+     * Sharding-JDBC just have one logic database table.
      * Default: sharding_db
      * </p>
      */

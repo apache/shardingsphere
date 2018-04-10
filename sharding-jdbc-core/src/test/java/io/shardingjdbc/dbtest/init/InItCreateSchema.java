@@ -17,11 +17,9 @@
 
 package io.shardingjdbc.dbtest.init;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -30,21 +28,39 @@ import io.shardingjdbc.dbtest.StartTest;
 import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import io.shardingjdbc.dbtest.common.FileUtil;
 import io.shardingjdbc.dbtest.common.PathUtil;
+import io.shardingjdbc.dbtest.config.AnalyzeDatabase;
+import io.shardingjdbc.dbtest.config.AnalyzeSql;
+import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.h2.tools.RunScript;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import org.xml.sax.SAXException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.sql.DataSource;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 public class InItCreateSchema {
     
     private static Set<DatabaseType> DATABASE_SCHEMAS;
     
+    @Getter
+    public static final Set<String> DATABASES = new HashSet<>();
+    
+    /**
+     * add database.
+     *
+     * @param database database name
+     */
+    public static void addDatabase(String database) {
+        DATABASES.add(database);
+    }
     
     static {
         String assertPath = StartTest.getAssertPath();
@@ -56,7 +72,7 @@ public class InItCreateSchema {
         } catch (IOException e) {
             e.printStackTrace();
         }
-       
+        
     }
     
     public static Set<DatabaseType> getDatabaseSchemas() {
@@ -90,21 +106,39 @@ public class InItCreateSchema {
      */
     public static void createDatabase() {
         Connection conn = null;
+        ResultSet resultSet = null;
         try {
-            for (DatabaseType each : DATABASE_SCHEMAS) {
-                
-                conn = initialConnection(null, each);
-                String packing = "default";
-                if (DatabaseType.Oracle == each) {
-                    packing = "oracle";
+            for (String database : DATABASES) {
+                String sql = getCreateTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                        .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
+                for (DatabaseType each : DATABASE_SCHEMAS) {
+                    if (DatabaseType.Oracle.equals(each)) {
+                        String oracleSql = getCreateTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                                .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
+                        StringReader sr = new StringReader(oracleSql);
+                        conn = initialConnection(null, each);
+                        
+                        resultSet = RunScript.execute(conn, sr);
+                        resultSet.close();
+                    } else {
+                        StringReader sr = new StringReader(sql);
+                        conn = initialConnection(null, each);
+                        
+                        resultSet = RunScript.execute(conn, sr);
+                    }
                 }
-                RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
-                        .getResourceAsStream("integrate/schema/" + packing + "/manual_schema_create.sql")));
-                
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
             e.printStackTrace();
         } finally {
+            
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
             if (conn != null) {
                 try {
                     conn.close();
@@ -112,7 +146,6 @@ public class InItCreateSchema {
                     e.printStackTrace();
                 }
             }
-            
         }
     }
     
@@ -121,21 +154,43 @@ public class InItCreateSchema {
      */
     public static synchronized void dropDatabase() {
         Connection conn = null;
+        ResultSet resultSet = null;
+        StringReader sr = null;
         try {
-            for (DatabaseType each : DATABASE_SCHEMAS) {
-                
-                conn = initialConnection(null, each);
-                String packing = "default";
-                if (DatabaseType.Oracle == each) {
-                    packing = "oracle";
+            for (String database : DATABASES) {
+                String sql = getDropTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                        .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
+                for (DatabaseType each : DATABASE_SCHEMAS) {
+                    
+                    if (DatabaseType.Oracle.equals(each)) {
+                        String oracleSql = getDropTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                                .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
+                        sr = new StringReader(oracleSql);
+                        conn = initialConnection(null, each);
+                        
+                        resultSet = RunScript.execute(conn, sr);
+                        
+                    } else {
+                        sr = new StringReader(sql);
+                        conn = initialConnection(null, each);
+                        
+                        resultSet = RunScript.execute(conn, sr);
+                    }
                 }
-                RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
-                        .getResourceAsStream("integrate/schema/" + packing + "/manual_schema_drop.sql")));
-                
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
             e.printStackTrace();
         } finally {
+            if (sr != null) {
+                sr.close();
+            }
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
             if (conn != null) {
                 try {
                     conn.close();
@@ -143,116 +198,111 @@ public class InItCreateSchema {
                     e.printStackTrace();
                 }
             }
-            
         }
     }
     
     private static void createSchema(final DatabaseType dbType) {
-        createJdbcSchema(dbType);
-        createMasterSlaveOnlySchema(dbType);
         createShardingSchema(dbType);
     }
     
     private static void dropSchema(final DatabaseType dbType) {
-        dropJdbcSchema(dbType);
-        dropMasterSlaveOnlySchema(dbType);
         dropShardingSchema(dbType);
     }
     
     private static void createShardingSchema(final DatabaseType dbType) {
+        Connection conn = null;
+        ResultSet resultSet = null;
+        StringReader sr = null;
         try {
-            Connection conn;
+            
             for (int i = 0; i < 10; i++) {
-                for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
-                    conn = initialConnection(database + "_" + i, dbType);
-                    RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
-                            .getResourceAsStream("integrate/schema/table/create/" + database + ".sql")));
-                    conn.close();
+                for (String each : DATABASES) {
+                    List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                            .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
+                    for (String database : databases) {
+                        conn = initialConnection(database, dbType);
+                        List<String> tableSqlIds = AnalyzeSql.analyze(InItCreateSchema.class.getClassLoader()
+                                .getResource("integrate/dbtest").getPath() + "/" + each + "/table/create-table.xml");
+                        List<String> tableSqls = new ArrayList<>();
+                        for (String tableSqlId : tableSqlIds) {
+                            tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
+                        }
+                        
+                        sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
+                        
+                        resultSet = RunScript.execute(conn, sr);
+                    }
                 }
             }
-            conn = initialConnection("tbl", dbType);
-            RunScript.execute(conn, new InputStreamReader(
-                    InItCreateSchema.class.getClassLoader().getResourceAsStream("integrate/schema/table/create/tbl.sql")));
-            conn.close();
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
+            
+        } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
+            e.printStackTrace();
+        } finally {
+            if (sr != null) {
+                sr.close();
+            }
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
     
-    private static void createMasterSlaveOnlySchema(final DatabaseType dbType) {
-        try {
-            Connection conn;
-            for (String database : Arrays.asList("master_only", "slave_only")) {
-                conn = initialConnection(database, dbType);
-                RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
-                        .getResourceAsStream("integrate/schema/table/create/" + database + ".sql")));
-                conn.close();
-            }
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-    
-    private static void createJdbcSchema(final DatabaseType dbType) {
-        try {
-            Connection conn;
-            for (int i = 0; i < 2; i++) {
-                conn = initialConnection("jdbc_" + i, dbType);
-                RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
-                        .getResourceAsStream("integrate/schema/table/create/jdbc.sql")));
-                conn.close();
-            }
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
     
     private static void dropShardingSchema(final DatabaseType dbType) {
+        Connection conn = null;
+        ResultSet resultSet = null;
+        StringReader sr = null;
         try {
-            Connection conn;
             for (int i = 0; i < 10; i++) {
-                for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
-                    conn = initialConnection(database + "_" + i, dbType);
-                    RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
-                            .getResourceAsStream("integrate/schema/table/drop/" + database + ".sql")));
-                    conn.close();
+                for (String each : DATABASES) {
+                    List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                            .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
+                    for (String database : databases) {
+                        conn = initialConnection(database, dbType);
+                        List<String> tableSqlIds = AnalyzeSql.analyze(InItCreateSchema.class.getClassLoader()
+                                .getResource("integrate/dbtest").getPath() + "/" + each + "/table/drop-table.xml");
+                        List<String> tableSqls = new ArrayList<>();
+                        for (String tableSqlId : tableSqlIds) {
+                            tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
+                        }
+                        sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
+                    
+                        resultSet = RunScript.execute(conn, sr);
+                    }
                 }
             }
-            conn = initialConnection("tbl", dbType);
-            RunScript.execute(conn, new InputStreamReader(
-                    InItCreateSchema.class.getClassLoader().getResourceAsStream("integrate/schema/table/drop/tbl.sql")));
-            conn.close();
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-    
-    private static void dropMasterSlaveOnlySchema(final DatabaseType dbType) {
-        try {
-            Connection conn;
-            for (String database : Arrays.asList("master_only", "slave_only")) {
-                conn = initialConnection(database, dbType);
-                RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
-                        .getResourceAsStream("integrate/schema/table/drop/" + database + ".sql")));
-                conn.close();
+        
+        } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
+            e.printStackTrace();
+        } finally {
+            if (sr != null) {
+                sr.close();
             }
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-    
-    private static void dropJdbcSchema(final DatabaseType dbType) {
-        try {
-            Connection conn;
-            for (int i = 0; i < 2; i++) {
-                conn = initialConnection("jdbc_" + i, dbType);
-                
-                RunScript.execute(conn, new InputStreamReader(InItCreateSchema.class.getClassLoader()
-                        .getResourceAsStream("integrate/schema/table/drop/jdbc.sql")));
-                conn.close();
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
     
@@ -265,6 +315,7 @@ public class InItCreateSchema {
         result.setUrl(dbEnv.getURL(dbName));
         result.setUsername(dbEnv.getUsername());
         result.setPassword(dbEnv.getPassword());
+        
         //result.setMaxActive(1);
         if (DatabaseType.Oracle == type) {
             result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dbName));
@@ -277,7 +328,6 @@ public class InItCreateSchema {
     }
     
     /**
-     *
      * @param paths paths
      * @return
      */
@@ -285,11 +335,11 @@ public class InItCreateSchema {
         Set<DatabaseType> dbset = new HashSet<>();
         DatabaseEnvironment databaseEnvironment = new DatabaseEnvironment(DatabaseType.H2);
         for (String each : paths) {
-            YamlShardingConfiguration shardingConfiguration =  unmarshal(new File(each));
+            YamlShardingConfiguration shardingConfiguration = unmarshal(new File(each));
             Map<String, DataSource> dataSourceMap = shardingConfiguration.getDataSources();
             for (Map.Entry<String, DataSource> eachDataSourceEntry : dataSourceMap.entrySet()) {
-                BasicDataSource dataSource = (BasicDataSource)eachDataSourceEntry.getValue();
-                DatabaseType databaseType = databaseEnvironment.getDatabaseTypeByJdbcDriver( dataSource.getDriverClassName());
+                BasicDataSource dataSource = (BasicDataSource) eachDataSourceEntry.getValue();
+                DatabaseType databaseType = databaseEnvironment.getDatabaseTypeByJdbcDriver(dataSource.getDriverClassName());
                 dbset.add(databaseType);
             }
         }
@@ -305,4 +355,27 @@ public class InItCreateSchema {
         }
     }
     
+    private static String getCreateTableSql(final DatabaseType databaseType, final List<String> databases) {
+        String basesql = "CREATE DATABASE ";
+        if (DatabaseType.Oracle == databaseType) {
+            basesql = "CREATE SCHEMA ";
+        }
+        List<String> sqls = new ArrayList<>();
+        for (String database : databases) {
+            sqls.add(basesql + database + ";");
+        }
+        return StringUtils.join(sqls, "\n");
+    }
+    
+    private static String getDropTableSql(final DatabaseType databaseType, final List<String> databases) {
+        String basesql = "DROP DATABASE ";
+        if (DatabaseType.Oracle == databaseType) {
+            basesql = "DROP SCHEMA ";
+        }
+        List<String> sqls = new ArrayList<>();
+        for (String database : databases) {
+            sqls.add(basesql + database + ";");
+        }
+        return StringUtils.join(sqls, "\n");
+    }
 }

@@ -1,4 +1,4 @@
-package io.shardingjdbc.dbtest.data;
+package io.shardingjdbc.dbtest.config.bean;
 
 import lombok.Data;
 

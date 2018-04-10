@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.data;
+package io.shardingjdbc.dbtest.config;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +32,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
+import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;

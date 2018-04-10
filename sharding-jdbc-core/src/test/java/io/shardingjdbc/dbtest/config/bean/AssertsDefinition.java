@@ -19,22 +19,35 @@ package io.shardingjdbc.dbtest.config.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @XmlRootElement(name = "asserts")
 public class AssertsDefinition {
-
+    
     @XmlAttribute(name = "sharding-rule-config")
     private String shardingRuleConfig;
-
+    
+    @XmlAttribute(name = "base-config")
+    private String baseConfig;
+    
+    @XmlAttribute(name = "base-config-path")
+    private String baseConfigPath;
+    
+    @Setter
     private String path;
-
+    
+    @Setter
+    private String pathBaseCofig;
+    
     @XmlElement(name = "assertDQL")
     private List<AssertDQLDefinition> assertDQL = new ArrayList<>();
     
@@ -43,8 +56,5 @@ public class AssertsDefinition {
     
     @XmlElement(name = "assertDDL")
     private List<AssertDDLDefinition> assertDDL = new ArrayList<>();
-
-    public void setPath(String path) {
-        this.path = path;
-    }
+    
 }

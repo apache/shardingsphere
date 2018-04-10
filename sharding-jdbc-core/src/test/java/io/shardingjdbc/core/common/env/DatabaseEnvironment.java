@@ -116,10 +116,10 @@ public final class DatabaseEnvironment {
     }
     
     /**
-     * Get schema.
+     * Get table.
      * 
      * @param dbName database name
-     * @return schema
+     * @return table
      */
     public String getSchema(final String dbName) {
         return null == SCHEMA.get(databaseType) ? null : String.format(SCHEMA.get(databaseType), dbName);

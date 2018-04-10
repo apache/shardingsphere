@@ -1,4 +1,4 @@
-<asserts sharding-rule-config="./config/test.yaml">
+<asserts sharding-rule-config="./config/test.yaml" base-config="db" base-config-path="classpath:integrate/dbtest/db">
     <assertDQL id="test" init-data-file="./init"
             sql="assertSelectEqualsWithSingleTable"
             expected-data-file="./asserts/dql/select.xml">

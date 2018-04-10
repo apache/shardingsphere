@@ -28,15 +28,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.shardingjdbc.dbtest.data.ColumnDefinition;
+import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
 import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
 import io.shardingjdbc.dbtest.config.bean.ParametersDefinition;
-import io.shardingjdbc.dbtest.data.DatasetDatabase;
-import io.shardingjdbc.dbtest.data.DatasetDefinition;
+import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
+import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
 import org.junit.Assert;
 
