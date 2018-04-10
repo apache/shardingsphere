@@ -62,7 +62,7 @@ public final class ComplexRoutingEngine implements RoutingEngine {
             Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByLogicTable(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    result.add(new StandardRoutingEngine(shardingRule, parameters, tableRule.get().getLogicTable(), sqlStatement).route());
+                    result.add(new StandardRoutingEngine(shardingRule, parameters, tableRule.get().getLogicTable(), sqlStatement, null).route());
                 }
                 Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each);
                 if (bindingTableRule.isPresent()) {
