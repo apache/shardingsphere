@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.parsing.integrate.jaxb.root;
 
-import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedOrConditions;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedOrCondition;
 import io.shardingjdbc.core.parsing.integrate.jaxb.groupby.ExpectedGroupByColumn;
 import io.shardingjdbc.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
 import io.shardingjdbc.core.parsing.integrate.jaxb.limit.ExpectedLimit;
@@ -48,7 +48,7 @@ public final class ParserResult {
     private List<ExpectedTable> tables = new LinkedList<>();
     
     @XmlElement(name = "or-conditions")
-    private ExpectedOrConditions orConditions = new ExpectedOrConditions();
+    private ExpectedOrCondition orCondition = new ExpectedOrCondition();
     
     @XmlElement
     private ExpectedTokens tokens = new ExpectedTokens();

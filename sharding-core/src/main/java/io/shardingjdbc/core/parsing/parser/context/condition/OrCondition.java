@@ -33,9 +33,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class OrConditions {
+public final class OrCondition {
     
-    private final List<AndConditions> andConditions = new LinkedList<>();
+    private final List<AndCondition> andConditions = new LinkedList<>();
     
     /**
      * Add condition.
@@ -43,14 +43,14 @@ public final class OrConditions {
      * @param condition condition
      */
     public void add(final Condition condition) {
-        AndConditions firstAndConditions;
+        AndCondition firstAndCondition;
         if (isEmpty()) {
-            firstAndConditions = new AndConditions();
-            andConditions.add(firstAndConditions);
+            firstAndCondition = new AndCondition();
+            andConditions.add(firstAndCondition);
         } else {
-            firstAndConditions = andConditions.get(0);
+            firstAndCondition = andConditions.get(0);
         }
-        firstAndConditions.add(condition);
+        firstAndCondition.add(condition);
     }
     
     /**
@@ -61,18 +61,18 @@ public final class OrConditions {
      * @return found condition
      */
     public Optional<Condition> find(final Column column, final int index) {
-        Optional<AndConditions> andConditions = get(index);
-        return andConditions.isPresent() ? andConditions.get().find(column) : Optional.<Condition>absent();
+        Optional<AndCondition> andCondition = get(index);
+        return andCondition.isPresent() ? andCondition.get().find(column) : Optional.<Condition>absent();
     }
     
     /**
-     * Get and conditions via index.
+     * Get and condition via index.
      *
      * @param index index of and conditions
      * @return found and conditions
      */
-    public Optional<AndConditions> get(final int index) {
-        AndConditions result = null;
+    public Optional<AndCondition> get(final int index) {
+        AndCondition result = null;
         if (size() > index) {
             result = andConditions.get(index);
         }
