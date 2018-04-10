@@ -127,10 +127,10 @@ public final class ParsingSQLRouter implements SQLRouter {
         } else if (tableNames.isEmpty()) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllInDefaultDataSource(tableNames)) {
-            routingEngine = new StandardRoutingEngine(shardingRule, parameters, tableNames.iterator().next(), sqlStatement, generatedKey);
+            routingEngine = new StandardRoutingEngine(shardingRule, parameters, tableNames.iterator().next(), sqlStatement.getConditions(), generatedKey);
         } else {
             // TODO config for cartesian set
-            routingEngine = new ComplexRoutingEngine(shardingRule, parameters, tableNames, sqlStatement);
+            routingEngine = new ComplexRoutingEngine(shardingRule, parameters, tableNames, sqlStatement.getConditions());
         }
         return routingEngine.route();
     }
@@ -139,7 +139,8 @@ public final class ParsingSQLRouter implements SQLRouter {
         if (null != insertStatement.getGeneratedKeyCondition()) {
             return new GeneratedKey(insertStatement.getGeneratedKeyCondition());
         }
-        Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByLogicTable(insertStatement.getTables().getSingleTableName());
+        String logicTableName = insertStatement.getTables().getSingleTableName();
+        Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByLogicTable(logicTableName);
         if (!tableRule.isPresent()) {
             return null;
         }
@@ -147,7 +148,6 @@ public final class ParsingSQLRouter implements SQLRouter {
         if (!generatedKeysToken.isPresent()) {
             return null;
         }
-        String logicTableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumn = shardingRule.getGenerateKeyColumn(logicTableName);
         Preconditions.checkState(generateKeyColumn.isPresent());
         return 0 == insertStatement.getParametersIndex()

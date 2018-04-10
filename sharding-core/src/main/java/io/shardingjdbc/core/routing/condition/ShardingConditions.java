@@ -40,11 +40,11 @@ import java.util.List;
 @Getter
 public final class ShardingConditions {
     
+    private final List<Object> parameters;
+    
     private final Conditions conditions;
     
     private final GeneratedKey generatedKey;
-    
-    private final List<Object> parameters;
     
     /**
      * Get sharding values.

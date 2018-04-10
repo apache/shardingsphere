@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
-import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
 import io.shardingjdbc.core.routing.condition.GeneratedKey;
 import io.shardingjdbc.core.routing.condition.ShardingConditions;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
@@ -53,10 +53,10 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private final ShardingConditions shardingConditions;
     
-    public StandardRoutingEngine(final ShardingRule shardingRule, final List<Object> parameters, final String logicTableName, final SQLStatement sqlStatement, final GeneratedKey generatedKey) {
+    public StandardRoutingEngine(final ShardingRule shardingRule, final List<Object> parameters, final String logicTableName, final Conditions conditions, final GeneratedKey generatedKey) {
         this.shardingRule = shardingRule;
         this.logicTableName = logicTableName;
-        shardingConditions = new ShardingConditions(sqlStatement.getConditions(), generatedKey, parameters);
+        shardingConditions = new ShardingConditions(parameters, conditions, generatedKey);
     }
     
     @Override
