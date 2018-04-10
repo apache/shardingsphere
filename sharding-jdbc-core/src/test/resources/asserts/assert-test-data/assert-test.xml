@@ -9,7 +9,8 @@
     </assertDQL>
     <assertDML id="test2" init-data-file="./init" expected-update="1" sql="assertUpdateWithoutAlias"
             expected-sql="assertSelectEqualsWithSingleTable"
-            expected-data-file="./asserts/dml/update.xml">
+            expected-data-file="./asserts/dml/update.xml"
+        >
         <parameters>
             <parameter value="update" />
             <parameter value="1000" type="int"/>
@@ -20,7 +21,7 @@
             <parameter value="1000" type="int"/>
         </expected-parameters>
     </assertDML>
-    <assertDDL id="test3" init-data-file="./init" expected-update="1" sql="assertAlterTableTOrder"
+    <assertDDL id="test3" init-sql="dbCreateTOrder" clean-sql="dbDropTOrder" expected-update="1" sql="assertAlterTableTOrder"
                table="t_order"
                expected-data-file="./asserts/ddl/update.xml">
     </assertDDL>

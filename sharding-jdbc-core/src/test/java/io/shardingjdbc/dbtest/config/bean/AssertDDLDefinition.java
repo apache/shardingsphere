@@ -31,8 +31,11 @@ public class AssertDDLDefinition implements AssertDefinition {
     @XmlAttribute(name = "id")
     private String id;
 
-    @XmlAttribute(name = "init-data-file")
-    private String initDataFile;
+    @XmlAttribute(name = "init-sql")
+    private String initSql;
+    
+    @XmlAttribute(name = "clean-sql")
+    private String cleanSql;
 
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;

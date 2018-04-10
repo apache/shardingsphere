@@ -80,15 +80,6 @@ public class StartTest {
         return getString("assert.path", null);
     }
     
-    /**
-     * initialized.
-     *
-     * @return initialized
-     */
-    public static boolean isInitialized() {
-        return Boolean.valueOf(getString("initialized", "false"));
-    }
-    
     
     @Parameters
     public static Collection<String[]> getParameters() {
@@ -136,9 +127,10 @@ public class StartTest {
     @BeforeClass
     public static void beforeClass() {
         
-        if (isInitialized()) {
+        if (AssertEngine.isInitialized()) {
             InItCreateSchema.createDatabase();
             InItCreateSchema.createTable();
+            AssertEngine.setInitialized(false);
         }
     }
     
@@ -149,8 +141,9 @@ public class StartTest {
     
     @AfterClass
     public static void afterClass() {
-        if (isInitialized()) {
+        if (AssertEngine.isClean()) {
             InItCreateSchema.dropDatabase();
+            AssertEngine.setClean(false);
         }
     }
     

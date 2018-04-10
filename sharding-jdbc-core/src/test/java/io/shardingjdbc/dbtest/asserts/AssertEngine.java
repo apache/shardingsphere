@@ -30,11 +30,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
+import io.shardingjdbc.dbtest.StartTest;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
 import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import io.shardingjdbc.dbtest.init.InItCreateSchema;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.Assert;
 import org.xml.sax.SAXException;
 
@@ -53,6 +56,19 @@ import io.shardingjdbc.dbtest.exception.DbTestException;
 public class AssertEngine {
     
     public static final Map<String, AssertsDefinition> ASSERTDEFINITIONMAPS = new HashMap<>();
+    
+    @Getter
+    @Setter
+    private static volatile boolean initialized;
+    
+    @Getter
+    @Setter
+    private static volatile boolean clean ;
+    
+    static {
+        initialized = Boolean.valueOf(StartTest.getString("initialized", "false"));
+        clean = Boolean.valueOf(StartTest.getString("initialized", "false"));
+    }
     
     /**
      * add check use cases.
@@ -216,8 +232,8 @@ public class AssertEngine {
     private static void doUpdateUsePreparedStatementToExecuteDDL(final String rootPath, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
-                InItCreateSchema.dropTable();
-                InItCreateSchema.createTable();
+                //InItCreateSchema.dropTable();
+                //InItCreateSchema.createTable();
                 DatabaseUtil.updateUsePreparedStatementToExecute(con, rootsql,
                         anAssert.getParameters());
                 String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
@@ -258,8 +274,8 @@ public class AssertEngine {
     private static void doUpdateUsePreparedStatementToExecuteUpdateDDL(final String rootPath, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
-                InItCreateSchema.dropTable();
-                InItCreateSchema.createTable();
+                //InItCreateSchema.dropTable();
+                //InItCreateSchema.createTable();
                 DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(con, rootsql,
                         anAssert.getParameters());
                 String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
@@ -301,8 +317,8 @@ public class AssertEngine {
     private static void doUpdateUseStatementToExecuteDDL(final String rootPath, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
-                InItCreateSchema.dropTable();
-                InItCreateSchema.createTable();
+                //InItCreateSchema.dropTable();
+                //InItCreateSchema.createTable();
                 DatabaseUtil.updateUseStatementToExecute(con, rootsql, anAssert.getParameters());
                 
                 String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
@@ -343,8 +359,8 @@ public class AssertEngine {
     private static void doUpdateUseStatementToExecuteUpdateDDL(final String rootPath, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
-                InItCreateSchema.dropTable();
-                InItCreateSchema.createTable();
+                //InItCreateSchema.dropTable(anAssert.getCleanSql());
+                //InItCreateSchema.createTable(anAssert.getInitSql());
                 DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootsql, anAssert.getParameters());
                 String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
@@ -354,8 +370,8 @@ public class AssertEngine {
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table, msg);
             }
         } finally {
-            InItCreateSchema.dropTable();
-            InItCreateSchema.createTable();
+            InItCreateSchema.dropTable(anAssert.getCleanSql());
+            InItCreateSchema.createTable(anAssert.getInitSql());
         }
     }
     

@@ -95,9 +95,27 @@ public class InItCreateSchema {
     /**
      * Initialize the database table.
      */
+    public static synchronized void createTable(final String sqlId) {
+        for (DatabaseType db : DATABASE_SCHEMAS) {
+            createSchema(db, sqlId);
+        }
+    }
+    
+    /**
+     * Initialize the database table.
+     */
     public static synchronized void dropTable() {
         for (DatabaseType db : DATABASE_SCHEMAS) {
             dropSchema(db);
+        }
+    }
+    
+    /**
+     * Initialize the database table.
+     */
+    public static synchronized void dropTable(final String sqlId) {
+        for (DatabaseType db : DATABASE_SCHEMAS) {
+            dropSchema(db, sqlId);
         }
     }
     
@@ -205,8 +223,16 @@ public class InItCreateSchema {
         createShardingSchema(dbType);
     }
     
+    private static void createSchema(final DatabaseType dbType, final String sqlId) {
+        createShardingSchema(dbType, sqlId);
+    }
+    
     private static void dropSchema(final DatabaseType dbType) {
         dropShardingSchema(dbType);
+    }
+    
+    private static void dropSchema(final DatabaseType dbType, final String sqlId) {
+        dropShardingSchema(dbType, sqlId);
     }
     
     private static void createShardingSchema(final DatabaseType dbType) {
@@ -214,24 +240,21 @@ public class InItCreateSchema {
         ResultSet resultSet = null;
         StringReader sr = null;
         try {
-            
-            for (int i = 0; i < 10; i++) {
-                for (String each : DATABASES) {
-                    List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
-                            .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
-                    for (String database : databases) {
-                        conn = initialConnection(database, dbType);
-                        List<String> tableSqlIds = AnalyzeSql.analyze(InItCreateSchema.class.getClassLoader()
-                                .getResource("integrate/dbtest").getPath() + "/" + each + "/table/create-table.xml");
-                        List<String> tableSqls = new ArrayList<>();
-                        for (String tableSqlId : tableSqlIds) {
-                            tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
-                        }
-                        
-                        sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
-                        
-                        resultSet = RunScript.execute(conn, sr);
+            for (String each : DATABASES) {
+                List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                        .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
+                for (String database : databases) {
+                    conn = initialConnection(database, dbType);
+                    List<String> tableSqlIds = AnalyzeSql.analyze(InItCreateSchema.class.getClassLoader()
+                            .getResource("integrate/dbtest").getPath() + "/" + each + "/table/create-table.xml");
+                    List<String> tableSqls = new ArrayList<>();
+                    for (String tableSqlId : tableSqlIds) {
+                        tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
                     }
+                    
+                    sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
+                    
+                    resultSet = RunScript.execute(conn, sr);
                 }
             }
             
@@ -258,31 +281,113 @@ public class InItCreateSchema {
         }
     }
     
+    private static void createShardingSchema(final DatabaseType dbType, final String sqlId) {
+        Connection conn = null;
+        ResultSet resultSet = null;
+        StringReader sr = null;
+        try {
+            
+            for (String each : DATABASES) {
+                List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                        .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
+                for (String database : databases) {
+                    conn = initialConnection(database, dbType);
+                    List<String> tableSqls = new ArrayList<>();
+                    tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(sqlId));
+                    
+                    sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
+                    
+                    resultSet = RunScript.execute(conn, sr);
+                }
+            }
+            
+        } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
+            e.printStackTrace();
+        } finally {
+            if (sr != null) {
+                sr.close();
+            }
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
     
     private static void dropShardingSchema(final DatabaseType dbType) {
         Connection conn = null;
         ResultSet resultSet = null;
         StringReader sr = null;
         try {
-            for (int i = 0; i < 10; i++) {
-                for (String each : DATABASES) {
-                    List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
-                            .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
-                    for (String database : databases) {
-                        conn = initialConnection(database, dbType);
-                        List<String> tableSqlIds = AnalyzeSql.analyze(InItCreateSchema.class.getClassLoader()
-                                .getResource("integrate/dbtest").getPath() + "/" + each + "/table/drop-table.xml");
-                        List<String> tableSqls = new ArrayList<>();
-                        for (String tableSqlId : tableSqlIds) {
-                            tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
-                        }
-                        sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
-                    
-                        resultSet = RunScript.execute(conn, sr);
+            for (String each : DATABASES) {
+                List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                        .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
+                for (String database : databases) {
+                    conn = initialConnection(database, dbType);
+                    List<String> tableSqlIds = AnalyzeSql.analyze(InItCreateSchema.class.getClassLoader()
+                            .getResource("integrate/dbtest").getPath() + "/" + each + "/table/drop-table.xml");
+                    List<String> tableSqls = new ArrayList<>();
+                    for (String tableSqlId : tableSqlIds) {
+                        tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
                     }
+                    sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
+                    
+                    resultSet = RunScript.execute(conn, sr);
                 }
             }
-        
+            
+        } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
+            e.printStackTrace();
+        } finally {
+            if (sr != null) {
+                sr.close();
+            }
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    private static void dropShardingSchema(final DatabaseType dbType, final String sqlId) {
+        Connection conn = null;
+        ResultSet resultSet = null;
+        StringReader sr = null;
+        try {
+            for (String each : DATABASES) {
+                List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                        .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
+                for (String database : databases) {
+                    conn = initialConnection(database, dbType);
+                    List<String> tableSqls = new ArrayList<>();
+                    tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(sqlId));
+                    
+                    sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
+                    
+                    resultSet = RunScript.execute(conn, sr);
+                }
+            }
+            
         } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
             e.printStackTrace();
         } finally {
