@@ -18,6 +18,8 @@
 package io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute;
 
 import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.proxy.backend.common.StatementExecuteBackendHandler;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
@@ -66,6 +68,19 @@ public final class ComStmtExecutePacket extends CommandPacket {
         }
     }
     
+    /**
+     * Is parameter null.
+     *
+     * @param index column index
+     * @return is parameter null
+     */
+    public boolean isParameterNull(final int index) {
+        int bytePos = index / 8;
+        int bitPos = index % 8;
+        nullBitmap[bytePos] = 1 << bitPos;
+        return (nullBitmap[bytePos] & (1 << bitPos)) != 0;
+    }
+    
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
         mysqlPacketPayload.writeInt4(statementId);
@@ -85,6 +100,6 @@ public final class ComStmtExecutePacket extends CommandPacket {
     @Override
     public List<DatabaseProtocolPacket> execute() {
         log.debug("COM_STMT_EXECUTE received for Sharding-Proxy: {}", statementId);
-        return null;
+        return new StatementExecuteBackendHandler(this, DatabaseType.MySQL, true).execute();
     }
 }
