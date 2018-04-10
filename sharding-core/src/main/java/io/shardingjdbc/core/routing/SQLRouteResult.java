@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.routing;
 
+import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,8 @@ import java.util.Set;
 public final class SQLRouteResult {
     
     private final SQLStatement sqlStatement;
+    
+    private final GeneratedKey generatedKey;
     
     private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
     

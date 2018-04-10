@@ -240,7 +240,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     private Optional<GeneratedKey> getGeneratedKey() {
         if (null != routeResult && routeResult.getSqlStatement() instanceof InsertStatement) {
-            return Optional.fromNullable(((InsertStatement) routeResult.getSqlStatement()).getGeneratedKey());
+            return Optional.fromNullable(routeResult.getGeneratedKey());
         }
         return Optional.absent();
     }
