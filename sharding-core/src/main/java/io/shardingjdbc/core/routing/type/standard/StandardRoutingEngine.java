@@ -19,9 +19,11 @@ package io.shardingjdbc.core.routing.type.standard;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
+import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
@@ -36,6 +38,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,6 +57,8 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private final String logicTableName;
     
     private final SQLStatement sqlStatement;
+    
+    private final GeneratedKey generatedKey;
     
     @Override
     public RoutingResult route() {
@@ -106,6 +111,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
             Optional<Condition> condition = sqlStatement.getConditions().find(new Column(each, logicTableName));
             if (condition.isPresent()) {
                 result.add(condition.get().getShardingValue(parameters));
+            } else if (null != generatedKey && each.equals(generatedKey.getColumn())) {
+                Comparable key = null == generatedKey.getValue() ? (Comparable) parameters.get(generatedKey.getIndex()) : (Comparable) generatedKey.getValue();
+                result.add(new ListShardingValue<>(sqlStatement.getTables().getSingleTableName(), each, Collections.singletonList(key)));
             }
         }
         return result;
