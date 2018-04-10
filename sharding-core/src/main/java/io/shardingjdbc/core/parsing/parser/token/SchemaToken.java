@@ -40,7 +40,7 @@ public final class SchemaToken implements SQLToken {
     private final String tableName;
     
     /**
-     * Get table name.
+     * Get schema name.
      * 
      * @return table name
      */
