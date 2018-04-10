@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.core.routing.router;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
@@ -28,6 +30,7 @@ import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingjdbc.core.rewrite.SQLBuilder;
 import io.shardingjdbc.core.rewrite.SQLRewriteEngine;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
@@ -45,6 +48,7 @@ import io.shardingjdbc.core.routing.type.ignore.IgnoreRoutingEngine;
 import io.shardingjdbc.core.routing.type.standard.StandardRoutingEngine;
 import io.shardingjdbc.core.routing.type.unicast.UnicastRoutingEngine;
 import io.shardingjdbc.core.rule.ShardingRule;
+import io.shardingjdbc.core.rule.TableRule;
 import io.shardingjdbc.core.util.SQLLogger;
 import lombok.RequiredArgsConstructor;
 
@@ -70,22 +74,21 @@ public final class ParsingSQLRouter implements SQLRouter {
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        SQLParsingEngine parsingEngine = new SQLParsingEngine(databaseType, logicSQL, shardingRule);
-        SQLStatement result = parsingEngine.parse(useCache);
-        if (result instanceof InsertStatement) {
-            ((InsertStatement) result).appendGenerateKeyToken(shardingRule);
-        }
-        return result;
+        return new SQLParsingEngine(databaseType, logicSQL, shardingRule).parse(useCache);
     }
     
     @Override
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
-        SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        if (sqlStatement instanceof InsertStatement && null != ((InsertStatement) sqlStatement).getGeneratedKey()) {
-            processGeneratedKey(parameters, (InsertStatement) sqlStatement, result);
+        GeneratedKey generatedKey = null;
+        if (sqlStatement instanceof InsertStatement) {
+            generatedKey = getGenerateKey(shardingRule, (InsertStatement) sqlStatement);
         }
-        RoutingResult routingResult = route(parameters, sqlStatement);
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement);
+        SQLRouteResult result = new SQLRouteResult(sqlStatement, generatedKey);
+        if (null != generatedKey) {
+            processGeneratedKey(parameters, generatedKey, sqlStatement.getTables().getSingleTableName(), result);
+        }
+        RoutingResult routingResult = route(parameters, sqlStatement, generatedKey);
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, generatedKey);
         boolean isSingleRouting = routingResult.isSingleRouting();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
             processLimit(parameters, (SelectStatement) sqlStatement, isSingleRouting);
@@ -108,7 +111,7 @@ public final class ParsingSQLRouter implements SQLRouter {
         return result;
     }
     
-    private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement) {
+    private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement, final GeneratedKey generatedKey) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
         RoutingEngine routingEngine;
         if (sqlStatement instanceof UseStatement) {
@@ -124,7 +127,7 @@ public final class ParsingSQLRouter implements SQLRouter {
         } else if (tableNames.isEmpty()) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllInDefaultDataSource(tableNames)) {
-            routingEngine = new StandardRoutingEngine(shardingRule, parameters, tableNames.iterator().next(), sqlStatement);
+            routingEngine = new StandardRoutingEngine(shardingRule, parameters, tableNames.iterator().next(), sqlStatement, generatedKey);
         } else {
             // TODO config for cartesian set
             routingEngine = new ComplexRoutingEngine(shardingRule, parameters, tableNames, sqlStatement);
@@ -132,12 +135,30 @@ public final class ParsingSQLRouter implements SQLRouter {
         return routingEngine.route();
     }
     
-    private void processGeneratedKey(final List<Object> parameters, final InsertStatement insertStatement, final SQLRouteResult sqlRouteResult) {
-        GeneratedKey generatedKey = insertStatement.getGeneratedKey();
+    private GeneratedKey getGenerateKey(final ShardingRule shardingRule, final InsertStatement insertStatement) {
+        if (null != insertStatement.getGeneratedKey()) {
+            return insertStatement.getGeneratedKey();
+        }
+        Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByLogicTable(insertStatement.getTables().getSingleTableName());
+        if (!tableRule.isPresent()) {
+            return null;
+        }
+        Optional<GeneratedKeyToken> generatedKeysToken = insertStatement.findGeneratedKeyToken();
+        if (!generatedKeysToken.isPresent()) {
+            return null;
+        }
+        String logicTableName = insertStatement.getTables().getSingleTableName();
+        Optional<String> generateKeyColumn = shardingRule.getGenerateKeyColumn(logicTableName);
+        Preconditions.checkState(generateKeyColumn.isPresent());
+        return 0 == insertStatement.getParametersIndex()
+                ? new GeneratedKey(generateKeyColumn.get(), -1, shardingRule.generateKey(logicTableName)) : new GeneratedKey(generateKeyColumn.get(), insertStatement.getParametersIndex(), null);
+    }
+    
+    private void processGeneratedKey(final List<Object> parameters, final GeneratedKey generatedKey, final String logicTableName, final SQLRouteResult sqlRouteResult) {
         if (parameters.isEmpty()) {
             sqlRouteResult.getGeneratedKeys().add(generatedKey.getValue());
         } else if (parameters.size() == generatedKey.getIndex()) {
-            Number key = shardingRule.generateKey(insertStatement.getTables().getSingleTableName());
+            Number key = shardingRule.generateKey(logicTableName);
             parameters.add(key);
             setGeneratedKeys(sqlRouteResult, key);
         } else if (-1 != generatedKey.getIndex()) {
