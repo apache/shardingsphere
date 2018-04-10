@@ -27,7 +27,7 @@ import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.routing.PreparedStatementRoutingEngine;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
 import io.shardingjdbc.core.routing.SQLRouteResult;
-import io.shardingjdbc.proxy.backend.mysql.MySQLPacketQueryResult;
+import io.shardingjdbc.proxy.backend.mysql.MySQLPacketStatementExecuteQueryResult;
 import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
@@ -36,7 +36,6 @@ import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute.Bi
 import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute.ComStmtExecutePacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
@@ -249,7 +248,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         List<QueryResult> queryResults = new ArrayList<>(packets.size());
         for (List<DatabaseProtocolPacket> each : packets) {
             // TODO replace to a common PacketQueryResult
-            queryResults.add(new MySQLPacketQueryResult(each));
+            queryResults.add(new MySQLPacketStatementExecuteQueryResult(each));
         }
         MergedResult mergedResult;
         try {
@@ -277,7 +276,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
                 for (int i = 1; i <= columnCount; i++) {
                     data.add(mergedResult.getValue(i, Object.class));
                 }
-                result.add(new TextResultSetRowPacket(++currentSequenceId, data));
+                result.add(new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data));
             }
         } catch (final SQLException ex) {
             return Collections.<DatabaseProtocolPacket>singletonList(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
