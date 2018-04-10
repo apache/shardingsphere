@@ -26,10 +26,12 @@ import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.limit.LimitValue;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
 import io.shardingjdbc.core.parsing.parser.token.OffsetToken;
 import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
 import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
+import io.shardingjdbc.core.parsing.parser.token.SchemaToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
@@ -274,5 +276,31 @@ public final class SQLRewriteEngineTest {
         SQLBuilder sqlBuilder = sqlRewriteEngine.rewrite(true);
         CartesianTableReference cartesianTableReference = new CartesianTableReference(Collections.singletonList(new TableUnit("db0", "table_x", "table_x")));
         assertThat(sqlRewriteEngine.generateSQL(cartesianTableReference, sqlBuilder), is("SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?"));
+    }
+    
+    @Test
+    public void assertSchemaTokenRewriteForTableName() {
+        tableTokens = new HashMap<>(1, 1);
+        tableTokens.put("table_x", "table_y");
+        selectStatement.getSqlTokens().add(new TableToken(18, "table_x"));
+        selectStatement.getSqlTokens().add(new SchemaToken(29, "table_x", "table_x"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW CREATE TABLE table_x ON table_x", DatabaseType.MySQL, selectStatement);
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, shardingRule), is("SHOW CREATE TABLE table_y ON db0"));
+    }
+    
+    @Test
+    public void assertIndexTokenForIndexNameTableName() {
+        selectStatement.getSqlTokens().add(new IndexToken(13, "index_name", "table_x"));
+        selectStatement.getSqlTokens().add(new TableToken(27, "table_x"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "CREATE INDEX index_name ON table_x ('column')", DatabaseType.MySQL, selectStatement);
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, shardingRule), is("CREATE INDEX index_name_table_1 ON table_1 ('column')"));
+    }
+    
+    @Test
+    public void assertIndexTokenForIndexNameTableNameWithoutLogicTableName() {
+        selectStatement.getSqlTokens().add(new IndexToken(13, "logic_index", ""));
+        selectStatement.getSqlTokens().add(new TableToken(28, "table_x"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "CREATE INDEX index_names ON table_x ('column')", DatabaseType.MySQL, selectStatement);
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, shardingRule), is("CREATE INDEX logic_index_table_1 ON table_1 ('column')"));
     }
 }

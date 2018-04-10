@@ -33,7 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public class OrConditions {
+public final class OrConditions {
     
     private final List<AndConditions> andConditions = new LinkedList<>();
     
@@ -60,13 +60,9 @@ public class OrConditions {
      * @param index index of and conditions
      * @return found condition
      */
-    public Optional<Condition> find(final Column column, int index) {
+    public Optional<Condition> find(final Column column, final int index) {
         Optional<AndConditions> andConditions = get(index);
-        if (andConditions.isPresent()) {
-            return andConditions.get().find(column);
-        } else {
-            return Optional.fromNullable(null);
-        }
+        return andConditions.isPresent() ? andConditions.get().find(column) : Optional.<Condition>absent();
     }
     
     /**
@@ -75,7 +71,7 @@ public class OrConditions {
      * @param index index of and conditions
      * @return found and conditions
      */
-    public Optional<AndConditions> get(int index) {
+    public Optional<AndConditions> get(final int index) {
         AndConditions result = null;
         if (size() > index) {
             result = andConditions.get(index);
@@ -84,9 +80,9 @@ public class OrConditions {
     }
     
     /**
-     * Adjust or conditions is empty or not.
+     * Adjust and conditions is empty or not.
      *
-     * @return or conditions is empty or not
+     * @return and conditions is empty or not
      */
     public boolean isEmpty() {
         return andConditions.isEmpty();

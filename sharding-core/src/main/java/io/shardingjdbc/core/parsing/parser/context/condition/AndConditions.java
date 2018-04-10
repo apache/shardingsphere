@@ -34,7 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public class AndConditions {
+public final class AndConditions {
     
     private final List<Condition> conditions = new LinkedList<>();
     
@@ -69,7 +69,7 @@ public class AndConditions {
      * @param index index of conditions
      * @return found condition
      */
-    public Optional<Condition> get(int index) {
+    public Optional<Condition> get(final int index) {
         Condition result = null;
         if (size() > index) {
             result = conditions.get(index);
@@ -78,9 +78,9 @@ public class AndConditions {
     }
     
     /**
-     * Adjust and conditions is empty or not.
+     * Adjust conditions is empty or not.
      *
-     * @return and conditions is empty or not
+     * @return conditions is empty or not
      */
     public boolean isEmpty() {
         return conditions.isEmpty();
