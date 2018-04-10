@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing;
+package io.shardingjdbc.core.routing.condition;
 
 import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import lombok.Getter;

@@ -32,7 +32,7 @@ import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingjdbc.core.rewrite.SQLBuilder;
 import io.shardingjdbc.core.rewrite.SQLRewriteEngine;
-import io.shardingjdbc.core.routing.GeneratedKey;
+import io.shardingjdbc.core.routing.condition.GeneratedKey;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
 import io.shardingjdbc.core.routing.SQLRouteResult;
 import io.shardingjdbc.core.routing.type.RoutingEngine;

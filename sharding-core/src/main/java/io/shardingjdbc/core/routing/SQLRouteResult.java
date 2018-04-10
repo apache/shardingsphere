@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.routing;
 
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.routing.condition.GeneratedKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
