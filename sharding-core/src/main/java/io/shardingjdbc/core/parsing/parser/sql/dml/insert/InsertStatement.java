@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.parsing.parser.sql.dml.insert;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
+import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
@@ -54,7 +54,7 @@ public final class InsertStatement extends DMLStatement {
     
     private int valuesListLastPosition;
     
-    private GeneratedKey generatedKey;
+    private GeneratedKeyCondition generatedKeyCondition;
     
     /**
      * Find generated key token.

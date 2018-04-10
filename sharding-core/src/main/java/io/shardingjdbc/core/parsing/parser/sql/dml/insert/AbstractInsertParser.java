@@ -62,14 +62,14 @@ public abstract class AbstractInsertParser implements SQLParser {
         }
         insertClauseParserFacade.getInsertValuesClauseParser().parse(result);
         insertClauseParserFacade.getInsertSetClauseParser().parse(result);
-        appendGenerateKey(result);
+        appendGenerateKeyToken(result);
         return result;
     }
     
-    private void appendGenerateKey(final InsertStatement insertStatement) {
+    private void appendGenerateKeyToken(final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
-        if (!generateKeyColumn.isPresent() || null != insertStatement.getGeneratedKey()) {
+        if (!generateKeyColumn.isPresent() || null != insertStatement.getGeneratedKeyCondition()) {
             return;
         } 
         ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
