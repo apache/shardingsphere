@@ -32,23 +32,40 @@ import java.util.List;
 @Getter
 public final class BinaryResultSetRowPacket extends MySQLPacket {
     
-    private static final int NULL = 0xfb;
+    private static final int PACKET_HEADER = 0x00;
+    
+    private final int numColumns;
     
     private final List<Object> data;
     
-    public BinaryResultSetRowPacket(final int sequenceId, final List<Object> data) {
+    public BinaryResultSetRowPacket(final int sequenceId, final int numColumns, final List<Object> data) {
         super(sequenceId);
+        this.numColumns = numColumns;
         this.data = data;
     }
     
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        for (Object each : data) {
-            if (null == each) {
-                mysqlPacketPayload.writeInt1(NULL);
+        mysqlPacketPayload.writeInt1(PACKET_HEADER);
+        
+        int bitmapBytes = (numColumns + 7 + 2) / 8;
+        int[] nullBitmap = new int[bitmapBytes];
+        for (int each : nullBitmap) {
+            mysqlPacketPayload.writeInt1(each);
+        }
+        
+        for (int i = 0; i < numColumns; i++) {
+            if (null == data.get(i)) {
+                setNullBit(nullBitmap, i);
             } else {
-                mysqlPacketPayload.writeStringLenenc(each.toString());
+                mysqlPacketPayload.writeStringLenenc(data.get(i).toString());
             }
         }
+    }
+    
+    private void setNullBit(final int[] nullBitmap, final int index) {
+        int bytePos = (index + 2) / 8;
+        int bitPos = (index + 2) % 8;
+        nullBitmap[bytePos] = 1 << bitPos;
     }
 }

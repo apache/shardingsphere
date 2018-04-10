@@ -22,6 +22,7 @@ import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.List;
  * @author zhangyonglun
  */
 @Slf4j
+@Getter
 public final class ComStmtExecutePacket extends CommandPacket {
     
     private final int statementId;

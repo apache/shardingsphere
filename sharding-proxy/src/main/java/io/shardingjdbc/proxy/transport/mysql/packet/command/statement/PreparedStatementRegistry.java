@@ -85,6 +85,16 @@ public final class PreparedStatementRegistry {
      * @param statementId statement ID
      * @return SQL
      */
+    public String getSql(final int statementId) {
+        return statementIdtoSqlMap.get(statementId);
+    }
+    
+    /**
+     * Get number columns.
+     *
+     * @param statementId statement ID
+     * @return number columns
+     */
     public int getNumColumns(final int statementId) {
         String sql = statementIdtoSqlMap.get(statementId);
         return sqlToNumColumnsMap.get(sql);
