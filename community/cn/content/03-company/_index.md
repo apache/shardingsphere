@@ -28,6 +28,7 @@ chapter = true
 * [搜狐资讯](http://ss.sohu.com/)
 * [凤凰汽车](http://auto.ifeng.com/)
 * [天涯社区](http://www.tianya.cn/)
+* [易车网](http://www.yiche.com/)
 
 ## O2O
 
@@ -78,6 +79,7 @@ chapter = true
 * [五谷图像](http://www.5grain.com/)
 * [上海南潮信息科技有限公司](https://ruff.io/)
 * [高阳捷迅](http://www.19pay.com.cn/)
+* [超级蓝领网络科技服务有限公司](http://www.chaojilanling.cn/)
 
 ## 政府
 
