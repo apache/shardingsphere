@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.proxy.backend.common.StatementExecuteBackendHandler;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
@@ -63,8 +64,21 @@ public final class ComStmtExecutePacket extends CommandPacket {
             nullBitmap[i] = mysqlPacketPayload.readInt1();
         }
         newParamsBoundFlag = mysqlPacketPayload.readInt1();
+        setParameterList(mysqlPacketPayload);
+    }
+    
+    private void setParameterList(final MySQLPacketPayload mysqlPacketPayload) {
         while (mysqlPacketPayload.isReadable()) {
-            parameterList.add(new Parameter(mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1(), mysqlPacketPayload.readStringLenenc()));
+            ColumnType columnType = ColumnType.valueOfJDBCType(mysqlPacketPayload.readInt1());
+            int unsignedFlag = mysqlPacketPayload.readInt1();
+            
+            // TODO add more types
+            if (columnType == ColumnType.MYSQL_TYPE_NEWDECIMAL) {
+                int value = mysqlPacketPayload.readInt4();
+                parameterList.add(new Parameter(columnType, unsignedFlag, String.valueOf(value)));
+            } else {
+                parameterList.add(new Parameter(columnType, unsignedFlag, mysqlPacketPayload.readStringLenenc()));
+            }
         }
     }
     
@@ -77,7 +91,6 @@ public final class ComStmtExecutePacket extends CommandPacket {
     public boolean isParameterNull(final int index) {
         int bytePos = index / 8;
         int bitPos = index % 8;
-        nullBitmap[bytePos] = 1 << bitPos;
         return (nullBitmap[bytePos] & (1 << bitPos)) != 0;
     }
     
@@ -93,7 +106,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
         for (Parameter each : parameterList) {
             mysqlPacketPayload.writeInt1(each.getColumnType().getValue());
             mysqlPacketPayload.writeInt1(each.getUnsignedFlag());
-            mysqlPacketPayload.writeStringLenenc(each.getValue());
+            mysqlPacketPayload.writeStringLenenc((String) each.getValue());
         }
     }
     

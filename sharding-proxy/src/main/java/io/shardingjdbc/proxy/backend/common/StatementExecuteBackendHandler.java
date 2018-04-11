@@ -61,15 +61,13 @@ import java.util.List;
  */
 public final class StatementExecuteBackendHandler implements BackendHandler {
     
-    private final String sql;
-    
     private final ComStmtExecutePacket comStmtExecutePacket;
     
     private final PreparedStatementRoutingEngine routingEngine;
     
     public StatementExecuteBackendHandler(final ComStmtExecutePacket comStmtExecutePacket, final DatabaseType databaseType, final boolean showSQL) {
         this.comStmtExecutePacket = comStmtExecutePacket;
-        sql = PreparedStatementRegistry.getInstance().getSql(comStmtExecutePacket.getStatementId());
+        String sql = PreparedStatementRegistry.getInstance().getSql(comStmtExecutePacket.getStatementId());
         routingEngine = new PreparedStatementRoutingEngine(sql, ShardingRuleRegistry.getInstance().getShardingRule(), databaseType, showSQL);
     }
     
@@ -111,7 +109,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         return result;
     }
     
-    private void setJdbcPreparedStatementParameters(final PreparedStatement preparedStatement) throws SQLException {
+    private void setJDBCPreparedStatementParameters(final PreparedStatement preparedStatement) throws SQLException {
         for (int i = 0; i < getComStmtExecuteParameters().size(); i++) {
             preparedStatement.setObject(i + 1, getComStmtExecuteParameters().get(i));
         }
@@ -120,9 +118,9 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     private List<DatabaseProtocolPacket> executeQuery(final DataSource dataSource, final String sql) {
         try (
                 Connection conn = dataSource.getConnection();
-                PreparedStatement preparedStatement = conn.prepareStatement(sql);
-                ResultSet resultSet = preparedStatement.executeQuery()) {
-            setJdbcPreparedStatementParameters(preparedStatement);
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            setJDBCPreparedStatementParameters(preparedStatement);
+            ResultSet resultSet = preparedStatement.executeQuery();
             return getDatabaseProtocolPackets(resultSet);
         } catch (final SQLException ex) {
             return Collections.<DatabaseProtocolPacket>singletonList(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
@@ -137,12 +135,12 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             long lastInsertId = 0;
             if (sqlStatement instanceof InsertStatement) {
                 preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                setJdbcPreparedStatementParameters(preparedStatement);
+                setJDBCPreparedStatementParameters(preparedStatement);
                 affectedRows = preparedStatement.executeUpdate();
                 lastInsertId = getGeneratedKey(preparedStatement);
             } else {
                 preparedStatement = conn.prepareStatement(sql);
-                setJdbcPreparedStatementParameters(preparedStatement);
+                setJDBCPreparedStatementParameters(preparedStatement);
                 affectedRows = preparedStatement.executeUpdate();
             }
             return Collections.<DatabaseProtocolPacket>singletonList(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
@@ -163,7 +161,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         try (
                 Connection conn = dataSource.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-            setJdbcPreparedStatementParameters(preparedStatement);
+            setJDBCPreparedStatementParameters(preparedStatement);
             boolean hasResultSet = preparedStatement.execute();
             if (hasResultSet) {
                 return getDatabaseProtocolPackets(preparedStatement.getResultSet());

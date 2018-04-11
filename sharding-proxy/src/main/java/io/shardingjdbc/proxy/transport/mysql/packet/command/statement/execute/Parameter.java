@@ -20,18 +20,33 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute;
 import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
 import lombok.Getter;
 
-@Getter
 public final class Parameter {
     
+    @Getter
     private final ColumnType columnType;
     
+    @Getter
     private final int unsignedFlag;
     
     private final String value;
     
-    public Parameter(final int columnType, final int unsignedFlag, final String value) {
-        this.columnType = ColumnType.valueOf(columnType);
+    public Parameter(final ColumnType columnType, final int unsignedFlag, final String value) {
+        this.columnType = columnType;
         this.unsignedFlag = unsignedFlag;
         this.value = value;
+    }
+    
+    /**
+     * Get value.
+     *
+     * @return value
+     */
+    public Object getValue() {
+        // TODO add more types
+        if (columnType == ColumnType.MYSQL_TYPE_NEWDECIMAL) {
+            return Long.parseLong(value);
+        } else {
+            return value;
+        }
     }
 }
