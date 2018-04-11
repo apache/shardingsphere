@@ -1,8 +1,6 @@
 +++
-title = "Core functions"
-weight = 6
-prev = "/02-sharding/sql-supported/"
-next = "/02-sharding/core-functions/hint"
+title = "Other functions"
+weight = 5
 chapter = true
 +++
 

@@ -2,8 +2,6 @@
 toc = true
 title = "Hint"
 weight = 1
-prev = "/02-sharding/core-functions/"
-next = "/02-sharding/core-functions/key-generator"
 +++
 
 ## Background

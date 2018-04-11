@@ -2,8 +2,6 @@
 toc = true
 title = "Distributed sequence"
 weight = 2
-prev = "/02-sharding/core-functions/hint/"
-next = "/02-sharding/core-functions/pagination/"
 +++
 
 ## Background
