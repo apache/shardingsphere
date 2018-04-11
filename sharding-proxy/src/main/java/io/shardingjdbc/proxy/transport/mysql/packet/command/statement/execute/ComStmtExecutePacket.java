@@ -79,8 +79,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
     
             // TODO add more types
             if (columnType == ColumnType.MYSQL_TYPE_LONG) {
-                int value = mysqlPacketPayload.readInt4();
-                parameterList.add(new Parameter(columnType, unsignedFlag, String.valueOf(value)));
+                parameterList.add(new Parameter(columnType, unsignedFlag, String.valueOf(mysqlPacketPayload.readInt4())));
             } else {
                 parameterList.add(new Parameter(columnType, unsignedFlag, mysqlPacketPayload.readStringLenenc()));
             }

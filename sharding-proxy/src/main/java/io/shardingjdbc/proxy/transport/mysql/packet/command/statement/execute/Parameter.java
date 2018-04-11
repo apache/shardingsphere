@@ -30,7 +30,7 @@ public final class Parameter {
     
     private final String value;
     
-    public Parameter(final ColumnType columnType, final int unsignedFlag, final String value) {
+    Parameter(final ColumnType columnType, final int unsignedFlag, final String value) {
         this.columnType = columnType;
         this.unsignedFlag = unsignedFlag;
         this.value = value;
