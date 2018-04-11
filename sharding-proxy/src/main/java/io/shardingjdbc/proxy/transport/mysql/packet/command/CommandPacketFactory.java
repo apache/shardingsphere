@@ -55,6 +55,9 @@ public final class CommandPacketFactory {
                 return new ComStmtPreparePacket(sequenceId, mysqlPacketPayload);
             case COM_STMT_EXECUTE:
                 return new ComStmtExecutePacket(sequenceId, mysqlPacketPayload);
+            case COM_STMT_CLOSE:
+                mysqlPacketPayload.readInt4();
+                return null;
             case COM_SLEEP:
             case COM_CREATE_DB:
             case COM_DROP_DB:
@@ -74,7 +77,6 @@ public final class CommandPacketFactory {
             case COM_CONNECT_OUT:
             case COM_REGISTER_SLAVE:
             case COM_STMT_SEND_LONG_DATA:
-            case COM_STMT_CLOSE:
             case COM_STMT_RESET:
             case COM_SET_OPTION:
             case COM_STMT_FETCH:
