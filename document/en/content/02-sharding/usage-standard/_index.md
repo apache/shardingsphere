@@ -1,14 +1,15 @@
 +++
 toc = true
 title = "Usage standard"
-weight = 5
-prev = "/02-sharding/key-generator/"
-next = "/02-sharding/key-generator/JDBC/"
+weight = 4
 +++
 
 ## Background
 
 
-Because of the flexibility and complexity of SQL syntax and the different handling for SQL queries for distributed databases and single database, not all of the SQLs can be used in Sharding-JDBC.
+This section mainly introduces the relevant usage standards of the Sharding, mainly including:
 
-This section lists the supported SQL syntax and the unsupported SQL syntax for user to look up. In the future, more and more SQL syntaxes will be supported in Sharding-JDBC.
+* SQL
+* paging
+
+Please refer to the relevant introduction page for details.

@@ -2,8 +2,6 @@
 toc = true
 title = "JDBC"
 weight = 1
-prev = "/02-sharding/usage-standard/"
-next = "/02-sharding/usage-standard/SQL/"
 +++
 
 ## The list of supported items in JDBC

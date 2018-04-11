@@ -1,10 +1,13 @@
 +++
 toc = true
 title = "SQL"
-weight = 2
-prev = "/02-sharding/usage-standard/JDBC/"
-next = "/02-sharding/core-functions/"
+weight = 1
 +++
+
+Because of the flexibility and complexity of SQL syntax and the different handling for SQL queries for distributed databases and single database, not all of the SQLs can be used in Sharding-JDBC.
+
+This section lists the supported SQL syntax and the unsupported SQL syntax for user to look up. In the future, more and more SQL syntaxes will be supported in Sharding-JDBC.
+
 
 ## The global supported items
 

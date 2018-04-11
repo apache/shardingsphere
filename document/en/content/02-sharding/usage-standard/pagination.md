@@ -1,9 +1,7 @@
 +++
 toc = true
 title = "Pagination"
-weight = 3
-prev = "/02-sharding/core-functions/pagination/"
-next = "/03-read-write-split/"
+weight = 2
 +++
 
 Sharding-JDBC supports the paging query of MySQL, PostgreSQL and Oracle. For SQLServer, due to its complex paging query, only partial queries can be executed.
