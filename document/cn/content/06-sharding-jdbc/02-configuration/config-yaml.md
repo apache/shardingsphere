@@ -22,57 +22,50 @@ weight = 3
 #### 分库分表
 ```yaml
 dataSources:
-  db0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
+  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_0
+    username: root
     password: 
-    maxActive: 100
-  db1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
+  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_1
+    username: root
     password: 
-    maxActive: 100
 
-shardingRule:
+shardingRule:  
   tables:
-    config:
-      actualDataNodes: db${0..1}.t_config
     t_order: 
-      actualDataNodes: db${0..1}.t_order_${0..1}
-      databaseStrategy: 
-        standard:
-          shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
       tableStrategy: 
         inline:
           shardingColumn: order_id
-          algorithmInlineExpression: t_order_${order_id % 2}
+          algorithmExpression: t_order_${order_id % 2}
       keyGeneratorColumnName: order_id
-      keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
     t_order_item:
-      actualDataNodes: db${0..1}.t_order_item_${0..1}
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       #绑定表中其余的表的策略与第一张表的策略相同
-      databaseStrategy: 
-        standard:
-          shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
-      tableStrategy: 
+      tableStrategy:
         inline:
           shardingColumn: order_id
-          algorithmInlineExpression: t_order_item_${order_id % 2}
+          algorithmExpression: t_order_item_${order_id % 2}  
+  
   bindingTables:
     - t_order,t_order_item
+  
   #默认数据库分片策略
   defaultDatabaseStrategy:
-    none:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds_${user_id % 2}
+  
   defaultTableStrategy:
-    complex:
-      shardingColumns: id, order_id
-      algorithmClassName: io.shardingjdbc.core.yaml.fixture.MultiAlgorithm
+    none:
+  defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  
   props:
     sql.show: true
+
 ```
 
 ##### 分库分表配置项说明
@@ -127,31 +120,29 @@ props: 属性配置(可选)
 #### 读写分离
 ```yaml
 dataSources:
-  db_master: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
+  ds_master: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_master
+    username: root
     password: 
-    maxActive: 100
-  db_slave_0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db_slave_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
+  ds_slave_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_slave_0
+    username: root
     password: 
-    maxActive: 100
-  db_slave_1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db_slave_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
+  ds_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_slave_1
+    username: root
     password: 
-    maxActive: 100
 
 masterSlaveRule:
-  name: db_ms
+  name: 
+    ds_ms
+  masterDataSourceName:
+    ds_master
+  slaveDataSourceNames: [ds_slave_0, ds_slave_1]
 
-  masterDataSourceName: db_master
-
-  slaveDataSourceNames: [db_slave_0, db_slave_1]
 ```
 
 ##### 读写分离配置项说明
@@ -176,6 +167,106 @@ slaveDataSourceNames：slave数据源名称，用数组表示多个
 !! 表示实现类
 
 [] 表示多个
+
+(详细语法请参看[YAML](http://yaml.org/))
+
+
+##### 配置项说明
+
+##### 分库分表
+
+##### YamlShardingRuleConfiguration
+
+| *名称*                         | *数据类型*  |  *必填* | *说明*                                                                |
+| ------------------------------- | ---------- | ------ | --------------------------------------------------------------------- |
+| defaultDataSourceName?     | String      |   否   | 默认数据源名称，未配置分片规则的表将通过默认数据源定位                        |
+| tables | Map\<String, YamlTableRuleConfiguration\> | 是 | 分表配置列表|
+| defaultDatabaseStrategy? | YamlShardingStrategyConfiguration      |   否   | 默认分库策略  |
+| defaultTableStrategy?    | YamlShardingStrategyConfiguration      |   否   | 默认分表策略  |
+| defaultKeyGeneratorClass? | String |否|自增列值生成类名
+| configMap                    |   Map\<String, Object\>         |   否   | 配置映射关系                                                            |
+| props?                        |   Properties         |   否   | 相关属性配置     |
+| bindingTables?            | List\<String\>      | 否| 绑定表列表|
+| masterSlaveRules? | Map\<String, YamlMasterSlaveRuleConfiguration\>|否|读写分离配置|
+
+
+##### YamlTableRuleConfiguration
+
+| *名称*                         | *数据类型*  |  *必填* | *说明*  |
+| --------------------         | ---------- | ------ | ------- |
+| logicTable                 |  String     |   是   | 逻辑表名 |
+| actualDataNodes             |  String     |   否   | 真实数据节点，由数据源名|
+| databaseStrategy      |  YamlShardingStrategyConfiguration     |   否   | 分库策略  |
+| tableStrategy            |  YamlShardingStrategyConfiguration     |   否   | 分表策略       |
+| logicIndex                   |  String     |   否   | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表        |
+| keyGeneratorColumnName | String | 否 | 自增列名|
+| keyGeneratorClass  | String | 否| 自增列值生成类|
+
+
+##### YamlStandardShardingStrategyConfiguration
+
+标准分片策略，用于单分片键的场景
+
+| *名称*                        | *数据类型*  |  *必填* | *说明*                                                                |
+| ------------------------------ | ---------- | ------ | --------------------------------------------------------------------- |
+| shardingColumn             |  String     |   是   | 分片列名                                                               |
+| preciseAlgorithmClassName      |  String     |   是   | 精确的分片算法类名称，用于=和IN。   |
+| rangeAlgorithmClassName      |  String     |   否   | 范围的分片算法类名称，用于BETWEEN。 |
+
+
+##### YamlComplexShardingStrategyConfiguration
+
+复合分片策略，用于多分片键的场景
+
+| *名称*                        | *数据类型*  |  *必填* | *说明*                                              |
+| ------------------------------ | ---------- | ------ | --------------------------------------------------- |
+| shardingColumns             |  String     |   是  | 分片列名，多个列以逗号分隔                              |
+| algorithmClassName             |  String     |   是  | 分片算法全类名 |
+
+##### InlineShardingStrategyConfiguration
+
+inline表达式分片策略
+
+| *名称*                         | *数据类型*  |  *必填* | *说明*       |
+| ------------------------------- | ---------- | ------ | ------------ |
+| shardingColumn              |  String     |   是   | 分片列名      |
+| algorithmExpression    |  String     |   是   | 分片算法表达式 |
+
+##### HintShardingStrategyConfiguration
+
+Hint方式分片策略
+
+| *名称*                         | *数据类型*  |  *必填* | *说明*                                              |
+| ------------------------------- | ---------- | ------ | --------------------------------------------------- |
+| algorithmClassName            |  String     |   是  | 分片算法全类名 |
+
+##### NoneShardingStrategyConfiguration
+
+不分片的策略
+
+##### ShardingPropertiesConstant
+
+| *名称*                                  | *数据类型*  | *必填* | *说明*                              |
+| ---------------------------------------- | ---------- | ----- | ----------------------------------- |
+| sql.show                               |  boolean   |   是   | 是否开启SQL显示，默认为false不开启     |
+| executor.size                          |  int       |   否   | 最大工作线程数量                      |
+
+##### configMap
+
+##### 读写分离
+
+##### YamlMasterSlaveRuleConfiguration
+
+| *名称*                        | *数据类型*  |  *必填* | *说明*                                   |
+| ------------------------------ |  --------- | ------ | ---------------------------------------- |
+| name                        |  String     |   是   | 读写分离配置名称                          |
+| masterDataSourceName      |   String        |   是   | 主库数据源                       |
+| slaveDataSourceNames      |   Collection\<String\>       |   是   | 从库数据源列表       |
+| loadBalanceAlgorithmType?               |  MasterSlaveLoadBalanceAlgorithmType     |   否   | 主从库复杂策略类型<br />可选值：ROUND_ROBIN, RANDOM<br />默认值：ROUND_ROBIN |
+| loadBalanceAlgorithmClassName? | String | 否| 主从库复杂策略类名|
+| configMap? | Map\<String, Object\> | 否 |配置映射关系|
+
+##### configMap
 
 #### 编排治理
 
