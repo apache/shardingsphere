@@ -1,9 +1,7 @@
 +++
 toc = true
-title = "apm"
+title = "APM"
 weight = 2
-prev = "/04-orchestration/orchestration/"
-next = "/05-transaction/"
 +++
 
 ## The brief
