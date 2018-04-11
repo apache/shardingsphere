@@ -44,7 +44,7 @@ public final class InlineExpressionParser {
     private final String inlineExpression;
     
     /**
-     * Replace all the inlineExpression placeholders "$->{" to "${".
+     * Replace all the inlineExpression placeholders.
      * @param inlineExpression inlineExpression
      * @return result inlineExpression
      */
