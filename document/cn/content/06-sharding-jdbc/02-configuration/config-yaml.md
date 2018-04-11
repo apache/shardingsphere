@@ -195,12 +195,12 @@ slaveDataSourceNames：slave数据源名称，用数组表示多个
 | *名称*                         | *数据类型*  |  *必填* | *说明*  |
 | --------------------         | ---------- | ------ | ------- |
 | logicTable                 |  String     |   是   | 逻辑表名 |
-| actualDataNodes             |  String     |   否   | 真实数据节点，由数据源名|
-| databaseStrategy      |  YamlShardingStrategyConfiguration     |   否   | 分库策略  |
-| tableStrategy            |  YamlShardingStrategyConfiguration     |   否   | 分表策略       |
-| logicIndex                   |  String     |   否   | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表        |
-| keyGeneratorColumnName | String | 否 | 自增列名|
-| keyGeneratorClass  | String | 否| 自增列值生成类|
+| actualDataNodes?             |  String     |   否   | 真实数据节点，由数据源名|
+| databaseStrategy?      |  YamlShardingStrategyConfiguration     |   否   | 分库策略  |
+| tableStrategy?            |  YamlShardingStrategyConfiguration     |   否   | 分表策略       |
+| logicIndex?                   |  String     |   否   | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表        |
+| keyGeneratorColumnName? | String | 否 | 自增列名|
+| keyGeneratorClass?  | String | 否| 自增列值生成类|
 
 
 ##### YamlStandardShardingStrategyConfiguration

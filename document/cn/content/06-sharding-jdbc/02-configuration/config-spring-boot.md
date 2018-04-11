@@ -83,7 +83,7 @@ sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave_0,ds_slave_1
 同[读写分离Yaml配置](/06-sharding-jdbc/02-configuration/config-yaml)
 
 #### 分库分表 + 读写分离
-```java
+```yaml
 sharding.jdbc.datasource.names=ds_master_0,ds_master_1,ds_master_0_slave_0,ds_master_0_slave_1,ds_master_1_slave_0,ds_master_1_slave_1
 
 sharding.jdbc.datasource.ds_master_0.type=org.apache.commons.dbcp.BasicDataSource
@@ -144,32 +144,47 @@ sharding.jdbc.config.sharding.master-slave-rules.ds_1.slave-data-source-names=ds
 
 ##### 分库分表
 
-##### YamlShardingRuleConfiguration
+##### sharding.jdbc.config.sharding
 
 | *名称*                         | *数据类型*  |  *必填* | *说明*                                                                |
 | ------------------------------- | ---------- | ------ | --------------------------------------------------------------------- |
-| defaultDataSourceName?     | String      |   否   | 默认数据源名称，未配置分片规则的表将通过默认数据源定位                        |
-| tables | Map\<String, YamlTableRuleConfiguration\> | 是 | 分表配置列表|
-| defaultDatabaseStrategy? | YamlShardingStrategyConfiguration      |   否   | 默认分库策略  |
-| defaultTableStrategy?    | YamlShardingStrategyConfiguration      |   否   | 默认分表策略  |
-| defaultKeyGeneratorClass? | String |否|自增列值生成类名
-| configMap                    |   Map\<String, Object\>         |   否   | 配置映射关系                                                            |
-| props?                        |   Properties         |   否   | 相关属性配置     |
-| bindingTables?            | List\<String\>      | 否| 绑定表列表|
-| masterSlaveRules? | Map\<String, YamlMasterSlaveRuleConfiguration\>|否|读写分离配置|
+| sharding.jdbc.config.sharding.default-data-source-name?     | String      |   否   | 默认数据源名称，未配置分片规则的表将通过默认数据源定位                        |
+| sharding.jdbc.config.sharding.tables | Map\<String, YamlTableRuleConfiguration\> | 是 | 分表配置列表|
+| sharding.jdbc.config.sharding.default-database-strategy? | YamlShardingStrategyConfiguration      |   否   | 默认分库策略  |
+| sharding.jdbc.config.sharding.default-table-strategy?    | YamlShardingStrategyConfiguration      |   否   | 默认分表策略  |
+| sharding.jdbc.config.sharding.default-key-generator-class? | String |否|自增列值生成类名
+| sharding.jdbc.config.sharding.config-map?                    |   Map\<String, Object\>         |   否   | 配置映射关系                                                            |
+| sharding.jdbc.config.sharding.props?                        |   Properties         |   否   | 相关属性配置     |
+| sharding.jdbc.config.sharding.binding-tables?            | List\<String\>      | 否| 绑定表列表|
+| sharding.jdbc.config.sharding.master-slave-rules? | Map\<String, YamlMasterSlaveRuleConfiguration\>|否|读写分离配置|
 
-
-##### YamlTableRuleConfiguration
+##### sharding.jdbc.datasource
 
 | *名称*                         | *数据类型*  |  *必填* | *说明*  |
 | --------------------         | ---------- | ------ | ------- |
-| logicTable                 |  String     |   是   | 逻辑表名 |
-| actualDataNodes             |  String     |   否   | 真实数据节点，由数据源名|
-| databaseStrategy      |  YamlShardingStrategyConfiguration     |   否   | 分库策略  |
-| tableStrategy            |  YamlShardingStrategyConfiguration     |   否   | 分表策略       |
-| logicIndex                   |  String     |   否   | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表        |
-| keyGeneratorColumnName | String | 否 | 自增列名|
-| keyGeneratorClass  | String | 否| 自增列值生成类|
+| sharding.jdbc.datasource.names | String      |   是   | 数据源列表,多个以逗号分隔 |
+
+##### sharding.jdbc.datasource.ds_name
+
+| *名称*                         | *数据类型*  |  *必填* | *说明*  |
+| --------------------         | ---------- | ------ | ------- |
+| sharding.jdbc.datasource.ds_name.type| String | 是 | 数据源类型,例如：org.apache.commons.dbcp.BasicDataSource|
+| sharding.jdbc.datasource.ds_name.driver-class-name | 是 | 数据源驱动类名|
+| sharding.jdbc.datasource.ds_name.url | 是 |数据源链接url|
+| sharding.jdbc.datasource.ds_name.username | 是 | 数据源链接用户名|
+| sharding.jdbc.datasource.ds_name.password | 是 | 数据源链接密码|
+
+##### sharding.jdbc.config.sharding.tables.tb_name
+
+| *名称*                         | *数据类型*  |  *必填* | *说明*  |
+| --------------------         | ---------- | ------ | ------- |
+| sharding.jdbc.config.sharding.tables.tb_name.logic-table                 |  String     |   是   | 逻辑表名 |
+| sharding.jdbc.config.sharding.tables.tb_name.actual-dataNodes?             |  String     |   否   | 真实数据节点，由数据源名|
+| sharding.jdbc.config.sharding.tables.tb_name.database-strategy?      |  YamlShardingStrategyConfiguration     |   否   | 分库策略  |
+| sharding.jdbc.config.sharding.tables.tb_name.table-strategy?            |  YamlShardingStrategyConfiguration     |   否   | 分表策略       |
+| sharding.jdbc.config.sharding.tables.tb_name.logic-index?                   |  String     |   否   | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表        |
+| sharding.jdbc.config.sharding.tables.tb_name.key-generator-columnName? | String | 否 | 自增列名|
+| sharding.jdbc.config.sharding.tables.tb_name.key-generator-class?  | String | 否| 自增列值生成类|
 
 
 ##### sharding.jdbc.config.sharding.default-table-strategy.standard
@@ -224,16 +239,16 @@ Hint方式分片策略
 
 ##### 读写分离
 
-##### YamlMasterSlaveRuleConfiguration
+##### sharding.jdbc.config.masterslave
 
 | *名称*                        | *数据类型*  |  *必填* | *说明*                                   |
 | ------------------------------ |  --------- | ------ | ---------------------------------------- |
-| name                        |  String     |   是   | 读写分离配置名称                          |
-| masterDataSourceName      |   String        |   是   | 主库数据源                       |
-| slaveDataSourceNames      |   Collection\<String\>       |   是   | 从库数据源列表       |
-| loadBalanceAlgorithmType?               |  MasterSlaveLoadBalanceAlgorithmType     |   否   | 主从库复杂策略类型<br />可选值：ROUND_ROBIN, RANDOM<br />默认值：ROUND_ROBIN |
-| loadBalanceAlgorithmClassName? | String | 否| 主从库复杂策略类名|
-| configMap? | Map\<String, Object\> | 否 |配置映射关系|
+| sharding.jdbc.config.masterslave.name                        |  String     |   是   | 读写分离配置名称                          |
+| sharding.jdbc.config.masterslave.master-data-sourceName      |   String        |   是   | 主库数据源                       |
+| sharding.jdbc.config.masterslave.slave-data-source-names      |   Collection\<String\>       |   是   | 从库数据源列表       |
+| sharding.jdbc.config.masterslave.load-balance-algorithm-type?               |  MasterSlaveLoadBalanceAlgorithmType     |   否   | 主从库复杂策略类型<br />可选值：ROUND_ROBIN, RANDOM<br />默认值：ROUND_ROBIN |
+| sharding.jdbc.config.masterslave.load-balance-algorithm-class-name? | String | 否| 主从库复杂策略类名|
+| sharding.jdbc.config.masterslave.config-map? | Map\<String, Object\> | 否 |配置映射关系|
 
 ##### configMap
 
