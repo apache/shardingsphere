@@ -2,8 +2,6 @@
 pre = "<b>5. </b>"
 title = "Transaction"
 weight = 5
-prev = "/04-orchestration/apm/"
-next = "/05-transaction/transaction/"
 chapter = true
 +++
 

@@ -2,8 +2,6 @@
 pre = "<b>4. </b>"
 title = "Orchestration"
 weight = 4
-prev = "/03-read-write-split/master-slave/"
-next = "/04-orchestration/orchestration/"
 chapter = true
 +++
 

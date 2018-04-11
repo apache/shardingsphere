@@ -1,9 +1,7 @@
 +++
 pre = "<b>3. </b>"
-title = "Read-write split"
+title = "Read-write splitting"
 weight = 3
-prev = "/02-sharding/subquery/"
-next = "/03-read-write-split/master-slave/"
 chapter = true
 +++
 
