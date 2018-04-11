@@ -2,8 +2,6 @@
 pre = "<b>2. </b>"
 title = "Data sharding"
 weight = 2
-prev = "/01-overview/"
-next = "/02-sharding/concept/"
 chapter = true
 +++
 

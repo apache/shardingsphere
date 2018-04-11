@@ -1,9 +1,7 @@
 +++
 toc = true
-title = "Scenario"
+title = "Background Introduction"
 weight = 3
-prev = "/02-sharding/workflow/"
-next = "/02-sharding/configuration/"
 +++
 
 ## Database Information

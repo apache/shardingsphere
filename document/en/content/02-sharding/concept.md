@@ -2,8 +2,6 @@
 toc = true
 title = "Core concepts "
 weight = 1
-prev = "/02-sharding/"
-next = "/02-sharding/workflow/"
 +++
 
 This section introduces some of the basic concepts for Sharding-JDBC.

@@ -2,8 +2,6 @@
 toc = true
 title = "Workflow"
 weight = 2
-prev = "/02-sharding/concept/"
-next = "/02-sharding/scenario/"
 +++
 
 Sharding-JDBC is a middleware supports database sharding and table sharding way.By processes of JDBC Extension => SQL Parser => SQL Router => SQL Rewrite => SQL Execution => Result Merger, and using the logical table which the user configured, the real SQL is completely shielded from the database access.
