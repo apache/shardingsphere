@@ -111,7 +111,7 @@ tables:
 
 规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。
 
->详细的规则配置请参考[分库分表](/02-guide/sharding)
+>详细的规则配置请参考[分库分表](/06-sharding-jdbc/02-configuration/config-java)
 
 ## 使用基于ShardingDataSource的JDBC接口
 
