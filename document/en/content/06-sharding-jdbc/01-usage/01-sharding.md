@@ -2,11 +2,9 @@
 toc = true
 title = "JDBC"
 weight = 1
-prev = "/06-user-guide/"
-next = "/06-user-guide/proxy/"
 +++
 
-## To configure by using API
+## To configure by using JAVA
 
 ### The Maven Installation
 
@@ -68,7 +66,12 @@ To configure by JAVA codes:
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
 ```
 
+## To configure by using YAML
+
+### The rule configurtion
+
 To configure by YAML, similar with the configuration method of JAVA codes:
+
 
 ```yaml
 dataSources:
@@ -111,7 +114,7 @@ tables:
 ```
 The rule configuration consists of data source configuration, table rule configuration, database Sharding strategy and table Sharding strategy, etc. Here is a simple configuration example, more flexible configurations can be used in product environment, e.g. multi-Sharding columns, table rules configuration directly bound with Sharding strategy.
 
-> To learn the details of the Sharding configuration, please refer to [Sharding](/02-guide/sharding).
+> To learn the details of the Sharding configuration, please refer to [Sharding](/06-sharding-jdbc/02-configuration/config-java).
 
 ## To use JDBC interface based on ShardingDataSource
 
