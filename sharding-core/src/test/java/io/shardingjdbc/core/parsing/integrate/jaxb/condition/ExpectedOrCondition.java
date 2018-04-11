@@ -36,6 +36,6 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedOrCondition {
     
-    @XmlElement(name = "and-conditions")
+    @XmlElement(name = "and-condition")
     private List<ExpectedAndCondition> andConditions = new LinkedList<>();
 }

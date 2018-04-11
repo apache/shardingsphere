@@ -47,7 +47,7 @@ public final class ParserResult {
     @XmlElement(name = "table")
     private List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlElement(name = "or-conditions")
+    @XmlElement(name = "or-condition")
     private ExpectedOrCondition orCondition = new ExpectedOrCondition();
     
     @XmlElement

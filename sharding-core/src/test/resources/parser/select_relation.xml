@@ -9,13 +9,13 @@
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="37" original-literals="t_order_item" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1000" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
     </parser-result>
     
     <parser-result sql-case-id="assertSelectWithInnerJoinAndRelatedWithTableName" parameters="1000">
@@ -31,13 +31,13 @@
             <table-token begin-position="75" original-literals="t_order_item" />
             <table-token begin-position="103" original-literals="t_order" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1000" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
     </parser-result>
     
     <parser-result sql-case-id="assertSelectWithJoinUsing" parameters="1000">
@@ -49,12 +49,12 @@
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="31" original-literals="t_order_item" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1000" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
     </parser-result>
 </parser-result-sets>
