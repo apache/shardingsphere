@@ -2,8 +2,6 @@
 pre = "<b>1. </b>"
 title = "Overview"
 weight = 1
-prev = "/07-other/external-dependency/"
-next = "/02-sharding/"
 chapter = true
 +++
 
