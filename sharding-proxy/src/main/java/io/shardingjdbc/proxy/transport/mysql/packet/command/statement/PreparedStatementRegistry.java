@@ -34,9 +34,9 @@ public final class PreparedStatementRegistry {
     
     private static final PreparedStatementRegistry INSTANCE = new PreparedStatementRegistry();
     
-    private final ConcurrentMap<String, Integer> sqlToNumColumnsMap = new ConcurrentHashMap<>(65535, 1);
+    private final ConcurrentMap<String, Integer> sqlToNumParamsMap = new ConcurrentHashMap<>(65535, 1);
     
-    private final ConcurrentMap<Integer, String> statementIdtoSqlMap = new ConcurrentHashMap<>(65535, 1);
+    private final ConcurrentMap<Integer, String> statementIdToSQLMap = new ConcurrentHashMap<>(65535, 1);
     
     private final AtomicInteger sequence = new AtomicInteger();
     
@@ -53,30 +53,20 @@ public final class PreparedStatementRegistry {
      * Register SQL.
      * 
      * @param sql SQL
-     * @param numColumns num columns
+     * @param numParams num columns
      * @return statement ID
      */
-    public int register(final String sql, final int numColumns) {
-        Integer result = sqlToNumColumnsMap.get(sql);
+    public int register(final String sql, final int numParams) {
+        Integer result = sqlToNumParamsMap.get(sql);
         if (null != result) {
             return result;
         }
         int statementId;
         do {
             statementId = sequence.incrementAndGet();
-        } while (null != statementIdtoSqlMap.putIfAbsent(statementId, sql));
-        sqlToNumColumnsMap.putIfAbsent(sql, numColumns);
+        } while (null != statementIdToSQLMap.putIfAbsent(statementId, sql));
+        sqlToNumParamsMap.putIfAbsent(sql, numParams);
         return statementId;
-    }
-    
-    /**
-     * Get statement ID.
-     *
-     * @param sql SQL
-     * @return statement ID
-     */
-    public int getStatementId(final String sql) {
-        return sqlToNumColumnsMap.get(sql);
     }
     
     /**
@@ -86,7 +76,7 @@ public final class PreparedStatementRegistry {
      * @return SQL
      */
     public String getSql(final int statementId) {
-        return statementIdtoSqlMap.get(statementId);
+        return statementIdToSQLMap.get(statementId);
     }
     
     /**
@@ -95,8 +85,7 @@ public final class PreparedStatementRegistry {
      * @param statementId statement ID
      * @return number columns
      */
-    public int getNumColumns(final int statementId) {
-        String sql = statementIdtoSqlMap.get(statementId);
-        return sqlToNumColumnsMap.get(sql);
+    public int getNumParams(final int statementId) {
+        return sqlToNumParamsMap.get(getSql(statementId));
     }
 }

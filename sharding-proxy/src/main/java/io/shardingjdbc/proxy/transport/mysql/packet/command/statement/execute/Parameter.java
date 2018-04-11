@@ -43,7 +43,7 @@ public final class Parameter {
      */
     public Object getValue() {
         // TODO add more types
-        if (columnType == ColumnType.MYSQL_TYPE_NEWDECIMAL) {
+        if (columnType == ColumnType.MYSQL_TYPE_LONG) {
             return Long.parseLong(value);
         } else {
             return value;

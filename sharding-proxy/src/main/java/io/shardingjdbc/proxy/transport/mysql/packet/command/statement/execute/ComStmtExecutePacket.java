@@ -58,22 +58,27 @@ public final class ComStmtExecutePacket extends CommandPacket {
         statementId = mysqlPacketPayload.readInt4();
         flags = mysqlPacketPayload.readInt1();
         Preconditions.checkArgument(iterationCount == mysqlPacketPayload.readInt4());
-        int numColumns = PreparedStatementRegistry.getInstance().getNumColumns(statementId);
-        nullBitmap = new int[(numColumns + 7) / 8];
+        int numParams = PreparedStatementRegistry.getInstance().getNumParams(statementId);
+        nullBitmap = new int[(numParams + 7) / 8];
         for (int i = 0; i < nullBitmap.length; i++) {
             nullBitmap[i] = mysqlPacketPayload.readInt1();
         }
         newParamsBoundFlag = mysqlPacketPayload.readInt1();
-        setParameterList(mysqlPacketPayload);
+        setParameterList(mysqlPacketPayload, numParams);
     }
     
-    private void setParameterList(final MySQLPacketPayload mysqlPacketPayload) {
-        while (mysqlPacketPayload.isReadable()) {
-            ColumnType columnType = ColumnType.valueOfJDBCType(mysqlPacketPayload.readInt1());
-            int unsignedFlag = mysqlPacketPayload.readInt1();
-            
+    private void setParameterList(final MySQLPacketPayload mysqlPacketPayload, final int numParams) {
+        List<Integer> params = new ArrayList<>(numParams);
+        for (int i = 0; i < numParams; i++) {
+            params.add(mysqlPacketPayload.readInt1());
+            params.add(mysqlPacketPayload.readInt1());
+        }
+        for (int i = 0; i < numParams; i++) {
+            ColumnType columnType = ColumnType.valueOf(params.get(i * 2));
+            int unsignedFlag = params.get(i * 2 + 1);
+    
             // TODO add more types
-            if (columnType == ColumnType.MYSQL_TYPE_NEWDECIMAL) {
+            if (columnType == ColumnType.MYSQL_TYPE_LONG) {
                 int value = mysqlPacketPayload.readInt4();
                 parameterList.add(new Parameter(columnType, unsignedFlag, String.valueOf(value)));
             } else {
