@@ -2,8 +2,6 @@
 toc = true
 title = "Overview"
 weight = 1
-prev = "/02-sharding/configuration/"
-next = "/02-sharding/configuration/config-java/"
 +++
 
 This section explains configuration domain models in Sharding-JDBC. The following class diagram is about those domain models in Sharding-JDBC.
