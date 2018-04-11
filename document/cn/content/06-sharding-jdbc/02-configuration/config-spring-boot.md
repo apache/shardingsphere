@@ -215,9 +215,10 @@ Hint方式分片策略
 
 ##### sharding.jdbc.config.sharding.props
 
-| *名称*                               | *数据类型*  | *必填* | *说明*                              |
-| ------------------------------------- | ---------- | ----- | ----------------------------------- |
-| executor.size                       |  int       |   否   | 最大工作线程数量                      |
+| *名称*                                   | *数据类型*  | *必填* | *说明*                              |
+| ------------------------------------   | ---------- | ----- | ----------------------------------- |
+| sharding.jdbc.config.sharding.props.sql.show       |  boolean   |   是   | 是否开启SQL显示，默认为false不开启     |
+| sharding.jdbc.config.sharding.props.executor.size?                            |  int       |   否   | 最大工作线程数量                      |
 
 ##### configMap
 
