@@ -15,29 +15,25 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing;
+package io.shardingjdbc.core.parsing.parser.context.condition;
 
-import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
-import io.shardingjdbc.core.routing.condition.GeneratedKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
+import lombok.ToString;
 
 /**
- * SQL route result.
+ * Generated key condition.
  * 
- * @author gaohongtao
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLRouteResult {
+@ToString
+public final class GeneratedKeyCondition {
     
-    private final SQLStatement sqlStatement;
+    private final String column;
     
-    private final GeneratedKey generatedKey;
+    private final int index;
     
-    private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
+    private final Number value;
 }
