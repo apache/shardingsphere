@@ -147,8 +147,8 @@ weight = 2
 | *名称*                         | *数据类型*  |  *必填* | *说明*         |
 | ----------------------------- |  --------- | ------ | -------------- |
 | dataSourceMap                 |  Map\<String, DataSource\>     |   是   | 数据源与其名称的映射 |
-| shardingRuleConfig               |   ShardingRuleConfiguration        |   是   | 分片规则        |
-| configMap                  |   Map\<String, Object\>        |   否   |         配置映射关系|
+| shardingRuleConfig               |   ShardingRuleConfiguration        |   是   | 分库分表配置规则        |
+| configMap?                  |   Map\<String, Object\>        |   否   |         配置映射关系|
 | props?                        |   Properties         |   否   | 相关属性配置     |
 
 ##### ShardingRuleConfiguration
@@ -169,12 +169,12 @@ weight = 2
 | *名称*                         | *数据类型*  |  *必填* | *说明*  |
 | --------------------         | ---------- | ------ | ------- |
 | logicTable                 |  String     |   是   | 逻辑表名 |
-| actualDataNodes             |  String     |   否   | 真实数据节点，由数据源名|
-| databaseShardingStrategyConfig      |  ShardingStrategyConfiguration     |   否   | 分库策略  |
-| tableShardingStrategyConfig            |  ShardingStrategyConfiguration     |   否   | 分表策略       |
-| logicIndex                   |  String     |   否   | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表        |
-| keyGeneratorColumnName | String | 否 | 自增列名|
-| keyGenerator  | KeyGenerator | 否| 自增列值生成类|
+| actualDataNodes?             |  String     |   否   | 真实数据节点|
+| databaseShardingStrategyConfig?      |  ShardingStrategyConfiguration     |   否   | 分库策略  |
+| tableShardingStrategyConfig?            |  ShardingStrategyConfiguration     |   否   | 分表策略       |
+| logicIndex?                   |  String     |   否   | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表        |
+| keyGeneratorColumnName? | String | 否 | 自增列名|
+| keyGenerator?  | KeyGenerator | 否| 自增列值生成类|
 
 
 ##### StandardShardingStrategyConfiguration
@@ -185,7 +185,7 @@ weight = 2
 | ------------------------------ | ---------- | ------ | --------------------------------------------------------------------- |
 | shardingColumn             |  String     |   是   | 分片列名                                                               |
 | preciseShardingAlgorithm      |  PreciseShardingAlgorithm     |   是   | 精确的分片算法类名称，用于=和IN。该类需使用默认的构造器或者提供无参数的构造器   |
-| rangeShardingAlgorithm      |  RangeShardingAlgorithm     |   否   | 范围的分片算法类名称，用于BETWEEN。该类需使用默认的构造器或者提供无参数的构造器 |
+| rangeShardingAlgorithm?      |  RangeShardingAlgorithm     |   否   | 范围的分片算法类名称，用于BETWEEN。该类需使用默认的构造器或者提供无参数的构造器 |
 
 
 ##### ComplexShardingStrategyConfiguration
@@ -220,10 +220,10 @@ Hint方式分片策略
 
 ##### ShardingPropertiesConstant
 
-| *名称*                                | *类型*       | *数据类型*  | *必填* | *说明*                              |
-| ------------------------------------ | ------------ | ---------- | ----- | ----------------------------------- |
-| sql.show                             | 属性         |  boolean   |   是   | 是否开启SQL显示，默认为false不开启     |
-| executor.size?                        | 属性         |  int       |   否   | 最大工作线程数量                      |
+| *名称*                               | *数据类型*  | *必填* | *说明*                              |
+| ------------------------------------- | ---------- | ----- | ----------------------------------- |
+| sql.show                            |  boolean   |   是   | 是否开启SQL显示，默认为false不开启     |
+| executor.size?                       |  int       |   否   | 最大工作线程数量                      |
 
 ##### configMap
 
@@ -234,8 +234,8 @@ Hint方式分片策略
 | *名称*                        | *数据类型*  |  *必填* | *说明*                                   |
 | ------------------------------ |  --------- | ------ | ---------------------------------------- |
 | dataSourceMap                 |  Map\<String, DataSource\>     |   是   | 数据源与其名称的映射 |
-| shardingRuleConfig               |   ShardingRuleConfiguration        |   是   | 分片规则        |
-| configMap                  |   Map\<String, Object\>        |   否   |         配置映射关系|
+| shardingRuleConfig               |   ShardingRuleConfiguration        |   是   | 分库分表规则配置       |
+| configMap?                  |   Map\<String, Object\>        |   否   |         配置映射关系|
 
 
 ##### MasterSlaveRuleConfiguration
@@ -245,7 +245,7 @@ Hint方式分片策略
 | name                        |  String     |   是   | 读写分离配置名称                          |
 | masterDataSourceName      |   String        |   是   | 主库数据源                       |
 | slaveDataSourceNames      |   Collection\<String\>       |   是   | 从库数据源列表       |
-| loadBalanceAlgorithm?               |  MasterSlaveLoadBalanceAlgorithm     |   否   | 主从库复杂策略 |
+| loadBalanceAlgorithm?               |  MasterSlaveLoadBalanceAlgorithm     |   否   | 主从库访问策略 |
 
 ##### configMap
 

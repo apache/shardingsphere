@@ -169,17 +169,17 @@ sharding.jdbc.config.sharding.master-slave-rules.ds_1.slave-data-source-names=ds
 | *名称*                         | *数据类型*  |  *必填* | *说明*  |
 | --------------------         | ---------- | ------ | ------- |
 | sharding.jdbc.datasource.ds_name.type| String | 是 | 数据源类型,例如：org.apache.commons.dbcp.BasicDataSource|
-| sharding.jdbc.datasource.ds_name.driver-class-name | 是 | 数据源驱动类名|
-| sharding.jdbc.datasource.ds_name.url | 是 |数据源链接url|
-| sharding.jdbc.datasource.ds_name.username | 是 | 数据源链接用户名|
-| sharding.jdbc.datasource.ds_name.password | 是 | 数据源链接密码|
+| sharding.jdbc.datasource.ds_name.driver-class-name | String|是 | 数据源驱动类名|
+| sharding.jdbc.datasource.ds_name.url | String|是 |数据源链接url|
+| sharding.jdbc.datasource.ds_name.username | String |是 | 数据源链接用户名|
+| sharding.jdbc.datasource.ds_name.password | String |是 | 数据源链接密码|
 
 ##### sharding.jdbc.config.sharding.tables.tb_name
 
 | *名称*                         | *数据类型*  |  *必填* | *说明*  |
 | --------------------         | ---------- | ------ | ------- |
 | sharding.jdbc.config.sharding.tables.tb_name.logic-table                 |  String     |   是   | 逻辑表名 |
-| sharding.jdbc.config.sharding.tables.tb_name.actual-dataNodes?             |  String     |   否   | 真实数据节点，由数据源名|
+| sharding.jdbc.config.sharding.tables.tb_name.actual-dataNodes?             |  String     |   否   | 真实数据节点|
 | sharding.jdbc.config.sharding.tables.tb_name.database-strategy?      |  YamlShardingStrategyConfiguration     |   否   | 分库策略  |
 | sharding.jdbc.config.sharding.tables.tb_name.table-strategy?            |  YamlShardingStrategyConfiguration     |   否   | 分表策略       |
 | sharding.jdbc.config.sharding.tables.tb_name.logic-index?                   |  String     |   否   | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表        |
@@ -195,7 +195,7 @@ sharding.jdbc.config.sharding.master-slave-rules.ds_1.slave-data-source-names=ds
 | ------------------------------ | ---------- | ------ | --------------------------------------------------------------------- |
 | sharding.jdbc.config.sharding.default-database-strategy.standard.sharding-column             |  String     |   是   | 分片列名                                                               |
 | sharding.jdbc.config.sharding.default-database-strategy.standard.precise-algorithm-class-name      |  String     |   是   | 精确的分片算法类名称，用于=和IN。   |
-| sharding.jdbc.config.sharding.default-database-strategy.standard.range-algorithm-class-name      |  String     |   否   | 范围的分片算法类名称，用于BETWEEN。 |
+| sharding.jdbc.config.sharding.default-database-strategy.standard.range-algorithm-class-name?      |  String     |   否   | 范围的分片算法类名称，用于BETWEEN。 |
 
 
 ##### sharding.jdbc.config.sharding.default-table-strategy.complex
@@ -246,8 +246,8 @@ Hint方式分片策略
 | sharding.jdbc.config.masterslave.name                        |  String     |   是   | 读写分离配置名称                          |
 | sharding.jdbc.config.masterslave.master-data-sourceName      |   String        |   是   | 主库数据源                       |
 | sharding.jdbc.config.masterslave.slave-data-source-names      |   Collection\<String\>       |   是   | 从库数据源列表       |
-| sharding.jdbc.config.masterslave.load-balance-algorithm-type?               |  MasterSlaveLoadBalanceAlgorithmType     |   否   | 主从库复杂策略类型<br />可选值：ROUND_ROBIN, RANDOM<br />默认值：ROUND_ROBIN |
-| sharding.jdbc.config.masterslave.load-balance-algorithm-class-name? | String | 否| 主从库复杂策略类名|
+| sharding.jdbc.config.masterslave.load-balance-algorithm-type?               |  MasterSlaveLoadBalanceAlgorithmType     |   否   | 主从库访问策略类型<br />可选值：ROUND_ROBIN, RANDOM<br />默认值：ROUND_ROBIN |
+| sharding.jdbc.config.masterslave.load-balance-algorithm-class-name? | String | 否| 主从库访问策略类名|
 | sharding.jdbc.config.masterslave.config-map? | Map\<String, Object\> | 否 |配置映射关系|
 
 ##### configMap
