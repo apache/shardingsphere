@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "使用规范"
-weight = 1
+weight = 4
 +++
 
 ## 背景

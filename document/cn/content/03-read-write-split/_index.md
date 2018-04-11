@@ -2,8 +2,6 @@
 pre = "<b>3. </b>"
 title = "读写分离"
 weight = 3
-prev = "/02-sharding/subquery/"
-next = "/03-read-write-split/master-slave/"
 chapter = true
 +++
 

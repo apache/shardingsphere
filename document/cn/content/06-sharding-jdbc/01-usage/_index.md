@@ -7,4 +7,4 @@ chapter = true
 
 ## 背景
 
-本章节将介绍Sharding-JDBC相关配置和使用。
+本章节将介绍Sharding-JDBC相关使用。
