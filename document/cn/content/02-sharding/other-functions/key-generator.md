@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "分布式主键"
-weight = 2
+weight = 1
 +++
 
 ## 实现动机
