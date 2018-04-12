@@ -33,8 +33,8 @@
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseShardingStrategy" generate-key-column="order_id" />
-                <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseShardingStrategy" generate-key-column="order_item_id" />
+                <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseShardingStrategy" generate-key-column-name="order_id" />
+                <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseShardingStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>

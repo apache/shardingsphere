@@ -28,8 +28,8 @@
     <sharding:data-source id="shardingTableDataSource" registry-center-ref="regCenter" overwrite="true">
         <sharding:sharding-rule data-source-names="demo_ds">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds.t_order_${0..1}" table-strategy-ref="orderTableShardingStrategy" generate-key-column="order_id" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds.t_order_item_${0..1}" table-strategy-ref="orderItemTableShardingStrategy" generate-key-column="order_item_id" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds.t_order_${0..1}" table-strategy-ref="orderTableShardingStrategy" generate-key-column-name="order_id" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds.t_order_item_${0..1}" table-strategy-ref="orderItemTableShardingStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
             <sharding:binding-table-rules>
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item"/>
