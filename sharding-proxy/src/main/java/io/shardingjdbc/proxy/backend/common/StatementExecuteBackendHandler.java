@@ -69,8 +69,8 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     public StatementExecuteBackendHandler(final ComStmtExecutePacket comStmtExecutePacket, final DatabaseType databaseType, final boolean showSQL) {
         this.comStmtExecutePacket = comStmtExecutePacket;
-        String sql = PreparedStatementRegistry.getInstance().getSql(comStmtExecutePacket.getStatementId());
-        routingEngine = new PreparedStatementRoutingEngine(sql, ShardingRuleRegistry.getInstance().getShardingRule(), databaseType, showSQL);
+        routingEngine = new PreparedStatementRoutingEngine(PreparedStatementRegistry.getInstance().getSql(comStmtExecutePacket.getStatementId()),
+            ShardingRuleRegistry.getInstance().getShardingRule(), databaseType, showSQL);
         columnDefinition41Packets = new ArrayList<>();
     }
     
