@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns="http://shardingjdbc.io/schema/shardingjdbc/sharding"
-            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
-            targetNamespace="http://shardingjdbc.io/schema/shardingjdbc/sharding"
+            xmlns="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
+            targetNamespace="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
     <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:all>
-                <xsd:element ref="sharding-rule" />
+                <xsd:element ref="sharding-rule" minOccurs="0" />
                 <xsd:element ref="config-map" minOccurs="0" />
                 <xsd:element ref="props" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="registry-center-ref" type="xsd:string" />
+            <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="sharding-rule">
