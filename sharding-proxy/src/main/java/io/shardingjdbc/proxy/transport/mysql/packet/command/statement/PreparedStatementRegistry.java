@@ -63,10 +63,8 @@ public final class PreparedStatementRegistry {
         if (null != result) {
             return result;
         }
-        int statementId;
-        do {
-            statementId = sequence.incrementAndGet();
-        } while (null != statementIdToSQLMap.putIfAbsent(statementId, sql));
+        int statementId = sequence.incrementAndGet();
+        statementIdToSQLMap.putIfAbsent(statementId, sql);
         sqlToStatementIdMap.putIfAbsent(sql, statementId);
         statementIdToNumParametersMap.putIfAbsent(statementId, numParameters);
         return statementId;
