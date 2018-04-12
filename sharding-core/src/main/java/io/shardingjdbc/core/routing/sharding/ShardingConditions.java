@@ -15,66 +15,66 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.algorithm.sharding;
+package io.shardingjdbc.core.routing.sharding;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Sharding values collection.
- * 
- * @author maxiaoguang
+ * Sharding conditions.
+ *
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public class ShardingValues {
+public final class ShardingConditions {
     
-    private final List<ShardingValueUnit> shardingValueUnits = new LinkedList<>();
+    private final GeneratedKey generatedKey;
+    
+    private final List<ShardingCondition> shardingConditions = new LinkedList<>();
     
     /**
-     * Add sharding value unit.
+     * Add sharding value.
      *
-     * @param shardingValueUnit sharding value unit
+     * @param shardingCondition sharding condition
      */
-    public void add(final ShardingValueUnit shardingValueUnit) {
-        shardingValueUnits.add(shardingValueUnit);
+    public void add(final ShardingCondition shardingCondition) {
+        shardingConditions.add(shardingCondition);
     }
     
     /**
-     * Get and condition via index.
+     * Get sharding condition via index.
      *
-     * @param index index of and conditions
+     * @param index index of sharding conditions
      * @return found and conditions
      */
-    public Optional<ShardingValueUnit> get(final int index) {
-        ShardingValueUnit result = null;
+    public Optional<ShardingCondition> get(final int index) {
+        ShardingCondition result = null;
         if (size() > index) {
-            result = shardingValueUnits.get(index);
+            result = shardingConditions.get(index);
         }
         return Optional.fromNullable(result);
     }
     
     /**
-     * Adjust sharding value units is empty or not.
+     * Adjust sharding conditions is empty or not.
      *
-     * @return and conditions is empty or not
+     * @return sharding conditions is empty or not
      */
     public boolean isEmpty() {
-        return shardingValueUnits.isEmpty();
+        return shardingConditions.isEmpty();
     }
     
     /**
-     * Returns the number of sharding value units in this.
+     * Returns the number of sharding conditions in this.
      *
-     * @return the number of sharding value units in this
+     * @return the number of sharding conditions in this
      */
     public int size() {
-        return shardingValueUnits.size();
+        return shardingConditions.size();
     }
 }

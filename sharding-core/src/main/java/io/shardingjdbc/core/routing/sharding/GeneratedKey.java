@@ -15,33 +15,35 @@
  * </p>
  */
 
-package io.shardingjdbc.core.api.algorithm.sharding;
+package io.shardingjdbc.core.routing.sharding;
 
+import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Sharding value unit.
- * 
- * @author maxiaoguang
+ * Generated key.
+ *
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public class ShardingValueUnit {
+public final class GeneratedKey {
     
-    private final List<ShardingValue> shardingValues = new LinkedList<>();
+    private final String column;
     
-    /**
-     * Add sharding value.
-     *
-     * @param shardingValue sharding value
-     */
-    public void add(final ShardingValue shardingValue) {
-        shardingValues.add(shardingValue);
+    private final int index;
+    
+    private final Number value;
+    
+    private final List<Number> generatedKeys = new LinkedList<>();
+    
+    public GeneratedKey(final GeneratedKeyCondition generatedKeyCondition) {
+        column = generatedKeyCondition.getColumn();
+        index = generatedKeyCondition.getIndex();
+        value = generatedKeyCondition.getValue();
     }
 }

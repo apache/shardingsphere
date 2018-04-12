@@ -18,8 +18,6 @@
 package io.shardingjdbc.core.parsing.parser.context.condition;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.core.api.algorithm.sharding.ShardingValueUnit;
-import io.shardingjdbc.core.api.algorithm.sharding.ShardingValues;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -97,28 +95,5 @@ public final class OrCondition {
      */
     public int size() {
         return andConditions.size();
-    }
-    
-    /**
-     * Get multiple sharding values via and conditions.
-     *
-     * @param parameters parameters
-     * @return sharding values
-     */
-    public ShardingValues getShardingValues(final List<Object> parameters) {
-        ShardingValues result = null;
-        if (andConditions.isEmpty()) {
-            result = new ShardingValues();
-        }
-        for (AndCondition each : andConditions) {
-            ShardingValueUnit shardingValueUnit = each.getShardingValueUnit(parameters);
-            if (null != shardingValueUnit) {
-                if (null == result) {
-                    result = new ShardingValues();
-                }
-                result.add(shardingValueUnit);
-            }
-        }
-        return result;
     }
 }

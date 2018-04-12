@@ -19,22 +19,12 @@ package io.shardingjdbc.core.parsing.parser.context.condition;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.collect.BoundType;
-import com.google.common.collect.Range;
-import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingjdbc.core.api.algorithm.sharding.ShardingValueUnit;
-import io.shardingjdbc.core.constant.ShardingOperator;
-import io.shardingjdbc.core.exception.ShardingJdbcException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * And conditions.
@@ -103,107 +93,5 @@ public final class AndCondition {
      */
     public int size() {
         return conditions.size();
-    }
-    
-    /**
-     * Get sharding values via conditions.
-     *
-     * @param parameters parameters
-     * @return sharding value unit
-     */
-    public ShardingValueUnit getShardingValueUnit(final List<Object> parameters) {
-        ShardingValueUnit result = new ShardingValueUnit();
-        if (conditions.isEmpty()) {
-            return result;
-        }
-        Map<Column, List<Condition>> conditionsMap = getConditionsMap();
-        for (Map.Entry<Column, List<Condition>> entry : conditionsMap.entrySet()) {
-            List<Comparable<?>> listValue = null;
-            Range<Comparable<?>> rangeValue = null;
-            for (Condition each : entry.getValue()) {
-                List<Comparable<?>> values = each.getValues(parameters);
-                if (Objects.equal(each.getOperator(), ShardingOperator.EQUAL) || Objects.equal(each.getOperator(), ShardingOperator.IN)) {
-                    listValue = mergeValue(values, listValue);
-                    if (null == listValue) {
-                        return null;
-                    }
-                }
-                if (Objects.equal(each.getOperator(), ShardingOperator.BETWEEN)) {
-                    try {
-                        rangeValue = mergeValue(Range.range(values.get(0), BoundType.CLOSED, values.get(1), BoundType.CLOSED), rangeValue);
-                    } catch (IllegalArgumentException e) {
-                        return null;
-                    } catch (ClassCastException e) {
-                        throw new ShardingJdbcException("Found different java type for sharding value `%s`.", each.getColumn());
-                    }
-                }
-            }
-            if (null == listValue) {
-                result.add(new RangeShardingValue<>(entry.getKey().getTableName(), entry.getKey().getName(), rangeValue));
-            } else {
-                if (null != rangeValue) {
-                    listValue = mergeValue(listValue, rangeValue);
-                    if (null == listValue) {
-                        return null;
-                    }
-                }
-                result.add(new ListShardingValue<>(entry.getKey().getTableName(), entry.getKey().getName(), listValue));
-            }
-        }
-        return result;
-    }
-    
-    private Map<Column, List<Condition>> getConditionsMap() {
-        Map<Column, List<Condition>> result = new LinkedHashMap<>();
-        for (Condition each : conditions) {
-            if (null == result.get(each.getColumn())) {
-                result.put(each.getColumn(), new LinkedList<Condition>());
-            }
-            result.get(each.getColumn()).add(each);
-        }
-        return result;
-    }
-    
-    private List<Comparable<?>> mergeValue(List<Comparable<?>> listValue1, List<Comparable<?>> listValue2) {
-        if (null == listValue1) {
-            return listValue2;
-        }
-        if (null == listValue2) {
-            return listValue1;
-        }
-        listValue1.retainAll(listValue2);
-        if (listValue1.isEmpty()) {
-            return null;
-        }
-        return listValue1;
-    }
-    
-    private Range<Comparable<?>> mergeValue(Range<Comparable<?>> rangeValue1, Range<Comparable<?>> rangeValue2) {
-        if (null == rangeValue1) {
-            return rangeValue2;
-        }
-        if (null == rangeValue2) {
-            return rangeValue1;
-        }
-        try {
-            return rangeValue1.intersection(rangeValue2);
-        } catch (IllegalArgumentException e) {
-            return null;
-        } catch (ClassCastException e) {
-            throw new ShardingJdbcException("Found different java type for same sharding value.");
-        }
-    }
-    
-    private List<Comparable<?>> mergeValue(List<Comparable<?>> listValue, Range<Comparable<?>> rangeValue) {
-        List<Comparable<?>> result = new LinkedList<>();
-        for (Comparable<?> each : listValue) {
-            if (rangeValue.contains(each)) {
-                result.add(each);
-            }
-        }
-        if (result.isEmpty()) {
-            return null;
-        }
-        return result;
     }
 }

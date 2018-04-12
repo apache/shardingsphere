@@ -46,14 +46,13 @@ import java.util.Map.Entry;
  * @author zhangliang
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 @EqualsAndHashCode
 @ToString
 public final class Condition {
     
-    @Getter
     private final Column column;
     
-    @Getter
     private final ShardingOperator operator;
     
     private final Map<Integer, Comparable<?>> positionValueMap = new LinkedHashMap<>();
