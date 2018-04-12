@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.core.parsing.parser.context.condition;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,16 +26,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * And conditions.
+ * Or conditions.
  *
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public class AndConditions {
+public final class OrCondition {
     
-    private final List<Condition> conditions = new LinkedList<>();
+    private final List<AndCondition> andConditions = new LinkedList<>();
     
     /**
      * Add condition.
@@ -44,35 +43,38 @@ public class AndConditions {
      * @param condition condition
      */
     public void add(final Condition condition) {
-        conditions.add(condition);
+        AndCondition firstAndCondition;
+        if (isEmpty()) {
+            firstAndCondition = new AndCondition();
+            andConditions.add(firstAndCondition);
+        } else {
+            firstAndCondition = andConditions.get(0);
+        }
+        firstAndCondition.add(condition);
     }
     
     /**
      * Find condition via column.
      *
      * @param column column
+     * @param index index of and conditions
      * @return found condition
      */
-    public Optional<Condition> find(final Column column) {
-        Condition result = null;
-        for (Condition each : conditions) {
-            if (Objects.equal(each.getColumn(), column)) {
-                result = each;
-            }
-        }
-        return Optional.fromNullable(result);
+    public Optional<Condition> find(final Column column, final int index) {
+        Optional<AndCondition> andCondition = get(index);
+        return andCondition.isPresent() ? andCondition.get().find(column) : Optional.<Condition>absent();
     }
     
     /**
-     * Get condition via index.
+     * Get and condition via index.
      *
-     * @param index index of conditions
-     * @return found condition
+     * @param index index of and conditions
+     * @return found and conditions
      */
-    public Optional<Condition> get(int index) {
-        Condition result = null;
+    public Optional<AndCondition> get(final int index) {
+        AndCondition result = null;
         if (size() > index) {
-            result = conditions.get(index);
+            result = andConditions.get(index);
         }
         return Optional.fromNullable(result);
     }
@@ -83,15 +85,15 @@ public class AndConditions {
      * @return and conditions is empty or not
      */
     public boolean isEmpty() {
-        return conditions.isEmpty();
+        return andConditions.isEmpty();
     }
     
     /**
-     * Returns the number of conditions in this.
+     * Returns the number of and conditions in this.
      *
-     * @return the number of conditions in this
+     * @return the number of and conditions in this
      */
     public int size() {
-        return conditions.size();
+        return andConditions.size();
     }
 }

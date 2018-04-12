@@ -59,6 +59,9 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
         int sequenceId = mysqlPacketPayload.readInt1();
         CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, mysqlPacketPayload);
+        if (null == commandPacket) {
+            return;
+        }
         for (DatabaseProtocolPacket each : commandPacket.execute()) {
             context.write(each);
         }

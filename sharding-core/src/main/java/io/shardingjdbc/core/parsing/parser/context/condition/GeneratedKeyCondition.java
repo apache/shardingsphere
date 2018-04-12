@@ -15,21 +15,21 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.parser.context;
+package io.shardingjdbc.core.parsing.parser.context.condition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Generated key.
+ * Generated key condition.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class GeneratedKey {
+public final class GeneratedKeyCondition {
     
     private final String column;
     

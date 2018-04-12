@@ -15,29 +15,27 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing;
+package io.shardingjdbc.core.parsing.integrate.jaxb.condition;
 
-import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
-import io.shardingjdbc.core.routing.condition.GeneratedKey;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * SQL route result.
- * 
- * @author gaohongtao
- * @author zhangliang
+ * Expected and conditions.
+ *
+ * @author maxiaoguang
  */
-@RequiredArgsConstructor
 @Getter
-public final class SQLRouteResult {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedAndCondition {
     
-    private final SQLStatement sqlStatement;
-    
-    private final GeneratedKey generatedKey;
-    
-    private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
+    @XmlElement(name = "condition")
+    private List<ExpectedCondition> conditions = new LinkedList<>();
 }

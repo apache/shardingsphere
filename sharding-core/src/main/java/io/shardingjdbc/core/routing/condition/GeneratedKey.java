@@ -15,27 +15,35 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.condition;
+package io.shardingjdbc.core.routing.condition;
 
+import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected and conditions.
+ * Generated key.
  *
- * @author maxiaoguang
+ * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedOrConditions {
+public final class GeneratedKey {
     
-    @XmlElement(name = "and-conditions")
-    private List<ExpectedAndConditions> andConditions = new LinkedList<>();
+    private final String column;
+    
+    private final int index;
+    
+    private final Number value;
+    
+    private final List<Number> generatedKeys = new LinkedList<>();
+    
+    public GeneratedKey(final GeneratedKeyCondition generatedKeyCondition) {
+        column = generatedKeyCondition.getColumn();
+        index = generatedKeyCondition.getIndex();
+        value = generatedKeyCondition.getValue();
+    }
 }

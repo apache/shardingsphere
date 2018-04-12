@@ -9,8 +9,11 @@
 1. [ISSUE #610](https://github.com/shardingjdbc/sharding-jdbc/issues/610) 优化不包含表的DQL
 1. [ISSUE #611](https://github.com/shardingjdbc/sharding-jdbc/issues/611) 支持MySQL的DESC语句
 1. [ISSUE #652](https://github.com/shardingjdbc/sharding-jdbc/issues/652) Spring Boot Starter 2.x支持
+1. [ISSUE #701](https://github.com/shardingjdbc/sharding-jdbc/issues/701) 支持缓存SQL解析结果以提升性能
+1. [ISSUE #702](https://github.com/shardingjdbc/sharding-jdbc/issues/702) 支持以 $->{..} 作为inline表达式的标记
 
 ### 缺陷修正
+1. [ISSUE #628](https://github.com/shardingjdbc/sharding-jdbc/issues/628) 支持PostgreSql的数据类型jsonb
 1. [ISSUE #646](https://github.com/shardingjdbc/sharding-jdbc/issues/646) 当SELECT ITEMS中的别名与GROUP BY或ORDER BY的真实列名对应时，无需补列
 
 ## 2.0.3

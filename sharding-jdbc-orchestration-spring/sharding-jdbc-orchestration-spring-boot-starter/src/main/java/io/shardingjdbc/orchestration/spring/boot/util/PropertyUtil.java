@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.spring.boot.util;
+package io.shardingjdbc.orchestration.spring.boot.util;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

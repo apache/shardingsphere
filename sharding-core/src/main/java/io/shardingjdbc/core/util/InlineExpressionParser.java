@@ -44,6 +44,15 @@ public final class InlineExpressionParser {
     private final String inlineExpression;
     
     /**
+     * Replace all the inlineExpression placeholders.
+     * @param inlineExpression inlineExpression
+     * @return result inlineExpression
+     */
+    public static String handlePlaceHolder(final String inlineExpression) {
+        return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\$\\{") : inlineExpression;
+    }
+    
+    /**
      * Split and evaluate inline expression.
      *
      * @return result list
@@ -59,7 +68,7 @@ public final class InlineExpressionParser {
         List<Object> result = new ArrayList<>(inlineExpressions.size());
         GroovyShell shell = new GroovyShell();
         for (String each : inlineExpressions) {
-            StringBuilder expression = new StringBuilder(each);
+            StringBuilder expression = new StringBuilder(handlePlaceHolder(each));
             if (!each.startsWith("\"")) {
                 expression.insert(0, "\"");
             }
@@ -88,6 +97,9 @@ public final class InlineExpressionParser {
                     break;
                 case '$':
                     if ('{' == inlineExpression.charAt(i + 1)) {
+                        bracketsDepth++;
+                    }
+                    if ("->{".equals(inlineExpression.substring(i + 1, i + 4))) {
                         bracketsDepth++;
                     }
                     segment.append(each);

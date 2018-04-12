@@ -21,10 +21,12 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
 import io.shardingjdbc.core.parsing.parser.token.OffsetToken;
@@ -36,6 +38,7 @@ import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
+import io.shardingjdbc.core.routing.condition.GeneratedKey;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
 import io.shardingjdbc.core.rule.BindingTableRule;
@@ -68,6 +71,8 @@ public final class SQLRewriteEngine {
     
     private final SQLStatement sqlStatement;
     
+    private final GeneratedKey generatedKey;
+    
     /**
      * Constructs SQL rewrite engine.
      * 
@@ -75,12 +80,14 @@ public final class SQLRewriteEngine {
      * @param originalSQL original SQL
      * @param databaseType database type
      * @param sqlStatement SQL statement
+     * @param generatedKey generated key
      */
-    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final GeneratedKey generatedKey) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
+        this.generatedKey = generatedKey;
         sqlTokens.addAll(sqlStatement.getSqlTokens());
     }
     
@@ -110,6 +117,8 @@ public final class SQLRewriteEngine {
                 appendIndexPlaceholder(result, (IndexToken) each, count, sqlTokens);
             } else if (each instanceof ItemsToken) {
                 appendItemsToken(result, (ItemsToken) each, count, sqlTokens);
+            } else if (each instanceof GeneratedKeyToken) {
+                appendGenerateKeyToken(result, (GeneratedKeyToken) each, count, sqlTokens);
             } else if (each instanceof RowCountToken) {
                 appendLimitRowCount(result, (RowCountToken) each, count, sqlTokens, isRewriteLimit);
             } else if (each instanceof OffsetToken) {
@@ -162,6 +171,16 @@ public final class SQLRewriteEngine {
         }
         int beginPosition = itemsToken.getBeginPosition();
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
+    }
+    
+    private void appendGenerateKeyToken(final SQLBuilder sqlBuilder, final GeneratedKeyToken generatedKeyToken, final int count, final List<SQLToken> sqlTokens) {
+        ItemsToken valuesToken = new ItemsToken(generatedKeyToken.getBeginPosition());
+        if (0 == sqlStatement.getParametersIndex()) {
+            valuesToken.getItems().add(generatedKey.getValue().toString());
+        } else {
+            valuesToken.getItems().add(Symbol.QUESTION.getLiterals());
+        }
+        appendItemsToken(sqlBuilder, valuesToken, count, sqlTokens);
     }
     
     private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final List<SQLToken> sqlTokens, final boolean isRewrite) {
