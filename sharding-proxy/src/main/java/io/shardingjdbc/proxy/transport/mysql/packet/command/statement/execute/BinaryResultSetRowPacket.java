@@ -17,8 +17,10 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute;
 
+import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import lombok.Getter;
 
 import java.util.List;
@@ -38,10 +40,13 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
     
     private final List<Object> data;
     
-    public BinaryResultSetRowPacket(final int sequenceId, final int numColumns, final List<Object> data) {
+    private final List<ColumnDefinition41Packet> columnDefinition41PacketList;
+    
+    public BinaryResultSetRowPacket(final int sequenceId, final int numColumns, final List<Object> data, final List<ColumnDefinition41Packet> columnDefinition41PacketList) {
         super(sequenceId);
         this.numColumns = numColumns;
         this.data = data;
+        this.columnDefinition41PacketList = columnDefinition41PacketList;
     }
     
     @Override
@@ -55,10 +60,18 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
         }
         
         for (int i = 0; i < numColumns; i++) {
+            ColumnType columnType = columnDefinition41PacketList.get(i).getColumnType();
             if (null == data.get(i)) {
                 setNullBit(nullBitmap, i);
             } else {
-                mysqlPacketPayload.writeStringLenenc(data.get(i).toString());
+                // TODO add more types
+                if (ColumnType.MYSQL_TYPE_LONGLONG == columnType) {
+                    mysqlPacketPayload.writeInt8(Long.parseLong(data.get(i).toString()));
+                } else if (ColumnType.MYSQL_TYPE_LONG == columnType) {
+                    mysqlPacketPayload.writeInt4(Integer.parseInt(data.get(i).toString()));
+                } else {
+                    mysqlPacketPayload.writeStringLenenc(data.get(i).toString());
+                }
             }
         }
     }
