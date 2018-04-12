@@ -63,7 +63,7 @@ public final class Conditions {
     }
     
     /**
-     * Find condition via column in index and condition.
+     * Find condition via column.
      *
      * @param column column
      * @param index index of and conditions
