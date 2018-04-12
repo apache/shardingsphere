@@ -148,83 +148,83 @@ sharding.jdbc.config.sharding.master-slave-rules.ds_1.slave-data-source-names=ds
 
 ##### sharding.jdbc.config.sharding
 
-| *名称*                         | *数据类型*  |  *必填* | *说明*                                                                |
+| *Name*                         | *DataType*  |  *Required* | *Info*                                                                       |
 | ------------------------------- | ---------- | ------ | --------------------------------------------------------------------- |
-| sharding.jdbc.config.sharding.default-data-source-name?     | String      |   否   | 默认数据源名称，未配置分片规则的表将通过默认数据源定位                        |
-| sharding.jdbc.config.sharding.tables | Map\<String, YamlTableRuleConfiguration\> | 是 | 分表配置列表|
-| sharding.jdbc.config.sharding.default-database-strategy? | YamlShardingStrategyConfiguration      |   否   | 默认分库策略  |
-| sharding.jdbc.config.sharding.default-table-strategy?    | YamlShardingStrategyConfiguration      |   否   | 默认分表策略  |
-| sharding.jdbc.config.sharding.default-key-generator-class? | String |否|自增列值生成类名
-| sharding.jdbc.config.sharding.config-map?                    |   Map\<String, Object\>         |   否   | 配置映射关系                                                            |
-| sharding.jdbc.config.sharding.props?                        |   Properties         |   否   | 相关属性配置     |
-| sharding.jdbc.config.sharding.binding-tables?            | List\<String\>      | 否| 绑定表列表|
-| sharding.jdbc.config.sharding.master-slave-rules? | Map\<String, YamlMasterSlaveRuleConfiguration\>|否|读写分离配置|
+| sharding.jdbc.config.sharding.default-data-source-name?     | String      |   N   | The default data source.                        |
+| sharding.jdbc.config.sharding.tables | Map\<String, YamlTableRuleConfiguration\> | Y | The list of table rules.|
+| sharding.jdbc.config.sharding.default-database-strategy? | YamlShardingStrategyConfiguration      |   N   | The default strategy for sharding databases.  |
+| sharding.jdbc.config.sharding.default-table-strategy?    | YamlShardingStrategyConfiguration      |   N   | The default strategy for sharding tables.  |
+| sharding.jdbc.config.sharding.default-key-generator-class? | String |N|The class name of key generator.
+| sharding.jdbc.config.sharding.config-map?                    |   Map\<String, Object\>         |   N   | Config map.                                                            |
+| sharding.jdbc.config.sharding.props?                        |   Properties         |   N   | Property Config.     |
+| sharding.jdbc.config.sharding.binding-tables?            | List\<String\>      | N| Blinding Rule.|
+| sharding.jdbc.config.sharding.master-slave-rules? | Map\<String, YamlMasterSlaveRuleConfiguration\>|N|The read-write-splitting configs|
 
 ##### sharding.jdbc.datasource
 
-| *名称*                         | *数据类型*  |  *必填* | *说明*  |
+| *Name*                         | *DataType*  |  *Required* | *Info*         |
 | --------------------         | ---------- | ------ | ------- |
-| sharding.jdbc.datasource.names | String      |   是   | 数据源列表,多个以逗号分隔 |
+| sharding.jdbc.datasource.names | String      |   Y   |The list of datasource. |
 
 ##### sharding.jdbc.datasource.ds_name
 
-| *名称*                         | *数据类型*  |  *必填* | *说明*  |
+| *Name*                         | *DataType*  |  *Required* | *Info*         |
 | --------------------         | ---------- | ------ | ------- |
-| sharding.jdbc.datasource.ds_name.type| String | 是 | 数据源类型,例如：org.apache.commons.dbcp.BasicDataSource|
-| sharding.jdbc.datasource.ds_name.driver-class-name | String|是 | 数据源驱动类名|
-| sharding.jdbc.datasource.ds_name.url | String|是 |数据源链接url|
-| sharding.jdbc.datasource.ds_name.username | String |是 | 数据源链接用户名|
-| sharding.jdbc.datasource.ds_name.password | String |是 | 数据源链接密码|
+| sharding.jdbc.datasource.ds_name.type| String | Y | The type of datasource e.g. org.apache.commons.dbcp.BasicDataSource|
+| sharding.jdbc.datasource.ds_name.driver-class-name | String|Y | The driver class name|
+| sharding.jdbc.datasource.ds_name.url | String|Y |The connection url of datasource|
+| sharding.jdbc.datasource.ds_name.username | String |Y | Connection username|
+| sharding.jdbc.datasource.ds_name.password | String |Y | Connection password|
 
 ##### sharding.jdbc.config.sharding.tables.tb_name
 
-| *名称*                         | *数据类型*  |  *必填* | *说明*  |
+| *Name*                         | *DataType*  |  *Required* | *Info*         |
 | --------------------         | ---------- | ------ | ------- |
-| sharding.jdbc.config.sharding.tables.tb_name.logic-table                 |  String     |   是   | 逻辑表名 |
-| sharding.jdbc.config.sharding.tables.tb_name.actual-dataNodes?             |  String     |   否   | 真实数据节点|
-| sharding.jdbc.config.sharding.tables.tb_name.database-strategy?      |  YamlShardingStrategyConfiguration     |   否   | 分库策略  |
-| sharding.jdbc.config.sharding.tables.tb_name.table-strategy?            |  YamlShardingStrategyConfiguration     |   否   | 分表策略       |
-| sharding.jdbc.config.sharding.tables.tb_name.logic-index?                   |  String     |   否   | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表        |
-| sharding.jdbc.config.sharding.tables.tb_name.key-generator-columnName? | String | 否 | 自增列名|
-| sharding.jdbc.config.sharding.tables.tb_name.key-generator-class?  | String | 否| 自增列值生成类|
+| sharding.jdbc.config.sharding.tables.tb_name.logic-table                 |  String     |   Y   | LogicTables |
+| sharding.jdbc.config.sharding.tables.tb_name.actual-dataNodes?             |  String     |   N   | Actual data nodes configured in the format of *datasource_name.table_name*, multiple configs separated with commas.|
+| sharding.jdbc.config.sharding.tables.tb_name.database-strategy?      |  YamlShardingStrategyConfiguration     |   N   | The strategy for sharding database.  |
+| sharding.jdbc.config.sharding.tables.tb_name.table-strategy?            |  YamlShardingStrategyConfiguration     |   N   | The strategy for sharding table.       |
+| sharding.jdbc.config.sharding.tables.tb_name.logic-index?                   |  String     |   N   | The Logic index name. If you want to use *DROP INDEX XXX* SQL in Oracle/PostgreSQL，This property needs to be set for finding the actual tables.       |
+| sharding.jdbc.config.sharding.tables.tb_name.key-generator-columnName? | String | N | The generate column|
+| sharding.jdbc.config.sharding.tables.tb_name.key-generator-class?  | String | N| The class name of key generator.|
 
 
 ##### sharding.jdbc.config.sharding.default-table-strategy.standard
 
-标准分片策略，用于单分片键的场景
+The standard sharding strategy for single sharding column.
 
-| *名称*                        | *数据类型*  |  *必填* | *说明*                                                                |
+| *Name*                         | *DataType*  |  *Required* | *Info*                                                                    |
 | ------------------------------ | ---------- | ------ | --------------------------------------------------------------------- |
-| sharding.jdbc.config.sharding.default-database-strategy.standard.sharding-column             |  String     |   是   | 分片列名                                                               |
-| sharding.jdbc.config.sharding.default-database-strategy.standard.precise-algorithm-class-name      |  String     |   是   | 精确的分片算法类名称，用于=和IN。   |
-| sharding.jdbc.config.sharding.default-database-strategy.standard.range-algorithm-class-name?      |  String     |   否   | 范围的分片算法类名称，用于BETWEEN。 |
+| sharding.jdbc.config.sharding.default-database-strategy.standard.sharding-column             |  String     |   Y   |  The name of sharding column.                                                                  |
+| sharding.jdbc.config.sharding.default-database-strategy.standard.precise-algorithm-class-name      |  String     |   Y   | The class name for precise-sharding-algorithm used for = and IN. The default constructor or on-parametric constructor is needed.     |
+| sharding.jdbc.config.sharding.default-database-strategy.standard.range-algorithm-class-name?      |  String     |   N   | The class name for range-sharding-algorithm used for BETWEEN. The default constructor or on-parametric constructor is needed.  |
 
 
 ##### sharding.jdbc.config.sharding.default-table-strategy.complex
 
-复合分片策略，用于多分片键的场景
+The complex sharding strategy for multiple sharding columns.
 
-| *名称*                        | *数据类型*  |  *必填* | *说明*                                              |
+| *Name*                         | *DataType*  |  *Required* | *Info*         |                                             
 | ------------------------------ | ---------- | ------ | --------------------------------------------------- |
-| sharding.jdbc.config.sharding.default-table-strategy.complex.sharding-columns             |  String     |   是  | 分片列名，多个列以逗号分隔                              |
-| sharding.jdbc.config.sharding.default-table-strategy.complex.algorithm-class-name            |  String     |   是  | 分片算法全类名 |
+| sharding.jdbc.config.sharding.default-table-strategy.complex.sharding-columns             |  String     |   Y  | The name of sharding column. Multiple names separated with commas.                              |
+| sharding.jdbc.config.sharding.default-table-strategy.complex.algorithm-class-name            |  String     |   Y  | The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
 
 ##### sharding.jdbc.config.sharding.default-table-strategy.inline
 
 inline表达式分片策略
 
-| *名称*                         | *数据类型*  |  *必填* | *说明*       |
+| *Name*                         | *DataType*  |  *Required* | *Info*         |
 | ------------------------------- | ---------- | ------ | ------------ |
-| sharding.jdbc.config.sharding.default-table-strategy.inline.sharding-column              |  String     |   是   | 分片列名      |
-| sharding.jdbc.config.sharding.default-table-strategy.inline.algorithm-expression    |  String     |   是   | 分片算法表达式 |
+| sharding.jdbc.config.sharding.default-table-strategy.inline.sharding-column              |  String     |   Y   | The  name of sharding column.       |
+| sharding.jdbc.config.sharding.default-table-strategy.inline.algorithm-expression    |  String     |   Y   | The expression for sharding algorithm. |
 
 ##### sharding.jdbc.config.sharding.default-table-strategy.hint
 
 Hint方式分片策略
 
-| *名称*                         | *数据类型*  |  *必填* | *说明*                                              |
+| *Name*                         | *DataType*  |  *Required* | *Info*                                          |
 | ------------------------------- | ---------- | ------ | --------------------------------------------------- |
-| sharding.jdbc.config.sharding.default-database-strategy.hint.algorithm-class-name            |  String     |   是  | 分片算法全类名 |
+| sharding.jdbc.config.sharding.default-database-strategy.hint.algorithm-class-name            |  String     |   Y  | The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed.  |
 
 ##### sharding.jdbc.config.sharding.default-database-strategy.none
 
@@ -232,10 +232,10 @@ Hint方式分片策略
 
 ##### sharding.jdbc.config.sharding.props
 
-| *名称*                                   | *数据类型*  | *必填* | *说明*                              |
+| *Name*                         | *DataType*  |  *Required* | *Info*         |
 | ------------------------------------   | ---------- | ----- | ----------------------------------- |
-| sharding.jdbc.config.sharding.props.sql.show       |  boolean   |   是   | 是否开启SQL显示，默认为false不开启     |
-| sharding.jdbc.config.sharding.props.executor.size?                            |  int       |   否   | 最大工作线程数量                      |
+| sharding.jdbc.config.sharding.props.sql.show       |  boolean   |   Y   | To show SQLS or not, the default is false.     |
+| sharding.jdbc.config.sharding.props.executor.size?                            |  int       |   N   | The number of running threads.                        |
 
 ##### configMap
 
@@ -243,14 +243,14 @@ Hint方式分片策略
 
 ##### sharding.jdbc.config.masterslave
 
-| *名称*                        | *数据类型*  |  *必填* | *说明*                                   |
+| *Name*                         | *DataType*  |  *Required* | *Info*         |
 | ------------------------------ |  --------- | ------ | ---------------------------------------- |
-| sharding.jdbc.config.masterslave.name                        |  String     |   是   | 读写分离配置名称                          |
-| sharding.jdbc.config.masterslave.master-data-sourceName      |   String        |   是   | 主库数据源                       |
-| sharding.jdbc.config.masterslave.slave-data-source-names      |   Collection\<String\>       |   是   | 从库数据源列表       |
-| sharding.jdbc.config.masterslave.load-balance-algorithm-type?               |  MasterSlaveLoadBalanceAlgorithmType     |   否   | 主从库访问策略类型<br />可选值：ROUND_ROBIN, RANDOM<br />默认值：ROUND_ROBIN |
-| sharding.jdbc.config.masterslave.load-balance-algorithm-class-name? | String | 否| 主从库访问策略类名|
-| sharding.jdbc.config.masterslave.config-map? | Map\<String, Object\> | 否 |配置映射关系|
+| sharding.jdbc.config.masterslave.name                        |  String     |   Y   | The name of rule configuration.                         |
+| sharding.jdbc.config.masterslave.master-data-sourceName      |   String        |   Y   | The master datasource.                         |
+| sharding.jdbc.config.masterslave.slave-data-source-names      |   Collection\<String\>       |   Y   |  The list of Slave databases, multiple items are separated by commas.        |
+| sharding.jdbc.config.masterslave.load-balance-algorithm-type?               |  MasterSlaveLoadBalanceAlgorithmType     |   N   | The complex strategy type of Master-Slaves. <br />The options: ROUND_ROBIN, RANDOM<br />. The default: ROUND_ROBIN|
+| sharding.jdbc.config.masterslave.load-balance-algorithm-class-name? | String | N| The class name of load balance algorithm for master and slaves.|
+| sharding.jdbc.config.masterslave.config-map? | Map\<String, Object\> | N | Config map.|
 
 ##### configMap
 
