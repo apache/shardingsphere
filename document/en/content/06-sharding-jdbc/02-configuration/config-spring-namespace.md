@@ -76,8 +76,8 @@ weight = 5
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column="order_id" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column="order_item_id" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_id" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
@@ -104,7 +104,7 @@ weight = 5
 | default-data-source-name?      | Property    | String      |   N        | The default name for data source. Tables without sharding rules will be considered in this data source.                        |
 | default-database-strategy-ref? | Property    | String      |   N        | The default strategy for sharding databases, which is also the strategy ID in \<sharding:xxx-strategy>. If this property is not set, the strategy of none sharding will be applied.|
 | default-table-strategy-ref?   | Property    | String      |   N        | The default strategy for sharding tables which is also the strategy ID in \<sharding:xxx-strategy>. If this property is not set, the strategy of none sharding will be applied. |
-| key-generator-class? | Property | String |N|The class name of key generator|
+| default-key-generator? | Property | String |N|The bean reference of default key generator|
 | table-rules                   | Label       |   -         |   Y        | The list of table rules.                                             |
 |binding-table-rules?           | Label         | -      | N| Blinding Rule|
 
@@ -124,8 +124,8 @@ weight = 5
 | database-strategy-ref? | Property     |  String    |   N        | The strategy for sharding database.Its strategy ID is in \<sharding:xxx-strategy>. The default is default-database-strategy-ref configured in \<sharding:sharding-rule/>    |
 | table-strategy-ref?    | Property     |  String    |   N        | The strategy for sharding table. Its strategy ID is in \<sharding:xxx-strategy>. The default is default-table-strategy-ref in \<sharding:sharding-rule/>       |
 | logic-index?           | Property     |  String    |   N        | The Logic index name. If you want to use *DROP INDEX XXX* SQL in Oracle/PostgreSQL，This property needs to be set for finding the actual tables.   |
-| generate-key-column？ | Property| String | N | The generate column|
-| column-key-generator-class？ | Property | String | N| The class name of key generator|
+| generate-key-column-name？ | Property| String | N | The generate column|
+| key-generator？ | Property | String | N| The bean reference of key generator|
 
 
 ##### \<sharding:binding-table-rules/>
