@@ -15,26 +15,33 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.condition;
+package io.shardingjdbc.core.api.algorithm.sharding;
 
-import io.shardingjdbc.core.api.algorithm.sharding.ShardingValues;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Sharding conditions.
- *
- * @author zhangliang
+ * Sharding value unit.
+ * 
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingConditions {
+@ToString
+public class ShardingValueUnit {
     
-    private final List<Object> parameters;
+    private final List<ShardingValue> shardingValues = new LinkedList<>();
     
-    private final ShardingValues shardingValues;
-    
-    private final GeneratedKey generatedKey;
+    /**
+     * Add sharding value.
+     *
+     * @param shardingValue sharding value
+     */
+    public void add(final ShardingValue shardingValue) {
+        shardingValues.add(shardingValue);
+    }
 }

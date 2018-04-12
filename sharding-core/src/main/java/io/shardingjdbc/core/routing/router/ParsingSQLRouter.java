@@ -19,6 +19,8 @@ package io.shardingjdbc.core.routing.router;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValues;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
@@ -113,6 +115,7 @@ public final class ParsingSQLRouter implements SQLRouter {
     
     private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement, final GeneratedKey generatedKey) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
+        ShardingValues shardingValues = sqlStatement.getConditions().getShardingValues(parameters);
         RoutingEngine routingEngine;
         if (sqlStatement instanceof UseStatement) {
             routingEngine = new IgnoreRoutingEngine();
@@ -120,17 +123,19 @@ public final class ParsingSQLRouter implements SQLRouter {
             routingEngine = new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
         } else if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowTablesStatement) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
+        } else if (null == shardingValues) {
+            routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement, tableNames);
         } else if (sqlStatement instanceof DALStatement) {
-            routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
+            routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement, tableNames);
         } else if (tableNames.isEmpty() && sqlStatement instanceof SelectStatement) {
-            routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement);
+            routingEngine = new UnicastRoutingEngine(shardingRule, sqlStatement, tableNames);
         } else if (tableNames.isEmpty()) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllInDefaultDataSource(tableNames)) {
-            routingEngine = new StandardRoutingEngine(shardingRule, parameters, tableNames.iterator().next(), sqlStatement.getConditions(), generatedKey);
+            routingEngine = new StandardRoutingEngine(shardingRule, parameters, tableNames.iterator().next(), shardingValues, generatedKey);
         } else {
             // TODO config for cartesian set
-            routingEngine = new ComplexRoutingEngine(shardingRule, parameters, tableNames, sqlStatement.getConditions());
+            routingEngine = new ComplexRoutingEngine(shardingRule, parameters, tableNames, shardingValues);
         }
         return routingEngine.route();
     }

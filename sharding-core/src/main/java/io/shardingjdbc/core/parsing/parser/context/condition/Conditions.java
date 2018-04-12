@@ -18,10 +18,14 @@
 package io.shardingjdbc.core.parsing.parser.context.condition;
 
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValues;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
 
 /**
  * Conditions collection.
@@ -71,5 +75,15 @@ public final class Conditions {
      */
     public Optional<Condition> find(final Column column, final int index) {
         return orCondition.find(column, index);
+    }
+    
+    /**
+     * Get sharding values via or condition.
+     *
+     * @param parameters parameters
+     * @return multiple sharding values
+     */
+    public ShardingValues getShardingValues(final List<Object> parameters) {
+        return orCondition.getShardingValues(parameters);
     }
 }

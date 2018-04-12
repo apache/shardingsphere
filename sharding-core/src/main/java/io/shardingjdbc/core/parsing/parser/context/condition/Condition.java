@@ -109,7 +109,7 @@ public final class Condition {
         }
     }
     
-    private List<Comparable<?>> getValues(final List<?> parameters) {
+    public List<Comparable<?>> getValues(final List<?> parameters) {
         List<Comparable<?>> result = new LinkedList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
             Object parameter = parameters.get(entry.getValue());
