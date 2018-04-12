@@ -38,7 +38,7 @@ public final class PreparedStatementRegistry {
     
     private final ConcurrentMap<Integer, String> statementIdToSQLMap = new ConcurrentHashMap<>(65535, 1);
     
-    private final ConcurrentMap<Integer, Integer> statementIdToNumParamsMap = new ConcurrentHashMap<>(65535, 1);
+    private final ConcurrentMap<Integer, Integer> statementIdToNumParametersMap = new ConcurrentHashMap<>(65535, 1);
     
     private final AtomicInteger sequence = new AtomicInteger();
     
@@ -55,10 +55,10 @@ public final class PreparedStatementRegistry {
      * Register SQL.
      * 
      * @param sql SQL
-     * @param numParams num columns
+     * @param numParameters num columns
      * @return statement ID
      */
-    public int register(final String sql, final int numParams) {
+    public int register(final String sql, final int numParameters) {
         Integer result = sqlToStatementIdMap.get(sql);
         if (null != result) {
             return result;
@@ -68,7 +68,7 @@ public final class PreparedStatementRegistry {
             statementId = sequence.incrementAndGet();
         } while (null != statementIdToSQLMap.putIfAbsent(statementId, sql));
         sqlToStatementIdMap.putIfAbsent(sql, statementId);
-        statementIdToNumParamsMap.putIfAbsent(statementId, numParams);
+        statementIdToNumParametersMap.putIfAbsent(statementId, numParameters);
         return statementId;
     }
     
@@ -83,12 +83,12 @@ public final class PreparedStatementRegistry {
     }
     
     /**
-     * Get number columns.
+     * Get number parameters.
      *
      * @param statementId statement ID
-     * @return number columns
+     * @return number parameters
      */
-    public int getNumParams(final int statementId) {
-        return statementIdToNumParamsMap.get(statementId);
+    public int getNumParameters(final int statementId) {
+        return statementIdToNumParametersMap.get(statementId);
     }
 }

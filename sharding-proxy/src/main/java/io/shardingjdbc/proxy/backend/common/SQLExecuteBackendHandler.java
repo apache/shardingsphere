@@ -95,8 +95,8 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     private List<DatabaseProtocolPacket> executeQuery(final DataSource dataSource, final String sql) {
         try (
-                Connection conn = dataSource.getConnection();
-                Statement statement = conn.createStatement();
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             return getDatabaseProtocolPackets(resultSet);
         } catch (final SQLException ex) {
@@ -106,8 +106,8 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     private List<DatabaseProtocolPacket> executeCommon(final DataSource dataSource, final String sql) {
         try (
-                Connection conn = dataSource.getConnection();
-                Statement statement = conn.createStatement()) {
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             boolean hasResultSet = statement.execute(sql);
             if (hasResultSet) {
                 return getDatabaseProtocolPackets(statement.getResultSet());
@@ -148,8 +148,8 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     private List<DatabaseProtocolPacket> executeUpdate(final DataSource dataSource, final String sql, final SQLStatement sqlStatement) {
         try (
-                Connection conn = dataSource.getConnection();
-                Statement statement = conn.createStatement()) {
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             int affectedRows;
             long lastInsertId = 0;
             if (sqlStatement instanceof InsertStatement) {
