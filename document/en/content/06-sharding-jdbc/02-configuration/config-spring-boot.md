@@ -211,7 +211,7 @@ The complex sharding strategy for multiple sharding columns.
 
 ##### sharding.jdbc.config.sharding.default-table-strategy.inline
 
-inline表达式分片策略
+The inline-expression sharding strategy.
 
 | *Name*                         | *DataType*  |  *Required* | *Info*         |
 | ------------------------------- | ---------- | ------ | ------------ |
@@ -220,7 +220,7 @@ inline表达式分片策略
 
 ##### sharding.jdbc.config.sharding.default-table-strategy.hint
 
-Hint方式分片策略
+The Hint-method sharding strategy.
 
 | *Name*                         | *DataType*  |  *Required* | *Info*                                          |
 | ------------------------------- | ---------- | ------ | --------------------------------------------------- |
@@ -228,7 +228,7 @@ Hint方式分片策略
 
 ##### sharding.jdbc.config.sharding.default-database-strategy.none
 
-不分片的策略
+The none sharding strategy.
 
 ##### sharding.jdbc.config.sharding.props
 

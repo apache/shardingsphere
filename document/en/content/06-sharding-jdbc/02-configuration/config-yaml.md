@@ -207,7 +207,7 @@ slaveDataSourceNames：Datasource name for Slave datasource, multiple datasource
 
 ##### YamlStandardShardingStrategyConfiguration
 
-标准分片策略，用于单分片键的场景
+The standard sharding strategy for single sharding column
 
 | *Name*                        | *DataType*  |  *Required* | *Info*                                                               |
 | ------------------------------ | ---------- | ------ | --------------------------------------------------------------------- |
@@ -218,7 +218,7 @@ slaveDataSourceNames：Datasource name for Slave datasource, multiple datasource
 
 ##### YamlComplexShardingStrategyConfiguration
 
-复合分片策略，用于多分片键的场景
+The complex sharding strategy for multiple sharding columns.
 
 | *Name*                        | *DataType*  |  *Required* | *Info*                                             |
 | ------------------------------ | ---------- | ------ | --------------------------------------------------- |
@@ -227,7 +227,7 @@ slaveDataSourceNames：Datasource name for Slave datasource, multiple datasource
 
 ##### InlineShardingStrategyConfiguration
 
-inline表达式分片策略
+The inline-expression sharding strategy.
 
 | *Name*                        | *DataType*  |  *Required* | *Info*       |
 | ------------------------------- | ---------- | ------ | ------------ |
@@ -236,7 +236,7 @@ inline表达式分片策略
 
 ##### HintShardingStrategyConfiguration
 
-Hint方式分片策略
+The Hint-method sharding strategy.
 
 | *Name*                        | *DataType*  |  *Required* | *Info*                                              |
 | ------------------------------- | ---------- | ------ | --------------------------------------------------- |
@@ -244,7 +244,7 @@ Hint方式分片策略
 
 ##### NoneShardingStrategyConfiguration
 
-不分片的策略
+The none sharding strategy.
 
 ##### ShardingPropertiesConstant
 
