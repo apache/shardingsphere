@@ -76,7 +76,6 @@ public final class ComStmtExecutePacket extends CommandPacket {
         for (int i = 0; i < numParameters; i++) {
             ColumnType columnType = ColumnType.valueOf(parameters.get(i * 2));
             int unsignedFlag = parameters.get(i * 2 + 1);
-    
             // TODO add more types
             if (columnType == ColumnType.MYSQL_TYPE_LONG) {
                 preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag, String.valueOf(mysqlPacketPayload.readInt4())));
