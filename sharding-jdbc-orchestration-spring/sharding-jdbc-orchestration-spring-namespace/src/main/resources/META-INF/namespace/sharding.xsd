@@ -28,7 +28,7 @@
             <xsd:attribute name="default-data-source-name" type="xsd:string" use="optional" />
             <xsd:attribute name="default-database-strategy-ref" type="xsd:string" use="optional" />
             <xsd:attribute name="default-table-strategy-ref" type="xsd:string" use="optional" />
-            <xsd:attribute name="key-generator-class" type="xsd:string" use="optional" />
+            <xsd:attribute name="default-key-generator-ref" type="xsd:string" use="optional" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="table-rules">
@@ -44,8 +44,8 @@
             <xsd:attribute name="actual-data-nodes" type="xsd:string" use="optional" />
             <xsd:attribute name="database-strategy-ref" type="xsd:string" use="optional" />
             <xsd:attribute name="table-strategy-ref" type="xsd:string" use="optional" />
-            <xsd:attribute name="generate-key-column" type="xsd:string" use="optional" />
-            <xsd:attribute name="column-key-generator-class" type="xsd:string" use="optional"/>
+            <xsd:attribute name="generate-key-column-name" type="xsd:string" use="optional" />
+            <xsd:attribute name="key-generator-ref" type="xsd:string" use="optional"/>
             <xsd:attribute name="logic-index" type="xsd:string" use="optional" />
         </xsd:complexType>
     </xsd:element>
