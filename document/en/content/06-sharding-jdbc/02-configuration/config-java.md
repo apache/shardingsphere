@@ -144,86 +144,86 @@ weight = 2
 
 ##### ShardingDataSourceFactory
 
-| *名称*                         | *数据类型*  |  *必填* | *说明*         |
+| *Name*                         | *DataType*  |  *Required* | *Info*         |
 | ----------------------------- |  --------- | ------ | -------------- |
-| dataSourceMap                 |  Map\<String, DataSource\>     |   是   | 数据源与其名称的映射 |
-| shardingRuleConfig               |   ShardingRuleConfiguration        |   是   | 分库分表配置规则        |
-| configMap?                  |   Map\<String, Object\>        |   否   |         配置映射关系|
-| props?                        |   Properties         |   否   | 相关属性配置     |
+| dataSourceMap                 |  Map\<String, DataSource\>     |   Y   | The map of datasource and its name |
+| shardingRuleConfig               |   ShardingRuleConfiguration        |   Y   | Sharding Rule        |
+| configMap?                  |   Map\<String, Object\>        |   N   |         config map |
+| props?                        |   Properties         |   N   | Property Config     |
 
 ##### ShardingRuleConfiguration
 
-| *名称*                         | *数据类型*  |  *必填* | *说明*                                                                |
+| *Name*                         | *DataType*  |  *Required* | *Info*                                                                |
 | ------------------------------- | ---------- | ------ | --------------------------------------------------------------------- |
-| defaultDataSourceName?     | String      |   否   | 默认数据源名称，未配置分片规则的表将通过默认数据源定位                        |
-| defaultDatabaseShardingStrategyConfig? | ShardingStrategyConfiguration      |   否   | 默认分库策略  |
-| defaultTableShardingStrategyConfig?    | ShardingStrategyConfiguration      |   否   | 默认分表策略  |
-| defaultKeyGenerator? | KeyGenerator |否|自增列值生成类名
-| tableRuleConfigs                    |   Collection\<TableRuleConfiguration\>         |   是   | 分片规则列表                                                            |
-| bindingTableGroups?            | Collection\<String\>      | 否| 绑定表规则|
-| masterSlaveRuleConfigs? | Collection\<MasterSlaveRuleConfiguration\>|否|读写分离配置|
+| defaultDataSourceName?     | String      |   N   | The default name for data source.                        |
+| defaultDatabaseShardingStrategyConfig? | ShardingStrategyConfiguration      |   N   | The default name for data source  |
+| defaultTableShardingStrategyConfig?    | ShardingStrategyConfiguration      |   N   | The default strategy for sharding tables  |
+| defaultKeyGenerator? | KeyGenerator |N|The class name of key generator
+| tableRuleConfigs                    |   Collection\<TableRuleConfiguration\>         |   Y   | The list of table rules                                                            |
+| bindingTableGroups?            | Collection\<String\>      | N| Blinding Rule|
+| masterSlaveRuleConfigs? | Collection\<MasterSlaveRuleConfiguration\>|N|The read-write-splitting configs|
 
 
 ##### TableRuleConfiguration
 
-| *名称*                         | *数据类型*  |  *必填* | *说明*  |
+| *Name*                         | *DataType*  |  *Required* | *Info*  |
 | --------------------         | ---------- | ------ | ------- |
-| logicTable                 |  String     |   是   | 逻辑表名 |
-| actualDataNodes?             |  String     |   否   | 真实数据节点|
-| databaseShardingStrategyConfig?      |  ShardingStrategyConfiguration     |   否   | 分库策略  |
-| tableShardingStrategyConfig?            |  ShardingStrategyConfiguration     |   否   | 分表策略       |
-| logicIndex?                   |  String     |   否   | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表        |
-| keyGeneratorColumnName? | String | 否 | 自增列名|
-| keyGenerator?  | KeyGenerator | 否| 自增列值生成类|
+| logicTable                 |  String     |   Y   | LogicTables |
+| actualDataNodes?             |  String     |   N   | Actual data nodes configured in the format of *datasource_name.table_name*, multiple configs separated with commas|
+| databaseShardingStrategyConfig?      |  ShardingStrategyConfiguration     |   N   | The strategy for sharding database.  |
+| tableShardingStrategyConfig?            |  ShardingStrategyConfiguration     |   N   | The strategy for sharding table.       |
+| logicIndex?                   |  String     |   N   | The Logic index name. If you want to use *DROP INDEX XXX* SQL in Oracle/PostgreSQL，This property needs to be set for finding the actual tables.        |
+| keyGeneratorColumnName? | String | N | The generate column|
+| keyGenerator?  | KeyGenerator | N| The class name of key generator.|
 
 
 ##### StandardShardingStrategyConfiguration
 
-标准分片策略，用于单分片键的场景
+The standard sharding strategy for single sharding column.
 
-| *名称*                        | *数据类型*  |  *必填* | *说明*                                                                |
+| *Name*                        | *DataType*  |  *Required* | *Info*                                                                |
 | ------------------------------ | ---------- | ------ | --------------------------------------------------------------------- |
-| shardingColumn             |  String     |   是   | 分片列名                                                               |
-| preciseShardingAlgorithm      |  PreciseShardingAlgorithm     |   是   | 精确的分片算法类名称，用于=和IN。该类需使用默认的构造器或者提供无参数的构造器   |
-| rangeShardingAlgorithm?      |  RangeShardingAlgorithm     |   否   | 范围的分片算法类名称，用于BETWEEN。该类需使用默认的构造器或者提供无参数的构造器 |
+| shardingColumn             |  String     |   Y   | The name of sharding column.                                                                |
+| preciseShardingAlgorithm      |  PreciseShardingAlgorithm     |   Y   | The class name for precise-sharding-algorithm used for = and IN. The default constructor or on-parametric constructor is needed.    |
+| rangeShardingAlgorithm?      |  RangeShardingAlgorithm     |   N   | The class name for range-sharding-algorithm used for BETWEEN. The default constructor or on-parametric constructor is needed. |
 
 
 ##### ComplexShardingStrategyConfiguration
 
-复合分片策略，用于多分片键的场景
+The complex sharding strategy for multiple sharding columns.
 
-| *名称*                        | *数据类型*  |  *必填* | *说明*                                              |
+| *Name*                        | *DataType*  |  *Required* | *Info*                                              |
 | ------------------------------ | ---------- | ------ | --------------------------------------------------- |
-| shardingColumns             |  String     |   是  | 分片列名，多个列以逗号分隔                              |
-| shardingAlgorithm             |  ComplexKeysShardingAlgorithm     |   是  | 分片算法全类名，该类需使用默认的构造器或者提供无参数的构造器 |
+| shardingColumns             |  String     |   Y  |  The name of sharding column. Multiple names separated with commas.                               |
+| shardingAlgorithm             |  ComplexKeysShardingAlgorithm     |   Y  | The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
 
-##### InlineShardingStrategyConfiguration
+## InlineShardingStrategyConfiguration
 
-inline表达式分片策略
+The inline-expression sharding strategy.
 
-| *名称*                         | *数据类型*  |  *必填* | *说明*       |
+| *Name*                        | *DataType*  |  *Required* | *Info*       |
 | ------------------------------- | ---------- | ------ | ------------ |
-| shardingColumn              |  String     |   是   | 分片列名      |
-| algorithmExpression    |  String     |   是   | 分片算法表达式 |
+| shardingColumn              |  String     |   Y   |The  name of sharding column.      |
+| algorithmExpression    |  String     |   Y   | The expression for sharding algorithm.|
 
 ##### HintShardingStrategyConfiguration
 
-Hint方式分片策略
+The Hint-method sharding strategy.
 
-| *名称*                         | *数据类型*  |  *必填* | *说明*                                              |
+| *Name*                        | *DataType*  |  *Required* | *Info*                                              |
 | ------------------------------- | ---------- | ------ | --------------------------------------------------- |
-| shardingAlgorithm            |  HintShardingAlgorithm     |   是  | 分片算法全类名，该类需使用默认的构造器或者提供无参数的构造器 |
+| shardingAlgorithm            |  HintShardingAlgorithm     |   Y  | The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed.  |
 
 ##### NoneShardingStrategyConfiguration
 
-不分片的策略
+The none sharding strategy.
 
 ##### ShardingPropertiesConstant
 
-| *名称*                               | *数据类型*  | *必填* | *说明*                              |
+| *Name*                        | *DataType*  |  *Required* | *Info*                              |
 | ------------------------------------- | ---------- | ----- | ----------------------------------- |
-| sql.show                            |  boolean   |   是   | 是否开启SQL显示，默认为false不开启     |
-| executor.size?                       |  int       |   否   | 最大工作线程数量                      |
+| sql.show                            |  boolean   |   Y   | To show SQLS or not, the default is false.  |
+| executor.size?                       |  int       |   N   | The number of running threads.                      |
 
 ##### configMap
 
@@ -231,21 +231,21 @@ Hint方式分片策略
 
 ##### MasterSlaveDataSourceFactory
 
-| *名称*                        | *数据类型*  |  *必填* | *说明*                                   |
+| *Name*                        | *DataType*  |  *Required* | *Info*                                      |
 | ------------------------------ |  --------- | ------ | ---------------------------------------- |
-| dataSourceMap                 |  Map\<String, DataSource\>     |   是   | 数据源与其名称的映射 |
-| shardingRuleConfig               |   ShardingRuleConfiguration        |   是   | 分库分表规则配置       |
-| configMap?                  |   Map\<String, Object\>        |   否   |         配置映射关系|
+| dataSourceMap                 |  Map\<String, DataSource\>     |   Y   | The map of datasource and its name. |
+| shardingRuleConfig               |   ShardingRuleConfiguration        |   Y   | The sharding rule config.      |
+| configMap?                  |   Map\<String, Object\>        |   N   |         Config map.|
 
 
 ##### MasterSlaveRuleConfiguration
 
-| *名称*                        | *数据类型*  |  *必填* | *说明*                                   |
+| *Name*                        | *DataType*  |  *Required* | *Info*                                     |
 | ------------------------------ |  --------- | ------ | ---------------------------------------- |
-| name                        |  String     |   是   | 读写分离配置名称                          |
-| masterDataSourceName      |   String        |   是   | 主库数据源                       |
-| slaveDataSourceNames      |   Collection\<String\>       |   是   | 从库数据源列表       |
-| loadBalanceAlgorithm?               |  MasterSlaveLoadBalanceAlgorithm     |   否   | 主从库访问策略 |
+| name                        |  String     |   Y   | The name.                          |
+| masterDataSourceName      |   String        |   Y   | The master datasource.                       |
+| slaveDataSourceNames      |   Collection\<String\>       |   Y   |  The list of Slave databases, multiple items are separated by commas.        |
+| loadBalanceAlgorithm?               |  MasterSlaveLoadBalanceAlgorithm     |   N   | The load balance algorithm of master and slaves. |
 
 ##### configMap
 
