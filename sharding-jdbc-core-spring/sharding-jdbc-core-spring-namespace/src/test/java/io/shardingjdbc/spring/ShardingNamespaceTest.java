@@ -36,6 +36,7 @@ import io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm;
 import io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm;
 import io.shardingjdbc.spring.algorithm.RangeModuloTableShardingAlgorithm;
 import io.shardingjdbc.spring.datasource.SpringShardingDataSource;
+import io.shardingjdbc.spring.fixture.IncrementKeyGenerator;
 import io.shardingjdbc.spring.util.FieldValueUtil;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -117,7 +118,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
                 new String[]{this.applicationContext.getBean("standardStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertTrue(Arrays.equals(shardingRule.getDefaultTableShardingStrategy().getShardingColumns().toArray(new String[]{}), 
                 new String[]{this.applicationContext.getBean("inlineStrategy", InlineShardingStrategyConfiguration.class).getShardingColumn()}));
-        assertThat(shardingRule.getDefaultKeyGenerator().getClass().getName(), is("io.shardingjdbc.spring.fixture.IncrementKeyGenerator"));
+        assertThat(shardingRule.getDefaultKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
     }
     
     @Test
@@ -140,7 +141,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertTrue(Arrays.equals(tableRule.getTableShardingStrategy().getShardingColumns().toArray(new String[]{}), 
                 new String[]{this.applicationContext.getBean("inlineStrategy", InlineShardingStrategyConfiguration.class).getShardingColumn()}));
         assertThat(tableRule.getGenerateKeyColumn(), is("order_id"));
-        assertThat(tableRule.getKeyGenerator().getClass().getName(), is("io.shardingjdbc.spring.fixture.IncrementKeyGenerator"));
+        assertThat(tableRule.getKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
     }
     
     @Test
