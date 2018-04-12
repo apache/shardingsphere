@@ -51,7 +51,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
     
     private final int newParamsBoundFlag;
     
-    private final List<Parameter> parameterList = new ArrayList<>();
+    private final List<PreparedStatementParameter> preparedStatementParameters = new ArrayList<>();
     
     public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
         super(sequenceId);
@@ -79,9 +79,9 @@ public final class ComStmtExecutePacket extends CommandPacket {
     
             // TODO add more types
             if (columnType == ColumnType.MYSQL_TYPE_LONG) {
-                parameterList.add(new Parameter(columnType, unsignedFlag, String.valueOf(mysqlPacketPayload.readInt4())));
+                preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag, String.valueOf(mysqlPacketPayload.readInt4())));
             } else {
-                parameterList.add(new Parameter(columnType, unsignedFlag, mysqlPacketPayload.readStringLenenc()));
+                preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag, mysqlPacketPayload.readStringLenenc()));
             }
         }
     }
@@ -107,7 +107,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
             mysqlPacketPayload.writeInt1(each);
         }
         mysqlPacketPayload.writeInt1(newParamsBoundFlag);
-        for (Parameter each : parameterList) {
+        for (PreparedStatementParameter each : preparedStatementParameters) {
             mysqlPacketPayload.writeInt1(each.getColumnType().getValue());
             mysqlPacketPayload.writeInt1(each.getUnsignedFlag());
             mysqlPacketPayload.writeStringLenenc((String) each.getValue());

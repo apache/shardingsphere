@@ -18,23 +18,23 @@
 package io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute;
 
 import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-public final class Parameter {
+/**
+ * Prepared statement parameter.
+ *
+ * @author zhangyonglun
+ */
+@AllArgsConstructor
+@Getter
+public final class PreparedStatementParameter {
     
-    @Getter
     private final ColumnType columnType;
     
-    @Getter
     private final int unsignedFlag;
     
     private final String value;
-    
-    Parameter(final ColumnType columnType, final int unsignedFlag, final String value) {
-        this.columnType = columnType;
-        this.unsignedFlag = unsignedFlag;
-        this.value = value;
-    }
     
     /**
      * Get value.

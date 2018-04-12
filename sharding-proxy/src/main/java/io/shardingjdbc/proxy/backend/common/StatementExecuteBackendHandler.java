@@ -65,13 +65,13 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     private final PreparedStatementRoutingEngine routingEngine;
     
-    private final List<ColumnDefinition41Packet> columnDefinition41PacketList;
+    private final List<ColumnDefinition41Packet> columnDefinition41Packets;
     
     public StatementExecuteBackendHandler(final ComStmtExecutePacket comStmtExecutePacket, final DatabaseType databaseType, final boolean showSQL) {
         this.comStmtExecutePacket = comStmtExecutePacket;
         String sql = PreparedStatementRegistry.getInstance().getSql(comStmtExecutePacket.getStatementId());
         routingEngine = new PreparedStatementRoutingEngine(sql, ShardingRuleRegistry.getInstance().getShardingRule(), databaseType, showSQL);
-        columnDefinition41PacketList = new ArrayList<>();
+        columnDefinition41Packets = new ArrayList<>();
     }
     
     @Override
@@ -102,11 +102,11 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     private List<Object> getComStmtExecuteParameters() {
         List<Object> result = new ArrayList<>();
-        for (int i = 0; i < comStmtExecutePacket.getParameterList().size(); i++) {
+        for (int i = 0; i < comStmtExecutePacket.getPreparedStatementParameters().size(); i++) {
             if (comStmtExecutePacket.isParameterNull(i)) {
                 result.add(null);
             } else {
-                result.add(comStmtExecutePacket.getParameterList().get(i).getValue());
+                result.add(comStmtExecutePacket.getPreparedStatementParameters().get(i).getValue());
             }
         }
         return result;
@@ -191,7 +191,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
                 resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnDisplaySize(i),
                 ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0);
             result.add(columnDefinition41Packet);
-            columnDefinition41PacketList.add(columnDefinition41Packet);
+            columnDefinition41Packets.add(columnDefinition41Packet);
         }
         result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         while (resultSet.next()) {
@@ -199,7 +199,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             for (int i = 1; i <= columnCount; i++) {
                 data.add(resultSet.getObject(i));
             }
-            result.add(new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, columnDefinition41PacketList));
+            result.add(new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, columnDefinition41Packets));
         }
         result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         return result;
@@ -279,7 +279,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
                 for (int i = 1; i <= columnCount; i++) {
                     data.add(mergedResult.getValue(i, Object.class));
                 }
-                result.add(new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, columnDefinition41PacketList));
+                result.add(new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, columnDefinition41Packets));
             }
         } catch (final SQLException ex) {
             return Collections.<DatabaseProtocolPacket>singletonList(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));

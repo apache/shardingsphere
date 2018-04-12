@@ -36,6 +36,8 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
     
     private static final int PACKET_HEADER = 0x00;
     
+    private static final int RESERVED_BIT_LENGTH = 2;
+    
     private final int numColumns;
     
     private final List<Object> data;
@@ -52,13 +54,10 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
         mysqlPacketPayload.writeInt1(PACKET_HEADER);
-        
-        int bitmapBytes = (numColumns + 7 + 2) / 8;
-        int[] nullBitmap = new int[bitmapBytes];
+        int[] nullBitmap = new int[calculateBitmapBytes()];
         for (int each : nullBitmap) {
             mysqlPacketPayload.writeInt1(each);
         }
-        
         for (int i = 0; i < numColumns; i++) {
             ColumnType columnType = columnDefinition41PacketList.get(i).getColumnType();
             if (null == data.get(i)) {
@@ -76,9 +75,13 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
         }
     }
     
+    private int calculateBitmapBytes() {
+        return (numColumns + RESERVED_BIT_LENGTH + 7) / 8;
+    }
+    
     private void setNullBit(final int[] nullBitmap, final int index) {
-        int bytePos = (index + 2) / 8;
-        int bitPos = (index + 2) % 8;
-        nullBitmap[bytePos] = 1 << bitPos;
+        int bytePosition = (index + RESERVED_BIT_LENGTH) / 8;
+        int bitPositionInCurrentByte = (index + RESERVED_BIT_LENGTH) % 8;
+        nullBitmap[bytePosition] = 1 << bitPositionInCurrentByte;
     }
 }

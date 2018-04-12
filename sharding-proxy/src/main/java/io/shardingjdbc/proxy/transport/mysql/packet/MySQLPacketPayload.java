@@ -42,7 +42,7 @@ public final class MySQLPacketPayload {
      * @return 1 byte fixed length integer
      */
     public int readInt1() {
-        return byteBuf.readByte() & 0xff;
+        return byteBuf.readByte();
     }
     
     /**
