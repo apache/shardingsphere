@@ -146,34 +146,34 @@ weight = 2
 
 | *Name*                         | *DataType*  |  *Required* | *Info*         |
 | ----------------------------- |  --------- | ------ | -------------- |
-| dataSourceMap                 |  Map\<String, DataSource\>     |   Y   | The map of datasource and its name |
-| shardingRuleConfig               |   ShardingRuleConfiguration        |   Y   | Sharding Rule        |
-| configMap?                  |   Map\<String, Object\>        |   N   |         config map |
-| props?                        |   Properties         |   N   | Property Config     |
+| dataSourceMap                 |  Map\<String, DataSource\>     |   Y   | The map of datasource and its name.|
+| shardingRuleConfig               |   ShardingRuleConfiguration        |   Y   | Sharding Rule.        |
+| configMap?                  |   Map\<String, Object\>        |   N   |         config map. |
+| props?                        |   Properties         |   N   | Property Config.     |
 
 ##### ShardingRuleConfiguration
 
 | *Name*                         | *DataType*  |  *Required* | *Info*                                                                |
 | ------------------------------- | ---------- | ------ | --------------------------------------------------------------------- |
-| defaultDataSourceName?     | String      |   N   | The default name for data source.                        |
-| defaultDatabaseShardingStrategyConfig? | ShardingStrategyConfiguration      |   N   | The default name for data source  |
-| defaultTableShardingStrategyConfig?    | ShardingStrategyConfiguration      |   N   | The default strategy for sharding tables  |
-| defaultKeyGenerator? | KeyGenerator |N|The class name of key generator
-| tableRuleConfigs                    |   Collection\<TableRuleConfiguration\>         |   Y   | The list of table rules                                                            |
-| bindingTableGroups?            | Collection\<String\>      | N| Blinding Rule|
-| masterSlaveRuleConfigs? | Collection\<MasterSlaveRuleConfiguration\>|N|The read-write-splitting configs|
+| defaultDataSourceName?     | String      |   N   | The default data source.                        |
+| defaultDatabaseShardingStrategyConfig? | ShardingStrategyConfiguration      |   N   | The default strategy for sharding databases.   |
+| defaultTableShardingStrategyConfig?    | ShardingStrategyConfiguration      |   N   | The default strategy for sharding tables.  |
+| defaultKeyGenerator? | KeyGenerator |N|The class name of key generator.
+| tableRuleConfigs                    |   Collection\<TableRuleConfiguration\>         |   Y   | The list of table rules.                                                            |
+| bindingTableGroups?            | Collection\<String\>      | N| Blinding Rule.|
+| masterSlaveRuleConfigs? | Collection\<MasterSlaveRuleConfiguration\>|N|The read-write-splitting configs.|
 
 
 ##### TableRuleConfiguration
 
 | *Name*                         | *DataType*  |  *Required* | *Info*  |
 | --------------------         | ---------- | ------ | ------- |
-| logicTable                 |  String     |   Y   | LogicTables |
-| actualDataNodes?             |  String     |   N   | Actual data nodes configured in the format of *datasource_name.table_name*, multiple configs separated with commas|
-| databaseShardingStrategyConfig?      |  ShardingStrategyConfiguration     |   N   | The strategy for sharding database.  |
-| tableShardingStrategyConfig?            |  ShardingStrategyConfiguration     |   N   | The strategy for sharding table.       |
+| logicTable                 |  String     |   Y   | LogicTables. |
+| actualDataNodes?             |  String     |   N   | Actual data nodes configured in the format of *datasource_name.table_name*, multiple configs separated with commas.|
+| databaseShardingStrategyConfig?      |  ShardingStrategyConfiguration     |   N   | The strategy for sharding databases.  |
+| tableShardingStrategyConfig?            |  ShardingStrategyConfiguration     |   N   | The strategy for sharding tables.       |
 | logicIndex?                   |  String     |   N   | The Logic index name. If you want to use *DROP INDEX XXX* SQL in Oracle/PostgreSQL，This property needs to be set for finding the actual tables.        |
-| keyGeneratorColumnName? | String | N | The generate column|
+| keyGeneratorColumnName? | String | N | The generate column.|
 | keyGenerator?  | KeyGenerator | N| The class name of key generator.|
 
 
@@ -184,8 +184,8 @@ The standard sharding strategy for single sharding column.
 | *Name*                        | *DataType*  |  *Required* | *Info*                                                                |
 | ------------------------------ | ---------- | ------ | --------------------------------------------------------------------- |
 | shardingColumn             |  String     |   Y   | The name of sharding column.                                                                |
-| preciseShardingAlgorithm      |  PreciseShardingAlgorithm     |   Y   | The class name for precise-sharding-algorithm used for = and IN. The default constructor or on-parametric constructor is needed.    |
-| rangeShardingAlgorithm?      |  RangeShardingAlgorithm     |   N   | The class name for range-sharding-algorithm used for BETWEEN. The default constructor or on-parametric constructor is needed. |
+| preciseShardingAlgorithm      |  PreciseShardingAlgorithm     |   Y   | The  precise sharding algorithm used for = and IN. The default constructor or on-parametric constructor is needed.    |
+| rangeShardingAlgorithm?      |  RangeShardingAlgorithm     |   N   | The class name for range sharding algorithm used for BETWEEN. The default constructor or on-parametric constructor is needed. |
 
 
 ##### ComplexShardingStrategyConfiguration
@@ -203,7 +203,7 @@ The inline-expression sharding strategy.
 
 | *Name*                        | *DataType*  |  *Required* | *Info*       |
 | ------------------------------- | ---------- | ------ | ------------ |
-| shardingColumn              |  String     |   Y   |The  name of sharding column.      |
+| shardingColumn              |  String     |   Y   |The name of sharding column.      |
 | algorithmExpression    |  String     |   Y   | The expression for sharding algorithm.|
 
 ##### HintShardingStrategyConfiguration
@@ -242,7 +242,7 @@ The none sharding strategy.
 
 | *Name*                        | *DataType*  |  *Required* | *Info*                                     |
 | ------------------------------ |  --------- | ------ | ---------------------------------------- |
-| name                        |  String     |   Y   | The name.                          |
+| name                        |  String     |   Y   | The name of rule configuration.                          |
 | masterDataSourceName      |   String        |   Y   | The master datasource.                       |
 | slaveDataSourceNames      |   Collection\<String\>       |   Y   |  The list of Slave databases, multiple items are separated by commas.        |
 | loadBalanceAlgorithm?               |  MasterSlaveLoadBalanceAlgorithm     |   N   | The load balance algorithm of master and slaves. |
