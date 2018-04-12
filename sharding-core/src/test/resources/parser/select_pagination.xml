@@ -15,8 +15,8 @@
             </items-token>
             <offset-token begin-position="188" offset="5" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
                     <value index="1" literal="2" type="int" />
@@ -25,8 +25,8 @@
                     <value index="2" literal="9" type="int" />
                     <value index="3" literal="10" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
         <order-by-columns>
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -48,8 +48,8 @@
             </items-token>
             <row-count-token begin-position="187" row-count="5" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
                     <value index="1" literal="2" type="int" />
@@ -58,8 +58,8 @@
                     <value index="2" literal="9" type="int" />
                     <value index="3" literal="10" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
         <order-by-columns>
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -82,8 +82,8 @@
             <offset-token begin-position="195" offset="5" />
             <row-count-token begin-position="198" row-count="3" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
                     <value index="1" literal="2" type="int" />
@@ -92,8 +92,8 @@
                     <value index="2" literal="9" type="int" />
                     <value index="3" literal="10" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
         <order-by-columns>
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -130,8 +130,8 @@
             <table-token begin-position="182" original-literals="t_order_item" />
             <row-count-token begin-position="27" row-count="3" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="1" literal="1" type="int" />
                     <value index="2" literal="2" type="int" />
@@ -140,8 +140,8 @@
                     <value index="3" literal="9" type="int" />
                     <value index="4" literal="10" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -164,8 +164,8 @@
             <offset-token begin-position="188" offset="5" />
             <row-count-token begin-position="196" row-count="3" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
                     <value index="1" literal="2" type="int" />
@@ -174,8 +174,8 @@
                     <value index="2" literal="9" type="int" />
                     <value index="3" literal="10" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
         <order-by-columns>
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -193,8 +193,8 @@
             <offset-token begin-position="338" offset="6" />
             <row-count-token begin-position="27" row-count="3" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="1" literal="1" type="int" />
                     <value index="2" literal="2" type="int" />
@@ -203,8 +203,8 @@
                     <value index="3" literal="9" type="int" />
                     <value index="4" literal="10" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -222,8 +222,8 @@
             <offset-token begin-position="339" offset="6" />
             <row-count-token begin-position="27" row-count="3" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="1" literal="1" type="int" />
                     <value index="2" literal="2" type="int" />
@@ -232,8 +232,8 @@
                     <value index="3" literal="9" type="int" />
                     <value index="4" literal="10" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -275,8 +275,8 @@
             </items-token>
             <row-count-token begin-position="363" row-count="3"/>
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
                     <value index="1" literal="2" type="int" />
@@ -285,8 +285,8 @@
                     <value index="2" literal="9" type="int" />
                     <value index="3" literal="10" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
         <order-by-columns>
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -309,8 +309,8 @@
             <offset-token begin-position="386" offset="3" />
             <row-count-token begin-position="363" row-count="5" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
                     <value index="1" literal="2" type="int" />
@@ -319,8 +319,8 @@
                     <value index="2" literal="9" type="int" />
                     <value index="3" literal="10" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
         <order-by-columns>
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -343,8 +343,8 @@
             <offset-token begin-position="387" offset="3" />
             <row-count-token begin-position="363" row-count="5" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
                     <value index="1" literal="2" type="int" />
@@ -353,8 +353,8 @@
                     <value index="2" literal="9" type="int" />
                     <value index="3" literal="10" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
         <order-by-columns>
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -442,16 +442,16 @@
             <offset-token begin-position="154" offset="0" />
             <row-count-token begin-position="157" row-count="20" />
         </tokens>
-        <or-conditions>
-            <and-conditions>
+        <or-condition>
+            <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="10" type="int" />
                 </condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="1" literal="1000" type="int" />
                 </condition>
-            </and-conditions>
-        </or-conditions>
+            </and-condition>
+        </or-condition>
         <order-by-columns>
             <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="ASC" />
         </order-by-columns>

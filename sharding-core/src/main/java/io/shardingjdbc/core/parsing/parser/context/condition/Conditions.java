@@ -33,10 +33,10 @@ import lombok.ToString;
 @ToString
 public final class Conditions {
     
-    private final OrConditions orConditions = new OrConditions();
+    private final OrCondition orCondition = new OrCondition();
     
     public Conditions(final Conditions conditions) {
-        orConditions.getAndConditions().addAll(conditions.orConditions.getAndConditions());
+        orCondition.getAndConditions().addAll(conditions.orCondition.getAndConditions());
     }
     
     /**
@@ -48,12 +48,12 @@ public final class Conditions {
     public void add(final Condition condition, final ShardingRule shardingRule) {
         // TODO self-join has problem, table name maybe use alias
         if (shardingRule.isShardingColumn(condition.getColumn())) {
-            orConditions.add(condition);
+            orCondition.add(condition);
         }
     }
     
     /**
-     * Find condition via column in first and conditions.
+     * Find condition via column in first and condition.
      *
      * @param column column
      * @return found condition
@@ -63,13 +63,13 @@ public final class Conditions {
     }
     
     /**
-     * Find condition via column in index and conditions.
+     * Find condition via column in index and condition.
      *
      * @param column column
      * @param index index of and conditions
      * @return found condition
      */
     public Optional<Condition> find(final Column column, final int index) {
-        return orConditions.find(column, index);
+        return orCondition.find(column, index);
     }
 }

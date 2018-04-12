@@ -34,7 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class AndConditions {
+public final class AndCondition {
     
     private final List<Condition> conditions = new LinkedList<>();
     
