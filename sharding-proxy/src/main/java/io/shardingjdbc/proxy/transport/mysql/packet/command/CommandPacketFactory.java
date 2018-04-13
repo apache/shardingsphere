@@ -18,6 +18,7 @@
 package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.close.ComStmtClosePacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute.ComStmtExecutePacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.text.fieldlist.ComFieldListPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.text.initdb.ComInitDbPacket;
@@ -56,8 +57,7 @@ public final class CommandPacketFactory {
             case COM_STMT_EXECUTE:
                 return new ComStmtExecutePacket(sequenceId, mysqlPacketPayload);
             case COM_STMT_CLOSE:
-                mysqlPacketPayload.readInt4();
-                return null;
+                return new ComStmtClosePacket(sequenceId, mysqlPacketPayload);
             case COM_SLEEP:
             case COM_CREATE_DB:
             case COM_DROP_DB:
