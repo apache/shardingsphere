@@ -69,8 +69,8 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     public StatementExecuteBackendHandler(final ComStmtExecutePacket comStmtExecutePacket, final DatabaseType databaseType, final boolean showSQL) {
         this.comStmtExecutePacket = comStmtExecutePacket;
-        String sql = PreparedStatementRegistry.getInstance().getSql(comStmtExecutePacket.getStatementId());
-        routingEngine = new PreparedStatementRoutingEngine(sql, ShardingRuleRegistry.getInstance().getShardingRule(), databaseType, showSQL);
+        routingEngine = new PreparedStatementRoutingEngine(PreparedStatementRegistry.getInstance().getSql(comStmtExecutePacket.getStatementId()),
+            ShardingRuleRegistry.getInstance().getShardingRule(), databaseType, showSQL);
         columnDefinition41Packets = new ArrayList<>();
     }
     
@@ -120,8 +120,8 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     private List<DatabaseProtocolPacket> executeQuery(final DataSource dataSource, final String sql) {
         try (
-                Connection conn = dataSource.getConnection();
-                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             setJDBCPreparedStatementParameters(preparedStatement);
             ResultSet resultSet = preparedStatement.executeQuery();
             return getDatabaseProtocolPackets(resultSet);
@@ -133,16 +133,16 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     private List<DatabaseProtocolPacket> executeUpdate(final DataSource dataSource, final String sql, final SQLStatement sqlStatement) {
         PreparedStatement preparedStatement = null;
         try (
-            Connection conn = dataSource.getConnection()) {
+            Connection connection = dataSource.getConnection()) {
             int affectedRows;
             long lastInsertId = 0;
             if (sqlStatement instanceof InsertStatement) {
-                preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 setJDBCPreparedStatementParameters(preparedStatement);
                 affectedRows = preparedStatement.executeUpdate();
                 lastInsertId = getGeneratedKey(preparedStatement);
             } else {
-                preparedStatement = conn.prepareStatement(sql);
+                preparedStatement = connection.prepareStatement(sql);
                 setJDBCPreparedStatementParameters(preparedStatement);
                 affectedRows = preparedStatement.executeUpdate();
             }
@@ -162,8 +162,8 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     private List<DatabaseProtocolPacket> executeCommon(final DataSource dataSource, final String sql) {
         try (
-                Connection conn = dataSource.getConnection();
-                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             setJDBCPreparedStatementParameters(preparedStatement);
             boolean hasResultSet = preparedStatement.execute();
             if (hasResultSet) {
