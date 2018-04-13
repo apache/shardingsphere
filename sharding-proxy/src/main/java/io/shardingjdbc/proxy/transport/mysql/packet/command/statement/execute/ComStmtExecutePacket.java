@@ -73,19 +73,18 @@ public final class ComStmtExecutePacket extends CommandPacket {
     }
     
     private void setParameterList(final MySQLPacketPayload mysqlPacketPayload, final int numParameters) {
-        List<Integer> parameters = new ArrayList<>(numParameters);
         for (int i = 0; i < numParameters; i++) {
-            parameters.add(mysqlPacketPayload.readInt1());
-            parameters.add(mysqlPacketPayload.readInt1());
+            ColumnType columnType = ColumnType.valueOf(mysqlPacketPayload.readInt1());
+            int unsignedFlag = mysqlPacketPayload.readInt1();
+            preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag, ""));
         }
         for (int i = 0; i < numParameters; i++) {
-            ColumnType columnType = ColumnType.valueOf(parameters.get(i * 2));
-            int unsignedFlag = parameters.get(i * 2 + 1);
+            PreparedStatementParameter preparedStatementParameter = preparedStatementParameters.get(i);
             // TODO add more types
-            if (columnType == ColumnType.MYSQL_TYPE_LONG) {
-                preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag, String.valueOf(mysqlPacketPayload.readInt4())));
+            if (preparedStatementParameter.getColumnType() == ColumnType.MYSQL_TYPE_LONG) {
+                preparedStatementParameter.setValue(String.valueOf(mysqlPacketPayload.readInt4()));
             } else {
-                preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag, mysqlPacketPayload.readStringLenenc()));
+                preparedStatementParameter.setValue(String.valueOf(mysqlPacketPayload.readStringLenenc()));
             }
         }
     }

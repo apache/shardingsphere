@@ -20,6 +20,7 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute;
 import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Prepared statement parameter.
@@ -28,13 +29,14 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
+@Setter
 public final class PreparedStatementParameter {
     
     private final ColumnType columnType;
     
     private final int unsignedFlag;
     
-    private final String value;
+    private String value;
     
     /**
      * Get value.
