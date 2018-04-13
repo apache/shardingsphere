@@ -70,8 +70,11 @@ weight = 5
         <property name="password" value=""/>
     </bean>
     
-    <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
-    <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
+    
+    <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm"/>
+    <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm"/>
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
@@ -147,8 +150,8 @@ The standard sharding strategy for single sharding column.
 | *Name*                        | *Type*       | *DataType* |  *Required* | *Info*                                                                |
 | ----------------------------- | ------------ | ---------- | ------      | --------------------------------------------------------------------- |
 | sharding-column               | Property     |  String    |   Y         | The name of sharding column.                                                       |
-| precise-algorithm-class       | Property     |  String    |   Y         | The class name for precise-sharding-algorithm used for = and IN. The default constructor or on-parametric constructor is needed.   |
-| range-algorithm-class         | Property     |  String    |   N         | The class name for range-sharding-algorithm used for BETWEEN. The default constructor or on-parametric constructor is needed. |
+| precise-algorithm-ref         | Property     |  String    |   Y         | The bean id for precise-sharding-algorithm used for = and IN. The default constructor or on-parametric constructor is needed.   |
+| range-algorithm-ref           | Property     |  String    |   N         | The bean id for range-sharding-algorithm used for BETWEEN. The default constructor or on-parametric constructor is needed. |
 
 
 ##### \<sharding:complex-strategy/>
@@ -158,7 +161,7 @@ The complex sharding strategy for multiple sharding columns.
 | *Name*                        | *Type*       | *DataType*  |  *Required* | *Info*                                              |
 | ----------------------------- | ------------ | ----------  | ------      | --------------------------------------------------- |
 | sharding-columns              | Property     |  String     |   Y         | The name of sharding column. Multiple names separated with commas.                              |
-| algorithm-class               | Property     |  String     |   Y         | The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
+| algorithm-ref                 | Property     |  String     |   Y         | The bean id for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
 
 ##### \<sharding:inline-strategy/>
 
@@ -175,7 +178,7 @@ The Hint-method sharding strategy.
 
 | *Name*                        | *Type*       | *DataType* |  *Required* | *Info*                                              |
 | ----------------------------- | ------------ | ---------- | ------      | --------------------------------------------------- |
-| algorithm-class               | Property     |  String    |   Y         | The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
+| algorithm-ref                 | Property     |  String    |   Y         | The bean id for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
 
 ##### \<sharding:none-strategy/>
 
@@ -455,8 +458,11 @@ hintManager.setMasterRouteOnly();
         <property name="password" value="" />
     </bean>
     
-    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
+    
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
     
     <sharding:data-source id="shardingDataSource" registry-center-ref="regCenter">
         <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-data-source-name="dbtbl_0">
@@ -526,8 +532,11 @@ hintManager.setMasterRouteOnly();
         <property name="password" value="" />
     </bean>
     
-    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
+        
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
     
     <sharding:data-source id="shardingDataSource" registry-center-ref="regCenter">
         <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-data-source-name="dbtbl_0">

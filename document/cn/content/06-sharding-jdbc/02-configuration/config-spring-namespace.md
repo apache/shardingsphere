@@ -70,8 +70,11 @@ weight = 5
         <property name="password" value=""/>
     </bean>
     
-    <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
-    <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm"/>
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
+    
+    <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
@@ -142,23 +145,23 @@ weight = 5
 
 标准分片策略，用于单分片键的场景
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                                                |
-| ----------------------------- | ------------ | ---------- | ------ | --------------------------------------------------------------------- |
-| id                            | 属性         |  String     |   是   | Spring Bean ID |
-| sharding-column               | 属性         |  String     |   是   | 分片列名                                                               |
-| precise-algorithm-class       | 属性         |  String     |   是   | 精确的分片算法类名称，用于=和IN。该类需使用默认的构造器或者提供无参数的构造器   |
-| range-algorithm-class？         | 属性         |  String     |   否   | 范围的分片算法类名称，用于BETWEEN。该类需使用默认的构造器或者提供无参数的构造器 |
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                            |
+| ----------------------------- | ------------ | ---------- | ------ | --------------------------------- |
+| id                            | 属性         |  String     |   是   | Spring Bean ID                    |
+| sharding-column               | 属性         |  String     |   是   | 分片列名                           |
+| precise-algorithm-ref         | 属性         |  String     |   是   | 精确的分片算法Bean引用，用于=和IN。   |
+| range-algorithm-ref？         | 属性         |  String     |   否   | 范围的分片算法Bean引用，用于BETWEEN。 |
 
 
 ##### \<sharding:complex-strategy/>
 
 复合分片策略，用于多分片键的场景
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                              |
-| ----------------------------- | ------------ | ---------- | ------ | --------------------------------------------------- |
-| id                            | 属性         |  String     |   是   | Spring Bean ID |
-| sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔                              |
-| algorithm-class               | 属性         |  String     |   是  | 分片算法全类名，该类需使用默认的构造器或者提供无参数的构造器 |
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                 |
+| ----------------------------- | ------------ | ---------- | ------ | ---------------------- |
+| id                            | 属性         |  String     |   是   | Spring Bean ID         |
+| sharding-columns              | 属性         |  String     |   是   | 分片列名，多个列以逗号分隔 |
+| algorithm-ref                 | 属性         |  String     |   是   | 分片算法Bean引用         |
 
 ##### \<sharding:inline-strategy/>
 
@@ -174,10 +177,10 @@ inline表达式分片策略
 
 Hint方式分片策略
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                              |
-| ----------------------------- | ------------ | ---------- | ------ | --------------------------------------------------- |
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*         |
+| ----------------------------- | ------------ | ---------- | ------ | -------------- |
 | id                            | 属性         |  String     |   是   | Spring Bean ID |
-| algorithm-class               | 属性         |  String     |   是  | 分片算法全类名，该类需使用默认的构造器或者提供无参数的构造器 |
+| algorithm-ref                 | 属性         |  String     |   是   | 分片算法Bean引用 |
 
 ##### \<sharding:none-strategy/>
 
@@ -451,8 +454,11 @@ hintManager.setMasterRouteOnly();
         <property name="password" value="" />
     </bean>
     
-    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+    
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
     
     <sharding:data-source id="shardingDataSource" registry-center-ref="regCenter">
         <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-data-source-name="dbtbl_0">
@@ -522,8 +528,11 @@ hintManager.setMasterRouteOnly();
         <property name="password" value="" />
     </bean>
     
-    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+        
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
     
     <sharding:data-source id="shardingDataSource" registry-center-ref="regCenter">
         <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-data-source-name="dbtbl_0">
