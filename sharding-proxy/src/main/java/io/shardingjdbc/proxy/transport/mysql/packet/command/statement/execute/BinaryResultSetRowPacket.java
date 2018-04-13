@@ -20,7 +20,6 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute;
 import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import lombok.Getter;
 
 import java.util.List;
@@ -42,13 +41,13 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
     
     private final List<Object> data;
     
-    private final List<ColumnDefinition41Packet> columnDefinition41PacketList;
+    private final List<ColumnType> columnTypes;
     
-    public BinaryResultSetRowPacket(final int sequenceId, final int numColumns, final List<Object> data, final List<ColumnDefinition41Packet> columnDefinition41PacketList) {
+    public BinaryResultSetRowPacket(final int sequenceId, final int numColumns, final List<Object> data, final List<ColumnType> columnTypes) {
         super(sequenceId);
         this.numColumns = numColumns;
         this.data = data;
-        this.columnDefinition41PacketList = columnDefinition41PacketList;
+        this.columnTypes = columnTypes;
     }
     
     @Override
@@ -59,7 +58,7 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
             mysqlPacketPayload.writeInt1(each);
         }
         for (int i = 0; i < numColumns; i++) {
-            ColumnType columnType = columnDefinition41PacketList.get(i).getColumnType();
+            ColumnType columnType = columnTypes.get(i);
             if (null == data.get(i)) {
                 setNullBit(nullBitmap, i);
             } else {
