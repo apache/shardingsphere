@@ -29,7 +29,9 @@
         <property name="password" value=""/>
     </bean>
     
-    <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-class="io.shardingjdbc.example.orchestration.spring.namespace.mybatis.algorithm.PreciseModuloDatabaseShardingAlgorithm"/>
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingjdbc.example.orchestration.spring.namespace.mybatis.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    
+    <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     
     <sharding:data-source id="shardingDatabaseDataSource" registry-center-ref="regCenter" overwrite="true">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
