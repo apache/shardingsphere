@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,7 +35,7 @@ import java.util.List;
 @ToString
 public final class OrCondition {
     
-    private final List<AndCondition> andConditions = new LinkedList<>();
+    private final List<AndCondition> andConditions = new ArrayList<>();
     
     /**
      * Add condition.

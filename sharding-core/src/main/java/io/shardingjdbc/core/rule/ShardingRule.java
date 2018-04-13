@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.rule;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -319,6 +320,23 @@ public final class ShardingRule {
             }
         }
         throw new ShardingConfigurationException("Cannot find actual data node for logic table name: '%s'", tableRule.getLogicTable());
+    }
+    
+    /**
+     * Find data node by data source and logic table.
+     *
+     * @param dataSourceName data source name
+     * @param logicTableName logic table name
+     * @return data node
+     */
+    public DataNode findDataNodeByDataSourceAndLogicTable(final String dataSourceName, final String logicTableName) {
+        TableRule tableRule = getTableRule(logicTableName);
+        for (DataNode each : tableRule.getActualDataNodes()) {
+            if (dataSourceNames.contains(each.getDataSourceName()) && Objects.equal(each.getDataSourceName(), dataSourceName)) {
+                return each;
+            }
+        }
+        throw new ShardingConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName);
     }
     
     /**

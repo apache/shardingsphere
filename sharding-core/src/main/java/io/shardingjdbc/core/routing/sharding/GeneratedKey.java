@@ -15,29 +15,35 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing;
+package io.shardingjdbc.core.routing.sharding;
 
-import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
-import io.shardingjdbc.core.routing.sharding.GeneratedKey;
+import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * SQL route result.
- * 
- * @author gaohongtao
+ * Generated key.
+ *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLRouteResult {
+public final class GeneratedKey {
     
-    private final SQLStatement sqlStatement;
+    private final String column;
     
-    private final GeneratedKey generatedKey;
+    private final int index;
     
-    private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
+    private final Number value;
+    
+    private final List<Number> generatedKeys = new LinkedList<>();
+    
+    public GeneratedKey(final GeneratedKeyCondition generatedKeyCondition) {
+        column = generatedKeyCondition.getColumn();
+        index = generatedKeyCondition.getIndex();
+        value = generatedKeyCondition.getValue();
+    }
 }
