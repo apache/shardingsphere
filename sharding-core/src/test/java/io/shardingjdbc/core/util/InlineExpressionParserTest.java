@@ -84,6 +84,13 @@ public final class InlineExpressionParserTest {
     }
     
     @Test
+    public void assertEvaluateForExpressionPlaceHolder() {
+        List<String> expected = new InlineExpressionParser("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}").evaluate();
+        assertThat(expected.size(), is(4));
+        assertThat(expected, hasItems("t_new3_order_1", "t_new3_order_2", "t_old_order_1", "t_old_order_2"));
+    }
+    
+    @Test
     public void assertEvaluateForLong() {
         StringBuilder expression = new StringBuilder();
         for (int i = 0; i < 1024; i++) {
