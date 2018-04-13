@@ -11,6 +11,8 @@
 1. [ISSUE #652](https://github.com/shardingjdbc/sharding-jdbc/issues/652) Spring Boot Starter 2.x支持
 1. [ISSUE #701](https://github.com/shardingjdbc/sharding-jdbc/issues/701) 支持缓存SQL解析结果以提升性能
 1. [ISSUE #702](https://github.com/shardingjdbc/sharding-jdbc/issues/702) 支持以 $->{..} 作为inline表达式的标记
+1. [ISSUE #719](https://github.com/shardingjdbc/sharding-jdbc/issues/719) 支持Spring bean的方式在命名空间中注入自增序列生成器对象
+1. [ISSUE #720](https://github.com/shardingjdbc/sharding-jdbc/issues/720) 支持Spring bean的方式在命名空间中注入分片算法对象
 
 ### 缺陷修正
 1. [ISSUE #628](https://github.com/shardingjdbc/sharding-jdbc/issues/628) 支持PostgreSql的数据类型jsonb

@@ -21,10 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.core.keygen.KeyGeneratorFactory;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.OrchestrationShardingDataSource;
 import io.shardingjdbc.orchestration.spring.datasource.OrchestrationShardingDataSourceFacoryBean;
 import io.shardingjdbc.orchestration.spring.datasource.SpringShardingDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
@@ -106,9 +103,9 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
     }
     
     private void parseKeyGenerator(final BeanDefinitionBuilder factory, final Element element) {
-        String keyGeneratorClass = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.KEY_GENERATOR_CLASS);
-        if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
-            factory.addPropertyValue("defaultKeyGenerator", KeyGeneratorFactory.newInstance(keyGeneratorClass));
+        String keyGenerator = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DEFAULT_KEY_GENERATOR_REF_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(keyGenerator)) {
+            factory.addPropertyReference("defaultKeyGenerator", keyGenerator);
         }
     }
     
@@ -158,13 +155,13 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
         if (!Strings.isNullOrEmpty(tableStrategy)) {
             factory.addPropertyReference("tableShardingStrategyConfig", tableStrategy);
         }
-        String keyGeneratorColumnName = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.GENERATE_KEY_COLUMN);
+        String keyGeneratorColumnName = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.GENERATE_KEY_COLUMN_NAME_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(keyGeneratorColumnName)) {
             factory.addPropertyValue("keyGeneratorColumnName", keyGeneratorColumnName);
         }
-        String keyGeneratorClass = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.COLUMN_KEY_GENERATOR_CLASS);
-        if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
-            factory.addPropertyValue("keyGenerator", KeyGeneratorFactory.newInstance(keyGeneratorClass));
+        String keyGenerator = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.KEY_GENERATOR_REF_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(keyGenerator)) {
+            factory.addPropertyReference("keyGenerator", keyGenerator);
         }
         String logicIndex = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.LOGIC_INDEX_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(logicIndex)) {

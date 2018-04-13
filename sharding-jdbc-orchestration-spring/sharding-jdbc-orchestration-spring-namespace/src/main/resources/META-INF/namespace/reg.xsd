@@ -3,10 +3,8 @@
             xmlns:beans="http://www.springframework.org/schema/beans"
             xmlns="http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg"
             targetNamespace="http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg"
-        elementFormDefault="qualified"
-        attributeFormDefault="unqualified">
+        elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans"/>
-    
     <xsd:element name="zookeeper">
         <xsd:complexType>
             <xsd:complexContent>
@@ -23,7 +21,6 @@
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
-    
     <xsd:element name="etcd">
         <xsd:complexType>
             <xsd:complexContent>
