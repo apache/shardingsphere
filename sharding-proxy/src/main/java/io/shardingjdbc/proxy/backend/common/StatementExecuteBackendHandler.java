@@ -33,7 +33,7 @@ import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
 import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute.BinaryResultSetRowPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute.ComStmtExecutePacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.EofPacket;
@@ -61,14 +61,13 @@ import java.util.List;
  */
 public final class StatementExecuteBackendHandler implements BackendHandler {
     
-    private final ComStmtExecutePacket comStmtExecutePacket;
+    private final List<PreparedStatementParameter> preparedStatementParameters;
     
     private final PreparedStatementRoutingEngine routingEngine;
     
-    public StatementExecuteBackendHandler(final ComStmtExecutePacket comStmtExecutePacket, final DatabaseType databaseType, final boolean showSQL) {
-        this.comStmtExecutePacket = comStmtExecutePacket;
-        routingEngine = new PreparedStatementRoutingEngine(PreparedStatementRegistry.getInstance().getSql(comStmtExecutePacket.getStatementId()),
-            ShardingRuleRegistry.getInstance().getShardingRule(), databaseType, showSQL);
+    public StatementExecuteBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType, final boolean showSQL) {
+        this.preparedStatementParameters = preparedStatementParameters;
+        routingEngine = new PreparedStatementRoutingEngine(PreparedStatementRegistry.getInstance().getSql(statementId), ShardingRuleRegistry.getInstance().getShardingRule(), databaseType, showSQL);
     }
     
     @Override
@@ -100,12 +99,8 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     private List<Object> getComStmtExecuteParameters() {
         List<Object> result = new ArrayList<>();
-        for (int i = 0; i < comStmtExecutePacket.getPreparedStatementParameters().size(); i++) {
-            if (comStmtExecutePacket.isParameterNull(i)) {
-                result.add(null);
-            } else {
-                result.add(comStmtExecutePacket.getPreparedStatementParameters().get(i).getValue());
-            }
+        for (PreparedStatementParameter each : preparedStatementParameters) {
+            result.add(each.getValue());
         }
         return result;
     }

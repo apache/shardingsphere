@@ -44,6 +44,10 @@ import java.util.List;
 @Getter
 public final class ComStmtExecutePacket extends CommandPacket {
     
+    private static final ColumnType NULL_PARAMETER_DEFAULT_COLUMN_TYPE = ColumnType.MYSQL_TYPE_STRING;
+    
+    private static final int NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG = 0;
+    
     private final int statementId;
     
     private final int flags;
@@ -74,11 +78,18 @@ public final class ComStmtExecutePacket extends CommandPacket {
     
     private void setParameterList(final MySQLPacketPayload mysqlPacketPayload, final int numParameters) {
         for (int i = 0; i < numParameters; i++) {
+            if (isParameterNull(i)) {
+                preparedStatementParameters.add(new PreparedStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
+                continue;
+            }
             ColumnType columnType = ColumnType.valueOf(mysqlPacketPayload.readInt1());
             int unsignedFlag = mysqlPacketPayload.readInt1();
             preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag, ""));
         }
         for (int i = 0; i < numParameters; i++) {
+            if (isParameterNull(i)) {
+                continue;
+            }
             PreparedStatementParameter preparedStatementParameter = preparedStatementParameters.get(i);
             // TODO add more types
             if (preparedStatementParameter.getColumnType() == ColumnType.MYSQL_TYPE_LONG) {
@@ -120,6 +131,6 @@ public final class ComStmtExecutePacket extends CommandPacket {
     @Override
     public List<DatabaseProtocolPacket> execute() {
         log.debug("COM_STMT_EXECUTE received for Sharding-Proxy: {}", statementId);
-        return new StatementExecuteBackendHandler(this, DatabaseType.MySQL, true).execute();
+        return new StatementExecuteBackendHandler(preparedStatementParameters, statementId, DatabaseType.MySQL, true).execute();
     }
 }
