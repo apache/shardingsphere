@@ -10,47 +10,22 @@ chapter = true
 [![GitHub forks](https://img.shields.io/github/forks/shardingjdbc/sharding-jdbc.svg?style=social&label=Fork)](https://github.com/shardingjdbc/sharding-jdbc/fork)&nbsp;
 [![GitHub watchers](https://img.shields.io/github/watchers/shardingjdbc/sharding-jdbc.svg?style=social&label=Watch)](https://github.com/shardingjdbc/sharding-jdbc/watchers)
 
-Sharding-JDBC: A data sharding, read-write splitting, BASE transaction and database orchestration middleware. It provides maximum compatibilities for applications by JDBC and MySQL protocol.
+Sharding-Sphere is an open-sourced distributed database middleware solution suite, which is composite by Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar. Those 3 projects provide consistent features which include data sharding, read-write splitting, orchestration and B.A.S.E transaction. They can suitable for various scenario.
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![Gitter](https://badges.gitter.im/Sharding-JDBC/shardingjdbc.svg)](https://gitter.im/Sharding-JDBC/shardingjdbc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
 [![GitHub release](https://img.shields.io/github/release/shardingjdbc/sharding-jdbc.svg)](https://github.com/shardingjdbc/sharding-jdbc/releases)
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-proxy-2.1.0-SNAPSHOT-assembly-v1.tar.gz)
 
 [![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.png?branch=master)](https://travis-ci.org/shardingjdbc/sharding-jdbc)
 [![Coverage Status](https://codecov.io/github/shardingjdbc/sharding-jdbc/coverage.svg?branch=master)](https://codecov.io/github/shardingjdbc/sharding-jdbc?branch=master)
-[![Gitter](https://badges.gitter.im/Sharding-JDBC/shardingjdbc.svg)](https://gitter.im/Sharding-JDBC/shardingjdbc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
-## Features
+![Sharding-Sphere Score](http://ovfotjrsi.bkt.clouddn.com/sphere_scope_en.png)
 
-### 1. Data sharding
-* Both databases and tables sharding supported.
-* Standard aggregation functions, GROUP BY, ORDER BY, LIMIT and JOIN DQL supported.
-* Standard DML, DDL, TCL and database administrator command supported.
-* Sharding operator `=`, `BETWEEN` and `IN` supported.
-* Sharding algorithm customization and inline expression supported.
-* Route by hint supported.
-* Distributed sequence supported.
-
-### 2. Read-write splitting
-* Multiple slaves replica supported. 
-* Data consistency guarantee in same thread supported.
-* Mix read-write splitting and data sharding supported.
-* Route by hint supported.
-
-### 3. BASE Transaction
-* Best efforts delivery transaction supported.
-* Try confirm cancel transaction (TBD).
-
-### 4. Orchestration
-* Configuration center supported, can refresh dynamically.
-* Circuit breaker supported.
-* Open tracing supported.
-
-## Architecture
+## Introduction
 
 ### Sharding-JDBC
 
@@ -64,15 +39,43 @@ Use JDBC connect databases without redirect cost for java application, best perf
 
 ### Sharding-Proxy
 
-Database router. Deploy as a stateless server, support MySQL protocol for now.
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-proxy-2.1.0-SNAPSHOT-assembly-v1.tar.gz)
+
+Database proxy. Deploy as a stateless server, support MySQL protocol for now.
 
 * Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
 * Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.
 
-![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/proxy_brief_en.png)
+![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/proxy_brief_v2_en.png)
 
 ### Sharding-Sidecar(TBD)
 
 Use sidecar to connect databases, best for Kubernetes or Mesos together.
 
 ![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_v2_en.png)
+
+## Features
+
+### Data sharding
+* Both databases and tables sharding.
+* Standard aggregation functions, GROUP BY, ORDER BY, LIMIT and JOIN DQL supported.
+* Standard DML, DDL, TCL and database administrator command supported.
+* Sharding operator `=`, `BETWEEN` and `IN` supported.
+* Sharding algorithm customization and inline expression supported.
+* Force route by hint.
+* Distributed sequence.
+
+### Read-write splitting
+* Multiple slaves replica. 
+* Data consistency guarantee in same thread.
+* Mix read-write splitting and data sharding.
+* Force route by hint.
+
+### BASE Transaction
+* Best efforts delivery transaction.
+* Try confirm cancel transaction (TBD).
+
+### Orchestration
+* Configuration center, can refresh dynamically.
+* Circuit breaker.
+* Open tracing supported.
