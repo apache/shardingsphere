@@ -36,13 +36,4 @@ import java.util.List;
 public class ShardingCondition {
     
     private final List<ShardingValue> shardingValues = new LinkedList<>();
-    
-    /**
-     * Add sharding value.
-     *
-     * @param shardingValue sharding value
-     */
-    public void add(final ShardingValue shardingValue) {
-        shardingValues.add(shardingValue);
-    }
 }

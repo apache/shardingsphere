@@ -43,7 +43,7 @@ public final class OrCondition {
      * @param condition condition
      */
     public void add(final Condition condition) {
-        if (isEmpty()) {
+        if (andConditions.isEmpty()) {
             andConditions.add(new AndCondition());
         }
         andConditions.get(0).add(condition);
@@ -59,36 +59,7 @@ public final class OrCondition {
      */
     @Deprecated
     public Optional<Condition> find(final Column column, final int index) {
-        AndCondition andCondition = get(index);
+        AndCondition andCondition = andConditions.get(index);
         return null != andCondition ? andCondition.find(column) : Optional.<Condition>absent();
-    }
-    
-    /**
-     * Get and condition via index.
-     *
-     * @param index index of and conditions
-     * @return index of and conditions
-     * @throws IndexOutOfBoundsException if the index is out of range
-     */
-    public AndCondition get(final int index) {
-        return andConditions.get(index);
-    }
-    
-    /**
-     * Adjust and conditions is empty or not.
-     *
-     * @return and conditions is empty or not
-     */
-    public boolean isEmpty() {
-        return andConditions.isEmpty();
-    }
-    
-    /**
-     * Returns the number of and conditions in this.
-     *
-     * @return the number of and conditions in this
-     */
-    public int size() {
-        return andConditions.size();
     }
 }

@@ -17,9 +17,9 @@
 
 package io.shardingjdbc.core.routing.sharding;
 
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,10 +28,14 @@ import java.util.List;
  * @author zhangliang
  * @author maxiaoguang
  */
-@NoArgsConstructor
-public class ShardingConditions {
+@RequiredArgsConstructor
+public final class ShardingConditions {
     
-    private final List<ShardingCondition> shardingConditions = new ArrayList<>();
+    private final List<ShardingCondition> shardingConditions;
+    
+    public ShardingConditions() {
+        shardingConditions = Collections.emptyList();
+    }
     
     /**
      * Adjust sharding conditions is always false.

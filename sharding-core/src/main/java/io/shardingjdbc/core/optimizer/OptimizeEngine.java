@@ -33,6 +33,7 @@ import io.shardingjdbc.core.routing.sharding.GeneratedKey;
 import io.shardingjdbc.core.routing.sharding.ShardingCondition;
 import io.shardingjdbc.core.routing.sharding.ShardingConditions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -48,25 +49,25 @@ import java.util.Map.Entry;
 public final class OptimizeEngine {
     
     /**
-     * Get sharding conditions.
+     * Optimize sharding conditions.
      *
      * @param orCondition or condition
      * @param parameters parameters
      * @param generatedKey generated key
-     * @return sharding value
+     * @return sharding conditions
      */
-    public ShardingConditions getOptimizeShardingConditions(final OrCondition orCondition, final List<Object> parameters, final GeneratedKey generatedKey) {
-        ShardingConditions result = new ShardingConditions();
-        if (orCondition.isEmpty()) {
-            return result;
+    public ShardingConditions optimize(final OrCondition orCondition, final List<Object> parameters, final GeneratedKey generatedKey) {
+        if (orCondition.getAndConditions().isEmpty()) {
+            return new ShardingConditions();
         }
+        List<ShardingCondition> shardingConditions = new ArrayList<>(orCondition.getAndConditions().size());
         for (AndCondition each : orCondition.getAndConditions()) {
-            result.add(getOptimizeShardingCondition(each, parameters, generatedKey));
+            shardingConditions.add(optimize(each, parameters, generatedKey));
         }
-        return result;
+        return new ShardingConditions(shardingConditions);
     }
     
-    private ShardingCondition getOptimizeShardingCondition(final AndCondition andCondition, final List<Object> parameters, final GeneratedKey generatedKey) {
+    private ShardingCondition optimize(final AndCondition andCondition, final List<Object> parameters, final GeneratedKey generatedKey) {
         ShardingCondition result = new ShardingCondition();
         Map<Column, List<Condition>> conditionsMap = getConditionsMap(andCondition, generatedKey);
         for (Entry<Column, List<Condition>> entry : conditionsMap.entrySet()) {
@@ -91,7 +92,7 @@ public final class OptimizeEngine {
                 }
             }
             if (null == listValue) {
-                result.add(new RangeShardingValue<>(entry.getKey().getTableName(), entry.getKey().getName(), rangeValue));
+                result.getShardingValues().add(new RangeShardingValue<>(entry.getKey().getTableName(), entry.getKey().getName(), rangeValue));
             } else {
                 if (null != rangeValue) {
                     try {
@@ -103,7 +104,7 @@ public final class OptimizeEngine {
                 if (null == listValue) {
                     return new AlwaysFalseShardingCondition();
                 }
-                result.add(new ListShardingValue<>(entry.getKey().getTableName(), entry.getKey().getName(), listValue));
+                result.getShardingValues().add(new ListShardingValue<>(entry.getKey().getTableName(), entry.getKey().getName(), listValue));
             }
         }
         return result;

@@ -120,7 +120,7 @@ public final class ParsingSQLRouter implements SQLRouter {
     
     private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement, final GeneratedKey generatedKey) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
-        ShardingConditions shardingConditions = new OptimizeEngine().getOptimizeShardingConditions(sqlStatement.getConditions().getOrCondition(), parameters, generatedKey);
+        ShardingConditions shardingConditions = new OptimizeEngine().optimize(sqlStatement.getConditions().getOrCondition(), parameters, generatedKey);
         RoutingEngine routingEngine;
         if (sqlStatement instanceof UseStatement) {
             routingEngine = new IgnoreRoutingEngine();
