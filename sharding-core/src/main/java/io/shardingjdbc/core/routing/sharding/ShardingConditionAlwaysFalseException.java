@@ -18,9 +18,11 @@
 package io.shardingjdbc.core.routing.sharding;
 
 /**
- * Always false sharding condition.
+ * Sharding condition always false exception.
  *
- * @author maxiaoguang
+ * @author zhangliang
  */
-public final class AlwaysFalseShardingCondition extends ShardingCondition {
+public final class ShardingConditionAlwaysFalseException extends Exception {
+    
+    private static final long serialVersionUID = 7463185076839043601L;
 }

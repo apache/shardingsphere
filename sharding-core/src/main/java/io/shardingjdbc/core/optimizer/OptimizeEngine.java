@@ -21,6 +21,7 @@ import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.parsing.parser.context.condition.AndCondition;
@@ -31,6 +32,7 @@ import io.shardingjdbc.core.parsing.parser.context.condition.OrCondition;
 import io.shardingjdbc.core.routing.sharding.AlwaysFalseShardingCondition;
 import io.shardingjdbc.core.routing.sharding.GeneratedKey;
 import io.shardingjdbc.core.routing.sharding.ShardingCondition;
+import io.shardingjdbc.core.routing.sharding.ShardingConditionAlwaysFalseException;
 import io.shardingjdbc.core.routing.sharding.ShardingConditions;
 
 import java.util.ArrayList;
@@ -61,51 +63,58 @@ public final class OptimizeEngine {
         }
         List<ShardingCondition> shardingConditions = new ArrayList<>(orCondition.getAndConditions().size());
         for (AndCondition each : orCondition.getAndConditions()) {
-            shardingConditions.add(optimize(getConditionsMap(each, generatedKey), parameters));
+            try {
+                shardingConditions.add(optimize(getConditionsMap(each, generatedKey), parameters));
+            } catch (final ShardingConditionAlwaysFalseException ex) {
+                shardingConditions.add(new AlwaysFalseShardingCondition());
+            }
         }
         return new ShardingConditions(shardingConditions);
     }
     
-    private ShardingCondition optimize(final Map<Column, List<Condition>> conditionsMap, final List<Object> parameters) {
+    private ShardingCondition optimize(final Map<Column, List<Condition>> conditionsMap, final List<Object> parameters) throws ShardingConditionAlwaysFalseException {
         ShardingCondition result = new ShardingCondition();
         for (Entry<Column, List<Condition>> entry : conditionsMap.entrySet()) {
-            List<Comparable<?>> listValue = null;
-            Range<Comparable<?>> rangeValue = null;
-            for (Condition each : entry.getValue()) {
-                List<Comparable<?>> conditionValues = each.getConditionValues(parameters);
-                if (ShardingOperator.EQUAL == each.getOperator() || ShardingOperator.IN == each.getOperator()) {
-                    listValue = optimize(conditionValues, listValue);
-                    if (null == listValue) {
-                        return new AlwaysFalseShardingCondition();
-                    }
-                }
-                if (ShardingOperator.BETWEEN == each.getOperator()) {
-                    try {
-                        rangeValue = optimize(Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED), rangeValue);
-                    } catch (final IllegalArgumentException ex) {
-                        return new AlwaysFalseShardingCondition();
-                    } catch (final ClassCastException ex) {
-                        throw new ShardingJdbcException("Found different types for sharding value `%s`.", entry.getKey());
-                    }
-                }
-            }
-            if (null == listValue) {
-                result.getShardingValues().add(new RangeShardingValue<>(entry.getKey().getTableName(), entry.getKey().getName(), rangeValue));
-            } else {
-                if (null != rangeValue) {
-                    try {
-                        listValue = optimize(listValue, rangeValue);
-                    } catch (final ClassCastException ex) {
-                        throw new ShardingJdbcException("Found different types for sharding value `%s`.", entry.getKey());
-                    }
-                }
-                if (null == listValue) {
-                    return new AlwaysFalseShardingCondition();
-                }
-                result.getShardingValues().add(new ListShardingValue<>(entry.getKey().getTableName(), entry.getKey().getName(), listValue));
-            }
+            result.getShardingValues().add(optimize(entry.getKey(), entry.getValue(), parameters));
         }
         return result;
+    }
+    
+    private ShardingValue optimize(final Column column, final List<Condition> conditions, final List<Object> parameters) throws ShardingConditionAlwaysFalseException {
+        List<Comparable<?>> listValue = null;
+        Range<Comparable<?>> rangeValue = null;
+        for (Condition each : conditions) {
+            List<Comparable<?>> conditionValues = each.getConditionValues(parameters);
+            if (ShardingOperator.EQUAL == each.getOperator() || ShardingOperator.IN == each.getOperator()) {
+                listValue = optimize(conditionValues, listValue);
+                if (null == listValue) {
+                    throw new ShardingConditionAlwaysFalseException();
+                }
+            }
+            if (ShardingOperator.BETWEEN == each.getOperator()) {
+                try {
+                    rangeValue = optimize(Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED), rangeValue);
+                } catch (final IllegalArgumentException ex) {
+                    throw new ShardingConditionAlwaysFalseException();
+                } catch (final ClassCastException ex) {
+                    throw new ShardingJdbcException("Found different types for sharding value `%s`.", column);
+                }
+            }
+        }
+        if (null == listValue) {
+            return new RangeShardingValue<>(column.getTableName(), column.getName(), rangeValue);
+        }
+        if (null != rangeValue) {
+            try {
+                listValue = optimize(listValue, rangeValue);
+            } catch (final ClassCastException ex) {
+                throw new ShardingJdbcException("Found different types for sharding value `%s`.", column);
+            }
+        }
+        if (null == listValue) {
+            throw new ShardingConditionAlwaysFalseException();
+        }
+        return new ListShardingValue<>(column.getTableName(), column.getName(), listValue);
     }
     
     private List<Comparable<?>> optimize(final List<Comparable<?>> value1, final List<Comparable<?>> value2) {
