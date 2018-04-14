@@ -17,17 +17,17 @@
 
 package io.shardingjdbc.core.routing.type.unicast;
 
-import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.TableUnit;
-import io.shardingjdbc.core.routing.type.complex.CartesianRoutingEngine;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Unicast routing engine.
@@ -39,41 +39,34 @@ public final class UnicastRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
-    private final SQLStatement sqlStatement;
-    
     private final Collection<String> logicTables;
     
     @Override
     public RoutingResult route() {
-        Collection<RoutingResult> result = new ArrayList<>(logicTables.size());
+        RoutingResult result;
         if (logicTables.isEmpty()) {
-            RoutingResult routingResult = new RoutingResult();
-            result.add(routingResult);
-            routingResult.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getDataSourceNames().iterator().next(), "", ""));
-        } else if (logicTables.size() == 1) {
+            result = new RoutingResult();
+            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getDataSourceNames().iterator().next(), "", ""));
+        } else if (1 == logicTables.size()) {
             String logicTableName = logicTables.iterator().next();
-            DataNode dataNode = shardingRule.findDataNodeByLogicTable(logicTableName);
-            RoutingResult routingResult = new RoutingResult();
-            result.add(routingResult);
-            routingResult.getTableUnits().getTableUnits().add(new TableUnit(dataNode.getDataSourceName(), logicTableName, dataNode.getTableName()));
+            DataNode dataNode = shardingRule.findDataNode(logicTableName);
+            result = new RoutingResult();
+            result.getTableUnits().getTableUnits().add(new TableUnit(dataNode.getDataSourceName(), logicTableName, dataNode.getTableName()));
         } else {
             String dataSourceName = null;
+            Map<String, DataNode> dataNodeMap = new LinkedHashMap<>(logicTables.size(), 1);
             for (String each : logicTables) {
-                RoutingResult routingResult = new RoutingResult();
-                result.add(routingResult);
+                DataNode dataNode = shardingRule.findDataNode(dataSourceName, each);
+                dataNodeMap.put(each, dataNode);
                 if (null == dataSourceName) {
-                    DataNode dataNode = shardingRule.findDataNodeByLogicTable(each);
                     dataSourceName = dataNode.getDataSourceName();
-                    routingResult.getTableUnits().getTableUnits().add(new TableUnit(dataNode.getDataSourceName(), each, dataNode.getTableName()));
-                } else {
-                    DataNode dataNode = shardingRule.findDataNodeByDataSourceAndLogicTable(dataSourceName, each);
-                    routingResult.getTableUnits().getTableUnits().add(new TableUnit(dataNode.getDataSourceName(), each, dataNode.getTableName()));
                 }
             }
+            result = new UnicastRoutingResult(dataSourceName);
+            for (Entry<String, DataNode> entry : dataNodeMap.entrySet()) {
+                result.getTableUnits().getTableUnits().add(new TableUnit(entry.getValue().getDataSourceName(), entry.getKey(), entry.getValue().getTableName()));
+            }
         }
-        if (1 == result.size()) {
-            return result.iterator().next();
-        }
-        return new CartesianRoutingEngine(result).route();
+        return result;
     }
 }

@@ -44,6 +44,7 @@ import java.util.List;
  * Insert values clause parser.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
 public class InsertValuesClauseParser implements SQLClauseParser {
     
@@ -104,9 +105,9 @@ public class InsertValuesClauseParser implements SQLClauseParser {
     private GeneratedKeyCondition createGeneratedKeyCondition(final Column column, final SQLExpression sqlExpression) {
         GeneratedKeyCondition result;
         if (sqlExpression instanceof SQLPlaceholderExpression) {
-            result = new GeneratedKeyCondition(column.getName(), ((SQLPlaceholderExpression) sqlExpression).getIndex(), null);
+            result = new GeneratedKeyCondition(column, ((SQLPlaceholderExpression) sqlExpression).getIndex(), null);
         } else if (sqlExpression instanceof SQLNumberExpression) {
-            result = new GeneratedKeyCondition(column.getName(), -1, ((SQLNumberExpression) sqlExpression).getNumber());
+            result = new GeneratedKeyCondition(column, -1, ((SQLNumberExpression) sqlExpression).getNumber());
         } else {
             throw new ShardingJdbcException("Generated key only support number.");
         }

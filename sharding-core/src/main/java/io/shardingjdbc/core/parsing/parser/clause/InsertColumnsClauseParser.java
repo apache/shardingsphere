@@ -51,14 +51,14 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
         Collection<Column> result = new LinkedList<>();
         if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
             String tableName = insertStatement.getTables().getSingleTableName();
-            Optional<String> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
+            Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
             int count = 0;
             do {
                 lexerEngine.nextToken();
                 String columnName = SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals());
                 result.add(new Column(columnName, tableName));
                 lexerEngine.nextToken();
-                if (generateKeyColumn.isPresent() && generateKeyColumn.get().equalsIgnoreCase(columnName)) {
+                if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(columnName)) {
                     insertStatement.setGenerateKeyColumnIndex(count);
                 }
                 count++;
