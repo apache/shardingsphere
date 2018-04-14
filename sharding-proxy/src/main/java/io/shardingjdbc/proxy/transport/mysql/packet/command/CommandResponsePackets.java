@@ -43,10 +43,9 @@ public class CommandResponsePackets {
      * Add packet.
      *
      * @param databaseProtocolPacket database protocol packet
-     * @return is succeed
      */
-    public boolean addPacket(final DatabaseProtocolPacket databaseProtocolPacket) {
-        return databaseProtocolPackets.add(databaseProtocolPacket);
+    public void addPacket(final DatabaseProtocolPacket databaseProtocolPacket) {
+        databaseProtocolPackets.add(databaseProtocolPacket);
     }
     
     /**
