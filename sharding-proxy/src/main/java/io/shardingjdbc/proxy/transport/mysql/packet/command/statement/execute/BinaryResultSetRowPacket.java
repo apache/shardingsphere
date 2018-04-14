@@ -53,34 +53,25 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
         mysqlPacketPayload.writeInt1(PACKET_HEADER);
-        int[] nullBitmap = new int[calculateBitmapBytes()];
-        for (int each : nullBitmap) {
+        NullBitmap nullBitmap = new NullBitmap(numColumns, RESERVED_BIT_LENGTH);
+        for (int i = 0; i < numColumns; i++) {
+            if (null == data.get(i)) {
+                nullBitmap.setNullBit(i);
+            }
+        }
+        for (int each : nullBitmap.getNullBitmap()) {
             mysqlPacketPayload.writeInt1(each);
         }
         for (int i = 0; i < numColumns; i++) {
             ColumnType columnType = columnTypes.get(i);
-            if (null == data.get(i)) {
-                setNullBit(nullBitmap, i);
+            // TODO add more types
+            if (ColumnType.MYSQL_TYPE_LONGLONG == columnType) {
+                mysqlPacketPayload.writeInt8(Long.parseLong(data.get(i).toString()));
+            } else if (ColumnType.MYSQL_TYPE_LONG == columnType) {
+                mysqlPacketPayload.writeInt4(Integer.parseInt(data.get(i).toString()));
             } else {
-                // TODO add more types
-                if (ColumnType.MYSQL_TYPE_LONGLONG == columnType) {
-                    mysqlPacketPayload.writeInt8(Long.parseLong(data.get(i).toString()));
-                } else if (ColumnType.MYSQL_TYPE_LONG == columnType) {
-                    mysqlPacketPayload.writeInt4(Integer.parseInt(data.get(i).toString()));
-                } else {
-                    mysqlPacketPayload.writeStringLenenc(data.get(i).toString());
-                }
+                mysqlPacketPayload.writeStringLenenc(data.get(i).toString());
             }
         }
-    }
-    
-    private int calculateBitmapBytes() {
-        return (numColumns + RESERVED_BIT_LENGTH + 7) / 8;
-    }
-    
-    private void setNullBit(final int[] nullBitmap, final int index) {
-        int bytePosition = (index + RESERVED_BIT_LENGTH) / 8;
-        int bitPositionInCurrentByte = (index + RESERVED_BIT_LENGTH) % 8;
-        nullBitmap[bytePosition] = 1 << bitPositionInCurrentByte;
     }
 }
