@@ -19,7 +19,6 @@ package io.shardingjdbc.core.routing.sharding;
 
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.LinkedList;
@@ -30,7 +29,6 @@ import java.util.List;
  * 
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
 public class ShardingCondition {

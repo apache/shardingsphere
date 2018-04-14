@@ -61,14 +61,13 @@ public final class OptimizeEngine {
         }
         List<ShardingCondition> shardingConditions = new ArrayList<>(orCondition.getAndConditions().size());
         for (AndCondition each : orCondition.getAndConditions()) {
-            shardingConditions.add(optimize(each, parameters, generatedKey));
+            shardingConditions.add(optimize(getConditionsMap(each, generatedKey), parameters));
         }
         return new ShardingConditions(shardingConditions);
     }
     
-    private ShardingCondition optimize(final AndCondition andCondition, final List<Object> parameters, final GeneratedKey generatedKey) {
+    private ShardingCondition optimize(final Map<Column, List<Condition>> conditionsMap, final List<Object> parameters) {
         ShardingCondition result = new ShardingCondition();
-        Map<Column, List<Condition>> conditionsMap = getConditionsMap(andCondition, generatedKey);
         for (Entry<Column, List<Condition>> entry : conditionsMap.entrySet()) {
             List<Comparable<?>> listValue = null;
             Range<Comparable<?>> rangeValue = null;
