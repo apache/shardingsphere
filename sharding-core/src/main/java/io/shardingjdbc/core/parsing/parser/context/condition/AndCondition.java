@@ -39,15 +39,6 @@ public final class AndCondition {
     private final List<Condition> conditions = new ArrayList<>();
     
     /**
-     * Add condition.
-     *
-     * @param condition condition
-     */
-    public void add(final Condition condition) {
-        conditions.add(condition);
-    }
-    
-    /**
      * Find condition via column.
      *
      * @param column column
@@ -63,34 +54,5 @@ public final class AndCondition {
             }
         }
         return Optional.fromNullable(result);
-    }
-    
-    /**
-     * Get condition via index.
-     *
-     * @param index index of conditions
-     * @return index of condition
-     * @throws IndexOutOfBoundsException if the index is out of range
-     */
-    public Condition get(final int index) {
-        return conditions.get(index);
-    }
-    
-    /**
-     * Adjust conditions is empty or not.
-     *
-     * @return conditions is empty or not
-     */
-    public boolean isEmpty() {
-        return conditions.isEmpty();
-    }
-    
-    /**
-     * Returns the number of conditions in this.
-     *
-     * @return the number of conditions in this
-     */
-    public int size() {
-        return conditions.size();
     }
 }

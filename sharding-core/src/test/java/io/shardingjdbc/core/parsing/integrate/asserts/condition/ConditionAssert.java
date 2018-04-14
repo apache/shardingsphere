@@ -59,10 +59,10 @@ public final class ConditionAssert {
     }
     
     private void assertAndCondition(final AndCondition actual, final ExpectedAndCondition expected) {
-        assertThat(assertMessage.getFullAssertMessage("And condition size assertion error: "), actual.size(), is(expected.getConditions().size()));
+        assertThat(assertMessage.getFullAssertMessage("And condition size assertion error: "), actual.getConditions().size(), is(expected.getConditions().size()));
         int count = 0;
         for (ExpectedCondition each : expected.getConditions()) {
-            assertCondition(actual.get(count), each);
+            assertCondition(actual.getConditions().get(count), each);
             count++;
         }
     }

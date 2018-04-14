@@ -46,7 +46,7 @@ public final class OrCondition {
         if (andConditions.isEmpty()) {
             andConditions.add(new AndCondition());
         }
-        andConditions.get(0).add(condition);
+        andConditions.get(0).getConditions().add(condition);
     }
     
     /**
