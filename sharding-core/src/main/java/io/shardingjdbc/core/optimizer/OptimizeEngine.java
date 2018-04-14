@@ -35,7 +35,6 @@ import io.shardingjdbc.core.routing.sharding.ShardingConditions;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -111,16 +110,11 @@ public final class OptimizeEngine {
     }
     
     private Map<Column, List<Condition>> getConditionsMap(final AndCondition andCondition, final GeneratedKey generatedKey) {
-        Map<Column, List<Condition>> result = new LinkedHashMap<>(andCondition.getConditions().size() + 1, 1);
-        for (Condition each : andCondition.getConditions()) {
-            if (!result.containsKey(each.getColumn())) {
-                result.put(each.getColumn(), new LinkedList<Condition>());
-            }
-            result.get(each.getColumn()).add(each);
+        Map<Column, List<Condition>> result = andCondition.getConditionsMap();
+        if (null == generatedKey) {
+            return result;
         }
-        if (null != generatedKey) {
-            result.put(generatedKey.getColumn(), Collections.<Condition>singletonList(new GeneratedKeyCondition(generatedKey)));
-        }
+        result.put(generatedKey.getColumn(), Collections.<Condition>singletonList(new GeneratedKeyCondition(generatedKey)));
         return result;
     }
     
