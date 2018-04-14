@@ -52,7 +52,9 @@ public final class AndCondition {
      *
      * @param column column
      * @return found condition
+     * @deprecated only test call
      */
+    @Deprecated
     public Optional<Condition> find(final Column column) {
         Condition result = null;
         for (Condition each : conditions) {
@@ -67,14 +69,11 @@ public final class AndCondition {
      * Get condition via index.
      *
      * @param index index of conditions
-     * @return found condition
+     * @return index of condition
+     * @throws IndexOutOfBoundsException if the index is out of range
      */
-    public Optional<Condition> get(final int index) {
-        Condition result = null;
-        if (size() > index) {
-            result = conditions.get(index);
-        }
-        return Optional.fromNullable(result);
+    public Condition get(final int index) {
+        return conditions.get(index);
     }
     
     /**

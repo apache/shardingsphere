@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.core.rule;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -44,6 +43,7 @@ import java.util.TreeSet;
  * Databases and tables sharding rule configuration.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @Getter
 public final class ShardingRule {
@@ -260,15 +260,15 @@ public final class ShardingRule {
     }
     
     /**
-     * get generated key's column name.
+     * get generated key's column.
      * 
      * @param logicTableName logic table name
-     * @return generated key's column name
+     * @return generated key's column
      */
-    public Optional<String> getGenerateKeyColumn(final String logicTableName) {
+    public Optional<Column> getGenerateKeyColumn(final String logicTableName) {
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equalsIgnoreCase(logicTableName)) {
-                return Optional.fromNullable(each.getGenerateKeyColumn());
+            if (each.getLogicTable().equalsIgnoreCase(logicTableName) && null != each.getGenerateKeyColumn()) {
+                return Optional.of(new Column(each.getGenerateKeyColumn(), logicTableName));
             }
         }
         return Optional.absent();
@@ -312,14 +312,8 @@ public final class ShardingRule {
      * @param logicTableName logic table name
      * @return data node
      */
-    public DataNode findDataNodeByLogicTable(final String logicTableName) {
-        TableRule tableRule = getTableRule(logicTableName);
-        for (DataNode each : tableRule.getActualDataNodes()) {
-            if (dataSourceNames.contains(each.getDataSourceName())) {
-                return each;
-            }
-        }
-        throw new ShardingConfigurationException("Cannot find actual data node for logic table name: '%s'", tableRule.getLogicTable());
+    public DataNode findDataNode(final String logicTableName) {
+        return findDataNode(null, logicTableName);
     }
     
     /**
@@ -329,14 +323,18 @@ public final class ShardingRule {
      * @param logicTableName logic table name
      * @return data node
      */
-    public DataNode findDataNodeByDataSourceAndLogicTable(final String dataSourceName, final String logicTableName) {
+    public DataNode findDataNode(final String dataSourceName, final String logicTableName) {
         TableRule tableRule = getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
-            if (dataSourceNames.contains(each.getDataSourceName()) && Objects.equal(each.getDataSourceName(), dataSourceName)) {
+            if (dataSourceNames.contains(each.getDataSourceName()) && (null == dataSourceName || each.getDataSourceName().equals(dataSourceName))) {
                 return each;
             }
         }
-        throw new ShardingConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName);
+        if (null == dataSourceName) {
+            throw new ShardingConfigurationException("Cannot find actual data node for logic table name: '%s'", logicTableName);
+        } else {
+            throw new ShardingConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName);
+        }
     }
     
     /**

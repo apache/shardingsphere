@@ -17,25 +17,38 @@
 
 package io.shardingjdbc.core.routing.sharding;
 
-import com.google.common.base.Optional;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Sharding conditions.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingConditions {
+@NoArgsConstructor
+public class ShardingConditions {
     
-    private final GeneratedKey generatedKey;
+    private final List<ShardingCondition> shardingConditions = new ArrayList<>();
     
-    private final List<ShardingCondition> shardingConditions = new LinkedList<>();
+    /**
+     * Adjust sharding conditions is always false.
+     *
+     * @return sharding conditions is always false
+     */
+    public boolean isAlwaysFalse() {
+        if (isEmpty()) {
+            return false;
+        }
+        for (ShardingCondition shardingCondition : shardingConditions) {
+            if (!(shardingCondition instanceof AlwaysFalseShardingCondition)) {
+                return false;
+            }
+        }
+        return true;
+    }
     
     /**
      * Add sharding value.
@@ -50,14 +63,11 @@ public final class ShardingConditions {
      * Get sharding condition via index.
      *
      * @param index index of sharding conditions
-     * @return found and conditions
+     * @return index of sharding conditions
+     * @throws IndexOutOfBoundsException if the index is out of range
      */
-    public Optional<ShardingCondition> get(final int index) {
-        ShardingCondition result = null;
-        if (size() > index) {
-            result = shardingConditions.get(index);
-        }
-        return Optional.fromNullable(result);
+    public ShardingCondition get(final int index) {
+        return shardingConditions.get(index);
     }
     
     /**
@@ -67,14 +77,5 @@ public final class ShardingConditions {
      */
     public boolean isEmpty() {
         return shardingConditions.isEmpty();
-    }
-    
-    /**
-     * Returns the number of sharding conditions in this.
-     *
-     * @return the number of sharding conditions in this
-     */
-    public int size() {
-        return shardingConditions.size();
     }
 }

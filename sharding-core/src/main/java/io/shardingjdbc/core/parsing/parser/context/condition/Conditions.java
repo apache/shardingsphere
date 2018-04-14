@@ -27,6 +27,7 @@ import lombok.ToString;
  * Conditions collection.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
 @NoArgsConstructor
 @Getter
@@ -57,7 +58,9 @@ public final class Conditions {
      *
      * @param column column
      * @return found condition
+     * @deprecated only test call
      */
+    @Deprecated
     public Optional<Condition> find(final Column column) {
         return find(column, 0);
     }
@@ -68,7 +71,9 @@ public final class Conditions {
      * @param column column
      * @param index index of and conditions
      * @return found condition
+     * @deprecated only test call
      */
+    @Deprecated
     public Optional<Condition> find(final Column column, final int index) {
         return orCondition.find(column, index);
     }

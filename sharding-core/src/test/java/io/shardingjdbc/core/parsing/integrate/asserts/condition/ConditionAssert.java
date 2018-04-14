@@ -55,9 +55,7 @@ public final class ConditionAssert {
         assertThat(assertMessage.getFullAssertMessage("Or condition size assertion error: "), actual.size(), is(expected.getAndConditions().size()));
         int count = 0;
         for (ExpectedAndCondition each : expected.getAndConditions()) {
-            Optional<AndCondition> actualAndCondition = actual.get(count);
-            assertTrue(assertMessage.getFullAssertMessage("And condition should exist: "), actualAndCondition.isPresent());
-            assertAndCondition(actualAndCondition.get(), each);
+            assertAndCondition(actual.get(count), each);
             count++;
         }
     }
@@ -66,9 +64,7 @@ public final class ConditionAssert {
         assertThat(assertMessage.getFullAssertMessage("And condition size assertion error: "), actual.size(), is(expected.getConditions().size()));
         int count = 0;
         for (ExpectedCondition each : expected.getConditions()) {
-            Optional<Condition> actualCondition = actual.get(count);
-            assertTrue(assertMessage.getFullAssertMessage("Condition should exist: "), actualCondition.isPresent());
-            assertCondition(actualCondition.get(), each);
+            assertCondition(actual.get(count), each);
             count++;
         }
     }
