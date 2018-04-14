@@ -99,7 +99,7 @@ public class Condition {
      */
     @Deprecated
     public ShardingValue getShardingValue(final List<?> parameters) {
-        List<Comparable<?>> conditionValues = getValues(parameters);
+        List<Comparable<?>> conditionValues = getConditionValues(parameters);
         switch (operator) {
             case EQUAL:
             case IN:
@@ -111,7 +111,13 @@ public class Condition {
         }
     }
     
-    private List<Comparable<?>> getValues(final List<?> parameters) {
+    /**
+     * Get condition values.
+     * 
+     * @param parameters parameters
+     * @return condition values
+     */
+    public List<Comparable<?>> getConditionValues(final List<?> parameters) {
         List<Comparable<?>> result = new LinkedList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
             Object parameter = parameters.get(entry.getValue());

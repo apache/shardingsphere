@@ -74,16 +74,16 @@ public final class OptimizeEngine {
             List<Comparable<?>> listValue = null;
             Range<Comparable<?>> rangeValue = null;
             for (Condition each : entry.getValue()) {
-                List<Comparable<?>> values = getValues(each, parameters);
+                List<Comparable<?>> conditionValues = each.getConditionValues(parameters);
                 if (ShardingOperator.EQUAL == each.getOperator() || ShardingOperator.IN == each.getOperator()) {
-                    listValue = getOptimizeValue(values, listValue);
+                    listValue = getOptimizeValue(conditionValues, listValue);
                     if (null == listValue) {
                         return new AlwaysFalseShardingCondition();
                     }
                 }
                 if (ShardingOperator.BETWEEN == each.getOperator()) {
                     try {
-                        rangeValue = getOptimizeValue(Range.range(values.get(0), BoundType.CLOSED, values.get(1), BoundType.CLOSED), rangeValue);
+                        rangeValue = getOptimizeValue(Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED), rangeValue);
                     } catch (IllegalArgumentException e) {
                         return new AlwaysFalseShardingCondition();
                     } catch (ClassCastException e) {
@@ -120,22 +120,6 @@ public final class OptimizeEngine {
         }
         if (null != generatedKey) {
             result.put(generatedKey.getColumn(), Collections.<Condition>singletonList(new GeneratedKeyCondition(generatedKey)));
-        }
-        return result;
-    }
-    
-    private List<Comparable<?>> getValues(final Condition condition, final List<?> parameters) {
-        List<Comparable<?>> result = new LinkedList<>(condition.getPositionValueMap().values());
-        for (Entry<Integer, Integer> entry : condition.getPositionIndexMap().entrySet()) {
-            Object parameter = parameters.get(entry.getValue());
-            if (!(parameter instanceof Comparable<?>)) {
-                throw new ShardingJdbcException("Parameter `%s` should extends Comparable for sharding value.", parameter);
-            }
-            if (entry.getKey() < result.size()) {
-                result.add(entry.getKey(), (Comparable<?>) parameter);
-            } else {
-                result.add((Comparable<?>) parameter);
-            }
         }
         return result;
     }
