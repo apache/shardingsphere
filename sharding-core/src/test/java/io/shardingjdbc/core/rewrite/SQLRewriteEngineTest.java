@@ -120,7 +120,8 @@ public final class SQLRewriteEngineTest {
         itemsToken.getItems().add("id");
         insertStatement.getSqlTokens().add(itemsToken);
         insertStatement.getSqlTokens().add(new GeneratedKeyToken(44));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO table_x (name, age) VALUES (?, ?)", DatabaseType.MySQL, insertStatement, new GeneratedKey(new Column("table_x", "id"), 2, null));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
+                shardingRule, "INSERT INTO table_x (name, age) VALUES (?, ?)", DatabaseType.MySQL, insertStatement, new GeneratedKey(new Column("table_x", "id"), 2, null));
         assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), is("INSERT INTO table_1 (name, age, id) VALUES (?, ?, ?)"));
     }
     

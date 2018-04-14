@@ -33,7 +33,7 @@ import io.shardingjdbc.core.routing.sharding.GeneratedKey;
 import io.shardingjdbc.core.routing.sharding.ShardingCondition;
 import io.shardingjdbc.core.routing.sharding.ShardingConditions;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -118,7 +118,7 @@ public final class OptimizeEngine {
             result.get(each.getColumn()).add(each);
         }
         if (null != generatedKey) {
-            result.put(generatedKey.getColumn(), Arrays.<Condition>asList(new GeneratedKeyCondition(generatedKey)));
+            result.put(generatedKey.getColumn(), Collections.<Condition>singletonList(new GeneratedKeyCondition(generatedKey)));
         }
         return result;
     }

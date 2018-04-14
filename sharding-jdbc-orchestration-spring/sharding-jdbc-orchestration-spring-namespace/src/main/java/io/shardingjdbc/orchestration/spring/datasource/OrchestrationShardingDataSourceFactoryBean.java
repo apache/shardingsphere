@@ -1,3 +1,20 @@
+/*
+ * Copyright 1999-2015 dangdang.com.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * </p>
+ */
+
 package io.shardingjdbc.orchestration.spring.datasource;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
@@ -9,11 +26,15 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 
-public class OrchestrationShardingDataSourceFacoryBean implements FactoryBean<OrchestrationShardingDataSource>, InitializingBean, DisposableBean {
+/**
+ * Orchestration sharding data source factory bean.
+ * 
+ * @author zhangliang 
+ */
+public class OrchestrationShardingDataSourceFactoryBean implements FactoryBean<OrchestrationShardingDataSource>, InitializingBean, DisposableBean {
     
     private OrchestrationShardingDataSource orchestrationShardingDataSource;
     
@@ -27,12 +48,12 @@ public class OrchestrationShardingDataSourceFacoryBean implements FactoryBean<Or
     
     private final OrchestrationConfiguration orchestrationConfig;
     
-    public OrchestrationShardingDataSourceFacoryBean(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+    public OrchestrationShardingDataSourceFactoryBean(final OrchestrationConfiguration orchestrationConfig) {
         this(null, null, null, null, orchestrationConfig);
     }
     
-    public OrchestrationShardingDataSourceFacoryBean(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
-                                                     final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+    public OrchestrationShardingDataSourceFactoryBean(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
+                                                      final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) {
         this.orchestrationConfig = orchestrationConfig;
         this.dataSourceMap = dataSourceMap;
         this.shardingRuleConfig = shardingRuleConfig;
@@ -41,7 +62,7 @@ public class OrchestrationShardingDataSourceFacoryBean implements FactoryBean<Or
     }
     
     @Override
-    public OrchestrationShardingDataSource getObject() throws Exception {
+    public OrchestrationShardingDataSource getObject() {
         return orchestrationShardingDataSource;
     }
     
@@ -57,11 +78,12 @@ public class OrchestrationShardingDataSourceFacoryBean implements FactoryBean<Or
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        orchestrationShardingDataSource = (OrchestrationShardingDataSource) OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, configMap, props, orchestrationConfig);
+        orchestrationShardingDataSource = 
+                (OrchestrationShardingDataSource) OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, configMap, props, orchestrationConfig);
     }
     
     @Override
-    public void destroy() throws Exception {
+    public void destroy() {
         orchestrationShardingDataSource.close();
     }
 }

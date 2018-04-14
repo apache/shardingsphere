@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public final class OrchestrationConfiguration {
     
     public static final String MASTER_SLAVE = "masterslave";
+    
     public static final String SHARDING = "sharding";
     
     private final String name;

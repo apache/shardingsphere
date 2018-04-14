@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.core.parsing.integrate.asserts.condition;
 
-import com.google.common.base.Optional;
 import io.shardingjdbc.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedAndCondition;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedCondition;
@@ -33,7 +32,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Condition assert.

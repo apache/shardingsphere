@@ -31,13 +31,14 @@ import java.util.UUID;
 @Getter
 public final class OrchestrationInstance {
     
+    private static final String DELIMITER = "@";
+    
     private static final OrchestrationInstance INSTANCE = new OrchestrationInstance();
     
     private String instanceId;
     
     private OrchestrationInstance() {
-        String splitFlag = "@";
-        instanceId = IpUtils.getIp() + splitFlag + ManagementFactory.getRuntimeMXBean().getName().split(splitFlag)[0] + splitFlag + UUID.randomUUID().toString();
+        instanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] + DELIMITER + UUID.randomUUID().toString();
     }
     
     /**
