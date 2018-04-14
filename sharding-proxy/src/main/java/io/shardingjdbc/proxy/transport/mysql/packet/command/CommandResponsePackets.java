@@ -19,6 +19,7 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,17 +29,13 @@ import java.util.List;
  *
  * @author zhangyonglun
  */
+@NoArgsConstructor
 @Getter
 public class CommandResponsePackets {
     
-    private final List<DatabaseProtocolPacket> databaseProtocolPackets;
-    
-    public CommandResponsePackets() {
-        databaseProtocolPackets = new LinkedList<>();
-    }
+    private final List<DatabaseProtocolPacket> databaseProtocolPackets = new LinkedList<>();
     
     public CommandResponsePackets(final DatabaseProtocolPacket databaseProtocolPacket) {
-        databaseProtocolPackets = new LinkedList<>();
         databaseProtocolPackets.add(databaseProtocolPacket);
     }
     
