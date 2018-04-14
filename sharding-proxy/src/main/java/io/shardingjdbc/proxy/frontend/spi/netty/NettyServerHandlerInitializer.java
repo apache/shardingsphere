@@ -20,6 +20,7 @@ package io.shardingjdbc.proxy.frontend.spi.netty;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.proxy.frontend.common.FrontendHandlerFactory;
@@ -30,11 +31,19 @@ import io.shardingjdbc.proxy.transport.common.codec.PacketCodecFactory;
  */
 public class NettyServerHandlerInitializer extends ChannelInitializer<SocketChannel> {
 
+    private EventLoopGroup userGroup;
+
+    NettyServerHandlerInitializer(EventLoopGroup userGroup) {
+        this.userGroup = userGroup;
+    }
+
     @Override
     protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
         // TODO load database type from yaml or startup arguments
         pipeline.addLast(PacketCodecFactory.createPacketCodecInstance(DatabaseType.MySQL));
-        pipeline.addLast(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL));
+        pipeline.addLast(FrontendHandlerFactory
+                .createFrontendHandlerInstance(DatabaseType.MySQL, userGroup));
+
     }
 }

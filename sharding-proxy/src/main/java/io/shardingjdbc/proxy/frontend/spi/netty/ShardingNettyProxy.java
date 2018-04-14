@@ -58,6 +58,12 @@ public final class ShardingNettyProxy implements ShardingProxy {
     private EventLoopGroup workerGroup;
 
 
+    /**
+     * user group
+     */
+    private EventLoopGroup userGroup;
+
+
     private static final String OS_NAME = "Linux";
 
 
@@ -77,6 +83,7 @@ public final class ShardingNettyProxy implements ShardingProxy {
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
+            userGroup.shutdownGracefully();
         }
     }
 
@@ -84,28 +91,30 @@ public final class ShardingNettyProxy implements ShardingProxy {
         if (Objects.equals(StandardSystemProperty.OS_NAME.value(), OS_NAME)) {
             bossGroup = new EpollEventLoopGroup(1);
             workerGroup = new EpollEventLoopGroup(workThreads);
+            userGroup = new EpollEventLoopGroup(workThreads);
             bootstrap.group(bossGroup, workerGroup)
                     .channel(EpollServerSocketChannel.class)
                     .option(EpollChannelOption.TCP_CORK, true)
                     .option(EpollChannelOption.SO_KEEPALIVE, true)
-                    .option(EpollChannelOption.SO_BACKLOG, 100)
+                    .option(EpollChannelOption.SO_BACKLOG, 128)
                     .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new NettyServerHandlerInitializer());
+                    .childHandler(new NettyServerHandlerInitializer(userGroup));
         } else {
             bossGroup = new NioEventLoopGroup();
             workerGroup = new NioEventLoopGroup(workThreads);
+            userGroup = new NioEventLoopGroup(workThreads);
             bootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG, 100)
+                    .option(ChannelOption.SO_BACKLOG, 128)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     .option(ChannelOption.TCP_NODELAY, true)
                     .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new NettyServerHandlerInitializer());
+                    .childHandler(new NettyServerHandlerInitializer(userGroup));
         }
     }
 }

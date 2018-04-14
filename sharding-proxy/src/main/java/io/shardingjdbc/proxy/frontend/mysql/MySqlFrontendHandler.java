@@ -19,10 +19,10 @@ package io.shardingjdbc.proxy.frontend.mysql;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
+import io.netty.channel.EventLoopGroup;
 import io.shardingjdbc.proxy.frontend.common.FrontendHandler;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketFactory;
@@ -37,20 +37,22 @@ import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakeResponse4
  *
  * @author zhangliang
  */
-public final class MySQLFrontendHandler extends FrontendHandler {
-
-    private AuthPluginData authPluginData;
+public final class MySqlFrontendHandler extends FrontendHandler {
 
 
     /**
      * handle with oneself thread pool
      */
-    private NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
+    private EventLoopGroup eventLoopGroup;
+
+    public MySqlFrontendHandler(EventLoopGroup eventLoopGroup) {
+        this.eventLoopGroup = eventLoopGroup;
+    }
 
 
     @Override
     protected void handshake(final ChannelHandlerContext context) {
-        authPluginData = new AuthPluginData();
+        AuthPluginData authPluginData = new AuthPluginData();
         context.writeAndFlush(new HandshakePacket(ConnectionIdGenerator.getInstance().nextId(), authPluginData));
     }
 
@@ -64,7 +66,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
 
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        nioEventLoopGroup
+        eventLoopGroup
                 .execute(new Runnable() {
                              @Override
                              public void run() {
