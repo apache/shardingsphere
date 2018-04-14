@@ -33,7 +33,9 @@ public class ParametersDefinition {
 
     @XmlElement(name = "parameter")
     private List<ParameterDefinition> parameter = new ArrayList<>();
-
-
-
+    
+    
+    public void setNewParameter(final List<ParameterDefinition> parameter) {
+        this.parameter = parameter;
+    }
 }

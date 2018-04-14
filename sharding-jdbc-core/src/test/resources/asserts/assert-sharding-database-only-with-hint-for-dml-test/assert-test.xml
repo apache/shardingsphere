@@ -1,0 +1,146 @@
+<asserts sharding-rule-config="./config/test.yaml" base-config="db" base-config-path="classpath:integrate/dbtest/db">
+    <assertDML id="assertInsertWithAllPlaceholders1" init-data-file="./init" expected-update="1"
+               sql="assertInsertOrderWithAllPlaceholders"
+               expected-sql="assertSelectEqualsWithSingleTable"
+               expected-data-file="./asserts/dml/insert/insert1.xml">
+        <parameters>
+            <parameter>
+                <value value="1" type="int"/>
+                <value value="1" type="int"/>
+                <value value="insert"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="1" type="int"/>
+            <value value="1" type="int"/>
+        </expected-parameter>
+    </assertDML>
+    <assertDML id="assertInsertWithAllPlaceholders2" init-data-file="./init" expected-update="1"
+               sql="assertInsertOrderWithAllPlaceholders"
+               expected-sql="assertSelectEqualsWithSingleTable"
+               expected-data-file="./asserts/dml/insert/insert2.xml">
+        <parameters>
+            <parameter>
+                <value value="2" type="int"/>
+                <value value="2" type="int"/>
+                <value value="insert"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="2" type="int"/>
+            <value value="2" type="int"/>
+        </expected-parameter>
+    </assertDML>
+    <assertDML id="assertInsertWithAllPlaceholders3" init-data-file="./init" expected-update="1"
+               sql="assertInsertOrderWithAllPlaceholders"
+               expected-sql="assertSelectEqualsWithSingleTable"
+               expected-data-file="./asserts/dml/insert/insert3.xml">
+        <parameters>
+            <parameter>
+                <value value="3" type="int"/>
+                <value value="3" type="int"/>
+                <value value="insert"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="3" type="int"/>
+            <value value="3" type="int"/>
+        </expected-parameter>
+    </assertDML>
+    <assertDML id="assertInsertWithAllPlaceholders4" init-data-file="./init" expected-update="1"
+               sql="assertInsertOrderWithAllPlaceholders"
+               expected-sql="assertSelectEqualsWithSingleTable"
+               expected-data-file="./asserts/dml/insert/insert4.xml">
+        <parameters>
+            <parameter>
+                <value value="4" type="int"/>
+                <value value="4" type="int"/>
+                <value value="insert"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="4" type="int"/>
+            <value value="4" type="int"/>
+        </expected-parameter>
+    </assertDML>
+    <assertDML id="assertInsertWithAllPlaceholders5" init-data-file="./init" expected-update="1"
+               sql="assertInsertOrderWithAllPlaceholders"
+               expected-sql="assertSelectEqualsWithSingleTable"
+               expected-data-file="./asserts/dml/insert/insert5.xml">
+        <parameters>
+            <parameter>
+                <value value="5" type="int"/>
+                <value value="5" type="int"/>
+                <value value="insert"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="5" type="int"/>
+            <value value="5" type="int"/>
+        </expected-parameter>
+    </assertDML>
+    <assertDML id="assertInsertWithAllPlaceholders6" init-data-file="./init" expected-update="1"
+               sql="assertInsertOrderWithAllPlaceholders"
+               expected-sql="assertSelectEqualsWithSingleTable"
+               expected-data-file="./asserts/dml/insert/insert6.xml">
+        <parameters>
+            <parameter>
+                <value value="6" type="int"/>
+                <value value="6" type="int"/>
+                <value value="insert"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="6" type="int"/>
+            <value value="6" type="int"/>
+        </expected-parameter>
+    </assertDML>
+    <assertDML id="assertInsertWithAllPlaceholders7" init-data-file="./init" expected-update="1"
+               sql="assertInsertOrderWithAllPlaceholders"
+               expected-sql="assertSelectEqualsWithSingleTable"
+               expected-data-file="./asserts/dml/insert/insert7.xml">
+        <parameters>
+            <parameter>
+                <value value="7" type="int"/>
+                <value value="7" type="int"/>
+                <value value="insert"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="7" type="int"/>
+            <value value="7" type="int"/>
+        </expected-parameter>
+    </assertDML>
+    <assertDML id="assertInsertWithAllPlaceholders8" init-data-file="./init" expected-update="1"
+               sql="assertInsertOrderWithAllPlaceholders"
+               expected-sql="assertSelectEqualsWithSingleTable"
+               expected-data-file="./asserts/dml/insert/insert8.xml">
+        <parameters>
+            <parameter>
+                <value value="8" type="int"/>
+                <value value="8" type="int"/>
+                <value value="insert"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="8" type="int"/>
+            <value value="8" type="int"/>
+        </expected-parameter>
+    </assertDML>
+    <assertDML id="assertInsertWithAllPlaceholders9" init-data-file="./init" expected-update="1"
+               sql="assertInsertOrderWithAllPlaceholders"
+               expected-sql="assertSelectEqualsWithSingleTable"
+               expected-data-file="./asserts/dml/insert/insert9.xml">
+        <parameters>
+            <parameter>
+                <value value="9" type="int"/>
+                <value value="9" type="int"/>
+                <value value="insert"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="9" type="int"/>
+            <value value="9" type="int"/>
+        </expected-parameter>
+    </assertDML>
+</asserts>

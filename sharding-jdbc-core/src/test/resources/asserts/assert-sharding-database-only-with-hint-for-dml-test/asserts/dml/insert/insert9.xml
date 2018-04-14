@@ -1,10 +1,11 @@
 <init>
     <metadata>
-        <table name="t_order">
+        <table name="data">
             <cloumn name="order_id" type="int" />
             <cloumn name="user_id" type="int" />
-            <cloumn name="status" type="varchar"/>
-            <cloumn name="name" type="varchar"/>
         </table>
     </metadata>
+    <dataset>
+        <data order_id="9" user_id="9" status="insert"/>
+    </dataset>
 </init>

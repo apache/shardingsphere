@@ -6,6 +6,6 @@
         </table>
     </metadata>
     <dataset>
-        <data order_id="1000" user_id="10" status="update"/>
+        <data order_id="5" user_id="5" status="insert"/>
     </dataset>
 </init>

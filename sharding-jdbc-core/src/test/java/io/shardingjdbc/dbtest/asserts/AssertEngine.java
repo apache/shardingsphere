@@ -31,9 +31,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.dbtest.StartTest;
-import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
-import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
-import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
+import io.shardingjdbc.dbtest.config.bean.*;
 import io.shardingjdbc.dbtest.init.InItCreateSchema;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.Getter;
@@ -46,11 +44,7 @@ import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.dbtest.common.DatabaseUtil;
 import io.shardingjdbc.dbtest.common.PathUtil;
-import io.shardingjdbc.dbtest.config.bean.AssertDQLDefinition;
-import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
 import io.shardingjdbc.dbtest.config.AnalyzeDataset;
-import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
-import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
 
 public class AssertEngine {
@@ -221,7 +215,7 @@ public class AssertEngine {
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getInstance().getSQL(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
-                        anAssert.getExpectedParameters());
+                        anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
             }
         } finally {
@@ -234,8 +228,11 @@ public class AssertEngine {
             try (Connection con = dataSource.getConnection()) {
                 //InItCreateSchema.dropTable();
                 //InItCreateSchema.createTable();
+                ParametersDefinition parametersDefinition = new ParametersDefinition();
+                parametersDefinition.setNewParameter(Arrays.asList(anAssert.getParameter()));
+                
                 DatabaseUtil.updateUsePreparedStatementToExecute(con, rootsql,
-                        anAssert.getParameters());
+                        parametersDefinition);
                 String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
                 
@@ -263,7 +260,7 @@ public class AssertEngine {
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getInstance().getSQL(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
-                        anAssert.getExpectedParameters());
+                        anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
             }
         } finally {
@@ -276,8 +273,11 @@ public class AssertEngine {
             try (Connection con = dataSource.getConnection()) {
                 //InItCreateSchema.dropTable();
                 //InItCreateSchema.createTable();
+                ParametersDefinition parametersDefinition = new ParametersDefinition();
+                parametersDefinition.setNewParameter(Arrays.asList(anAssert.getParameter()));
+                
                 DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(con, rootsql,
-                        anAssert.getParameters());
+                        parametersDefinition);
                 String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
                 
@@ -306,7 +306,7 @@ public class AssertEngine {
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getInstance().getSQL(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
-                        anAssert.getExpectedParameters());
+                        anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
             }
         } finally {
@@ -319,7 +319,10 @@ public class AssertEngine {
             try (Connection con = dataSource.getConnection()) {
                 //InItCreateSchema.dropTable();
                 //InItCreateSchema.createTable();
-                DatabaseUtil.updateUseStatementToExecute(con, rootsql, anAssert.getParameters());
+                ParametersDefinition parametersDefinition = new ParametersDefinition();
+                parametersDefinition.setNewParameter(Arrays.asList(anAssert.getParameter()));
+                
+                DatabaseUtil.updateUseStatementToExecute(con, rootsql, parametersDefinition);
                 
                 String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
@@ -347,7 +350,7 @@ public class AssertEngine {
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getInstance().getSQL(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
-                        anAssert.getExpectedParameters());
+                        anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
                 
             }
@@ -359,9 +362,11 @@ public class AssertEngine {
     private static void doUpdateUseStatementToExecuteUpdateDDL(final String rootPath, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
-                //InItCreateSchema.dropTable(anAssert.getCleanSql());
-                //InItCreateSchema.createTable(anAssert.getInitSql());
-                DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootsql, anAssert.getParameters());
+    
+                ParametersDefinition parametersDefinition = new ParametersDefinition();
+                parametersDefinition.setNewParameter(Arrays.asList(anAssert.getParameter()));
+                
+                DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootsql, parametersDefinition);
                 String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
                 

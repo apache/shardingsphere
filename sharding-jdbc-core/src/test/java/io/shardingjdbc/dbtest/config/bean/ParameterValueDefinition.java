@@ -22,33 +22,17 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AssertDMLDefinition implements AssertDefinition {
+public class ParameterValueDefinition {
 
-    @XmlAttribute(name = "id")
-    private String id;
+    @XmlAttribute(name = "value")
+    private String value;
 
-    @XmlAttribute(name = "init-data-file")
-    private String initDataFile;
+    @XmlAttribute(name = "type")
+    private String type = "String";
 
-    @XmlAttribute(name = "expected-data-file")
-    private String expectedDataFile;
 
-    @XmlAttribute(name = "expected-update")
-    private Integer expectedUpdate;
-    
-    @XmlAttribute(name = "sql")
-    private String sql;
-    
-    @XmlAttribute(name = "expected-sql")
-    private String expectedSql;
 
-    @XmlElement(name = "parameters")
-    private ParametersDefinition parameters;
-    
-    @XmlElement(name = "expected-parameter")
-    private ParameterDefinition expectedParameter;
 }

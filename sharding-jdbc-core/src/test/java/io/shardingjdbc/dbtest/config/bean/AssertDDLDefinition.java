@@ -46,7 +46,7 @@ public class AssertDDLDefinition implements AssertDefinition {
     @XmlAttribute(name = "table")
     private String table;
 
-    @XmlElement(name = "parameters")
-    private ParametersDefinition parameters = new ParametersDefinition();
+    @XmlElement(name = "parameter")
+    private ParameterDefinition parameter = new ParameterDefinition();
     
 }

@@ -40,7 +40,7 @@ public class AssertDQLDefinition implements AssertDefinition {
     @XmlAttribute(name = "sql")
     private String sql;
     
-    @XmlElement(name = "parameters")
-    private ParametersDefinition parameters;
+    @XmlElement(name = "parameter")
+    private ParameterDefinition parameters = new ParameterDefinition();
     
 }

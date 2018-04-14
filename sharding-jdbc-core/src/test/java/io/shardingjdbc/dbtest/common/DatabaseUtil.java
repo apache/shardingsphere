@@ -28,15 +28,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
+import io.shardingjdbc.dbtest.config.bean.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
-import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
-import io.shardingjdbc.dbtest.config.bean.ParametersDefinition;
-import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
-import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
 import org.junit.Assert;
 
@@ -192,8 +188,10 @@ public class DatabaseUtil {
         List<ParameterDefinition> parameter = parameters.getParameter();
         int result = 0;
         try (Statement pstmt = conn.createStatement()) {
-            String newSql = sqlStatement(sql, parameter);
-            result = pstmt.executeUpdate(newSql);
+            for (ParameterDefinition parameterDefinition : parameter) {
+                String newSql = sqlStatement(sql, parameterDefinition.getValues());
+                result = result + pstmt.executeUpdate(newSql);
+            }
         }
         return result;
     }
@@ -205,9 +203,13 @@ public class DatabaseUtil {
      * @param parameter parameter
      * @return sql
      */
-    private static String sqlStatement(final String sql, final List<ParameterDefinition> parameter) {
+    private static String sqlStatement(final String sql, final List<ParameterValueDefinition> parameter) {
+        if (parameter == null) {
+            return sql;
+        }
         String result = sql;
-        for (ParameterDefinition parameterDefinition : parameter) {
+        for (ParameterValueDefinition parameterDefinition : parameter) {
+            
             String type = parameterDefinition.getType();
             String datacol = parameterDefinition.getValue();
             switch (type) {
@@ -252,9 +254,14 @@ public class DatabaseUtil {
                                                       final ParametersDefinition parameters) throws SQLException {
         List<ParameterDefinition> parameter = parameters.getParameter();
         try (Statement pstmt = conn.createStatement()) {
-            String newSql = sqlStatement(sql, parameter);
-            return pstmt.execute(newSql);
+            for (ParameterDefinition parameterDefinition : parameter) {
+                String newSql = sqlStatement(sql, parameterDefinition.getValues());
+                if (!pstmt.execute(newSql)) {
+                    return false;
+                }
+            }
         }
+        return true;
     }
     
     /**
@@ -273,8 +280,10 @@ public class DatabaseUtil {
         int result = 0;
         String newSql = sql.replaceAll("\\%s", "?");
         try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
-            sqlPreparedStatement(parameter, pstmt);
-            result = pstmt.executeUpdate();
+            for (ParameterDefinition parameterDefinition : parameter) {
+                sqlPreparedStatement(parameterDefinition.getValues(), pstmt);
+                result = result + pstmt.executeUpdate();
+            }
         }
         return result;
     }
@@ -294,9 +303,14 @@ public class DatabaseUtil {
         List<ParameterDefinition> parameter = parameters.getParameter();
         String newSql = sql.replaceAll("\\%s", "?");
         try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
-            sqlPreparedStatement(parameter, pstmt);
-            return pstmt.execute();
+            for (ParameterDefinition parameterDefinition : parameter) {
+                sqlPreparedStatement(parameterDefinition.getValues(), pstmt);
+                if (!pstmt.execute()) {
+                    return false;
+                }
+            }
         }
+        return true;
     }
     
     /**
@@ -310,8 +324,8 @@ public class DatabaseUtil {
      * @throws ParseException ParseException
      */
     public static DatasetDatabase selectUsePreparedStatement(final Connection conn, final String sql,
-                                                             final ParametersDefinition parameters) throws SQLException, ParseException {
-        List<ParameterDefinition> parameter = parameters.getParameter();
+                                                             final ParameterDefinition parameters) throws SQLException, ParseException {
+        List<ParameterValueDefinition> parameter = parameters.getValues();
         String newSql = sql.replaceAll("\\%s", "?");
         try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
             sqlPreparedStatement(parameter, pstmt);
@@ -332,8 +346,8 @@ public class DatabaseUtil {
      * @throws ParseException ParseException
      */
     public static DatasetDatabase selectUsePreparedStatementToExecuteSelect(final Connection conn, final String sql,
-                                                                            final ParametersDefinition parameters) throws SQLException, ParseException {
-        List<ParameterDefinition> parameter = parameters.getParameter();
+                                                                            final ParameterDefinition parameters) throws SQLException, ParseException {
+        List<ParameterValueDefinition> parameter = parameters.getValues();
         String newSql = sql.replaceAll("\\%s", "?");
         try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
             sqlPreparedStatement(parameter, pstmt);
@@ -426,8 +440,8 @@ public class DatabaseUtil {
      * @throws SQLException SQL executes exceptions
      */
     public static DatasetDatabase selectUseStatement(final Connection conn, final String sql,
-                                                     final ParametersDefinition parameters) throws SQLException {
-        List<ParameterDefinition> parameter = parameters.getParameter();
+                                                     final ParameterDefinition parameters) throws SQLException {
+        List<ParameterValueDefinition> parameter = parameters.getValues();
         try (Statement pstmt = conn.createStatement()) {
             String newSql = sqlStatement(sql, parameter);
             try (ResultSet resultSet = pstmt.executeQuery(newSql)) {
@@ -446,8 +460,8 @@ public class DatabaseUtil {
      * @throws SQLException SQL executes exceptions
      */
     public static DatasetDatabase selectUseStatementToExecuteSelect(final Connection conn, final String sql,
-                                                                    final ParametersDefinition parameters) throws SQLException {
-        List<ParameterDefinition> parameter = parameters.getParameter();
+                                                                    final ParameterDefinition parameters) throws SQLException {
+        List<ParameterValueDefinition> parameter = parameters.getValues();
         try (Statement pstmt = conn.createStatement()) {
             String newSql = sqlStatement(sql, parameter);
             try (ResultSet resultSet = pstmt.executeQuery(newSql)) {
@@ -492,10 +506,13 @@ public class DatabaseUtil {
      * @throws SQLException   SQL executes exceptions
      * @throws ParseException ParseException
      */
-    private static void sqlPreparedStatement(final List<ParameterDefinition> parameter, final PreparedStatement pstmt)
+    private static void sqlPreparedStatement(final List<ParameterValueDefinition> parameter, final PreparedStatement pstmt)
             throws SQLException, ParseException {
+        if (parameter == null) {
+            return;
+        }
         int index = 1;
-        for (ParameterDefinition parameterDefinition : parameter) {
+        for (ParameterValueDefinition parameterDefinition : parameter) {
             String type = parameterDefinition.getType();
             String datacol = parameterDefinition.getValue();
             switch (type) {
@@ -684,7 +701,7 @@ public class DatabaseUtil {
                 Map<String, String> expectData = data.get(i);
                 Map<String, String> actualData = actualDatas.get(i);
                 for (Map.Entry<String, String> stringStringEntry : expectData.entrySet()) {
-                    assertTrue(msg, stringStringEntry.getValue().equals(actualData.get(stringStringEntry.getKey())));
+                    assertTrue(msg + " result set validation failed", stringStringEntry.getValue().equals(actualData.get(stringStringEntry.getKey())));
                 }
                 
             }
