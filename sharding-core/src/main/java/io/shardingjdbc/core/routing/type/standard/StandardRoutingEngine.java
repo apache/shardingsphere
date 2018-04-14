@@ -104,20 +104,11 @@ public final class StandardRoutingEngine implements RoutingEngine {
             return result;
         }
         for (ShardingValue each : shardingConditions.get(0).getShardingValues()) {
-            if (logicTableName.equals(each.getLogicTableName()) && isInShardingColumns(shardingColumns, each.getColumnName())) {
+            if (logicTableName.equals(each.getLogicTableName()) && shardingColumns.contains(each.getColumnName())) {
                 result.add(each);
             }
         }
         return result;
-    }
-    
-    private boolean isInShardingColumns(final Collection<String> shardingColumns, final String columnName) {
-        for (String each : shardingColumns) {
-            if (each.equalsIgnoreCase(columnName)) {
-                return true;
-            }
-        }
-        return false;
     }
     
     private Collection<String> routeDataSources(final TableRule tableRule, final List<ShardingValue> databaseShardingValues) {
