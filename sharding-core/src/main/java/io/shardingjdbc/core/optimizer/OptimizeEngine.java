@@ -45,7 +45,7 @@ import java.util.Map.Entry;
  *
  * @author maxiaoguang
  */
-public class OptimizeEngine {
+public final class OptimizeEngine {
     
     /**
      * Get sharding conditions.

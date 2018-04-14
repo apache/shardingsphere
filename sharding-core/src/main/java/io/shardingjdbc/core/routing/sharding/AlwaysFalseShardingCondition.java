@@ -17,13 +17,10 @@
 
 package io.shardingjdbc.core.routing.sharding;
 
-import lombok.NoArgsConstructor;
-
 /**
  * Sharding conditions.
  *
  * @author maxiaoguang
  */
-@NoArgsConstructor
 public final class AlwaysFalseShardingCondition extends ShardingCondition {
 }
