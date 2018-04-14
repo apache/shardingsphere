@@ -75,7 +75,11 @@ public final class OptimizeEngine {
     private ShardingCondition optimize(final Map<Column, List<Condition>> conditionsMap, final List<Object> parameters) throws ShardingConditionAlwaysFalseException {
         ShardingCondition result = new ShardingCondition();
         for (Entry<Column, List<Condition>> entry : conditionsMap.entrySet()) {
-            result.getShardingValues().add(optimize(entry.getKey(), entry.getValue(), parameters));
+            try {
+                result.getShardingValues().add(optimize(entry.getKey(), entry.getValue(), parameters));
+            } catch (final ClassCastException ex) {
+                throw new ShardingJdbcException("Found different types for sharding value `%s`.", entry.getKey());
+            }
         }
         return result;
     }
@@ -87,7 +91,7 @@ public final class OptimizeEngine {
             List<Comparable<?>> conditionValues = each.getConditionValues(parameters);
             if (ShardingOperator.EQUAL == each.getOperator() || ShardingOperator.IN == each.getOperator()) {
                 listValue = optimize(conditionValues, listValue);
-                if (null == listValue) {
+                if (listValue.isEmpty()) {
                     throw new ShardingConditionAlwaysFalseException();
                 }
             }
@@ -96,46 +100,32 @@ public final class OptimizeEngine {
                     rangeValue = optimize(Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED), rangeValue);
                 } catch (final IllegalArgumentException ex) {
                     throw new ShardingConditionAlwaysFalseException();
-                } catch (final ClassCastException ex) {
-                    throw new ShardingJdbcException("Found different types for sharding value `%s`.", column);
                 }
             }
         }
         if (null == listValue) {
             return new RangeShardingValue<>(column.getTableName(), column.getName(), rangeValue);
         }
-        if (null != rangeValue) {
-            try {
-                listValue = optimize(listValue, rangeValue);
-            } catch (final ClassCastException ex) {
-                throw new ShardingJdbcException("Found different types for sharding value `%s`.", column);
-            }
+        if (null == rangeValue) {
+            return new ListShardingValue<>(column.getTableName(), column.getName(), listValue);
         }
-        if (null == listValue) {
+        listValue = optimize(listValue, rangeValue);
+        if (listValue.isEmpty()) {
             throw new ShardingConditionAlwaysFalseException();
         }
         return new ListShardingValue<>(column.getTableName(), column.getName(), listValue);
     }
     
     private List<Comparable<?>> optimize(final List<Comparable<?>> value1, final List<Comparable<?>> value2) {
-        if (null == value1) {
-            return value2;
-        }
         if (null == value2) {
             return value1;
         }
         value1.retainAll(value2);
-        return value1.isEmpty() ? null : value1;
+        return value1;
     }
     
     private Range<Comparable<?>> optimize(final Range<Comparable<?>> value1, final Range<Comparable<?>> value2) {
-        if (null == value1) {
-            return value2;
-        }
-        if (null == value2) {
-            return value1;
-        }
-        return value1.intersection(value2);
+        return null == value2 ? value1 : value1.intersection(value2);
     }
     
     private List<Comparable<?>> optimize(final List<Comparable<?>> listValue, final Range<Comparable<?>> rangeValue) {
@@ -144,9 +134,6 @@ public final class OptimizeEngine {
             if (rangeValue.contains(each)) {
                 result.add(each);
             }
-        }
-        if (result.isEmpty()) {
-            return null;
         }
         return result;
     }
