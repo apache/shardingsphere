@@ -139,7 +139,6 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
                 setJDBCPreparedStatementParameters(preparedStatement);
                 affectedRows = preparedStatement.executeUpdate();
             }
-
             return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));

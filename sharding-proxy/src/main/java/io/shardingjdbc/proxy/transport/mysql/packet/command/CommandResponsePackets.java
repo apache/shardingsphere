@@ -18,50 +18,55 @@
 package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
-import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
-import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
-import lombok.Generated;
 import lombok.Getter;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Command packet.
+ * Command response packet.
  *
- * @author zhangliang
+ * @author zhangyonglun
  */
+@Getter
 public class CommandResponsePackets {
     
-    @Getter
     private final List<DatabaseProtocolPacket> databaseProtocolPackets;
-    
-//    private final Iterator<DatabaseProtocolPacket> packetIterator;
     
     public CommandResponsePackets() {
         databaseProtocolPackets = new LinkedList<>();
-//        packetIterator = databaseProtocolPackets.iterator();
     }
     
-    public CommandResponsePackets(DatabaseProtocolPacket databaseProtocolPacket) {
+    public CommandResponsePackets(final DatabaseProtocolPacket databaseProtocolPacket) {
         databaseProtocolPackets = new LinkedList<>();
         databaseProtocolPackets.add(databaseProtocolPacket);
     }
     
+    /**
+     * Add packet.
+     *
+     * @param databaseProtocolPacket database protocol packet
+     * @return is succeed
+     */
     public boolean addPacket(final DatabaseProtocolPacket databaseProtocolPacket) {
         return databaseProtocolPackets.add(databaseProtocolPacket);
     }
     
+    /**
+     * Get packet.
+     *
+     * @param index index
+     * @return database protocol packet
+     */
     public DatabaseProtocolPacket getPacket(final int index) {
         return databaseProtocolPackets.get(index);
     }
     
-//    public DatabaseProtocolPacket nextPacket() {
-//        return packetIterator.next();
-//    }
-    
+    /**
+     * Size of databaseProtocolPackets.
+     *
+     * @return size
+     */
     public int size() {
         return databaseProtocolPackets.size();
     }

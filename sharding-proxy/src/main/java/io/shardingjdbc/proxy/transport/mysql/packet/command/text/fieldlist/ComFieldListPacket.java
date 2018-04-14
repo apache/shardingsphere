@@ -26,8 +26,6 @@ import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
 /**
  * COM_FIELD_LIST command packet.
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>

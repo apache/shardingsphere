@@ -18,15 +18,11 @@
 package io.shardingjdbc.proxy.transport.mysql.packet.command.text.quit;
 
 import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
-import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * COM_QUIT command packet.

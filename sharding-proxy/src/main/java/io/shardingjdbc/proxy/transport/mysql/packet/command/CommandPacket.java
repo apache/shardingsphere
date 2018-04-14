@@ -17,10 +17,7 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
-import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
-
-import java.util.List;
 
 /**
  * Command packet.
