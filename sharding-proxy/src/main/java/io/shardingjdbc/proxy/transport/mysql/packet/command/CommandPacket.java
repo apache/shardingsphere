@@ -38,5 +38,5 @@ public abstract class CommandPacket extends MySQLPacket {
      * 
      * @return result packets to be sent
      */
-    public abstract List<DatabaseProtocolPacket> execute();
+    public abstract CommandResponsePackets execute();
 }
