@@ -31,7 +31,7 @@ import java.util.LinkedList;
  */
 @NoArgsConstructor
 @Getter
-public class CommandResponsePackets {
+public final class CommandResponsePackets {
     
     private final Collection<DatabaseProtocolPacket> databaseProtocolPackets = new LinkedList<>();
     
