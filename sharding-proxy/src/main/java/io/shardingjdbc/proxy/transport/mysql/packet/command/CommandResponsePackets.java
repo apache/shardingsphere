@@ -21,8 +21,8 @@ import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Command response packet.
@@ -33,7 +33,7 @@ import java.util.List;
 @Getter
 public class CommandResponsePackets {
     
-    private final List<DatabaseProtocolPacket> databaseProtocolPackets = new LinkedList<>();
+    private final Collection<DatabaseProtocolPacket> databaseProtocolPackets = new LinkedList<>();
     
     public CommandResponsePackets(final DatabaseProtocolPacket databaseProtocolPacket) {
         databaseProtocolPackets.add(databaseProtocolPacket);
@@ -49,13 +49,12 @@ public class CommandResponsePackets {
     }
     
     /**
-     * Get packet.
+     * Get head packet.
      *
-     * @param index index
-     * @return database protocol packet
+     * @return head database protocol packet
      */
-    public DatabaseProtocolPacket getPacket(final int index) {
-        return databaseProtocolPackets.get(index);
+    public DatabaseProtocolPacket getHeadPacket() {
+        return databaseProtocolPackets.iterator().next();
     }
     
     /**

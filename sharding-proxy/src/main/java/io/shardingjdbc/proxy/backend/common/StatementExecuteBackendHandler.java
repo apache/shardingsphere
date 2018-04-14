@@ -211,17 +211,17 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         if (1 == packets.size()) {
             return packets.iterator().next();
         }
-        CommandResponsePackets firstPackets = new CommandResponsePackets();
+        CommandResponsePackets headPackets = new CommandResponsePackets();
         for (CommandResponsePackets each : packets) {
-            firstPackets.addPacket(each.getPacket(0));
+            headPackets.addPacket(each.getHeadPacket());
         }
-        for (DatabaseProtocolPacket each : firstPackets.getDatabaseProtocolPackets()) {
+        for (DatabaseProtocolPacket each : headPackets.getDatabaseProtocolPackets()) {
             if (each instanceof ErrPacket) {
                 return new CommandResponsePackets(each);
             }
         }
         if (SQLType.DML == sqlStatement.getType()) {
-            return mergeDML(firstPackets);
+            return mergeDML(headPackets);
         }
         if (SQLType.DQL == sqlStatement.getType() || SQLType.DAL == sqlStatement.getType()) {
             return mergeDQLorDAL(sqlStatement, packets, columnTypes);
