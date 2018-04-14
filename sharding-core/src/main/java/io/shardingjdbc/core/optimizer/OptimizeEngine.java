@@ -75,17 +75,17 @@ public final class OptimizeEngine {
             for (Condition each : entry.getValue()) {
                 List<Comparable<?>> conditionValues = each.getConditionValues(parameters);
                 if (ShardingOperator.EQUAL == each.getOperator() || ShardingOperator.IN == each.getOperator()) {
-                    listValue = getOptimizeValue(conditionValues, listValue);
+                    listValue = optimize(conditionValues, listValue);
                     if (null == listValue) {
                         return new AlwaysFalseShardingCondition();
                     }
                 }
                 if (ShardingOperator.BETWEEN == each.getOperator()) {
                     try {
-                        rangeValue = getOptimizeValue(Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED), rangeValue);
-                    } catch (IllegalArgumentException e) {
+                        rangeValue = optimize(Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED), rangeValue);
+                    } catch (final IllegalArgumentException ex) {
                         return new AlwaysFalseShardingCondition();
-                    } catch (ClassCastException e) {
+                    } catch (final ClassCastException ex) {
                         throw new ShardingJdbcException("Found different types for sharding value `%s`.", entry.getKey());
                     }
                 }
@@ -95,8 +95,8 @@ public final class OptimizeEngine {
             } else {
                 if (null != rangeValue) {
                     try {
-                        listValue = getOptimizeValue(listValue, rangeValue);
-                    } catch (ClassCastException e) {
+                        listValue = optimize(listValue, rangeValue);
+                    } catch (final ClassCastException ex) {
                         throw new ShardingJdbcException("Found different types for sharding value `%s`.", entry.getKey());
                     }
                 }
@@ -109,40 +109,28 @@ public final class OptimizeEngine {
         return result;
     }
     
-    private Map<Column, List<Condition>> getConditionsMap(final AndCondition andCondition, final GeneratedKey generatedKey) {
-        Map<Column, List<Condition>> result = andCondition.getConditionsMap();
-        if (null == generatedKey) {
-            return result;
+    private List<Comparable<?>> optimize(final List<Comparable<?>> value1, final List<Comparable<?>> value2) {
+        if (null == value1) {
+            return value2;
         }
-        result.put(generatedKey.getColumn(), Collections.<Condition>singletonList(new GeneratedKeyCondition(generatedKey)));
-        return result;
+        if (null == value2) {
+            return value1;
+        }
+        value1.retainAll(value2);
+        return value1.isEmpty() ? null : value1;
     }
     
-    private List<Comparable<?>> getOptimizeValue(final List<Comparable<?>> listValue1, final List<Comparable<?>> listValue2) {
-        if (null == listValue1) {
-            return listValue2;
+    private Range<Comparable<?>> optimize(final Range<Comparable<?>> value1, final Range<Comparable<?>> value2) {
+        if (null == value1) {
+            return value2;
         }
-        if (null == listValue2) {
-            return listValue1;
+        if (null == value2) {
+            return value1;
         }
-        listValue1.retainAll(listValue2);
-        if (listValue1.isEmpty()) {
-            return null;
-        }
-        return listValue1;
+        return value1.intersection(value2);
     }
     
-    private Range<Comparable<?>> getOptimizeValue(final Range<Comparable<?>> rangeValue1, final Range<Comparable<?>> rangeValue2) {
-        if (null == rangeValue1) {
-            return rangeValue2;
-        }
-        if (null == rangeValue2) {
-            return rangeValue1;
-        }
-        return rangeValue1.intersection(rangeValue2);
-    }
-    
-    private List<Comparable<?>> getOptimizeValue(final List<Comparable<?>> listValue, final Range<Comparable<?>> rangeValue) {
+    private List<Comparable<?>> optimize(final List<Comparable<?>> listValue, final Range<Comparable<?>> rangeValue) {
         List<Comparable<?>> result = new LinkedList<>();
         for (Comparable<?> each : listValue) {
             if (rangeValue.contains(each)) {
@@ -155,4 +143,12 @@ public final class OptimizeEngine {
         return result;
     }
     
+    private Map<Column, List<Condition>> getConditionsMap(final AndCondition andCondition, final GeneratedKey generatedKey) {
+        Map<Column, List<Condition>> result = andCondition.getConditionsMap();
+        if (null == generatedKey) {
+            return result;
+        }
+        result.put(generatedKey.getColumn(), Collections.<Condition>singletonList(new GeneratedKeyCondition(generatedKey)));
+        return result;
+    }
 }
