@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.routing.sharding;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
@@ -29,6 +30,7 @@ import java.util.List;
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
+@Getter
 public final class ShardingConditions {
     
     private final List<ShardingCondition> shardingConditions;
@@ -38,48 +40,19 @@ public final class ShardingConditions {
     }
     
     /**
-     * Adjust sharding conditions is always false.
+     * Adjust sharding conditions is always false or not.
      *
-     * @return sharding conditions is always false
+     * @return sharding conditions is always false or not
      */
     public boolean isAlwaysFalse() {
-        if (isEmpty()) {
+        if (shardingConditions.isEmpty()) {
             return false;
         }
-        for (ShardingCondition shardingCondition : shardingConditions) {
-            if (!(shardingCondition instanceof AlwaysFalseShardingCondition)) {
+        for (ShardingCondition each : shardingConditions) {
+            if (!(each instanceof AlwaysFalseShardingCondition)) {
                 return false;
             }
         }
         return true;
-    }
-    
-    /**
-     * Add sharding value.
-     *
-     * @param shardingCondition sharding condition
-     */
-    public void add(final ShardingCondition shardingCondition) {
-        shardingConditions.add(shardingCondition);
-    }
-    
-    /**
-     * Get sharding condition via index.
-     *
-     * @param index index of sharding conditions
-     * @return index of sharding conditions
-     * @throws IndexOutOfBoundsException if the index is out of range
-     */
-    public ShardingCondition get(final int index) {
-        return shardingConditions.get(index);
-    }
-    
-    /**
-     * Adjust sharding conditions is empty or not.
-     *
-     * @return sharding conditions is empty or not
-     */
-    public boolean isEmpty() {
-        return shardingConditions.isEmpty();
     }
 }

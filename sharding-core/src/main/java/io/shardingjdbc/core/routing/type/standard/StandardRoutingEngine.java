@@ -100,10 +100,10 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private List<ShardingValue> getShardingValues(final Collection<String> shardingColumns) {
         List<ShardingValue> result = new LinkedList<>();
-        if (shardingConditions.isEmpty()) {
+        if (shardingConditions.getShardingConditions().isEmpty()) {
             return result;
         }
-        for (ShardingValue each : shardingConditions.get(0).getShardingValues()) {
+        for (ShardingValue each : shardingConditions.getShardingConditions().get(0).getShardingValues()) {
             if (logicTableName.equals(each.getLogicTableName()) && shardingColumns.contains(each.getColumnName())) {
                 result.add(each);
             }
