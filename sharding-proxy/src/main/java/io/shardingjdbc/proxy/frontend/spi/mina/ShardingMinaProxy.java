@@ -15,37 +15,25 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy;
+package io.shardingjdbc.proxy.frontend.spi.mina;
 
-import io.shardingjdbc.proxy.frontend.spi.netty.ShardingNettyProxy;
+import io.shardingjdbc.proxy.frontend.spi.ShardingProxy;
 
 /**
- * Sharding-Proxy Bootstrap.
+ * Sharding-Mina-Proxy.
  *
- * @author zhangliang
+ * @author xiaoyu
  */
-public final class Bootstrap {
-    
-    private static final int DEFAULT_PORT = 3307;
+public final class ShardingMinaProxy implements ShardingProxy {
     
     /**
-     * Main Entrance.
+     * Start Sharding-Proxy.
      * 
-     * @param args startup arguments
+     * @param port port
      * @throws InterruptedException interrupted exception
      */
-    public static void main(final String[] args) throws InterruptedException {
-        new ShardingNettyProxy().start(getPort(args));
-    }
-    
-    private static int getPort(final String[] args) {
-        if (0 == args.length) {
-            return DEFAULT_PORT;
-        }
-        try {
-            return Integer.parseInt(args[0]);
-        } catch (final NumberFormatException ex) {
-            return DEFAULT_PORT;
-        }
+    @Override
+    public void start(final int port) throws InterruptedException {
+
     }
 }

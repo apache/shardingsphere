@@ -19,6 +19,7 @@ package io.shardingjdbc.proxy.frontend.mysql;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingjdbc.proxy.frontend.common.FrontendHandler;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -33,19 +34,26 @@ import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakeResponse4
 
 /**
  * MySQL frontend handler.
- * 
- * @author zhangliang 
+ *
+ * @author zhangliang
  */
 public final class MySQLFrontendHandler extends FrontendHandler {
-    
+
     private AuthPluginData authPluginData;
-    
+
+
+    /**
+     * handle with oneself thread pool
+     */
+    private NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
+
+
     @Override
     protected void handshake(final ChannelHandlerContext context) {
         authPluginData = new AuthPluginData();
         context.writeAndFlush(new HandshakePacket(ConnectionIdGenerator.getInstance().nextId(), authPluginData));
     }
-    
+
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
@@ -53,15 +61,23 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
         context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
     }
-    
+
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
-        int sequenceId = mysqlPacketPayload.readInt1();
-        CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, mysqlPacketPayload);
-        for (DatabaseProtocolPacket each : commandPacket.execute()) {
-            context.write(each);
-        }
-        context.flush();
+        nioEventLoopGroup
+                .execute(new Runnable() {
+                             @Override
+                             public void run() {
+                                 MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
+                                 int sequenceId = mysqlPacketPayload.readInt1();
+                                 CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, mysqlPacketPayload);
+                                 for (DatabaseProtocolPacket each : commandPacket.execute()) {
+                                     context.write(each);
+                                 }
+                                 context.flush();
+                             }
+                         }
+                );
+
     }
 }
