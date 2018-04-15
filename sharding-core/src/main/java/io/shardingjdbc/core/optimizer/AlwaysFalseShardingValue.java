@@ -15,14 +15,24 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.sharding;
+package io.shardingjdbc.core.optimizer;
+
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 
 /**
- * Sharding condition always false exception.
+ * Always false sharding value.
  *
  * @author zhangliang
  */
-public final class ShardingConditionAlwaysFalseException extends Exception {
+public final class AlwaysFalseShardingValue implements ShardingValue {
     
-    private static final long serialVersionUID = 7463185076839043601L;
+    @Override
+    public String getLogicTableName() {
+        return "";
+    }
+    
+    @Override
+    public String getColumnName() {
+        return "";
+    }
 }
