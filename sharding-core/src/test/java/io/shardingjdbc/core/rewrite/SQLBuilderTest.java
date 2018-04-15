@@ -120,6 +120,13 @@ public final class SQLBuilderTest {
         assertThat(sqlBuilder.toSQL(tableTokens, createShardingRule()), is("SHOW CREATE TABLE table_1 ON ds0"));
     }
     
+    @Test
+    public void assertShardingPlaceholderToString() {
+        assertThat(new IndexPlaceholder("index_name", "table_x").toString(), is("index_name"));
+        assertThat(new SchemaPlaceholder("schema_name", "table_x").toString(), is("schema_name"));
+        assertThat(new TablePlaceholder("table_name").toString(), is("table_name"));
+    }
+    
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
