@@ -15,7 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.sharding;
+package io.shardingjdbc.core.optimizer.query;
+
+import io.shardingjdbc.core.optimizer.condition.ShardingCondition;
 
 /**
  * Always false sharding condition.

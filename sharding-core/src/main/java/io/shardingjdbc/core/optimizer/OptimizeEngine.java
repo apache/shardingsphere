@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.optimizer;
 
-import io.shardingjdbc.core.routing.sharding.ShardingConditions;
+import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 
 /**
  * Optimize engine.

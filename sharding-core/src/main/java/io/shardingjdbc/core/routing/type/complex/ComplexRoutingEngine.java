@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
-import io.shardingjdbc.core.routing.sharding.ShardingConditions;
+import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.standard.StandardRoutingEngine;

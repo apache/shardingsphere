@@ -38,7 +38,7 @@ import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
-import io.shardingjdbc.core.routing.sharding.GeneratedKey;
+import io.shardingjdbc.core.routing.router.GeneratedKey;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.TableUnits;
 import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;

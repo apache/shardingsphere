@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.optimizer;
+package io.shardingjdbc.core.optimizer.query;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
@@ -24,13 +24,13 @@ import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.optimizer.OptimizeEngine;
+import io.shardingjdbc.core.optimizer.condition.ShardingCondition;
+import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 import io.shardingjdbc.core.parsing.parser.context.condition.AndCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.OrCondition;
-import io.shardingjdbc.core.routing.sharding.AlwaysFalseShardingCondition;
-import io.shardingjdbc.core.routing.sharding.ShardingCondition;
-import io.shardingjdbc.core.routing.sharding.ShardingConditions;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

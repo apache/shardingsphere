@@ -21,14 +21,15 @@ import com.google.common.collect.Range;
 import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.RangeShardingValue;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import io.shardingjdbc.core.optimizer.condition.ShardingCondition;
+import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
+import io.shardingjdbc.core.optimizer.query.QueryOptimizeEngine;
 import io.shardingjdbc.core.parsing.parser.context.condition.AndCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.OrCondition;
 import io.shardingjdbc.core.parsing.parser.expression.SQLExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
-import io.shardingjdbc.core.routing.sharding.ShardingCondition;
-import io.shardingjdbc.core.routing.sharding.ShardingConditions;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

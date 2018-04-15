@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.sharding;
+package io.shardingjdbc.core.optimizer.condition;
 
+import io.shardingjdbc.core.optimizer.query.AlwaysFalseShardingCondition;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

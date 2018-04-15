@@ -15,24 +15,23 @@
  * </p>
  */
 
-package io.shardingjdbc.core.optimizer;
+package io.shardingjdbc.core.optimizer.condition;
 
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
+import lombok.Getter;
+import lombok.ToString;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Always false sharding value.
- *
- * @author zhangliang
+ * Sharding condition.
+ * 
+ * @author maxiaoguang
  */
-public final class AlwaysFalseShardingValue implements ShardingValue {
+@Getter
+@ToString
+public class ShardingCondition {
     
-    @Override
-    public String getLogicTableName() {
-        return "";
-    }
-    
-    @Override
-    public String getColumnName() {
-        return "";
-    }
+    private final List<ShardingValue> shardingValues = new LinkedList<>();
 }

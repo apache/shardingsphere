@@ -15,16 +15,17 @@
  * </p>
  */
 
-package io.shardingjdbc.core.optimizer;
+package io.shardingjdbc.core.optimizer.insert;
 
 import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
+import io.shardingjdbc.core.optimizer.OptimizeEngine;
+import io.shardingjdbc.core.optimizer.condition.ShardingCondition;
+import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 import io.shardingjdbc.core.parsing.parser.context.condition.AndCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.OrCondition;
-import io.shardingjdbc.core.routing.sharding.GeneratedKey;
-import io.shardingjdbc.core.routing.sharding.ShardingCondition;
-import io.shardingjdbc.core.routing.sharding.ShardingConditions;
+import io.shardingjdbc.core.routing.router.GeneratedKey;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
