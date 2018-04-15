@@ -10,6 +10,7 @@ import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.OrCondition;
 import io.shardingjdbc.core.parsing.parser.expression.SQLExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
+import io.shardingjdbc.core.routing.sharding.GeneratedKey;
 import io.shardingjdbc.core.routing.sharding.ShardingCondition;
 import io.shardingjdbc.core.routing.sharding.ShardingConditions;
 import org.hamcrest.CoreMatchers;
@@ -20,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -117,6 +119,17 @@ public class OptimizeEngineTest {
         Collection<Comparable<?>> values = ((ListShardingValue<Comparable<?>>) shardingValue).getValues();
         assertThat(values.size(), is(2));
         assertTrue(values.containsAll(Arrays.asList(1, 2)));
+    }
+    
+    @Test
+    public void assertOptimizeGeneratedKeyCondition() {
+        ShardingConditions shardingConditions = new OptimizeEngine().optimize(new OrCondition(), Collections.emptyList(), new GeneratedKey(new Column("test", "test"), 0, 1));
+        assertFalse(shardingConditions.isAlwaysFalse());
+        ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
+        ShardingValue shardingValue = shardingCondition.getShardingValues().get(0);
+        Collection<Comparable<?>> values = ((ListShardingValue<Comparable<?>>) shardingValue).getValues();
+        assertThat(values.size(), is(1));
+        assertTrue(values.contains(1));
     }
     
 }
