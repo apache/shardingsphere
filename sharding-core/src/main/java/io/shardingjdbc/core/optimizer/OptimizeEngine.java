@@ -62,7 +62,7 @@ public final class OptimizeEngine {
         if (null == generatedKey && orCondition.getAndConditions().isEmpty()) {
             return new ShardingConditions();
         }
-        List<ShardingCondition> shardingConditions = new ArrayList<>(orCondition.getAndConditions().size());
+        List<ShardingCondition> shardingConditions = new ArrayList<>(orCondition.getAndConditions().size() + 1);
         if (orCondition.getAndConditions().isEmpty()) {
             try {
                 shardingConditions.add(optimize(getConditionsMap(generatedKey), parameters));
