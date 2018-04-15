@@ -46,7 +46,7 @@ public final class AndCondition {
      * @return conditions map
      */
     public Map<Column, List<Condition>> getConditionsMap() {
-        Map<Column, List<Condition>> result = new LinkedHashMap<>(conditions.size() + 1, 1);
+        Map<Column, List<Condition>> result = new LinkedHashMap<>(conditions.size(), 1);
         for (Condition each : conditions) {
             if (!result.containsKey(each.getColumn())) {
                 result.put(each.getColumn(), new LinkedList<Condition>());

@@ -27,7 +27,6 @@ import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.parsing.parser.context.condition.AndCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
-import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.OrCondition;
 import io.shardingjdbc.core.routing.sharding.AlwaysFalseShardingCondition;
 import io.shardingjdbc.core.routing.sharding.GeneratedKey;
@@ -61,12 +60,12 @@ public final class OptimizeEngine {
         if (null == generatedKey && orCondition.getAndConditions().isEmpty()) {
             return new ShardingConditions();
         }
-        if (orCondition.getAndConditions().isEmpty()) {
-            return new ShardingConditions(Collections.singletonList(optimize(getConditionsMap(generatedKey), parameters)));
+        if (null != generatedKey && orCondition.getAndConditions().isEmpty()) {
+            return new ShardingConditions(Collections.singletonList(optimize(generatedKey.getConditionsMap(), parameters)));
         }
-        List<ShardingCondition> shardingConditions = new ArrayList<>(null == generatedKey ? orCondition.getAndConditions().size() : orCondition.getAndConditions().size() + 1);
+        List<ShardingCondition> shardingConditions = new ArrayList<>(orCondition.getAndConditions().size());
         for (AndCondition each : orCondition.getAndConditions()) {
-            shardingConditions.add(optimize(getConditionsMap(each.getConditionsMap(), generatedKey), parameters));
+            shardingConditions.add(optimize(getConditionsMap(each, generatedKey), parameters));
         }
         return new ShardingConditions(shardingConditions);
     }
@@ -138,15 +137,14 @@ public final class OptimizeEngine {
         return result;
     }
     
-    private Map<Column, List<Condition>> getConditionsMap(final GeneratedKey generatedKey) {
-        return getConditionsMap(new LinkedHashMap<Column, List<Condition>>(1, 1), generatedKey);
-    }
-    
-    private Map<Column, List<Condition>> getConditionsMap(final Map<Column, List<Condition>> conditionsMap, final GeneratedKey generatedKey) {
+    private Map<Column, List<Condition>> getConditionsMap(final AndCondition andCondition, final GeneratedKey generatedKey) {
+        Map<Column, List<Condition>> andConditionsMap = andCondition.getConditionsMap();
         if (null == generatedKey) {
-            return conditionsMap;
+            return andConditionsMap;
         }
-        conditionsMap.put(generatedKey.getColumn(), Collections.<Condition>singletonList(new GeneratedKeyCondition(generatedKey)));
-        return conditionsMap;
+        Map<Column, List<Condition>> result = new LinkedHashMap<>(andConditionsMap.size() + 1);
+        result.putAll(andConditionsMap);
+        result.putAll(generatedKey.getConditionsMap());
+        return result;
     }
 }
