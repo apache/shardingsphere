@@ -60,7 +60,7 @@ public final class GeneratedKey {
      */
     public Map<Column, List<Condition>> getConditionsMap() {
         Map<Column, List<Condition>> result = new HashMap<>(1, 1);
-        result.put(column, Collections.<Condition>singletonList(new GeneratedKeyCondition(this)));
+        result.put(column, Collections.<Condition>singletonList(new GeneratedKeyCondition(column, index, value)));
         return result;
     }
 }

@@ -18,7 +18,6 @@
 package io.shardingjdbc.core.parsing.parser.context.condition;
 
 import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
-import io.shardingjdbc.core.routing.sharding.GeneratedKey;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -37,10 +36,6 @@ public final class GeneratedKeyCondition extends Condition {
     private final int index;
     
     private final Number value;
-    
-    public GeneratedKeyCondition(final GeneratedKey generatedKey) {
-        this(generatedKey.getColumn(), generatedKey.getIndex(), generatedKey.getValue());
-    }
     
     public GeneratedKeyCondition(final Column column, final int index, final Number value) {
         super(column, new SQLNumberExpression(value));
