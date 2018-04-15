@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -67,6 +66,7 @@ public class OptimizeEngineTest {
         assertTrue(shardingConditions.isAlwaysFalse());
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertOptimizeListConditions() {
         Condition condition1 = new Condition(new Column("test", "test"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
@@ -85,6 +85,7 @@ public class OptimizeEngineTest {
         assertTrue(values.containsAll(Collections.singleton(1)));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertOptimizeRangeConditions() {
         Condition condition1 = new Condition(new Column("test", "test"), new SQLNumberExpression(1), new SQLNumberExpression(2));
@@ -103,6 +104,7 @@ public class OptimizeEngineTest {
         assertThat(values.upperEndpoint(), CoreMatchers.<Comparable>is(2));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertOptimizeListConditionsAndRangeConditions() {
         Condition condition1 = new Condition(new Column("test", "test"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
@@ -121,6 +123,7 @@ public class OptimizeEngineTest {
         assertTrue(values.containsAll(Arrays.asList(1, 2)));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertOptimizeGeneratedKeyCondition() {
         ShardingConditions shardingConditions = new OptimizeEngine().optimize(new OrCondition(), Collections.emptyList(), new GeneratedKey(new Column("test", "test"), 0, 1));
