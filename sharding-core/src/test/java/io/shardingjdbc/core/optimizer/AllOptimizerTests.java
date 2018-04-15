@@ -21,6 +21,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses(OptimizeEngineTest.class)
+@Suite.SuiteClasses({
+        InsertOptimizeEngineTest.class, 
+        QueryOptimizeEngineTest.class
+    })
 public class AllOptimizerTests {
 }

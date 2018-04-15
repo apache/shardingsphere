@@ -27,7 +27,6 @@ import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.OrCondition;
 import io.shardingjdbc.core.parsing.parser.expression.SQLExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
-import io.shardingjdbc.core.routing.sharding.GeneratedKey;
 import io.shardingjdbc.core.routing.sharding.ShardingCondition;
 import io.shardingjdbc.core.routing.sharding.ShardingConditions;
 import org.hamcrest.CoreMatchers;
@@ -42,58 +41,58 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class OptimizeEngineTest {
+public final class QueryOptimizeEngineTest {
     
     @Test
     public void assertOptimizeAlwaysFalseListConditions() {
-        Condition condition1 = new Condition(new Column("test", "test"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
-        Condition condition2 = new Condition(new Column("test", "test"), new SQLNumberExpression(3));
+        Condition condition1 = new Condition(new Column("column", "tbl"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
+        Condition condition2 = new Condition(new Column("column", "tbl"), new SQLNumberExpression(3));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
         OrCondition orCondition = new OrCondition();
         orCondition.getAndConditions().add(andCondition);
-        ShardingConditions shardingConditions = new OptimizeEngine().optimize(orCondition, Collections.emptyList(), null);
+        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize();
         assertTrue(shardingConditions.isAlwaysFalse());
     }
     
     @Test
     public void assertOptimizeAlwaysFalseRangeConditions() {
-        Condition condition1 = new Condition(new Column("test", "test"), new SQLNumberExpression(1), new SQLNumberExpression(2));
-        Condition condition2 = new Condition(new Column("test", "test"), new SQLNumberExpression(3), new SQLNumberExpression(4));
+        Condition condition1 = new Condition(new Column("column", "tbl"), new SQLNumberExpression(1), new SQLNumberExpression(2));
+        Condition condition2 = new Condition(new Column("column", "tbl"), new SQLNumberExpression(3), new SQLNumberExpression(4));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
         OrCondition orCondition = new OrCondition();
         orCondition.getAndConditions().add(andCondition);
-        ShardingConditions shardingConditions = new OptimizeEngine().optimize(orCondition, Collections.emptyList(), null);
+        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize();
         assertTrue(shardingConditions.isAlwaysFalse());
     }
     
     @Test
     public void assertOptimizeAlwaysFalseListConditionsAndRangeConditions() {
-        Condition condition1 = new Condition(new Column("test", "test"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
-        Condition condition2 = new Condition(new Column("test", "test"), new SQLNumberExpression(3), new SQLNumberExpression(4));
+        Condition condition1 = new Condition(new Column("column", "tbl"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
+        Condition condition2 = new Condition(new Column("column", "tbl"), new SQLNumberExpression(3), new SQLNumberExpression(4));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
         OrCondition orCondition = new OrCondition();
         orCondition.getAndConditions().add(andCondition);
-        ShardingConditions shardingConditions = new OptimizeEngine().optimize(orCondition, Collections.emptyList(), null);
+        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize();
         assertTrue(shardingConditions.isAlwaysFalse());
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertOptimizeListConditions() {
-        Condition condition1 = new Condition(new Column("test", "test"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
-        Condition condition2 = new Condition(new Column("test", "test"), new SQLNumberExpression(1));
+        Condition condition1 = new Condition(new Column("column", "tbl"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
+        Condition condition2 = new Condition(new Column("column", "tbl"), new SQLNumberExpression(1));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
         OrCondition orCondition = new OrCondition();
         orCondition.getAndConditions().add(andCondition);
-        ShardingConditions shardingConditions = new OptimizeEngine().optimize(orCondition, Collections.emptyList(), null);
+        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize();
         assertFalse(shardingConditions.isAlwaysFalse());
         ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
         ShardingValue shardingValue = shardingCondition.getShardingValues().get(0);
@@ -105,14 +104,14 @@ public class OptimizeEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertOptimizeRangeConditions() {
-        Condition condition1 = new Condition(new Column("test", "test"), new SQLNumberExpression(1), new SQLNumberExpression(2));
-        Condition condition2 = new Condition(new Column("test", "test"), new SQLNumberExpression(1), new SQLNumberExpression(3));
+        Condition condition1 = new Condition(new Column("column", "tbl"), new SQLNumberExpression(1), new SQLNumberExpression(2));
+        Condition condition2 = new Condition(new Column("column", "tbl"), new SQLNumberExpression(1), new SQLNumberExpression(3));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
         OrCondition orCondition = new OrCondition();
         orCondition.getAndConditions().add(andCondition);
-        ShardingConditions shardingConditions = new OptimizeEngine().optimize(orCondition, Collections.emptyList(), null);
+        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize();
         assertFalse(shardingConditions.isAlwaysFalse());
         ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
         ShardingValue shardingValue = shardingCondition.getShardingValues().get(0);
@@ -124,31 +123,19 @@ public class OptimizeEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertOptimizeListConditionsAndRangeConditions() {
-        Condition condition1 = new Condition(new Column("test", "test"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
-        Condition condition2 = new Condition(new Column("test", "test"), new SQLNumberExpression(1), new SQLNumberExpression(2));
+        Condition condition1 = new Condition(new Column("column", "tbl"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
+        Condition condition2 = new Condition(new Column("column", "tbl"), new SQLNumberExpression(1), new SQLNumberExpression(2));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
         OrCondition orCondition = new OrCondition();
         orCondition.getAndConditions().add(andCondition);
-        ShardingConditions shardingConditions = new OptimizeEngine().optimize(orCondition, Collections.emptyList(), null);
+        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize();
         assertFalse(shardingConditions.isAlwaysFalse());
         ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
         ShardingValue shardingValue = shardingCondition.getShardingValues().get(0);
         Collection<Comparable<?>> values = ((ListShardingValue<Comparable<?>>) shardingValue).getValues();
         assertThat(values.size(), is(2));
         assertTrue(values.containsAll(Arrays.asList(1, 2)));
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void assertOptimizeGeneratedKeyCondition() {
-        ShardingConditions shardingConditions = new OptimizeEngine().optimize(new OrCondition(), Collections.emptyList(), new GeneratedKey(new Column("test", "test"), 0, 1));
-        assertFalse(shardingConditions.isAlwaysFalse());
-        ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
-        ShardingValue shardingValue = shardingCondition.getShardingValues().get(0);
-        Collection<Comparable<?>> values = ((ListShardingValue<Comparable<?>>) shardingValue).getValues();
-        assertThat(values.size(), is(1));
-        assertTrue(values.contains(1));
     }
 }

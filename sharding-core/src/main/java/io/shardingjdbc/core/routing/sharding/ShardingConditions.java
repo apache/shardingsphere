@@ -20,7 +20,6 @@ package io.shardingjdbc.core.routing.sharding;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,10 +33,6 @@ import java.util.List;
 public final class ShardingConditions {
     
     private final List<ShardingCondition> shardingConditions;
-    
-    public ShardingConditions() {
-        shardingConditions = Collections.emptyList();
-    }
     
     /**
      * Adjust sharding conditions is always false or not.

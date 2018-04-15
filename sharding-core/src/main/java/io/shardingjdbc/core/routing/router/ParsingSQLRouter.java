@@ -20,7 +20,7 @@ package io.shardingjdbc.core.routing.router;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.optimizer.OptimizeEngine;
+import io.shardingjdbc.core.optimizer.OptimizeEngineFactory;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
@@ -120,7 +120,7 @@ public final class ParsingSQLRouter implements SQLRouter {
     
     private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement, final GeneratedKey generatedKey) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
-        ShardingConditions shardingConditions = new OptimizeEngine().optimize(sqlStatement.getConditions().getOrCondition(), parameters, generatedKey);
+        ShardingConditions shardingConditions = OptimizeEngineFactory.newInstance(sqlStatement, parameters, generatedKey).optimize();
         RoutingEngine routingEngine;
         if (sqlStatement instanceof UseStatement) {
             routingEngine = new IgnoreRoutingEngine();

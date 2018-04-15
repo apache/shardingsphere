@@ -18,16 +18,12 @@
 package io.shardingjdbc.core.routing.sharding;
 
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
-import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Generated key.
@@ -51,16 +47,5 @@ public final class GeneratedKey {
         column = generatedKeyCondition.getColumn();
         index = generatedKeyCondition.getIndex();
         value = generatedKeyCondition.getValue();
-    }
-    
-    /**
-     * Get conditions map.
-     * 
-     * @return conditions map
-     */
-    public Map<Column, List<Condition>> getConditionsMap() {
-        Map<Column, List<Condition>> result = new HashMap<>(1, 1);
-        result.put(column, Collections.<Condition>singletonList(new GeneratedKeyCondition(column, index, value)));
-        return result;
     }
 }

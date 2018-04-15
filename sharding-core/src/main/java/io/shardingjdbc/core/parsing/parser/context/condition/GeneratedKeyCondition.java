@@ -21,6 +21,9 @@ import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Generated key condition.
  * 
@@ -42,5 +45,11 @@ public final class GeneratedKeyCondition extends Condition {
         this.column = column;
         this.index = index;
         this.value = value;
+    }
+    
+    @Override
+    public List<Comparable<?>> getConditionValues(final List<?> parameters) {
+        Comparable<?> result = null == value ? (Comparable<?>) parameters.get(index) : (Comparable<?>) value;
+        return Collections.<Comparable<?>>singletonList(result);
     }
 }
