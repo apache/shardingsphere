@@ -61,13 +61,12 @@ public final class OptimizeEngine {
         if (null == generatedKey && orCondition.getAndConditions().isEmpty()) {
             return new ShardingConditions();
         }
-        List<ShardingCondition> shardingConditions = new ArrayList<>(orCondition.getAndConditions().size() + 1);
         if (orCondition.getAndConditions().isEmpty()) {
-            shardingConditions.add(optimize(getConditionsMap(generatedKey), parameters));
-        } else {
-            for (AndCondition each : orCondition.getAndConditions()) {
-                shardingConditions.add(optimize(getConditionsMap(each.getConditionsMap(), generatedKey), parameters));
-            }
+            return new ShardingConditions(Collections.singletonList(optimize(getConditionsMap(generatedKey), parameters)));
+        }
+        List<ShardingCondition> shardingConditions = new ArrayList<>(null == generatedKey ? orCondition.getAndConditions().size() : orCondition.getAndConditions().size() + 1);
+        for (AndCondition each : orCondition.getAndConditions()) {
+            shardingConditions.add(optimize(getConditionsMap(each.getConditionsMap(), generatedKey), parameters));
         }
         return new ShardingConditions(shardingConditions);
     }
