@@ -1,4 +1,4 @@
-package io.shardingjdbc.core.jdbc.metadata.entity;
+package io.shardingjdbc.core.jdbc.meta.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +10,11 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class ActualTableInformation {
+public class ActualTableMeta {
     
     private final String dataSourceName;
     
     private final String tableName;
     
-    private final TableStructure tableStructure;
+    private final TableMeta tableMeta;
 }

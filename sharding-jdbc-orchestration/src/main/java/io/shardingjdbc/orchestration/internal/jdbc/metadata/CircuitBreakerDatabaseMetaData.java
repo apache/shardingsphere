@@ -23,7 +23,7 @@ import java.sql.ResultSet;
 import java.sql.RowIdLifetime;
 
 /**
- * Circuit breaker metadata.
+ * Circuit breaker meta.
  *
  * @author caohao
  */

@@ -1,9 +1,9 @@
-package io.shardingjdbc.core.jdbc.metadata.handler;
+package io.shardingjdbc.core.jdbc.meta.handler;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.jdbc.metadata.entity.ColumnInformation;
-import io.shardingjdbc.core.jdbc.metadata.entity.TableStructure;
+import io.shardingjdbc.core.jdbc.meta.entity.ColumnMeta;
+import io.shardingjdbc.core.jdbc.meta.entity.TableMeta;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -32,7 +32,7 @@ public final class TableStructureHandler {
         databaseType = DatabaseType.valueFrom(dataSource.getConnection().getMetaData().getDatabaseProductName());
     }
     
-    public TableStructure getActualTableStructure() throws SQLException {
+    public TableMeta getActualTableStructure() throws SQLException {
         switch (databaseType) {
             case MySQL:
                 return getMySQLTableStructure();
@@ -41,19 +41,19 @@ public final class TableStructureHandler {
         }
     }
     
-    private TableStructure getMySQLTableStructure() throws SQLException {
+    private TableMeta getMySQLTableStructure() throws SQLException {
         Connection connection = dataSource.getConnection();
         Statement statement = connection.createStatement();
         statement.executeQuery(String.format("desc %s;", actualTableName));
         ResultSet resultSet = statement.getResultSet();
-        final TableStructure tableStructure = new TableStructure();
+        final TableMeta tableMeta = new TableMeta();
         while (resultSet.next()) {
             String columnName = resultSet.getString("Field");
             String columnType = resultSet.getString("Type");
             String columnKey = resultSet.getString("Key");
-            final ColumnInformation columnInformation = new ColumnInformation(columnName, columnType, columnKey);
-            tableStructure.getColumnInformations().add(columnInformation);
+            final ColumnMeta columnMeta = new ColumnMeta(columnName, columnType, columnKey);
+            tableMeta.getColumnMetas().add(columnMeta);
         }
-        return tableStructure;
+        return tableMeta;
     }
 }

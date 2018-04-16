@@ -1,4 +1,4 @@
-package io.shardingjdbc.core.jdbc.metadata.entity;
+package io.shardingjdbc.core.jdbc.meta.entity;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class ColumnInformation {
+public final class ColumnMeta {
     
     private final String columnName;
     
