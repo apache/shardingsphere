@@ -76,7 +76,7 @@ public final class PreparedStatementRegistry {
      * @param statementId statement ID
      * @return SQL
      */
-    public String getSql(final int statementId) {
+    public String getSQL(final int statementId) {
         return statementIdToSQLMap.get(statementId);
     }
     
