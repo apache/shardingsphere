@@ -1,19 +1,14 @@
 +++
 toc = true
-title = "Sharding-Proxy"
+title = "Sharding-Proxy Quick Start"
 weight = 2
 +++
 
-## Quick Start
+## 1. Configure sharding rule
 
+Edit `${sharding-proxy}\conf\sharding-config.yaml`. More details please reference [Configuration Manual](/07-sharding-proxy/02-configuration/). 
 
-### Sharding-Proxy
-
-#### 1. Configure sharding rule
-
-Edit `${sharding-proxy}\conf\sharding-config.yaml`. Same format with Sharding-JDBC-Driver's `YAML` configuration. 
-
-#### 2. Start server
+## 2. Start server
 
 ```sh
 ${sharding-proxy}\bin\start.sh ${port}

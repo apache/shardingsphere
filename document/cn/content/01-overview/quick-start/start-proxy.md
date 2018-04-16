@@ -1,18 +1,14 @@
 +++
 toc = true
-title = "Sharding-Proxy"
+title = "Sharding-Proxy快速入门"
 weight = 2
 +++
 
-## 快速入门
+## 1. 规则配置
 
-### Sharding-Proxy
+编辑`${sharding-proxy}\conf\sharding-config.yaml`。详情请参见[配置手册](/07-sharding-proxy/02-configuration/)。 
 
-#### 1. 规则配置
-
-编辑`${sharding-proxy}\conf\sharding-config.yaml`。配置规则同Sharding-JDBC-Driver的`YAML`格式。 
-
-#### 2. 启动服务
+## 2. 启动服务
 
 ```sh
 ${sharding-proxy}\bin\start.sh ${port}
