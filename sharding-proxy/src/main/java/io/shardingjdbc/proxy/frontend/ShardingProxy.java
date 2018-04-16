@@ -30,41 +30,27 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.shardingjdbc.proxy.frontend.netty.NettyServerHandlerInitializer;
+import io.shardingjdbc.proxy.frontend.netty.ServerHandlerInitializer;
 
 import java.util.Objects;
 
 /**
- * Sharding-Netty-Proxy.
+ * Sharding-Proxy.
  *
+ * @author zhangliang
  * @author xiaoyu
  */
 public final class ShardingProxy {
 
-
-    /**
-     * this is work group  max threads
-     */
-    private static int WORK_MAX_THREADS = Runtime.getRuntime().availableProcessors() << 1;
-
-    /**
-     * boss group
-     */
-    private EventLoopGroup bossGroup;
-
-    /**
-     * worker group
-     */
-    private EventLoopGroup workerGroup;
-
-
-    /**
-     * user group
-     */
-    private EventLoopGroup userGroup;
-
+    private static final int WORK_MAX_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
     private static final String OS_NAME = "Linux";
+
+    private EventLoopGroup bossGroup;
+
+    private EventLoopGroup workerGroup;
+
+    private EventLoopGroup userGroup;
 
 
     /**
@@ -86,7 +72,7 @@ public final class ShardingProxy {
         }
     }
 
-    private void groups(ServerBootstrap bootstrap, int workThreads) {
+    private void groups(final ServerBootstrap bootstrap, final int workThreads) {
         if (Objects.equals(StandardSystemProperty.OS_NAME.value(), OS_NAME)) {
             bossGroup = new EpollEventLoopGroup(1);
             workerGroup = new EpollEventLoopGroup(workThreads);
@@ -99,7 +85,7 @@ public final class ShardingProxy {
                     .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new NettyServerHandlerInitializer(userGroup));
+                    .childHandler(new ServerHandlerInitializer(userGroup));
         } else {
             bossGroup = new NioEventLoopGroup();
             workerGroup = new NioEventLoopGroup(workThreads);
@@ -113,7 +99,7 @@ public final class ShardingProxy {
                     .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new NettyServerHandlerInitializer(userGroup));
+                    .childHandler(new ServerHandlerInitializer(userGroup));
         }
     }
 }

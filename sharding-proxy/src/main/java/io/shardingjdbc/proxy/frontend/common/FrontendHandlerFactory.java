@@ -27,6 +27,7 @@ import lombok.NoArgsConstructor;
  * Frontend handler factory.
  *
  * @author zhangliang
+ * @author xiaoyu
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FrontendHandlerFactory {
@@ -35,7 +36,7 @@ public final class FrontendHandlerFactory {
      * Create frontend handler instance.
      *
      * @param databaseType database type
-     * @param userGroup    user thread pool
+     * @param userGroup user thread pool
      * @return frontend handler instance
      */
     public static FrontendHandler createFrontendHandlerInstance(final DatabaseType databaseType,

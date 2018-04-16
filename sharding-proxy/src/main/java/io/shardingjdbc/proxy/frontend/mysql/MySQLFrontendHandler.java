@@ -31,25 +31,19 @@ import io.shardingjdbc.proxy.transport.mysql.packet.handshake.AuthPluginData;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
+import lombok.RequiredArgsConstructor;
 
 /**
  * MySQL frontend handler.
- * 
- * @author zhangliang 
+ *
+ * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class MySQLFrontendHandler extends FrontendHandler {
 
     private AuthPluginData authPluginData;
 
-    /**
-     * handle with oneself thread pool
-     */
-    private EventLoopGroup eventLoopGroup;
-
-    public MySQLFrontendHandler(EventLoopGroup eventLoopGroup) {
-        this.eventLoopGroup = eventLoopGroup;
-    }
-
+    private final EventLoopGroup eventLoopGroup;
 
     @Override
     protected void handshake(final ChannelHandlerContext context) {
@@ -67,20 +61,18 @@ public final class MySQLFrontendHandler extends FrontendHandler {
 
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        eventLoopGroup
-                .execute(new Runnable() {
-                             @Override
-                             public void run() {
-                                 MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
-                                 int sequenceId = mysqlPacketPayload.readInt1();
-                                 CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, mysqlPacketPayload);
-                                 for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
-                                     context.write(each);
-                                 }
-                                 context.flush();
-                             }
-                         }
-                );
+        eventLoopGroup.execute(new Runnable() {
 
+            @Override
+            public void run() {
+                MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
+                int sequenceId = mysqlPacketPayload.readInt1();
+                CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, mysqlPacketPayload);
+                for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
+                    context.write(each);
+                }
+                context.flush();
+            }
+        });
     }
 }
