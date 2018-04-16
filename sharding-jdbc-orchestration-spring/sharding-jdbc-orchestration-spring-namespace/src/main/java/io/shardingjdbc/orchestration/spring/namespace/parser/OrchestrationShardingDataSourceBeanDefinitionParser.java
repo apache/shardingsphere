@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.spring.datasource.OrchestrationShardingDataSourceFacoryBean;
+import io.shardingjdbc.orchestration.spring.datasource.OrchestrationShardingDataSourceFactoryBean;
 import io.shardingjdbc.orchestration.spring.datasource.SpringShardingDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -69,7 +69,7 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
     }
     
     private AbstractBeanDefinition getOrchestrationSpringShardingDataSourceBean(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationShardingDataSourceFacoryBean.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationShardingDataSourceFactoryBean.class);
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
         if (null != shardingRuleElement) {
             factory.addConstructorArgValue(parseDataSources(element));

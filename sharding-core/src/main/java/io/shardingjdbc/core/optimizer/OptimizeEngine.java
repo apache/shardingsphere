@@ -15,31 +15,21 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.api.config;
+package io.shardingjdbc.core.optimizer;
 
-import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 
 /**
- * Orchestration configuration.
+ * Optimize engine.
  *
- * @author zhagliang
+ * @author maxiaoguang
  */
-@RequiredArgsConstructor
-@Getter
-public final class OrchestrationConfiguration {
+public interface OptimizeEngine {
     
-    public static final String MASTER_SLAVE = "masterslave";
-    
-    public static final String SHARDING = "sharding";
-    
-    private final String name;
-    
-    private final RegistryCenterConfiguration regCenterConfig;
-    
-    private final boolean overwrite;
-
-    private final String type;
-
+    /**
+     * Optimize sharding conditions.
+     *
+     * @return sharding conditions
+     */
+    ShardingConditions optimize();
 }

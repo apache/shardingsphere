@@ -34,8 +34,8 @@ import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakeResponse4
 
 /**
  * MySQL frontend handler.
- *
- * @author zhangliang
+ * 
+ * @author zhangliang 
  */
 public final class MySQLFrontendHandler extends FrontendHandler {
 

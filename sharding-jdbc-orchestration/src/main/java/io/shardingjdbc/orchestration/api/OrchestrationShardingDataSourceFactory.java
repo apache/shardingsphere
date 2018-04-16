@@ -96,7 +96,8 @@ public final class OrchestrationShardingDataSourceFactory {
             Preconditions.checkState(null != cloudShardingRuleConfig, "Missing the sharding rule configuration on register center");
             return createDataSource(configService.loadDataSourceMap(), cloudShardingRuleConfig, configService.loadShardingConfigMap(), configService.loadShardingProperties(), orchestrationFacade);
         } else {
-            return createDataSource(dataSourceMap, yamlShardingRuleConfig.getShardingRuleConfiguration(), yamlShardingRuleConfig.getConfigMap(), yamlShardingRuleConfig.getProps(), orchestrationFacade);
+            return createDataSource(
+                    dataSourceMap, yamlShardingRuleConfig.getShardingRuleConfiguration(), yamlShardingRuleConfig.getConfigMap(), yamlShardingRuleConfig.getProps(), orchestrationFacade);
         }
     }
     

@@ -15,31 +15,37 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.api.config;
+package io.shardingjdbc.core.routing.router;
 
-import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingjdbc.core.parsing.parser.context.condition.Column;
+import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * Orchestration configuration.
+ * Generated key.
  *
- * @author zhagliang
+ * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
-public final class OrchestrationConfiguration {
+public final class GeneratedKey {
     
-    public static final String MASTER_SLAVE = "masterslave";
+    private final Column column;
     
-    public static final String SHARDING = "sharding";
+    private final int index;
     
-    private final String name;
+    private final Number value;
     
-    private final RegistryCenterConfiguration regCenterConfig;
+    private final List<Number> generatedKeys = new LinkedList<>();
     
-    private final boolean overwrite;
-
-    private final String type;
-
+    public GeneratedKey(final GeneratedKeyCondition generatedKeyCondition) {
+        column = generatedKeyCondition.getColumn();
+        index = generatedKeyCondition.getIndex();
+        value = generatedKeyCondition.getValue();
+    }
 }

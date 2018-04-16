@@ -15,31 +15,25 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.api.config;
+package io.shardingjdbc.core.routing.type.unicast;
 
-import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingjdbc.core.routing.type.RoutingResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Orchestration configuration.
- *
- * @author zhagliang
+ * Unicast routing result.
+ * 
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
-public final class OrchestrationConfiguration {
+public class UnicastRoutingResult extends RoutingResult {
     
-    public static final String MASTER_SLAVE = "masterslave";
+    private final String dataSource;
     
-    public static final String SHARDING = "sharding";
-    
-    private final String name;
-    
-    private final RegistryCenterConfiguration regCenterConfig;
-    
-    private final boolean overwrite;
-
-    private final String type;
-
+    @Override
+    public boolean isSingleRouting() {
+        return true;
+    }
 }

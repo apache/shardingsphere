@@ -23,8 +23,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * And conditions.
@@ -36,15 +38,22 @@ import java.util.List;
 @ToString
 public final class AndCondition {
     
-    private final List<Condition> conditions = new ArrayList<>();
+    private final List<Condition> conditions = new LinkedList<>();
     
     /**
-     * Add condition.
-     *
-     * @param condition condition
+     * Get conditions map.
+     * 
+     * @return conditions map
      */
-    public void add(final Condition condition) {
-        conditions.add(condition);
+    public Map<Column, List<Condition>> getConditionsMap() {
+        Map<Column, List<Condition>> result = new LinkedHashMap<>(conditions.size(), 1);
+        for (Condition each : conditions) {
+            if (!result.containsKey(each.getColumn())) {
+                result.put(each.getColumn(), new LinkedList<Condition>());
+            }
+            result.get(each.getColumn()).add(each);
+        }
+        return result;
     }
     
     /**
@@ -52,7 +61,9 @@ public final class AndCondition {
      *
      * @param column column
      * @return found condition
+     * @deprecated only test call
      */
+    @Deprecated
     public Optional<Condition> find(final Column column) {
         Condition result = null;
         for (Condition each : conditions) {
@@ -61,37 +72,5 @@ public final class AndCondition {
             }
         }
         return Optional.fromNullable(result);
-    }
-    
-    /**
-     * Get condition via index.
-     *
-     * @param index index of conditions
-     * @return found condition
-     */
-    public Optional<Condition> get(final int index) {
-        Condition result = null;
-        if (size() > index) {
-            result = conditions.get(index);
-        }
-        return Optional.fromNullable(result);
-    }
-    
-    /**
-     * Adjust conditions is empty or not.
-     *
-     * @return conditions is empty or not
-     */
-    public boolean isEmpty() {
-        return conditions.isEmpty();
-    }
-    
-    /**
-     * Returns the number of conditions in this.
-     *
-     * @return the number of conditions in this
-     */
-    public int size() {
-        return conditions.size();
     }
 }

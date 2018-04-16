@@ -15,31 +15,24 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.api.config;
+package io.shardingjdbc.core.optimizer.query;
 
-import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 
 /**
- * Orchestration configuration.
+ * Always false sharding value.
  *
- * @author zhagliang
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class OrchestrationConfiguration {
+public final class AlwaysFalseShardingValue implements ShardingValue {
     
-    public static final String MASTER_SLAVE = "masterslave";
+    @Override
+    public String getLogicTableName() {
+        return "";
+    }
     
-    public static final String SHARDING = "sharding";
-    
-    private final String name;
-    
-    private final RegistryCenterConfiguration regCenterConfig;
-    
-    private final boolean overwrite;
-
-    private final String type;
-
+    @Override
+    public String getColumnName() {
+        return "";
+    }
 }

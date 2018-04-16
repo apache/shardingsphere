@@ -19,7 +19,6 @@ package io.shardingjdbc.orchestration.internal;
 
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;

@@ -15,25 +15,15 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.transport.mysql.packet.command;
+package io.shardingjdbc.core.optimizer;
 
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-/**
- * Command packet.
- *
- * @author zhangliang
- */
-public abstract class CommandPacket extends MySQLPacket {
-    
-    public CommandPacket(final int sequenceId) {
-        super(sequenceId);
-    }
-    
-    /**
-     * Execute command.
-     * 
-     * @return result packets to be sent
-     */
-    public abstract CommandResponsePackets execute();
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+        InsertOptimizeEngineTest.class, 
+        QueryOptimizeEngineTest.class
+    })
+public class AllOptimizerTests {
 }
