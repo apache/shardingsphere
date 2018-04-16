@@ -25,9 +25,9 @@ import java.util.Map;
 
 
 @Getter
-public final class MetaRegistor {
+public final class MetaRegister {
     //TODO
-    private static MetaRegistor INSTANCE;
+    private static MetaRegister INSTANCE;
     
     private  Map<String, TableStructure> logicTableStructureMap;
     
@@ -35,14 +35,14 @@ public final class MetaRegistor {
     
     
     
-    public static synchronized MetaRegistor getInstance(Map<String, DataSource> dataSourceMap, ShardingRule shardingRule) throws SQLException {
+    public static synchronized MetaRegister getInstance(Map<String, DataSource> dataSourceMap, ShardingRule shardingRule) throws SQLException {
         if ( INSTANCE == null) {
-            INSTANCE = new MetaRegistor(dataSourceMap, shardingRule);
+            INSTANCE = new MetaRegister(dataSourceMap, shardingRule);
         }
         return INSTANCE;
     }
     
-    private MetaRegistor(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
+    private MetaRegister(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         Collection<TableRule> tableRules = shardingRule.getTableRules();
         generateLogicTableActualTablesMap(dataSourceMap, tableRules);
         generateLogicTableStructureMap();
@@ -84,7 +84,7 @@ public final class MetaRegistor {
     }
     
     public void refresh(Map<String, DataSource> dataSourceMap, ShardingRule shardingRule) throws SQLException {
-        INSTANCE = new MetaRegistor(dataSourceMap, shardingRule);
+        INSTANCE = new MetaRegister(dataSourceMap, shardingRule);
     }
     
     private ActualTableInformations getActualTableInformations(Map<String, DataSource> dataSourceMap, TableRule tableRule) throws SQLException {
