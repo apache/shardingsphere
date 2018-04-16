@@ -8,8 +8,8 @@ chapter = true
 
 This section mainly introduces quick start for projects of Sharding-Sphere, includes:
 
-* Quick start of Sharding-JDBC
-* Quick start of Sharding-Proxy
-* Quick start of Sharding-Sidecar(TBD)
+* [Quick start](/01-overview/quick-start/sharding-jdbc) of Sharding-JDBC
+* [Quick start](/01-overview/quick-start/sharding-proxy) of Sharding-Proxy
+* [Quick start](/01-overview/quick-start/sharding-sidecar) of Sharding-Sidecar(TBD)
 
 Please refer to the relevant introduction page for details.
