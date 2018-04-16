@@ -38,6 +38,11 @@ public final class PreparedStatementParameter {
     
     private String value;
     
+    public PreparedStatementParameter(final ColumnType columnType, final int unsignedFlag) {
+        this.columnType = columnType;
+        this.unsignedFlag = unsignedFlag;
+    }
+    
     /**
      * Get value.
      *
