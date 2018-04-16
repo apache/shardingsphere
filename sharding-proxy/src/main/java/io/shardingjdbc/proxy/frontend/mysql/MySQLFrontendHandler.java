@@ -37,22 +37,23 @@ import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakeResponse4
  *
  * @author zhangliang
  */
-public final class MySqlFrontendHandler extends FrontendHandler {
+public final class MySQLFrontendHandler extends FrontendHandler {
 
+    private AuthPluginData authPluginData;
 
     /**
      * handle with oneself thread pool
      */
     private EventLoopGroup eventLoopGroup;
 
-    public MySqlFrontendHandler(EventLoopGroup eventLoopGroup) {
+    public MySQLFrontendHandler(EventLoopGroup eventLoopGroup) {
         this.eventLoopGroup = eventLoopGroup;
     }
 
 
     @Override
     protected void handshake(final ChannelHandlerContext context) {
-        AuthPluginData authPluginData = new AuthPluginData();
+        authPluginData = new AuthPluginData();
         context.writeAndFlush(new HandshakePacket(ConnectionIdGenerator.getInstance().nextId(), authPluginData));
     }
 

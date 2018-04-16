@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.frontend.spi.netty;
+package io.shardingjdbc.proxy.frontend.netty;
 
 import com.google.common.base.StandardSystemProperty;
 import io.netty.bootstrap.ServerBootstrap;
@@ -30,7 +30,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.shardingjdbc.proxy.frontend.spi.ShardingProxy;
 
 import java.util.Objects;
 
@@ -39,7 +38,7 @@ import java.util.Objects;
  *
  * @author xiaoyu
  */
-public final class ShardingNettyProxy implements ShardingProxy {
+public final class ShardingProxy {
 
 
     /**
@@ -73,7 +72,6 @@ public final class ShardingNettyProxy implements ShardingProxy {
      * @param port port
      * @throws InterruptedException interrupted exception
      */
-    @Override
     public void start(final int port) throws InterruptedException {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();

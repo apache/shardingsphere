@@ -19,7 +19,7 @@ package io.shardingjdbc.proxy.frontend.common;
 
 import io.netty.channel.EventLoopGroup;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.proxy.frontend.mysql.MySqlFrontendHandler;
+import io.shardingjdbc.proxy.frontend.mysql.MySQLFrontendHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -42,7 +42,7 @@ public final class FrontendHandlerFactory {
                                                                 final EventLoopGroup userGroup) {
         switch (databaseType) {
             case MySQL:
-                return new MySqlFrontendHandler(userGroup);
+                return new MySQLFrontendHandler(userGroup);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
         }

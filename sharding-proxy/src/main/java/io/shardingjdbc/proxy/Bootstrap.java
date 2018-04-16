@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.proxy;
 
-import io.shardingjdbc.proxy.frontend.spi.netty.ShardingNettyProxy;
+import io.shardingjdbc.proxy.frontend.netty.ShardingProxy;
 
 /**
  * Sharding-Proxy Bootstrap.
@@ -35,7 +35,7 @@ public final class Bootstrap {
      * @throws InterruptedException interrupted exception
      */
     public static void main(final String[] args) throws InterruptedException {
-        new ShardingNettyProxy().start(getPort(args));
+        new ShardingProxy().start(getPort(args));
     }
     
     private static int getPort(final String[] args) {

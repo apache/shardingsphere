@@ -15,7 +15,7 @@
  * along with this distribution; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-package io.shardingjdbc.proxy.frontend.spi.netty;
+package io.shardingjdbc.proxy.frontend.netty;
 
 
 import io.netty.channel.ChannelInitializer;
@@ -25,17 +25,15 @@ import io.netty.channel.socket.SocketChannel;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.proxy.frontend.common.FrontendHandlerFactory;
 import io.shardingjdbc.proxy.transport.common.codec.PacketCodecFactory;
+import lombok.AllArgsConstructor;
 
 /**
  * @author xiaoyu
  */
+@AllArgsConstructor
 public class NettyServerHandlerInitializer extends ChannelInitializer<SocketChannel> {
 
     private EventLoopGroup userGroup;
-
-    NettyServerHandlerInitializer(EventLoopGroup userGroup) {
-        this.userGroup = userGroup;
-    }
 
     @Override
     protected void initChannel(SocketChannel socketChannel) {
