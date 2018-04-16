@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.frontend.netty;
+package io.shardingjdbc.proxy.frontend;
 
 import com.google.common.base.StandardSystemProperty;
 import io.netty.bootstrap.ServerBootstrap;
@@ -30,6 +30,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.shardingjdbc.proxy.frontend.netty.NettyServerHandlerInitializer;
 
 import java.util.Objects;
 
