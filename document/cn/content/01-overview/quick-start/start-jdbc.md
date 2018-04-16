@@ -1,17 +1,12 @@
 +++
 toc = true
-title = "Sharding-JDBC"
+title = "Sharding-JDBC快速入门"
 weight = 1
 +++
 
-## 快速入门
-
-### Sharding-JDBC
-
-#### 1. 引入maven依赖
+## 1. 引入maven依赖
 
 ```xml
-<!-- 引入sharding-jdbc核心模块 -->
 <dependency>
     <groupId>io.shardingjdbc</groupId>
     <artifactId>sharding-jdbc-core</artifactId>
@@ -19,11 +14,11 @@ weight = 1
 </dependency>
 ```
 
-#### 2. 规则配置
+## 2. 规则配置
 
-Sharding-JDBC可以通过`Java`，`YAML`，`Spring命名空间`和`Spring Boot Starter`四种方式配置，开发者可根据场景选择适合的配置方式。(详见)
+Sharding-JDBC可以通过`Java`，`YAML`，`Spring命名空间`和`Spring Boot Starter`四种方式配置，开发者可根据场景选择适合的配置方式。详情请参见[配置手册](/06-sharding-jdbc/02-configuration/)。
 
-#### 3. 创建DataSource
+## 3. 创建DataSource
 
 通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后即可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
 
