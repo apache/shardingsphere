@@ -4,7 +4,7 @@ weight = 2
 chapter = true
 +++
 
-## Background
+## Navigation
 
 This section mainly introduces the configuration of Sharding-Proxy, which mainly includes:
 

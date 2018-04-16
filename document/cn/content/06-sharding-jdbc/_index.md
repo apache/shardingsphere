@@ -5,6 +5,6 @@ weight = 6
 chapter = true
 +++
 
-## 背景
+## 导览
 
 本章节将介绍Sharding-JDBC相关配置和使用。

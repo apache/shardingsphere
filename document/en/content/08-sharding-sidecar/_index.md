@@ -5,6 +5,6 @@ weight = 8
 chapter = true
 +++
 
-## Background
+## Navigation
 
 This section introduce the configuration and usage of Sharding-Sidecar.

@@ -5,7 +5,7 @@ weight = 2
 chapter = true
 +++
 
-## Background
+## Navigation
 
 This section covers the overview of Sharding-JDBC configuration, as well as various configuration options, including:
 

@@ -4,7 +4,7 @@ weight = 5
 chapter = true
 +++
 
-## Background
+## Navigation
 
 This section mainly introduces some core functions of Sharding-JDBC, including:
 

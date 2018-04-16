@@ -4,8 +4,7 @@ title = "Usage standard"
 weight = 4
 +++
 
-## Background
-
+## Navigation
 
 This section mainly introduces the relevant usage standards of the Sharding, mainly including:
 

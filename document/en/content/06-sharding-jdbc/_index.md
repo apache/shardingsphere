@@ -5,6 +5,6 @@ weight = 6
 chapter = true
 +++
 
-## Background
+## Navigation
 
 This section introduce the configuration and usage of Sharding-JDBC.

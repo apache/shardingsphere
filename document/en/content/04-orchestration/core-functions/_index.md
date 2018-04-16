@@ -4,7 +4,7 @@ weight = 1
 chapter = true
 +++
 
-## Background
+## Navigation
 
 This section mainly introduces some core functions of database orchestration, including:
 

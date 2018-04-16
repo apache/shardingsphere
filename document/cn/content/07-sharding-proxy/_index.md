@@ -5,6 +5,6 @@ weight = 7
 chapter = true
 +++
 
-## 背景
+## 导览
 
 本章节将介绍Sharding-Proxy相关配置和使用。
