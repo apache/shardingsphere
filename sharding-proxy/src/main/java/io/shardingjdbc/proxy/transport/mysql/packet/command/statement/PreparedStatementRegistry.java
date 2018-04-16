@@ -86,7 +86,7 @@ public final class PreparedStatementRegistry {
      * @param statementId statement ID
      * @param preparedStatementParameters prepared statement parameters
      */
-    public void setParameters(final int statementId, final List<PreparedStatementParameter> preparedStatementParameters) {
+    public void setParameterHeaders(final int statementId, final List<PreparedStatementParameter> preparedStatementParameters) {
         statementIdToParametersMap.putIfAbsent(statementId, preparedStatementParameters);
     }
     
@@ -96,7 +96,7 @@ public final class PreparedStatementRegistry {
      * @param statementId statement ID
      * @return prepared statement parameters
      */
-    public PreparedStatementParameter getParameter(final int statementId) {
+    public PreparedStatementParameter getParameterHeader(final int statementId) {
         return statementIdToParametersMap.get(statementId).iterator().next();
     }
 }
