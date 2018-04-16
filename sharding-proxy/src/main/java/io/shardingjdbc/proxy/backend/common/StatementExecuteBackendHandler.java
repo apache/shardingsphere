@@ -72,6 +72,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     @Override
     public CommandResponsePackets execute() {
+        // TODO support null value parameter
         SQLRouteResult routeResult = routingEngine.route(getComStmtExecuteParameters());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
