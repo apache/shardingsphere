@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command.statement;
 
-import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameterHeader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -40,7 +40,7 @@ public final class PreparedStatementRegistry {
     
     private final ConcurrentMap<Integer, String> statementIdToSQLMap = new ConcurrentHashMap<>(65535, 1);
     
-    private final ConcurrentMap<Integer, List<PreparedStatementParameter>> statementIdToParametersMap = new ConcurrentHashMap<>(65535, 1);
+    private final ConcurrentMap<Integer, List<PreparedStatementParameterHeader>> statementIdToParameterHeadersMap = new ConcurrentHashMap<>(65535, 1);
     
     private final AtomicInteger sequence = new AtomicInteger();
     
@@ -81,22 +81,22 @@ public final class PreparedStatementRegistry {
     }
     
     /**
-     * Set parameters.
+     * Set parameter headers.
      *
      * @param statementId statement ID
-     * @param preparedStatementParameters prepared statement parameters
+     * @param preparedStatementParameterHeaders prepared statement parameter headers
      */
-    public void setParameterHeaders(final int statementId, final List<PreparedStatementParameter> preparedStatementParameters) {
-        statementIdToParametersMap.putIfAbsent(statementId, preparedStatementParameters);
+    public void setParameterHeaders(final int statementId, final List<PreparedStatementParameterHeader> preparedStatementParameterHeaders) {
+        statementIdToParameterHeadersMap.putIfAbsent(statementId, preparedStatementParameterHeaders);
     }
     
     /**
-     * Get parameter.
+     * Get parameter header.
      *
      * @param statementId statement ID
      * @return prepared statement parameters
      */
-    public PreparedStatementParameter getParameterHeader(final int statementId) {
-        return statementIdToParametersMap.get(statementId).iterator().next();
+    public PreparedStatementParameterHeader getParameterHeader(final int statementId) {
+        return statementIdToParameterHeadersMap.get(statementId).iterator().next();
     }
 }

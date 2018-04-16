@@ -83,23 +83,13 @@ public final class ComStmtExecutePacket extends CommandPacket {
         if (newParametersBoundFlag == NewParametersBoundFlag.PARAMETER_TYPE_EXIST) {
             setParameterHeader(mysqlPacketPayload, numParameters);
         } else if (newParametersBoundFlag == NewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST) {
-            setParameterHeaderCached(numParameters);
+            setParameterHeaderFromCache(numParameters);
         }
         setParameterValue(mysqlPacketPayload, numParameters);
     }
     
-    private void setParameterHeaderCached(final int numParameters) {
-        for (int i = 0; i < numParameters; i++) {
-            if (nullBitmap.isParameterNull(i)) {
-                preparedStatementParameters.add(new PreparedStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
-                continue;
-            }
-            preparedStatementParameters.add(PreparedStatementRegistry.getInstance().getParameterHeader(statementId));
-        }
-    }
-    
     private void setParameterHeader(final MySQLPacketPayload mysqlPacketPayload, final int numParameters) {
-        List<PreparedStatementParameter> parameterHeaders = new ArrayList<>();
+        List<PreparedStatementParameterHeader> parameterHeaders = new ArrayList<>();
         for (int i = 0; i < numParameters; i++) {
             if (nullBitmap.isParameterNull(i)) {
                 preparedStatementParameters.add(new PreparedStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
@@ -108,9 +98,20 @@ public final class ComStmtExecutePacket extends CommandPacket {
             ColumnType columnType = ColumnType.valueOf(mysqlPacketPayload.readInt1());
             int unsignedFlag = mysqlPacketPayload.readInt1();
             preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag));
-            parameterHeaders.add(new PreparedStatementParameter(columnType, unsignedFlag));
+            parameterHeaders.add(new PreparedStatementParameterHeader(columnType, unsignedFlag));
         }
         PreparedStatementRegistry.getInstance().setParameterHeaders(statementId, parameterHeaders);
+    }
+    
+    private void setParameterHeaderFromCache(final int numParameters) {
+        for (int i = 0; i < numParameters; i++) {
+            if (nullBitmap.isParameterNull(i)) {
+                preparedStatementParameters.add(new PreparedStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
+                continue;
+            }
+            PreparedStatementParameterHeader preparedStatementParameterHeader = PreparedStatementRegistry.getInstance().getParameterHeader(statementId);
+            preparedStatementParameters.add(new PreparedStatementParameter(preparedStatementParameterHeader.getColumnType(), preparedStatementParameterHeader.getUnsignedFlag()));
+        }
     }
     
     private void setParameterValue(final MySQLPacketPayload mysqlPacketPayload, final int numParameters) {
