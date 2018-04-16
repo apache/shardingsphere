@@ -24,16 +24,16 @@ import io.netty.channel.socket.SocketChannel;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.proxy.frontend.common.FrontendHandlerFactory;
 import io.shardingjdbc.proxy.transport.common.codec.PacketCodecFactory;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
- * init  Channel.
+ * init Channel.
  * @author xiaoyu
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private EventLoopGroup userGroup;
+    private final EventLoopGroup userGroup;
 
     @Override
     protected void initChannel(final SocketChannel socketChannel) {
@@ -41,6 +41,5 @@ public class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> 
         // TODO load database type from yaml or startup arguments
         pipeline.addLast(PacketCodecFactory.createPacketCodecInstance(DatabaseType.MySQL));
         pipeline.addLast(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL, userGroup));
-
     }
 }
