@@ -24,6 +24,7 @@ import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.proxy.backend.common.StatementExecuteBackendHandler;
 import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
 import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
+import io.shardingjdbc.proxy.transport.mysql.constant.NewParametersBoundFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -58,7 +59,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
     
     private final NullBitmap nullBitmap;
     
-    private final int newParametersBoundFlag;
+    private final NewParametersBoundFlag newParametersBoundFlag;
     
     private final List<PreparedStatementParameter> preparedStatementParameters = new ArrayList<>();
     
@@ -74,15 +75,15 @@ public final class ComStmtExecutePacket extends CommandPacket {
         for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
             nullBitmap.getNullBitmap()[i] = mysqlPacketPayload.readInt1();
         }
-        newParametersBoundFlag = mysqlPacketPayload.readInt1();
+        newParametersBoundFlag = NewParametersBoundFlag.valueOf(mysqlPacketPayload.readInt1());
         setParameterList(mysqlPacketPayload, numParameters, newParametersBoundFlag);
     }
     
-    private void setParameterList(final MySQLPacketPayload mysqlPacketPayload, final int numParameters, final int newParametersBoundFlag) {
-        if (0 == newParametersBoundFlag) {
-            setParameterHeaderCached(numParameters);
-        } else {
+    private void setParameterList(final MySQLPacketPayload mysqlPacketPayload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {
+        if (newParametersBoundFlag == NewParametersBoundFlag.PARAMETER_TYPE_EXIST) {
             setParameterHeader(mysqlPacketPayload, numParameters);
+        } else if (newParametersBoundFlag == NewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST) {
+            setParameterHeaderCached(numParameters);
         }
         setParameterValue(mysqlPacketPayload, numParameters);
     }
@@ -135,7 +136,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
         for (int each : nullBitmap.getNullBitmap()) {
             mysqlPacketPayload.writeInt1(each);
         }
-        mysqlPacketPayload.writeInt1(newParametersBoundFlag);
+        mysqlPacketPayload.writeInt1(newParametersBoundFlag.getValue());
         for (PreparedStatementParameter each : preparedStatementParameters) {
             mysqlPacketPayload.writeInt1(each.getColumnType().getValue());
             mysqlPacketPayload.writeInt1(each.getUnsignedFlag());
