@@ -1,4 +1,4 @@
-package io.shardingjdbc.core.jdbc.registor.entity;
+package io.shardingjdbc.core.jdbc.metadata.entity;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -1,9 +1,9 @@
-package io.shardingjdbc.core.jdbc.registor;
+package io.shardingjdbc.core.jdbc.metadata;
 
-import io.shardingjdbc.core.jdbc.registor.entity.ActualTableInformation;
-import io.shardingjdbc.core.jdbc.registor.entity.ActualTableInformations;
-import io.shardingjdbc.core.jdbc.registor.entity.TableStructure;
-import io.shardingjdbc.core.jdbc.registor.handler.TableStructureHandler;
+import io.shardingjdbc.core.jdbc.metadata.entity.ActualTableInformation;
+import io.shardingjdbc.core.jdbc.metadata.entity.ActualTableInformations;
+import io.shardingjdbc.core.jdbc.metadata.entity.TableStructure;
+import io.shardingjdbc.core.jdbc.metadata.handler.TableStructureHandler;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The meta registor of sharding tables.
+ * The meta metadata of sharding tables.
  *
  * @author panjuan
  */

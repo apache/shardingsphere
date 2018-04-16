@@ -1,9 +1,9 @@
-package io.shardingjdbc.core.jdbc.registor.handler;
+package io.shardingjdbc.core.jdbc.metadata.handler;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.jdbc.registor.entity.ColumnInformation;
-import io.shardingjdbc.core.jdbc.registor.entity.TableStructure;
+import io.shardingjdbc.core.jdbc.metadata.entity.ColumnInformation;
+import io.shardingjdbc.core.jdbc.metadata.entity.TableStructure;
 import lombok.Getter;
 
 import javax.sql.DataSource;

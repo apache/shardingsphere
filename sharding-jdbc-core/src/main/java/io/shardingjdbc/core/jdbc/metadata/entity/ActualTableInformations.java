@@ -1,6 +1,5 @@
-package io.shardingjdbc.core.jdbc.registor.entity;
+package io.shardingjdbc.core.jdbc.metadata.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
