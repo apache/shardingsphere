@@ -1,21 +1,16 @@
 package io.shardingjdbc.core.jdbc.meta;
 
-import io.shardingjdbc.core.jdbc.meta.entity.ActualTableInformation;
 import io.shardingjdbc.core.jdbc.meta.entity.ActualTableInformationList;
 import io.shardingjdbc.core.jdbc.meta.entity.TableMeta;
-import io.shardingjdbc.core.jdbc.meta.handler.TableMetaHandler;
+import io.shardingjdbc.core.jdbc.meta.handler.ActualTableInformationListHandler;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import lombok.Getter;
-
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The meta meta of sharding tables.
@@ -23,22 +18,14 @@ import java.util.Map;
  * @author panjuan
  */
 
-
 @Getter
 public final class MetaRegister {
     
     private static MetaRegister INSTANCE;
     
-    private  final Map<String, TableMeta> logicTableStructureMap;
+    private final Map<String, TableMeta> logicTableStructureMap;
     
-    private  final Map<String, ActualTableInformationList> logicTableActualTablesMap;
-    
-    public static synchronized MetaRegister getInstance(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
-        if ( INSTANCE == null) {
-            INSTANCE = new MetaRegister(dataSourceMap, shardingRule);
-        }
-        return INSTANCE;
-    }
+    private final Map<String, ActualTableInformationList> logicTableActualTablesMap;
     
     private MetaRegister(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         logicTableActualTablesMap = new HashMap<>();
@@ -49,22 +36,33 @@ public final class MetaRegister {
         calculateLogicTableStructureMap();
     }
     
+    /**
+     * To get instance of meta register.
+     *
+     * @param dataSourceMap The map of string and datasource.
+     * @param shardingRule The sharding rule.
+     * @return meta register.
+     * @throws SQLException SQL exception.
+     */
+    public static synchronized MetaRegister getInstance(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
+        if (INSTANCE == null) {
+            INSTANCE = new MetaRegister(dataSourceMap, shardingRule);
+        }
+        return INSTANCE;
+    }
+    
     private void calculateLogicTableActualTablesMap(final Map<String, DataSource> dataSourceMap, final Collection<TableRule> tableRules)
-    throws SQLException {
-        
+        throws SQLException {
         for (TableRule tableRule : tableRules) {
             String logicTable = tableRule.getLogicTable();
-            ActualTableInformationList actualTableInformationList = getActualTableInformations(dataSourceMap, tableRule);
+            List<DataNode> actualDataNodes = tableRule.getActualDataNodes();
+            ActualTableInformationList actualTableInformationList = new ActualTableInformationListHandler(actualDataNodes, dataSourceMap).calActualTableInformationList();
             logicTableActualTablesMap.put(logicTable, actualTableInformationList);
         }
-        
     }
     
     private void calculateLogicTableStructureMap() {
-        
-        
         for (Map.Entry<String, ActualTableInformationList> entry : logicTableActualTablesMap.entrySet()) {
-            
             if (entry.getValue().isAllTableMetaSame()) {
                 logicTableStructureMap.put(entry.getKey(), entry.getValue().getActualTableInformationList().get(0).getTableMeta());
             } else {
@@ -72,32 +70,37 @@ public final class MetaRegister {
             }
         
         }
-        
     }
     
-    public TableMeta getLogicTableStructure(String logicTable) {
+    /**
+     * To get logic table meta by logic table name.
+     *
+     * @param logicTable logic table name.
+     * @return table meta.
+     */
+    public TableMeta getLogicTableMeta(final String logicTable) {
         return logicTableStructureMap.get(logicTable);
     }
     
-    public ActualTableInformationList getActualTableInformations(String logicTable) {
+    /**
+     * To get actual table information list by logic table name.
+     *
+     * @param logicTable logic table name.
+     * @return actual table information list.
+     */
+    public ActualTableInformationList getActualTableInformationList(final String logicTable) {
         return logicTableActualTablesMap.get(logicTable);
     }
     
-    public void refresh(Map<String, DataSource> dataSourceMap, ShardingRule shardingRule) throws SQLException {
+    /**
+     * To refresh the meta register.
+     *
+     * @param dataSourceMap The map of string and datasource.
+     * @param shardingRule sharding rule.
+     * @throws SQLException SQL exception.
+     */
+    public void refresh(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         INSTANCE = new MetaRegister(dataSourceMap, shardingRule);
     }
     
-    private ActualTableInformationList getActualTableInformations(Map<String, DataSource> dataSourceMap, TableRule tableRule) throws SQLException {
-        ActualTableInformationList actualTableInformationList = new ActualTableInformationList();
-        List<DataNode> actualDataNodes = tableRule.getActualDataNodes();
-        for (DataNode dataNode : actualDataNodes) {
-            String dataSourceName = dataNode.getDataSourceName();
-            DataSource dataSource = dataSourceMap.get(dataSourceName);
-            String tableName = dataNode.getTableName();
-            TableMeta tableMeta = new TableMetaHandler(dataSource, tableName).getActualTableMeta();
-            ActualTableInformation actualTableInformation = new ActualTableInformation(dataSourceName, tableName, tableMeta);
-            actualTableInformationList.getActualTableInformationList().add(actualTableInformation);
-        }
-        return actualTableInformationList;
-    }
 }
