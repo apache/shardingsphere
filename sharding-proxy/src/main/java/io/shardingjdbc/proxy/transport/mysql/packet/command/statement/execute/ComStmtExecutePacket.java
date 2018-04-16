@@ -40,8 +40,8 @@ import java.util.List;
  *
  * @author zhangyonglun
  */
-@Slf4j
 @Getter
+@Slf4j
 public final class ComStmtExecutePacket extends CommandPacket {
     
     private static final ColumnType NULL_PARAMETER_DEFAULT_COLUMN_TYPE = ColumnType.MYSQL_TYPE_STRING;
