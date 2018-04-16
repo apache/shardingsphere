@@ -44,7 +44,7 @@ public class ActualTableInformationListHandler {
     private ActualTableInformation calActualTableInformation(final DataNode dataNode, final DataSource dataSource) throws SQLException {
         String dataSourceName = dataNode.getDataSourceName();
         String tableName = dataNode.getTableName();
-        TableMeta tableMeta = new TableMetaHandler(dataSource, tableName).getActualTableMeta();
+        TableMeta tableMeta = TableMetaHandlerFactory.newInstance(dataSource, tableName).getActualTableMeta();
         return new ActualTableInformation(dataSourceName, tableName, tableMeta);
     }
     
