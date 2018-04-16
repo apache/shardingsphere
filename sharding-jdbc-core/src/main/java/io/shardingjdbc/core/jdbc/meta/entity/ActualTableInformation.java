@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class ActualTableMeta {
+public class ActualTableInformation {
     
     private final String dataSourceName;
     

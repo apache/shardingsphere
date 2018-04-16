@@ -1,7 +1,6 @@
 package io.shardingjdbc.core.jdbc.meta.entity;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,19 +12,19 @@ import java.util.Set;
  *
  * @author panjuan
  */
-@NoArgsConstructor
+
 @Getter
-public class ActualTableMetaList {
+public class ActualTableInformationList {
     
-    private List<ActualTableMeta> actualTableMetaList;
+    private final List<ActualTableInformation> actualTableInformationList = new ArrayList<>();
     
-    public boolean isAllTableStructuresSame() {
+    public boolean isAllTableMetaSame() {
         final List<TableMeta> tableMetaList = new ArrayList<>();
-        for(ActualTableMeta each : actualTableMetaList) {
+        for(ActualTableInformation each : actualTableInformationList) {
             tableMetaList.add(each.getTableMeta());
         }
         
         final Set<TableMeta> tableMetaSet = new HashSet<>(tableMetaList);
-        return tableMetaSet.size() == 1;
+        return 1 == tableMetaSet.size();
     }
 }

@@ -15,43 +15,48 @@ import java.sql.*;
  * @author panjuan
  */
 @Getter
-public final class TableStructureHandler {
+public final class TableMetaHandler {
     
-    private DataSource dataSource;
+    private final DataSource dataSource;
     
-    private String actualTableName;
+    private final String actualTableName;
     
-    private DatabaseType databaseType;
+    private final DatabaseType databaseType;
     
-    public TableStructureHandler(final DataSource dataSource, final String actualTableName) throws SQLException {
+    public TableMetaHandler(final DataSource dataSource, final String actualTableName) throws SQLException {
         
-        this.dataSource = dataSource instanceof MasterSlaveDataSource ?
-            ((MasterSlaveDataSource) dataSource).getMasterDataSource().values().iterator().next() : dataSource;
-        this.dataSource = dataSource;
+        this.dataSource = dataSource instanceof MasterSlaveDataSource
+            ? ((MasterSlaveDataSource) dataSource).getMasterDataSource().values().iterator().next() : dataSource;
         this.actualTableName = actualTableName;
         databaseType = DatabaseType.valueFrom(dataSource.getConnection().getMetaData().getDatabaseProductName());
     }
     
-    public TableMeta getActualTableStructure() throws SQLException {
+    /**
+     *
+     *
+     * @return
+     * @throws SQLException
+     */
+    public TableMeta getActualTableMeta() throws SQLException {
         switch (databaseType) {
             case MySQL:
-                return getMySQLTableStructure();
+                return getMySQLTableMeta();
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
         }
     }
     
-    private TableMeta getMySQLTableStructure() throws SQLException {
+    private TableMeta getMySQLTableMeta() throws SQLException {
         Connection connection = dataSource.getConnection();
         Statement statement = connection.createStatement();
         statement.executeQuery(String.format("desc %s;", actualTableName));
         ResultSet resultSet = statement.getResultSet();
-        final TableMeta tableMeta = new TableMeta();
+        TableMeta tableMeta = new TableMeta();
         while (resultSet.next()) {
             String columnName = resultSet.getString("Field");
             String columnType = resultSet.getString("Type");
             String columnKey = resultSet.getString("Key");
-            final ColumnMeta columnMeta = new ColumnMeta(columnName, columnType, columnKey);
+            ColumnMeta columnMeta = new ColumnMeta(columnName, columnType, columnKey);
             tableMeta.getColumnMetas().add(columnMeta);
         }
         return tableMeta;
