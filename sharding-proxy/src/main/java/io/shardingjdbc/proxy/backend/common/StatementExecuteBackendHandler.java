@@ -67,16 +67,17 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     public StatementExecuteBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType, final boolean showSQL) {
         this.preparedStatementParameters = preparedStatementParameters;
-        routingEngine = new PreparedStatementRoutingEngine(PreparedStatementRegistry.getInstance().getSql(statementId), ShardingRuleRegistry.getInstance().getShardingRule(), databaseType, showSQL);
+        routingEngine = new PreparedStatementRoutingEngine(PreparedStatementRegistry.getInstance().getSQL(statementId), ShardingRuleRegistry.getInstance().getShardingRule(), databaseType, showSQL);
     }
     
     @Override
     public CommandResponsePackets execute() {
+        // TODO support null value parameter
         SQLRouteResult routeResult = routingEngine.route(getComStmtExecuteParameters());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
-        List<ColumnType> columnTypes = new ArrayList<>();
+        List<ColumnType> columnTypes = new ArrayList<>(32);
         List<CommandResponsePackets> result = new LinkedList<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             // TODO multiple threads
@@ -98,7 +99,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     }
     
     private List<Object> getComStmtExecuteParameters() {
-        List<Object> result = new ArrayList<>();
+        List<Object> result = new ArrayList<>(32);
         for (PreparedStatementParameter each : preparedStatementParameters) {
             result.add(each.getValue());
         }
