@@ -6,7 +6,7 @@ weight = 2
 
 Sharding-Sphere的3个产品的数据分片主要流程是完全一致的。它们由SQL解析 => 执行器优化 => SQL路由 => SQL改写 => SQL执行 => 结果归并的流程组成，在SQL通过使用逻辑表，配合用户配置的分片规则，将对数据库访问的真实SQL完全屏蔽。
 
-![内部实现架构图](http://ovfotjrsi.bkt.clouddn.com/sharding_core_cn.png)
+![分片架构图](http://ovfotjrsi.bkt.clouddn.com/sharding_architecture_cn.png)
 
 ## SQL解析
 
