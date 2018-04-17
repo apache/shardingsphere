@@ -19,7 +19,7 @@ package io.shardingjdbc.core.parsing.parser.context.condition;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -30,12 +30,16 @@ import java.util.List;
  *
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @ToString
 public final class OrCondition {
     
     private final List<AndCondition> andConditions = new ArrayList<>();
+    
+    public OrCondition(final Condition condition) {
+        add(condition);
+    }
     
     /**
      * Add condition.
