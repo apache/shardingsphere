@@ -15,38 +15,40 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata.handler;
+package io.shardingjdbc.core.jdbc.metadata.dialect;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.jdbc.metadata.entity.TableMetaData;
+import io.shardingjdbc.core.jdbc.metadata.ColumnMetaData;
+import lombok.AccessLevel;
 import lombok.Getter;
+
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * The abstract table structure handler.
+ * Abstract table meta handler.
  *
  * @author panjuan
  */
-@Getter
+@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractTableMetaHandler {
     
-    protected final DataSource dataSource;
+    private final DataSource dataSource;
     
-    protected final String actualTableName;
+    private final String actualTableName;
     
     public AbstractTableMetaHandler(final DataSource dataSource, final String actualTableName) {
-        
         this.dataSource = dataSource instanceof MasterSlaveDataSource
             ? ((MasterSlaveDataSource) dataSource).getMasterDataSource().values().iterator().next() : dataSource;
         this.actualTableName = actualTableName;
     }
     
     /**
-     * To get actual table meta.
+     * Get column meta data list.
      *
-     * @return Table meta.
-     * @throws SQLException SQL exception.
+     * @return column meta data list
+     * @throws SQLException SQL exception
      */
-    public abstract TableMetaData getActualTableMeta() throws SQLException;
+    public abstract Collection<ColumnMetaData> getColumnMetaDataList() throws SQLException;
 }

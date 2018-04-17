@@ -15,15 +15,16 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata.entity;
+package io.shardingjdbc.core.jdbc.metadata;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import java.util.List;
+
+import java.util.Collection;
 
 /**
- * The table metadata information.
+ * Table metadata.
  *
  * @author panjuan
  */
@@ -32,5 +33,5 @@ import java.util.List;
 @EqualsAndHashCode
 public final class TableMetaData {
     
-    private final List<ColumnMetaData> columnMetaData;
+    private final Collection<ColumnMetaData> columnMetaData;
 }

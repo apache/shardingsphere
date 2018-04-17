@@ -18,94 +18,54 @@
 package io.shardingjdbc.core.jdbc.metadata;
 
 import io.shardingjdbc.core.exception.ShardingJdbcException;
-import io.shardingjdbc.core.jdbc.metadata.entity.ActualTableInformation;
-import io.shardingjdbc.core.jdbc.metadata.entity.TableMetaData;
-import io.shardingjdbc.core.jdbc.metadata.handler.TableMetaHandlerFactory;
+import io.shardingjdbc.core.jdbc.metadata.dialect.TableMetaHandlerFactory;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 import lombok.Getter;
+
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * The metadata of sharding tables.
+ * Sharding metadata.
  *
  * @author panjuan
  */
 @Getter
 public final class ShardingMetaData {
     
-    private Map<String, TableMetaData> logicTableStructureMap;
+    private Map<String, TableMetaData> tableMetaDataMap;
     
-    private Map<String, List<ActualTableInformation>> logicTableActualTablesMap;
-    
-    private void initialize(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
-        Collection<TableRule> tableRules = shardingRule.getTableRules();
-        calculateLogicTableActualTablesMap(dataSourceMap, tableRules);
-        calculateLogicTableStructureMap();
-    }
-    
-    private void calculateLogicTableActualTablesMap(final Map<String, DataSource> dataSourceMap, final Collection<TableRule> tableRules)
-        throws SQLException {
-        logicTableActualTablesMap = new HashMap<>(tableRules.size(), 1);
-        for (TableRule each : tableRules) {
-            String logicTable = each.getLogicTable();
-            List<DataNode> actualDataNodes = each.getActualDataNodes();
-            List<ActualTableInformation> actualTableInformationList = calActualTableInformationList(actualDataNodes, dataSourceMap);
-            logicTableActualTablesMap.put(logicTable, actualTableInformationList);
+    /**
+     * Initialize sharding meta data.
+     * 
+     * @param dataSourceMap data source map
+     * @param shardingRule sharding rule
+     * @throws SQLException SQL exception
+     */
+    public void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
+        tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
+        for (TableRule each : shardingRule.getTableRules()) {
+            tableMetaDataMap.put(each.getLogicTable(), getTableMetaData(each.getLogicTable(), each.getActualDataNodes(), dataSourceMap));
         }
     }
     
-    private void calculateLogicTableStructureMap() {
-        logicTableStructureMap = new HashMap<>(logicTableStructureMap.size(), 1);
-        for (Entry<String, List<ActualTableInformation>> entry : logicTableActualTablesMap.entrySet()) {
-            if (isAllTableMetaSame(entry.getValue())) {
-                logicTableStructureMap.put(entry.getKey(), entry.getValue().get(0).getTableMetaData());
-            } else {
-                throw new ShardingJdbcException("Cannot get uniformed table structure for %s.", entry.getKey());
+    private TableMetaData getTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Collection<ColumnMetaData> result = null;
+        for (DataNode each : actualDataNodes) {
+            Collection<ColumnMetaData> columnMetaDataList = TableMetaHandlerFactory.newInstance(dataSourceMap.get(each.getDataSourceName()), each.getTableName()).getColumnMetaDataList();
+            if (null == result) {
+                result = columnMetaDataList;
+            }
+            if (!result.equals(columnMetaDataList)) {
+                throw new ShardingJdbcException("Cannot get uniformed table structure for '%s'.", logicTableName);
             }
         }
-    }
-    
-    private List<ActualTableInformation> calActualTableInformationList(final List<DataNode> actualDataNodes, final Map<String, DataSource> dataSourceMap)
-        throws SQLException {
-        List<ActualTableInformation> actualTableInformationList = new ArrayList<>();
-        for (DataNode dataNode : actualDataNodes) {
-            TableMetaData tableMetaData = TableMetaHandlerFactory.newInstance(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName()).getActualTableMeta();
-            actualTableInformationList.add(new ActualTableInformation(dataNode, tableMetaData));
-        }
-        return actualTableInformationList;
-    }
-    
-    private boolean isAllTableMetaSame(final List<ActualTableInformation> actualTableInformationList) {
-        List<TableMetaData> tableMetaDataList = new ArrayList<>();
-        for (ActualTableInformation each : actualTableInformationList) {
-            tableMetaDataList.add(each.getTableMetaData());
-        }
-        final Set<TableMetaData> tableMetaDataSet = new HashSet<>(tableMetaDataList);
-        return 1 == tableMetaDataSet.size();
-    }
-    
-    /**
-     * To get logic table metadata by logic table name.
-     *
-     * @param logicTable logic table name.
-     * @return table metadata.
-     */
-    public TableMetaData getLogicTableMeta(final String logicTable) {
-        return logicTableStructureMap.get(logicTable);
-    }
-    
-    /**
-     * To get actual table information list by logic table name.
-     *
-     * @param logicTable logic table name.
-     * @return actual table information list.
-     */
-    public List<ActualTableInformation> getActualTableInformationList(final String logicTable) {
-        return logicTableActualTablesMap.get(logicTable);
+        return new TableMetaData(result);
     }
 }
