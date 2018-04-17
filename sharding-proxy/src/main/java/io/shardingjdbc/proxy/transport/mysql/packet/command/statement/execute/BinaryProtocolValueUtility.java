@@ -22,6 +22,9 @@ import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+
 /**
  * Binary protocol value.
  * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html">Binary Protocol Value</a>
@@ -47,16 +50,101 @@ public final class BinaryProtocolValueUtility {
      *
      * @param columnType column type
      * @param mysqlPacketPayload mysql packet payload
-     * @return string value
+     * @return object value
      */
-    public String readBinaryProtocolValue(final ColumnType columnType, final MySQLPacketPayload mysqlPacketPayload) {
-        // TODO add more types
+    public Object readBinaryProtocolValue(final ColumnType columnType, final MySQLPacketPayload mysqlPacketPayload) {
         switch (columnType) {
+            case MYSQL_TYPE_STRING:
+            case MYSQL_TYPE_VARCHAR:
+            case MYSQL_TYPE_VAR_STRING:
+            case MYSQL_TYPE_ENUM:
+            case MYSQL_TYPE_SET:
+            case MYSQL_TYPE_LONG_BLOB:
+            case MYSQL_TYPE_MEDIUM_BLOB:
+            case MYSQL_TYPE_BLOB:
+            case MYSQL_TYPE_TINY_BLOB:
+            case MYSQL_TYPE_GEOMETRY:
+            case MYSQL_TYPE_BIT:
+            case MYSQL_TYPE_DECIMAL:
+            case MYSQL_TYPE_NEWDECIMAL:
+                return mysqlPacketPayload.readStringLenenc();
+            case MYSQL_TYPE_LONGLONG:
+                return mysqlPacketPayload.readInt8();
             case MYSQL_TYPE_LONG:
-                return String.valueOf(mysqlPacketPayload.readInt4());
+            case MYSQL_TYPE_INT24:
+                return mysqlPacketPayload.readInt4();
+            case MYSQL_TYPE_SHORT:
+            case MYSQL_TYPE_YEAR:
+                return mysqlPacketPayload.readInt2();
+            case MYSQL_TYPE_TINY:
+                return mysqlPacketPayload.readInt1();
+            case MYSQL_TYPE_DOUBLE:
+                return mysqlPacketPayload.readInt8();
+            case MYSQL_TYPE_FLOAT:
+                return mysqlPacketPayload.readInt4();
+            case MYSQL_TYPE_DATE:
+            case MYSQL_TYPE_DATETIME:
+            case MYSQL_TYPE_TIMESTAMP:
+                return readDate(mysqlPacketPayload);
+            case MYSQL_TYPE_TIME:
+                return readTime(mysqlPacketPayload);
             default:
-                return String.valueOf(mysqlPacketPayload.readStringLenenc());
+                throw new IllegalArgumentException(String.format("Cannot find MYSQL type '%s' in column type", columnType));
         }
+    }
+    
+    private Timestamp readDate(final MySQLPacketPayload mysqlPacketPayload) {
+        Timestamp timestamp;
+        Calendar calendar = Calendar.getInstance();
+        int length = mysqlPacketPayload.readInt1();
+        switch (length) {
+            case 0:
+                timestamp = new Timestamp(0);
+                break;
+            case 4:
+                calendar.set(mysqlPacketPayload.readInt2(), mysqlPacketPayload.readInt1() - 1, mysqlPacketPayload.readInt1());
+                timestamp = new Timestamp(calendar.getTimeInMillis());
+                break;
+            case 7:
+                calendar.set(mysqlPacketPayload.readInt2(), mysqlPacketPayload.readInt1() - 1, mysqlPacketPayload.readInt1(),
+                    mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1());
+                timestamp = new Timestamp(calendar.getTimeInMillis());
+                break;
+            case 11:
+                calendar.set(mysqlPacketPayload.readInt2(), mysqlPacketPayload.readInt1() - 1, mysqlPacketPayload.readInt1(),
+                    mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1());
+                timestamp = new Timestamp(calendar.getTimeInMillis());
+                timestamp.setNanos(mysqlPacketPayload.readInt4());
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("Wrong length '%d' of MYSQL_TYPE_TIME", length));
+        }
+        return timestamp;
+    }
+    
+    private Timestamp readTime(final MySQLPacketPayload mysqlPacketPayload) {
+        Timestamp timestamp;
+        Calendar calendar = Calendar.getInstance();
+        int length = mysqlPacketPayload.readInt1();
+        mysqlPacketPayload.readInt1();
+        mysqlPacketPayload.readInt4();
+        switch (length) {
+            case 0:
+                timestamp = new Timestamp(0);
+                break;
+            case 8:
+                calendar.set(0, 14, 0, mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1() - 1, mysqlPacketPayload.readInt1());
+                timestamp = new Timestamp(calendar.getTimeInMillis());
+                break;
+            case 12:
+                calendar.set(0, 14, 0, mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1() - 1, mysqlPacketPayload.readInt1());
+                timestamp = new Timestamp(calendar.getTimeInMillis());
+                timestamp.setNanos(mysqlPacketPayload.readInt4());
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("Wrong length '%d' of MYSQL_TYPE_DATE", length));
+        }
+        return timestamp;
     }
     
     /**
@@ -64,36 +152,19 @@ public final class BinaryProtocolValueUtility {
      *
      * @param columnType column type
      * @param mysqlPacketPayload mysql packet pay load
-     * @param stringData string data
+     * @param objectData object data
      */
-    public void writeBinaryProtocolValue(final ColumnType columnType, final MySQLPacketPayload mysqlPacketPayload, final String stringData) {
+    public void writeBinaryProtocolValue(final ColumnType columnType, final MySQLPacketPayload mysqlPacketPayload, final Object objectData) {
         // TODO add more types
         switch (columnType) {
             case MYSQL_TYPE_LONGLONG:
-                mysqlPacketPayload.writeInt8(Long.parseLong(stringData));
+                mysqlPacketPayload.writeInt8(Long.parseLong(objectData.toString()));
                 break;
             case MYSQL_TYPE_LONG:
-                mysqlPacketPayload.writeInt4(Integer.parseInt(stringData));
+                mysqlPacketPayload.writeInt4(Integer.parseInt(objectData.toString()));
                 break;
             default:
-                mysqlPacketPayload.writeStringLenenc(stringData);
-        }
-    }
-    
-    /**
-     * Get value.
-     *
-     * @param columnType column type
-     * @param value string value
-     * @return object value
-     */
-    public Object getValue(final ColumnType columnType, final String value) {
-        // TODO add more types
-        switch (columnType) {
-            case MYSQL_TYPE_LONG:
-                return Long.parseLong(value);
-            default:
-                return null;
+                mysqlPacketPayload.writeStringLenenc(objectData.toString());
         }
     }
 }
