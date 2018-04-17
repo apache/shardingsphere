@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="assertSelectOrWithSingleTable" value="SELECT * FROM t_order WHERE user_id = ? OR user_id = ?" />
-</sql-cases>
