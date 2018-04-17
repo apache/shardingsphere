@@ -17,31 +17,28 @@
 
 package io.shardingjdbc.core.jdbc.metadata;
 
+import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.jdbc.metadata.entity.ActualTableInformation;
-import io.shardingjdbc.core.jdbc.metadata.entity.TableMeta;
+import io.shardingjdbc.core.jdbc.metadata.entity.TableMetaData;
 import io.shardingjdbc.core.jdbc.metadata.handler.TableMetaHandlerFactory;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
-import io.shardingjdbc.core.exception.ShardingJdbcException;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.Map.Entry;
-
 
 /**
  * The metadata of sharding tables.
  *
  * @author panjuan
  */
-@NoArgsConstructor
 @Getter
 public final class ShardingMetaData {
     
-    private Map<String, TableMeta> logicTableStructureMap;
+    private Map<String, TableMetaData> logicTableStructureMap;
     
     private Map<String, List<ActualTableInformation>> logicTableActualTablesMap;
     
@@ -66,7 +63,7 @@ public final class ShardingMetaData {
         logicTableStructureMap = new HashMap<>(logicTableStructureMap.size(), 1);
         for (Entry<String, List<ActualTableInformation>> entry : logicTableActualTablesMap.entrySet()) {
             if (isAllTableMetaSame(entry.getValue())) {
-                logicTableStructureMap.put(entry.getKey(), entry.getValue().get(0).getTableMeta());
+                logicTableStructureMap.put(entry.getKey(), entry.getValue().get(0).getTableMetaData());
             } else {
                 throw new ShardingJdbcException("Cannot get uniformed table structure for %s.", entry.getKey());
             }
@@ -77,19 +74,19 @@ public final class ShardingMetaData {
         throws SQLException {
         List<ActualTableInformation> actualTableInformationList = new ArrayList<>();
         for (DataNode dataNode : actualDataNodes) {
-            TableMeta tableMeta = TableMetaHandlerFactory.newInstance(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName()).getActualTableMeta();
-            actualTableInformationList.add(new ActualTableInformation(dataNode, tableMeta));
+            TableMetaData tableMetaData = TableMetaHandlerFactory.newInstance(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName()).getActualTableMeta();
+            actualTableInformationList.add(new ActualTableInformation(dataNode, tableMetaData));
         }
         return actualTableInformationList;
     }
     
     private boolean isAllTableMetaSame(final List<ActualTableInformation> actualTableInformationList) {
-        List<TableMeta> tableMetaList = new ArrayList<>();
+        List<TableMetaData> tableMetaDataList = new ArrayList<>();
         for (ActualTableInformation each : actualTableInformationList) {
-            tableMetaList.add(each.getTableMeta());
+            tableMetaDataList.add(each.getTableMetaData());
         }
-        final Set<TableMeta> tableMetaSet = new HashSet<>(tableMetaList);
-        return 1 == tableMetaSet.size();
+        final Set<TableMetaData> tableMetaDataSet = new HashSet<>(tableMetaDataList);
+        return 1 == tableMetaDataSet.size();
     }
     
     /**
@@ -98,7 +95,7 @@ public final class ShardingMetaData {
      * @param logicTable logic table name.
      * @return table metadata.
      */
-    public TableMeta getLogicTableMeta(final String logicTable) {
+    public TableMetaData getLogicTableMeta(final String logicTable) {
         return logicTableStructureMap.get(logicTable);
     }
     

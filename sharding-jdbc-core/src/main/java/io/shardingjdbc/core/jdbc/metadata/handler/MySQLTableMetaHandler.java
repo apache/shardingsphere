@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.core.jdbc.metadata.handler;
 
-import io.shardingjdbc.core.jdbc.metadata.entity.ColumnMeta;
-import io.shardingjdbc.core.jdbc.metadata.entity.TableMeta;
+import io.shardingjdbc.core.jdbc.metadata.entity.ColumnMetaData;
+import io.shardingjdbc.core.jdbc.metadata.entity.TableMetaData;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,18 +43,18 @@ public final class MySQLTableMetaHandler extends AbstractTableMetaHandler {
      * @return table metadata
      * @throws SQLException SQL exception.
      */
-    public TableMeta getActualTableMeta() throws SQLException {
+    public TableMetaData getActualTableMeta() throws SQLException {
         try (Statement statement = dataSource.getConnection().createStatement()) {
             statement.executeQuery(String.format("desc %s;", actualTableName));
             ResultSet resultSet = statement.getResultSet();
-            List<ColumnMeta> columnMetaList = new ArrayList<>();
+            List<ColumnMetaData> columnMetaDataList = new ArrayList<>();
             while (resultSet.next()) {
                 String columnName = resultSet.getString("Field");
                 String columnType = resultSet.getString("Type");
                 String columnKey = resultSet.getString("Key");
-                columnMetaList.add(new ColumnMeta(columnName, columnType, columnKey));
+                columnMetaDataList.add(new ColumnMetaData(columnName, columnType, columnKey));
             }
-            return new TableMeta(columnMetaList);
+            return new TableMetaData(columnMetaDataList);
         }
     }
 }

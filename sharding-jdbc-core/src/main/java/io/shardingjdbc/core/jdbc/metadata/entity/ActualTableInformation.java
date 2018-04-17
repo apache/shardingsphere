@@ -32,5 +32,5 @@ public class ActualTableInformation {
     
     private final DataNode dataNode;
     
-    private final TableMeta tableMeta;
+    private final TableMetaData tableMetaData;
 }

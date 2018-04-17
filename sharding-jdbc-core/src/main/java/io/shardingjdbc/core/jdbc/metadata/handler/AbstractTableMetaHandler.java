@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.jdbc.metadata.handler;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.jdbc.metadata.entity.TableMeta;
+import io.shardingjdbc.core.jdbc.metadata.entity.TableMetaData;
 import lombok.Getter;
 import javax.sql.DataSource;
 import java.sql.*;
@@ -48,5 +48,5 @@ public abstract class AbstractTableMetaHandler {
      * @return Table meta.
      * @throws SQLException SQL exception.
      */
-    public abstract TableMeta getActualTableMeta() throws SQLException;
+    public abstract TableMetaData getActualTableMeta() throws SQLException;
 }

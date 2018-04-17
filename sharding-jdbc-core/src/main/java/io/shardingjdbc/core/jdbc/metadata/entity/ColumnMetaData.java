@@ -20,17 +20,20 @@ package io.shardingjdbc.core.jdbc.metadata.entity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import java.util.List;
 
 /**
- * The table metadata information.
+ * The column information.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class TableMeta {
+public final class ColumnMetaData {
     
-    private final List<ColumnMeta> columnMetas;
+    private final String columnName;
+    
+    private final String columnType;
+    
+    private final String keyType;
 }
