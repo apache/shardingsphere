@@ -89,7 +89,7 @@ public final class BinaryProtocolValueUtility {
             case MYSQL_TYPE_TIME:
                 return readTime(mysqlPacketPayload);
             default:
-                throw new IllegalArgumentException(String.format("Cannot find MYSQL type '%s' in column type", columnType));
+                throw new IllegalArgumentException(String.format("Cannot find MYSQL type '%s' in column type when read binary protocol value", columnType));
         }
     }
     
@@ -133,11 +133,11 @@ public final class BinaryProtocolValueUtility {
                 timestamp = new Timestamp(0);
                 break;
             case 8:
-                calendar.set(0, 14, 0, mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1() - 1, mysqlPacketPayload.readInt1());
+                calendar.set(0, 0, 0, mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1() - 1, mysqlPacketPayload.readInt1());
                 timestamp = new Timestamp(calendar.getTimeInMillis());
                 break;
             case 12:
-                calendar.set(0, 14, 0, mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1() - 1, mysqlPacketPayload.readInt1());
+                calendar.set(0, 0, 0, mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1() - 1, mysqlPacketPayload.readInt1());
                 timestamp = new Timestamp(calendar.getTimeInMillis());
                 timestamp.setNanos(mysqlPacketPayload.readInt4());
                 break;
@@ -155,16 +155,121 @@ public final class BinaryProtocolValueUtility {
      * @param objectData object data
      */
     public void writeBinaryProtocolValue(final ColumnType columnType, final MySQLPacketPayload mysqlPacketPayload, final Object objectData) {
-        // TODO add more types
         switch (columnType) {
+            case MYSQL_TYPE_STRING:
+            case MYSQL_TYPE_VARCHAR:
+            case MYSQL_TYPE_VAR_STRING:
+            case MYSQL_TYPE_ENUM:
+            case MYSQL_TYPE_SET:
+            case MYSQL_TYPE_LONG_BLOB:
+            case MYSQL_TYPE_MEDIUM_BLOB:
+            case MYSQL_TYPE_BLOB:
+            case MYSQL_TYPE_TINY_BLOB:
+            case MYSQL_TYPE_GEOMETRY:
+            case MYSQL_TYPE_BIT:
+            case MYSQL_TYPE_DECIMAL:
+            case MYSQL_TYPE_NEWDECIMAL:
+                mysqlPacketPayload.writeStringLenenc(objectData.toString());
+                break;
             case MYSQL_TYPE_LONGLONG:
-                mysqlPacketPayload.writeInt8(Long.parseLong(objectData.toString()));
+                mysqlPacketPayload.writeInt8((Long) objectData);
                 break;
             case MYSQL_TYPE_LONG:
+            case MYSQL_TYPE_INT24:
+                mysqlPacketPayload.writeInt4((Integer) objectData);
+                break;
+            case MYSQL_TYPE_SHORT:
+            case MYSQL_TYPE_YEAR:
+                mysqlPacketPayload.writeInt2((Integer) objectData);
+                break;
+            case MYSQL_TYPE_TINY:
+                mysqlPacketPayload.writeInt1((Integer) objectData);
+                break;
+            case MYSQL_TYPE_DOUBLE:
+                mysqlPacketPayload.writeInt8(Integer.parseInt(objectData.toString()));
+                break;
+            case MYSQL_TYPE_FLOAT:
                 mysqlPacketPayload.writeInt4(Integer.parseInt(objectData.toString()));
                 break;
+            case MYSQL_TYPE_DATE:
+            case MYSQL_TYPE_DATETIME:
+            case MYSQL_TYPE_TIMESTAMP:
+                writeDate((Timestamp) objectData, mysqlPacketPayload);
+                break;
+            case MYSQL_TYPE_TIME:
+                writeTime((Timestamp) objectData, mysqlPacketPayload);
+                break;
             default:
-                mysqlPacketPayload.writeStringLenenc(objectData.toString());
+                throw new IllegalArgumentException(String.format("Cannot find MYSQL type '%s' in column type when write binary protocol value", columnType));
+        }
+    }
+    
+    private void writeDate(final Timestamp timestamp, final MySQLPacketPayload mysqlPacketPayload) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp.getTime());
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        int millisecond = timestamp.getNanos();
+        boolean isDateValueAbsent = 0 == year && 0 == month && 0 == day;
+        boolean isTimeValueAbsent = 0 == hour && 0 == minute && 0 == second;
+        boolean isMillisecondValueAbsent = 0 == millisecond;
+        if (isDateValueAbsent && isTimeValueAbsent && isMillisecondValueAbsent) {
+            mysqlPacketPayload.writeInt1(0);
+        } else if (isTimeValueAbsent && isMillisecondValueAbsent) {
+            mysqlPacketPayload.writeInt1(4);
+            mysqlPacketPayload.writeInt2(year);
+            mysqlPacketPayload.writeInt1(month);
+            mysqlPacketPayload.writeInt1(day);
+        } else if (isMillisecondValueAbsent) {
+            mysqlPacketPayload.writeInt1(7);
+            mysqlPacketPayload.writeInt2(year);
+            mysqlPacketPayload.writeInt1(month);
+            mysqlPacketPayload.writeInt1(day);
+            mysqlPacketPayload.writeInt1(hour);
+            mysqlPacketPayload.writeInt1(minute);
+            mysqlPacketPayload.writeInt1(second);
+        } else {
+            mysqlPacketPayload.writeInt1(11);
+            mysqlPacketPayload.writeInt2(year);
+            mysqlPacketPayload.writeInt1(month);
+            mysqlPacketPayload.writeInt1(day);
+            mysqlPacketPayload.writeInt1(hour);
+            mysqlPacketPayload.writeInt1(minute);
+            mysqlPacketPayload.writeInt1(second);
+            mysqlPacketPayload.writeInt4(millisecond);
+        }
+    }
+    
+    private void writeTime(final Timestamp timestamp, final MySQLPacketPayload mysqlPacketPayload) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp.getTime());
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        int millisecond = timestamp.getNanos();
+        boolean isTimeValueAbsent = 0 == hour && 0 == minute && 0 == second;
+        boolean isMillisecondValueAbsent = 0 == millisecond;
+        if (isTimeValueAbsent && isMillisecondValueAbsent) {
+            mysqlPacketPayload.writeInt1(0);
+        } else if (isMillisecondValueAbsent) {
+            mysqlPacketPayload.writeInt1(8);
+            mysqlPacketPayload.writeInt1(0);
+            mysqlPacketPayload.writeInt4(0);
+            mysqlPacketPayload.writeInt1(hour);
+            mysqlPacketPayload.writeInt1(minute);
+            mysqlPacketPayload.writeInt1(second);
+        } else {
+            mysqlPacketPayload.writeInt1(12);
+            mysqlPacketPayload.writeInt1(0);
+            mysqlPacketPayload.writeInt4(0);
+            mysqlPacketPayload.writeInt1(hour);
+            mysqlPacketPayload.writeInt1(minute);
+            mysqlPacketPayload.writeInt1(second);
+            mysqlPacketPayload.writeInt4(millisecond);
         }
     }
 }
