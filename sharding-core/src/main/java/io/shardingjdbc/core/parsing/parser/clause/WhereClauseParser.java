@@ -126,7 +126,7 @@ public class WhereClauseParser implements SQLClauseParser {
             } else {
                 Optional<Condition> condition = parseComparisonCondition(shardingRule, sqlStatement, items);
                 skipsDoubleColon();
-                if (condition.isPresent()) {
+                if (condition.isPresent() && shardingRule.isShardingColumn(condition.get().getColumn())) {
                     OrCondition orCondition = new OrCondition();
                     orCondition.add(condition.get());
                     result = merge(result, orCondition);
