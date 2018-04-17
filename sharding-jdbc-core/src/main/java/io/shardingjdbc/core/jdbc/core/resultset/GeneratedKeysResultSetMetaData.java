@@ -30,7 +30,7 @@ import java.sql.Types;
  * @author gaohongtao
  */
 @RequiredArgsConstructor
-public final class  GeneratedKeysResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
+public final class GeneratedKeysResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final String generatedKeyColumn;
     
