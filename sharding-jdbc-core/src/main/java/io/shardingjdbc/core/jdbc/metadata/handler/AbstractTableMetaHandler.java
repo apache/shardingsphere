@@ -1,10 +1,11 @@
-package io.shardingjdbc.core.jdbc.meta.handler;
+package io.shardingjdbc.core.jdbc.metadata.handler;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.jdbc.meta.entity.TableMeta;
+import io.shardingjdbc.core.jdbc.metadata.entity.TableMeta;
 import lombok.Getter;
 import javax.sql.DataSource;
 import java.sql.*;
+
 /**
  * The abstract table structure handler.
  *
@@ -24,5 +25,11 @@ public abstract class AbstractTableMetaHandler {
         this.actualTableName = actualTableName;
     }
     
-    protected abstract TableMeta getActualTableMeta() throws SQLException;
+    /**
+     * To get actual table meta.
+     *
+     * @return Table meta.
+     * @throws SQLException SQL exception.
+     */
+    public abstract TableMeta getActualTableMeta() throws SQLException;
 }

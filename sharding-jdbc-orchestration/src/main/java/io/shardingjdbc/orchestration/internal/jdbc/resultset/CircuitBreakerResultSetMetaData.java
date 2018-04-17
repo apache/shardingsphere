@@ -20,7 +20,7 @@ package io.shardingjdbc.orchestration.internal.jdbc.resultset;
 import java.sql.ResultSetMetaData;
 
 /**
- * Circuit breaker result set meta.
+ * Circuit breaker result set metadata.
  * 
  * @author caohao
  */

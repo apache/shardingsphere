@@ -1,26 +1,19 @@
-package io.shardingjdbc.core.jdbc.meta.entity;
+package io.shardingjdbc.core.jdbc.metadata.entity;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The table meta information.
+ * The table metadata information.
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-@RequiredArgsConstructor
 public final class TableMeta {
     
     private final List<ColumnMeta> columnMetas;
-    
-    public TableMeta() {
-        columnMetas = new ArrayList<>(30);
-    }
-    
 }
