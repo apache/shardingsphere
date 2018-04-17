@@ -120,12 +120,8 @@ public final class ComStmtExecutePacket extends CommandPacket {
                 continue;
             }
             PreparedStatementParameter preparedStatementParameter = preparedStatementParameters.get(i);
-            // TODO add more types
-            if (ColumnType.MYSQL_TYPE_LONG == preparedStatementParameter.getColumnType()) {
-                preparedStatementParameter.setValue(String.valueOf(mysqlPacketPayload.readInt4()));
-            } else {
-                preparedStatementParameter.setValue(String.valueOf(mysqlPacketPayload.readStringLenenc()));
-            }
+            ColumnType columnType = preparedStatementParameter.getColumnType();
+            preparedStatementParameter.setValue(BinaryProtocolValueUtility.getInstance().readBinaryProtocolValue(columnType, mysqlPacketPayload));
         }
     }
     

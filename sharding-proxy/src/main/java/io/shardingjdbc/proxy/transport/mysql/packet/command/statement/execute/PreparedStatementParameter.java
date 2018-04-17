@@ -45,11 +45,6 @@ public final class PreparedStatementParameter extends PreparedStatementParameter
      * @return value
      */
     public Object getValue() {
-        // TODO add more types
-        if (ColumnType.MYSQL_TYPE_LONG == getColumnType()) {
-            return Long.parseLong(value);
-        } else {
-            return value;
-        }
+        return BinaryProtocolValueUtility.getInstance().getValue(getColumnType(), value);
     }
 }
