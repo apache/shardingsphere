@@ -46,7 +46,7 @@ public final class PreparedStatementParameter extends PreparedStatementParameter
      */
     public Object getValue() {
         // TODO add more types
-        if (getColumnType() == ColumnType.MYSQL_TYPE_LONG) {
+        if (ColumnType.MYSQL_TYPE_LONG == getColumnType()) {
             return Long.parseLong(value);
         } else {
             return value;

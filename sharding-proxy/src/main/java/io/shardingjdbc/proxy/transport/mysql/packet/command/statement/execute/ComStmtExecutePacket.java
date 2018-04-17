@@ -80,9 +80,9 @@ public final class ComStmtExecutePacket extends CommandPacket {
     }
     
     private void setParameterList(final MySQLPacketPayload mysqlPacketPayload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {
-        if (newParametersBoundFlag == NewParametersBoundFlag.PARAMETER_TYPE_EXIST) {
+        if (NewParametersBoundFlag.PARAMETER_TYPE_EXIST == newParametersBoundFlag) {
             setParameterHeader(mysqlPacketPayload, numParameters);
-        } else if (newParametersBoundFlag == NewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST) {
+        } else if (NewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST == newParametersBoundFlag) {
             setParameterHeaderFromCache(numParameters);
         }
         setParameterValue(mysqlPacketPayload, numParameters);
@@ -121,7 +121,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
             }
             PreparedStatementParameter preparedStatementParameter = preparedStatementParameters.get(i);
             // TODO add more types
-            if (preparedStatementParameter.getColumnType() == ColumnType.MYSQL_TYPE_LONG) {
+            if (ColumnType.MYSQL_TYPE_LONG == preparedStatementParameter.getColumnType()) {
                 preparedStatementParameter.setValue(String.valueOf(mysqlPacketPayload.readInt4()));
             } else {
                 preparedStatementParameter.setValue(String.valueOf(mysqlPacketPayload.readStringLenenc()));
