@@ -60,6 +60,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executorEngine = new ExecutorEngine(executorSize);
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        // new meta
+        // init
         shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, showSQL);
     }
     

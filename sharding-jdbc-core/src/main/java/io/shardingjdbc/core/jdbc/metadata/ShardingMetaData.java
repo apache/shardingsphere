@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.jdbc.metadata;
 
 import io.shardingjdbc.core.exception.ShardingJdbcException;
-import io.shardingjdbc.core.jdbc.metadata.dialect.TableMetaHandlerFactory;
+import io.shardingjdbc.core.jdbc.metadata.dialect.ShardingMetaDataHandlerFactory;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
@@ -58,7 +58,7 @@ public final class ShardingMetaData {
     private TableMetaData getTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes, final Map<String, DataSource> dataSourceMap) throws SQLException {
         Collection<ColumnMetaData> result = null;
         for (DataNode each : actualDataNodes) {
-            Collection<ColumnMetaData> columnMetaDataList = TableMetaHandlerFactory.newInstance(dataSourceMap.get(each.getDataSourceName()), each.getTableName()).getColumnMetaDataList();
+            Collection<ColumnMetaData> columnMetaDataList = ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(each.getDataSourceName()), each.getTableName()).getColumnMetaDataList();
             if (null == result) {
                 result = columnMetaDataList;
             }

@@ -32,13 +32,13 @@ import java.util.Collection;
  * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractTableMetaHandler {
+public abstract class ShardingMetaDataHandler {
     
     private final DataSource dataSource;
     
     private final String actualTableName;
     
-    public AbstractTableMetaHandler(final DataSource dataSource, final String actualTableName) {
+    public ShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
         this.dataSource = dataSource instanceof MasterSlaveDataSource
             ? ((MasterSlaveDataSource) dataSource).getMasterDataSource().values().iterator().next() : dataSource;
         this.actualTableName = actualTableName;

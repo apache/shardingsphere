@@ -32,9 +32,9 @@ import java.util.List;
  *
  * @author panjuan
  */
-public final class MySQLTableMetaHandler extends AbstractTableMetaHandler {
+public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler {
     
-    public MySQLTableMetaHandler(final DataSource dataSource, final String actualTableName) {
+    public MySQLShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
         super(dataSource, actualTableName);
     }
     
