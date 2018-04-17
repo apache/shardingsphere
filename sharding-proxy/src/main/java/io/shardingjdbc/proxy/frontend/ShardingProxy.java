@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.proxy.frontend;
 
-import com.google.common.base.StandardSystemProperty;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -30,7 +29,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.shardingjdbc.proxy.OperationSystem;
 import io.shardingjdbc.proxy.frontend.netty.ServerHandlerInitializer;
 
 /**
@@ -42,8 +40,6 @@ import io.shardingjdbc.proxy.frontend.netty.ServerHandlerInitializer;
 public final class ShardingProxy {
     
     private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors() * 2;
-    
-    private static final String OS_NAME = StandardSystemProperty.OS_NAME.value();
     
     private EventLoopGroup bossGroup;
     
@@ -60,7 +56,8 @@ public final class ShardingProxy {
     public void start(final int port) throws InterruptedException {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
-            if (canUseEpoll()) {
+            bossGroup = createEventLoopGroup();
+            if (bossGroup instanceof EpollEventLoopGroup) {
                 groupsEpoll(bootstrap);
             } else {
                 groupsNio(bootstrap);
@@ -74,12 +71,15 @@ public final class ShardingProxy {
         }
     }
     
-    private boolean canUseEpoll() {
-        return null != OS_NAME && OS_NAME.startsWith(OperationSystem.LINUX.getPrefix());
+    private EventLoopGroup createEventLoopGroup() {
+        try {
+            return new EpollEventLoopGroup(1);
+        } catch (final UnsatisfiedLinkError ex) {
+            return new NioEventLoopGroup(1);
+        }
     }
     
     private void groupsEpoll(final ServerBootstrap bootstrap) {
-        bossGroup = new EpollEventLoopGroup(1);
         workerGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
         userGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(bossGroup, workerGroup)
@@ -94,7 +94,6 @@ public final class ShardingProxy {
     }
     
     private void groupsNio(final ServerBootstrap bootstrap) {
-        bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
         userGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(bossGroup, workerGroup)
