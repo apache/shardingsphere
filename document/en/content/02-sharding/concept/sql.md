@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "SQL Core Concept"
+title = "SQL"
 weight = 1
 +++
 

@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "Sharding Core Concept"
+title = "Sharding"
 weight = 2
 +++
 

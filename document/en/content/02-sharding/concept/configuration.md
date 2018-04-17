@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "Configuration Core Concept"
+title = "Configuration"
 weight = 3
 +++
 

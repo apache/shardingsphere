@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "分片核心概念"
+title = "分片"
 weight = 2
 +++
 

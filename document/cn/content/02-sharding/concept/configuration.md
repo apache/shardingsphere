@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "配置核心概念"
+title = "配置"
 weight = 3
 +++
 

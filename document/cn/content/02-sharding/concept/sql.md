@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "SQL核心概念"
+title = "SQL"
 weight = 1
 +++
 
