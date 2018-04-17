@@ -61,7 +61,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
     
     private final NewParametersBoundFlag newParametersBoundFlag;
     
-    private final List<PreparedStatementParameter> preparedStatementParameters = new ArrayList<>();
+    private final List<PreparedStatementParameter> preparedStatementParameters = new ArrayList<>(32);
     
     public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
         super(sequenceId);
@@ -89,7 +89,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
     }
     
     private void setParameterHeader(final MySQLPacketPayload mysqlPacketPayload, final int numParameters) {
-        List<PreparedStatementParameterHeader> parameterHeaders = new ArrayList<>();
+        List<PreparedStatementParameterHeader> parameterHeaders = new ArrayList<>(32);
         for (int i = 0; i < numParameters; i++) {
             if (nullBitmap.isParameterNull(i)) {
                 preparedStatementParameters.add(new PreparedStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));

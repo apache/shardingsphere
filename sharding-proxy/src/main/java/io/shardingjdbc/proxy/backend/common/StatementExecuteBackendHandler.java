@@ -77,7 +77,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
-        List<ColumnType> columnTypes = new ArrayList<>();
+        List<ColumnType> columnTypes = new ArrayList<>(32);
         List<CommandResponsePackets> result = new LinkedList<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             // TODO multiple threads
@@ -99,7 +99,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     }
     
     private List<Object> getComStmtExecuteParameters() {
-        List<Object> result = new ArrayList<>();
+        List<Object> result = new ArrayList<>(32);
         for (PreparedStatementParameter each : preparedStatementParameters) {
             result.add(each.getValue());
         }
