@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "Sharding-Sidecar Quick Start"
+title = "Sharding-Sidecar"
 weight = 3
 +++
 

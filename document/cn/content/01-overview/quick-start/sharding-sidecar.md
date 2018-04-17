@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "Sharding-Sidecar快速入门"
+title = "Sharding-Sidecar"
 weight = 3
 +++
 
