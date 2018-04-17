@@ -24,5 +24,5 @@ import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
  *
  * @author maxiaoguang
  */
-public final class NoShardingCondition extends Condition {
+public final class NullCondition extends Condition {
 }

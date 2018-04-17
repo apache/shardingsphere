@@ -23,7 +23,7 @@ import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
-import io.shardingjdbc.core.parsing.parser.clause.condition.NoShardingCondition;
+import io.shardingjdbc.core.parsing.parser.clause.condition.NullCondition;
 import io.shardingjdbc.core.parsing.parser.clause.expression.AliasExpressionParser;
 import io.shardingjdbc.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingjdbc.core.parsing.parser.context.condition.AndCondition;
@@ -92,15 +92,8 @@ public class WhereClauseParser implements SQLClauseParser {
     
     private void parseWhere(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         do {
-            OrCondition orCondition = parseOr(shardingRule, sqlStatement, items);
-            boolean isAllrouter = false;
-            for (AndCondition each : orCondition.getAndConditions()) {
-                if (each.getConditions().get(0) instanceof NoShardingCondition) {
-                    isAllrouter = true;
-                    break;
-                }
-            }
-            if (!isAllrouter) {
+            OrCondition orCondition = parseOr(shardingRule, sqlStatement, items).trim();
+            if (1 != orCondition.getAndConditions().size() || !(orCondition.getAndConditions().iterator().next().getConditions().iterator().next() instanceof NullCondition)) {
                 sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
             }
         } while (lexerEngine.skipIfEqual(DefaultKeyword.AND));
@@ -184,7 +177,7 @@ public class WhereClauseParser implements SQLClauseParser {
             result = parseBetweenCondition(shardingRule, sqlStatement, left);
             return result;
         }
-        result = new NoShardingCondition();
+        result = new NullCondition();
         if (sqlStatement instanceof SelectStatement && isRowNumberCondition(items, left)) {
             if (lexerEngine.skipIfEqual(Symbol.LT)) {
                 parseRowCountCondition((SelectStatement) sqlStatement, false);
@@ -229,7 +222,7 @@ public class WhereClauseParser implements SQLClauseParser {
                 return new Condition(column.get(), right);
             }
         }
-        return new NoShardingCondition();
+        return new NullCondition();
     }
     
     private Condition parseInCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
@@ -244,7 +237,7 @@ public class WhereClauseParser implements SQLClauseParser {
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
             return new Condition(column.get(), rights);
         }
-        return new NoShardingCondition();
+        return new NullCondition();
     }
     
     private Condition parseBetweenCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
@@ -257,7 +250,7 @@ public class WhereClauseParser implements SQLClauseParser {
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
             return new Condition(column.get(), rights.get(0), rights.get(1));
         }
-        return new NoShardingCondition();
+        return new NullCondition();
     }
     
     private boolean isRowNumberCondition(final List<SelectItem> items, final SQLExpression sqlExpression) {
