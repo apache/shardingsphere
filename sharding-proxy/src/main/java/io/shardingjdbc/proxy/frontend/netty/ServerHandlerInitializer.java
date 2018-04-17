@@ -28,13 +28,14 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Channel initializer.
+ * 
  * @author xiaoyu
  */
 @RequiredArgsConstructor
-public class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> {
-
+public final class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> {
+    
     private final EventLoopGroup userGroup;
-
+    
     @Override
     protected void initChannel(final SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();

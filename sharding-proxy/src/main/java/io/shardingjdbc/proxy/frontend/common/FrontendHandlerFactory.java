@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FrontendHandlerFactory {
-
+    
     /**
      * Create frontend handler instance.
      *
@@ -39,8 +39,7 @@ public final class FrontendHandlerFactory {
      * @param userGroup user thread pool
      * @return frontend handler instance
      */
-    public static FrontendHandler createFrontendHandlerInstance(final DatabaseType databaseType,
-                                                                final EventLoopGroup userGroup) {
+    public static FrontendHandler createFrontendHandlerInstance(final DatabaseType databaseType, final EventLoopGroup userGroup) {
         switch (databaseType) {
             case MySQL:
                 return new MySQLFrontendHandler(userGroup);

@@ -41,18 +41,17 @@ import java.util.Objects;
  * @author xiaoyu
  */
 public final class ShardingProxy {
-
+    
     private static final int WORK_MAX_THREADS = Runtime.getRuntime().availableProcessors() * 2;
-
+    
     private static final String OS_NAME = "Linux";
-
+    
     private EventLoopGroup bossGroup;
-
+    
     private EventLoopGroup workerGroup;
-
+    
     private EventLoopGroup userGroup;
-
-
+    
     /**
      * Start Sharding-Proxy.
      *
@@ -71,7 +70,7 @@ public final class ShardingProxy {
             userGroup.shutdownGracefully();
         }
     }
-
+    
     private void groups(final ServerBootstrap bootstrap, final int workThreads) {
         if (Objects.equals(StandardSystemProperty.OS_NAME.value(), OS_NAME)) {
             bossGroup = new EpollEventLoopGroup(1);
