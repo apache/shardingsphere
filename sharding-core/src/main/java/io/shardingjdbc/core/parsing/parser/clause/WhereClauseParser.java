@@ -110,14 +110,18 @@ public class WhereClauseParser implements SQLClauseParser {
                 result.getAndConditions().addAll(merge(subOrCondition, orCondition).getAndConditions());
             } else {
                 OrCondition orCondition = parseAnd(shardingRule, sqlStatement, items);
-                result.getAndConditions().addAll(orCondition.getAndConditions());
+                try {
+                    result.getAndConditions().addAll(orCondition.getAndConditions());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } while (lexerEngine.skipIfEqual(DefaultKeyword.OR));
         return result;
     }
     
     private OrCondition parseAnd(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
-        OrCondition result = null;
+        OrCondition result = new OrCondition();
         do {
             if (lexerEngine.skipIfEqual(Symbol.LEFT_PAREN)) {
                 OrCondition subOrCondition = parseOr(shardingRule, sqlStatement, items);
@@ -232,11 +236,11 @@ public class WhereClauseParser implements SQLClauseParser {
             lexerEngine.skipIfEqual(Symbol.COMMA);
             rights.add(basicExpressionParser.parse(sqlStatement));
         } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN));
+        lexerEngine.nextToken();
         Optional<Column> column = find(sqlStatement.getTables(), left);
         if (column.isPresent()) {
             return Optional.of(new Condition(column.get(), rights));
         }
-        lexerEngine.nextToken();
         return Optional.absent();
     }
     

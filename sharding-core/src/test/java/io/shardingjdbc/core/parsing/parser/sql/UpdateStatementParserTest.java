@@ -106,7 +106,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(shardingValue3.upperEndpoint(), is((Comparable) 80));
     }
     
-    @Test(expected = SQLParsingUnsupportedException.class)
+    @Test
     public void parseWithOr() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.Oracle, "UPDATE TABLE_XXX SET field1=1 WHERE field1<1 AND (field1 >2 OR field2 =1)", shardingRule).parse(false);
