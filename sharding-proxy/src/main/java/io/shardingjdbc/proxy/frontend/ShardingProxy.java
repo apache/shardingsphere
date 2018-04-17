@@ -30,9 +30,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.shardingjdbc.proxy.OperationSystem;
 import io.shardingjdbc.proxy.frontend.netty.ServerHandlerInitializer;
-
-import java.util.Objects;
 
 /**
  * Sharding-Proxy.
@@ -42,9 +41,9 @@ import java.util.Objects;
  */
 public final class ShardingProxy {
     
-    private static final int WORK_MAX_THREADS = Runtime.getRuntime().availableProcessors() * 2;
+    private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     
-    private static final String OS_NAME = "Linux";
+    private static final String OS_NAME = StandardSystemProperty.OS_NAME.value();
     
     private EventLoopGroup bossGroup;
     
@@ -61,7 +60,11 @@ public final class ShardingProxy {
     public void start(final int port) throws InterruptedException {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
-            groups(bootstrap, WORK_MAX_THREADS);
+            if (canUseEpoll()) {
+                groupsEpoll(bootstrap);
+            } else {
+                groupsNio(bootstrap);
+            }
             ChannelFuture future = bootstrap.bind(port).sync();
             future.channel().closeFuture().sync();
         } finally {
@@ -71,34 +74,38 @@ public final class ShardingProxy {
         }
     }
     
-    private void groups(final ServerBootstrap bootstrap, final int workThreads) {
-        if (Objects.equals(StandardSystemProperty.OS_NAME.value(), OS_NAME)) {
-            bossGroup = new EpollEventLoopGroup(1);
-            workerGroup = new EpollEventLoopGroup(workThreads);
-            userGroup = new EpollEventLoopGroup(workThreads);
-            bootstrap.group(bossGroup, workerGroup)
-                    .channel(EpollServerSocketChannel.class)
-                    .option(EpollChannelOption.TCP_CORK, true)
-                    .option(EpollChannelOption.SO_KEEPALIVE, true)
-                    .option(EpollChannelOption.SO_BACKLOG, 128)
-                    .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                    .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                    .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new ServerHandlerInitializer(userGroup));
-        } else {
-            bossGroup = new NioEventLoopGroup();
-            workerGroup = new NioEventLoopGroup(workThreads);
-            userGroup = new NioEventLoopGroup(workThreads);
-            bootstrap.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG, 128)
-                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
-                    .option(ChannelOption.SO_KEEPALIVE, true)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                    .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                    .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new ServerHandlerInitializer(userGroup));
-        }
+    private boolean canUseEpoll() {
+        return null != OS_NAME && OS_NAME.startsWith(OperationSystem.LINUX.getPrefix());
+    }
+    
+    private void groupsEpoll(final ServerBootstrap bootstrap) {
+        bossGroup = new EpollEventLoopGroup(1);
+        workerGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
+        userGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
+        bootstrap.group(bossGroup, workerGroup)
+                .channel(EpollServerSocketChannel.class)
+                .option(EpollChannelOption.TCP_CORK, true)
+                .option(EpollChannelOption.SO_KEEPALIVE, true)
+                .option(EpollChannelOption.SO_BACKLOG, 128)
+                .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .handler(new LoggingHandler(LogLevel.INFO))
+                .childHandler(new ServerHandlerInitializer(userGroup));
+    }
+    
+    private void groupsNio(final ServerBootstrap bootstrap) {
+        bossGroup = new NioEventLoopGroup();
+        workerGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
+        userGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
+        bootstrap.group(bossGroup, workerGroup)
+                .channel(NioServerSocketChannel.class)
+                .option(ChannelOption.SO_KEEPALIVE, true)
+                .option(ChannelOption.TCP_NODELAY, true)
+                .option(ChannelOption.SO_BACKLOG, 128)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
+                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .handler(new LoggingHandler(LogLevel.INFO))
+                .childHandler(new ServerHandlerInitializer(userGroup));
     }
 }
