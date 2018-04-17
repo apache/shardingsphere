@@ -27,7 +27,7 @@ import io.shardingjdbc.proxy.transport.common.codec.PacketCodecFactory;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Initializer Channel.
+ * Channel initializer.
  * @author xiaoyu
  */
 @RequiredArgsConstructor
