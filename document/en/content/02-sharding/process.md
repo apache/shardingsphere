@@ -1,20 +1,21 @@
 +++
 toc = true
-title = "Workflow"
+title = "Main Process"
 weight = 2
 +++
 
-Sharding-JDBC is a middleware supports database sharding and table sharding way.By processes of JDBC Extension => SQL Parser => SQL Router => SQL Rewrite => SQL Execution => Result Merger, and using the logical table which the user configured, the real SQL is completely shielded from the database access.
+Sharding-Sphere's 3 projects have same main process on data sharding. They are SQL Parser => Executor Optimizer => SQL Router => SQL Rewrite => SQL Execution => Result Merger, and using the logical table which the user configured, the real SQL is completely shielded from the database access.
 
 ![Architecture Diagram](http://ovfotjrsi.bkt.clouddn.com/sharding_core_cn.png)
 
-## JDBC Extension
-
-The mapping between Connection and Statement (PreparedStatement) in the JDBC interface is converted from one-one to one-many. Therefore, the execution of a logical SQL may be split into multiple execution result sets.
 
 ## SQL Parser
 
 It is divided into lexical parser and syntactic parser. First of all, the SQL is split into some separate words by lexical parser. The syntactic parser is used to understand the SQL, and then the context is finally extracted. Parsing context includes tables, selections, sorting items, grouping items, aggregate functions, paging information, query conditions, and placeholders that may need to be modified.
+
+## Executor Optimizer
+
+Merge and optimize sharding conditions, such as OR.
 
 ## SQL Router
 

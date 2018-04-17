@@ -1,20 +1,20 @@
 +++
 toc = true
-title = "核心流程"
+title = "主要流程"
 weight = 2
 +++
 
-Sharding-JDBC是一个具有分库分表功能的数据库中间件。它通过JDBC扩展 => SQL解析 => SQL路由 => SQL改写 => SQL执行 => 结果归并的流程，在SQL通过使用逻辑表，配合用户配置的分片规则，将对数据库访问的真实SQL完全屏蔽。
+Sharding-Sphere的3个产品的数据分片主要流程是完全一致的。它们由SQL解析 => 执行器优化 => SQL路由 => SQL改写 => SQL执行 => 结果归并的流程组成，在SQL通过使用逻辑表，配合用户配置的分片规则，将对数据库访问的真实SQL完全屏蔽。
 
 ![内部实现架构图](http://ovfotjrsi.bkt.clouddn.com/sharding_core_cn.png)
-
-## JDBC扩展
-
-将JDBC接口中的Connection和Statement(PreparedStatement)的对应关系从一对一转换为一对多。因此一个逻辑SQL的执行，则有可能被拆分为多个执行结果集。
 
 ## SQL解析
 
 分为词法解析和语法解析。先通过词法解析将SQL拆分为一个个不可再分的单词。再使用语法解析器对SQL进行理解，并最终提炼出解析上下文。解析上下文包括表、选择项、排序项、分组项、聚合函数、分页信息、查询条件以及可能需要修改的占位符的标记。
+
+## 执行器优化
+
+合并和优化分片条件，如OR等。
 
 ## SQL路由
 
@@ -23,7 +23,7 @@ Sharding-JDBC是一个具有分库分表功能的数据库中间件。它通过J
 Hint路由用于通过程序的方式注入路由最终目的地的方式路由，可用于分片信息不包含在SQL中的场景。
 广播路由用于SQL中不包含分片键的场景。根据SQL类型又可以划分为全库广播路由(SET AUTOCOMMIT=1)和全库表广播路由(DQL, DML, DDL)。
 单播路由用于获取某一真实表信息的场景，如DESCRIBE table_name。
-阻断路由用于屏蔽SQL对数据库的操作，如USE db_name，因为Sharding-JDBC仅有一个逻辑数据源，无需切换。
+阻断路由用于屏蔽SQL对数据库的操作，如USE db_name，因为Sharding-Sphere仅有一个逻辑数据源，无需切换。
 
 ## SQL改写
 
