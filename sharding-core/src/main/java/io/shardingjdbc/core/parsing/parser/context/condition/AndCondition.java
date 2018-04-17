@@ -58,11 +58,11 @@ public final class AndCondition {
     }
     
     /**
-     * Trim and condition.
+     * Optimize and condition.
      *
      * @return and condition
      */
-    public AndCondition trim() {
+    public AndCondition optimize() {
         AndCondition result = new AndCondition();
         for (Condition each : conditions) {
             if (Condition.class.equals(each.getClass())) {

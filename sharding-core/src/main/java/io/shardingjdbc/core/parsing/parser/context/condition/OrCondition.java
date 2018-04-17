@@ -55,11 +55,11 @@ public final class OrCondition {
     }
     
     /**
-     * Trim or condition.
+     * Optimize or condition.
      *
      * @return or condition
      */
-    public OrCondition trim() {
+    public OrCondition optimize() {
         for (AndCondition each : andConditions) {
             if (each.getConditions().iterator().next() instanceof NullCondition) {
                 OrCondition result = new OrCondition();

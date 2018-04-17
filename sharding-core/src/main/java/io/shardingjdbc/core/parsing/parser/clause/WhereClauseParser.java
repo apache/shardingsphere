@@ -91,13 +91,10 @@ public class WhereClauseParser implements SQLClauseParser {
     }
     
     private void parseWhere(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
-        do {
-            OrCondition orCondition = parseOr(shardingRule, sqlStatement, items).trim();
-            if (1 != orCondition.getAndConditions().size() || !(orCondition.getAndConditions().iterator().next().getConditions().iterator().next() instanceof NullCondition)) {
-                sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
-            }
-        } while (lexerEngine.skipIfEqual(DefaultKeyword.AND));
-        lexerEngine.unsupportedIfEqual(DefaultKeyword.OR);
+        OrCondition orCondition = parseOr(shardingRule, sqlStatement, items).optimize();
+        if (1 != orCondition.getAndConditions().size() || !(orCondition.getAndConditions().iterator().next().getConditions().iterator().next() instanceof NullCondition)) {
+            sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
+        }
     }
     
     private OrCondition parseOr(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
@@ -159,7 +156,7 @@ public class WhereClauseParser implements SQLClauseParser {
         for (Condition each : andCondition2.getConditions()) {
             result.getConditions().add(each);
         }
-        return result.trim();
+        return result.optimize();
     }
     
     private Condition parseComparisonCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
