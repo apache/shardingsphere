@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata.entity;
+package io.shardingjdbc.core.jdbc.metadata;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * The column information.
+ * Column metadata.
  *
  * @author panjuan
  */

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata.handler;
+package io.shardingjdbc.core.jdbc.metadata.dialect;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import lombok.AccessLevel;
@@ -24,12 +24,13 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
- * The factory of table metadata handler.
+ * Table metadata handler factory.
  *
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableMetaHandlerFactory {
+    
     /**
      * To generate table metadata handler by data type.
      *
