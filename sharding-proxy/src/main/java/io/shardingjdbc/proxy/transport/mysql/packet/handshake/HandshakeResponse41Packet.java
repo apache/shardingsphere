@@ -17,9 +17,9 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.handshake;
 
-import io.shardingjdbc.proxy.constant.CapabilityFlag;
+import io.shardingjdbc.proxy.transport.mysql.constant.CapabilityFlag;
+import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLReceivedPacket;
 import lombok.Getter;
 
 /**
@@ -29,7 +29,7 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter
-public final class HandshakeResponse41Packet extends MySQLReceivedPacket {
+public final class HandshakeResponse41Packet extends MySQLPacket {
     
     private int capabilityFlags;
     
@@ -43,9 +43,8 @@ public final class HandshakeResponse41Packet extends MySQLReceivedPacket {
     
     private String database;
     
-    @Override
-    public HandshakeResponse41Packet read(final MySQLPacketPayload mysqlPacketPayload) {
-        setSequenceId(mysqlPacketPayload.readInt1());
+    public HandshakeResponse41Packet(final MySQLPacketPayload mysqlPacketPayload) {
+        super(mysqlPacketPayload.readInt1());
         capabilityFlags = mysqlPacketPayload.readInt4();
         maxPacketSize = mysqlPacketPayload.readInt4();
         characterSet = mysqlPacketPayload.readInt1();
@@ -53,7 +52,6 @@ public final class HandshakeResponse41Packet extends MySQLReceivedPacket {
         username = mysqlPacketPayload.readStringNul();
         readAuthResponse(mysqlPacketPayload);
         readDatabase(mysqlPacketPayload);
-        return this;
     }
     
     private void readAuthResponse(final MySQLPacketPayload mysqlPacketPayload) {
@@ -70,6 +68,34 @@ public final class HandshakeResponse41Packet extends MySQLReceivedPacket {
     private void readDatabase(final MySQLPacketPayload mysqlPacketPayload) {
         if (0 != (capabilityFlags & CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue())) {
             database = mysqlPacketPayload.readStringNul();
+        }
+    }
+    
+    @Override
+    public void write(final MySQLPacketPayload mysqlPacketPayload) {
+        mysqlPacketPayload.writeInt4(capabilityFlags);
+        mysqlPacketPayload.writeInt4(maxPacketSize);
+        mysqlPacketPayload.writeInt1(characterSet);
+        mysqlPacketPayload.writeReserved(23);
+        mysqlPacketPayload.writeStringNul(username);
+        writeAuthResponse(mysqlPacketPayload);
+        writeDatabase(mysqlPacketPayload);
+    }
+    
+    private void writeAuthResponse(final MySQLPacketPayload mysqlPacketPayload) {
+        if (0 != (capabilityFlags & CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue())) {
+            mysqlPacketPayload.writeStringLenenc(new String(authResponse));
+        } else if (0 != (capabilityFlags & CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
+            mysqlPacketPayload.writeInt1(authResponse.length);
+            mysqlPacketPayload.writeStringFix(new String(authResponse));
+        } else {
+            mysqlPacketPayload.writeStringNul(new String(authResponse));
+        }
+    }
+    
+    private void writeDatabase(final MySQLPacketPayload mysqlPacketPayload) {
+        if (0 != (capabilityFlags & CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue())) { 
+            mysqlPacketPayload.writeStringNul(database);
         }
     }
 }

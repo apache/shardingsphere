@@ -17,22 +17,21 @@
 
 package io.shardingjdbc.core.parsing.integrate.asserts.condition;
 
-import com.google.common.base.Optional;
 import io.shardingjdbc.core.parsing.integrate.asserts.SQLStatementAssertMessage;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedAndCondition;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedCondition;
+import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedOrCondition;
 import io.shardingjdbc.core.parsing.integrate.jaxb.condition.ExpectedValue;
-import io.shardingjdbc.core.parsing.parser.context.condition.Column;
+import io.shardingjdbc.core.parsing.parser.context.condition.AndCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
-import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
+import io.shardingjdbc.core.parsing.parser.context.condition.OrCondition;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Condition assert.
@@ -45,17 +44,26 @@ public final class ConditionAssert {
     private final SQLStatementAssertMessage assertMessage;
     
     /**
-     * Assert conditions.
+     * Assert or condition.
      * 
-     * @param actual actual conditions
-     * @param expected expected conditions
+     * @param actual actual or condition
+     * @param expected expected or condition
      */
-    public void assertConditions(final Conditions actual, final List<ExpectedCondition> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Conditions size assertion error: "), actual.getConditions().size(), is(expected.size()));
-        for (ExpectedCondition each : expected) {
-            Optional<Condition> condition = actual.find(new Column(each.getColumnName(), each.getTableName()));
-            assertTrue(assertMessage.getFullAssertMessage("Table should exist: "), condition.isPresent());
-            assertCondition(condition.get(), each);
+    public void assertOrCondition(final OrCondition actual, final ExpectedOrCondition expected) {
+        assertThat(assertMessage.getFullAssertMessage("Or condition size assertion error: "), actual.getAndConditions().size(), is(expected.getAndConditions().size()));
+        int count = 0;
+        for (ExpectedAndCondition each : expected.getAndConditions()) {
+            assertAndCondition(actual.getAndConditions().get(count), each);
+            count++;
+        }
+    }
+    
+    private void assertAndCondition(final AndCondition actual, final ExpectedAndCondition expected) {
+        assertThat(assertMessage.getFullAssertMessage("And condition size assertion error: "), actual.getConditions().size(), is(expected.getConditions().size()));
+        int count = 0;
+        for (ExpectedCondition each : expected.getConditions()) {
+            assertCondition(actual.getConditions().get(count), each);
+            count++;
         }
     }
     

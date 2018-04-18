@@ -8,12 +8,14 @@
             <table-token begin-position="76" original-literals="`t_order_item`" />
             <order-by-token placeholder-begin-position="156" literal-begin-position="162" />
         </tokens>
-        <conditions>
-            <condition column-name="order_id" table-name="t_order_item" operator="IN">
-                <value index="0" literal="1000" type="int" />
-                <value index="1" literal="1100" type="int" />
-            </condition>
-        </conditions>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="IN">
+                    <value index="0" literal="1000" type="int" />
+                    <value index="1" literal="1100" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(*)" alias="c_number" />
         </aggregation-select-items>
@@ -157,16 +159,18 @@
             </items-token>
             <order-by-token placeholder-begin-position="194" literal-begin-position="195" />
         </tokens>
-        <conditions>
-            <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
-            </condition>
-            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="2" literal="9" type="int" />
-                <value index="3" literal="10" type="int" />
-            </condition>
-        </conditions>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count" />
         </aggregation-select-items>
@@ -187,16 +191,18 @@
             <table-token begin-position="47" original-literals="t_order" />
             <table-token begin-position="62" original-literals="t_order_item" />
         </tokens>
-        <conditions>
-            <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
-            </condition>
-            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="2" literal="9" type="int" />
-                <value index="3" literal="10" type="int" />
-            </condition>
-        </conditions>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count" />
         </aggregation-select-items>
@@ -245,7 +251,7 @@
         <limit row-count-index="0" row-count="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectItemWithAliasAndMatchOrderByAndGroupByItems" parameters="5">
+    <parser-result sql-case-id="assertSelectItemWithAliasAndMatchOrderByAndGroupByItems">
         <tables>
             <table name="t_order" alias="o" />
         </tables>

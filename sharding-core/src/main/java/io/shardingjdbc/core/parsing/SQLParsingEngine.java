@@ -17,7 +17,9 @@
 
 package io.shardingjdbc.core.parsing;
 
+import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.parsing.cache.ParsingResultCache;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.LexerEngineFactory;
 import io.shardingjdbc.core.parsing.parser.sql.SQLParserFactory;
@@ -42,11 +44,24 @@ public final class SQLParsingEngine {
     /**
      * Parse SQL.
      * 
+     * @param useCache use cache or not
      * @return parsed SQL statement
      */
-    public SQLStatement parse() {
+    public SQLStatement parse(final boolean useCache) {
+        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(useCache);
+        if (cachedSQLStatement.isPresent()) {
+            return cachedSQLStatement.get();
+        }
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
         lexerEngine.nextToken();
-        return SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine).parse();
+        SQLStatement result = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine).parse();
+        if (useCache) {
+            ParsingResultCache.getInstance().put(sql, result);
+        }
+        return result;
+    }
+    
+    private Optional<SQLStatement> getSQLStatementFromCache(final boolean useCache) {
+        return useCache ? Optional.fromNullable(ParsingResultCache.getInstance().getSQLStatement(sql)) : Optional.<SQLStatement>absent();
     }
 }

@@ -62,11 +62,11 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     
     public static final String DEFAULT_TABLE_STRATEGY_REF_ATTRIBUTE = "default-table-strategy-ref";
     
-    public static final String GENERATE_KEY_COLUMN = "generate-key-column";
+    public static final String GENERATE_KEY_COLUMN_NAME_ATTRIBUTE = "generate-key-column-name";
     
-    public static final String COLUMN_KEY_GENERATOR_CLASS = "column-key-generator-class";
+    public static final String KEY_GENERATOR_REF_ATTRIBUTE = "key-generator-ref";
     
-    public static final String KEY_GENERATOR_CLASS = "key-generator-class";
+    public static final String DEFAULT_KEY_GENERATOR_REF_ATTRIBUTE = "default-key-generator-ref";
     
     public static final String LOGIC_INDEX = "logic-index";
 }

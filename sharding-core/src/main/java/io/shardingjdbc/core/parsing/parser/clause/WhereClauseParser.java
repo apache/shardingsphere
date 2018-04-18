@@ -89,6 +89,7 @@ public class WhereClauseParser implements SQLClauseParser {
     private void parseConditions(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         do {
             parseComparisonCondition(shardingRule, sqlStatement, items);
+            skipsDoubleColon();
         } while (lexerEngine.skipIfEqual(DefaultKeyword.AND));
         lexerEngine.unsupportedIfEqual(DefaultKeyword.OR);
     }
@@ -174,6 +175,7 @@ public class WhereClauseParser implements SQLClauseParser {
     private void parseBetweenCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
         List<SQLExpression> rights = new LinkedList<>();
         rights.add(basicExpressionParser.parse(sqlStatement));
+        skipsDoubleColon();
         lexerEngine.accept(DefaultKeyword.AND);
         rights.add(basicExpressionParser.parse(sqlStatement));
         Optional<Column> column = find(sqlStatement.getTables(), left);
@@ -252,5 +254,11 @@ public class WhereClauseParser implements SQLClauseParser {
     
     private Optional<Column> getColumnWithoutOwner(final Tables tables, final SQLIdentifierExpression identifierExpression) {
         return tables.isSingleTable() ? Optional.of(new Column(SQLUtil.getExactlyValue(identifierExpression.getName()), tables.getSingleTableName())) : Optional.<Column>absent();
+    }
+    
+    private void skipsDoubleColon() {
+        if (lexerEngine.skipIfEqual(Symbol.DOUBLE_COLON)) {
+            lexerEngine.nextToken();
+        }
     }
 }

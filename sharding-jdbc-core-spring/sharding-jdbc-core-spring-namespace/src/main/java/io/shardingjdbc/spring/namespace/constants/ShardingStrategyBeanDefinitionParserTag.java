@@ -42,11 +42,11 @@ public final class ShardingStrategyBeanDefinitionParserTag {
     
     public static final String SHARDING_COLUMNS_ATTRIBUTE = "sharding-columns";
     
-    public static final String ALGORITHM_CLASS_ATTRIBUTE = "algorithm-class";
+    public static final String ALGORITHM_REF_ATTRIBUTE = "algorithm-ref";
     
-    public static final String PRECISE_ALGORITHM_CLASS_ATTRIBUTE = "precise-algorithm-class";
+    public static final String PRECISE_ALGORITHM_REF_ATTRIBUTE = "precise-algorithm-ref";
     
-    public static final String RANGE_ALGORITHM_CLASS_ATTRIBUTE = "range-algorithm-class";
+    public static final String RANGE_ALGORITHM_REF_ATTRIBUTE = "range-algorithm-ref";
     
     public static final String ALGORITHM_EXPRESSION_ATTRIBUTE = "algorithm-expression";
 }

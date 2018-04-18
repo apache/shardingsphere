@@ -22,9 +22,7 @@ import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
-import io.shardingjdbc.core.parsing.parser.context.condition.Column;
-import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
-import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
@@ -49,11 +47,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
-    private final List<Object> parameters;
-    
     private final String logicTableName;
     
-    private final SQLStatement sqlStatement;
+    private final ShardingConditions shardingConditions;
     
     @Override
     public RoutingResult route() {
@@ -70,12 +66,14 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private List<ShardingValue> getDatabaseShardingValues(final TableRule tableRule) {
         ShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
-        return HintManagerHolder.isUseShardingHint() ? getDatabaseShardingValuesFromHint(strategy.getShardingColumns()) : getShardingValues(strategy.getShardingColumns());
+        return HintManagerHolder.isUseShardingHint()
+                ? getDatabaseShardingValuesFromHint(strategy.getShardingColumns()) : getShardingValues(strategy.getShardingColumns());
     }
     
     private List<ShardingValue> getTableShardingValues(final TableRule tableRule) {
         ShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
-        return HintManagerHolder.isUseShardingHint() ? getTableShardingValuesFromHint(strategy.getShardingColumns()) : getShardingValues(strategy.getShardingColumns());
+        return HintManagerHolder.isUseShardingHint()
+                ? getTableShardingValuesFromHint(strategy.getShardingColumns()) : getShardingValues(strategy.getShardingColumns());
     }
     
     private List<ShardingValue> getDatabaseShardingValuesFromHint(final Collection<String> shardingColumns) {
@@ -101,11 +99,13 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private List<ShardingValue> getShardingValues(final Collection<String> shardingColumns) {
-        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
-        for (String each : shardingColumns) {
-            Optional<Condition> condition = sqlStatement.getConditions().find(new Column(each, logicTableName));
-            if (condition.isPresent()) {
-                result.add(condition.get().getShardingValue(parameters));
+        List<ShardingValue> result = new LinkedList<>();
+        if (shardingConditions.getShardingConditions().isEmpty()) {
+            return result;
+        }
+        for (ShardingValue each : shardingConditions.getShardingConditions().get(0).getShardingValues()) {
+            if (logicTableName.equals(each.getLogicTableName()) && shardingColumns.contains(each.getColumnName())) {
+                result.add(each);
             }
         }
         return result;

@@ -21,7 +21,8 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingjdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingjdbc.orchestration.spring.datasource.OrchestrationMasterSlaveDataSourceFactoryBean;
 import io.shardingjdbc.orchestration.spring.datasource.SpringMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
@@ -73,13 +74,14 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     }
     
     private AbstractBeanDefinition getOrchestrationSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationMasterSlaveDataSource.class);
-        factory.addConstructorArgValue(parseDataSources(element));
-        factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element));
-        factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
-        factory.addConstructorArgValue(parseOrchestrationConfiguration(element));
-        factory.setInitMethodName("init");
-        factory.setDestroyMethodName("close");
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationMasterSlaveDataSourceFactoryBean.class);
+        String masterDataSourceRef = parseMasterDataSourceRef(element);
+        if (!Strings.isNullOrEmpty(masterDataSourceRef)) {
+            factory.addConstructorArgValue(parseDataSources(element));
+            factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element));
+            factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
+        }
+        factory.addConstructorArgValue(parseOrchestrationConfiguration(element, OrchestrationConfiguration.MASTER_SLAVE));
         return factory.getBeanDefinition();
     }
     
@@ -95,10 +97,6 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     
     private String parseId(final Element element) {
         return element.getAttribute(ID_ATTRIBUTE);
-    }
-    
-    private String parseRegistryCenterRef(final Element element) {
-        return element.getAttribute("registry-center-ref");
     }
     
     private BeanDefinition parseMasterSlaveRuleConfig(final Element element) {

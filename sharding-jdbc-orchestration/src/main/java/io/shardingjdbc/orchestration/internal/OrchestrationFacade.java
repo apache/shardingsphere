@@ -33,6 +33,7 @@ import io.shardingjdbc.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingjdbc.orchestration.reg.etcd.EtcdRegistryCenter;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -52,6 +53,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private final boolean isOverwrite;
     
+    @Getter
     private final ConfigurationService configService;
     
     private final InstanceStateService instanceStateService;

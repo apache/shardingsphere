@@ -30,11 +30,11 @@ import io.shardingjdbc.core.merger.JDBCQueryResult;
 import io.shardingjdbc.core.merger.MergeEngine;
 import io.shardingjdbc.core.merger.MergeEngineFactory;
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingjdbc.core.routing.router.GeneratedKey;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
 import io.shardingjdbc.core.routing.SQLRouteResult;
 import io.shardingjdbc.core.routing.StatementRoutingEngine;
@@ -230,7 +230,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
         if (returnGeneratedKeys && generatedKey.isPresent()) {
-            return new GeneratedKeysResultSet(routeResult.getGeneratedKeys().iterator(), generatedKey.get().getColumn(), this);
+            return new GeneratedKeysResultSet(routeResult.getGeneratedKey().getGeneratedKeys().iterator(), generatedKey.get().getColumn().getName(), this);
         }
         if (1 == getRoutedStatements().size()) {
             return getRoutedStatements().iterator().next().getGeneratedKeys();
@@ -240,7 +240,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     private Optional<GeneratedKey> getGeneratedKey() {
         if (null != routeResult && routeResult.getSqlStatement() instanceof InsertStatement) {
-            return Optional.fromNullable(((InsertStatement) routeResult.getSqlStatement()).getGeneratedKey());
+            return Optional.fromNullable(routeResult.getGeneratedKey());
         }
         return Optional.absent();
     }

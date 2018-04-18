@@ -17,8 +17,9 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.generic;
 
+import com.google.common.base.Preconditions;
+import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 import lombok.Getter;
 
 /**
@@ -28,7 +29,7 @@ import lombok.Getter;
  * @author zhangliang 
  */
 @Getter
-public class OKPacket extends MySQLSentPacket {
+public class OKPacket extends MySQLPacket {
     
     private static final int HEADER = 0x00;
     
@@ -43,12 +44,22 @@ public class OKPacket extends MySQLSentPacket {
     private final String info;
     
     public OKPacket(final int sequenceId, final long affectedRows, final long lastInsertId, final int statusFlags, final int warnings, final String info) {
-        setSequenceId(sequenceId);
+        super(sequenceId);
         this.affectedRows = affectedRows;
         this.lastInsertId = lastInsertId;
         this.statusFlags = statusFlags;
         this.warnings = warnings;
         this.info = info;
+    }
+    
+    public OKPacket(final MySQLPacketPayload mysqlPacketPayload) {
+        super(mysqlPacketPayload.readInt1());
+        Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
+        affectedRows = mysqlPacketPayload.readIntLenenc();
+        lastInsertId = mysqlPacketPayload.readIntLenenc();
+        statusFlags = mysqlPacketPayload.readInt2();
+        warnings = mysqlPacketPayload.readInt2();
+        info = mysqlPacketPayload.readStringEOF();
     }
     
     @Override

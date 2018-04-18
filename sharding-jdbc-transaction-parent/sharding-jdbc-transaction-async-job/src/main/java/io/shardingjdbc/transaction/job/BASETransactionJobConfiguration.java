@@ -60,9 +60,9 @@ public final class BASETransactionJobConfiguration {
     }
     
     /**
-     * Get next one transaction log data sorce.
+     * Get next one transaction log data source.
      *
-     * @return next one transaction log data sorce
+     * @return next one transaction log data source
      */
     public DataSource getDefaultTransactionLogDataSource() {
         return transactionLogDataSource.values().iterator().next();

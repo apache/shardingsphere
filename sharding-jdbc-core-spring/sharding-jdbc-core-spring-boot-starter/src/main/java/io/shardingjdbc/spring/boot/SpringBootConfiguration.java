@@ -24,8 +24,8 @@ import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.util.DataSourceUtil;
 import io.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingjdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
+import io.shardingjdbc.spring.boot.util.PropertyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -72,12 +72,13 @@ public class SpringBootConfiguration implements EnvironmentAware {
         setDataSourceMap(environment);
     }
     
+    @SuppressWarnings("unchecked")
     private void setDataSourceMap(final Environment environment) {
-        RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "sharding.jdbc.datasource.");
-        String dataSources = propertyResolver.getProperty("names");
+        String prefix = "sharding.jdbc.datasource.";
+        String dataSources = environment.getProperty(prefix + "names");
         for (String each : dataSources.split(",")) {
             try {
-                Map<String, Object> dataSourceProps = propertyResolver.getSubProperties(each + ".");
+                Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, prefix + each, Map.class);
                 Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong datasource properties!");
                 DataSource dataSource = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
                 dataSourceMap.put(each, dataSource);

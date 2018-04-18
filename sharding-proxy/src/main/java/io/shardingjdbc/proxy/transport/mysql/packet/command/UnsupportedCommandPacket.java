@@ -18,19 +18,13 @@
 package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Unsupported command packet.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class UnsupportedCommandPacket extends CommandPacket {
     
     private static final int ERROR_CODE = 0xcc;
@@ -43,13 +37,17 @@ public final class UnsupportedCommandPacket extends CommandPacket {
     
     private final CommandPacketType type;
     
-    @Override
-    public UnsupportedCommandPacket read(final MySQLPacketPayload mysqlPacketPayload) {
-        return this;
+    public UnsupportedCommandPacket(final int sequenceId, final CommandPacketType type) {
+        super(sequenceId);
+        this.type = type;
     }
     
     @Override
-    public List<MySQLSentPacket> execute() {
-        return Collections.<MySQLSentPacket>singletonList(new ErrPacket(getSequenceId() + 1, ERROR_CODE, SQL_STATE_MARKER, SQL_STATE, String.format(ERROR_MESSAGE, type)));
+    public CommandResponsePackets execute() {
+        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ERROR_CODE, SQL_STATE_MARKER, SQL_STATE, String.format(ERROR_MESSAGE, type)));
+    }
+    
+    @Override
+    public void write(final MySQLPacketPayload mysqlPacketPayload) {
     }
 }

@@ -22,7 +22,6 @@ import com.google.common.collect.Lists;
 import io.shardingjdbc.core.common.env.DatabaseEnvironment;
 import io.shardingjdbc.core.common.env.ShardingJdbcDatabaseTester;
 import io.shardingjdbc.core.common.env.ShardingTestStrategy;
-import io.shardingjdbc.core.util.SQLAssertHelper;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.jaxb.SQLAssertData;
@@ -30,6 +29,8 @@ import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.parsing.cache.ParsingResultCache;
+import io.shardingjdbc.core.util.SQLAssertHelper;
 import lombok.Getter;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.IDatabaseTester;
@@ -133,6 +134,11 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
                 executeSQL("DROP TABLE t_log");
             }
         }
+    }
+    
+    @After
+    public void cleanupParsingResultCache() {
+        ParsingResultCache.getInstance().clear();
     }
     
     private void executeSQL(final String sql) throws SQLException {
