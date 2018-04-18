@@ -25,7 +25,6 @@ import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
-import io.shardingjdbc.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Test;
@@ -38,6 +37,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class UpdateStatementParserTest extends AbstractStatementParserTest {
     
@@ -106,10 +106,17 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(shardingValue3.upperEndpoint(), is((Comparable) 80));
     }
     
-    @Test(expected = SQLParsingUnsupportedException.class)
+    @Test
     public void parseWithOr() {
         ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.Oracle, "UPDATE TABLE_XXX SET field1=1 WHERE field1<1 AND (field1 >2 OR field2 =1)", shardingRule).parse(false);
+        DMLStatement updateStatement = (DMLStatement) new SQLParsingEngine(DatabaseType.Oracle, "UPDATE TABLE_XXX AS xxx SET field1=1 WHERE field1<1 AND (field1 >2 OR xxx.field2 =1)", shardingRule).parse(false);
+        assertUpdateStatementWitOr(updateStatement);
+    }
+    
+    private void assertUpdateStatementWitOr(final DMLStatement updateStatement) {
+        assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
+        assertThat(updateStatement.getTables().find("TABLE_XXX").get().getAlias().get(), is("xxx"));
+        assertTrue(updateStatement.getConditions().getOrCondition().getAndConditions().isEmpty());
     }
     
     @Test

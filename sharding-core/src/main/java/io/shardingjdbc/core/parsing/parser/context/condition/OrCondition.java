@@ -18,8 +18,9 @@
 package io.shardingjdbc.core.parsing.parser.context.condition;
 
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.parsing.parser.clause.condition.NullCondition;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -30,12 +31,16 @@ import java.util.List;
  *
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @ToString
 public final class OrCondition {
     
     private final List<AndCondition> andConditions = new ArrayList<>();
+    
+    public OrCondition(final Condition condition) {
+        add(condition);
+    }
     
     /**
      * Add condition.
@@ -47,6 +52,22 @@ public final class OrCondition {
             andConditions.add(new AndCondition());
         }
         andConditions.get(0).getConditions().add(condition);
+    }
+    
+    /**
+     * Optimize or condition.
+     *
+     * @return or condition
+     */
+    public OrCondition optimize() {
+        for (AndCondition each : andConditions) {
+            if (each.getConditions().iterator().next() instanceof NullCondition) {
+                OrCondition result = new OrCondition();
+                result.add(new NullCondition());
+                return result;
+            }
+        }
+        return this;
     }
     
     /**
