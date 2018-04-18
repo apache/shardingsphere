@@ -22,8 +22,7 @@ import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
-import io.shardingjdbc.orchestration.spring.datasource.OrchestrationMasterSlaveDataSourceFacoryBean;
+import io.shardingjdbc.orchestration.spring.datasource.OrchestrationMasterSlaveDataSourceFactoryBean;
 import io.shardingjdbc.orchestration.spring.datasource.SpringMasterSlaveDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
@@ -75,7 +74,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     }
     
     private AbstractBeanDefinition getOrchestrationSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationMasterSlaveDataSourceFacoryBean.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationMasterSlaveDataSourceFactoryBean.class);
         String masterDataSourceRef = parseMasterDataSourceRef(element);
         if (!Strings.isNullOrEmpty(masterDataSourceRef)) {
             factory.addConstructorArgValue(parseDataSources(element));

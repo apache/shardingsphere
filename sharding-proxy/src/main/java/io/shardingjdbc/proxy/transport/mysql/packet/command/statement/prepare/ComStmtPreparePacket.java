@@ -24,18 +24,15 @@ import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
-import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
 import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.EofPacket;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * COM_STMT_PREPARE command packet.
@@ -59,20 +56,20 @@ public final class ComStmtPreparePacket extends CommandPacket {
     }
     
     @Override
-    public List<DatabaseProtocolPacket> execute() {
+    public CommandResponsePackets execute() {
         log.debug("COM_STMT_PREPARE received for Sharding-Proxy: {}", sql);
-        List<DatabaseProtocolPacket> result = new LinkedList<>();
+        CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
         SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, sql, ShardingRuleRegistry.getInstance().getShardingRule()).parse(true);
         int parametersIndex = sqlStatement.getParametersIndex();
-        result.add(new ComStmtPrepareOKPacket(++currentSequenceId, PreparedStatementRegistry.getInstance().register(sql, parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
+        result.addPacket(new ComStmtPrepareOKPacket(++currentSequenceId, PreparedStatementRegistry.getInstance().register(sql), getNumColumns(sqlStatement), parametersIndex, 0));
         for (int i = 0; i < parametersIndex; i++) {
             // TODO add column name
-            result.add(new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, 
+            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME,
                     sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "", "", "", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         if (parametersIndex > 0) {
-            result.add(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+            result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         }
         // TODO add If numColumns > 0
         return result;

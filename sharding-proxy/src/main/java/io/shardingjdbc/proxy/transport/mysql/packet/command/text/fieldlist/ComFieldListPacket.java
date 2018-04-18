@@ -20,13 +20,11 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.text.fieldlist;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.proxy.backend.common.SQLExecuteBackendHandler;
-import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketType;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 /**
  * COM_FIELD_LIST command packet.
@@ -55,7 +53,7 @@ public final class ComFieldListPacket extends CommandPacket {
     }
     
     @Override
-    public List<DatabaseProtocolPacket> execute() {
+    public CommandResponsePackets execute() {
         log.debug("table name received for Sharding-Proxy: {}", table);
         log.debug("field wildcard received for Sharding-Proxy: {}", fieldWildcard);
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);

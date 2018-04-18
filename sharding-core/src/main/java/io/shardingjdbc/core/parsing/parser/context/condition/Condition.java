@@ -44,12 +44,13 @@ import java.util.Map.Entry;
  * Condition.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class Condition {
+public class Condition {
     
     private final Column column;
     
@@ -78,7 +79,7 @@ public final class Condition {
             count++;
         }
     }
-    
+ 
     private void init(final SQLExpression sqlExpression, final int position) {
         if (sqlExpression instanceof SQLPlaceholderExpression) {
             positionIndexMap.put(position, ((SQLPlaceholderExpression) sqlExpression).getIndex());
@@ -94,9 +95,11 @@ public final class Condition {
      *
      * @param parameters parameters
      * @return sharding value
+     * @deprecated only test call
      */
+    @Deprecated
     public ShardingValue getShardingValue(final List<?> parameters) {
-        List<Comparable<?>> conditionValues = getValues(parameters);
+        List<Comparable<?>> conditionValues = getConditionValues(parameters);
         switch (operator) {
             case EQUAL:
             case IN:
@@ -108,7 +111,13 @@ public final class Condition {
         }
     }
     
-    public List<Comparable<?>> getValues(final List<?> parameters) {
+    /**
+     * Get condition values.
+     * 
+     * @param parameters parameters
+     * @return condition values
+     */
+    public List<Comparable<?>> getConditionValues(final List<?> parameters) {
         List<Comparable<?>> result = new LinkedList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
             Object parameter = parameters.get(entry.getValue());

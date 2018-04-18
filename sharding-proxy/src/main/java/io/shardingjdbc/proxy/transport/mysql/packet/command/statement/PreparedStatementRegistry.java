@@ -17,9 +17,11 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command.statement;
 
+import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameterHeader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -38,7 +40,7 @@ public final class PreparedStatementRegistry {
     
     private final ConcurrentMap<Integer, String> statementIdToSQLMap = new ConcurrentHashMap<>(65535, 1);
     
-    private final ConcurrentMap<Integer, Integer> statementIdToNumParamsMap = new ConcurrentHashMap<>(65535, 1);
+    private final ConcurrentMap<Integer, List<PreparedStatementParameterHeader>> statementIdToParameterHeadersMap = new ConcurrentHashMap<>(65535, 1);
     
     private final AtomicInteger sequence = new AtomicInteger();
     
@@ -55,20 +57,16 @@ public final class PreparedStatementRegistry {
      * Register SQL.
      * 
      * @param sql SQL
-     * @param numParams num columns
      * @return statement ID
      */
-    public int register(final String sql, final int numParams) {
+    public int register(final String sql) {
         Integer result = sqlToStatementIdMap.get(sql);
         if (null != result) {
             return result;
         }
-        int statementId;
-        do {
-            statementId = sequence.incrementAndGet();
-        } while (null != statementIdToSQLMap.putIfAbsent(statementId, sql));
+        int statementId = sequence.incrementAndGet();
+        statementIdToSQLMap.putIfAbsent(statementId, sql);
         sqlToStatementIdMap.putIfAbsent(sql, statementId);
-        statementIdToNumParamsMap.putIfAbsent(statementId, numParams);
         return statementId;
     }
     
@@ -78,17 +76,27 @@ public final class PreparedStatementRegistry {
      * @param statementId statement ID
      * @return SQL
      */
-    public String getSql(final int statementId) {
+    public String getSQL(final int statementId) {
         return statementIdToSQLMap.get(statementId);
     }
     
     /**
-     * Get number columns.
+     * Set parameter headers.
      *
      * @param statementId statement ID
-     * @return number columns
+     * @param preparedStatementParameterHeaders prepared statement parameter headers
      */
-    public int getNumParams(final int statementId) {
-        return statementIdToNumParamsMap.get(statementId);
+    public void setParameterHeaders(final int statementId, final List<PreparedStatementParameterHeader> preparedStatementParameterHeaders) {
+        statementIdToParameterHeadersMap.putIfAbsent(statementId, preparedStatementParameterHeaders);
+    }
+    
+    /**
+     * Get parameter header.
+     *
+     * @param statementId statement ID
+     * @return prepared statement parameters
+     */
+    public PreparedStatementParameterHeader getParameterHeader(final int statementId) {
+        return statementIdToParameterHeadersMap.get(statementId).iterator().next();
     }
 }

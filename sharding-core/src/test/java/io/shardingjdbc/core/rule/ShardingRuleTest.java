@@ -362,7 +362,7 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        assertThat(new ShardingRule(shardingRuleConfig, createDataSourceNames()).findDataNodeByLogicTable("logic_table").getDataSourceName(), is("ds0"));
+        assertThat(new ShardingRule(shardingRuleConfig, createDataSourceNames()).findDataNode("logic_table").getDataSourceName(), is("ds0"));
     }
     
     @Test(expected = ShardingConfigurationException.class)
@@ -371,7 +371,7 @@ public final class ShardingRuleTest {
         shardingRuleConfig.setDefaultDataSourceName("ds3");
         TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        new ShardingRule(shardingRuleConfig, createDataSourceNames()).findDataNodeByLogicTable("logic_table_x");
+        new ShardingRule(shardingRuleConfig, createDataSourceNames()).findDataNode("logic_table_x");
     }
     
     private ShardingRule createShardingRule() {

@@ -34,7 +34,7 @@ public abstract class AbstractOrchestrationBeanDefinitionParser extends Abstract
         return element.getAttribute("registry-center-ref");
     }
     
-    protected BeanDefinition parseOrchestrationConfiguration(final Element element, String type) {
+    protected BeanDefinition parseOrchestrationConfiguration(final Element element, final String type) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute("id"));
         factory.addConstructorArgReference(element.getAttribute("registry-center-ref"));

@@ -17,23 +17,39 @@
 
 package io.shardingjdbc.core.parsing.parser.context.condition;
 
+import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Generated key condition.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
-public final class GeneratedKeyCondition {
+public final class GeneratedKeyCondition extends Condition {
     
-    private final String column;
+    private final Column column;
     
     private final int index;
     
     private final Number value;
+    
+    public GeneratedKeyCondition(final Column column, final int index, final Number value) {
+        super(column, new SQLNumberExpression(value));
+        this.column = column;
+        this.index = index;
+        this.value = value;
+    }
+    
+    @Override
+    public List<Comparable<?>> getConditionValues(final List<?> parameters) {
+        Comparable<?> result = null == value ? (Comparable<?>) parameters.get(index) : (Comparable<?>) value;
+        return Collections.<Comparable<?>>singletonList(result);
+    }
 }

@@ -19,6 +19,7 @@ package io.shardingjdbc.proxy.backend.mysql;
 
 import io.shardingjdbc.core.merger.QueryResult;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
@@ -28,7 +29,6 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,9 +49,9 @@ public final class MySQLPacketQueryResult implements QueryResult {
     
     private TextResultSetRowPacket currentRow;
     
-    public MySQLPacketQueryResult(final List<DatabaseProtocolPacket> packets) {
-        Iterator<DatabaseProtocolPacket> packetIterator = packets.iterator();
-        columnCount = Long.valueOf(((FieldCountPacket) packetIterator.next()).getColumnCount()).intValue();
+    public MySQLPacketQueryResult(final CommandResponsePackets packets) {
+        Iterator<DatabaseProtocolPacket> packetIterator = packets.getDatabaseProtocolPackets().iterator();
+        columnCount = ((FieldCountPacket) packetIterator.next()).getColumnCount();
         columnIndexAndLabelMap = new HashMap<>(columnCount, 1);
         columnLabelAndIndexMap = new HashMap<>(columnCount, 1);
         for (int i = 1; i <= columnCount; i++) {

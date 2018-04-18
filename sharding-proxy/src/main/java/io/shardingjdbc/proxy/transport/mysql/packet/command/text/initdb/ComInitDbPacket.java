@@ -19,16 +19,13 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.text.initdb;
 
 import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
-import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketType;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * COM_INIT_DB command packet.
@@ -53,11 +50,11 @@ public final class ComInitDbPacket extends CommandPacket {
     }
     
     @Override
-    public List<DatabaseProtocolPacket> execute() {
+    public CommandResponsePackets execute() {
         log.debug("Schema name received for Sharding-Proxy: {}", schemaName);
         if (ShardingConstant.LOGIC_SCHEMA_NAME.equalsIgnoreCase(schemaName)) {
-            return Collections.<DatabaseProtocolPacket>singletonList(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            return new CommandResponsePackets(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
-        return Collections.<DatabaseProtocolPacket>singletonList(new ErrPacket(getSequenceId() + 1, 1049, "", "", String.format("Unknown database '%s'", schemaName)));
+        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, 1049, "", "", String.format("Unknown database '%s'", schemaName)));
     }
 }

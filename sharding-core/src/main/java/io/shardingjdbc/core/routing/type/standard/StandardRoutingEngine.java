@@ -17,14 +17,12 @@
 
 package io.shardingjdbc.core.routing.type.standard;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
-import io.shardingjdbc.core.routing.sharding.ShardingCondition;
-import io.shardingjdbc.core.routing.sharding.ShardingConditions;
+import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
@@ -52,12 +50,6 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private final String logicTableName;
     
     private final ShardingConditions shardingConditions;
-    
-    public StandardRoutingEngine(final ShardingRule shardingRule, final List<Object> parameters, final String logicTableName, final ShardingConditions shardingConditions) {
-        this.shardingRule = shardingRule;
-        this.logicTableName = logicTableName;
-        this.shardingConditions = shardingConditions;
-    }
     
     @Override
     public RoutingResult route() {
@@ -106,16 +98,14 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private List<ShardingValue> getShardingValues(Collection<String> shardingColumns) {
+    private List<ShardingValue> getShardingValues(final Collection<String> shardingColumns) {
         List<ShardingValue> result = new LinkedList<>();
-        if (!shardingConditions.isEmpty()) {
-            Optional<ShardingCondition> shardingCondition = shardingConditions.get(0);
-            if (shardingCondition.isPresent()) {
-                for (ShardingValue each : shardingCondition.get().getShardingValues()) {
-                    if (Objects.equal(each.getLogicTableName(), logicTableName) && shardingColumns.contains(each.getColumnName())) {
-                        result.add(each);
-                    }
-                }
+        if (shardingConditions.getShardingConditions().isEmpty()) {
+            return result;
+        }
+        for (ShardingValue each : shardingConditions.getShardingConditions().get(0).getShardingValues()) {
+            if (logicTableName.equals(each.getLogicTableName()) && shardingColumns.contains(each.getColumnName())) {
+                result.add(each);
             }
         }
         return result;

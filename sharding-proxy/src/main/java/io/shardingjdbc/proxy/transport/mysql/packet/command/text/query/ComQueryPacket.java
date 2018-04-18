@@ -19,12 +19,10 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.text.query;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.proxy.backend.common.SQLExecuteBackendHandler;
-import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 /**
  * COM_QUERY command packet.
@@ -48,7 +46,7 @@ public final class ComQueryPacket extends CommandPacket {
     }
     
     @Override
-    public List<DatabaseProtocolPacket> execute() {
+    public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
     }

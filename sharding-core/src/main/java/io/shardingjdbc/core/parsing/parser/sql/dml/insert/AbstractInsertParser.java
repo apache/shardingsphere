@@ -22,6 +22,7 @@ import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import io.shardingjdbc.core.parsing.parser.clause.facade.AbstractInsertClauseParserFacade;
+import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.sql.SQLParser;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
@@ -68,12 +69,12 @@ public abstract class AbstractInsertParser implements SQLParser {
     
     private void appendGenerateKeyToken(final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<String> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
+        Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
         if (!generateKeyColumn.isPresent() || null != insertStatement.getGeneratedKeyCondition()) {
             return;
         } 
         ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
-        columnsToken.getItems().add(generateKeyColumn.get());
+        columnsToken.getItems().add(generateKeyColumn.get().getName());
         insertStatement.getSqlTokens().add(columnsToken);
         insertStatement.getSqlTokens().add(new GeneratedKeyToken(insertStatement.getValuesListLastPosition()));
     }

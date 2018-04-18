@@ -18,23 +18,26 @@
 package io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute;
 
 import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Prepared statement parameter.
  *
  * @author zhangyonglun
  */
-@AllArgsConstructor
-@Getter
-public final class PreparedStatementParameter {
+@Setter
+public final class PreparedStatementParameter extends PreparedStatementParameterHeader {
     
-    private final ColumnType columnType;
+    private String value;
     
-    private final int unsignedFlag;
+    public PreparedStatementParameter(final ColumnType columnType, final int unsignedFlag) {
+        super(columnType, unsignedFlag);
+    }
     
-    private final String value;
+    public PreparedStatementParameter(final ColumnType columnType, final int unsignedFlag, final String value) {
+        super(columnType, unsignedFlag);
+        this.value = value;
+    }
     
     /**
      * Get value.
@@ -43,7 +46,7 @@ public final class PreparedStatementParameter {
      */
     public Object getValue() {
         // TODO add more types
-        if (columnType == ColumnType.MYSQL_TYPE_LONG) {
+        if (ColumnType.MYSQL_TYPE_LONG == getColumnType()) {
             return Long.parseLong(value);
         } else {
             return value;

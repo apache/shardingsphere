@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.OrderDirection;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
+import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.limit.LimitValue;
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
@@ -35,7 +36,7 @@ import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
 import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
 import io.shardingjdbc.core.parsing.parser.token.SchemaToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
-import io.shardingjdbc.core.routing.sharding.GeneratedKey;
+import io.shardingjdbc.core.routing.router.GeneratedKey;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
 import io.shardingjdbc.core.rule.ShardingRule;
@@ -119,7 +120,8 @@ public final class SQLRewriteEngineTest {
         itemsToken.getItems().add("id");
         insertStatement.getSqlTokens().add(itemsToken);
         insertStatement.getSqlTokens().add(new GeneratedKeyToken(44));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO table_x (name, age) VALUES (?, ?)", DatabaseType.MySQL, insertStatement, new GeneratedKey("id", 2, null));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
+                shardingRule, "INSERT INTO table_x (name, age) VALUES (?, ?)", DatabaseType.MySQL, insertStatement, new GeneratedKey(new Column("table_x", "id"), 2, null));
         assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null), is("INSERT INTO table_1 (name, age, id) VALUES (?, ?, ?)"));
     }
     
