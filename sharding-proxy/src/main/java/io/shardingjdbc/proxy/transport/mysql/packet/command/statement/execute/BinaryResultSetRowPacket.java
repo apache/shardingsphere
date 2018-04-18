@@ -64,7 +64,7 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
         }
         for (int i = 0; i < numColumns; i++) {
             ColumnType columnType = columnTypes.get(i);
-            BinaryProtocolValueUtility.getInstance().writeBinaryProtocolValue(columnType, mysqlPacketPayload, data.get(i));
+            BinaryProtocolValueUtility.getInstance().writeBinaryProtocolValue(columnType, data.get(i), mysqlPacketPayload);
         }
     }
 }

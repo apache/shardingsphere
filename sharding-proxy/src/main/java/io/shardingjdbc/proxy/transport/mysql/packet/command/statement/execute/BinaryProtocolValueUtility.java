@@ -155,7 +155,7 @@ public final class BinaryProtocolValueUtility {
      * @param mysqlPacketPayload mysql packet pay load
      * @param objectData object data
      */
-    public void writeBinaryProtocolValue(final ColumnType columnType, final MySQLPacketPayload mysqlPacketPayload, final Object objectData) {
+    public void writeBinaryProtocolValue(final ColumnType columnType, final Object objectData, final MySQLPacketPayload mysqlPacketPayload) {
         switch (columnType) {
             case MYSQL_TYPE_STRING:
             case MYSQL_TYPE_VARCHAR:
