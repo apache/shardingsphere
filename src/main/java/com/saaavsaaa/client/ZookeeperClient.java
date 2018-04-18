@@ -3,6 +3,7 @@ package com.saaavsaaa.client;
  * Created by aaa on 18-4-18.
  */
 
+import com.saaavsaaa.client.untils.PathUtil;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
 
@@ -12,7 +13,6 @@ import java.util.concurrent.CountDownLatch;
 
 public class ZookeeperClient{
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
-    public static final String PATH_SEPARATOR = "/";
     
     private final String servers;
     private final int sessionTimeOut;
@@ -28,7 +28,7 @@ public class ZookeeperClient{
     
     void start() throws IOException, InterruptedException {
         zooKeeper = new ZooKeeper(servers, sessionTimeOut, connectWatcher());
-        CONNECTED.wait();
+        CONNECTED.await();
     }
     
     private Watcher connectWatcher() {
@@ -44,22 +44,15 @@ public class ZookeeperClient{
     }
     
     public byte[] getData(String key) throws KeeperException, InterruptedException {
-        return zooKeeper.getData(getRealPath(key), false, null);
-    }
-    
-    private String getRealPath(String path){
-        if (path.equals(rootNode)){
-            return new StringBuilder().append(PATH_SEPARATOR).append(rootNode).toString();
-        }
-        return new StringBuilder().append(PATH_SEPARATOR).append(rootNode).append(PATH_SEPARATOR).append(path).toString();
+        return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), false, null);
     }
     
     public boolean checkExists(String key) throws KeeperException, InterruptedException {
-        return null != zooKeeper.exists(getRealPath(key), false);
+        return null != zooKeeper.exists(PathUtil.getRealPath(rootNode, key), false);
     }
     
     public List<String> getChildren(String key) throws KeeperException, InterruptedException {
-        return zooKeeper.getChildren(getRealPath(key), false);
+        return zooKeeper.getChildren(PathUtil.getRealPath(rootNode, key), false);
     }
     
     public void create(String path, byte[] data, CreateMode createMode) throws KeeperException, InterruptedException {
@@ -74,11 +67,11 @@ public class ZookeeperClient{
         if (checkExists(rootNode)){
             return;
         }
-        this.zooKeeper.create(getRealPath(rootNode), new byte[0], authorities, CreateMode.PERSISTENT);
+        this.zooKeeper.create(rootNode, new byte[0], authorities, CreateMode.PERSISTENT);
     }
     
     public void update(String key, byte[] data) throws KeeperException, InterruptedException {
-        this.zooKeeper.transaction().setData(getRealPath(key), data, -1).commit();
+        this.zooKeeper.transaction().setData(PathUtil.getRealPath(rootNode, key), data, -1).commit();
     }
     
     public void setRootNode(String rootNode) {

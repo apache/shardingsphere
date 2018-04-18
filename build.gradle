@@ -1,14 +1,10 @@
 group 'com.saaavsaaa'
 version '1.0-SNAPSHOT'
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '2.13'
-  distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-}
-
+apply plugin: 'idea'
 apply plugin: 'java'
-
-sourceCompatibility = 1.5
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 repositories {
     mavenCentral()
@@ -19,4 +15,65 @@ dependencies {
     compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.4.11'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            //为Pom文件做数字签名
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+            }
+
+            pom.project {
+                name project.name
+                packaging 'jar'
+                description 'zk client'
+                url 'https://github.com/saaavsaaa/ZookeeperClient'
+
+                scm {
+                    url 'scm:git@github.com:saaavsaaa/ZookeeperClient.git'
+                    connection 'scm:git@github.com:saaavsaaa/ZookeeperClient.git'
+                    developerConnection 'git@github.com:saaavsaaa/ZookeeperClient.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'saaav'
+                        name 'lidb'
+                    }
+                }
+            }
+        }
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
 }

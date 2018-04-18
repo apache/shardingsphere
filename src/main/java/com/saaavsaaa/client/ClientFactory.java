@@ -24,9 +24,9 @@ public class ClientFactory {
     }
     
     public synchronized ZookeeperClient start() throws IOException, InterruptedException {
+        client.start();
         client.setRootNode(namespace);
         client.setAuthorities(scheme , auth);
-        client.start();
         return client;
     }
     
