@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
 public final class LexerEngineFactory {
     
     /**
-     * Create Ω analysis engine instance.
+     * Create lexical analysis engine instance.
      * 
      * @param dbType database type
      * @param sql SQL
