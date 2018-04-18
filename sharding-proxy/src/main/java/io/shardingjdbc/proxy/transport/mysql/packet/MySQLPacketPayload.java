@@ -341,4 +341,20 @@ public final class MySQLPacketPayload {
             byteBuf.writeByte(0);
         }
     }
+    
+    public float readFloat() {
+        return byteBuf.readFloatLE();
+    }
+    
+    public void writeFloat(final float value) {
+        byteBuf.writeFloatLE(value);
+    }
+    
+    public double readDouble() {
+        return byteBuf.readDoubleLE();
+    }
+    
+    public void writeDouble(final double value) {
+        byteBuf.writeDoubleLE(value);
+    }
 }

@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Binary protocol value.
@@ -186,10 +187,10 @@ public final class BinaryProtocolValueUtility {
                 mysqlPacketPayload.writeInt1((Integer) objectData);
                 break;
             case MYSQL_TYPE_DOUBLE:
-                mysqlPacketPayload.writeInt8(Integer.parseInt(objectData.toString()));
+                mysqlPacketPayload.writeDouble(Double.parseDouble(objectData.toString()));
                 break;
             case MYSQL_TYPE_FLOAT:
-                mysqlPacketPayload.writeInt4(Integer.parseInt(objectData.toString()));
+                mysqlPacketPayload.writeFloat(Float.parseFloat(objectData.toString()));
                 break;
             case MYSQL_TYPE_DATE:
             case MYSQL_TYPE_DATETIME:
@@ -197,7 +198,7 @@ public final class BinaryProtocolValueUtility {
                 writeDate((Timestamp) objectData, mysqlPacketPayload);
                 break;
             case MYSQL_TYPE_TIME:
-                writeTime((Timestamp) objectData, mysqlPacketPayload);
+                writeTime((Date) objectData, mysqlPacketPayload);
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Cannot find MYSQL type '%s' in column type when write binary protocol value", columnType));
@@ -244,12 +245,13 @@ public final class BinaryProtocolValueUtility {
         }
     }
     
-    private void writeTime(final Timestamp timestamp, final MySQLPacketPayload mysqlPacketPayload) {
+    private void writeTime(final Date date, final MySQLPacketPayload mysqlPacketPayload) {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timestamp.getTime());
+        calendar.setTimeInMillis(date.getTime());
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
+        Timestamp timestamp = new Timestamp(date.getTime());
         int millisecond = timestamp.getNanos();
         boolean isTimeValueAbsent = 0 == hour && 0 == minute && 0 == second;
         boolean isMillisecondValueAbsent = 0 == millisecond;
