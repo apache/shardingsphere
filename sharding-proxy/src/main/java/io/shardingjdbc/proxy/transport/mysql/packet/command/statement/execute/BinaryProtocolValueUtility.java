@@ -80,9 +80,9 @@ public final class BinaryProtocolValueUtility {
             case MYSQL_TYPE_TINY:
                 return mysqlPacketPayload.readInt1();
             case MYSQL_TYPE_DOUBLE:
-                return mysqlPacketPayload.readInt8();
+                return mysqlPacketPayload.readDouble();
             case MYSQL_TYPE_FLOAT:
-                return mysqlPacketPayload.readInt4();
+                return mysqlPacketPayload.readFloat();
             case MYSQL_TYPE_DATE:
             case MYSQL_TYPE_DATETIME:
             case MYSQL_TYPE_TIMESTAMP:
@@ -134,11 +134,11 @@ public final class BinaryProtocolValueUtility {
                 timestamp = new Timestamp(0);
                 break;
             case 8:
-                calendar.set(0, 0, 0, mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1() - 1, mysqlPacketPayload.readInt1());
+                calendar.set(0, 0, 0, mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1());
                 timestamp = new Timestamp(calendar.getTimeInMillis());
                 break;
             case 12:
-                calendar.set(0, 0, 0, mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1() - 1, mysqlPacketPayload.readInt1());
+                calendar.set(0, 0, 0, mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1(), mysqlPacketPayload.readInt1());
                 timestamp = new Timestamp(calendar.getTimeInMillis());
                 timestamp.setNanos(mysqlPacketPayload.readInt4());
                 break;
