@@ -342,18 +342,42 @@ public final class MySQLPacketPayload {
         }
     }
     
+    /**
+     * Read 4 byte float from byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_FLOAT">MYSQL_TYPE_FLOAT</a>
+     *
+     * @return 4 byte float
+     */
     public float readFloat() {
         return byteBuf.readFloatLE();
     }
     
+    /**
+     * Write 4 byte float to byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_FLOAT">MYSQL_TYPE_FLOAT</a>
+     *
+     * @param value 4 byte float
+     */
     public void writeFloat(final float value) {
         byteBuf.writeFloatLE(value);
     }
     
+    /**
+     * Read 8 byte double from byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DOUBLE">MYSQL_TYPE_DOUBLE</a>
+     *
+     * @return 8 byte double
+     */
     public double readDouble() {
         return byteBuf.readDoubleLE();
     }
     
+    /**
+     * Write 8 byte double to byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DOUBLE">MYSQL_TYPE_DOUBLE</a>
+     *
+     * @param value 8 byte double
+     */
     public void writeDouble(final double value) {
         byteBuf.writeDoubleLE(value);
     }
