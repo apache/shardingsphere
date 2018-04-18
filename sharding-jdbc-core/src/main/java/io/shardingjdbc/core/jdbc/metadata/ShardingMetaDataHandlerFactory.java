@@ -15,11 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata.dialect;
+package io.shardingjdbc.core.jdbc.metadata;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.jdbc.metadata.dialect.MySQLShardingMetaDataHandler;
+import io.shardingjdbc.core.jdbc.metadata.dialect.ShardingMetaDataHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
@@ -29,7 +32,7 @@ import java.sql.SQLException;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TableMetaHandlerFactory {
+public final class ShardingMetaDataHandlerFactory {
     
     /**
      * To generate table metadata handler by data type.
@@ -39,11 +42,11 @@ public final class TableMetaHandlerFactory {
      * @return abstract table metadata handler.
      * @throws SQLException SQL exception.
      */
-    public static AbstractTableMetaHandler newInstance(final DataSource dataSource, final String actualTableName) throws SQLException {
+    public static ShardingMetaDataHandler newInstance(final DataSource dataSource, final String actualTableName) throws SQLException {
         DatabaseType databaseType = DatabaseType.valueFrom(dataSource.getConnection().getMetaData().getDatabaseProductName());
         switch (databaseType) {
             case MySQL:
-                return new MySQLTableMetaHandler(dataSource, actualTableName);
+                return new MySQLShardingMetaDataHandler(dataSource, actualTableName);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
         }

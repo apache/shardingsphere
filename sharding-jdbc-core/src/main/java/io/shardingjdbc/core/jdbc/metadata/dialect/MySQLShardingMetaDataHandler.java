@@ -17,8 +17,7 @@
 
 package io.shardingjdbc.core.jdbc.metadata.dialect;
 
-import io.shardingjdbc.core.jdbc.metadata.ColumnMetaData;
-
+import io.shardingjdbc.core.metadata.ColumnMetaData;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,9 +31,9 @@ import java.util.List;
  *
  * @author panjuan
  */
-public final class MySQLTableMetaHandler extends AbstractTableMetaHandler {
+public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler {
     
-    public MySQLTableMetaHandler(final DataSource dataSource, final String actualTableName) {
+    public MySQLShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
         super(dataSource, actualTableName);
     }
     

@@ -19,8 +19,9 @@ package io.shardingjdbc.core.parsing.parser.context.condition;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.parsing.parser.clause.condition.NullCondition;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.LinkedHashMap;
@@ -33,7 +34,7 @@ import java.util.Map;
  *
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @ToString
 public final class AndCondition {
@@ -52,6 +53,24 @@ public final class AndCondition {
                 result.put(each.getColumn(), new LinkedList<Condition>());
             }
             result.get(each.getColumn()).add(each);
+        }
+        return result;
+    }
+    
+    /**
+     * Optimize and condition.
+     *
+     * @return and condition
+     */
+    public AndCondition optimize() {
+        AndCondition result = new AndCondition();
+        for (Condition each : conditions) {
+            if (Condition.class.equals(each.getClass())) {
+                result.getConditions().add(each);
+            }
+        }
+        if (result.getConditions().isEmpty()) {
+            result.getConditions().add(new NullCondition());
         }
         return result;
     }

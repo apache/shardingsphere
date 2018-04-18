@@ -60,6 +60,11 @@ public class Condition {
     
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
+    protected Condition() {
+        column = null;
+        operator = null;
+    }
+    
     public Condition(final Column column, final SQLExpression sqlExpression) {
         this(column, ShardingOperator.EQUAL);
         init(sqlExpression, 0);

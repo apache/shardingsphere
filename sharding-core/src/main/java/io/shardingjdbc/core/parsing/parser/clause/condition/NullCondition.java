@@ -15,25 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata;
+package io.shardingjdbc.core.parsing.parser.clause.condition;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 
 /**
- * Column metadata.
+ * No sharding condition.
  *
- * @author panjuan
+ * @author maxiaoguang
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-public final class ColumnMetaData {
-    
-    private final String columnName;
-    
-    private final String columnType;
-    
-    private final String keyType;
+public final class NullCondition extends Condition {
 }
