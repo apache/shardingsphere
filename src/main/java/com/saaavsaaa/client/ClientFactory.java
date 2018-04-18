@@ -12,12 +12,7 @@ public class ClientFactory {
     private byte[] auth;
     
     public ClientFactory(){}
-    
-    public static void main(String[] args) throws Exception{
-        ClientFactory creator = new ClientFactory();
-        ZookeeperClient client = creator.setNamespace("test").authorization("digest", "digest".getBytes()).newClient("192.168.2.44:2181", 20000).start();
-    }
-    
+
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
         client = new ZookeeperClient(servers, sessionTimeoutMilliseconds);
         return this;
