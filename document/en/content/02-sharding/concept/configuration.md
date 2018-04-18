@@ -14,7 +14,50 @@ Physical data sources list.
 
 ## Tables Configurations
 
-Configure logic table, actual data nodes and sharding strategies.
+Configure logic table, data nodes and sharding strategies.
+
+## Data Node Configurations
+
+Configure relationship mapping with logic table and actual data nodes, can use uniform distribution or user-defined distribution.
+
+- Uniform Distribution
+
+Tables are evenly distributed in each data source, for example: 
+
+```
+db0
+  ├── t_order_0 
+  └── t_order_1 
+db1
+  ├── t_order_0 
+  └── t_order_1
+```
+
+Then, configuration of data nodes are: 
+
+```
+db0.t_order_0, db0.t_order_1, db1.t_order_0, db1.t_order_1
+```
+
+- User-defined Distribution
+
+Tables are distributed by user defined in each data source, for example: 
+
+```
+db0
+  ├── t_order_0 
+  └── t_order_1 
+db1
+  ├── t_order_2
+  ├── t_order_3
+  └── t_order_4
+```
+
+Then, configuration of data nodes are: 
+
+```
+db0.t_order_0, db0.t_order_1, db1.t_order_2, db1.t_order_3, db1.t_order_4
+```
 
 ## Sharding Strategies Configurations
 
