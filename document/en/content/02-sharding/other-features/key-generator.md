@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "Distributed sequence"
-weight = 1
+weight = 2
 +++
 
 ## Background
