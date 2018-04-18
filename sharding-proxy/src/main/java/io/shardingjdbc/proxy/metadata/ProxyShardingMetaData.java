@@ -15,32 +15,33 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata;
+package io.shardingjdbc.proxy.metadata;
 
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.DataNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Sharding metadata for JDBC.
+ * Sharding metadata for proxy.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class JDBCShardingMetaData extends ShardingMetaData {
+public final class ProxyShardingMetaData extends ShardingMetaData {
     
     private final Map<String, DataSource> dataSourceMap;
     
     @Override
     protected Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode) throws SQLException {
-        return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName()).getColumnMetaDataList();
+        return new ShardingMetaDataHandler(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName()).getColumnMetaDataList();
     }
 }
 

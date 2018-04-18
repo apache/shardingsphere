@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.jdbc.metadata;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.jdbc.metadata.dialect.DefaultShardingMetaDataHandler;
 import io.shardingjdbc.core.jdbc.metadata.dialect.MySQLShardingMetaDataHandler;
 import io.shardingjdbc.core.jdbc.metadata.dialect.ShardingMetaDataHandler;
 import lombok.AccessLevel;
@@ -47,7 +48,7 @@ public final class ShardingMetaDataHandlerFactory {
             case MySQL:
                 return new MySQLShardingMetaDataHandler(dataSource, actualTableName);
             default:
-                throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
+                return new DefaultShardingMetaDataHandler(dataSource, actualTableName);
         }
     }
 }

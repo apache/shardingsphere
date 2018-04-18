@@ -24,6 +24,8 @@ import io.shardingjdbc.core.executor.ExecutorEngine;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.connection.ShardingConnection;
+import io.shardingjdbc.core.jdbc.metadata.JDBCShardingMetaData;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.Getter;
 
@@ -59,8 +61,10 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executorEngine = new ExecutorEngine(executorSize);
+        ShardingMetaData shardingMetaData = new JDBCShardingMetaData(dataSourceMap);
+        shardingMetaData.init(shardingRule);
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, showSQL);
+        shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingMetaData, showSQL);
     }
     
     /**
@@ -69,8 +73,9 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
      * @param newDataSourceMap new data source map
      * @param newShardingRule new sharding rule
      * @param newProps new sharding properties
+     * @throws SQLException SQL exception.
      */
-    public void renew(final Map<String, DataSource> newDataSourceMap, final ShardingRule newShardingRule, final Properties newProps) {
+    public void renew(final Map<String, DataSource> newDataSourceMap, final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
         ShardingProperties newShardingProperties = new ShardingProperties(null == newProps ? new Properties() : newProps);
         int originalExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
@@ -80,8 +85,10 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
             originalExecutorEngine.close();
         }
         boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        ShardingMetaData shardingMetaData = new JDBCShardingMetaData(newDataSourceMap);
+        shardingMetaData.init(newShardingRule);
         shardingProperties = newShardingProperties;
-        shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, newShowSQL);
+        shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, shardingMetaData, newShowSQL);
     }
     
     @Override

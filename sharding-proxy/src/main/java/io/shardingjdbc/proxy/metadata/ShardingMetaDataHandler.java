@@ -15,9 +15,12 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata.dialect;
+package io.shardingjdbc.proxy.metadata;
 
+import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.metadata.ColumnMetaData;
+import lombok.Getter;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -28,21 +31,33 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * MySQL table metadata handler.
+ * Sharding meta data handler.
  *
  * @author panjuan
  */
-public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler {
+@Getter
+public final class ShardingMetaDataHandler {
     
-    public MySQLShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
-        super(dataSource, actualTableName);
+    private final DataSource dataSource;
+    
+    private final String actualTableName;
+    
+    public ShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
+        this.dataSource = dataSource instanceof MasterSlaveDataSource
+            ? ((MasterSlaveDataSource) dataSource).getMasterDataSource().values().iterator().next() : dataSource;
+        this.actualTableName = actualTableName;
     }
     
-    @Override
+    /**
+     * Get column meta data list.
+     *
+     * @return column meta data list
+     * @throws SQLException SQL exception
+     */
     public Collection<ColumnMetaData> getColumnMetaDataList() throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         try (Connection connection = getDataSource().getConnection();
-            Statement statement = connection.createStatement()) {
+             Statement statement = connection.createStatement()) {
             statement.executeQuery(String.format("desc %s;", getActualTableName()));
             ResultSet resultSet = statement.getResultSet();
             while (resultSet.next()) {
