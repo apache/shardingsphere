@@ -24,6 +24,7 @@ import io.shardingjdbc.core.jdbc.metadata.dialect.ShardingMetaDataHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -43,12 +44,14 @@ public final class ShardingMetaDataHandlerFactory {
      * @throws SQLException SQL exception.
      */
     public static ShardingMetaDataHandler newInstance(final DataSource dataSource, final String actualTableName) throws SQLException {
-        DatabaseType databaseType = DatabaseType.valueFrom(dataSource.getConnection().getMetaData().getDatabaseProductName());
-        switch (databaseType) {
-            case MySQL:
-                return new MySQLShardingMetaDataHandler(dataSource, actualTableName);
-            default:
-                return new DefaultShardingMetaDataHandler(dataSource, actualTableName);
+        try (Connection conn = dataSource.getConnection()) {
+            DatabaseType databaseType = DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName());
+            switch (databaseType) {
+                case MySQL:
+                    return new MySQLShardingMetaDataHandler(dataSource, actualTableName);
+                default:
+                    return new DefaultShardingMetaDataHandler(dataSource, actualTableName);
+            }
         }
     }
 }
