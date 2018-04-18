@@ -1,7 +1,7 @@
 +++
 toc = true
-title = "Main Process"
-weight = 2
+title = "Process"
+weight = 4
 +++
 
 Sharding-Sphere's 3 projects have same main process on data sharding. They are SQL Parser => Executor Optimizer => SQL Router => SQL Rewrite => SQL Execution => Result Merger, and using the logical table which the user configured, the real SQL is completely shielded from the database access.

@@ -1,7 +1,7 @@
 +++
 toc = true
-title = "主要流程"
-weight = 2
+title = "流程"
+weight = 4
 +++
 
 Sharding-Sphere的3个产品的数据分片主要流程是完全一致的。它们由SQL解析 => 执行器优化 => SQL路由 => SQL改写 => SQL执行 => 结果归并的流程组成，在SQL通过使用逻辑表，配合用户配置的分片规则，将对数据库访问的真实SQL完全屏蔽。
