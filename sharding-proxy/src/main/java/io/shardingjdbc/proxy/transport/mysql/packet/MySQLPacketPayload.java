@@ -487,6 +487,7 @@ public final class MySQLPacketPayload {
             case 8:
                 calendar.set(0, 0, 0, readInt1(), readInt1(), readInt1());
                 timestamp = new Timestamp(calendar.getTimeInMillis());
+                timestamp.setNanos(0);
                 break;
             case 12:
                 calendar.set(0, 0, 0, readInt1(), readInt1(), readInt1());
