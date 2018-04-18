@@ -1,14 +1,11 @@
 +++
 toc = true
 title = "Usage standard"
-weight = 4
+weight = 2
 +++
 
-## Navigation
+## background
 
-This section mainly introduces the relevant usage standards of the Sharding, mainly including:
+Sharding-Sphere hopes keep best compatibilities with SQL and single node database's behaviours, but distributed scenario is more complicated than before. Sharding-Sphere will focus on big data for OLAP firstly. For OLAP related, Sharding-Sphere will supported little by little.
 
-* SQL
-* paging
-
-Please refer to the relevant introduction page for details.
+Please read [Supported SQL](/02-sharding/usage-standard/sql) and [Pagination](/02-sharding/usage-standard/pagination) for more details.
