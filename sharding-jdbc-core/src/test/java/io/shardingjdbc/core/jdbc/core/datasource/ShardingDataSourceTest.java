@@ -27,25 +27,17 @@ import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
 import io.shardingjdbc.core.executor.ExecutorEngine;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.sql.*;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public final class ShardingDataSourceTest {
     
@@ -121,9 +113,13 @@ public final class ShardingDataSourceTest {
         DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        Statement statement = mock(Statement.class);
+        ResultSet resultSet = mock(ResultSet.class);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getDatabaseProductName()).thenReturn(dataBaseProductName);
         when(result.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(ArgumentMatchers.<String>any())).thenReturn(resultSet);
         return result;
     }
     

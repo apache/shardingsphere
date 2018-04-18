@@ -51,7 +51,7 @@ public final class ShardingRuleRegistry {
         YamlShardingConfiguration yamlShardingConfig;
         try {
             yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(getClass().getResource("/conf/sharding-config.yaml").getFile()));
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new ShardingJdbcException(ex);
         }
         dataSourceMap = yamlShardingConfig.getDataSources();
@@ -59,7 +59,7 @@ public final class ShardingRuleRegistry {
         try {
             shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
             shardingMetaData.init(shardingRule);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new ShardingJdbcException(ex);
         }
     }
