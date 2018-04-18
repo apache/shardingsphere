@@ -71,7 +71,7 @@ public final class ShardingConnectionTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         ShardingMetaData shardingMetaData = new JDBCShardingMetaData(dataSourceMap);
-        ShardingContext shardingContext = new ShardingContext(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), null, null, shardingMetaData,false);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), null, null, shardingMetaData, false);
         connection = new ShardingConnection(shardingContext);
     }
     
