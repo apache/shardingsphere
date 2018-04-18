@@ -21,7 +21,6 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 import lombok.AccessLevel;
 import lombok.Getter;
-
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;

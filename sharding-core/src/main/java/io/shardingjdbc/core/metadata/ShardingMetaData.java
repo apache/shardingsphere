@@ -22,7 +22,6 @@ import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 import lombok.Getter;
-
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;

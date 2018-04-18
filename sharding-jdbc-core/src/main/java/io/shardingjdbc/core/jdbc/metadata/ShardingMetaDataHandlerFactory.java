@@ -22,7 +22,6 @@ import io.shardingjdbc.core.jdbc.metadata.dialect.MySQLShardingMetaDataHandler;
 import io.shardingjdbc.core.jdbc.metadata.dialect.ShardingMetaDataHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
