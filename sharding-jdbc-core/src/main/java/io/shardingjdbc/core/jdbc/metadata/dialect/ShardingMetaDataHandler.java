@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.jdbc.metadata.dialect;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.jdbc.metadata.ColumnMetaData;
+import io.shardingjdbc.core.metadata.ColumnMetaData;
 import lombok.AccessLevel;
 import lombok.Getter;
 

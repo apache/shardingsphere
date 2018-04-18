@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata;
+package io.shardingjdbc.core.metadata;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

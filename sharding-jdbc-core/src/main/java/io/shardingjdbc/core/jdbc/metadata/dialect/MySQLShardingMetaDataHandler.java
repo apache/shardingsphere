@@ -17,8 +17,7 @@
 
 package io.shardingjdbc.core.jdbc.metadata.dialect;
 
-import io.shardingjdbc.core.jdbc.metadata.ColumnMetaData;
-
+import io.shardingjdbc.core.metadata.ColumnMetaData;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -15,11 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata.dialect;
+package io.shardingjdbc.core.jdbc.metadata;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.jdbc.metadata.dialect.MySQLShardingMetaDataHandler;
+import io.shardingjdbc.core.jdbc.metadata.dialect.ShardingMetaDataHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
