@@ -17,21 +17,31 @@
 
 package io.shardingjdbc.core.jdbc.metadata;
 
-import lombok.EqualsAndHashCode;
+import io.shardingjdbc.core.metadata.ColumnMetaData;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
+import io.shardingjdbc.core.rule.DataNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 
 /**
- * Table metadata.
+ * Sharding metadata.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class TableMetaData {
+public final class JDBCShardingMetaData extends ShardingMetaData {
     
-    private final Collection<ColumnMetaData> columnMetaData;
+    private final Map<String, DataSource> dataSourceMap;
+    
+    @Override
+    protected Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode) throws SQLException {
+        return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName()).getColumnMetaDataList();
+    }
 }
+
+

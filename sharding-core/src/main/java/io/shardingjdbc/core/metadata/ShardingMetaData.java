@@ -15,16 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata;
+package io.shardingjdbc.core.metadata;
 
 import io.shardingjdbc.core.exception.ShardingJdbcException;
-import io.shardingjdbc.core.jdbc.metadata.dialect.TableMetaHandlerFactory;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 import lombok.Getter;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,33 +30,32 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Sharding metadata.
+ * Abstract Sharding metadata.
  *
  * @author panjuan
  */
 @Getter
-public final class ShardingMetaData {
+public abstract class ShardingMetaData {
     
     private Map<String, TableMetaData> tableMetaDataMap;
     
     /**
      * Initialize sharding meta data.
-     * 
-     * @param dataSourceMap data source map
+     *
      * @param shardingRule sharding rule
      * @throws SQLException SQL exception
      */
-    public void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
+    public void init(final ShardingRule shardingRule) throws SQLException {
         tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
-            tableMetaDataMap.put(each.getLogicTable(), getTableMetaData(each.getLogicTable(), each.getActualDataNodes(), dataSourceMap));
+            tableMetaDataMap.put(each.getLogicTable(), getTableMetaData(each.getLogicTable(), each.getActualDataNodes()));
         }
     }
     
-    private TableMetaData getTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes, final Map<String, DataSource> dataSourceMap) throws SQLException {
+    private TableMetaData getTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes) throws SQLException {
         Collection<ColumnMetaData> result = null;
         for (DataNode each : actualDataNodes) {
-            Collection<ColumnMetaData> columnMetaDataList = TableMetaHandlerFactory.newInstance(dataSourceMap.get(each.getDataSourceName()), each.getTableName()).getColumnMetaDataList();
+            Collection<ColumnMetaData> columnMetaDataList = getColumnMetaDataList(each);
             if (null == result) {
                 result = columnMetaDataList;
             }
@@ -68,4 +65,8 @@ public final class ShardingMetaData {
         }
         return new TableMetaData(result);
     }
+    
+    protected abstract Collection<ColumnMetaData> getColumnMetaDataList(DataNode dataNode) throws SQLException;
 }
+
+
