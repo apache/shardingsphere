@@ -1,4 +1,4 @@
-package com.saaavsaaa.client;
+package com.saaavsaaa.client.zookeeper;
 
 import java.io.IOException;
 

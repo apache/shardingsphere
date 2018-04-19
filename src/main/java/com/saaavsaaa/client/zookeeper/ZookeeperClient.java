@@ -1,8 +1,9 @@
-package com.saaavsaaa.client;
+package com.saaavsaaa.client.zookeeper;
 /**
  * Created by aaa on 18-4-18.
  */
 
+import com.saaavsaaa.client.BaseClient;
 import com.saaavsaaa.client.untils.PathUtil;
 import com.saaavsaaa.client.untils.StringUtil;
 import org.apache.zookeeper.*;
@@ -13,47 +14,26 @@ import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.CountDownLatch;
 
-public class ZookeeperClient{
-    private static final CountDownLatch CONNECTED = new CountDownLatch(1);
-    
-    private final String servers;
-    private final int sessionTimeOut;
+/*
+* cache
+*/
+public class ZookeeperClient extends BaseClient {
     
     private String rootNode;
-    private ZooKeeper zooKeeper;
     private List<ACL> authorities;
     
     ZookeeperClient(String servers, int sessionTimeoutMilliseconds) {
-        this.servers = servers;
-        this.sessionTimeOut = sessionTimeoutMilliseconds;
+        super(servers, sessionTimeoutMilliseconds);
     }
-    
-    void start() throws IOException, InterruptedException {
-        zooKeeper = new ZooKeeper(servers, sessionTimeOut, connectWatcher());
-        CONNECTED.await();
-        /*if (StringUtil.isNullOrWhite(rootNode)){
-            createRootNode();
-        }*/
-    }
-    
-    private void createRootNode() throws KeeperException, InterruptedException {
+
+    public void createRootNode() throws KeeperException, InterruptedException {
         if (checkExists(rootNode)){
             return;
         }
         zooKeeper.create(rootNode, new byte[0], authorities, CreateMode.PERSISTENT);
     }
     
-    private Watcher connectWatcher() {
-        return new Watcher(){
-            public void process(WatchedEvent event) {
-                if(Event.KeeperState.SyncConnected == event.getState()){
-                    if(Event.EventType.None == event.getType()){
-                        CONNECTED.countDown();
-                    }
-                }
-            }
-        };
-    }
+
     
     public byte[] getData(String key) throws KeeperException, InterruptedException {
         return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), false, null);
@@ -77,7 +57,7 @@ public class ZookeeperClient{
             return;
         }
         Transaction transaction = zooKeeper.transaction();
-        // sync cache
+        //todo sync cache
         Stack<String> pathStack = PathUtil.getPathNodes(path);
         while (!pathStack.empty()){
             String node = pathStack.pop();
