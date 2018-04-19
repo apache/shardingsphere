@@ -41,7 +41,14 @@ public class UsualClientTest {
     @Test
     public void get() throws KeeperException, InterruptedException {
         String key = "a/b";
-
+        /*TreeCache cache = findTreeCache(key);
+        if (null == cache) {
+            return getDirectly(key);
+        }
+        ChildData resultInCache = cache.getCurrentData(key);
+        if (null != resultInCache) {
+            return null == resultInCache.getData() ? null : new String(resultInCache.getData(), Charsets.UTF_8);
+        }*/
         getDirectly(key);
     }
     
@@ -51,13 +58,13 @@ public class UsualClientTest {
     
     @Test
     public void getDirectly() throws KeeperException, InterruptedException {
-        String key = "";
+        String key = "a/b/bb";
         getDirectly(key);
     }
     
     @Test
     public void isExisted() throws KeeperException, InterruptedException {
-        String key = "a/b/bb";
+        String key = "a";
         System.out.println(isExisted(key));
     }
 
@@ -108,7 +115,7 @@ public class UsualClientTest {
         String key = "bb";
         String value = "b1b";
         if (isExisted(key)) {
-            client.deleteTogetherBranch(key);
+            client.deleteCurrentBranch(key);
         }
         client.createAllNeedPath(key, value.getBytes(), CreateMode.EPHEMERAL);
     }

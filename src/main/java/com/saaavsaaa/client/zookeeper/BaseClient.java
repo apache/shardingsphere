@@ -1,4 +1,4 @@
-package com.saaavsaaa.client;
+package com.saaavsaaa.client.zookeeper;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -20,7 +20,7 @@ public abstract class BaseClient {
     private final int sessionTimeOut;
     protected ZooKeeper zooKeeper;
     
-    protected String rootNode = "InitValue";
+    protected String rootNode = "/InitValue";
     protected List<ACL> authorities;
     
     protected BaseClient(String servers, int sessionTimeoutMilliseconds) {
@@ -45,11 +45,11 @@ public abstract class BaseClient {
         };
     }
     
-    public void setRootNode(String rootNode) {
+    void setRootNode(String rootNode) {
         this.rootNode = rootNode;
     }
     
-    public void setAuthorities(String scheme, byte[] auth) {
+    void setAuthorities(String scheme, byte[] auth) {
         zooKeeper.addAuthInfo(scheme , auth);
         this.authorities = ZooDefs.Ids.CREATOR_ALL_ACL;
     }

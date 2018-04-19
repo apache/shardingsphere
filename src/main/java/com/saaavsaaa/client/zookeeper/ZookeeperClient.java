@@ -3,16 +3,12 @@ package com.saaavsaaa.client.zookeeper;
  * Created by aaa on 18-4-18.
  */
 
-import com.saaavsaaa.client.BaseClient;
 import com.saaavsaaa.client.untils.PathUtil;
-import com.saaavsaaa.client.untils.StringUtil;
 import org.apache.zookeeper.*;
-import org.apache.zookeeper.data.ACL;
 
-import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.CountDownLatch;
 
 /*
 * cache
@@ -52,12 +48,17 @@ public class ZookeeperClient extends BaseClient {
         }
         Transaction transaction = zooKeeper.transaction();
         //todo sync cache
-        Stack<String> pathStack = PathUtil.getPathNodes(path);
-        while (!pathStack.empty()){
-            String node = pathStack.pop();
+        Iterator<String> nodes = PathUtil.getPathOrderNodes(rootNode, path).iterator();
+        while (nodes.hasNext()){
+            String node = nodes.next();
             // contrast cache
             if (!checkExists(node)){
-                createInTransaction(path, data, createMode, transaction);
+                try {
+                    // TODO: exception
+                    createInTransaction(path, data, createMode, transaction);
+                } catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
             }
         }
         transaction.commit();
@@ -75,7 +76,19 @@ public class ZookeeperClient extends BaseClient {
         zooKeeper.setData(PathUtil.getRealPath(rootNode, key), data, -1);
     }
     
-    public void deleteTogetherBranch(String key) {
+    public void deleteOnlyCurrent(String key) throws KeeperException, InterruptedException {
+        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), -1);
+    }
+    
+    public void deleteOnlyCurrent(String key, AsyncCallback.VoidCallback callback, Object ctx) throws KeeperException, InterruptedException {
+        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), -1, callback, ctx);
+    }
+    
+    public void deleteCurrentBranch(String key) {
+        
+    }
+    
+    public void deleteAllChild(String key) {
         
     }
 }
