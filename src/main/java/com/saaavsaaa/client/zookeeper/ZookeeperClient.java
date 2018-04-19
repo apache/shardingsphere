@@ -18,10 +18,6 @@ import java.util.concurrent.CountDownLatch;
 * cache
 */
 public class ZookeeperClient extends BaseClient {
-    
-    private String rootNode;
-    private List<ACL> authorities;
-    
     ZookeeperClient(String servers, int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);
     }
@@ -32,9 +28,7 @@ public class ZookeeperClient extends BaseClient {
         }
         zooKeeper.create(rootNode, new byte[0], authorities, CreateMode.PERSISTENT);
     }
-    
 
-    
     public byte[] getData(String key) throws KeeperException, InterruptedException {
         return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), false, null);
     }
@@ -69,20 +63,19 @@ public class ZookeeperClient extends BaseClient {
         transaction.commit();
     }
     
-    private Transaction createInTransaction(String path, byte[] data, CreateMode createMode, Transaction transaction){
+    public Transaction createInTransaction(String path, byte[] data, CreateMode createMode, Transaction transaction){
         return transaction.create(PathUtil.getRealPath(rootNode, path), data, authorities, createMode);
     }
     
-    public void update(String key, byte[] data) throws KeeperException, InterruptedException {
+    public void updateInTransaction(String key, byte[] data) throws KeeperException, InterruptedException {
         zooKeeper.transaction().setData(PathUtil.getRealPath(rootNode, key), data, -1).commit();
     }
     
-    public void setRootNode(String rootNode) {
-        this.rootNode = rootNode;
+    public void update(String key, byte[] data) throws KeeperException, InterruptedException {
+        zooKeeper.setData(PathUtil.getRealPath(rootNode, key), data, -1);
     }
     
-    public void setAuthorities(String scheme, byte[] auth) {
-        zooKeeper.addAuthInfo(scheme , auth);
-        this.authorities = ZooDefs.Ids.CREATOR_ALL_ACL;
+    public void deleteTogetherBranch(String key) {
+        
     }
 }

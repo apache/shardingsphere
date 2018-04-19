@@ -6,12 +6,19 @@ import java.io.IOException;
  * Created by aaa on 18-4-18.
  */
 public class ClientFactory {
+//    private static final String CLIENT_EXCLUSIVE_NODE = "ZKC";
+    
     private ZookeeperClient client;
     private String namespace;
     private String scheme;
     private byte[] auth;
     
     public ClientFactory(){}
+    
+    public ClientFactory newCacheClient(final String servers, final int sessionTimeoutMilliseconds) {
+        client = new CacheClient(servers, sessionTimeoutMilliseconds);
+        return this;
+    }
 
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
         client = new ZookeeperClient(servers, sessionTimeoutMilliseconds);

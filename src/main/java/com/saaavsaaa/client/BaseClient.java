@@ -2,6 +2,7 @@ package com.saaavsaaa.client;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 
@@ -12,12 +13,15 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Created by aaa on 18-4-19.
  */
-public class BaseClient {
+public abstract class BaseClient {
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
     
     private final String servers;
     private final int sessionTimeOut;
     protected ZooKeeper zooKeeper;
+    
+    protected String rootNode = "InitValue";
+    protected List<ACL> authorities;
     
     protected BaseClient(String servers, int sessionTimeoutMilliseconds) {
         this.servers = servers;
@@ -39,5 +43,14 @@ public class BaseClient {
                 }
             }
         };
+    }
+    
+    public void setRootNode(String rootNode) {
+        this.rootNode = rootNode;
+    }
+    
+    public void setAuthorities(String scheme, byte[] auth) {
+        zooKeeper.addAuthInfo(scheme , auth);
+        this.authorities = ZooDefs.Ids.CREATOR_ALL_ACL;
     }
 }
