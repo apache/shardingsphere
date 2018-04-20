@@ -7,6 +7,7 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -118,15 +119,16 @@ public class UsualClientTest {
         client.update(key, value);
     }
     
+    @Ignore
     @Test
     public void persistEphemeral() throws KeeperException, InterruptedException {
-        /*String key = "a/b/bb";
+        String key = "a/b/bb";
         String value = "b1b";
         client.createAllNeedPath(key, value, CreateMode.PERSISTENT);
         if (isExisted(key)) {
             client.deleteAllChild(key);
         }
-        client.createAllNeedPath(key, value, CreateMode.EPHEMERAL);*/
+        client.createAllNeedPath(key, value, CreateMode.EPHEMERAL);
     }
     
     @Test
