@@ -46,13 +46,13 @@ public final class MySQLPacketStatementExecuteQueryResult implements QueryResult
     
     private final int columnCount;
     
+    private final List<ColumnType> columnTypes;
+    
     private final Map<Integer, String> columnIndexAndLabelMap;
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
     private final ResultSet resultSet;
-    
-    private final List<ColumnType> columnTypes;
     
     private int currentSequenceId;
     
@@ -68,7 +68,6 @@ public final class MySQLPacketStatementExecuteQueryResult implements QueryResult
             columnIndexAndLabelMap.put(i, columnDefinition41Packet.getName());
             columnLabelAndIndexMap.put(columnDefinition41Packet.getName(), i);
         }
-        packetIterator.next();
         this.resultSet = resultSet;
         this.columnTypes = columnTypes;
     }

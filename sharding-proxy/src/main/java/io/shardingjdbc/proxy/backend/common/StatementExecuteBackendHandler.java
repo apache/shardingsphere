@@ -282,6 +282,12 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         return result;
     }
     
+    /**
+     * Has more Result value.
+     *
+     * @return has more result value
+     * @throws SQLException sql exception
+     */
     public boolean hasMoreResultValue() throws SQLException {
         if (!hasMoreResultValueFlag) {
             return false;
@@ -293,6 +299,11 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         return true;
     }
     
+    /**
+     * Get result value.
+     *
+     * @return database protocol packet
+     */
     public DatabaseProtocolPacket getResultValue() {
         if (!hasMoreResultValueFlag) {
             return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());

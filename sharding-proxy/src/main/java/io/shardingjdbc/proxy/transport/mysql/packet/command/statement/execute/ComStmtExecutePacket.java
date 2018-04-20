@@ -152,6 +152,11 @@ public final class ComStmtExecutePacket extends CommandPacket {
         return statementExecuteBackendHandler.execute();
     }
     
+    /**
+     * Has more Result value.
+     *
+     * @return has more result value
+     */
     public boolean hasMoreResultValue() {
         try {
             return statementExecuteBackendHandler.hasMoreResultValue();
@@ -160,6 +165,11 @@ public final class ComStmtExecutePacket extends CommandPacket {
         }
     }
     
+    /**
+     * Get result value.
+     *
+     * @return database protocol packet
+     */
     public DatabaseProtocolPacket getResultValue() {
         return statementExecuteBackendHandler.getResultValue();
     }
