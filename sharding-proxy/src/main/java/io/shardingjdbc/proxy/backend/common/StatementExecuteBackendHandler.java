@@ -130,7 +130,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     }
     
     private CommandResponsePackets executeQuery(final DataSource dataSource, final String sql) {
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         try {
             Connection connection = dataSource.getConnection();
             connections.add(connection);
@@ -141,13 +141,6 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             return getDatabaseProtocolPackets();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-        } finally {
-//            if (preparedStatement != null) {
-//                try {
-//                    preparedStatement.close();
-//                } catch (SQLException ignore) {
-//                }
-//            }
         }
     }
     
@@ -296,21 +289,32 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     public boolean hasMoreResultValue() throws SQLException {
         if (noMoreValues) {
-        
             return false;
         }
         if (!mergedResult.next()) {
             noMoreValues = true;
-            for (Connection each : connections) {
-                if (null != each) {
-                    try {
-                        each.close();
-                    } catch (SQLException ignore) {
-                    }
+            cleanJDBCResources();
+        }
+        return true;
+    }
+    
+    private void cleanJDBCResources() {
+        for (ResultSet each : resultSets) {
+            if (null != each) {
+                try {
+                    each.close();
+                } catch (SQLException ignore) {
                 }
             }
         }
-        return true;
+        for (Connection each : connections) {
+            if (null != each) {
+                try {
+                    each.close();
+                } catch (SQLException ignore) {
+                }
+            }
+        }
     }
     
     public DatabaseProtocolPacket getResultValue() {
