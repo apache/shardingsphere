@@ -1,8 +1,7 @@
 package com.saaavsaaa.client.untils;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
+import javax.swing.tree.TreeNode;
+import java.util.*;
 
 /**
  * Created by aaa on 18-4-18.
@@ -58,5 +57,40 @@ public class PathUtil {
         while (position > -1);
         paths.add(path);
         return paths;
+    }
+    
+    public static List<String> breadthToB(TreeNode root) {
+        List<String> lists = new ArrayList<>();
+        if(root==null)
+            return lists;
+        Queue<TreeNode> queue=new LinkedList<>();
+        queue.offer(root);
+        while(!queue.isEmpty()){
+            /*TreeNode tree=queue.poll();
+            if(tree.left!=null)
+                queue.offer(tree.left);
+            if(tree.right!=null)
+                queue.offer(tree.right);
+            lists.add(tree.val);*/
+        }
+        return lists;
+    }
+    
+    public static List<String> depthToB(TreeNode root) {
+        List<String> lists = new ArrayList<>();
+        if(root==null)
+            return lists;
+        Stack<TreeNode> stack=new Stack<TreeNode>();
+        stack.push(root);
+        while(!stack.isEmpty()){
+            TreeNode tree=stack.pop();
+            //先往栈中压入右节点，再压左节点，这样出栈就是先左节点后右节点了。
+            /*if(tree.right!=null)
+                stack.push(tree.right);
+            if(tree.left!=null)
+                stack.push(tree.left);
+            lists.add(tree.val);*/
+        }
+        return lists;
     }
 }

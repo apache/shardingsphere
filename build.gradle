@@ -40,16 +40,16 @@ uploadArchives {
             //为Pom文件做数字签名
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-//            repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-//                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
-//            }
+            repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+            }
 
-            repository(url: getReleaseRepositoryUrl()) {
-                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-            }
-            snapshotRepository(url: getSnapshotRepositoryUrl()) {
-                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-            }
+//            repository(url: getReleaseRepositoryUrl()) {
+//                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+//            }
+//            snapshotRepository(url: getSnapshotRepositoryUrl()) {
+//                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+//            }
 
             pom.project {
                 name project.name
@@ -121,6 +121,6 @@ artifacts {
 }
 
 signing {
-    required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
+//    required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
 }

@@ -15,6 +15,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public abstract class BaseClient {
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
+    public static final int VERSION = -1;
     
     private final String servers;
     private final int sessionTimeOut;
