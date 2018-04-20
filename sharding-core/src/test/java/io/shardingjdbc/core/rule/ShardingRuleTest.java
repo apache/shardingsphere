@@ -374,6 +374,22 @@ public final class ShardingRuleTest {
         new ShardingRule(shardingRuleConfig, createDataSourceNames()).findDataNode("logic_table_x");
     }
     
+    @Test(expected = ShardingConfigurationException.class)
+    public void assertFindDataNodeByLogicTableFailureWithDataSourceName() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        assertThat(new ShardingRule(shardingRuleConfig, createDataSourceNames()).findDataNode("ds3", "logic_table").getDataSourceName(), is("ds0"));
+    }
+    
+    @Test
+    public void assertIsLogicIndex() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        TableRuleConfiguration tableRuleConfig = createTableRuleConfigWithLogicIndex();
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceNames()).isLogicIndex("index_table", "logic_table"));
+    }
+    
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
@@ -442,4 +458,5 @@ public final class ShardingRuleTest {
         result.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new TestPreciseShardingAlgorithm()));
         return result;
     }
+    
 }

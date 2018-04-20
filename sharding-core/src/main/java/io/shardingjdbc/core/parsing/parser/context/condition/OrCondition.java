@@ -61,7 +61,7 @@ public final class OrCondition {
      */
     public OrCondition optimize() {
         for (AndCondition each : andConditions) {
-            if (each.getConditions().iterator().next() instanceof NullCondition) {
+            if (each.getConditions().get(0) instanceof NullCondition) {
                 OrCondition result = new OrCondition();
                 result.add(new NullCondition());
                 return result;
