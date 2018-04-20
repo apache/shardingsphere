@@ -66,9 +66,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
             if (shardingConditions.getShardingConditions().isEmpty()) {
                 routedDataNodes.addAll(route(tableRule, Collections.<ShardingValue>emptyList(), Collections.<ShardingValue>emptyList()));
             } else {
-                for (ShardingCondition shardingCondition : shardingConditions.getShardingConditions()) {
-                    List<ShardingValue> databaseShardingValues = getShardingValues(databaseShardingColumns, shardingCondition);
-                    List<ShardingValue> tableShardingValues = getShardingValues(tableShardingColumns, shardingCondition);
+                for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+                    List<ShardingValue> databaseShardingValues = getShardingValues(databaseShardingColumns, each);
+                    List<ShardingValue> tableShardingValues = getShardingValues(tableShardingColumns, each);
                     routedDataNodes.addAll(route(tableRule, databaseShardingValues, tableShardingValues));
                 }
             }
