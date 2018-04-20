@@ -155,7 +155,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
     public boolean hasMoreResultValue() {
         try {
             return statementExecuteBackendHandler.hasMoreResultValue();
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             return false;
         }
     }

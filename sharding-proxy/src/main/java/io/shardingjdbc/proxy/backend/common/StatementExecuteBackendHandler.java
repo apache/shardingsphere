@@ -77,7 +77,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     private final List<ColumnType> columnTypes;
     
-    private boolean noMoreValues;
+    private boolean hasMoreResultValueFlag;
     
     public StatementExecuteBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType, final boolean showSQL) {
         this.preparedStatementParameters = preparedStatementParameters;
@@ -85,7 +85,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         connections = new ArrayList<>(1024);
         resultSets = new ArrayList<>(1024);
         columnTypes = new ArrayList<>(32);
-        noMoreValues = false;
+        hasMoreResultValueFlag = true;
     }
     
     @Override
@@ -164,7 +164,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
         } finally {
-            if (preparedStatement != null) {
+            if (null != preparedStatement) {
                 try {
                     preparedStatement.close();
                 } catch (final SQLException ignore) {
@@ -255,10 +255,6 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
         List<QueryResult> queryResults = new ArrayList<>(packets.size());
-//        for (CommandResponsePackets each : packets) {
-//            // TODO replace to a common PacketQueryResult
-//            queryResults.add(new MySQLPacketStatementExecuteQueryResult(each, resultSet, columnTypes));
-//        }
         for (int i = 0; i < packets.size(); i++) {
             // TODO replace to a common PacketQueryResult
             queryResults.add(new MySQLPacketStatementExecuteQueryResult(packets.get(i), resultSets.get(i), columnTypes));
@@ -277,7 +273,6 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         FieldCountPacket fieldCountPacketSampling = (FieldCountPacket) databaseProtocolPacketsSampling.next();
         result.addPacket(fieldCountPacketSampling);
         ++currentSequenceId;
-        int columnCount = fieldCountPacketSampling.getColumnCount();
         for (int i = 0; i < columnCount; i++) {
             result.addPacket(databaseProtocolPacketsSampling.next());
             ++currentSequenceId;
@@ -288,37 +283,18 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     }
     
     public boolean hasMoreResultValue() throws SQLException {
-        if (noMoreValues) {
+        if (!hasMoreResultValueFlag) {
             return false;
         }
         if (!mergedResult.next()) {
-            noMoreValues = true;
+            hasMoreResultValueFlag = false;
             cleanJDBCResources();
         }
         return true;
     }
     
-    private void cleanJDBCResources() {
-        for (ResultSet each : resultSets) {
-            if (null != each) {
-                try {
-                    each.close();
-                } catch (SQLException ignore) {
-                }
-            }
-        }
-        for (Connection each : connections) {
-            if (null != each) {
-                try {
-                    each.close();
-                } catch (SQLException ignore) {
-                }
-            }
-        }
-    }
-    
     public DatabaseProtocolPacket getResultValue() {
-        if (noMoreValues) {
+        if (!hasMoreResultValueFlag) {
             return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         }
         try {
@@ -329,6 +305,25 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             return new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, columnTypes);
         } catch (final SQLException ex) {
             return new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage());
+        }
+    }
+    
+    private void cleanJDBCResources() {
+        for (ResultSet each : resultSets) {
+            if (null != each) {
+                try {
+                    each.close();
+                } catch (final SQLException ignore) {
+                }
+            }
+        }
+        for (Connection each : connections) {
+            if (null != each) {
+                try {
+                    each.close();
+                } catch (final SQLException ignore) {
+                }
+            }
         }
     }
 }
