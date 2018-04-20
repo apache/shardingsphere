@@ -5,8 +5,8 @@ import com.saaavsaaa.client.zookeeper.UsualClient;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.data.Stat;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -20,16 +20,21 @@ import java.util.List;
  */
 public class UsualClientTest {
     private static final String SERVERS = "192.168.2.44:2181";
-    private static final int SESSION_TIMEOUT = 2000000;//ms
+    private static final int SESSION_TIMEOUT = 200000;//ms
     private static final String ROOT = "test";
     private static final String AUTH = "digest";
     
-    private static UsualClient client = null;
+    private UsualClient client = null;
     
-    @BeforeClass
-    public static void start() throws IOException, InterruptedException {
+    @Before
+    public void start() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         client = creator.setNamespace(ROOT).authorization(AUTH, AUTH.getBytes()).newClient(SERVERS, SESSION_TIMEOUT).start();
+    }
+    
+    @After
+    public void stop() throws InterruptedException {
+        client.close();
     }
     
     @Test
