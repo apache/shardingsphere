@@ -10,19 +10,18 @@ public class PathUtil {
     public static final String PATH_SEPARATOR = "/";
     
     public static String getRealPath(final String root, String path){
-        path = adjustPath(root, path);
-        return new StringBuilder().append(root).append(path).toString();
+        return adjustPath(root, path);
     }
     
     private static String adjustPath(final String root, String path){
         if (StringUtil.isNullOrWhite(path)){
             throw new IllegalArgumentException("path should have content!");
         }
-        if (path.startsWith(root)){
-            return path;
-        }
         if (!path.startsWith(PATH_SEPARATOR)){
             path = PATH_SEPARATOR + path;
+        }
+        if (!path.startsWith(root)){
+            return root + path;
         }
         return path;
     }
@@ -45,7 +44,7 @@ public class PathUtil {
     
     public static List<String> getPathOrderNodes(final String root, String path){
         path = adjustPath(root, path);
-        List<String> paths = new LinkedList<>();
+        List<String> paths = new ArrayList<>();
         int index = 1;
         int position = path.indexOf('/', index);
     

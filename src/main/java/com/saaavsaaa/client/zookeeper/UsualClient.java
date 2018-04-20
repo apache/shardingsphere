@@ -7,6 +7,7 @@ import com.saaavsaaa.client.untils.PathUtil;
 import org.apache.zookeeper.*;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.nio.charset.Charset;
 import java.util.EventListener;
 import java.util.Iterator;
 import java.util.List;
@@ -15,8 +16,8 @@ import java.util.Stack;
 /*
 * cache
 */
-public class ZookeeperClient extends BaseClient {
-    ZookeeperClient(String servers, int sessionTimeoutMilliseconds) {
+public class UsualClient extends BaseClient {
+    UsualClient(String servers, int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);
     }
 
@@ -25,6 +26,10 @@ public class ZookeeperClient extends BaseClient {
             return;
         }
         zooKeeper.create(rootNode, new byte[0], authorities, CreateMode.PERSISTENT);
+    }
+    
+    public void deleteRoot() throws KeeperException, InterruptedException {
+        zooKeeper.delete(rootNode, VERSION);
     }
 
     public byte[] getData(String key) throws KeeperException, InterruptedException {
@@ -39,46 +44,47 @@ public class ZookeeperClient extends BaseClient {
         return zooKeeper.getChildren(PathUtil.getRealPath(rootNode, key), false);
     }
     
-    public void createCurrentOnly(String path, byte[] data, CreateMode createMode) throws KeeperException, InterruptedException {
-        zooKeeper.create(PathUtil.getRealPath(rootNode, path), data, authorities, createMode);
+    public void createCurrentOnly(String key, String value, CreateMode createMode) throws KeeperException, InterruptedException {
+        zooKeeper.create(PathUtil.getRealPath(rootNode, key), value.getBytes(UTF_8), authorities, createMode);
     }
     
     /*
     * closed beta
     */
-    public void createAllNeedPath(String path, byte[] data, CreateMode createMode) throws KeeperException, InterruptedException {
-        if (path.indexOf(PathUtil.PATH_SEPARATOR) < -1){
-            this.createCurrentOnly(path, data, createMode);
+    public void createAllNeedPath(String key, String value, CreateMode createMode) throws KeeperException, InterruptedException {
+        if (key.indexOf(PathUtil.PATH_SEPARATOR) < -1){
+            this.createCurrentOnly(key, value, createMode);
             return;
         }
         Transaction transaction = zooKeeper.transaction();
         //todo sync cache
-        Iterator<String> nodes = PathUtil.getPathOrderNodes(rootNode, path).iterator();
-        while (nodes.hasNext()){
-            String node = nodes.next();
-            // contrast cache
-            if (!checkExists(node)){
-                try {
-                    // TODO: exception
-                    createInTransaction(path, data, createMode, transaction);
-                } catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
+        List<String> nodes = PathUtil.getPathOrderNodes(rootNode, key);
+        for (int i = 0; i < nodes.size(); i++) {
+            // todo contrast cache
+            if (checkExists(nodes.get(i))){
+                continue;
+            }
+            if (i == nodes.size() - 1){
+                createInTransaction(nodes.get(i), value.getBytes(UTF_8), createMode, transaction);
+            } else {
+                createInTransaction(nodes.get(i), NOTHING_DATA, createMode, transaction);
             }
         }
+        
+        // org.apache.zookeeper.KeeperException$NodeExistsException: KeeperErrorCode = NodeExists
         transaction.commit();
     }
     
-    public Transaction createInTransaction(String path, byte[] data, CreateMode createMode, Transaction transaction){
-        return transaction.create(PathUtil.getRealPath(rootNode, path), data, authorities, createMode);
+    private Transaction createInTransaction(String key, byte[] data, CreateMode createMode, Transaction transaction){
+        return transaction.create(PathUtil.getRealPath(rootNode, key), data, authorities, createMode);
     }
     
-    public void updateInTransaction(String key, byte[] data) throws KeeperException, InterruptedException {
-        zooKeeper.transaction().setData(PathUtil.getRealPath(rootNode, key), data, VERSION).commit();
+    public void updateInTransaction(String key, String value) throws KeeperException, InterruptedException {
+        zooKeeper.transaction().setData(PathUtil.getRealPath(rootNode, key), value.getBytes(UTF_8), VERSION).commit();
     }
     
-    public void update(String key, byte[] data) throws KeeperException, InterruptedException {
-        zooKeeper.setData(PathUtil.getRealPath(rootNode, key), data, VERSION);
+    public void update(String key, String value) throws KeeperException, InterruptedException {
+        zooKeeper.setData(PathUtil.getRealPath(rootNode, key), value.getBytes(UTF_8), VERSION);
     }
     
     public void deleteOnlyCurrent(String key) throws KeeperException, InterruptedException {
@@ -92,18 +98,18 @@ public class ZookeeperClient extends BaseClient {
     /*
     * closed beta
     */
-    public void deleteCurrentBranch(String path) throws KeeperException, InterruptedException {
-        if (path.indexOf(PathUtil.PATH_SEPARATOR) < -1){
-            this.deleteOnlyCurrent(path);
+    public void deleteCurrentBranch(String key) throws KeeperException, InterruptedException {
+        if (key.indexOf(PathUtil.PATH_SEPARATOR) < -1){
+            this.deleteOnlyCurrent(key);
             return;
         }
         Transaction transaction = zooKeeper.transaction();
         //todo branch check
-        Stack<String> pathStack = PathUtil.getPathReverseNodes(rootNode, path);
+        Stack<String> pathStack = PathUtil.getPathReverseNodes(rootNode, key);
         while (!pathStack.empty()){
             String node = pathStack.pop();
             // contrast cache
-            if (!checkExists(node)){
+            if (checkExists(node)){
                 transaction.delete(node, VERSION);
             }
         }
@@ -113,9 +119,9 @@ public class ZookeeperClient extends BaseClient {
     /*
     * closed beta
     */
-    public void deleteAllChild(String path) throws KeeperException, InterruptedException {
-        if (path.indexOf(PathUtil.PATH_SEPARATOR) < -1){
-            this.deleteOnlyCurrent(path);
+    public void deleteAllChild(String key) throws KeeperException, InterruptedException {
+        if (key.indexOf(PathUtil.PATH_SEPARATOR) < -1){
+            this.deleteOnlyCurrent(key);
             return;
         }
         Transaction transaction = zooKeeper.transaction();
@@ -126,14 +132,11 @@ public class ZookeeperClient extends BaseClient {
             String node = nodes.next();
             // contrast cache
             if (checkExists(node)){
-                try {
-                    // TODO: exception
-                    deleteOnlyCurrent(node);
-                } catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
+                deleteOnlyCurrent(node);
             }
         }
+    
+        // TODO: exception
         transaction.commit();
     }
     

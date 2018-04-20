@@ -8,7 +8,7 @@ import java.io.IOException;
 public class ClientFactory {
 //    private static final String CLIENT_EXCLUSIVE_NODE = "ZKC";
     
-    private ZookeeperClient client;
+    private UsualClient client;
     private String namespace;
     private String scheme;
     private byte[] auth;
@@ -21,11 +21,11 @@ public class ClientFactory {
     }
 
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
-        client = new ZookeeperClient(servers, sessionTimeoutMilliseconds);
+        client = new UsualClient(servers, sessionTimeoutMilliseconds);
         return this;
     }
     
-    public synchronized ZookeeperClient start() throws IOException, InterruptedException {
+    public synchronized UsualClient start() throws IOException, InterruptedException {
         client.start();
         client.setRootNode(namespace);
         client.setAuthorities(scheme , auth);

@@ -1,9 +1,11 @@
 package com.saaavsaaa.client.test;
 
 import com.saaavsaaa.client.zookeeper.ClientFactory;
-import com.saaavsaaa.client.zookeeper.ZookeeperClient;
+import com.saaavsaaa.client.zookeeper.UsualClient;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.Stat;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -17,118 +19,120 @@ import java.util.List;
  * Created by aaa on 18-4-18.
  */
 public class UsualClientTest {
-    static final String SERVERS = "192.168.2.44:2181";
-    static final int SESSION_TIMEOUT = 200000;//ms
+    private static final String SERVERS = "192.168.2.44:2181";
+    private static final int SESSION_TIMEOUT = 2000000;//ms
+    private static final String ROOT = "test";
+    private static final String AUTH = "digest";
     
-    static ZookeeperClient client = null;
+    private static UsualClient client = null;
     
-//    @BeforeClass
+    @BeforeClass
     public static void start() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
-        client = creator.setNamespace("test").authorization("digest", "digest".getBytes()).newClient(SERVERS, SESSION_TIMEOUT).start();
+        client = creator.setNamespace(ROOT).authorization(AUTH, AUTH.getBytes()).newClient(SERVERS, SESSION_TIMEOUT).start();
     }
     
-//    @Test
+    @Test
     public void createRoot() throws KeeperException, InterruptedException {
         client.createRootNode();
+        assert client.getZooKeeper().exists("/" + ROOT, false) != null;
+        client.deleteRoot();
+        assert client.getZooKeeper().exists("/" + ROOT, false) == null;
     }
     
-//    @Test
+    @Test
     public void createChild() throws KeeperException, InterruptedException {
-        client.createCurrentOnly("a/b/bb", "bbb11".getBytes(), CreateMode.PERSISTENT);
-    }
-    
-//    @Test
-    public void get() throws KeeperException, InterruptedException {
-        String key = "a/b";
-        /*TreeCache cache = findTreeCache(key);
-        if (null == cache) {
-            return getDirectly(key);
-        }
-        ChildData resultInCache = cache.getCurrentData(key);
-        if (null != resultInCache) {
-            return null == resultInCache.getData() ? null : new String(resultInCache.getData(), Charsets.UTF_8);
-        }*/
-        getDirectly(key);
-    }
-    
-    private void getDirectly(String key) throws KeeperException, InterruptedException {
-        System.out.println(new String(client.getData(key)));
-    }
-    
-//    @Test
-    public void getDirectly() throws KeeperException, InterruptedException {
         String key = "a/b/bb";
-        getDirectly(key);
+        client.createAllNeedPath(key, "bbb11", CreateMode.PERSISTENT);
+        assert client.getZooKeeper().exists("/" + ROOT + "/" + key, false) != null;
+        client.deleteCurrentBranch(key);
+        assert client.getZooKeeper().exists("/" + ROOT + "/" + key, false) == null;
     }
     
-//    @Test
+    @Test
     public void isExisted() throws KeeperException, InterruptedException {
+        String key = "a/b/bb";
+        client.createAllNeedPath(key, "", CreateMode.PERSISTENT);
+        assert isExisted(key);
+        client.deleteCurrentBranch(key);
+    }
+    
+    @Test
+    public void get() throws KeeperException, InterruptedException {
+        client.createAllNeedPath("a/b", "bbb11", CreateMode.PERSISTENT);
         String key = "a";
-        System.out.println(isExisted(key));
+        // TODO: cache
+        assert getDirectly(key).equals("");
+        key = "a/b";
+        assert getDirectly(key).equals("bbb11");
+        client.deleteCurrentBranch("a/b");
+    }
+    
+    private String  getDirectly(String key) throws KeeperException, InterruptedException {
+        return new String(client.getData(key));
     }
 
     private boolean isExisted(String key) throws KeeperException, InterruptedException {
         return client.checkExists(key);
     }
     
-//    @Test
+    @Test
     public void getChildrenKeys() throws KeeperException, InterruptedException {
-        String key = "a";
-        List<String> result = client.getChildren(key);
+        String key = "a/b";
+        String current = "a";
+        client.createAllNeedPath(key, "", CreateMode.PERSISTENT);
+        List<String> result = client.getChildren(current);
         Collections.sort(result, new Comparator<String>() {
             public int compare(final String o1, final String o2) {
                 return o2.compareTo(o1);
             }
         });
-        System.out.println(result);
+        assert result.get(0).equals("b");
+        client.deleteCurrentBranch(key);
     }
     
-//    @Test
+    @Test
     public void persist() throws KeeperException, InterruptedException {
         String key = "a";
         String value = "aa";
+        String newValue = "aaa";
         if (!isExisted(key)) {
-            client.createAllNeedPath(key, value.getBytes(), CreateMode.PERSISTENT);
+            client.createAllNeedPath(key, value, CreateMode.PERSISTENT);
         } else {
             update(key, value);
         }
+    
+        assert getDirectly(key).equals(value);
+    
+        update(key, newValue);
+        assert getDirectly(key).equals(newValue);
+        client.deleteCurrentBranch(key);
     }
     
     private void update(String key, String value) throws KeeperException, InterruptedException {
-        client.update(key, value.getBytes());
+        client.update(key, value);
     }
     
-//    @Test
-    public void update() throws KeeperException, InterruptedException {
-        String key = "a";
-        String value = "aaa";
-        update(key, value); //inTransaction().check().forPath(key).and().setData().forPath().and().commit();
-        getDirectly(key);
-        value = "aa";
-        client.updateInTransaction(key, value.getBytes());
-        getDirectly(key);
-    }
-    
-//    @Test
+    @Test
     public void persistEphemeral() throws KeeperException, InterruptedException {
-        String key = "bb";
+        /*String key = "a/b/bb";
         String value = "b1b";
+        client.createAllNeedPath(key, value, CreateMode.PERSISTENT);
         if (isExisted(key)) {
-            client.deleteCurrentBranch(key);
+            client.deleteAllChild(key);
         }
-        client.createAllNeedPath(key, value.getBytes(), CreateMode.EPHEMERAL);
+        client.createAllNeedPath(key, value, CreateMode.EPHEMERAL);*/
     }
     
-//    @Test
+    @Test
     public void watch() {
-        String key = "a";
-        final String path = key + "/";
+        String key = "";
         EventListener eventListener;
     }
     
-//    @Test
+    @Test
     public void close() throws Exception {
-        
+        client.close();
+        assert client.getZooKeeper().getState() == ZooKeeper.States.CLOSED;
     }
 }

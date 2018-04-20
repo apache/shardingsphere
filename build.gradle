@@ -105,3 +105,5 @@ artifacts {
 signing {
     sign configurations.archives
 }
+
+// https://issues.sonatype.org/browse/OSSRH-39239

@@ -7,6 +7,7 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -16,6 +17,8 @@ import java.util.concurrent.CountDownLatch;
 public abstract class BaseClient {
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
     public static final int VERSION = -1;
+    public static final byte[] NOTHING_DATA = new byte[0];
+    public static final Charset UTF_8 = Charset.forName("UTF-8");
     
     private final String servers;
     private final int sessionTimeOut;
@@ -32,6 +35,10 @@ public abstract class BaseClient {
     public void start() throws IOException, InterruptedException {
         zooKeeper = new ZooKeeper(servers, sessionTimeOut, connectWatcher());
         CONNECTED.await();
+    }
+    
+    public ZooKeeper getZooKeeper(){
+        return zooKeeper;
     }
     
     private Watcher connectWatcher() {
