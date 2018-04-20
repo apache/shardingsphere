@@ -33,6 +33,7 @@ import java.util.Date;
  * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html">binary protocol value</a>
  * 
  * @author zhangliang
+ * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter

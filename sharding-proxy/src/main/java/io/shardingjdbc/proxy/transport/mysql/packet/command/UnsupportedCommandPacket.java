@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
 
@@ -49,5 +50,15 @@ public final class UnsupportedCommandPacket extends CommandPacket {
     
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
+    }
+    
+    @Override
+    public boolean hasMoreResultValue() {
+        return false;
+    }
+    
+    @Override
+    public DatabaseProtocolPacket getResultValue() {
+        return null;
     }
 }
