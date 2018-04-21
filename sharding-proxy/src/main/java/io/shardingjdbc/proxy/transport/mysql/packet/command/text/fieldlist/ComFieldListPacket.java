@@ -20,6 +20,7 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.text.fieldlist;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.proxy.backend.common.SQLExecuteBackendHandler;
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketType;
@@ -59,5 +60,15 @@ public final class ComFieldListPacket extends CommandPacket {
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
         return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
+    }
+    
+    @Override
+    public boolean hasMoreResultValue() {
+        return false;
+    }
+    
+    @Override
+    public DatabaseProtocolPacket getResultValue() {
+        return null;
     }
 }
