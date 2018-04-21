@@ -42,7 +42,7 @@ public final class DatabaseHintSQLRouterTest {
     private DatabaseHintSQLRouter databaseHintSQLRouter;
 
     @Before
-    public void setRouteRuleContext() {
+    public void setRouterContext() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
