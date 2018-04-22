@@ -46,10 +46,10 @@ public final class SQLLogger {
         log("Logic SQL: {}", logicSQL);
         log("SQLStatement: {}", sqlStatement);
         for (SQLExecutionUnit each : sqlExecutionUnits) {
-            if (each.getSqlUnit().getParameters().isEmpty()) {
+            if (each.getSqlUnit().getParameterSets().get(0).isEmpty()) {
                 log("Actual SQL: {} ::: {}", each.getDataSource(), each.getSqlUnit().getSql());
             } else {
-                log("Actual SQL: {} ::: {} ::: {}", each.getDataSource(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameters());
+                log("Actual SQL: {} ::: {} ::: {}", each.getDataSource(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameterSets());
             }
         }
     }

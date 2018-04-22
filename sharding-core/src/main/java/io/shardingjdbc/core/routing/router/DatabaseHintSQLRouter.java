@@ -30,6 +30,8 @@ import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLLogger;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -56,7 +58,7 @@ public final class DatabaseHintSQLRouter implements SQLRouter {
         SQLRouteResult result = new SQLRouteResult(sqlStatement, null);
         RoutingResult routingResult = new DatabaseHintRoutingEngine(shardingRule.getDataSourceNames(), (HintShardingStrategy) shardingRule.getDefaultDatabaseShardingStrategy()).route();
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), new SQLUnit(logicSQL, parameters)));
+            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), new SQLUnit(logicSQL, new ArrayList<>(Collections.singleton(parameters)))));
         }
         if (showSQL) {
             SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits());

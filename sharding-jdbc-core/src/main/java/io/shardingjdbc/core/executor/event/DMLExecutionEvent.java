@@ -17,16 +17,19 @@
 
 package io.shardingjdbc.core.executor.event;
 
+import io.shardingjdbc.core.routing.SQLUnit;
+
 import java.util.List;
 
 /**
  * DML execution event.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 public final class DMLExecutionEvent extends AbstractSQLExecutionEvent {
     
-    public DMLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
-        super(dataSource, sql, parameters);
+    public DMLExecutionEvent(final String dataSource, final SQLUnit sqlUnit, final List<Object> parameters) {
+        super(dataSource, sqlUnit, parameters);
     }
 }

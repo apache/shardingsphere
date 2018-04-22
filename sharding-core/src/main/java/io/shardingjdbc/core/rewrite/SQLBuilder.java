@@ -28,6 +28,7 @@ import io.shardingjdbc.core.routing.SQLUnit;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +39,7 @@ import java.util.Map;
  * 
  * @author gaohongtao
  * @author zhangliang
+ * @author maxiaoguang
  */
 public final class SQLBuilder {
     
@@ -116,6 +118,6 @@ public final class SQLBuilder {
                 result.append(each);
             }
         }
-        return new SQLUnit(result.toString(), parameters);
+        return new SQLUnit(result.toString(), new ArrayList<>(Collections.singleton(parameters)));
     }
 }

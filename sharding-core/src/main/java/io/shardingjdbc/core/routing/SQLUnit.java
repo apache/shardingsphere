@@ -37,5 +37,5 @@ public class SQLUnit {
     
     private final String sql;
     
-    private final List<Object> parameters;
+    private final List<List<Object>> parameterSets;
 }
