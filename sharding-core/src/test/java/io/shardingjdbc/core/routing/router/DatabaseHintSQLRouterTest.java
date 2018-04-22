@@ -27,6 +27,7 @@ import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.rule.ShardingRule;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,7 +40,14 @@ import static org.junit.Assert.assertThat;
 
 public final class DatabaseHintSQLRouterTest {
 
+    private final HintManager hintManager = HintManager.getInstance();
+
     private DatabaseHintSQLRouter databaseHintSQLRouter;
+
+    @After
+    public void tearDown() {
+        hintManager.close();
+    }
 
     @Before
     public void setRouterContext() {
@@ -60,7 +68,6 @@ public final class DatabaseHintSQLRouterTest {
 
     @Test
     public void assertRoute() {
-        HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME, 1);
         assertNotNull(databaseHintSQLRouter.route("select t from table t", Collections.emptyList(), new DQLStatement()));
     }
