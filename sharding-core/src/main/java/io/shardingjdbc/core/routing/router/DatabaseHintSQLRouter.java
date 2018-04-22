@@ -21,6 +21,7 @@ import io.shardingjdbc.core.parsing.SQLJudgeEngine;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
 import io.shardingjdbc.core.routing.SQLRouteResult;
+import io.shardingjdbc.core.routing.SQLUnit;
 import io.shardingjdbc.core.routing.strategy.hint.HintShardingStrategy;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.TableUnit;
@@ -35,6 +36,7 @@ import java.util.List;
  * SQL router for hint database only.
  * 
  * @author zhangiang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class DatabaseHintSQLRouter implements SQLRouter {
@@ -54,10 +56,10 @@ public final class DatabaseHintSQLRouter implements SQLRouter {
         SQLRouteResult result = new SQLRouteResult(sqlStatement, null);
         RoutingResult routingResult = new DatabaseHintRoutingEngine(shardingRule.getDataSourceNames(), (HintShardingStrategy) shardingRule.getDefaultDatabaseShardingStrategy()).route();
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), logicSQL));
+            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), new SQLUnit(logicSQL, parameters)));
         }
         if (showSQL) {
-            SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits(), parameters);
+            SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits());
         }
         return result;
     }

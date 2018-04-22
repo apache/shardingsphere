@@ -56,7 +56,7 @@ public final class StatementExecutor {
             
             @Override
             public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                return baseStatementUnit.getStatement().executeQuery(baseStatementUnit.getSqlExecutionUnit().getSql());
+                return baseStatementUnit.getStatement().executeQuery(baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         });
     }
@@ -133,7 +133,7 @@ public final class StatementExecutor {
             
             @Override
             public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                return updater.executeUpdate(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSql());
+                return updater.executeUpdate(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         });
         return accumulate(results);
@@ -219,7 +219,7 @@ public final class StatementExecutor {
             
             @Override
             public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                return executor.execute(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSql());
+                return executor.execute(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         });
         if (null == result || result.isEmpty() || null == result.get(0)) {

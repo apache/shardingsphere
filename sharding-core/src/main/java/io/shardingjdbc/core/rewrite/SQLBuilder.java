@@ -24,9 +24,11 @@ import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.ShardingPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
+import io.shardingjdbc.core.routing.SQLUnit;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +43,17 @@ public final class SQLBuilder {
     
     private final List<Object> segments;
     
+    private final List<Object> parameters;
+    
     private StringBuilder currentSegment;
     
     public SQLBuilder() {
+        this(Collections.emptyList());
+    }
+    
+    public SQLBuilder(final List<Object> parameters) {
         segments = new LinkedList<>();
+        this.parameters = parameters;
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }
@@ -70,13 +79,13 @@ public final class SQLBuilder {
     }
     
     /**
-     * Convert to SQL string.
+     * Convert to SQL unit.
      *
      * @param logicAndActualTableMap logic and actual map
      * @param shardingRule sharding rule
-     * @return SQL string
+     * @return SQL unit
      */
-    public String toSQL(final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule) {
+    public SQLUnit toSQL(final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule) {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
             if (!(each instanceof ShardingPlaceholder)) {
@@ -107,6 +116,6 @@ public final class SQLBuilder {
                 result.append(each);
             }
         }
-        return result.toString();
+        return new SQLUnit(result.toString(), parameters);
     }
 }
