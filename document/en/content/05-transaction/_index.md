@@ -7,4 +7,7 @@ chapter = true
 
 ## Background
 
-Considering the performance, sharding-jdbc decides not to support strong consistency distributed transactions. In the future, it will support the B.A.S.E transaction which makes the final result of all the distributed databases consistent. Currently, in addition to supporting weak XA transactions, we have been able to provide the Best-Effort-Delivery transaction, one of the B.A.S.E transaction.
+For distributed databases, performance of ACID transaction is a big problem. Use BASE transaction is a better solution for performance and data integrated balance.
+Sharding-Sphere support Best-Effort-Delivery transaction, will support TCC in future.
+
+If user do not want use BASE transaction, Sharding-Sphere also can support weak XA.
