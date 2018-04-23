@@ -173,7 +173,7 @@ public class UsualClientTest {
     }
     
     @Test
-    public void watch() {
+    public void watch() throws KeeperException, InterruptedException {
         String key = "";
     
         EventListener eventListener = new EventListener() {
@@ -209,7 +209,8 @@ public class UsualClientTest {
                 }
             }
         };
-        client.watch(key, listener);
+        Watcher watcher = client.watch(key, listener);
+        client.getZooKeeper().exists("a", watcher);
     }
     
     @Test

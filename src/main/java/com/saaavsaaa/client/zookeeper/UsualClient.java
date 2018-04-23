@@ -149,14 +149,14 @@ public class UsualClient extends BaseClient {
     }
     
     private Watcher watcher;
-    public void watch(final String key, final Listener eventListener){
+    public Watcher watch(final String key, final Listener eventListener){
         watcher = new Watcher() {
-    
             @Override
             public void process(WatchedEvent event) {
-        
+                eventListener.process(event);
             }
         };
+        return watcher;
     }
     
     public void close() throws InterruptedException {
