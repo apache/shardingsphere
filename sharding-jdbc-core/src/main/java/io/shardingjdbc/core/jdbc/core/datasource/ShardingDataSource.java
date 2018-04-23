@@ -20,6 +20,7 @@ package io.shardingjdbc.core.jdbc.core.datasource;
 import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.constant.ShardingProperties;
 import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
+import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.executor.ExecutorEngine;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
@@ -73,9 +74,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
      * @param newDataSourceMap new data source map
      * @param newShardingRule new sharding rule
      * @param newProps new sharding properties
-     * @throws SQLException SQL exception.
      */
-    public void renew(final Map<String, DataSource> newDataSourceMap, final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
+    public void renew(final Map<String, DataSource> newDataSourceMap, final ShardingRule newShardingRule, final Properties newProps) {
         ShardingProperties newShardingProperties = new ShardingProperties(null == newProps ? new Properties() : newProps);
         int originalExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
@@ -86,7 +86,12 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         ShardingMetaData shardingMetaData = new JDBCShardingMetaData(newDataSourceMap, getDatabaseType());
-        shardingMetaData.init(newShardingRule);
+        try {
+            shardingMetaData.init(newShardingRule);
+        } catch (SQLException ex) {
+            throw new ShardingJdbcException(ex);
+        }
+        
         shardingProperties = newShardingProperties;
         shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, shardingMetaData, newShowSQL);
     }
