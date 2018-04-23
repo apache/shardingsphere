@@ -22,37 +22,37 @@ public class UsualClient extends BaseClient {
         super(servers, sessionTimeoutMilliseconds);
     }
 
-    public void createRootNode() throws KeeperException, InterruptedException {
+    public void createNamespace() throws KeeperException, InterruptedException {
         if (checkExists(rootNode)){
             return;
         }
         zooKeeper.create(rootNode, new byte[0], authorities, CreateMode.PERSISTENT);
     }
     
-    public void deleteRoot() throws KeeperException, InterruptedException {
+    public void deleteNamespace() throws KeeperException, InterruptedException {
         zooKeeper.delete(rootNode, VERSION);
     }
 
-    public byte[] getData(String key) throws KeeperException, InterruptedException {
+    public byte[] getData(final String key) throws KeeperException, InterruptedException {
         return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), false, null);
     }
     
-    public boolean checkExists(String key) throws KeeperException, InterruptedException {
+    public boolean checkExists(final String key) throws KeeperException, InterruptedException {
         return null != zooKeeper.exists(PathUtil.getRealPath(rootNode, key), false);
     }
     
-    public List<String> getChildren(String key) throws KeeperException, InterruptedException {
+    public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
         return zooKeeper.getChildren(PathUtil.getRealPath(rootNode, key), false);
     }
     
-    public void createCurrentOnly(String key, String value, CreateMode createMode) throws KeeperException, InterruptedException {
+    public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         zooKeeper.create(PathUtil.getRealPath(rootNode, key), value.getBytes(UTF_8), authorities, createMode);
     }
     
     /*
     * closed beta
     */
-    public void createAllNeedPath(String key, String value, CreateMode createMode) throws KeeperException, InterruptedException {
+    public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         if (key.indexOf(PathUtil.PATH_SEPARATOR) < -1){
             this.createCurrentOnly(key, value, createMode);
             return;
@@ -78,28 +78,32 @@ public class UsualClient extends BaseClient {
         transaction.commit();
     }
     
-    private Transaction createInTransaction(String key, byte[] data, CreateMode createMode, Transaction transaction){
+    private Transaction createInTransaction(final String key, byte[] data, final CreateMode createMode, final Transaction transaction){
         return transaction.create(PathUtil.getRealPath(rootNode, key), data, authorities, createMode);
     }
     
-    public void update(String key, String value) throws KeeperException, InterruptedException {
+    public void update(final String key, final String value) throws KeeperException, InterruptedException {
         zooKeeper.setData(PathUtil.getRealPath(rootNode, key), value.getBytes(UTF_8), VERSION);
     }
     
-    public void updateInTransaction(String key, String value) throws KeeperException, InterruptedException {
+    public void updateInTransaction(final String key, final String value) throws KeeperException, InterruptedException {
         String realPath = PathUtil.getRealPath(rootNode, key);
         zooKeeper.transaction().check(realPath, VERSION).setData(realPath, value.getBytes(UTF_8), VERSION).commit();
     }
     
-    public void deleteOnlyCurrent(String key) throws KeeperException, InterruptedException {
+    public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
         zooKeeper.delete(PathUtil.getRealPath(rootNode, key), VERSION);
     }
     
-    public void deleteOnlyCurrent(String key, AsyncCallback.VoidCallback callback, Object ctx) throws KeeperException, InterruptedException {
+    private void deleteOnlyCurrent(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
+        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), VERSION);
+    }
+    
+    public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         zooKeeper.delete(PathUtil.getRealPath(rootNode, key), VERSION, callback, ctx);
     }
     
-    public void deleteCurrentBranch(String key) throws KeeperException, InterruptedException {
+    public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         if (key.indexOf(PathUtil.PATH_SEPARATOR) < -1){
             this.deleteOnlyCurrent(key);
             return;
@@ -121,8 +125,9 @@ public class UsualClient extends BaseClient {
     * closed beta
     * 当前实现方法用于缓存方式
     * 缓存实现后此类判断换为异常方式（包括创建）
+    * 用事务不能用异常
     */
-    public void deleteAllChild(String key) throws KeeperException, InterruptedException {
+    public void deleteAllChild(final String key) throws KeeperException, InterruptedException {
         String realPath = PathUtil.getRealPath(rootNode, key);
         try {
             this.deleteOnlyCurrent(realPath);

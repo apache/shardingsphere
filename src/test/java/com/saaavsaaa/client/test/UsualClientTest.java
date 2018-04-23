@@ -41,9 +41,9 @@ public class UsualClientTest {
     
     @Test
     public void createRoot() throws KeeperException, InterruptedException {
-        client.createRootNode();
+        client.createNamespace();
         assert client.getZooKeeper().exists(PathUtil.PATH_SEPARATOR + ROOT, false) != null;
-        client.deleteRoot();
+        client.deleteNamespace();
         assert client.getZooKeeper().exists(PathUtil.PATH_SEPARATOR + ROOT, false) == null;
     }
     
@@ -144,7 +144,7 @@ public class UsualClientTest {
         client.deleteAllChild("a");
         assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, key), false) == null;
         assert client.getZooKeeper().exists("/" + ROOT, false) != null;
-        client.deleteRoot();
+        client.deleteNamespace();
     }
     
     @Test

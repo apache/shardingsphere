@@ -10,29 +10,24 @@ import java.util.Iterator;
 /**
  * Created by aaa on 18-4-19.
  */
-public class CacheClient extends UsualClient {
+public final class CacheClient extends UsualClient {
     CacheClient(String servers, int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);
     }
     
-    public void deleteAllChild(String key) throws KeeperException, InterruptedException {
-        if (key.indexOf(PathUtil.PATH_SEPARATOR) < -1){
-            this.deleteOnlyCurrent(key);
-            return;
-        }
+    /*
+    * closed beta
+    * 当前实现方法用于缓存方式
+    * 缓存实现后此类判断换为异常方式（包括创建）
+    * 用事务不能用异常
+    */
+    @Override
+    public void deleteAllChild(final String key) throws KeeperException, InterruptedException {
         Transaction transaction = zooKeeper.transaction();
-        //todo sync cache
-        new DefaultMutableTreeNode();
-        Iterator<String> nodes = PathUtil.depthToB(new DefaultMutableTreeNode()).iterator();
-        while (nodes.hasNext()){
-            String node = nodes.next();
-            // contrast cache
-            if (checkExists(node)){
-                deleteOnlyCurrent(node);
-            }
-        }
-        
-        // TODO: exception
+        this.deleteAllChild(key, transaction);
         transaction.commit();
+    }
+    
+    private void deleteAllChild(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
     }
 }
