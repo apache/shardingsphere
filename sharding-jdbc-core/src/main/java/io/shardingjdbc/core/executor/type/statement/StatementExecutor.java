@@ -35,6 +35,7 @@ import java.util.List;
  * @author gaohongtao
  * @author caohao
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class StatementExecutor {
@@ -52,11 +53,11 @@ public final class StatementExecutor {
      * @throws SQLException SQL exception
      */
     public List<ResultSet> executeQuery() throws SQLException {
-        return executorEngine.executeStatement(sqlType, statementUnits, new ExecuteCallback<ResultSet>() {
+        return executorEngine.execute(sqlType, statementUnits, new ExecuteCallback<ResultSet>() {
             
             @Override
             public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                return baseStatementUnit.getStatement().executeQuery(baseStatementUnit.getSqlExecutionUnit().getSql());
+                return baseStatementUnit.getStatement().executeQuery(baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         });
     }
@@ -129,11 +130,11 @@ public final class StatementExecutor {
     }
     
     private int executeUpdate(final Updater updater) throws SQLException {
-        List<Integer> results = executorEngine.executeStatement(sqlType, statementUnits, new ExecuteCallback<Integer>() {
+        List<Integer> results = executorEngine.execute(sqlType, statementUnits, new ExecuteCallback<Integer>() {
             
             @Override
             public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                return updater.executeUpdate(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSql());
+                return updater.executeUpdate(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         });
         return accumulate(results);
@@ -215,11 +216,11 @@ public final class StatementExecutor {
     }
     
     private boolean execute(final Executor executor) throws SQLException {
-        List<Boolean> result = executorEngine.executeStatement(sqlType, statementUnits, new ExecuteCallback<Boolean>() {
+        List<Boolean> result = executorEngine.execute(sqlType, statementUnits, new ExecuteCallback<Boolean>() {
             
             @Override
             public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                return executor.execute(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSql());
+                return executor.execute(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         });
         if (null == result || result.isEmpty() || null == result.get(0)) {

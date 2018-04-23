@@ -37,6 +37,7 @@ import java.util.Map;
  * 
  * @author gaohongtao
  * @author wangkai
+ * @author maxiaoguang
  */
 public final class ExecuteEventListener {
     
@@ -124,7 +125,7 @@ public final class ExecuteEventListener {
                 branchContainer.set(tracer.buildSpan("/SJDBC/BRANCH/" + operation).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                         .withTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSource()).withTag(Tags.COMPONENT.getKey(), "ShardingJDBC")
                         .withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).withTag(Tags.DB_TYPE.getKey(), "sql")
-                        .withTag(Tags.DB_STATEMENT.getKey(), event.getSql()).startManual());
+                        .withTag(Tags.DB_STATEMENT.getKey(), event.getSqlUnit().getSql()).startManual());
                 break;
             case EXECUTE_FAILURE:
                 Span span = branchContainer.get();
