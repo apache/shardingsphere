@@ -69,4 +69,4 @@ Generate distribute unique primary keys by this.
 
 ## Config Map
 
-ConfigMap allows you to configure metadata information for data source of Sharding or Read-write splitting. The information of shardingConfig and masterSlaveConfig in ConfigMap can be obtained by calling ConfigMapContext.getInstance (). e.g. Differet weight for machines, different traffic on machines. The metadata for machines' weight can be configured through the ConfigMap.
+ConfigMap allows user to configure metadata information for data source of Sharding. The information of shardingConfig in ConfigMap can be obtained by calling ConfigMapContext.getInstance (). e.g. Different weight for machines, different traffic on machines. The metadata for machines' weight can be configured through the ConfigMap.

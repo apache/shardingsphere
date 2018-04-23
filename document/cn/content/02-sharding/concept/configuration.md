@@ -79,4 +79,4 @@ db0.t_order_0, db0.t_order_1, db1.t_order_2, db1.t_order_3, db1.t_order_4
 
 ## Config Map
 
-通过ConfigMap可以配置分库分表或读写分离数据源的元数据，可通过调用ConfigMapContext.getInstance()获取ConfigMap中的shardingConfig和masterSlaveConfig数据。例：如果机器权重不同则流量可能不同，可通过ConfigMap配置机器权重元数据。
+配置分库分表数据源的元数据，可通过调用ConfigMapContext.getInstance()获取ConfigMap中的shardingConfig数据。例：如果机器权重不同则流量可能不同，可通过ConfigMap配置机器权重元数据。
