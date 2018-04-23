@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.jdbc.metadata;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.DataNode;
@@ -38,9 +39,11 @@ public final class JDBCShardingMetaData extends ShardingMetaData {
     
     private final Map<String, DataSource> dataSourceMap;
     
+    private final DatabaseType databaseType;
+    
     @Override
     protected Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode) throws SQLException {
-        return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName()).getColumnMetaDataList();
+        return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType).getColumnMetaDataList();
     }
 }
 
