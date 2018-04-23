@@ -37,6 +37,7 @@ import java.sql.SQLException;
 public final class ComQueryPacket extends CommandPacket {
     
     private final String sql;
+    
     private final SQLExecuteBackendHandler sqlExecuteBackendHandler;
     
     public ComQueryPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
