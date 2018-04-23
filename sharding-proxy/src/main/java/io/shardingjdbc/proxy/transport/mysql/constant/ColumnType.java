@@ -87,7 +87,7 @@ public enum ColumnType {
             case Types.FLOAT:
                 return MYSQL_TYPE_FLOAT;
             case Types.REAL:
-                return MYSQL_TYPE_DOUBLE;
+                return MYSQL_TYPE_FLOAT;
             case Types.DOUBLE:
                 return MYSQL_TYPE_DOUBLE;
             case Types.NUMERIC:

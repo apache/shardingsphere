@@ -22,9 +22,10 @@ import io.shardingjdbc.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
+import java.sql.SQLException;
 
 /**
  * COM_QUERY command packet.
@@ -37,9 +38,12 @@ public final class ComQueryPacket extends CommandPacket {
     
     private final String sql;
     
+    private final SQLExecuteBackendHandler sqlExecuteBackendHandler;
+    
     public ComQueryPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
         super(sequenceId);
         sql = mysqlPacketPayload.readStringEOF();
+        sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true);
     }
     
     @Override
@@ -48,8 +52,30 @@ public final class ComQueryPacket extends CommandPacket {
     }
     
     @Override
-    public List<DatabaseProtocolPacket> execute() {
+    public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
-        return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
+        return sqlExecuteBackendHandler.execute();
+    }
+    
+    /**
+     * Has more Result value.
+     *
+     * @return has more result value
+     */
+    public boolean hasMoreResultValue() {
+        try {
+            return sqlExecuteBackendHandler.hasMoreResultValue();
+        } catch (final SQLException ex) {
+            return false;
+        }
+    }
+    
+    /**
+     * Get result value.
+     *
+     * @return database protocol packet
+     */
+    public DatabaseProtocolPacket getResultValue() {
+        return sqlExecuteBackendHandler.getResultValue();
     }
 }

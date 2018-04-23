@@ -21,6 +21,7 @@ import io.shardingjdbc.core.api.AllApiTests;
 import io.shardingjdbc.core.constant.AllConstantsTests;
 import io.shardingjdbc.core.hint.AllHintTests;
 import io.shardingjdbc.core.merger.AllMergerTests;
+import io.shardingjdbc.core.optimizer.AllOptimizerTests;
 import io.shardingjdbc.core.parsing.AllParsingTests;
 import io.shardingjdbc.core.rewrite.AllRewriteTests;
 import io.shardingjdbc.core.routing.AllRoutingTests;
@@ -35,7 +36,8 @@ import org.junit.runners.Suite.SuiteClasses;
         AllConstantsTests.class, 
         AllApiTests.class, 
         AllUtilTests.class, 
-        AllParsingTests.class, 
+        AllParsingTests.class,
+        AllOptimizerTests.class, 
         AllRewriteTests.class, 
         AllRoutingTests.class, 
         AllMergerTests.class, 

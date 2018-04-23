@@ -26,6 +26,7 @@ import lombok.ToString;
  * SQL execution unit.
  * 
  * @author gaohongtao
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
@@ -35,5 +36,5 @@ public final class SQLExecutionUnit {
     
     private final String dataSource;
     
-    private final String sql;
+    private final SQLUnit sqlUnit;
 }

@@ -39,6 +39,7 @@ import java.sql.SQLException;
  * Best efforts delivery B.A.S.E transaction listener.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @Slf4j
 public final class BestEffortsDeliveryListener {
@@ -61,7 +62,7 @@ public final class BestEffortsDeliveryListener {
             case BEFORE_EXECUTE:
                 //TODO for batch SQL need split to 2-level records
                 transactionLogStorage.add(new TransactionLog(event.getId(), bedSoftTransaction.getTransactionId(), bedSoftTransaction.getTransactionType(), 
-                        event.getDataSource(), event.getSql(), event.getParameters(), System.currentTimeMillis(), 0));
+                        event.getDataSource(), event.getSqlUnit().getSql(), event.getParameters(), System.currentTimeMillis(), 0));
                 return;
             case EXECUTE_SUCCESS: 
                 transactionLogStorage.remove(event.getId());
@@ -82,7 +83,7 @@ public final class BestEffortsDeliveryListener {
                             conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLType.DML);
                             isNewConnection = true;
                         }
-                        preparedStatement = conn.prepareStatement(event.getSql());
+                        preparedStatement = conn.prepareStatement(event.getSqlUnit().getSql());
                         //TODO for batch event need split to 2-level records
                         for (int parameterIndex = 0; parameterIndex < event.getParameters().size(); parameterIndex++) {
                             preparedStatement.setObject(parameterIndex + 1, event.getParameters().get(parameterIndex));

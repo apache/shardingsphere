@@ -17,9 +17,7 @@
 
 package io.shardingjdbc.proxy.backend.common;
 
-import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
-
-import java.util.List;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
 /**
  * Backend handler.
@@ -33,5 +31,5 @@ public interface BackendHandler {
      *
      * @return result packets to be sent
      */
-    List<DatabaseProtocolPacket> execute();
+    CommandResponsePackets execute();
 }

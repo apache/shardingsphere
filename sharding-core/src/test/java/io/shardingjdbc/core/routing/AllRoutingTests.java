@@ -17,10 +17,14 @@
 
 package io.shardingjdbc.core.routing;
 
+import io.shardingjdbc.core.routing.router.DatabaseHintSQLRouterTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses(DatabaseTest.class)
+@Suite.SuiteClasses({
+        DatabaseTest.class,
+        DatabaseHintSQLRouterTest.class
+})
 public class AllRoutingTests {
 }

@@ -33,6 +33,7 @@ import java.util.Map;
  * PreparedStatement Executor for  multiple threads to process add batch.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class BatchPreparedStatementExecutor {
@@ -45,7 +46,7 @@ public final class BatchPreparedStatementExecutor {
     
     private final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits;
     
-    private final List<List<Object>> parameterSets;
+    private final int batchCount;
     
     /**
      * Execute batch.
@@ -54,7 +55,7 @@ public final class BatchPreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public int[] executeBatch() throws SQLException {
-        return accumulate(executorEngine.executeBatch(sqlType, batchPreparedStatementUnits, parameterSets, new ExecuteCallback<int[]>() {
+        return accumulate(executorEngine.execute(sqlType, batchPreparedStatementUnits, new ExecuteCallback<int[]>() {
             
             @Override
             public int[] execute(final BaseStatementUnit baseStatementUnit) throws Exception {
@@ -64,7 +65,7 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private int[] accumulate(final List<int[]> results) {
-        int[] result = new int[parameterSets.size()];
+        int[] result = new int[batchCount];
         int count = 0;
         for (BatchPreparedStatementUnit each : batchPreparedStatementUnits) {
             for (Map.Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {

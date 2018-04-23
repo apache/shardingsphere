@@ -17,9 +17,11 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command.statement;
 
+import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameterHeader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,6 +39,8 @@ public final class PreparedStatementRegistry {
     private final ConcurrentMap<String, Integer> sqlToStatementIdMap = new ConcurrentHashMap<>(65535, 1);
     
     private final ConcurrentMap<Integer, String> statementIdToSQLMap = new ConcurrentHashMap<>(65535, 1);
+    
+    private final ConcurrentMap<Integer, List<PreparedStatementParameterHeader>> statementIdToParameterHeadersMap = new ConcurrentHashMap<>(65535, 1);
     
     private final AtomicInteger sequence = new AtomicInteger();
     
@@ -72,7 +76,27 @@ public final class PreparedStatementRegistry {
      * @param statementId statement ID
      * @return SQL
      */
-    public String getSql(final int statementId) {
+    public String getSQL(final int statementId) {
         return statementIdToSQLMap.get(statementId);
+    }
+    
+    /**
+     * Set parameter headers.
+     *
+     * @param statementId statement ID
+     * @param preparedStatementParameterHeaders prepared statement parameter headers
+     */
+    public void setParameterHeaders(final int statementId, final List<PreparedStatementParameterHeader> preparedStatementParameterHeaders) {
+        statementIdToParameterHeadersMap.putIfAbsent(statementId, preparedStatementParameterHeaders);
+    }
+    
+    /**
+     * Get parameter header.
+     *
+     * @param statementId statement ID
+     * @return prepared statement parameters
+     */
+    public PreparedStatementParameterHeader getParameterHeader(final int statementId) {
+        return statementIdToParameterHeadersMap.get(statementId).iterator().next();
     }
 }

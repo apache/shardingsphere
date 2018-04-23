@@ -24,12 +24,12 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * SQL logger.
  * 
- * @author zhangliang 
+ * @author zhangliang
+ * @author maxiaoguang
  */
 @Slf4j(topic = "Sharding-JDBC-SQL")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -41,16 +41,15 @@ public final class SQLLogger {
      * @param logicSQL logic SQL
      * @param sqlStatement SQL statement
      * @param sqlExecutionUnits SQL execution units
-     * @param parameters parameters for SQL placeholder
      */
-    public static void logSQL(final String logicSQL, final SQLStatement sqlStatement, final Collection<SQLExecutionUnit> sqlExecutionUnits, final List<Object> parameters) {
+    public static void logSQL(final String logicSQL, final SQLStatement sqlStatement, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
         log("Logic SQL: {}", logicSQL);
         log("SQLStatement: {}", sqlStatement);
         for (SQLExecutionUnit each : sqlExecutionUnits) {
-            if (parameters.isEmpty()) {
-                log("Actual SQL: {} ::: {}", each.getDataSource(), each.getSql());
+            if (each.getSqlUnit().getParameterSets().get(0).isEmpty()) {
+                log("Actual SQL: {} ::: {}", each.getDataSource(), each.getSqlUnit().getSql());
             } else {
-                log("Actual SQL: {} ::: {} ::: {}", each.getDataSource(), each.getSql(), parameters);
+                log("Actual SQL: {} ::: {} ::: {}", each.getDataSource(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameterSets());
             }
         }
     }

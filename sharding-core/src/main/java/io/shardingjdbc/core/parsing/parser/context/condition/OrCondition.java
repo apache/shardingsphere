@@ -18,8 +18,9 @@
 package io.shardingjdbc.core.parsing.parser.context.condition;
 
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.parsing.parser.clause.condition.NullCondition;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -30,12 +31,16 @@ import java.util.List;
  *
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @ToString
 public final class OrCondition {
     
     private final List<AndCondition> andConditions = new ArrayList<>();
+    
+    public OrCondition(final Condition condition) {
+        add(condition);
+    }
     
     /**
      * Add condition.
@@ -43,14 +48,26 @@ public final class OrCondition {
      * @param condition condition
      */
     public void add(final Condition condition) {
-        AndCondition firstAndCondition;
-        if (isEmpty()) {
-            firstAndCondition = new AndCondition();
-            andConditions.add(firstAndCondition);
-        } else {
-            firstAndCondition = andConditions.get(0);
+        if (andConditions.isEmpty()) {
+            andConditions.add(new AndCondition());
         }
-        firstAndCondition.add(condition);
+        andConditions.get(0).getConditions().add(condition);
+    }
+    
+    /**
+     * Optimize or condition.
+     *
+     * @return or condition
+     */
+    public OrCondition optimize() {
+        for (AndCondition each : andConditions) {
+            if (each.getConditions().get(0) instanceof NullCondition) {
+                OrCondition result = new OrCondition();
+                result.add(new NullCondition());
+                return result;
+            }
+        }
+        return this;
     }
     
     /**
@@ -59,41 +76,11 @@ public final class OrCondition {
      * @param column column
      * @param index index of and conditions
      * @return found condition
+     * @deprecated only test call
      */
+    @Deprecated
     public Optional<Condition> find(final Column column, final int index) {
-        Optional<AndCondition> andCondition = get(index);
-        return andCondition.isPresent() ? andCondition.get().find(column) : Optional.<Condition>absent();
-    }
-    
-    /**
-     * Get and condition via index.
-     *
-     * @param index index of and conditions
-     * @return found and conditions
-     */
-    public Optional<AndCondition> get(final int index) {
-        AndCondition result = null;
-        if (size() > index) {
-            result = andConditions.get(index);
-        }
-        return Optional.fromNullable(result);
-    }
-    
-    /**
-     * Adjust and conditions is empty or not.
-     *
-     * @return and conditions is empty or not
-     */
-    public boolean isEmpty() {
-        return andConditions.isEmpty();
-    }
-    
-    /**
-     * Returns the number of and conditions in this.
-     *
-     * @return the number of and conditions in this
-     */
-    public int size() {
-        return andConditions.size();
+        AndCondition andCondition = andConditions.get(index);
+        return null != andCondition ? andCondition.find(column) : Optional.<Condition>absent();
     }
 }

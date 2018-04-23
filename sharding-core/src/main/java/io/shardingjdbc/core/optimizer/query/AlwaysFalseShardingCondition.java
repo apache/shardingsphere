@@ -15,34 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.sharding;
+package io.shardingjdbc.core.optimizer.query;
 
-import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
-import java.util.LinkedList;
-import java.util.List;
+import io.shardingjdbc.core.optimizer.condition.ShardingCondition;
 
 /**
- * Sharding condition.
- * 
+ * Always false sharding condition.
+ *
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public class ShardingCondition {
-    
-    private final List<ShardingValue> shardingValues = new LinkedList<>();
-    
-    /**
-     * Add sharding value.
-     *
-     * @param shardingValue sharding value
-     */
-    public void add(final ShardingValue shardingValue) {
-        shardingValues.add(shardingValue);
-    }
+public final class AlwaysFalseShardingCondition extends ShardingCondition {
 }

@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.executor.event;
 
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.routing.SQLUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +29,7 @@ import java.util.List;
  * SQL execution event.
  * 
  * @author gaohongtao
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
@@ -35,7 +37,7 @@ public abstract class AbstractSQLExecutionEvent extends AbstractExecutionEvent {
     
     private final String dataSource;
     
-    private final String sql;
+    private final SQLUnit sqlUnit;
     
     private final List<Object> parameters;
     
