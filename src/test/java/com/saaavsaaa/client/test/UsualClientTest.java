@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.test;
 
+import com.saaavsaaa.client.untils.PathUtil;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.UsualClient;
 import org.apache.zookeeper.CreateMode;
@@ -41,18 +42,18 @@ public class UsualClientTest {
     @Test
     public void createRoot() throws KeeperException, InterruptedException {
         client.createRootNode();
-        assert client.getZooKeeper().exists("/" + ROOT, false) != null;
+        assert client.getZooKeeper().exists(PathUtil.PATH_SEPARATOR + ROOT, false) != null;
         client.deleteRoot();
-        assert client.getZooKeeper().exists("/" + ROOT, false) == null;
+        assert client.getZooKeeper().exists(PathUtil.PATH_SEPARATOR + ROOT, false) == null;
     }
     
     @Test
     public void createChild() throws KeeperException, InterruptedException {
         String key = "a/b/bb";
         client.createAllNeedPath(key, "bbb11", CreateMode.PERSISTENT);
-        assert client.getZooKeeper().exists("/" + ROOT + "/" + key, false) != null;
+        assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, key)/*"/" + ROOT + "/" + key*/, false) != null;
         client.deleteCurrentBranch(key);
-        assert client.getZooKeeper().exists("/" + ROOT + "/" + key, false) == null;
+        assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, key)/*"/" + ROOT + "/" + key*/, false) == null;
     }
     
     @Test
@@ -74,7 +75,7 @@ public class UsualClientTest {
         client.deleteCurrentBranch("a/b");
     }
     
-    private String  getDirectly(String key) throws KeeperException, InterruptedException {
+    private String getDirectly(String key) throws KeeperException, InterruptedException {
         return new String(client.getData(key));
     }
 
@@ -116,7 +117,7 @@ public class UsualClientTest {
     }
     
     private void update(String key, String value) throws KeeperException, InterruptedException {
-        client.update(key, value);
+        client.updateInTransaction(key, value);
     }
 
     @Test
@@ -124,10 +125,12 @@ public class UsualClientTest {
         String key = "a/b/bb";
         String value = "b1b";
         client.createAllNeedPath(key, value, CreateMode.PERSISTENT);
-        if (isExisted(key)) {
-            client.deleteAllChild(key);
-        }
+        assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, key), null).getEphemeralOwner() == 0;
+        client.deleteAllChild(key);
+        assert !isExisted(key);
         client.createAllNeedPath(key, value, CreateMode.EPHEMERAL);
+        assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, key), null).getEphemeralOwner() != 0; // Ephemeral node connection session id
+        client.deleteCurrentBranch(key);
     }
     
     @Test
@@ -136,11 +139,12 @@ public class UsualClientTest {
         client.createAllNeedPath(key, "bb", CreateMode.PERSISTENT);
         key = "a/c/cc";
         client.createAllNeedPath(key, "cc", CreateMode.PERSISTENT);
-        assert client.getZooKeeper().exists("/" + ROOT + "/" + key, false) != null;
+        System.out.println(client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, "a"), null).getNumChildren()); // nearest children count
+        assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, key), false) != null;
         client.deleteAllChild("a");
-        assert client.getZooKeeper().exists("/" + ROOT + "/" + key, false) == null;
-        assert client.getZooKeeper().exists("/" + ROOT + "/a", false) != null;
-        client.createAllNeedPath("a", "bb", CreateMode.PERSISTENT);
+        assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, key), false) == null;
+        assert client.getZooKeeper().exists("/" + ROOT, false) != null;
+        client.deleteRoot();
     }
     
     @Test

@@ -83,6 +83,10 @@ public class UsualClient extends BaseClient {
     }
     
     public void update(String key, String value) throws KeeperException, InterruptedException {
+        zooKeeper.setData(PathUtil.getRealPath(rootNode, key), value.getBytes(UTF_8), VERSION);
+    }
+    
+    public void updateInTransaction(String key, String value) throws KeeperException, InterruptedException {
         String realPath = PathUtil.getRealPath(rootNode, key);
         zooKeeper.transaction().check(realPath, VERSION).setData(realPath, value.getBytes(UTF_8), VERSION).commit();
     }
@@ -95,9 +99,6 @@ public class UsualClient extends BaseClient {
         zooKeeper.delete(PathUtil.getRealPath(rootNode, key), VERSION, callback, ctx);
     }
     
-    /*
-    * closed beta
-    */
     public void deleteCurrentBranch(String key) throws KeeperException, InterruptedException {
         if (key.indexOf(PathUtil.PATH_SEPARATOR) < -1){
             this.deleteOnlyCurrent(key);
@@ -125,14 +126,18 @@ public class UsualClient extends BaseClient {
         String realPath = PathUtil.getRealPath(rootNode, key);
         try {
             this.deleteOnlyCurrent(realPath);
+            System.out.println("delete : " + realPath);
         }catch (KeeperException.NotEmptyException ee){
             List<String> children = this.getChildren(realPath);
             for (String child : children) {
                 child = realPath + PathUtil.PATH_SEPARATOR + child;
                 this.deleteAllChild(child);
             }
+            this.deleteOnlyCurrent(realPath);
+            System.out.println("delete : " + realPath);
         } catch (KeeperException.NoNodeException ee){
             System.out.println(ee.getMessage());
+            return;
         }
     }
     
