@@ -32,7 +32,7 @@ public class UsualClient extends BaseClient {
     }
 
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
-        return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), watcher, null);
+        return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), false, null);
     }
     
     public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
