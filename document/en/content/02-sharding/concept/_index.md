@@ -11,3 +11,4 @@ This section mainly introduces core concept for Sharding-Sphere, includes:
 * SQL core concept
 * Sharding core concept
 * Configuration core concept
+* Core process

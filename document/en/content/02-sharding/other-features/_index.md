@@ -10,5 +10,6 @@ This section introduces other functions of data sharding, includes:
 
 * Inline expression
 * Distributed sequence
+* Sharding Hint
 
 Please refer to the relevant pages of each function for details.
