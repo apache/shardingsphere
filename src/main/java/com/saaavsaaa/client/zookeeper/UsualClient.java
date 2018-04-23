@@ -15,6 +15,7 @@ import java.util.Stack;
 
 /*
 * cache
+* todo Sequential
 */
 public class UsualClient extends BaseClient {
     UsualClient(String servers, int sessionTimeoutMilliseconds) {
@@ -62,8 +63,10 @@ public class UsualClient extends BaseClient {
         for (int i = 0; i < nodes.size(); i++) {
             // todo contrast cache
             if (checkExists(nodes.get(i))){
+                System.out.println("exist:" + nodes.get(i));
                 continue;
             }
+            System.out.println("not exist:" + nodes.get(i));
             if (i == nodes.size() - 1){
                 createInTransaction(nodes.get(i), value.getBytes(UTF_8), createMode, transaction);
             } else {
@@ -79,12 +82,9 @@ public class UsualClient extends BaseClient {
         return transaction.create(PathUtil.getRealPath(rootNode, key), data, authorities, createMode);
     }
     
-    public void updateInTransaction(String key, String value) throws KeeperException, InterruptedException {
-        zooKeeper.transaction().setData(PathUtil.getRealPath(rootNode, key), value.getBytes(UTF_8), VERSION).commit();
-    }
-    
     public void update(String key, String value) throws KeeperException, InterruptedException {
-        zooKeeper.setData(PathUtil.getRealPath(rootNode, key), value.getBytes(UTF_8), VERSION);
+        String realPath = PathUtil.getRealPath(rootNode, key);
+        zooKeeper.transaction().check(realPath, VERSION).setData(realPath, value.getBytes(UTF_8), VERSION).commit();
     }
     
     public void deleteOnlyCurrent(String key) throws KeeperException, InterruptedException {
@@ -118,26 +118,22 @@ public class UsualClient extends BaseClient {
     
     /*
     * closed beta
+    * 当前实现方法用于缓存方式
+    * 缓存实现后此类判断换为异常方式（包括创建）
     */
     public void deleteAllChild(String key) throws KeeperException, InterruptedException {
-        if (key.indexOf(PathUtil.PATH_SEPARATOR) < -1){
-            this.deleteOnlyCurrent(key);
-            return;
-        }
-        Transaction transaction = zooKeeper.transaction();
-        //todo sync cache
-        new DefaultMutableTreeNode();
-        Iterator<String> nodes = PathUtil.depthToB(new DefaultMutableTreeNode()).iterator();
-        while (nodes.hasNext()){
-            String node = nodes.next();
-            // contrast cache
-            if (checkExists(node)){
-                deleteOnlyCurrent(node);
+        String realPath = PathUtil.getRealPath(rootNode, key);
+        try {
+            this.deleteOnlyCurrent(realPath);
+        }catch (KeeperException.NotEmptyException ee){
+            List<String> children = this.getChildren(realPath);
+            for (String child : children) {
+                child = realPath + PathUtil.PATH_SEPARATOR + child;
+                this.deleteAllChild(child);
             }
+        } catch (KeeperException.NoNodeException ee){
+            System.out.println(ee.getMessage());
         }
-    
-        // TODO: exception
-        transaction.commit();
     }
     
     private Watcher watcher;

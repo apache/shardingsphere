@@ -118,8 +118,7 @@ public class UsualClientTest {
     private void update(String key, String value) throws KeeperException, InterruptedException {
         client.update(key, value);
     }
-    
-    @Ignore
+
     @Test
     public void persistEphemeral() throws KeeperException, InterruptedException {
         String key = "a/b/bb";
@@ -129,6 +128,19 @@ public class UsualClientTest {
             client.deleteAllChild(key);
         }
         client.createAllNeedPath(key, value, CreateMode.EPHEMERAL);
+    }
+    
+    @Test
+    public void delAllChildren() throws KeeperException, InterruptedException {
+        String key = "a/b/bb";
+        client.createAllNeedPath(key, "bb", CreateMode.PERSISTENT);
+        key = "a/c/cc";
+        client.createAllNeedPath(key, "cc", CreateMode.PERSISTENT);
+        assert client.getZooKeeper().exists("/" + ROOT + "/" + key, false) != null;
+        client.deleteAllChild("a");
+        assert client.getZooKeeper().exists("/" + ROOT + "/" + key, false) == null;
+        assert client.getZooKeeper().exists("/" + ROOT + "/a", false) != null;
+        client.createAllNeedPath("a", "bb", CreateMode.PERSISTENT);
     }
     
     @Test
