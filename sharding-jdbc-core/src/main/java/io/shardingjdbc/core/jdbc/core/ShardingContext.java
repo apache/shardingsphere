@@ -19,6 +19,7 @@ package io.shardingjdbc.core.jdbc.core;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.executor.ExecutorEngine;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ import java.util.Map;
  * Sharding runtime context.
  * 
  * @author gaohongtao
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -42,6 +44,8 @@ public final class ShardingContext {
     private final DatabaseType databaseType;
     
     private final ExecutorEngine executorEngine;
+    
+    private final ShardingMetaData shardingMetaData;
     
     private final boolean showSQL;
 }

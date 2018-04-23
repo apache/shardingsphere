@@ -24,6 +24,8 @@ import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.fixture.TestDataSource;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingjdbc.core.jdbc.metadata.JDBCShardingMetaData;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.After;
 import org.junit.Before;
@@ -61,14 +63,15 @@ public final class ShardingConnectionTest {
     }
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("test");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
-        ShardingContext shardingContext = new ShardingContext(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), null, null, false);
+        ShardingMetaData shardingMetaData = new JDBCShardingMetaData(dataSourceMap, null);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), null, null, shardingMetaData, false);
         connection = new ShardingConnection(shardingContext);
     }
     

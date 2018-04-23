@@ -18,13 +18,16 @@
 package io.shardingjdbc.proxy.config;
 
 import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
+import io.shardingjdbc.proxy.metadata.ProxyShardingMetaData;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -42,15 +45,23 @@ public final class ShardingRuleRegistry {
     
     private final ShardingRule shardingRule;
     
+    private final ShardingMetaData shardingMetaData;
+    
     private ShardingRuleRegistry() {
         YamlShardingConfiguration yamlShardingConfig;
         try {
             yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(getClass().getResource("/conf/sharding-config.yaml").getFile()));
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new ShardingJdbcException(ex);
         }
         dataSourceMap = yamlShardingConfig.getDataSources();
         shardingRule = yamlShardingConfig.getShardingRule(Collections.<String>emptyList());
+        try {
+            shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
+            shardingMetaData.init(shardingRule);
+        } catch (final SQLException ex) {
+            throw new ShardingJdbcException(ex);
+        }
     }
     
     /**

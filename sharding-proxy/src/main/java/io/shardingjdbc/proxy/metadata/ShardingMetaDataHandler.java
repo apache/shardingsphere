@@ -15,23 +15,28 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata.dialect;
+package io.shardingjdbc.proxy.metadata;
 
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.metadata.ColumnMetaData;
-import lombok.AccessLevel;
 import lombok.Getter;
+
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Abstract table meta handler.
+ * Sharding meta data handler.
  *
  * @author panjuan
  */
-@Getter(AccessLevel.PROTECTED)
-public abstract class ShardingMetaDataHandler {
+@Getter
+public final class ShardingMetaDataHandler {
     
     private final DataSource dataSource;
     
@@ -49,5 +54,16 @@ public abstract class ShardingMetaDataHandler {
      * @return column meta data list
      * @throws SQLException SQL exception
      */
-    public abstract Collection<ColumnMetaData> getColumnMetaDataList() throws SQLException;
+    public Collection<ColumnMetaData> getColumnMetaDataList() throws SQLException {
+        List<ColumnMetaData> result = new LinkedList<>();
+        try (Connection connection = getDataSource().getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeQuery(String.format("desc %s;", getActualTableName()));
+            ResultSet resultSet = statement.getResultSet();
+            while (resultSet.next()) {
+                result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));
+            }
+        }
+        return result;
+    }
 }
