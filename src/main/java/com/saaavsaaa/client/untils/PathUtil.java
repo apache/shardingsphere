@@ -9,13 +9,16 @@ import java.util.*;
 public class PathUtil {
     public static final String PATH_SEPARATOR = "/";
     
-    public static String getRealPath(final String root, String path){
+    public static String getRealPath(final String root, final String path){
         return adjustPath(root, path);
     }
     
-    private static String adjustPath(final String root, String path){
+    private static String adjustPath(String root, String path){
         if (StringUtil.isNullOrWhite(path)){
             throw new IllegalArgumentException("path should have content!");
+        }
+        if (!root.startsWith(PATH_SEPARATOR)){
+            root = PATH_SEPARATOR + root;
         }
         if (!path.startsWith(PATH_SEPARATOR)){
             path = PATH_SEPARATOR + path;
@@ -91,5 +94,52 @@ public class PathUtil {
             lists.add(tree.val);*/
         }
         return lists;
+    }
+    
+    //isSequential
+    /*
+    * ignore invalid char and // /./  /../
+    */
+    public static String checkPath(String path) throws IllegalArgumentException {
+        if(path == null || path.length() == 0) {
+            throw new IllegalArgumentException("path should not be null");
+        }
+        if(path.charAt(0) != 47 || path.charAt(path.length() - 1) == 47){
+            path = PATH_SEPARATOR + path;
+        }
+    
+        if(path.charAt(path.length() - 1) == 47){
+            path = PATH_SEPARATOR + path;
+        }
+
+        char previous = 47;
+        char[] chars = path.toCharArray();
+        StringBuilder builder = new StringBuilder();
+    
+        for(int i = 1; i < chars.length; ++i) {
+            char c = chars[i];
+            if (c == 0 || (c == 47 && previous == 47)) {
+                continue;
+            }
+            if (c == 46) {
+                // ignore /./  /../
+                boolean preWarn = previous == 47 || (previous == 46 && chars[i - 2] == 47);
+                if (previous == 47 && (i + 1 == chars.length || chars[i + 1] == 47)) {
+                    i++;
+                    continue;
+                }
+                if ((previous == 46 && chars[i - 2] == 47) && (i + 1 == chars.length || chars[i + 1] == 47)) {
+                    i+=2;
+                    continue;
+                }
+            }
+            if (c > 0 && c < 31 || c > 127 && c < 159 || c > '\ud800' && c < '\uf8ff' || c > '\ufff0' && c < '\uffff') {
+                continue;
+            }
+    
+            previous = chars[i];
+            builder.append(c);
+        }
+        return builder.toString();
     }
 }

@@ -1,21 +1,21 @@
 package com.saaavsaaa.client.test;
 
+import com.saaavsaaa.client.untils.Listener;
 import com.saaavsaaa.client.untils.PathUtil;
+import com.saaavsaaa.client.zookeeper.BaseClient;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.UsualClient;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EventListener;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by aaa on 18-4-18.
@@ -75,6 +75,26 @@ public class UsualClientTest {
         client.deleteCurrentBranch("a/b");
     }
     
+    @Test
+    public void asynGet() throws KeeperException, InterruptedException {
+        CountDownLatch ready = new CountDownLatch(1);
+        String key = "a/b";
+        String value = "bbb11";
+        client.createAllNeedPath(key, value, CreateMode.PERSISTENT);
+        AsyncCallback.DataCallback callback = new AsyncCallback.DataCallback() {
+            @Override
+            public void processResult(int rc, String path, Object ctx, byte[] data, Stat stat) {
+                String result = new String(data);
+                System.out.println(new StringBuffer().append("rc:").append(rc).append(",path:").append(path).append(",ctx:").append(ctx).append(",stat:").append(stat));
+                assert result.equals(ctx);
+                ready.countDown();
+            }
+        };
+        client.getData(key, callback, value);
+        ready.await();
+        client.deleteCurrentBranch("a/b");
+    }
+    
     private String getDirectly(String key) throws KeeperException, InterruptedException {
         return new String(client.getData(key));
     }
@@ -125,10 +145,15 @@ public class UsualClientTest {
         String key = "a/b/bb";
         String value = "b1b";
         client.createAllNeedPath(key, value, CreateMode.PERSISTENT);
-        assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, key), null).getEphemeralOwner() == 0;
+//        assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, key), null).getEphemeralOwner() == 0;
+        Stat stat = new Stat();
+        client.getZooKeeper().getData(PathUtil.getRealPath(ROOT, key), false, stat);
+        assert  stat.getEphemeralOwner() == 0;
+        
         client.deleteAllChild(key);
         assert !isExisted(key);
         client.createAllNeedPath(key, value, CreateMode.EPHEMERAL);
+        
         assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, key), null).getEphemeralOwner() != 0; // Ephemeral node connection session id
         client.deleteCurrentBranch(key);
     }
@@ -150,12 +175,85 @@ public class UsualClientTest {
     @Test
     public void watch() {
         String key = "";
-        EventListener eventListener;
+    
+        EventListener eventListener = new EventListener() {
+            @Override
+            public void onChange(DataChangedEvent event) {
+                System.out.println(event.getKey() + " : " + event.getValue());
+            }
+        };
+        Listener listener = new Listener() {
+            @Override
+            public void process(WatchedEvent event) {
+                byte[] data = new byte[0];
+                try {
+                    data = client.getZooKeeper().getData(event.getPath(),false, null);
+                } catch (KeeperException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                eventListener.onChange(new DataChangedEvent(getEventType(event), event.getPath(),
+                        null == data ? null : new String(data, BaseClient.UTF_8)));
+            }
+            
+            private DataChangedEvent.Type getEventType(final WatchedEvent event) {
+                switch (event.getType()) {
+                    case NodeDataChanged:
+                    case NodeChildrenChanged:
+                        return DataChangedEvent.Type.UPDATED;
+                    case NodeDeleted:
+                        return DataChangedEvent.Type.DELETED;
+                    default:
+                        return DataChangedEvent.Type.IGNORED;
+                }
+            }
+        };
+        client.watch(key, listener);
     }
     
     @Test
     public void close() throws Exception {
         client.close();
         assert client.getZooKeeper().getState() == ZooKeeper.States.CLOSED;
+    }
+}
+
+interface EventListener {
+    void onChange(DataChangedEvent event);
+}
+
+class DataChangedEvent {
+    
+    public Type getEventType() {
+        return eventType;
+    }
+    
+    public String getKey() {
+        return key;
+    }
+    
+    public String getValue() {
+        return value;
+    }
+    
+    public DataChangedEvent(Type eventType, String key, String value) {
+        this.eventType = eventType;
+        this.key = key;
+        this.value = value;
+    }
+    
+    private final Type eventType;
+    
+    private final String key;
+    
+    private final String value;
+    
+    /**
+     * Data changed event type.
+     */
+    public enum Type {
+        
+        UPDATED, DELETED, IGNORED
     }
 }

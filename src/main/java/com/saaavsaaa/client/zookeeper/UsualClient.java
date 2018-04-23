@@ -3,13 +3,11 @@ package com.saaavsaaa.client.zookeeper;
  * Created by aaa on 18-4-18.
  */
 
+import com.saaavsaaa.client.untils.Listener;
 import com.saaavsaaa.client.untils.PathUtil;
 import org.apache.zookeeper.*;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import java.nio.charset.Charset;
 import java.util.EventListener;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -34,7 +32,11 @@ public class UsualClient extends BaseClient {
     }
 
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
-        return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), false, null);
+        return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), watcher, null);
+    }
+    
+    public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
+        zooKeeper.getData(PathUtil.getRealPath(rootNode, key), false, callback, ctx);
     }
     
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
@@ -74,7 +76,7 @@ public class UsualClient extends BaseClient {
             }
         }
         
-        // org.apache.zookeeper.KeeperException$NodeExistsException: KeeperErrorCode = NodeExists
+        // todo org.apache.zookeeper.KeeperException$NodeExistsException: KeeperErrorCode = NodeExists
         transaction.commit();
     }
     
@@ -147,10 +149,12 @@ public class UsualClient extends BaseClient {
     }
     
     private Watcher watcher;
-    public void watch(final String key, final EventListener eventListener){
+    public void watch(final String key, final Listener eventListener){
         watcher = new Watcher() {
+    
             @Override
             public void process(WatchedEvent event) {
+        
             }
         };
     }
@@ -159,3 +163,4 @@ public class UsualClient extends BaseClient {
         zooKeeper.close();
     }
 }
+
