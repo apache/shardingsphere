@@ -4,30 +4,29 @@ title = "应用性能监控"
 weight = 4
 +++
 
-## 简介
+## 背景
 
 `APM`是应用性能监控的缩写。目前`APM`的主要功能着眼于分布式系统的性能诊断，其主要功能包括调用链展示，应用拓扑分析等。
 
-[Sharding-JDBC](http://shardingjdbc.io)团队与[SkyWalking](http://skywalking.io)团队共同合作，推出了`Sharding-JDBC`自动探针，可以将`Sharding-JDBC`的性能数据发送到`SkyWalking`中。
+[Sharding-Sphere](http://shardingjdbc.io)团队与[SkyWalking](http://skywalking.io)团队共同合作，推出了`Sharding-Sphere`自动探针，可以将`Sharding-Sphere`的性能数据发送到`SkyWalking`中。
 
 ## 使用方法
 
-## 使用SkyWalking插件
+### 使用SkyWalking插件
 
 请参考[SkyWalking部署手册](https://github.com/OpenSkywalking/skywalking/wiki/Quick-start-chn)。
 
-## 使用OpenTracing插件
+### 使用OpenTracing插件
 
-如果想使用其他的APM系统，且该系统支持[OpenTracing](http://opentracing.io)。可以使用[sharding-jdbc-opentracing](https://github.com/shardingjdbc/sharding-jdbc-opentracing/blob/master/README_ZH.md)插件来配合该
-APM系统的使用。
+如果想使用其他的APM系统，且该系统支持[OpenTracing](http://opentracing.io)。可以使用Sharding-Sphere提供的API配合该APM系统使用。
 
-*注意:使用SkyWalking的OpenTracing探针时，应将原ShardingJDBC探针插件禁用，以防止两种插件互相冲突*
+*注意:使用SkyWalking的OpenTracing探针时，应将原Sharding-Sphere探针插件禁用，以防止两种插件互相冲突*
 
 ## 效果展示
 
 ### 应用架构
 
-该应用是一个`SpringBoot`应用，使用`Sharding-JDBC`访问两个数据库`ds_0`和`ds_1`，且每个数据库中有两个分表。
+该应用是一个`SpringBoot`应用，使用`Sharding-Sphere`访问两个数据库`ds_0`和`ds_1`，且每个数据库中有两个分表。
 
 ### 拓扑图展示
 
@@ -46,6 +45,6 @@ APM系统的使用。
 
 ![逻辑执行节点](http://ovfotjrsi.bkt.clouddn.com/apm-trunk-span.png)
 
-`/SJSBC/BRANCH/*` : 表示具体执行的实际SQL的性能。
+`/SJDBC/BRANCH/*` : 表示具体执行的实际SQL的性能。
 
 ![实际访问节点](http://ovfotjrsi.bkt.clouddn.com/apm-branch-span.png)
