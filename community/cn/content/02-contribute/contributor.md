@@ -1,8 +1,6 @@
 +++
 title = "贡献者指南"
 weight = 1
-prev = "/02-contribute/"
-next = "/02-contribute/committer/"
 chapter = true
 +++
 

@@ -1,8 +1,6 @@
 +++
 title = "参与和贡献"
 weight = 2
-prev = "/01-organization/"
-next = "/02-contribute/contributor/"
 chapter = true
 +++
 

@@ -1,8 +1,6 @@
 +++
 title = "开发规范"
 weight = 3
-prev = "/02-contribute/committer/"
-next = "/03-company/"
 chapter = true
 +++
 

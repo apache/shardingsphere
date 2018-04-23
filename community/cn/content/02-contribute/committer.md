@@ -1,8 +1,6 @@
 +++
 title = "提交者指南"
 weight = 2
-prev = "/02-contribute/contributor/"
-next = "/02-contribute/convention/"
 chapter = true
 +++
 
@@ -12,6 +10,7 @@ chapter = true
  - 深入理解Sharding核心技术
  - 遵守开发规范
  - 高质量提交
+ - 开启Google 2FA([2FA](/02-contribute/2fa/))
 
 ## 当前提交者
 
@@ -33,35 +32,47 @@ chapter = true
 
  - *All Components in Sharding*
  
-     - 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu); 曹昊, Hao Cao, [@haocao](https://github.com/haocao); 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng); 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily)
+     - 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu)
+     - 曹昊, Hao Cao, [@haocao](https://github.com/haocao)
+     - 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng)
+     - 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily)
      
  - *sharding-jdbc-core-spring*
  
-     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013); 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
+     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
+     - 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
      
  - *sharding-jdbc-core*
  
-     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013); 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
+     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
+     - 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
      
  - *sharding-jdbc-orchestration-spring*
  
-     - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster); 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
+     - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster) 
+     - 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
  
  - *sharding-jdbc-orchestration*
   
-     - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster); 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
+     - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster) 
+     - 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
  
  - *sharding-jdbc-plugin*
  
-     - 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe); 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster); 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
+     - 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe)
+     - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster)
+     - 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
  
  - *sharding-proxy*
   
-     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013); 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV); 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
+     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
+     - 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV)
+     - 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
  
  - *sharding-jdbc-transaction-parent*
  
-     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013); 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
+     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
+     - 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
      
  - *sharding-jdbc-doc*
  
@@ -70,8 +81,10 @@ chapter = true
  
  - *sharding-jdbc-example*
  
-     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013); 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
+     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) 
+     - 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
  
  - *sharding-jdbc-opentracing*
  
-     - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster); 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
+     - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster)
+     - 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
