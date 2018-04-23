@@ -19,6 +19,7 @@ package io.shardingjdbc.core.parsing.parser.sql.dql.select;
 
 import com.google.common.base.Optional;
 import io.shardingjdbc.core.constant.AggregationType;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.Assist;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
@@ -62,6 +63,8 @@ public abstract class AbstractSelectParser implements SQLParser {
     private final AbstractSelectClauseParserFacade selectClauseParserFacade;
     
     private final List<SelectItem> items = new LinkedList<>();
+    
+    private final ShardingMetaData shardingMetaData;
     
     @Override
     public final SelectStatement parse() {

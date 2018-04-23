@@ -89,7 +89,7 @@ public final class ParsingSQLRouter implements SQLRouter {
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        return new SQLParsingEngine(databaseType, logicSQL, shardingRule).parse(useCache);
+        return new SQLParsingEngine(databaseType, logicSQL, shardingRule, null).parse(useCache);
     }
     
     @Override
