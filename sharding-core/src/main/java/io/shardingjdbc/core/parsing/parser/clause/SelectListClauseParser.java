@@ -34,7 +34,6 @@ import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLUtil;
 import lombok.Getter;
-
 import java.util.List;
 
 /**
@@ -83,10 +82,7 @@ public class SelectListClauseParser implements SQLClauseParser {
             result = parseAggregationSelectItem(selectStatement);
             parseRestSelectItem(selectStatement);
         } else {
-            SelectItem selectItem = parseCommonOrStarSelectItem(selectStatement);
-            result = selectItem instanceof StarSelectItem ? selectItem
-                    : new CommonSelectItem(SQLUtil.getExactlyValue(selectItem.getExpression()
-                    + parseRestSelectItem(selectStatement)), aliasExpressionParser.parseSelectItemAlias());
+            result = parseCommonOrStarSelectItem(selectStatement);
         }
         return result;
     }
@@ -140,7 +136,8 @@ public class SelectListClauseParser implements SQLClauseParser {
             result.append(lexerEngine.getCurrentToken().getLiterals());
             lexerEngine.nextToken();
         }
-        return new CommonSelectItem(result.toString(), Optional.<String>absent());
+        return new CommonSelectItem(SQLUtil.getExactlyValue(result
+                + parseRestSelectItem(selectStatement)), aliasExpressionParser.parseSelectItemAlias());
         
     }
     
