@@ -19,7 +19,6 @@ weight = 1
 ### Configure sharding rule with java
 
 You can implement Sharding by configuring rules for Sharding-JDBC. The following example firstly takes the module of user_id to split databases and then takes the module of order_id to split tables. At last, two tables are in each of two databases.
-
 To configure by JAVA codes:
 
 ```java
@@ -64,7 +63,7 @@ To configure by JAVA codes:
 
 ### Configure sharding rule with yaml
 
-To configure by YAML, similar with the configuration method of JAVA codes:
+To configure by yaml, similar with the configuration method of java codes:
 
 ```yaml
 dataSources:
@@ -219,4 +218,4 @@ private DataSource dataSource;
 ```
 
 The rule configuration consists of data source configuration, table rule configuration, database Sharding strategy and table Sharding strategy, etc. Here is a simple configuration example, more flexible configurations can be used in product environment, e.g. multi-Sharding columns, table rules configuration directly bound with Sharding strategy.
-More details please reference [configuration manual](/06-sharding-jdbc/configuration/)。
+More details please reference [configuration manual](/06-sharding-jdbc/configuration/).

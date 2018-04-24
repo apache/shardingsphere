@@ -1,12 +1,12 @@
 +++
 toc = true
-title = "读写分离"
+title = "Read-write Splitting"
 weight = 2
 +++
 
-## 不使用Spring
+## Without spring
 
-### 引入Maven依赖
+### Add maven dependency
 
 ```xml
 <dependency>
@@ -16,13 +16,13 @@ weight = 2
 </dependency>
 ```
 
-### 基于Java编码的规则配置
+### Configure read-write splitting rule with java
 
 ```java
-    // 配置真实数据源
+    // Configure actual data sources
     Map<String, DataSource> dataSourceMap = new HashMap<>();
     
-    // 配置主库
+    // Configure master data source
     BasicDataSource masterDataSource = new BasicDataSource();
     masterDataSource.setDriverClassName("com.mysql.jdbc.Driver");
     masterDataSource.setUrl("jdbc:mysql://localhost:3306/ds_master");
@@ -30,7 +30,7 @@ weight = 2
     masterDataSource.setPassword("");
     dataSourceMap.put("ds_master", masterDataSource);
     
-    // 配置第一个从库
+    // Configure first slave data source
     BasicDataSource slaveDataSource1 = new BasicDataSource();
     slaveDataSource1.setDriverClassName("com.mysql.jdbc.Driver");
     slaveDataSource1.setUrl("jdbc:mysql://localhost:3306/ds_slave_0");
@@ -38,7 +38,7 @@ weight = 2
     slaveDataSource1.setPassword("");
     dataSourceMap.put("ds_slave_0", slaveDataSource1);
     
-    // 配置第二个从库
+    // Configure second slave data source
     BasicDataSource slaveDataSource2 = new BasicDataSource();
     slaveDataSource2.setDriverClassName("com.mysql.jdbc.Driver");
     slaveDataSource2.setUrl("jdbc:mysql://localhost:3306/ds_slave_1");
@@ -46,16 +46,16 @@ weight = 2
     slaveDataSource2.setPassword("");
     dataSourceMap.put("ds_slave_1", slaveDataSource2);
     
-    // 配置读写分离规则
+    // Configure read-write splitting rule
     MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("ds_master_slave", "ds_master", Arrays.asList("ds_slave_0", "ds_slave_1"));
     
-    // 获取数据源对象
+    // Get data source
     DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>());
 ```
 
-### 基于Yaml的规则配置
+### Configure read-write splitting rule rule with yaml
 
-或通过Yaml方式配置，与以上配置等价：
+To configure by yaml, similar with the configuration method of java codes:
 
 ```yaml
 dataSources:
@@ -86,10 +86,10 @@ masterSlaveRule:
     DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
 ```
 
-### 使用原生JDBC
+### Use raw JDBC
 
-通过MasterSlaveDataSourceFactory工厂和规则配置对象获取MasterSlaveDataSource，MasterSlaveDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
-以JDBC原生实现为例：
+By using MasterSlaveDataSourceFactory factory class and rule configuration object, we can obtain MasterSlaveDataSource which implements the standard interface of DataSource in JDBC. Thus you can choose to use native JDBC DataSource for development, or using JPA, MyBatis ORM tools, etc.
+Take DataSource in JDBC as an example:
 
 ```java
 DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
@@ -108,9 +108,9 @@ try (
 }
 ```
 
-## 使用Spring
+## Using spring
 
-### 引入Maven依赖
+### Add maven dependency
 
 ```xml
 <dependency>
@@ -120,7 +120,7 @@ try (
 </dependency>
 ```
 
-### 基于Spring命名空间的规则配置
+### Configure read-write splitting rule with spring namespace
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -155,7 +155,7 @@ try (
 </beans>
 ```
 
-### 基于Spring boot的规则配置
+### Configure read-write splitting rule with spring boot
 
 ```properties
 sharding.jdbc.datasource.names=ds_master,ds_slave_0,ds_slave_1
@@ -183,13 +183,13 @@ sharding.jdbc.config.masterslave.master-data-source-name=ds_master
 sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave_0,ds_slave_1
 ```
 
-### 在Spring中使用DataSource
+### Use DataSource on spring
 
-直接通过注入的方式即可使用DataSource，或者将DataSource配置在JPA、Hibernate或MyBatis中使用。
+Just inject or configure data source to JPA, Hibernate orMyBatis.
 
 ```java
 @Resource
 private DataSource dataSource;
 ```
 
-更多的详细配置请参考[配置手册](/06-sharding-jdbc/configuration/)。
+More details please reference [configuration manual](/06-sharding-jdbc/configuration/).
