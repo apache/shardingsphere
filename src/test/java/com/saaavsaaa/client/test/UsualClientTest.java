@@ -2,6 +2,7 @@ package com.saaavsaaa.client.test;
 
 import com.saaavsaaa.client.untils.Listener;
 import com.saaavsaaa.client.untils.PathUtil;
+import com.saaavsaaa.client.untils.StringUtil;
 import com.saaavsaaa.client.zookeeper.BaseClient;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.UsualClient;
@@ -12,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -174,8 +176,12 @@ public class UsualClientTest {
     
     @Test
     public void watch() throws KeeperException, InterruptedException {
-        String key = "";
-    
+        List<String> expected = new ArrayList<>();
+        expected.add("update_/test/a_value");
+        expected.add("update_/test/a_value1");
+        expected.add("update_/test/a_value2");
+        expected.add("delete_/test/a_value2");
+        List<String> actual = new ArrayList<>();
         EventListener eventListener = new EventListener() {
             @Override
             public void onChange(DataChangedEvent event) {
@@ -193,24 +199,41 @@ public class UsualClientTest {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                eventListener.onChange(new DataChangedEvent(getEventType(event), event.getPath(),
-                        null == data ? null : new String(data, BaseClient.UTF_8)));
+                String result = null == data ? null : new String(data, StringUtil.UTF_8);
+                eventListener.onChange(new DataChangedEvent(getEventType(event, result), event.getPath(), result));
             }
             
-            private DataChangedEvent.Type getEventType(final WatchedEvent event) {
+            private DataChangedEvent.Type getEventType(final WatchedEvent event, final String result) {
                 switch (event.getType()) {
                     case NodeDataChanged:
-                    case NodeChildrenChanged:
+                    case NodeChildrenChanged: {
+                        actual.add(new StringBuilder().append("update_").append(event.getPath()).append("_").append(result).toString());
                         return DataChangedEvent.Type.UPDATED;
-                    case NodeDeleted:
+                    }
+                    case NodeDeleted: {
+                        actual.add(new StringBuilder().append("delete_").append(event.getPath()).append("_").append(result).toString());
                         return DataChangedEvent.Type.DELETED;
+                    }
                     default:
+                        actual.add(new StringBuilder().append("ignore_").append(event.getPath()).append("_").append(result).toString());
                         return DataChangedEvent.Type.IGNORED;
                 }
             }
         };
+        String key = "a";
         Watcher watcher = client.watch(key, listener);
-        client.getZooKeeper().exists("a", watcher);
+        client.createNamespace();
+        client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
+        client.checkExists(key, watcher);
+        client.updateInTransaction(key, "value");
+        System.out.println(new String(client.getData(key)));
+        assert client.getDataString(key).equals("value");
+        client.updateInTransaction(key, "value1");
+        assert client.getDataString(key).equals("value1");
+        client.updateInTransaction(key, "value2");
+        assert client.getDataString(key).equals("value2");
+        client.deleteCurrentBranch(key);
+        assert expected.size() == actual.size();
     }
     
     @Test

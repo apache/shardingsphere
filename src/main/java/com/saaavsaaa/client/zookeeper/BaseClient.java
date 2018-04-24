@@ -18,7 +18,6 @@ public abstract class BaseClient {
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
     public static final int VERSION = -1;
     public static final byte[] NOTHING_DATA = new byte[0];
-    public static final Charset UTF_8 = Charset.forName("UTF-8");
     
     private final String servers;
     private final int sessionTimeOut;

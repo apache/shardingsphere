@@ -5,9 +5,9 @@ package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.untils.Listener;
 import com.saaavsaaa.client.untils.PathUtil;
+import com.saaavsaaa.client.untils.StringUtil;
 import org.apache.zookeeper.*;
 
-import java.util.EventListener;
 import java.util.List;
 import java.util.Stack;
 
@@ -30,6 +30,10 @@ public class UsualClient extends BaseClient {
     public void deleteNamespace() throws KeeperException, InterruptedException {
         zooKeeper.delete(rootNode, VERSION);
     }
+    
+    public String getDataString(final String key) throws KeeperException, InterruptedException {
+        return new String(getData(key));
+    }
 
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
         return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), false, null);
@@ -40,7 +44,12 @@ public class UsualClient extends BaseClient {
     }
     
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
-        return null != zooKeeper.exists(PathUtil.getRealPath(rootNode, key), false);
+//        return null != zooKeeper.exists(PathUtil.getRealPath(rootNode, key), false);
+        return checkExists(key, null);
+    }
+    
+    public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
+        return null != zooKeeper.exists(PathUtil.getRealPath(rootNode, key), watcher);
     }
     
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
@@ -48,7 +57,7 @@ public class UsualClient extends BaseClient {
     }
     
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        zooKeeper.create(PathUtil.getRealPath(rootNode, key), value.getBytes(UTF_8), authorities, createMode);
+        zooKeeper.create(PathUtil.getRealPath(rootNode, key), value.getBytes(StringUtil.UTF_8), authorities, createMode);
     }
     
     /*
@@ -70,7 +79,7 @@ public class UsualClient extends BaseClient {
             }
             System.out.println("not exist:" + nodes.get(i));
             if (i == nodes.size() - 1){
-                createInTransaction(nodes.get(i), value.getBytes(UTF_8), createMode, transaction);
+                createInTransaction(nodes.get(i), value.getBytes(StringUtil.UTF_8), createMode, transaction);
             } else {
                 createInTransaction(nodes.get(i), NOTHING_DATA, createMode, transaction);
             }
@@ -85,12 +94,12 @@ public class UsualClient extends BaseClient {
     }
     
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        zooKeeper.setData(PathUtil.getRealPath(rootNode, key), value.getBytes(UTF_8), VERSION);
+        zooKeeper.setData(PathUtil.getRealPath(rootNode, key), value.getBytes(StringUtil.UTF_8), VERSION);
     }
     
     public void updateInTransaction(final String key, final String value) throws KeeperException, InterruptedException {
         String realPath = PathUtil.getRealPath(rootNode, key);
-        zooKeeper.transaction().check(realPath, VERSION).setData(realPath, value.getBytes(UTF_8), VERSION).commit();
+        zooKeeper.transaction().check(realPath, VERSION).setData(realPath, value.getBytes(StringUtil.UTF_8), VERSION).commit();
     }
     
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
@@ -118,6 +127,7 @@ public class UsualClient extends BaseClient {
             // contrast cache
             if (checkExists(node)){
                 transaction.delete(node, VERSION);
+                System.out.println("delete : " + node);
             }
         }
         transaction.commit();
