@@ -55,7 +55,7 @@ To configure by JAVA codes:
     shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     
     // Configure table rule for order_item
-    ...
+    // ...
     
     // Get data source
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());

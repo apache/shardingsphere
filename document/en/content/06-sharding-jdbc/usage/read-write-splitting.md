@@ -53,7 +53,7 @@ weight = 2
     DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>());
 ```
 
-### Configure read-write splitting rule rule with yaml
+### Configure read-write splitting rule with yaml
 
 To configure by yaml, similar with the configuration method of java codes:
 

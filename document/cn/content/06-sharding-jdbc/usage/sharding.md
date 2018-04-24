@@ -54,6 +54,7 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
     shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     
     // 省略配置order_item表规则...
+    // ...
     
     // 获取数据源对象
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
