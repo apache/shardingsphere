@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "柔性事务"
-weight = 4
+weight = 5
 +++
 
 ## 最大努力送达型
