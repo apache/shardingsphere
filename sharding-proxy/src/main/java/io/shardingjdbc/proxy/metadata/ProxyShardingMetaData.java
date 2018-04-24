@@ -15,42 +15,34 @@
  * </p>
  */
 
-package io.shardingjdbc.core.executor.event;
+package io.shardingjdbc.proxy.metadata;
 
-import com.google.common.base.Optional;
-import io.shardingjdbc.core.routing.SQLUnit;
+import io.shardingjdbc.core.metadata.ColumnMetaData;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
+import io.shardingjdbc.core.rule.DataNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * SQL execution event.
- * 
- * @author gaohongtao
- * @author maxiaoguang
+ * Sharding metadata for proxy.
+ *
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class AbstractSQLExecutionEvent extends AbstractExecutionEvent {
+public final class ProxyShardingMetaData extends ShardingMetaData {
     
-    private final String dataSource;
+    private final Map<String, DataSource> dataSourceMap;
     
-    private final SQLUnit sqlUnit;
-    
-    private final List<Object> parameters;
-    
-    /**
-     * Get exception.
-     *
-     * @return exception
-     */
-    public Optional<SQLException> getException() {
-        Optional<? extends Exception> ex = super.getException();
-        if (ex.isPresent()) {
-            return Optional.of((SQLException) ex.get());
-        }
-        return Optional.absent();
+    @Override
+    protected Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode) throws SQLException {
+        return new ShardingMetaDataHandler(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName()).getColumnMetaDataList();
     }
 }
+
+
