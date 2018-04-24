@@ -79,7 +79,6 @@ masterSlaveRule:
   name: ds_ms
   masterDataSourceName: ds_master
   slaveDataSourceNames: [ds_slave_0, ds_slave_1]
-
 ```
 
 ```java
@@ -113,11 +112,47 @@ try (
 ### Add maven dependency
 
 ```xml
+<!-- for spring boot -->
+<dependency>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-core-spring-boot-starter</artifactId>
+    <version>${sharding-jdbc.version}</version>
+</dependency>
+
+<!-- for spring namespace -->
 <dependency>
     <groupId>io.shardingjdbc</groupId>
     <artifactId>sharding-jdbc-core-spring-namespace</artifactId>
     <version>${sharding-jdbc.version}</version>
 </dependency>
+```
+
+### Configure read-write splitting rule with spring boot
+
+```properties
+sharding.jdbc.datasource.names=ds_master,ds_slave_0,ds_slave_1
+
+sharding.jdbc.datasource.ds_master.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_master.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_master.url=jdbc:mysql://localhost:3306/ds_master
+sharding.jdbc.datasource.ds_master.username=root
+sharding.jdbc.datasource.ds_master.password=
+
+sharding.jdbc.datasource.ds_slave_0.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_slave_0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_slave_0.url=jdbc:mysql://localhost:3306/ds_slave_0
+sharding.jdbc.datasource.ds_slave_0.username=root
+sharding.jdbc.datasource.ds_slave_0.password=
+
+sharding.jdbc.datasource.ds_slave_1.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_slave_1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_slave_1.url=jdbc:mysql://localhost:3306/ds_slave_1
+sharding.jdbc.datasource.ds_slave_1.username=root
+sharding.jdbc.datasource.ds_slave_1.password=
+
+sharding.jdbc.config.masterslave.name=ds_ms
+sharding.jdbc.config.masterslave.master-data-source-name=ds_master
+sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave_0,ds_slave_1
 ```
 
 ### Configure read-write splitting rule with spring namespace
@@ -153,34 +188,6 @@ try (
     
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave_0, ds_slave_1" />
 </beans>
-```
-
-### Configure read-write splitting rule with spring boot
-
-```properties
-sharding.jdbc.datasource.names=ds_master,ds_slave_0,ds_slave_1
-
-sharding.jdbc.datasource.ds_master.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds_master.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds_master.url=jdbc:mysql://localhost:3306/ds_master
-sharding.jdbc.datasource.ds_master.username=root
-sharding.jdbc.datasource.ds_master.password=
-
-sharding.jdbc.datasource.ds_slave_0.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds_slave_0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds_slave_0.url=jdbc:mysql://localhost:3306/ds_slave_0
-sharding.jdbc.datasource.ds_slave_0.username=root
-sharding.jdbc.datasource.ds_slave_0.password=
-
-sharding.jdbc.datasource.ds_slave_1.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds_slave_1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds_slave_1.url=jdbc:mysql://localhost:3306/ds_slave_1
-sharding.jdbc.datasource.ds_slave_1.username=root
-sharding.jdbc.datasource.ds_slave_1.password=
-
-sharding.jdbc.config.masterslave.name=ds_ms
-sharding.jdbc.config.masterslave.master-data-source-name=ds_master
-sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave_0,ds_slave_1
 ```
 
 ### Use DataSource on spring
