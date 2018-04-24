@@ -6,6 +6,16 @@ weight = 4
 
 ## Best effort delivery
 
+### Add maven dependency
+
+```xml
+<dependency>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-transaction</artifactId>
+    <version>${sharding-jdbc.version}</version>
+</dependency>
+```
+
 ### Example
 
 ```java

@@ -6,6 +6,16 @@ weight = 4
 
 ## 最大努力送达型
 
+### 引入Maven依赖
+
+```xml
+<dependency>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-transaction</artifactId>
+    <version>${sharding-jdbc.version}</version>
+</dependency>
+```
+
 ### 使用示例
 
 ```java
