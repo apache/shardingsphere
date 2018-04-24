@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "Java"
-weight = 2
+weight = 1
 +++
 
 ## JAVA configuration

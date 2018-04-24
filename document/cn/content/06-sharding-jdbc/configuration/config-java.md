@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "Java配置"
-weight = 2
+weight = 1
 +++
 
 ## JAVA配置

@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "Spring namespace"
-weight = 5
+weight = 4
 +++
 
 ## Spring namespace configuration

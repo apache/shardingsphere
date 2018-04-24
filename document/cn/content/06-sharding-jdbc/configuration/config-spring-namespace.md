@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "Spring命名空间配置"
-weight = 5
+weight = 4
 +++
 
 ## Spring命名空间配置

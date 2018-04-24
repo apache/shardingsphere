@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "Spring Boot配置"
-weight = 4
+weight = 3
 +++
 
 ## Spring Boot配置

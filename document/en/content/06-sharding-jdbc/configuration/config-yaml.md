@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "YAML"
-weight = 3
+weight = 2
 +++
 
 
