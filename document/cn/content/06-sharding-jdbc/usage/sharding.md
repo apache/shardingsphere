@@ -130,11 +130,48 @@ try (
 ### 引入Maven依赖
 
 ```xml
+<!-- for spring boot -->
+<dependency>
+    <groupId>io.shardingjdbc</groupId>
+    <artifactId>sharding-jdbc-core-spring-boot-starter</artifactId>
+    <version>${sharding-jdbc.version}</version>
+</dependency>
+
+<!-- for spring namespace -->
 <dependency>
     <groupId>io.shardingjdbc</groupId>
     <artifactId>sharding-jdbc-core-spring-namespace</artifactId>
     <version>${sharding-jdbc.version}</version>
 </dependency>
+```
+
+### 基于Spring boot的规则配置
+
+```properties
+sharding.jdbc.datasource.names=ds_0,ds_1
+
+sharding.jdbc.datasource.ds_0.type=org.apache.commons.dbcp2.BasicDataSource
+sharding.jdbc.datasource.ds_0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_0.url=jdbc:mysql://localhost:3306/ds_0
+sharding.jdbc.datasource.ds_0.username=root
+sharding.jdbc.datasource.ds_0.password=
+
+sharding.jdbc.datasource.ds_1.type=org.apache.commons.dbcp2.BasicDataSource
+sharding.jdbc.datasource.ds_1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_1.url=jdbc:mysql://localhost:3306/ds_1
+sharding.jdbc.datasource.ds_1.username=root
+sharding.jdbc.datasource.ds_1.password=
+
+sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds_$->{user_id % 2}
+
+sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds_$->{0..1}.t_order_$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order_$->{order_id % 2}
+
+sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds_$->{0..1}.t_order_item_$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$->{order_id % 2}
 ```
 
 ### 基于Spring命名空间的规则配置
@@ -175,35 +212,6 @@ try (
         </sharding:sharding-rule>
     </sharding:data-source>
 </beans>
-```
-
-### 基于Spring boot的规则配置
-
-```properties
-sharding.jdbc.datasource.names=ds_0,ds_1
-
-sharding.jdbc.datasource.ds_0.type=org.apache.commons.dbcp2.BasicDataSource
-sharding.jdbc.datasource.ds_0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds_0.url=jdbc:mysql://localhost:3306/ds_0
-sharding.jdbc.datasource.ds_0.username=root
-sharding.jdbc.datasource.ds_0.password=
-
-sharding.jdbc.datasource.ds_1.type=org.apache.commons.dbcp2.BasicDataSource
-sharding.jdbc.datasource.ds_1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds_1.url=jdbc:mysql://localhost:3306/ds_1
-sharding.jdbc.datasource.ds_1.username=root
-sharding.jdbc.datasource.ds_1.password=
-
-sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
-sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds_$->{user_id % 2}
-
-sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds_$->{0..1}.t_order_$->{0..1}
-sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order_$->{order_id % 2}
-
-sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds_$->{0..1}.t_order_item_$->{0..1}
-sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$->{order_id % 2}
 ```
 
 ### 在Spring中使用DataSource
