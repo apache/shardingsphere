@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.dialect.postgresql.sql;
 
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.dialect.postgresql.clause.PostgreSQLForClauseParser;
 import io.shardingjdbc.core.parsing.parser.dialect.postgresql.clause.PostgreSQLLimitClauseParser;
@@ -36,8 +37,8 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
     private final PostgreSQLForClauseParser forClauseParser;
     
-    public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new PostgreSQLSelectClauseParserFacade(shardingRule, lexerEngine));
+    public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
+        super(shardingRule, lexerEngine, new PostgreSQLSelectClauseParserFacade(shardingRule, lexerEngine), shardingMetaData);
         limitClauseParser = new PostgreSQLLimitClauseParser(lexerEngine);
         forClauseParser = new PostgreSQLForClauseParser(lexerEngine);
     }

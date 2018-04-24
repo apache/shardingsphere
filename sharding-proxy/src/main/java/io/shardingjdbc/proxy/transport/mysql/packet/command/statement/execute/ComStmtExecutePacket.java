@@ -73,7 +73,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
         flags = mysqlPacketPayload.readInt1();
         Preconditions.checkArgument(iterationCount == mysqlPacketPayload.readInt4());
         SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, PreparedStatementRegistry.getInstance().getSQL(statementId),
-            ShardingRuleRegistry.getInstance().getShardingRule()).parse(true);
+            ShardingRuleRegistry.getInstance().getShardingRule(), null).parse(true);
         int numParameters = sqlStatement.getParametersIndex();
         nullBitmap = new NullBitmap(numParameters, RESERVED_BIT_LENGTH);
         for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {

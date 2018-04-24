@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.dialect.oracle.sql;
 
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.dialect.oracle.clause.OracleForClauseParser;
 import io.shardingjdbc.core.parsing.parser.dialect.oracle.clause.OracleHierarchicalQueryClauseParser;
@@ -39,8 +40,8 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     private final OracleForClauseParser forClauseParser;
     
-    public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new OracleSelectClauseParserFacade(shardingRule, lexerEngine));
+    public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
+        super(shardingRule, lexerEngine, new OracleSelectClauseParserFacade(shardingRule, lexerEngine), shardingMetaData);
         hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(lexerEngine);
         modelClauseParser = new OracleModelClauseParser(lexerEngine);
         forClauseParser = new OracleForClauseParser(lexerEngine);
