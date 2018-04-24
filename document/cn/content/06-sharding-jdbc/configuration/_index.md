@@ -5,14 +5,8 @@ weight = 2
 chapter = true
 +++
 
-## 导览
+## 概述
 
-本小节主要介绍Sharding-JDBC的配置概览，以及各种配置方式，主要包括：
+配置是整个Sharding-JDBC的核心，是Sharding-JDBC中唯一与应用开发者打交道的模块。配置模块也是Sharding-JDBC的门户，通过它可以快速清晰的理解Sharding-JDBC所提供的功能。
 
-* 概览
-* Java配置
-* YAML配置
-* Spring命名空间配置
-* Spring Boot配置
-
-详细内容请参考各类配置的相关介绍页面。
+本部分是Sharding-JDBC的配置参考手册，需要时可当做字典查阅。

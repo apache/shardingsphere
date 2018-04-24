@@ -5,18 +5,8 @@ weight = 2
 chapter = true
 +++
 
-## Navigation
+## Overview
 
-This section covers the overview of Sharding-JDBC configuration, as well as various configuration options, including:
+Configuration is core module of Sharding-JDBC, it is only one module which end-users need to study. Configuration module is main entrance of Sharding-JDBC, end-users can use it to know what features that Sharding-JDBC supported.   
 
-* overview
-
-* the Java configuration
-
-* YAML configuration
-
-* Spring namespace configuration.
-
-* Spring Boot configuration
-
-Please refer to the related introductory pages of various configurations for details.
+This section is a configuration manual, users can use it as a dictionary, may lookup some configuration if necessary.
