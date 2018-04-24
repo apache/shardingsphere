@@ -4,7 +4,9 @@ title = "B.A.S.E"
 weight = 4
 +++
 
-### The usage example
+## Best effort delivery
+
+### Example
 
 ```java
     // 1. To configure SoftTransactionConfiguration
@@ -25,7 +27,11 @@ weight = 4
     /* 
         codes here
     */
-    * 
+    
     // 6. To close the connection
     transaction.end();
 ```
+
+## TCC
+
+TODO

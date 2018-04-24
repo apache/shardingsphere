@@ -4,7 +4,9 @@ title = "柔性事务"
 weight = 4
 +++
 
-### 操作指南
+## 最大努力送达型
+
+### 使用示例
 
 ```java
     // 1. 配置SoftTransactionConfiguration
@@ -25,7 +27,11 @@ weight = 4
     /* 
         codes here
     */
-    * 
+    
     // 6.关闭事务
     transaction.end();
 ```
+
+## TCC
+
+开发中
