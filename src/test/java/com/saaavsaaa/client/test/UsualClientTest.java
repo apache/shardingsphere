@@ -9,6 +9,7 @@ import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -29,13 +30,13 @@ public class UsualClientTest {
     
     private UsualClient client = null;
     
-    @Before
+//    @Before
     public void start() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         client = creator.setNamespace(ROOT).authorization(AUTH, AUTH.getBytes()).newClient(SERVERS, SESSION_TIMEOUT).start();
     }
     
-//    @Before
+    @Before
     public void startWithWatch() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         Listener listener = buildListener();
@@ -59,6 +60,7 @@ public class UsualClientTest {
     @After
     public void stop() throws InterruptedException {
         client.close();
+        client = null;
     }
     
     @Test

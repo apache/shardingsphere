@@ -174,7 +174,7 @@ public class UsualClient extends BaseClient {
 
     public Watcher watch(final String key, final Listener listener){
         String path = PathUtil.getRealPath(rootNode, key);
-        listener.setKey(path);
+//        listener.setKey(path);
         Watcher watcher = new Watcher() {
             @Override
             public void process(WatchedEvent event) {
