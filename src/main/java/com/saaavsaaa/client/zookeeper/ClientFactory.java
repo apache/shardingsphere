@@ -12,6 +12,7 @@ public class ClientFactory {
 //    private static final String CLIENT_EXCLUSIVE_NODE = "ZKC";
     
     private UsualClient client;
+    private Listener globalListener;
     private String namespace;
     private String scheme;
     private byte[] auth;
@@ -29,7 +30,7 @@ public class ClientFactory {
     }
     
     public ClientFactory watch(final Listener listener){
-        client.watch(listener);
+        globalListener = listener;
         return this;
     }
     
@@ -37,6 +38,9 @@ public class ClientFactory {
         client.start();
         client.setRootNode(namespace);
         client.setAuthorities(scheme , auth);
+        if (globalListener != null) {
+            client.watch(globalListener);
+        }
         return client;
     }
     

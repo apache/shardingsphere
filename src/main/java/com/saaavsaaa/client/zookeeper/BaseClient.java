@@ -8,7 +8,11 @@ import org.apache.zookeeper.data.ACL;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -16,8 +20,10 @@ import java.util.concurrent.CountDownLatch;
  */
 public abstract class BaseClient {
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
+    private static final boolean WATCH_ON = true;
     public static final int VERSION = -1;
     public static final byte[] NOTHING_DATA = new byte[0];
+    protected static final Map<String, Watcher> watchers = new ConcurrentHashMap<>();
     
     private final String servers;
     private final int sessionTimeOut;
@@ -25,7 +31,6 @@ public abstract class BaseClient {
     
     protected String rootNode = "/InitValue";
     protected List<ACL> authorities;
-    protected Watcher watcher;
     
     protected BaseClient(String servers, int sessionTimeoutMilliseconds) {
         this.servers = servers;
@@ -49,8 +54,13 @@ public abstract class BaseClient {
                         CONNECTED.countDown();
                     }
                 }
-                if (watcher != null){
-                    watcher.process(event);
+                // key == rootNode signify that register a watcher without appoint path when client init
+                // or want to watch the whole namespace
+                if (watchers.containsKey(rootNode)){
+                    watchers.get(rootNode).process(event);
+                }
+                if (WATCH_ON && watchers.containsKey(event.getPath())){
+                     watchers.get(event.getPath()).process(event);
                 }
             }
         };

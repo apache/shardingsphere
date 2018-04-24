@@ -3,14 +3,12 @@ package com.saaavsaaa.client.test;
 import com.saaavsaaa.client.untils.Listener;
 import com.saaavsaaa.client.untils.PathUtil;
 import com.saaavsaaa.client.untils.StringUtil;
-import com.saaavsaaa.client.zookeeper.BaseClient;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.UsualClient;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -31,13 +29,13 @@ public class UsualClientTest {
     
     private UsualClient client = null;
     
-    /*@Before
+    @Before
     public void start() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         client = creator.setNamespace(ROOT).authorization(AUTH, AUTH.getBytes()).newClient(SERVERS, SESSION_TIMEOUT).start();
-    }*/
+    }
     
-    @Before
+//    @Before
     public void startWithWatch() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         Listener listener = buildListener();
@@ -196,16 +194,18 @@ public class UsualClientTest {
         client.deleteNamespace();
     }
     
+//    @Ignore
     @Test
     public void watch() throws KeeperException, InterruptedException {
         List<String> expected = new ArrayList<>();
-        expected.add("ignore_/test_");
         expected.add("update_/test/a_value");
         expected.add("update_/test/a_value1");
         expected.add("update_/test/a_value2");
-        expected.add("delete_/test/a_value2");
+        expected.add("delete_/test/a_");
         List<String> actual = new ArrayList<>();
-        Listener listener = buildListener(actual);
+        
+        Listener listener = buildEventListener(actual); //buildListener(actual);
+        
         String key = "a";
         Watcher watcher = client.watch(key, listener);
         client.createNamespace();
@@ -219,15 +219,59 @@ public class UsualClientTest {
         client.updateInTransaction(key, "value2");
         assert client.getDataString(key).equals("value2");
         client.deleteCurrentBranch(key);
+        Thread.sleep(100);
         assert expected.size() == actual.size();
         assert expected.containsAll(actual);
     }
     
     private Listener buildListener(List<String> actual){
+        Listener listener = new Listener() {
+            @Override
+            public void process(WatchedEvent event) {
+                System.out.println("==========================================================");
+                System.out.println(event.getPath());
+                System.out.println(event.getType());
+    
+                switch (event.getType()) {
+                    case NodeDataChanged:
+                    case NodeChildrenChanged: {
+                        String result;
+                        try {
+                            result = new String(client.getZooKeeper().getData(event.getPath(),false, null));
+                            System.out.println();
+                        } catch (KeeperException e) {
+                            result = e.getMessage();
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            result = e.getMessage();
+                            e.printStackTrace();
+                        }
+                        actual.add(new StringBuilder().append("update_").append(event.getPath()).append("_").append(result).toString());
+                        break;
+                    }
+                    case NodeDeleted: {
+                        actual.add(new StringBuilder().append("delete_").append(event.getPath()).append("_").toString());
+                        break;
+                    }
+                    default:
+                        actual.add(new StringBuilder().append("ignore_").append(event.getPath()).append("_").append(event.getType()).toString());
+                        break;
+                }
+                System.out.println("==========================================================");
+            }
+        };
+        return listener;
+    }
+    
+    private Listener buildEventListener(List<String> actual){
         EventListener eventListener = new EventListener() {
             @Override
             public void onChange(DataChangedEvent event) {
-                System.out.println(event.getKey() + " : " + event.getValue());
+                System.out.println("==========================================================");
+                System.out.println(event.getKey());
+                System.out.println(event.getValue());
+                System.out.println(event.getEventType());
+                System.out.println("==========================================================");
             }
         };
         Listener listener = new Listener() {
@@ -237,7 +281,11 @@ public class UsualClientTest {
                 try {
                     data = client.getZooKeeper().getData(event.getPath(),false, null);
                 } catch (KeeperException e) {
-                    e.printStackTrace();
+                    if (e instanceof KeeperException.NoNodeException){
+                        System.out.println(event.getType() +" : "+ e.getMessage());
+                    } else {
+                        e.printStackTrace();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

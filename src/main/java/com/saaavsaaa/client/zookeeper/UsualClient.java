@@ -164,34 +164,24 @@ public class UsualClient extends BaseClient {
             return;
         }
         watchRegistered = true;
-        watcher = new Watcher() {
+        watchers.put(rootNode, new Watcher() {
             @Override
             public void process(WatchedEvent event) {
                 listener.process(event);
             }
-        };
+        });
     }
 
     public Watcher watch(final String key, final Listener listener){
-        watcher = new Watcher() {
+        String path = PathUtil.getRealPath(rootNode, key);
+        listener.setKey(path);
+        Watcher watcher = new Watcher() {
             @Override
             public void process(WatchedEvent event) {
-                /*new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        zooKeeper.register(watcher);
-                    }
-                }).start();*/
                 listener.process(event);
-                /*try {
-                    zooKeeper.exists(PathUtil.getRealPath(rootNode, key), watcher);
-                } catch (KeeperException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
         };
+        watchers.put(path, watcher);
         return watcher;
     }
     
