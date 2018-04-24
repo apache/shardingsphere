@@ -58,6 +58,8 @@ import java.util.List;
  */
 public final class SQLExecuteBackendHandler implements BackendHandler {
     
+    private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    
     private final String sql;
     
     private final StatementRoutingEngine routingEngine;
@@ -116,7 +118,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
             Connection connection = dataSource.getConnection();
             connections.add(connection);
             Statement statement = connection.createStatement();
-            statement.setFetchSize(Integer.MIN_VALUE);
+            statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
             resultSets.add(statement.executeQuery(sql));
             return getQueryDatabaseProtocolPackets();
         } catch (final SQLException ex) {
@@ -226,7 +228,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
             return mergeDML(headPackets);
         }
         if (SQLType.DQL == sqlStatement.getType()) {
-            return mergeDQLorDAL(sqlStatement, packets);
+            return mergeDQL(sqlStatement, packets);
         }
         return packets.get(0);
     }
@@ -242,7 +244,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         return new CommandResponsePackets(new OKPacket(1, affectedRows, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
     }
     
-    private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
+    private CommandResponsePackets mergeDQL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
         List<QueryResult> queryResults = new ArrayList<>(packets.size());
         for (int i = 0; i < packets.size(); i++) {
             // TODO replace to a common PacketQueryResult
