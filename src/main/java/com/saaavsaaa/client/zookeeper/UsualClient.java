@@ -159,7 +159,7 @@ public class UsualClient extends BaseClient {
         }
     }
     
-    void watch(final Listener listener){
+    void registerWatch(final Listener listener){
         if (watchRegistered){
             return;
         }
@@ -172,7 +172,7 @@ public class UsualClient extends BaseClient {
         });
     }
 
-    public Watcher watch(final String key, final Listener listener){
+    public Watcher registerWatch(final String key, final Listener listener){
         String path = PathUtil.getRealPath(rootNode, key);
 //        listener.setKey(path);
         Watcher watcher = new Watcher() {
@@ -183,6 +183,16 @@ public class UsualClient extends BaseClient {
         };
         watchers.put(path, watcher);
         return watcher;
+    }
+    
+    public void unregisterWatch(final String key){
+        if (StringUtil.isNullOrBlank(key)){
+            throw new IllegalArgumentException("key should not be blank");
+        }
+        String path = PathUtil.getRealPath(rootNode, key);
+        if (watchers.containsKey(path)){
+            watchers.remove(path);
+        }
     }
     
     public void close() throws InterruptedException {

@@ -206,10 +206,10 @@ public class UsualClientTest {
         expected.add("delete_/test/a_");
         List<String> actual = new ArrayList<>();
         
-        Listener listener = buildEventListener(actual); //buildListener(actual);
+        Listener listener = buildListener(actual);
         
         String key = "a";
-        Watcher watcher = client.watch(key, listener);
+        Watcher watcher = client.registerWatch(key, listener);
         client.createNamespace();
         client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
         client.checkExists(key, watcher);
@@ -224,13 +224,14 @@ public class UsualClientTest {
         Thread.sleep(100);
         assert expected.size() == actual.size();
         assert expected.containsAll(actual);
+        client.unregisterWatch(key);
     }
     
     private Listener buildListener(List<String> actual){
         Listener listener = new Listener() {
             @Override
             public void process(WatchedEvent event) {
-                System.out.println("==========================================================");
+                System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                 System.out.println(event.getPath());
                 System.out.println(event.getType());
     
@@ -259,7 +260,7 @@ public class UsualClientTest {
                         actual.add(new StringBuilder().append("ignore_").append(event.getPath()).append("_").append(event.getType()).toString());
                         break;
                 }
-                System.out.println("==========================================================");
+                System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             }
         };
         return listener;

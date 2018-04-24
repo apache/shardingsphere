@@ -39,7 +39,7 @@ public class ClientFactory {
         client.setRootNode(namespace);
         client.setAuthorities(scheme , auth);
         if (globalListener != null) {
-            client.watch(globalListener);
+            client.registerWatch(globalListener);
         }
         return client;
     }

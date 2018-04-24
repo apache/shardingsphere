@@ -7,7 +7,7 @@ import java.nio.charset.Charset;
  */
 public class StringUtil {
     public static final Charset UTF_8 = Charset.forName("UTF-8");
-    public static boolean isNullOrWhite(String string) {
+    public static boolean isNullOrBlank(String string) {
         return string == null || string.trim().length() == 0;
     }
 }

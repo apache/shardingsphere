@@ -14,7 +14,7 @@ public class PathUtil {
     }
     
     private static String adjustPath(String root, String path){
-        if (StringUtil.isNullOrWhite(path)){
+        if (StringUtil.isNullOrBlank(path)){
             throw new IllegalArgumentException("path should have content!");
         }
         if (!root.startsWith(PATH_SEPARATOR)){
