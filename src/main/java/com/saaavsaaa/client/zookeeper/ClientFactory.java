@@ -1,5 +1,8 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.untils.Listener;
+import org.apache.zookeeper.Watcher;
+
 import java.io.IOException;
 
 /**
@@ -22,6 +25,11 @@ public class ClientFactory {
 
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
         client = new UsualClient(servers, sessionTimeoutMilliseconds);
+        return this;
+    }
+    
+    public ClientFactory watch(final Listener listener){
+        client.watch(listener);
         return this;
     }
     

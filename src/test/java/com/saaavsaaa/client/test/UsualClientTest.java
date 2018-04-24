@@ -10,6 +10,7 @@ import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -30,10 +31,31 @@ public class UsualClientTest {
     
     private UsualClient client = null;
     
-    @Before
+    /*@Before
     public void start() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         client = creator.setNamespace(ROOT).authorization(AUTH, AUTH.getBytes()).newClient(SERVERS, SESSION_TIMEOUT).start();
+    }*/
+    
+    @Before
+    public void startWithWatch() throws IOException, InterruptedException {
+        ClientFactory creator = new ClientFactory();
+        Listener listener = buildListener();
+        client = creator.setNamespace(ROOT).authorization(AUTH, AUTH.getBytes()).newClient(SERVERS, SESSION_TIMEOUT).watch(listener).start();
+    }
+    
+    private Listener buildListener(){
+        Listener listener = new Listener() {
+            @Override
+            public void process(WatchedEvent event) {
+                System.out.println("==========================================================");
+                System.out.println(event.getPath());
+                System.out.println(event.getState());
+                System.out.println(event.getType());
+                System.out.println("==========================================================");
+            }
+        };
+        return listener;
     }
     
     @After
@@ -177,11 +199,31 @@ public class UsualClientTest {
     @Test
     public void watch() throws KeeperException, InterruptedException {
         List<String> expected = new ArrayList<>();
+        expected.add("ignore_/test_");
         expected.add("update_/test/a_value");
         expected.add("update_/test/a_value1");
         expected.add("update_/test/a_value2");
         expected.add("delete_/test/a_value2");
         List<String> actual = new ArrayList<>();
+        Listener listener = buildListener(actual);
+        String key = "a";
+        Watcher watcher = client.watch(key, listener);
+        client.createNamespace();
+        client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
+        client.checkExists(key, watcher);
+        client.updateInTransaction(key, "value");
+        System.out.println(new String(client.getData(key)));
+        assert client.getDataString(key).equals("value");
+        client.updateInTransaction(key, "value1");
+        assert client.getDataString(key).equals("value1");
+        client.updateInTransaction(key, "value2");
+        assert client.getDataString(key).equals("value2");
+        client.deleteCurrentBranch(key);
+        assert expected.size() == actual.size();
+        assert expected.containsAll(actual);
+    }
+    
+    private Listener buildListener(List<String> actual){
         EventListener eventListener = new EventListener() {
             @Override
             public void onChange(DataChangedEvent event) {
@@ -202,7 +244,7 @@ public class UsualClientTest {
                 String result = null == data ? null : new String(data, StringUtil.UTF_8);
                 eventListener.onChange(new DataChangedEvent(getEventType(event, result), event.getPath(), result));
             }
-            
+        
             private DataChangedEvent.Type getEventType(final WatchedEvent event, final String result) {
                 switch (event.getType()) {
                     case NodeDataChanged:
@@ -220,20 +262,7 @@ public class UsualClientTest {
                 }
             }
         };
-        String key = "a";
-        Watcher watcher = client.watch(key, listener);
-        client.createNamespace();
-        client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
-        client.checkExists(key, watcher);
-        client.updateInTransaction(key, "value");
-        System.out.println(new String(client.getData(key)));
-        assert client.getDataString(key).equals("value");
-        client.updateInTransaction(key, "value1");
-        assert client.getDataString(key).equals("value1");
-        client.updateInTransaction(key, "value2");
-        assert client.getDataString(key).equals("value2");
-        client.deleteCurrentBranch(key);
-        assert expected.size() == actual.size();
+        return listener;
     }
     
     @Test

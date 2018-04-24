@@ -16,6 +16,8 @@ import java.util.Stack;
 * todo Sequential
 */
 public class UsualClient extends BaseClient {
+    private final boolean watched = true; //false
+    private boolean watchRegistered = false;
     UsualClient(String servers, int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);
     }
@@ -36,16 +38,15 @@ public class UsualClient extends BaseClient {
     }
 
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
-        return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), false, null);
+        return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), watched, null);
     }
     
     public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        zooKeeper.getData(PathUtil.getRealPath(rootNode, key), false, callback, ctx);
+        zooKeeper.getData(PathUtil.getRealPath(rootNode, key), watched, callback, ctx);
     }
     
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
-//        return null != zooKeeper.exists(PathUtil.getRealPath(rootNode, key), false);
-        return checkExists(key, null);
+        return null != zooKeeper.exists(PathUtil.getRealPath(rootNode, key), watched);
     }
     
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
@@ -53,7 +54,7 @@ public class UsualClient extends BaseClient {
     }
     
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
-        return zooKeeper.getChildren(PathUtil.getRealPath(rootNode, key), false);
+        return zooKeeper.getChildren(PathUtil.getRealPath(rootNode, key), watched);
     }
     
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
@@ -158,12 +159,37 @@ public class UsualClient extends BaseClient {
         }
     }
     
-    private Watcher watcher;
-    public Watcher watch(final String key, final Listener eventListener){
+    void watch(final Listener listener){
+        if (watchRegistered){
+            return;
+        }
+        watchRegistered = true;
         watcher = new Watcher() {
             @Override
             public void process(WatchedEvent event) {
-                eventListener.process(event);
+                listener.process(event);
+            }
+        };
+    }
+
+    public Watcher watch(final String key, final Listener listener){
+        watcher = new Watcher() {
+            @Override
+            public void process(WatchedEvent event) {
+                /*new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        zooKeeper.register(watcher);
+                    }
+                }).start();*/
+                listener.process(event);
+                /*try {
+                    zooKeeper.exists(PathUtil.getRealPath(rootNode, key), watcher);
+                } catch (KeeperException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
             }
         };
         return watcher;

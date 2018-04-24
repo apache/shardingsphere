@@ -25,6 +25,7 @@ public abstract class BaseClient {
     
     protected String rootNode = "/InitValue";
     protected List<ACL> authorities;
+    protected Watcher watcher;
     
     protected BaseClient(String servers, int sessionTimeoutMilliseconds) {
         this.servers = servers;
@@ -47,6 +48,9 @@ public abstract class BaseClient {
                     if(Event.EventType.None == event.getType()){
                         CONNECTED.countDown();
                     }
+                }
+                if (watcher != null){
+                    watcher.process(event);
                 }
             }
         };
