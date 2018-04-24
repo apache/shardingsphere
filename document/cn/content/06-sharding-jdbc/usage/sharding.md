@@ -4,12 +4,11 @@ title = "数据分片"
 weight = 1
 +++
 
-## 使用JAVA配置
+## 不使用Spring
 
-### Maven安装 
+### 引入Maven依赖
 
 ```xml
-<!-- 引入sharding-jdbc核心模块 -->
 <dependency>
     <groupId>io.shardingjdbc</groupId>
     <artifactId>sharding-jdbc-core</artifactId>
@@ -17,10 +16,9 @@ weight = 1
 </dependency>
 ```
 
-## 规则与策略配置
-Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user_id取模分库, 且根据order_id取模分表的两库两表的配置。
+### 基于Java编码的规则配置
 
-可以通过Java编码的方式配置：
+Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user_id取模分库, 且根据order_id取模分表的两库两表的配置。
 
 ```java
     // 配置真实数据源
@@ -47,10 +45,8 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
     orderTableRuleConfig.setLogicTable("t_order");
     orderTableRuleConfig.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
     
-    // 配置分库策略
+    // 配置分库 + 分表策略
     orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
-    
-    // 配置分表策略
     orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
     
     // 配置分片规则
@@ -63,11 +59,9 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
 ```
 
-## 使用YAML配置
+### 基于Yaml的规则配置
 
-### 规则与策略配置
-
-或通过YAML方式配置，与以上配置等价：
+或通过Yaml方式配置，与以上配置等价：
 
 ```yaml
 dataSources:
@@ -109,11 +103,7 @@ tables:
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
-规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。
-
->详细的规则配置请参考[分库分表](/06-sharding-jdbc/02-configuration/config-java)
-
-## 使用基于ShardingDataSource的JDBC接口
+### 使用原生JDBC
 
 通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
 以JDBC原生实现为例：
@@ -137,17 +127,17 @@ try (
 
 ## 使用Spring
 
-### Maven安装
+### 引入Maven依赖
 
 ```xml
-<!-- 引入sharding-jdbc核心模块 -->
 <dependency>
     <groupId>io.shardingjdbc</groupId>
     <artifactId>sharding-jdbc-core-spring-namespace</artifactId>
     <version>${sharding-jdbc.version}</version>
 </dependency>
 ```
-### Spring命名空间
+
+### 基于Spring命名空间的规则配置
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -191,3 +181,43 @@ try (
     </sharding:data-source>
 </beans>
 ```
+
+### 基于Spring boot的规则配置
+
+```properties
+sharding.jdbc.datasource.names=ds_0,ds_1
+
+sharding.jdbc.datasource.ds_0.type=org.apache.commons.dbcp2.BasicDataSource
+sharding.jdbc.datasource.ds_0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_0.url=jdbc:mysql://localhost:3306/ds_0
+sharding.jdbc.datasource.ds_0.username=root
+sharding.jdbc.datasource.ds_0.password=
+
+sharding.jdbc.datasource.ds_1.type=org.apache.commons.dbcp2.BasicDataSource
+sharding.jdbc.datasource.ds_1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_1.url=jdbc:mysql://localhost:3306/ds_1
+sharding.jdbc.datasource.ds_1.username=root
+sharding.jdbc.datasource.ds_1.password=
+
+sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds_${user_id % 2}
+
+sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds_${0..1}.t_order_${0..1}
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order_${order_id % 2}
+
+sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds_${0..1}.t_order_item_${0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_${order_id % 2}
+```
+
+### 在Spring中使用DataSource
+
+直接通过注入的方式即可使用DataSource，或者将DataSource配置在JPA、Hibernate或MyBatis中使用。
+
+```java
+@Resource
+private DataSource dataSource;
+```
+
+规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。更多的详细配置请参考[配置手册](/06-sharding-jdbc/configuration/)。
