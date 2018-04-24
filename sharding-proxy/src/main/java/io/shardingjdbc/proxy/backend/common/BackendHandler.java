@@ -17,19 +17,46 @@
 
 package io.shardingjdbc.proxy.backend.common;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
 /**
  * Backend handler.
  *
  * @author zhangliang
+ * @author wangkai
  */
-public interface BackendHandler {
+public abstract class BackendHandler extends ChannelInboundHandlerAdapter {
+    
+    private boolean handshaked;
+    
+    private boolean authorized;
+    
+    protected abstract void handshake(ChannelHandlerContext context, ByteBuf message);
+    
+    @Override
+    public void channelRead(final ChannelHandlerContext context, final Object message) {
+        if (!handshaked) {
+            handshake(context, (ByteBuf) message);
+            handshaked = true;
+        } else if(authorized) {
+            auth(context, (ByteBuf) message);
+            authorized = true;
+        } else {
+            executeCommand(context, (ByteBuf) message);
+        }
+    }
+    
+    protected abstract void auth(ChannelHandlerContext context, ByteBuf message);
+    
+    protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf message);
     
     /**
      * Execute command.
      *
      * @return result packets to be sent
      */
-    CommandResponsePackets execute();
+    protected abstract CommandResponsePackets execute();
 }

@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.proxy.backend;
 
-import io.netty.bootstrap.ServerBootstrap;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -29,7 +29,12 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.shardingjdbc.proxy.frontend.netty.ServerHandlerInitializer;
+import io.shardingjdbc.proxy.backend.netty.ClientHandlerInitializer;
+import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
+import org.apache.commons.dbcp2.BasicDataSource;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Sharding-Proxy Client.
@@ -38,72 +43,56 @@ import io.shardingjdbc.proxy.frontend.netty.ServerHandlerInitializer;
  */
 public final class ShardingProxyClient {
     
-    private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors() * 2;
-    
-    private EventLoopGroup bossGroup;
+    private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors();
     
     private EventLoopGroup workerGroup;
-    
-    private EventLoopGroup userGroup;
     
     /**
      * Start Sharding-Proxy.
      *
-     * @param port port
      * @throws InterruptedException interrupted exception
      */
-    public void start(final int port) throws InterruptedException {
+    public void start() throws InterruptedException {
         try {
-            ServerBootstrap bootstrap = new ServerBootstrap();
-            bossGroup = createEventLoopGroup();
-            if (bossGroup instanceof EpollEventLoopGroup) {
+            Bootstrap bootstrap = new Bootstrap();
+            if (workerGroup instanceof EpollEventLoopGroup) {
                 groupsEpoll(bootstrap);
             } else {
                 groupsNio(bootstrap);
             }
-            ChannelFuture future = bootstrap.bind(port).sync();
-            future.channel().closeFuture().sync();
+            Map<String, DataSource> dataSourceMap = ShardingRuleRegistry.getInstance().getDataSourceMap();
+            for (DataSource each : dataSourceMap.values()) {
+                ((BasicDataSource)each).getUrl().
+                ChannelFuture future = bootstrap.connect("localhost",3306).sync();
+                future.channel().closeFuture().sync();
+            }
         } finally {
             workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
-            userGroup.shutdownGracefully();
         }
     }
     
-    private EventLoopGroup createEventLoopGroup() {
-        try {
-            return new EpollEventLoopGroup(1);
-        } catch (final UnsatisfiedLinkError ex) {
-            return new NioEventLoopGroup(1);
-        }
-    }
-    
-    private void groupsEpoll(final ServerBootstrap bootstrap) {
+    private void groupsEpoll(final Bootstrap bootstrap) {
         workerGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
-        userGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
-        bootstrap.group(bossGroup, workerGroup)
+        bootstrap.group(workerGroup)
                 .channel(EpollServerSocketChannel.class)
                 .option(EpollChannelOption.TCP_CORK, true)
                 .option(EpollChannelOption.SO_KEEPALIVE, true)
                 .option(EpollChannelOption.SO_BACKLOG, 128)
                 .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(new ServerHandlerInitializer(userGroup));
+                .handler(new ClientHandlerInitializer());
     }
     
-    private void groupsNio(final ServerBootstrap bootstrap) {
+    private void groupsNio(final Bootstrap bootstrap) {
         workerGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
-        userGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
-        bootstrap.group(bossGroup, workerGroup)
+        bootstrap.group(workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(new ServerHandlerInitializer(userGroup));
+                .handler(new ClientHandlerInitializer());
     }
 }
