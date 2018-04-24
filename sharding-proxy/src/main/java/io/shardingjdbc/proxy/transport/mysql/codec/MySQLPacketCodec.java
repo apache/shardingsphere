@@ -45,11 +45,7 @@ public final class MySQLPacketCodec extends PacketCodec<MySQLPacket> {
             in.resetReaderIndex();
             return;
         }
-        if (readableBytes > realPacketLength) {
-            out.add(in.readRetainedSlice(payloadLength + MySQLPacket.SEQUENCE_LENGTH));
-            return;
-        }
-        out.add(in);
+        out.add(in.readRetainedSlice(payloadLength + MySQLPacket.SEQUENCE_LENGTH));
     }
     
     @Override
