@@ -61,6 +61,8 @@ import java.util.List;
  */
 public final class StatementExecuteBackendHandler implements BackendHandler {
     
+    private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    
     private final List<PreparedStatementParameter> preparedStatementParameters;
     
     private final PreparedStatementRoutingEngine routingEngine;
@@ -137,7 +139,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             Connection connection = dataSource.getConnection();
             connections.add(connection);
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setFetchSize(Integer.MIN_VALUE);
+            preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
             setJDBCPreparedStatementParameters(preparedStatement);
             resultSets.add(preparedStatement.executeQuery());
             return getQueryDatabaseProtocolPackets();
