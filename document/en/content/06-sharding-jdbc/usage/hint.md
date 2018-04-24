@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "Hint"
-weight = 4
+weight = 3
 +++
 
 ## Background

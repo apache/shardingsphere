@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "强制路由"
-weight = 4
+weight = 3
 +++
 
 ## 背景
