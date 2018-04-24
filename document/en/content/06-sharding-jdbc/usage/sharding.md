@@ -1,15 +1,14 @@
 +++
 toc = true
-title = "JDBC"
+title = "Sharding"
 weight = 1
 +++
 
-## To configure by using JAVA
+## Without spring
 
-### The Maven Installation
+### Add maven dependency
 
 ```xml
-<!-- imoort the core module of sharding-jdbc -->
 <dependency>
     <groupId>io.shardingjdbc</groupId>
     <artifactId>sharding-jdbc-core</artifactId>
@@ -17,17 +16,17 @@ weight = 1
 </dependency>
 ```
 
-## The rule configurtion
+### Configure sharding rule with java
 
 You can implement Sharding by configuring rules for Sharding-JDBC. The following example firstly takes the module of user_id to split databases and then takes the module of order_id to split tables. At last, two tables are in each of two databases.
 
 To configure by JAVA codes:
 
 ```java
-    // To configure the actual data source
+    // Configure actual data sources
     Map<String, DataSource> dataSourceMap = new HashMap<>();
     
-    // To configure the first data source
+    // Configure first data source
     BasicDataSource dataSource1 = new BasicDataSource();
     dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource1.setUrl("jdbc:mysql://localhost:3306/ds_0");
@@ -35,7 +34,7 @@ To configure by JAVA codes:
     dataSource1.setPassword("");
     dataSourceMap.put("ds_0", dataSource1);
     
-    // To configure the second data source
+    // Configure second data source
     BasicDataSource dataSource2 = new BasicDataSource();
     dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource2.setUrl("jdbc:mysql://localhost:3306/ds_1");
@@ -43,35 +42,29 @@ To configure by JAVA codes:
     dataSource2.setPassword("");
     dataSourceMap.put("ds_1", dataSource2);
     
-    // To configure the table rules for Order
+    // Configure table rule for Order
     TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
     orderTableRuleConfig.setLogicTable("t_order");
     orderTableRuleConfig.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
     
-    // To configure the strategy for database Sharding. 
+    // Configure strategies for database + table sharding 
     orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
-    
-    // To configure the strategy for table Sharding.
     orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
     
-    // To configure the strategy rule of Sharding
+    // Configure sharding rule
     ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
     shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     
-    // To configure the table rules for order_item
-    
+    // Configure table rule for order_item
     ...
     
-    // To get the data source object
+    // Get data source
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
 ```
 
-## To configure by using YAML
-
-### The rule configurtion
+### Configure sharding rule with yaml
 
 To configure by YAML, similar with the configuration method of JAVA codes:
-
 
 ```yaml
 dataSources:
@@ -112,15 +105,12 @@ tables:
 ```java
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
 ```
-The rule configuration consists of data source configuration, table rule configuration, database Sharding strategy and table Sharding strategy, etc. Here is a simple configuration example, more flexible configurations can be used in product environment, e.g. multi-Sharding columns, table rules configuration directly bound with Sharding strategy.
 
-> To learn the details of the Sharding configuration, please refer to [Sharding](/06-sharding-jdbc/02-configuration/config-java).
-
-## To use JDBC interface based on ShardingDataSource
+### Use raw JDBC
 
 By using ShardingDataSourceFactory factory class and rule configuration object, we can obtain ShardingDataSource which implements the standard interface of DataSource in JDBC. Thus you can choose to use native JDBC DataSource for development, or using JPA, MyBatis ORM tools, etc.
 
-Take native DataSource in JDBC as an example:
+Take DataSource in JDBC as an example:
 
 ```java
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule);
@@ -139,19 +129,19 @@ try (
 }
 ```
 
-##  To configure by using Spring
+## Using spring
 
-### The Maven Installation
+### Add maven dependency
 
 ```xml
-<!-- imoort the core module of sharding-jdbc -->
 <dependency>
     <groupId>io.shardingjdbc</groupId>
     <artifactId>sharding-jdbc-core-spring-namespace</artifactId>
     <version>${sharding-jdbc.version}</version>
 </dependency>
+
 ```
-### The Spring namespace
+### Configure sharding rule with spring namespace
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -195,3 +185,44 @@ try (
     </sharding:data-source>
 </beans>
 ```
+
+### Configure sharding rule with spring boot
+
+```properties
+sharding.jdbc.datasource.names=ds_0,ds_1
+
+sharding.jdbc.datasource.ds_0.type=org.apache.commons.dbcp2.BasicDataSource
+sharding.jdbc.datasource.ds_0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_0.url=jdbc:mysql://localhost:3306/ds_0
+sharding.jdbc.datasource.ds_0.username=root
+sharding.jdbc.datasource.ds_0.password=
+
+sharding.jdbc.datasource.ds_1.type=org.apache.commons.dbcp2.BasicDataSource
+sharding.jdbc.datasource.ds_1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_1.url=jdbc:mysql://localhost:3306/ds_1
+sharding.jdbc.datasource.ds_1.username=root
+sharding.jdbc.datasource.ds_1.password=
+
+sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds_${user_id % 2}
+
+sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds_${0..1}.t_order_${0..1}
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order_${order_id % 2}
+
+sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds_${0..1}.t_order_item_${0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_${order_id % 2}
+```
+
+### Use DataSource on spring
+
+Just inject or configure data source to JPA, Hibernate orMyBatis.
+
+```java
+@Resource
+private DataSource dataSource;
+```
+
+The rule configuration consists of data source configuration, table rule configuration, database Sharding strategy and table Sharding strategy, etc. Here is a simple configuration example, more flexible configurations can be used in product environment, e.g. multi-Sharding columns, table rules configuration directly bound with Sharding strategy.
+More details please reference [configuration manual](/06-sharding-jdbc/configuration/)。
