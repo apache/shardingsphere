@@ -61,7 +61,7 @@ public final class ComStmtPreparePacket extends CommandPacket {
         log.debug("COM_STMT_PREPARE received for Sharding-Proxy: {}", sql);
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
-        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, sql, ShardingRuleRegistry.getInstance().getShardingRule()).parse(true);
+        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, sql, ShardingRuleRegistry.getInstance().getShardingRule(), null).parse(true);
         int parametersIndex = sqlStatement.getParametersIndex();
         result.addPacket(new ComStmtPrepareOKPacket(++currentSequenceId, PreparedStatementRegistry.getInstance().register(sql), getNumColumns(sqlStatement), parametersIndex, 0));
         for (int i = 0; i < parametersIndex; i++) {

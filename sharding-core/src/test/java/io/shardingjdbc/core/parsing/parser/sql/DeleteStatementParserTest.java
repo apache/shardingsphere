@@ -43,7 +43,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     @Test
     public void parseWithoutCondition() {
         ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX", shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX", shardingRule, null);
         DMLStatement deleteStatement = (DMLStatement) statementParser.parse(false);
         assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
     }
@@ -52,7 +52,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     public void parseWithoutParameter() {
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, 
-                "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10", shardingRule);
+                "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10", shardingRule, null);
         DMLStatement deleteStatement = (DMLStatement) statementParser.parse(false);
         assertDeleteStatementWithoutParameter(deleteStatement);
     }
@@ -80,7 +80,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     public void parseWithParameter() {
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, 
-                "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?", shardingRule);
+                "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?", shardingRule, null);
         DMLStatement deleteStatement = (DMLStatement) statementParser.parse(false);
         assertDeleteStatementWithParameter(deleteStatement);
     }
@@ -107,13 +107,13 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     @Test(expected = UnsupportedOperationException.class)
     public void parseStatementWithDeleteMultipleTable() {
         ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.MySQL, "DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2", shardingRule).parse(false);
+        new SQLParsingEngine(DatabaseType.MySQL, "DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2", shardingRule, null).parse(false);
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void parseStatementWithDeleteMultipleTableWithUsing() {
         ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2", shardingRule).parse(false);
+        new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2", shardingRule, null).parse(false);
     }
     
     @Test
@@ -125,7 +125,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
         ShardingRule shardingRule = createShardingRule();
-        DMLStatement deleteStatement = (DMLStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule).parse(false);
+        DMLStatement deleteStatement = (DMLStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule, null).parse(false);
         assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         assertFalse(deleteStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = deleteStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();

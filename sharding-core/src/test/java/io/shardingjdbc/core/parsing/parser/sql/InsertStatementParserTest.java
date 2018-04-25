@@ -51,7 +51,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     @Test
     public void assertParseWithoutParameter() {
         ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)", shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)", shardingRule, null);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
         assertInsertStatementWithoutParameter(insertStatement);
     }
@@ -59,7 +59,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     @Test
     public void assertParseWithParameter() {
         ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)", shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)", shardingRule, null);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
         assertInsertStatementWithParameter(insertStatement);
     }
@@ -67,7 +67,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     @Test
     public void assertParseWithGenerateKeyColumnsWithoutParameter() {
         ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)", shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)", shardingRule, null);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
         assertInsertStatementWithoutParameter(insertStatement);
     }
@@ -83,7 +83,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     @Test
     public void assertParseWithGenerateKeyColumnsWithParameter() {
         ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)", shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)", shardingRule, null);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
         assertInsertStatementWithParameter(insertStatement);
     }
@@ -129,7 +129,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     @SuppressWarnings("unchecked")
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
         ShardingRule shardingRule = createShardingRule();
-        InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule).parse(false);
+        InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule, null).parse(false);
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         assertFalse(insertStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
@@ -141,18 +141,18 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     // TODO assert
     public void parseMultipleInsertForMySQL() {
         ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (`field1`, `field2`) VALUES (1, 'value_char'), (2, 'value_char')", shardingRule).parse(false);
+        new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (`field1`, `field2`) VALUES (1, 'value_char'), (2, 'value_char')", shardingRule, null).parse(false);
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void parseInsertAllForOracle() {
         ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.Oracle, "INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2", shardingRule).parse(false);
+        new SQLParsingEngine(DatabaseType.Oracle, "INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2", shardingRule, null).parse(false);
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void parseInsertFirstForOracle() {
         ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.Oracle, "INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2", shardingRule).parse(false);
+        new SQLParsingEngine(DatabaseType.Oracle, "INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2", shardingRule, null).parse(false);
     }
 }
