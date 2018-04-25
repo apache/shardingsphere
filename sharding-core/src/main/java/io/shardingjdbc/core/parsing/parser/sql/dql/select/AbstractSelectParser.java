@@ -177,6 +177,24 @@ public abstract class AbstractSelectParser implements SQLParser {
         }
     }
     
+    private boolean isContainsItem(final OrderItem orderItem, final SelectStatement selectStatement) {
+        if (-1 != orderItem.getIndex()) {
+            return true;
+        }
+        if (!selectStatement.getStarSelectItems().isEmpty()) {
+            return isContainsItemInStarSelectItem(selectStatement.getStarSelectItems(), orderItem, selectStatement.getTables());
+        }
+        for (SelectItem each : selectStatement.getItems()) {
+            if (each.getAlias().isPresent() && orderItem.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(orderItem.getAlias().get())) {
+                return true;
+            }
+            if (!each.getAlias().isPresent() && orderItem.getQualifiedName().isPresent() && each.getExpression().equalsIgnoreCase(orderItem.getQualifiedName().get())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private boolean isContainsItemInStarSelectItem(final List<StarSelectItem> starSelectItems, final OrderItem orderItem, final Tables tables) {
         for (StarSelectItem each : starSelectItems) {
             if (!each.getOwner().isPresent()) {
@@ -189,24 +207,6 @@ public abstract class AbstractSelectParser implements SQLParser {
             List<String> columnNames = tableOptionalOfStarSelectItem.isPresent()
                     ? shardingMetaData.getTableMetaDataMap().get(tableOptionalOfStarSelectItem.get().getName()).getAllColumnNames() : new ArrayList<String>();
             if (columnNames.contains(orderItem.getName().get().toUpperCase()) || columnNames.contains(orderItem.getName().get().toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isContainsItem(final OrderItem orderItem, final SelectStatement selectStatement) {
-        if (-1 != orderItem.getIndex()) {
-            return true;
-        }
-        if (0 < selectStatement.getStarSelectItems().size()) {
-            return isContainsItemInStarSelectItem(selectStatement.getStarSelectItems(), orderItem, selectStatement.getTables());
-        }
-        for (SelectItem each : selectStatement.getItems()) {
-            if (each.getAlias().isPresent() && orderItem.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(orderItem.getAlias().get())) {
-                return true;
-            }
-            if (!each.getAlias().isPresent() && orderItem.getQualifiedName().isPresent() && each.getExpression().equalsIgnoreCase(orderItem.getQualifiedName().get())) {
                 return true;
             }
         }
