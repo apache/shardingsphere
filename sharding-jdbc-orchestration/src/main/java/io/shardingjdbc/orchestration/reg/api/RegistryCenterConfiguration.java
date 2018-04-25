@@ -18,7 +18,7 @@
 package io.shardingjdbc.orchestration.reg.api;
 
 /**
- * Registry center registry center configuration.
+ * Registry center configuration.
  *
  * @author zhangliang
  */
