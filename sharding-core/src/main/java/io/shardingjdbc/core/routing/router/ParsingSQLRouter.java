@@ -20,6 +20,7 @@ package io.shardingjdbc.core.routing.router;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.optimizer.OptimizeEngineFactory;
 import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
@@ -64,11 +65,14 @@ import java.util.List;
  * 
  * @author zhangiang
  * @author maxiaoguang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class ParsingSQLRouter implements SQLRouter {
     
     private final ShardingRule shardingRule;
+    
+    private final ShardingMetaData shardingMetaData;
     
     private final DatabaseType databaseType;
     
@@ -78,7 +82,7 @@ public final class ParsingSQLRouter implements SQLRouter {
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        return new SQLParsingEngine(databaseType, logicSQL, shardingRule, null).parse(useCache);
+        return new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingMetaData).parse(useCache);
     }
     
     @Override

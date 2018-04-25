@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.routing;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.router.SQLRouter;
 import io.shardingjdbc.core.routing.router.SQLRouterFactory;
@@ -29,13 +30,14 @@ import java.util.Collections;
  * Statement routing engine.
  * 
  * @author zhangiang
+ * @author panjuan
  */
 public final class StatementRoutingEngine {
     
     private final SQLRouter sqlRouter;
     
-    public StatementRoutingEngine(final ShardingRule shardingRule, final DatabaseType databaseType, final boolean showSQL) {
-        sqlRouter = SQLRouterFactory.createSQLRouter(shardingRule, databaseType, showSQL);
+    public StatementRoutingEngine(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final boolean showSQL) {
+        sqlRouter = SQLRouterFactory.createSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL);
     }
     
     /**

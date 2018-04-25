@@ -199,12 +199,7 @@ public abstract class AbstractSelectParser implements SQLParser {
         if (-1 != orderItem.getIndex()) {
             return true;
         }
-        // TODO remove this judgement.
-        if (selectStatement.isContainStar()) {
-            return true;
-        }
-        // TODO remove the first judgement.
-        if (null != shardingMetaData && 0 < selectStatement.getStarSelectItems().size()) {
+        if (0 < selectStatement.getStarSelectItems().size()) {
             return isContainsItemInStarSelectItem(selectStatement.getStarSelectItems(), orderItem, selectStatement.getTables());
         }
         for (SelectItem each : selectStatement.getItems()) {

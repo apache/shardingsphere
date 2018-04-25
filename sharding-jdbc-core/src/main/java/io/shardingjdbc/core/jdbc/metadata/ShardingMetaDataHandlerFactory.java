@@ -19,6 +19,7 @@ package io.shardingjdbc.core.jdbc.metadata;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.metadata.dialect.DefaultShardingMetaDataHandler;
+import io.shardingjdbc.core.jdbc.metadata.dialect.H2ShardingMetaDataHandler;
 import io.shardingjdbc.core.jdbc.metadata.dialect.MySQLShardingMetaDataHandler;
 import io.shardingjdbc.core.jdbc.metadata.dialect.ShardingMetaDataHandler;
 import lombok.AccessLevel;
@@ -47,6 +48,8 @@ public final class ShardingMetaDataHandlerFactory {
         switch (databaseType) {
             case MySQL:
                 return new MySQLShardingMetaDataHandler(dataSource, actualTableName);
+            case H2:
+                return new H2ShardingMetaDataHandler(dataSource, actualTableName);
             default:
                 return new DefaultShardingMetaDataHandler(dataSource, actualTableName);
         }
