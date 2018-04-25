@@ -104,7 +104,8 @@ public final class ShardingDataSourceTest {
             createShardingDataSource(dataSourceMap).getDatabaseType();
         } finally {
             for (Connection each : connections) {
-                verify(each).close();
+                System.out.println(each.getMetaData());
+                verify(each, atLeast(1)).close();
             }
         }
     }

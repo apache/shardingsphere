@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.routing;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.router.SQLRouter;
 import io.shardingjdbc.core.routing.router.SQLRouterFactory;
@@ -29,6 +30,7 @@ import java.util.List;
  * PreparedStatement routing engine.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 public final class PreparedStatementRoutingEngine {
     
@@ -38,9 +40,9 @@ public final class PreparedStatementRoutingEngine {
     
     private SQLStatement sqlStatement;
     
-    public PreparedStatementRoutingEngine(final String logicSQL, final ShardingRule shardingRule, final DatabaseType databaseType, final boolean showSQL) {
+    public PreparedStatementRoutingEngine(final String logicSQL, final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final boolean showSQL) {
         this.logicSQL = logicSQL;
-        sqlRouter = SQLRouterFactory.createSQLRouter(shardingRule, databaseType, showSQL);
+        sqlRouter = SQLRouterFactory.createSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL);
     }
     
     /**

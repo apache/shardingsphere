@@ -63,6 +63,7 @@ import java.util.Objects;
  * @author zhangliang
  * @author caohao
  * @author maxiaoguang
+ * @author panjuan
  */
 @Getter
 public final class ShardingPreparedStatement extends AbstractShardingPreparedStatementAdapter {
@@ -113,7 +114,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         ShardingContext shardingContext = connection.getShardingContext();
-        routingEngine = new PreparedStatementRoutingEngine(sql, shardingContext.getShardingRule(), shardingContext.getDatabaseType(), shardingContext.isShowSQL());
+        routingEngine = new PreparedStatementRoutingEngine(sql, shardingContext.getShardingRule(), shardingContext.getShardingMetaData(), shardingContext.getDatabaseType(), shardingContext.isShowSQL());
     }
     
     @Override

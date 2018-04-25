@@ -51,6 +51,6 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.getParserResult(sqlCaseId).getParameters());
-        new SQLStatementAssert(new SQLParsingEngine(databaseType, sql, getShardingRule(), null).parse(false), sqlCaseId, sqlCaseType).assertSQLStatement();
+        new SQLStatementAssert(new SQLParsingEngine(databaseType, sql, getShardingRule(), getShardingMetaData()).parse(false), sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }

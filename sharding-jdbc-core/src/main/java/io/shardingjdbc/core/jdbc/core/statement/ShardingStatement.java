@@ -199,7 +199,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         clearPrevious();
         ShardingContext shardingContext = connection.getShardingContext();
-        routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), shardingContext.getDatabaseType(), shardingContext.isShowSQL()).route(sql);
+        routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), shardingContext.getShardingMetaData(), shardingContext.getDatabaseType(), shardingContext.isShowSQL()).route(sql);
         Collection<StatementUnit> statementUnits = new LinkedList<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             Collection<Connection> connections;
