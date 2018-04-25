@@ -85,13 +85,17 @@ shardingRule:
   masterSlaveRules:
     ds_0:
       masterDataSourceName: master_ds_0
-      slaveDataSourceNames: [master_ds_0_slave_0, master_ds_0_slave_1]
+      slaveDataSourceNames:
+        - master_ds_0_slave_0
+        - master_ds_0_slave_1
       loadBalanceAlgorithmType: ROUND_ROBIN
       configMap:
         master-slave-key0: master-slave-value0
     ds_1:
       masterDataSourceName: master_ds_1
-      slaveDataSourceNames: [master_ds_1_slave_0, master_ds_1_slave_1]
+      slaveDataSourceNames: 
+        - master_ds_1_slave_0
+        - master_ds_1_slave_1
       loadBalanceAlgorithmClassName: TestAlgorithmClass
       configMap:
         master-slave-key1: master-slave-value1
