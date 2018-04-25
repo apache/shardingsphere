@@ -8,6 +8,7 @@ import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -65,6 +66,13 @@ public class UsualClientTest {
     public void createRoot() throws KeeperException, InterruptedException {
         client.createNamespace();
         assert client.getZooKeeper().exists(Constants.PATH_SEPARATOR + ROOT, false) != null;
+        client.deleteNamespace();
+        assert client.getZooKeeper().exists(Constants.PATH_SEPARATOR + ROOT, false) == null;
+    }
+    
+    @Ignore
+    @Test
+    public void deleteRoot() throws KeeperException, InterruptedException {
         client.deleteNamespace();
         assert client.getZooKeeper().exists(Constants.PATH_SEPARATOR + ROOT, false) == null;
     }

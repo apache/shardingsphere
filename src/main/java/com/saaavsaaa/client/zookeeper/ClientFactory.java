@@ -35,8 +35,8 @@ public class ClientFactory {
     }
     
     public synchronized UsualClient start() throws IOException, InterruptedException {
-        client.start();
         client.setRootNode(namespace);
+        client.start();
         client.setAuthorities(scheme , auth);
         if (globalListener != null) {
             client.registerWatch(globalListener);

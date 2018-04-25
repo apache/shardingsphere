@@ -1,9 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.untils.Listener;
-import com.saaavsaaa.client.untils.PathUtil;
-import com.saaavsaaa.client.untils.Properties;
-import com.saaavsaaa.client.untils.StringUtil;
+import com.saaavsaaa.client.untils.*;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
@@ -16,19 +13,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
+import static org.apache.zookeeper.Watcher.Event.EventType.NodeDeleted;
+
 /**
  * Created by aaa on 18-4-19.
  */
 public abstract class BaseClient {
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
     protected static final Map<String, Watcher> watchers = new ConcurrentHashMap<>();
-    private boolean watchRegistered = false;
+    private boolean globalListenerRegistered = false;
     
     private final String servers;
     private final int sessionTimeOut;
     protected ZooKeeper zooKeeper;
     
     protected String rootNode = "/InitValue";
+    protected boolean rootExist = false;
     protected List<ACL> authorities;
     
     protected BaseClient(String servers, int sessionTimeoutMilliseconds) {
@@ -37,7 +37,7 @@ public abstract class BaseClient {
     }
     
     public void start() throws IOException, InterruptedException {
-        zooKeeper = new ZooKeeper(servers, sessionTimeOut, connectWatcher());
+        zooKeeper = new ZooKeeper(servers, sessionTimeOut, startWatcher());
         CONNECTED.await();
     }
     
@@ -45,7 +45,7 @@ public abstract class BaseClient {
         return zooKeeper;
     }
     
-    private Watcher connectWatcher() {
+    private Watcher startWatcher() {
         return new Watcher(){
             public void process(WatchedEvent event) {
                 if(Event.KeeperState.SyncConnected == event.getState()){
@@ -53,10 +53,8 @@ public abstract class BaseClient {
                         CONNECTED.countDown();
                     }
                 }
-                // key == rootNode signify that register a watcher without appoint path when client init
-                // or want to watch the whole namespace
-                if (watchers.containsKey(rootNode)){
-                    watchers.get(rootNode).process(event);
+                if (globalListenerRegistered){
+                    watchers.get(Constants.GLOBAL_LISTENER_KEY).process(event);
                 }
                 if (Properties.WATCH_ON && watchers.containsKey(event.getPath())){
                      watchers.get(event.getPath()).process(event);
@@ -65,15 +63,15 @@ public abstract class BaseClient {
         };
     }
     
-    void registerWatch(final Listener listener){
-        if (watchRegistered){
+    void registerWatch(final Listener globalListener){
+        if (globalListenerRegistered){
             return;
         }
-        watchRegistered = true;
-        watchers.put(rootNode, new Watcher() {
+        globalListenerRegistered = true;
+        watchers.put(Constants.GLOBAL_LISTENER_KEY, new Watcher() {
             @Override
             public void process(WatchedEvent event) {
-                listener.process(event);
+                globalListener.process(event);
             }
         });
     }

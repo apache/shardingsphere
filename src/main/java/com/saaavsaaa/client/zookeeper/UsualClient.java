@@ -10,9 +10,12 @@ import org.apache.zookeeper.*;
 
 import java.util.List;
 
+import static org.apache.zookeeper.Watcher.Event.EventType.NodeDeleted;
+
 /*
 * cache
 * todo Sequential
+* todo org.apache.zookeeper.KeeperException$NodeExistsException: KeeperErrorCode = NodeExists
 */
 public class UsualClient extends BaseClient {
     private final boolean watched = true; //false
@@ -22,10 +25,25 @@ public class UsualClient extends BaseClient {
     }
 
     public void createNamespace() throws KeeperException, InterruptedException {
-        if (checkExists(rootNode)){
+        if (rootExist){
             return;
         }
         zooKeeper.create(rootNode, new byte[0], authorities, CreateMode.PERSISTENT);
+        rootExist = true;
+        zooKeeper.exists(rootNode, new Watcher() {
+            @Override
+            public void process(WatchedEvent event) {
+                if (rootNode.equals(event.getPath()) && NodeDeleted.equals(event.getType())){
+                    rootExist = false;
+                    System.out.println("----------------------------------------------delete root");
+                    System.out.println(event.getPath());
+                    System.out.println(event.getState());
+                    System.out.println(event.getType());
+                    System.out.println("----------------------------------------------delete root");
+                }
+            }
+        });
+        System.out.println("----------------------------------------------create root");
     }
     
     public void deleteNamespace() throws KeeperException, InterruptedException {
@@ -57,7 +75,12 @@ public class UsualClient extends BaseClient {
     }
     
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        zooKeeper.create(PathUtil.getRealPath(rootNode, key), value.getBytes(Constants.UTF_8), authorities, createMode);
+        createNamespace();
+        String path = PathUtil.getRealPath(rootNode, key);
+        if (rootNode.equals(path)){
+            return;
+        }
+        zooKeeper.create(path, value.getBytes(Constants.UTF_8), authorities, createMode);
     }
     
     /*
@@ -68,9 +91,9 @@ public class UsualClient extends BaseClient {
             this.createCurrentOnly(key, value, createMode);
             return;
         }
-        Transaction transaction = zooKeeper.transaction();
-        //todo sync cache
+
         List<String> nodes = PathUtil.getPathOrderNodes(rootNode, key);
+        nodes.remove(rootNode);
         for (int i = 0; i < nodes.size(); i++) {
             // todo contrast cache
             if (checkExists(nodes.get(i))){
@@ -84,9 +107,6 @@ public class UsualClient extends BaseClient {
                 createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, createMode);
             }
         }
-        
-        // todo org.apache.zookeeper.KeeperException$NodeExistsException: KeeperErrorCode = NodeExists
-        transaction.commit();
     }
     
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
