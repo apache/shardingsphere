@@ -11,7 +11,7 @@ Configuration is core module of Sharding-JDBC, it is only one module which end-u
 
 This section is a configuration manual, users can use it as a dictionary, may lookup some configuration if necessary.
 
-Sharding-JDBC provides 4 types of configurations. User can use sharding, read-write-splitting or sharding + read-write-splitting together.
+Sharding-JDBC provides 4 types of configurations. User can use sharding, read-write splitting or sharding + read-write splitting together.
 
 ![The class diagrams for Domain Model](http://ovfotjrsi.bkt.clouddn.com/docs/img/config_domain.png)
 

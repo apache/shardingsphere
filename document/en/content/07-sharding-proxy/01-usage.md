@@ -8,7 +8,7 @@ weight = 1
 
 Sharding-Proxy is the MySQL protocol agent based on Sharding-JDBC, and more friendly for management and debugging. You can use any clients compatible with MySQL protocol, e.g. MySQL Command Client, MySQL Workbench to connect to Sharding-Proxy to query and modify data.
 
-In brief, Sharding-Proxy is a standard MySQL (Other databases might be included in future) that also supports Sharding, Read-write-splitting, and orchestration and is also like the management interface for all back-end MySQL Sharding. In fact, it is the control node, the management node, and the routing node.
+In brief, Sharding-Proxy is a standard MySQL (Other databases might be included in future) that also supports Sharding, Read-write splitting, and orchestration and is also like the management interface for all back-end MySQL Sharding. In fact, it is the control node, the management node, and the routing node.
 
 Sharding-Proxy is suitable for uses to manage and debug, and can be connected easily by various MySQL clients, and Sharding-JDBC is more suitable for online programs for it reduces the cost of secondary transmit.
 

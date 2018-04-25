@@ -14,7 +14,7 @@ weight = 1
          shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
          shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
          shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
+         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
          shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
          return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
      }
@@ -22,7 +22,7 @@ weight = 1
      TableRuleConfiguration getOrderTableRuleConfiguration() {
          TableRuleConfiguration result = new TableRuleConfiguration();
          result.setLogicTable("t_order");
-         result.setActualDataNodes("demo_ds_${0..1}.t_order_${0..1}");
+         result.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
          result.setKeyGeneratorColumnName("order_id");
          return result;
      }
@@ -30,14 +30,14 @@ weight = 1
      TableRuleConfiguration getOrderItemTableRuleConfiguration() {
          TableRuleConfiguration result = new TableRuleConfiguration();
          result.setLogicTable("t_order_item");
-         result.setActualDataNodes("demo_ds_${0..1}.t_order_item_${0..1}");
+         result.setActualDataNodes("ds_${0..1}.t_order_item_${0..1}");
          return result;
      }
      
      Map<String, DataSource> createDataSourceMap() {
          Map<String, DataSource> result = new HashMap<>();
-         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
-         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
+         result.put("ds_0", DataSourceUtil.createDataSource("ds_0"));
+         result.put("ds_1", DataSourceUtil.createDataSource("ds_1"));
          return result;
      }
 ```
@@ -47,17 +47,17 @@ weight = 1
 ```java
      DataSource getMasterSlaveDataSource() throws SQLException {
          MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-         masterSlaveRuleConfig.setName("demo_ds_master_slave");
-         masterSlaveRuleConfig.setMasterDataSourceName("demo_ds_master");
-         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
+         masterSlaveRuleConfig.setName("ds_master_slave");
+         masterSlaveRuleConfig.setMasterDataSourceName("ds_master");
+         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("ds_slave_0", "ds_slave_1"));
          return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig);
      }
      
      Map<String, DataSource> createDataSourceMap() {
          Map<String, DataSource> result = new HashMap<>();
-         result.put("demo_ds_master", DataSourceUtil.createDataSource("demo_ds_master"));
-         result.put("demo_ds_slave_0", DataSourceUtil.createDataSource("demo_ds_slave_0"));
-         result.put("demo_ds_slave_1", DataSourceUtil.createDataSource("demo_ds_slave_1"));
+         result.put("ds_master", DataSourceUtil.createDataSource("ds_master"));
+         result.put("ds_slave_0", DataSourceUtil.createDataSource("ds_slave_0"));
+         result.put("ds_slave_1", DataSourceUtil.createDataSource("ds_slave_1"));
          return result;
      }
 ```
@@ -94,41 +94,41 @@ weight = 1
     List<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig1.setName("ds_0");
-        masterSlaveRuleConfig1.setMasterDataSourceName("demo_ds_master_0");
-        masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
+        masterSlaveRuleConfig1.setMasterDataSourceName("ds_master_0");
+        masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("ds_master_0_slave_0", "ds_master_0_slave_1"));
         
         MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig2.setName("ds_1");
-        masterSlaveRuleConfig2.setMasterDataSourceName("demo_ds_master_1");
-        masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
+        masterSlaveRuleConfig2.setMasterDataSourceName("ds_master_1");
+        masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("ds_master_1_slave_0", "ds_master_1_slave_1"));
         return Lists.newArrayList(masterSlaveRuleConfig1, masterSlaveRuleConfig2);
     }
     
     Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         
-        result.put("demo_ds_master_0", DataSourceUtil.createDataSource("demo_ds_master_0"));
-        result.put("demo_ds_master_0_slave_0", DataSourceUtil.createDataSource("demo_ds_master_0_slave_0"));
-        result.put("demo_ds_master_0_slave_1", DataSourceUtil.createDataSource("demo_ds_master_0_slave_1"));
-        result.put("demo_ds_master_1", DataSourceUtil.createDataSource("demo_ds_master_1"));
-        result.put("demo_ds_master_1_slave_0", DataSourceUtil.createDataSource("demo_ds_master_1_slave_0"));
-        result.put("demo_ds_master_1_slave_1", DataSourceUtil.createDataSource("demo_ds_master_1_slave_1"));
+        result.put("ds_master_0", DataSourceUtil.createDataSource("ds_master_0"));
+        result.put("ds_master_0_slave_0", DataSourceUtil.createDataSource("ds_master_0_slave_0"));
+        result.put("ds_master_0_slave_1", DataSourceUtil.createDataSource("ds_master_0_slave_1"));
+        result.put("ds_master_1", DataSourceUtil.createDataSource("ds_master_1"));
+        result.put("ds_master_1_slave_0", DataSourceUtil.createDataSource("ds_master_1_slave_0"));
+        result.put("ds_master_1_slave_1", DataSourceUtil.createDataSource("ds_master_1_slave_1"));
         
         MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig1.setName("ds_0");
-        masterSlaveRuleConfig1.setMasterDataSourceName("demo_ds_master_0");
-        masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
+        masterSlaveRuleConfig1.setMasterDataSourceName("ds_master_0");
+        masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("ds_master_0_slave_0", "ds_master_0_slave_1"));
         
         MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration();
         masterSlaveRuleConfig2.setName("ds_1");
-        masterSlaveRuleConfig2.setMasterDataSourceName("demo_ds_master_1");
-        masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
+        masterSlaveRuleConfig2.setMasterDataSourceName("ds_master_1");
+        masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("ds_master_1_slave_0", "ds_master_1_slave_1"));
         
         return result;
     }
 ```
 
-### 使用Zookeeper的数据治理配置示例
+### 使用Zookeeper的数据治理
 
 ```java
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
@@ -143,7 +143,7 @@ weight = 1
     }
 ```
 
-### 使用Etcd的数据治理配置示例
+### 使用Etcd的数据治理
 
 ```java
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
@@ -190,51 +190,51 @@ weight = 1
 
 表分片规则配置对象。
 
-| *名称*                              | *数据类型*                     | *说明*                                                                                                     |
-| ---------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| logicTable                         | String                        | 逻辑表名称                                                                                                  |
-| actualDataNodes (?)                | String                        | 真实数据节点名称，不填写表示不分表                                                                             |
-| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | 分库策略，不填写表示使用默认分库策略                                                                           |
-| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略，不填写表示使用默认分表策略                                                                           |
-| logicIndex (?)                     | String                        | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表 |
-| keyGeneratorColumnName (?)         | String                        | 自增列名称，不填写表示不使用自增主键生成器                                                                      |
-| keyGenerator (?)                   | KeyGenerator                  | 自增列值生成器，如果填写了keyGeneratorColumnName，不填写keyGenerator，表示使用默认自增主键生成器                   |
+| *名称*                              | *数据类型*                     | *说明*                                                                                                            |
+| ---------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| logicTable                         | String                        | 逻辑表名称                                                                                                         |
+| actualDataNodes (?)                | String                        | 描述数据源名称 + 真实表名称，用点间隔，多个数据节点间用逗号分隔，可支持行表达式。不填写表示不分表。例如：ds${0..7}.tbl_${0..7} |
+| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | 分库策略，不填写表示使用默认分库策略                                                                                  |
+| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略，不填写表示使用默认分表策略                                                                                  |
+| logicIndex (?)                     | String                        | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表        |
+| keyGeneratorColumnName (?)         | String                        | 自增列名称，不填写表示不使用自增主键生成器                                                                             |
+| keyGenerator (?)                   | KeyGenerator                  | 自增列值生成器，如果填写了keyGeneratorColumnName，不填写keyGenerator，表示使用默认自增主键生成器                          |
 
 #### StandardShardingStrategyConfiguration
 
 ShardingStrategyConfiguration的实现类，用于配置标准分片策略。
 
-| *名称*                      | *数据类型*                | *说明*                                                                |
-| -------------------------- | ------------------------ | --------------------------------------------------------------------- |
-| shardingColumn             | String                   | 分片列名                                                               |
-| preciseShardingAlgorithm   | PreciseShardingAlgorithm | 精确的分片算法类名称，用于=和IN。该类需使用默认的构造器或者提供无参数的构造器   |
-| rangeShardingAlgorithm (?) | RangeShardingAlgorithm   | 范围的分片算法类名称，用于BETWEEN。该类需使用默认的构造器或者提供无参数的构造器 |
+| *名称*                      | *数据类型*                | *说明*                         |
+| -------------------------- | ------------------------ | ------------------------------ |
+| shardingColumn             | String                   | 分片列名                        |
+| preciseShardingAlgorithm   | PreciseShardingAlgorithm | 精确的分片算法类名称，用于=和IN   |
+| rangeShardingAlgorithm (?) | RangeShardingAlgorithm   | 范围的分片算法类名称，用于BETWEEN |
 
 #### ComplexShardingStrategyConfiguration
 
 ShardingStrategyConfiguration的实现类，用于配置复合分片策略。
 
-| *名称*             | *数据类型*                    | *说明*                                                |
-| ----------------- | ---------------------------- | ----------------------------------------------------- |
-| shardingColumns   | String                       | 分片列名，多个列以逗号分隔                               |
-| shardingAlgorithm | ComplexKeysShardingAlgorithm | 分片算法全类名，该类需使用默认的构造器或者提供无参数的构造器 |
+| *名称*             | *数据类型*                    | *说明*                  |
+| ----------------- | ---------------------------- | ----------------------- |
+| shardingColumns   | String                       | 分片列名，多个列以逗号分隔 |
+| shardingAlgorithm | ComplexKeysShardingAlgorithm | 配置复合分片算法          |
 
 #### InlineShardingStrategyConfiguration
 
 ShardingStrategyConfiguration的实现类，用于配置行表达式分片策略。
 
-| *名称*               | *数据类型*  | *说明*        |
-| ------------------- | ----------- | ------------ |
-| shardingColumn      |  String     | 分片列名      |
-| algorithmExpression |  String     | 分片算法表达式 |
+| *名称*               | *数据类型*  | *说明*                                                                           |
+| ------------------- | ----------- | ------------------------------------------------------------------------------- |
+| shardingColumn      |  String     | 分片列名                                                                         |
+| algorithmExpression |  String     | 分片算法表达式，详情请参考[行表达式](/02-sharding/other-features/inline-expression) |
 
 #### HintShardingStrategyConfiguration
 
 ShardingStrategyConfiguration的实现类，用于配置Hint方式分片策略。
 
-| *名称*             | *数据类型*             | *说明*                                               |
-| ----------------- | --------------------- | ---------------------------------------------------- |
-| shardingAlgorithm | HintShardingAlgorithm | 分片算法全类名，该类需使用默认的构造器或者提供无参数的构造器 |
+| *名称*             | *数据类型*             | *说明*      |
+| ----------------- | --------------------- | ----------- |
+| shardingAlgorithm | HintShardingAlgorithm | Hint分片算法 |
 
 #### NoneShardingStrategyConfiguration
 
@@ -298,12 +298,12 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 读写分离 + 数据治理的数据源创建工厂。
 
-| *名称*                 | *数据类型*                    | *说明*             |
-| --------------------- | ---------------------------- | ------------------ |
-| dataSourceMap         | Map\<String, DataSource\>    | 数据源与其名称的映射 |
-| masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 读写分离规则        |
-| configMap (?)         | Map\<String, Object\>        | 配置映射关系        |
-| orchestrationConfig   | OrchestrationConfiguration   | 数据治理规则配置     |
+| *名称*                 | *数据类型*                    | *说明*                         |
+| --------------------- | ---------------------------- | ------------------------------ |
+| dataSourceMap         | Map\<String, DataSource\>    | 同MasterSlaveDataSourceFactory |
+| masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 同MasterSlaveDataSourceFactory |
+| configMap (?)         | Map\<String, Object\>        | 同MasterSlaveDataSourceFactory |
+| orchestrationConfig   | OrchestrationConfiguration   | 数据治理规则配置                 |
  
 #### OrchestrationConfiguration
 
@@ -335,10 +335,10 @@ RegistryCenterConfiguration的实现类，用于配置Zookeeper注册中心。
 
 RegistryCenterConfiguration的实现类，用于配置Etcd注册中心。
 
-| *名称*                         | *数据类型* | *说明*                                                           |
-| ----------------------------- | ---------- | --------------------------------------------------------------- |
-| serverLists                   | String     | Etcd连接地址，多个Etcd用逗号分隔，如：localhost:2379,localhost:3379 |
-| timeToLiveSeconds (?)         | int        | 数据存活秒数，默认60秒                                             |
-| timeoutMilliseconds (?)       | int        | 请求超时毫秒数，默认500毫秒                                        |
-| retryIntervalMilliseconds (?) | int        | 重试间隔毫秒数，默认200毫秒                                        |
-| maxRetries (?)                | int        | 请求失败后的最大重试次数，默认3次                                   |
+| *名称*                         | *数据类型* | *说明*                                                                         |
+| ----------------------------- | ---------- | ----------------------------------------------------------------------------- |
+| serverLists                   | String     | Etcd连接地址，多个Etcd用逗号分隔，如：http://localhost:2379,http://localhost:3379 |
+| timeToLiveSeconds (?)         | int        | 数据存活秒数，默认60秒                                                           |
+| timeoutMilliseconds (?)       | int        | 请求超时毫秒数，默认500毫秒                                                      |
+| retryIntervalMilliseconds (?) | int        | 重试间隔毫秒数，默认200毫秒                                                      |
+| maxRetries (?)                | int        | 请求失败后的最大重试次数，默认3次                                                 |

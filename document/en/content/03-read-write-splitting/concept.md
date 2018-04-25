@@ -22,4 +22,4 @@ Redirect query operations to different slaves via load balance strategy.
 
 ## Config Map
 
-ConfigMap allows user to configure metadata information for data source of read-write-splitting. The information of masterSlaveConfig in ConfigMap can be obtained by calling ConfigMapContext.getInstance (). e.g. Different weight for machines, different traffic on machines. The metadata for machines' weight can be configured through the ConfigMap.
+ConfigMap allows user to configure metadata information for data source of read-write splitting. The information of masterSlaveConfig in ConfigMap can be obtained by calling ConfigMapContext.getInstance (). e.g. Different weight for machines, different traffic on machines. The metadata for machines' weight can be configured through the ConfigMap.
