@@ -163,23 +163,23 @@ weight = 1
 
 #### ShardingDataSourceFactory
 
-| *Name*             | *DataType*                | *Description*                       |
-| ------------------ |  ------------------------ | ----------------------------------- |
-| dataSourceMap      | Map\<String, DataSource\> | Map of data sources and their names |
-| shardingRuleConfig | ShardingRuleConfiguration | Sharding rule configuration         |
-| configMap (?)      | Map\<String, Object\>     | Config map                          |
-| props (?)          | Properties                | Properties                          |
+| *Name*             | *DataType*                | *Description*               |
+| ------------------ |  ------------------------ | --------------------------- |
+| dataSourceMap      | Map\<String, DataSource\> | Data sources configuration  |
+| shardingRuleConfig | ShardingRuleConfiguration | Sharding rule configuration |
+| configMap (?)      | Map\<String, Object\>     | Config map                  |
+| props (?)          | Properties                | Properties                  |
 
 #### ShardingRuleConfiguration
 
 | *Name*                                    | *DataType*           | *Description*                                                                                   |
 | ----------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------- |
+| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | Table rule configuration                                                  |
+| bindingTableGroups (?)                    | Collection\<String\>                       | Binding table groups                                                      |
 | defaultDataSourceName (?)                 | String                                     | If table not configure at table rule, will route to defaultDataSourceName |
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | The default strategy for sharding databases                               |
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | The default strategy for sharding tables                                  |
 | defaultKeyGenerator (?)                   | KeyGenerator                               | The default key generator                                                 |
-| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | Table rule configuration                                                  |
-| bindingTableGroups (?)                    | Collection\<String\>                       | Binding table groups                                                      |
 | masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write splitting rule configuration                                   |
 
 #### TableRuleConfiguration
@@ -304,25 +304,25 @@ User-defined arguments.
 
 Subclass of RegistryCenterConfiguration.
 
-| *Name*                        | *DataType* | *Description*                                                                           |
-| ----------------------------- | ---------- | --------------------------------------------------------------------------------------- |
-| serverLists                   | String     | Zookeeper servers list, multiple split as comma. Example: localhost:2181,localhost:3181 |
-| namespace                     | String     | Namespace of zookeeper                                                                  |
-| baseSleepTimeMilliseconds (?) | int        | Base sleep milliseconds, default value is 1000 milliseconds                             |
-| maxSleepTimeMilliseconds (?)  | int        | Maximum sleep milliseconds, default value is 3000 milliseconds                          |
-| maxRetries (?)                | int        | Max retries times if connect failure, default value is 3                                |
-| sessionTimeoutMilliseconds    | int        | Session timeout milliseconds                                                            |
-| connectionTimeoutMilliseconds | int        | Connection timeout milliseconds                                                         |
-| digest (?)                    | String     | Connection digest                                                                       |
+| *Name*                        | *DataType* | *Description*                                                                   |
+| ----------------------------- | ---------- | ------------------------------------------------------------------------------- |
+| serverLists                   | String     | Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181 |
+| namespace                     | String     | Namespace of zookeeper                                                          |
+| baseSleepTimeMilliseconds (?) | int        | Base sleep milliseconds, default value is 1000 milliseconds                     |
+| maxSleepTimeMilliseconds (?)  | int        | Maximum sleep milliseconds, default value is 3000 milliseconds                  |
+| maxRetries (?)                | int        | Max retries times if connect failure, default value is 3                        |
+| sessionTimeoutMilliseconds    | int        | Session timeout milliseconds                                                    |
+| connectionTimeoutMilliseconds | int        | Connection timeout milliseconds                                                 |
+| digest (?)                    | String     | Connection digest                                                               |
 
 #### EtcdConfiguration
 
 Subclass of RegistryCenterConfiguration.
 
-| *Name*                        | *DataType* | *Description*                                                                                    |
-| ----------------------------- | ---------- | ------------------------------------------------------------------------------------------------ |
-| serverLists                   | String     | Etcd servers list, multiple split as comma. Example: http://localhost:2379,http://localhost:3379 |
-| timeToLiveSeconds (?)         | int        | Time to live of data, default is 60 seconds                                                      |
-| timeoutMilliseconds (?)       | int        | Timeout milliseconds, default is 500 milliseconds                                                |
-| retryIntervalMilliseconds (?) | int        | Milliseconds of retry interval, default is w00 milliseconds                                      |
-| maxRetries (?)                | int        | Max retries times if request failure, default value is 3                                         |
+| *Name*                        | *DataType* | *Description*                                                                            |
+| ----------------------------- | ---------- | ---------------------------------------------------------------------------------------- |
+| serverLists                   | String     | Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379 |
+| timeToLiveSeconds (?)         | int        | Time to live of data, default is 60 seconds                                              |
+| timeoutMilliseconds (?)       | int        | Timeout milliseconds, default is 500 milliseconds                                        |
+| retryIntervalMilliseconds (?) | int        | Milliseconds of retry interval, default is w00 milliseconds                              |
+| maxRetries (?)                | int        | Max retries times if request failure, default value is 3                                 |
