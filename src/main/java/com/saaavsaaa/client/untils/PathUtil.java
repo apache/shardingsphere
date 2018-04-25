@@ -137,8 +137,8 @@ public class PathUtil {
                 continue;
             }
     
+            builder.append(previous);
             previous = chars[i];
-            builder.append(c);
         }
         return builder.toString();
     }

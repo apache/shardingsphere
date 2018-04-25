@@ -3,13 +3,12 @@ package com.saaavsaaa.client.zookeeper;
  * Created by aaa on 18-4-18.
  */
 
-import com.saaavsaaa.client.untils.Listener;
+import com.saaavsaaa.client.untils.Constants;
 import com.saaavsaaa.client.untils.PathUtil;
 import com.saaavsaaa.client.untils.StringUtil;
 import org.apache.zookeeper.*;
 
 import java.util.List;
-import java.util.Stack;
 
 /*
 * cache
@@ -17,7 +16,7 @@ import java.util.Stack;
 */
 public class UsualClient extends BaseClient {
     private final boolean watched = true; //false
-    private boolean watchRegistered = false;
+    
     UsualClient(String servers, int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);
     }
@@ -30,7 +29,7 @@ public class UsualClient extends BaseClient {
     }
     
     public void deleteNamespace() throws KeeperException, InterruptedException {
-        zooKeeper.delete(rootNode, VERSION);
+        zooKeeper.delete(rootNode, Constants.VERSION);
     }
     
     public String getDataString(final String key) throws KeeperException, InterruptedException {
@@ -80,9 +79,9 @@ public class UsualClient extends BaseClient {
             }
             System.out.println("not exist:" + nodes.get(i));
             if (i == nodes.size() - 1){
-                createInTransaction(nodes.get(i), value.getBytes(StringUtil.UTF_8), createMode, transaction);
+                createCurrentOnly(nodes.get(i), value, createMode);
             } else {
-                createInTransaction(nodes.get(i), NOTHING_DATA, createMode, transaction);
+                createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, createMode);
             }
         }
         
@@ -90,113 +89,73 @@ public class UsualClient extends BaseClient {
         transaction.commit();
     }
     
-    private Transaction createInTransaction(final String key, byte[] data, final CreateMode createMode, final Transaction transaction){
-        return transaction.create(PathUtil.getRealPath(rootNode, key), data, authorities, createMode);
-    }
-    
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        zooKeeper.setData(PathUtil.getRealPath(rootNode, key), value.getBytes(StringUtil.UTF_8), VERSION);
+        zooKeeper.setData(PathUtil.getRealPath(rootNode, key), value.getBytes(StringUtil.UTF_8), Constants.VERSION);
     }
     
-    public void updateInTransaction(final String key, final String value) throws KeeperException, InterruptedException {
+    public void updateWithCheck(final String key, final String value) throws KeeperException, InterruptedException {
         String realPath = PathUtil.getRealPath(rootNode, key);
-        zooKeeper.transaction().check(realPath, VERSION).setData(realPath, value.getBytes(StringUtil.UTF_8), VERSION).commit();
+        zooKeeper.transaction().check(realPath, Constants.VERSION).setData(realPath, value.getBytes(StringUtil.UTF_8), Constants.VERSION).commit();
     }
     
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
-        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), VERSION);
+        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION);
+        System.out.println("delete : " + PathUtil.getRealPath(rootNode, key));
     }
     
     private void deleteOnlyCurrent(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
-        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), VERSION);
+        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION);
     }
     
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), VERSION, callback, ctx);
+        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION, callback, ctx);
     }
     
-    public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
-        if (key.indexOf(PathUtil.PATH_SEPARATOR) < -1){
-            this.deleteOnlyCurrent(key);
-            return;
-        }
-        Transaction transaction = zooKeeper.transaction();
-        //todo branch check
-        Stack<String> pathStack = PathUtil.getPathReverseNodes(rootNode, key);
-        while (!pathStack.empty()){
-            String node = pathStack.pop();
-            // contrast cache
-            if (checkExists(node)){
-                transaction.delete(node, VERSION);
-                System.out.println("delete : " + node);
-            }
-        }
-        transaction.commit();
-    }
-    
-    /*
-    * closed beta
-    * 当前实现方法用于缓存方式
-    * 缓存实现后此类判断换为异常方式（包括创建）
-    * 用事务不能用异常
-    */
-    public void deleteAllChild(final String key) throws KeeperException, InterruptedException {
+    public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
         String realPath = PathUtil.getRealPath(rootNode, key);
         try {
             this.deleteOnlyCurrent(realPath);
-            System.out.println("delete : " + realPath);
         }catch (KeeperException.NotEmptyException ee){
             List<String> children = this.getChildren(realPath);
             for (String child : children) {
                 child = realPath + PathUtil.PATH_SEPARATOR + child;
-                this.deleteAllChild(child);
+                this.deleteAllChildren(child);
             }
             this.deleteOnlyCurrent(realPath);
-            System.out.println("delete : " + realPath);
         } catch (KeeperException.NoNodeException ee){
             System.out.println(ee.getMessage());
             return;
         }
     }
     
-    void registerWatch(final Listener listener){
-        if (watchRegistered){
+    /*
+    * delete the current node with force and delete the super node whose only child node is current node recursively
+    */
+    public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
+        String path = PathUtil.getRealPath(rootNode, key);
+        this.deleteAllChildren(path);
+        String superPath = path.substring(0, path.lastIndexOf(PathUtil.PATH_SEPARATOR));
+        try {
+            this.deleteRecursively(superPath);
+        } catch (KeeperException.NotEmptyException ee){
             return;
         }
-        watchRegistered = true;
-        watchers.put(rootNode, new Watcher() {
-            @Override
-            public void process(WatchedEvent event) {
-                listener.process(event);
-            }
-        });
-    }
-
-    public Watcher registerWatch(final String key, final Listener listener){
-        String path = PathUtil.getRealPath(rootNode, key);
-//        listener.setKey(path);
-        Watcher watcher = new Watcher() {
-            @Override
-            public void process(WatchedEvent event) {
-                listener.process(event);
-            }
-        };
-        watchers.put(path, watcher);
-        return watcher;
     }
     
-    public void unregisterWatch(final String key){
-        if (StringUtil.isNullOrBlank(key)){
-            throw new IllegalArgumentException("key should not be blank");
+    private void deleteRecursively(final String path) throws KeeperException, InterruptedException {
+        int index = path.lastIndexOf(PathUtil.PATH_SEPARATOR);
+        if (index < 0){
+            return;
         }
-        String path = PathUtil.getRealPath(rootNode, key);
-        if (watchers.containsKey(path)){
-            watchers.remove(path);
+        String superPath = path.substring(0, index);
+        try {
+            this.deleteOnlyCurrent(path);
+            this.deleteRecursively(superPath);
+        } catch (KeeperException.NotEmptyException ee){
+            List<String> children = this.getChildren(path);
+            children.forEach((c) -> System.out.println(path + " exist other children " + c));
+            return;
         }
-    }
-    
-    public void close() throws InterruptedException {
-        zooKeeper.close();
     }
 }
 

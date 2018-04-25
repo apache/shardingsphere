@@ -1,5 +1,9 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.untils.Listener;
+import com.saaavsaaa.client.untils.PathUtil;
+import com.saaavsaaa.client.untils.Properties;
+import com.saaavsaaa.client.untils.StringUtil;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
@@ -7,9 +11,6 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,10 +21,8 @@ import java.util.concurrent.CountDownLatch;
  */
 public abstract class BaseClient {
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
-    private static final boolean WATCH_ON = true;
-    public static final int VERSION = -1;
-    public static final byte[] NOTHING_DATA = new byte[0];
     protected static final Map<String, Watcher> watchers = new ConcurrentHashMap<>();
+    private boolean watchRegistered = false;
     
     private final String servers;
     private final int sessionTimeOut;
@@ -42,7 +41,7 @@ public abstract class BaseClient {
         CONNECTED.await();
     }
     
-    public ZooKeeper getZooKeeper(){
+    ZooKeeper getZooKeeper(){
         return zooKeeper;
     }
     
@@ -59,11 +58,51 @@ public abstract class BaseClient {
                 if (watchers.containsKey(rootNode)){
                     watchers.get(rootNode).process(event);
                 }
-                if (WATCH_ON && watchers.containsKey(event.getPath())){
+                if (Properties.WATCH_ON && watchers.containsKey(event.getPath())){
                      watchers.get(event.getPath()).process(event);
                 }
             }
         };
+    }
+    
+    void registerWatch(final Listener listener){
+        if (watchRegistered){
+            return;
+        }
+        watchRegistered = true;
+        watchers.put(rootNode, new Watcher() {
+            @Override
+            public void process(WatchedEvent event) {
+                listener.process(event);
+            }
+        });
+    }
+    
+    public Watcher registerWatch(final String key, final Listener listener){
+        String path = PathUtil.getRealPath(rootNode, key);
+//        listener.setKey(path);
+        Watcher watcher = new Watcher() {
+            @Override
+            public void process(WatchedEvent event) {
+                listener.process(event);
+            }
+        };
+        watchers.put(path, watcher);
+        return watcher;
+    }
+    
+    public void unregisterWatch(final String key){
+        if (StringUtil.isNullOrBlank(key)){
+            throw new IllegalArgumentException("key should not be blank");
+        }
+        String path = PathUtil.getRealPath(rootNode, key);
+        if (watchers.containsKey(path)){
+            watchers.remove(path);
+        }
+    }
+    
+    public void close() throws InterruptedException {
+        zooKeeper.close();
     }
     
     void setRootNode(String rootNode) {
