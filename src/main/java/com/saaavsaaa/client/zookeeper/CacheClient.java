@@ -23,7 +23,7 @@ public final class CacheClient extends UsualClient {
     * closed beta
     */
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (key.indexOf(PathUtil.PATH_SEPARATOR) < -1){
+        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
             this.createCurrentOnly(key, value, createMode);
             return;
         }
@@ -38,7 +38,7 @@ public final class CacheClient extends UsualClient {
             }
             System.out.println("not exist:" + nodes.get(i));
             if (i == nodes.size() - 1){
-                createInTransaction(nodes.get(i), value.getBytes(StringUtil.UTF_8), createMode, transaction);
+                createInTransaction(nodes.get(i), value.getBytes(Constants.UTF_8), createMode, transaction);
             } else {
                 createInTransaction(nodes.get(i), Constants.NOTHING_DATA, createMode, transaction);
             }
@@ -71,7 +71,7 @@ public final class CacheClient extends UsualClient {
     
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
-        if (key.indexOf(PathUtil.PATH_SEPARATOR) < -1){
+        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
             this.deleteOnlyCurrent(key);
             return;
         }

@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.untils.Constants;
 import com.saaavsaaa.client.untils.Listener;
 import com.saaavsaaa.client.untils.PathUtil;
 import com.saaavsaaa.client.untils.StringUtil;
@@ -63,9 +64,9 @@ public class UsualClientTest {
     @Test
     public void createRoot() throws KeeperException, InterruptedException {
         client.createNamespace();
-        assert client.getZooKeeper().exists(PathUtil.PATH_SEPARATOR + ROOT, false) != null;
+        assert client.getZooKeeper().exists(Constants.PATH_SEPARATOR + ROOT, false) != null;
         client.deleteNamespace();
-        assert client.getZooKeeper().exists(PathUtil.PATH_SEPARATOR + ROOT, false) == null;
+        assert client.getZooKeeper().exists(Constants.PATH_SEPARATOR + ROOT, false) == null;
     }
     
     @Test
@@ -304,7 +305,7 @@ public class UsualClientTest {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                String result = null == data ? null : new String(data, StringUtil.UTF_8);
+                String result = null == data ? null : new String(data, Constants.UTF_8);
                 eventListener.onChange(new DataChangedEvent(getEventType(event, result), event.getPath(), result));
             }
         

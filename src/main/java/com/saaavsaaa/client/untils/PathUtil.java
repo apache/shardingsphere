@@ -7,7 +7,6 @@ import java.util.*;
  * Created by aaa on 18-4-18.
  */
 public class PathUtil {
-    public static final String PATH_SEPARATOR = "/";
     
     public static String getRealPath(final String root, final String path){
         return adjustPath(root, path);
@@ -17,11 +16,11 @@ public class PathUtil {
         if (StringUtil.isNullOrBlank(path)){
             throw new IllegalArgumentException("path should have content!");
         }
-        if (!root.startsWith(PATH_SEPARATOR)){
-            root = PATH_SEPARATOR + root;
+        if (!root.startsWith(Constants.PATH_SEPARATOR)){
+            root = Constants.PATH_SEPARATOR + root;
         }
-        if (!path.startsWith(PATH_SEPARATOR)){
-            path = PATH_SEPARATOR + path;
+        if (!path.startsWith(Constants.PATH_SEPARATOR)){
+            path = Constants.PATH_SEPARATOR + path;
         }
         if (!path.startsWith(root)){
             return root + path;
@@ -34,11 +33,11 @@ public class PathUtil {
         path = adjustPath(root, path);
         Stack<String> pathStack = new Stack<>();
         int index = 1;
-        int position = path.indexOf(PATH_SEPARATOR, index);
+        int position = path.indexOf(Constants.PATH_SEPARATOR, index);
         do{
             pathStack.push(path.substring(0, position));
             index = position + 1;
-            position = path.indexOf(PATH_SEPARATOR, index);
+            position = path.indexOf(Constants.PATH_SEPARATOR, index);
         }
         while (position > -1);
         pathStack.push(path);
@@ -49,12 +48,12 @@ public class PathUtil {
         path = adjustPath(root, path);
         List<String> paths = new ArrayList<>();
         int index = 1;
-        int position = path.indexOf('/', index);
+        int position = path.indexOf(Constants.PATH_SEPARATOR, index);
     
         do{
             paths.add(path.substring(0, position));
             index = position + 1;
-            position = path.indexOf('/', index);
+            position = path.indexOf(Constants.PATH_SEPARATOR, index);
         }
         while (position > -1);
         paths.add(path);
@@ -105,11 +104,11 @@ public class PathUtil {
             throw new IllegalArgumentException("path should not be null");
         }
         if(path.charAt(0) != 47 || path.charAt(path.length() - 1) == 47){
-            path = PATH_SEPARATOR + path;
+            path = Constants.PATH_SEPARATOR + path;
         }
     
         if(path.charAt(path.length() - 1) == 47){
-            path = PATH_SEPARATOR + path;
+            path = Constants.PATH_SEPARATOR + path;
         }
 
         char previous = 47;

@@ -57,14 +57,14 @@ public class UsualClient extends BaseClient {
     }
     
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        zooKeeper.create(PathUtil.getRealPath(rootNode, key), value.getBytes(StringUtil.UTF_8), authorities, createMode);
+        zooKeeper.create(PathUtil.getRealPath(rootNode, key), value.getBytes(Constants.UTF_8), authorities, createMode);
     }
     
     /*
     * closed beta
     */
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (key.indexOf(PathUtil.PATH_SEPARATOR) < -1){
+        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
             this.createCurrentOnly(key, value, createMode);
             return;
         }
@@ -90,12 +90,12 @@ public class UsualClient extends BaseClient {
     }
     
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        zooKeeper.setData(PathUtil.getRealPath(rootNode, key), value.getBytes(StringUtil.UTF_8), Constants.VERSION);
+        zooKeeper.setData(PathUtil.getRealPath(rootNode, key), value.getBytes(Constants.UTF_8), Constants.VERSION);
     }
     
     public void updateWithCheck(final String key, final String value) throws KeeperException, InterruptedException {
         String realPath = PathUtil.getRealPath(rootNode, key);
-        zooKeeper.transaction().check(realPath, Constants.VERSION).setData(realPath, value.getBytes(StringUtil.UTF_8), Constants.VERSION).commit();
+        zooKeeper.transaction().check(realPath, Constants.VERSION).setData(realPath, value.getBytes(Constants.UTF_8), Constants.VERSION).commit();
     }
     
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
@@ -118,7 +118,7 @@ public class UsualClient extends BaseClient {
         }catch (KeeperException.NotEmptyException ee){
             List<String> children = this.getChildren(realPath);
             for (String child : children) {
-                child = realPath + PathUtil.PATH_SEPARATOR + child;
+                child = realPath + Constants.PATH_SEPARATOR + child;
                 this.deleteAllChildren(child);
             }
             this.deleteOnlyCurrent(realPath);
@@ -134,7 +134,7 @@ public class UsualClient extends BaseClient {
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         String path = PathUtil.getRealPath(rootNode, key);
         this.deleteAllChildren(path);
-        String superPath = path.substring(0, path.lastIndexOf(PathUtil.PATH_SEPARATOR));
+        String superPath = path.substring(0, path.lastIndexOf(Constants.PATH_SEPARATOR));
         try {
             this.deleteRecursively(superPath);
         } catch (KeeperException.NotEmptyException ee){
@@ -143,7 +143,7 @@ public class UsualClient extends BaseClient {
     }
     
     private void deleteRecursively(final String path) throws KeeperException, InterruptedException {
-        int index = path.lastIndexOf(PathUtil.PATH_SEPARATOR);
+        int index = path.lastIndexOf(Constants.PATH_SEPARATOR);
         if (index < 0){
             return;
         }
