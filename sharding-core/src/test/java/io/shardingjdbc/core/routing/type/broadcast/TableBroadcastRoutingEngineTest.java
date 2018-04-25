@@ -19,20 +19,20 @@ package io.shardingjdbc.core.routing.type.broadcast;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.routing.type.RoutingResult;
+import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingjdbc.core.parsing.parser.sql.dql.DQLStatement;
+import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-
-public final class DatabaseBroadcastRoutingEngineTest {
+public final class TableBroadcastRoutingEngineTest {
     
-    private DatabaseBroadcastRoutingEngine databaseBroadcastRoutingEngine;
+    private ShardingRule shardingRule;
+    
+    private DDLStatement ddlStatement;
     
     @Before
     public void setEngineContext() {
@@ -40,13 +40,22 @@ public final class DatabaseBroadcastRoutingEngineTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("t_order");
         tableRuleConfig.setActualDataNodes("ds${0..1}.t_order_${0..2}");
+        tableRuleConfig.setLogicIndex("t_order_index");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
-        databaseBroadcastRoutingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
+        shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
+        ddlStatement = new DDLStatement();
     }
     
     @Test
-    public void assertRoute() {
-        assertThat(databaseBroadcastRoutingEngine.route(), instanceOf(RoutingResult.class));
+    public void assertRouteWithoutLogicTableNames() {
+        TableBroadcastRoutingEngine tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(shardingRule, new DQLStatement());
+        tableBroadcastRoutingEngine.route();
+    }
+    
+    @Test
+    public void assertRouteWithLogicTableNames() {
+        ddlStatement.getSqlTokens().add(new IndexToken(13, "t_order_index", "t_order"));
+        TableBroadcastRoutingEngine tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(shardingRule, ddlStatement);
+        tableBroadcastRoutingEngine.route();
     }
 }
