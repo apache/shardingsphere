@@ -6,7 +6,7 @@ weight = 1
 
 ## Example
 
-## Sharding 
+### Sharding 
 
 ```java
      DataSource getShardingDataSource() throws SQLException {
@@ -42,7 +42,7 @@ weight = 1
      }
 ```
 
-## Read-write splitting
+### Read-write splitting
  
 ```java
      DataSource getMasterSlaveDataSource() throws SQLException {
@@ -62,7 +62,7 @@ weight = 1
      }
 ```
 
-#### Sharding + Read-write splitting 
+### Sharding + Read-write splitting 
 
 ```java
     DataSource getShardingDataSource() throws SQLException {
@@ -128,7 +128,7 @@ weight = 1
     }
 ```
 
-### Orchestration by Zookeeper 
+### Orchestration by Zookeeper
 
 ```java
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
@@ -172,25 +172,25 @@ weight = 1
 
 #### ShardingRuleConfiguration
 
-| *Name*                                    | *DataType*           | *Description*                                                                                   |
-| ----------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------- |
-| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | Table rule configuration                                                  |
-| bindingTableGroups (?)                    | Collection\<String\>                       | Binding table groups                                                      |
-| defaultDataSourceName (?)                 | String                                     | If table not configure at table rule, will route to defaultDataSourceName |
-| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | The default strategy for sharding databases                               |
-| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | The default strategy for sharding tables                                  |
-| defaultKeyGenerator (?)                   | KeyGenerator                               | The default key generator                                                 |
-| masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write splitting rule configuration                                   |
+| *Name*                                    | *DataType*           | *Description*                                                                                                   |
+| ----------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | Table rule configuration                                                                  |
+| bindingTableGroups (?)                    | Collection\<String\>                       | Binding table groups                                                                      |
+| defaultDataSourceName (?)                 | String                                     | If table not configure at table rule, will route to defaultDataSourceName                 |
+| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default strategy for sharding databases                                                   |
+| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default strategy for sharding tables                                                      |
+| defaultKeyGenerator (?)                   | KeyGenerator                               | Default key generator, default value is `io.shardingjdbc.core.keygen.DefaultKeyGenerator` |
+| masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write splitting rule configuration                                                   |
 
 #### TableRuleConfiguration
 
 | *Name*                             | *DataType*                    | *Description*                                                                                                                                                                                         |
 | ---------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| logicTable                         | String                        | Logic table name                                                                                                                                                                                      |
+| logicTable                         | String                        | Name of logic table                                                                                                                                                                                   |
 | actualDataNodes (?)                | String                        | Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl_${0..7} |
 | databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | Databases sharding strategy, use default databases sharding strategy if absent                                                                                                                        |
 | tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | Tables sharding strategy, use default databases sharding strategy if absent                                                                                                                           |
-| logicIndex (?)                     | String                        | The Logic index name. If use *DROP INDEX XXX* SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables                                                                   |
+| logicIndex (?)                     | String                        | Name if logic index. If use *DROP INDEX XXX* SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables                                                                    |
 | keyGeneratorColumnName (?)         | String                        | Key generator column name, do not use Key generator if absent                                                                                                                                         |
 | keyGenerator (?)                   | KeyGenerator                  | Key generator, use default key generator if absent                                                                                                                                                    |
 
@@ -198,20 +198,20 @@ weight = 1
 
 Subclass of ShardingStrategyConfiguration.
 
-| *Name*                     | *DataType*               | *Description*                                |
-| -------------------------- | ------------------------ | -------------------------------------------- |
-| shardingColumn             | String                   | Name of sharding column                      |
-| preciseShardingAlgorithm   | PreciseShardingAlgorithm | Precise sharding algorithm used for = and IN |
-| rangeShardingAlgorithm (?) | RangeShardingAlgorithm   | Range sharding algorithm used for BETWEEN    |
+| *Name*                     | *DataType*               | *Description*                                    |
+| -------------------------- | ------------------------ | ------------------------------------------------ |
+| shardingColumn             | String                   | Name of sharding column                          |
+| preciseShardingAlgorithm   | PreciseShardingAlgorithm | Precise sharding algorithm used for `=` and `IN` |
+| rangeShardingAlgorithm (?) | RangeShardingAlgorithm   | Range sharding algorithm used for `BETWEEN`      |
 
 #### ComplexShardingStrategyConfiguration
 
 Subclass of ShardingStrategyConfiguration.
 
-| *Name*            | *DataType*                   | *Description*                                                     |
-| ----------------- | ---------------------------- | ----------------------------------------------------------------- |
-| shardingColumns   | String                       | Names of sharding columns. Multiple names separated with commas   |
-| shardingAlgorithm | ComplexKeysShardingAlgorithm | Complex sharding algorithm                                        |
+| *Name*            | *DataType*                   | *Description*                                                  |
+| ----------------- | ---------------------------- | -------------------------------------------------------------- |
+| shardingColumns   | String                       | Names of sharding columns. Multiple names separated with comma |
+| shardingAlgorithm | ComplexKeysShardingAlgorithm | Complex sharding algorithm                                     |
 
 #### InlineShardingStrategyConfiguration
 
@@ -238,10 +238,10 @@ Subclass of ShardingStrategyConfiguration.
 
 Enumeration of properties.
 
-| *Name*            | *DataType* | *Description*                             |
-| ----------------- | ---------- | ----------------------------------------- |
-| sql.show (?)      | boolean    | To show SQLS or not, the default is false |
-| executor.size (?) | int        | The number of working threads             |
+| *Name*            | *DataType* | *Description*                                           |
+| ----------------- | ---------- | ------------------------------------------------------- |
+| sql.show (?)      | boolean    | To show SQLS or not, default value: false               |
+| executor.size (?) | int        | The number of working threads, default value: CPU count |
 
 #### configMap
 
@@ -259,12 +259,12 @@ User-defined arguments.
 
 #### MasterSlaveRuleConfiguration
 
-| *Name*                   | *DataType*                      | *Description*               |
-| ------------------------ | ------------------------------- | --------------------------- |
-| name                     | String                          | Name of master slave rule   |
-| masterDataSourceName     | String                          | Name of master data source  |
-| slaveDataSourceNames     | Collection\<String\>            | Names of Slave data sources |
-| loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | Load balance algorithm      |
+| *Name*                   | *DataType*                      | *Description*                    |
+| ------------------------ | ------------------------------- | -------------------------------- |
+| name                     | String                          | Name of master slave data source |
+| masterDataSourceName     | String                          | Name of master data source       |
+| slaveDataSourceNames     | Collection\<String\>            | Names of Slave data sources      |
+| loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | Load balance algorithm           |
 
 #### configMap
 
@@ -296,9 +296,9 @@ User-defined arguments.
 | *Name*          | *DataType*                  | *Description*                                                       |
 | --------------- | --------------------------- | ------------------------------------------------------------------- |
 | name            | String                      | Name of orchestration instance                                      |
-| regCenterConfig | RegistryCenterConfiguration | Registry center configuration                                       |
 | overwrite       | boolean                     | Use local configuration to overwrite registry center or not         |
-| type            | String                      | Data source type, values should one of `sharding` and `masterslave` |
+| type            | String                      | Data source type, values should be: `sharding` or `masterslave`     |
+| regCenterConfig | RegistryCenterConfiguration | Registry center configuration                                       |
 
 #### ZookeeperConfiguration
 
@@ -308,8 +308,8 @@ Subclass of RegistryCenterConfiguration.
 | ----------------------------- | ---------- | ------------------------------------------------------------------------------- |
 | serverLists                   | String     | Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181 |
 | namespace                     | String     | Namespace of zookeeper                                                          |
-| baseSleepTimeMilliseconds (?) | int        | Base sleep milliseconds, default value is 1000 milliseconds                     |
-| maxSleepTimeMilliseconds (?)  | int        | Maximum sleep milliseconds, default value is 3000 milliseconds                  |
+| baseSleepTimeMilliseconds (?) | int        | Initial milliseconds of waiting for retry, default value is 1000 milliseconds   |
+| maxSleepTimeMilliseconds (?)  | int        | Maximum milliseconds of waiting for retry, default value is 3000 milliseconds   |
 | maxRetries (?)                | int        | Max retries times if connect failure, default value is 3                        |
 | sessionTimeoutMilliseconds    | int        | Session timeout milliseconds                                                    |
 | connectionTimeoutMilliseconds | int        | Connection timeout milliseconds                                                 |

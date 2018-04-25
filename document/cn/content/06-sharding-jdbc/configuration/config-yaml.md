@@ -122,28 +122,28 @@ dataSources: # 数据源配置，可配置多个data_source_name
 shardingRule:
   tables: # 数据分片规则配置，可配置多个logic_table_name
     <logic_table_name>: # 逻辑表名称
-        actualDataNodes: # 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况
+      actualDataNodes: # 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况
         
-        databaseStrategy: # 分库策略，不填写表示使用默认分库策略，以下的分片策略只能选其一
-            standard: # 用于单分片键的标准分片场景
-                shardingColumn: # 分片列名称
-                preciseAlgorithmClassName: # 精确分片算法类名称，用于=和IN。该类需提供无参数构造器
-                rangeAlgorithmClassName: # 范围分片算法类名称，用于BETWEEN，可选。该类提供无参数构造器
-            complex: # 用于多分片键的复合分片场景
-                shardingColumns : # 分片列名称，多个列以逗号分隔
-                algorithmClassName: # 复合分片算法类名称。该类需提供无参数构造器
-            inline: # 行表达式分片策略
-                shardingColumn : # 分片列名称
-                algorithmInlineExpression: # 分片算法行表达式，需符合groovy语法
-            hint: # Hint分片策略
-                algorithmClassName: # Hint分片算法类名称。该类需提供无参数的构造器
-            none: # 不分片
-        tableStrategy: # 分表策略，同分库策略
+      databaseStrategy: # 分库策略，不填写表示使用默认分库策略，以下的分片策略只能选其一
+        standard: # 用于单分片键的标准分片场景
+          shardingColumn: # 分片列名称
+          preciseAlgorithmClassName: # 精确分片算法类名称，用于=和IN。该类需提供无参数构造器
+          rangeAlgorithmClassName: # 范围分片算法类名称，用于BETWEEN，可选。该类提供无参数构造器
+        complex: # 用于多分片键的复合分片场景
+          shardingColumns : # 分片列名称，多个列以逗号分隔
+          algorithmClassName: # 复合分片算法类名称。该类需提供无参数构造器
+        inline: # 行表达式分片策略
+          shardingColumn : # 分片列名称
+          algorithmInlineExpression: # 分片算法行表达式，需符合groovy语法
+        hint: # Hint分片策略
+          algorithmClassName: # Hint分片算法类名称。该类需提供无参数的构造器
+        none: # 不分片
+      tableStrategy: # 分表策略，同分库策略
         
-        keyGeneratorColumnName: # 自增列名称，不填写表示不使用自增主键生成器
-        keyGeneratorClass: # 自增列值生成器类名称。该类需提供无参数的构造器
+      keyGeneratorColumnName: # 自增列名称，不填写表示不使用自增主键生成器
+      keyGeneratorClass: # 自增列值生成器类名称。该类需提供无参数的构造器
         
-        logicIndex: # 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表
+      logicIndex: # 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表
   bindingTables: # 绑定表规则列表
   - <logic_table_name_1, logic_table_name_2, ...> 
   - <logic_table_name_3, logic_table_name_4, ...> 
@@ -281,14 +281,14 @@ jobConfig:
   # 每次作业获取的事务日志最大数量
   transactionLogFetchDataCount: 100
   
-  # 事务送达的最大尝试次数.
+  # 事务送达的最大尝试次数
   maxDeliveryTryTimes: 3
   
   # 执行送达事务的延迟毫秒数,早于此间隔时间的入库事务才会被作业执行
   maxDeliveryTryDelayMillis: 60000
 ```
 
-## YAML语法说明
+## Yaml语法说明
 
 `!!` 表示实例化该类
 

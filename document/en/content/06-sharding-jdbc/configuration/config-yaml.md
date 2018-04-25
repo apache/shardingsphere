@@ -1,35 +1,23 @@
 +++
 toc = true
-title = "YAML"
+title = "Yaml"
 weight = 2
 +++
 
+## Example
 
-## YAML configuration
+### Sharding
 
-### Import the dependency of maven
-
-```xml
-<dependency>
-    <groupId>io.shardingjdbc</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
-    <version>${latest.release.version}</version>
-</dependency>
-```
-
-### Configuration Example
-
-#### Sharding 
 ```yaml
 dataSources:
   ds_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_0
+    url: jdbc:mysql://localhost:3306/ds_0
     username: root
     password: 
   ds_1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_1
+    url: jdbc:mysql://localhost:3306/ds_1
     username: root
     password: 
 
@@ -44,7 +32,6 @@ shardingRule:
       keyGeneratorColumnName: order_id
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-      # t_order and t_order are all bindingTables of each other because of their same sharding strategies.
       tableStrategy:
         inline:
           shardingColumn: order_id
@@ -53,7 +40,6 @@ shardingRule:
   bindingTables:
     - t_order,t_order_item
   
-  # The default sharding strategy
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
@@ -65,395 +51,190 @@ shardingRule:
   
   props:
     sql.show: true
-
 ```
 
-##### The config items for Sharding
-
-```yaml
-dataSources: # Config for data source
-  <data_source_name> # Config for DB connection pool class. One or many configs are ok.
-    driverClassName: # Class name for database driver.
-    url: # The url for database connection.
-    username: # Username used to access DB.
-    password: # Password used to access DB.
-    ... # Other configs for connection pool.
-
-defaultDataSourceName: # Default datasource. Notice: Tables without sharding rules are accessed by using the default data source.
-
-tables: # The config for sharding, One or many configs for logic_table_name are ok.
-    <logic_table_name>: # Table name for LogicTables
-        actualDataNodes: # Actual data nodes configured in the format of *datasource_name.table_name*, multiple configs spliced with commas, supporting the inline expression. The default value is composed of configured datasources and logic table. This default config is to generate broadcast table (*The same table existed in every DB for cascade query*) or to split databases without spliting tables.
-        databaseStrategy: # Strategy for sharding databases, only one strategy can be chosen from following strategies:
-            standard: # Standard sharding strategy for single sharding column.
-                shardingColumn: # Sharding Column
-                preciseAlgorithmClassName: # The class name for precise-sharding-algorithm used for = and IN. The default constructor or on-parametric constructor is needed.
-                rangeAlgorithmClassName: # (Optional) The class name for range-sharding-algorithm used for BETWEEN. The default constructor or on-parametric constructor is needed.
-            complex: # Complex sharding strategy for multiple sharding columns.
-                shardingColumns : # Sharding Column, multiple sharding columns spliced with commas. 
-                algorithmClassName: # The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed.
-            inline: inline # Inline sharding strategy.
-                shardingColumn : # Sharding Column
-                algorithmInlineExpression: #  The inline expression conformed to groovy dynamic syntax for sharding. 
-            hint: # Hint sharding strategy
-                algorithmClassName: # The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed.
-            none: # No sharding
-        tableStrategy: # Strategy for sharding tables. The details is same as Strategy for sharding databases.
-  bindingTables: # Config for Blinding tables
-  - A list of logic_table_name, multiple logic_table_names spliced with commas.
-  
-defaultDatabaseStrategy: # Default strategy for sharding databases. The details is same as databaseStrategy.
- 
-defaultTableStrategy: # Default strategy for sharding databases. The details is same as tableStrategy.
-
-props: Property Configuration (Optional)
-    sql.show: # To show SQL or not. Default: false
-    executor.size: # The number of running thread. Default: The number of CPU cores.
-```
-
-#### The construction method for data source of Sharding
-
-```java
-    DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
-```
-
-#### Read-write splitting Configuration
+### Read-write splitting
 
 ```yaml
 dataSources:
   ds_master: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_master
+    url: jdbc:mysql://localhost:3306/ds_master
     username: root
     password: 
   ds_slave_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_slave_0
+    url: jdbc:mysql://localhost:3306/ds_slave_0
     username: root
     password: 
   ds_slave_1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_slave_1
+    url: jdbc:mysql://localhost:3306/ds_slave_1
     username: root
     password: 
 
 masterSlaveRule:
-  name: 
-    ds_ms
-  masterDataSourceName:
-    ds_master
-  slaveDataSourceNames: [ds_slave_0, ds_slave_1]
-
+  name: ds_ms
+  masterDataSourceName: ds_master
+  slaveDataSourceNames: 
+    - ds_slave_0
+    - ds_slave_1
 ```
 
-##### The config items for Read-write splitting
+### Orchestration by Zookeeper
 
 ```yaml
-dataSource: # Config for data sourc same as previous dataSource.
-
-name: # Data source name for sharding.
-
-masterDataSourceName: Datasource name for Master datasource
-
-slaveDataSourceNames：Datasource name for Slave datasource, multiple datasource put in an Array.
-```
-
-##### The construction method for data source of Read-write splitting
-
-```java
-    DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
-```
-
-##### More detail on YAML Configuration
-
-!! :implementation class.
-
-[] :multiple items.
-
-(Refer to [YAML](http://yaml.org/))
-
-
-##### Introduction for config items
-
-##### Sharding
-
-##### YamlShardingRuleConfiguration
-
-| *Name*                        | *DataType*  |  *Required* | *Info*                                                                |
-| ------------------------------- | ---------- | ------ | --------------------------------------------------------------------- |
-| defaultDataSourceName?     | String      |   N   | The default data source.                           |
-| tables | Map\<String, YamlTableRuleConfiguration\> | Y |  The list of table rules. |
-| defaultDatabaseStrategy? | YamlShardingStrategyConfiguration      |   N   | The default strategy for sharding databases.   |
-| defaultTableStrategy?    | YamlShardingStrategyConfiguration      |   N   | The default strategy for sharding tables.   |
-| defaultKeyGeneratorClass? | String |N|The class name of key generator.
-| configMap?                    |   Map\<String, Object\>         |   N   |  config map.                                                            |
-| props?                        |   Properties         |   N   | Property Config.     |
-| bindingTables?            | List\<String\>      | N|  Blinding Rule|
-| masterSlaveRules? | Map\<String, YamlMasterSlaveRuleConfiguration\>|N|The read-write-splitting configs.|
-
-
-##### YamlTableRuleConfiguration
-
-| *Name*                        | *DataType*  |  *Required* | *Info*  |
-| --------------------         | ---------- | ------ | ------- |
-| logicTable                 |  String     |   Y   | LogicTables. |
-| actualDataNodes?             |  String     |   N   | Actual data nodes configured in the format of *datasource_name.table_name*, multiple configs separated with commas.|
-| databaseStrategy?      |  YamlShardingStrategyConfiguration     |   N   | The strategy for sharding databases.  |
-| tableStrategy?            |  YamlShardingStrategyConfiguration     |   N   | The strategy for sharding tables.       |
-| logicIndex?                   |  String     |   N   |The Logic index name. If you want to use *DROP INDEX XXX* SQL in Oracle/PostgreSQL，This property needs to be set for finding the actual tables.      |
-| keyGeneratorColumnName? | String | N |  The generate column.|
-| keyGeneratorClass?  | String | N| The class name of key generator.|
-
-
-##### YamlStandardShardingStrategyConfiguration
-
-The standard sharding strategy for single sharding column
-
-| *Name*                        | *DataType*  |  *Required* | *Info*                                                               |
-| ------------------------------ | ---------- | ------ | --------------------------------------------------------------------- |
-| shardingColumn             |  String     |   Y   | 分片列名                                                               |
-| preciseAlgorithmClassName      |  String     |   Y   | The class name for precise-sharding-algorithm used for = and IN. The default constructor or on-parametric constructor is needed.    |
-| rangeAlgorithmClassName?      |  String     |   N   | The class name for range-sharding-algorithm used for BETWEEN. The default constructor or on-parametric constructor is needed. |
-
-
-##### YamlComplexShardingStrategyConfiguration
-
-The complex sharding strategy for multiple sharding columns.
-
-| *Name*                        | *DataType*  |  *Required* | *Info*                                             |
-| ------------------------------ | ---------- | ------ | --------------------------------------------------- |
-| shardingColumns             |  String     |   Y  | The name of sharding column. Multiple names separated with commas.                             |
-| algorithmClassName             |  String     |   Y  | The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
-
-##### InlineShardingStrategyConfiguration
-
-The inline-expression sharding strategy.
-
-| *Name*                        | *DataType*  |  *Required* | *Info*       |
-| ------------------------------- | ---------- | ------ | ------------ |
-| shardingColumn              |  String     |   Y   | The name of sharding column.       |
-| algorithmExpression    |  String     |   Y   | The expression for sharding algorithm. |
-
-##### HintShardingStrategyConfiguration
-
-The Hint-method sharding strategy.
-
-| *Name*                        | *DataType*  |  *Required* | *Info*                                              |
-| ------------------------------- | ---------- | ------ | --------------------------------------------------- |
-| algorithmClassName            |  String     |   Y  |  The class name for sharding-algorithm. The default constructor or on-parametric constructor is needed. |
-
-##### NoneShardingStrategyConfiguration
-
-The none sharding strategy.
-
-##### ShardingPropertiesConstant
-
-| *Name*                        | *DataType*  |  *Required* | *Info*                             |
-| -------------------------------- | ---------- | ----- | ----------------------------------- |
-| sql.show                               |  boolean   |   Y   | To show SQLS or not, the default is false.   |
-| executor.size?                         |  int       |   N   |  The number of running threads.                      |
-
-##### configMap
-
-##### Read-write-splitting
-
-##### YamlMasterSlaveRuleConfiguration
-
-| *Name*                        | *DataType*  |  *Required* | *Info*                                 |
-| ------------------------------ |  --------- | ------ | ---------------------------------------- |
-| name                        |  String     |   Y   | The name of rule configuration.                              |
-| masterDataSourceName      |   String        |   Y   | The master datasource.                        |
-| slaveDataSourceNames      |   Collection\<String\>       |   Y   | The list of Slave databases, multiple items are separated by commas.         |
-| loadBalanceAlgorithmType?               |  MasterSlaveLoadBalanceAlgorithmType     |   N   |  The complex strategy type of Master-Slaves. <br />The options: ROUND_ROBIN, RANDOM<br />. The default: ROUND_ROBIN |
-| loadBalanceAlgorithmClassName? | String | N| The class name of load balance algorithm of master and slaves.|
-| configMap? | Map\<String, Object\> | N |Config map.|
-
-##### configMap
-
-#### Orchestration
-
-##### The introduction for orchestration configs of Sharding in Zookeeper
-```yaml
-dataSources:
-  db0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
-    maxActive: 100
-  db1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
-    maxActive: 100
-
-shardingRule:
-  tables:
-    config:
-      actualDataNodes: db${0..1}.t_config
-    t_order: 
-      actualDataNodes: db${0..1}.t_order_${0..1}
-      databaseStrategy: 
-        standard:
-          shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
-      tableStrategy: 
-        inline:
-          shardingColumn: order_id
-          algorithmInlineExpression: t_order_${order_id % 2}
-      keyGeneratorColumnName: order_id
-      keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
-    t_order_item:
-      actualDataNodes: db${0..1}.t_order_item_${0..1}
-      #The strategies in other binding tables are same as the first binding table.
-      databaseStrategy: 
-        standard:
-          shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
-      tableStrategy: 
-        inline:
-          shardingColumn: order_id
-          algorithmInlineExpression: t_order_item_${order_id % 2}
-  bindingTables:
-    - t_order,t_order_item
-  #Defaut Sharding strategy
-  defaultDatabaseStrategy:
-    none:
-  defaultTableStrategy:
-    complex:
-      shardingColumns: id, order_id
-      algorithmClassName: io.shardingjdbc.core.yaml.fixture.MultiAlgorithm
-  props:
-    sql.show: true
+# Ignore sharding and master-slave configuration
 
 orchestration:
-  name: demo_yaml_ds_sharding_ms
+  name: orchestration_ds
   overwrite: true
   zookeeper:
-    namespace: orchestration-yaml-demo
+    namespace: orchestration
     serverLists: localhost:2181
 ```
 
-##### The introduction for orchestration configs of Sharding in Etcd
-```yaml
-dataSources:
-  db0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
-    maxActive: 100
-  db1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
-    maxActive: 100
+### Orchestration by Etcd
 
-shardingRule:
-  tables:
-    config:
-      actualDataNodes: db${0..1}.t_config
-    t_order: 
-      actualDataNodes: db${0..1}.t_order_${0..1}
-      databaseStrategy: 
-        standard:
-          shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
-      tableStrategy: 
-        inline:
-          shardingColumn: order_id
-          algorithmInlineExpression: t_order_${order_id % 2}
-      keyGeneratorColumnName: order_id
-      keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
-    t_order_item:
-      actualDataNodes: db${0..1}.t_order_item_${0..1}
-      databaseStrategy: 
-        standard:
-          shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
-      tableStrategy: 
-        inline:
-          shardingColumn: order_id
-          algorithmInlineExpression: t_order_item_${order_id % 2}
-  bindingTables:
-    - t_order,t_order_item
-  # The default strategy of Sharding 
-  defaultDatabaseStrategy:
-    none:
-  defaultTableStrategy:
-    complex:
-      shardingColumns: id, order_id
-      algorithmClassName: io.shardingjdbc.core.yaml.fixture.MultiAlgorithm
-  props:
-    sql.show: true
+```yaml
+# Ignore sharding and master-slave configuration
 
 orchestration:
-  name: demo_yaml_ds_sharding_ms
+  name: orchestration_ds
   overwrite: true
   etcd:
     serverLists: http://localhost:2379
 ```
 
-##### The introduction for orchestration configs of Read-write splitting in Zookeeper
+## Configuration reference
+
+### Sharding
 
 ```yaml
-dataSources: # The config of data source
+dataSources: # Data sources configuration, multiple `data_source_name` available
+  <data_source_name>: # <!!Data source pool implementation class> `!!` means class instantiation
+    driverClassName: # Database driver class name
+    url: # Database URL
+    username: # Database username
+    password: # Database password
+    # ... Other properties for data source pool
 
-shardingRule: # The config of Sharding rules
-
-orchestration: # The orchestration configs in Zookeeper
-  name: # The node name of the orchestration service
-  overwrite: # to decide whether the local configuration can override the registry configuration. If true, the config in each boot is based on the local configuration.
-  zookeeper: # The config of registry in Zookeeper
-    namespace: # The namespace in Zookeeper
-    serverLists: # The server list to connect to Zookeeper, including IP and port, mulitple addresses separated by commas, e.g. host1:2181,host2:2181.
-    baseSleepTimeMilliseconds: # The initial value of the interval for retry, unit: Millisecond.
-    maxSleepTimeMilliseconds: # The max value of the interval for retry, unit: Millisecond.
-    maxRetries: # The number of retry. 
-    sessionTimeoutMilliseconds: # Session timeout, unit: Millisecond.
-    connectionTimeoutMilliseconds: # Connection timeout, unit: Millisecond.
-    digest: # The permission token to connect to Zookeeper, and the default is no permission validation.
+shardingRule:
+  tables: # Sharding rule configuration, multiple `logic_table_name` available
+    <logic_table_name>: # Name of logic table
+      actualDataNodes: # Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl_${0..7}
+        
+      databaseStrategy: # Databases sharding strategy, use default databases sharding strategy if absent. sharding strategy below can choose only one.
+        standard: # Standard sharding scenario for single sharding column
+          shardingColumn: # Name of sharding column
+            preciseAlgorithmClassName: # Precise algorithm class name used for `=` and `IN`. No argument constructor required
+            rangeAlgorithmClassName: # Precise algorithm class name used for `BETWEEN`. No argument constructor required
+          complex: # Complex sharding scenario for multiple sharding columns
+            shardingColumns : # Names of sharding columns. Multiple names separated with comma
+            algorithmClassName: # Complex sharding algorithm class name. No argument constructor required
+          inline: # Inline expression sharding scenario for single sharding column
+            shardingColumn : # Name of sharding column
+            algorithmInlineExpression: # Inline expression for sharding algorithm
+          hint: # Hint sharding strategy
+            algorithmClassName: # Hint sharding algorithm class name. No argument constructor required
+           none: # Do not sharding
+      tableStrategy: # Tables sharding strategy, Same as databases sharding strategy
+        
+      keyGeneratorColumnName: # Key generator column name, do not use Key generator if absent
+      keyGeneratorClass: # Key generator, use default key generator if absent. No argument constructor required
+        
+      logicIndex: # Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables
+  bindingTables: # Binding table rule configurations
+  - <logic_table_name_1, logic_table_name_2, ...> 
+  - <logic_table_name_3, logic_table_name_4, ...> 
+  
+  defaultDataSourceName: # If table not configure at table rule, will route to defaultDataSourceName  
+  defaultDatabaseStrategy: # Default strategy for sharding databases, same as databases sharding strategy
+  defaultTableStrategy: # Default strategy for sharding tables, same as tables sharding strategy
+  defaultKeyGeneratorClass: # Default key generator class name, default value is `io.shardingjdbc.core.keygen.DefaultKeyGenerator`. No argument constructor required
+  
+  masterSlaveRules: # Read-write splitting rule configuration, more details can reference Read-write splitting part
+    <data_source_name>: # Data sources configuration, need consist with data source map, multiple `data_source_name` available
+      masterDataSourceName: # more details can reference Read-write splitting part
+      slaveDataSourceNames: # more details can reference Read-write splitting part
+      loadBalanceAlgorithmType: # more details can reference Read-write splitting part
+      loadBalanceAlgorithmClassName: # more details can reference Read-write splitting part
+  
+  props: # Properties
+    sql.show: # To show SQLS or not, default value: false
+    executor.size: # The number of working threads, default value: CPU count
+    
+  configMap: # User-defined arguments
+    key1: value1
+    key2: value2
 ```
 
-##### The introduction for orchestration configs of Read-write splitting in Etcd
+### Read-write splitting
 
 ```yaml
-dataSources: 
+dataSources: # Ignore data sources configuration, same as sharding
 
-shardingRule:  
-
-orchestration:  
-  name:  
-  overwrite:  
-  etcd: 
-    serverLists: 
-    timeToLiveSeconds: 
-    timeoutMilliseconds: 
-    maxRetries: 
-    retryIntervalMilliseconds: 
+masterSlaveRule:
+  name: # Name of master slave data source
+  masterDataSourceName: # Name of master data source
+  slaveDataSourceNames: # Names of Slave data sources
+    - <data_source_name_1>
+    - <data_source_name_2>
+  loadBalanceAlgorithmType: # Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`
+  loadBalanceAlgorithmClassName: # Load balance algorithm class name. No argument constructor required
+  
+  configMap: # User-defined arguments
+    key1: value1
+    key2: value2
 ```
 
-##### Sharding DataSource Creation
-
-```java
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
-```
-
-##### Read-write splitting DataSource Creation
-
-```java
-    DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(yamlFile);
-```
-
-
-#### B.A.S.E
-
-##### The YAML configuration of asynchronous jobs
+### Orchestration by Zookeeper
 
 ```yaml
-# The target data source.
+dataSources: # Ignore data sources configuration
+shardingRule: # Ignore sharding rule configuration
+masterSlaveRule: # Ignore master slave rule configuration
+
+orchestration:
+  name: # Name of orchestration instance
+  overwrite: # Use local configuration to overwrite registry center or not
+  type: # Data source type, values should be: `sharding` or `masterslave`
+  zookeeper: # Zookeeper configuration
+    serverLists: # Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181
+    namespace: # Namespace of zookeeper
+    baseSleepTimeMilliseconds: # Initial milliseconds of waiting for retry, default value is 1000 milliseconds
+    maxSleepTimeMilliseconds: # Maximum milliseconds of waiting for retry, default value is 3000 milliseconds
+    maxRetries: # Max retries times if connect failure, default value is 3
+    sessionTimeoutMilliseconds: # Session timeout milliseconds
+    connectionTimeoutMilliseconds: # Connection timeout milliseconds
+    digest: # Connection digest
+```
+
+### Orchestration by Etcd
+
+```yaml
+dataSources: # Ignore data sources configuration
+shardingRule: # Ignore sharding rule configuration
+masterSlaveRule: # Ignore master slave rule configuration
+
+orchestration:
+  name: # Same as Zookeeper
+  overwrite: # Same as Zookeeper
+  type: # Same as Zookeeper
+  etcd: # Etcd configuration
+    serverLists: # Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379
+    timeToLiveSeconds: # Time to live of data, default is 60 seconds
+    timeoutMilliseconds: # Timeout milliseconds, default is 500 milliseconds
+    retryIntervalMilliseconds: # Milliseconds of retry interval, default is w00 milliseconds
+    maxRetries: # Max retries times if request failure, default value is 3
+```
+
+## B.A.S.E Transaction
+
+### Yaml configuration of asynchronous jobs
+
+```yaml
+# The target data source
 targetDataSource:
   ds_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
@@ -466,7 +247,7 @@ targetDataSource:
     username: root
     password:
 
-# The data source of transaction logs.
+# The data source of transaction logs
 transactionLogDataSource:
   ds_trans: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
@@ -482,13 +263,13 @@ zkConfig:
   # The namespace of jobs
   namespace: Best-Efforts-Delivery-Job
   
-  # The inital value of the retry interval to connect to the registry.
+  # The inital value of the retry interval to connect to the registry
   baseSleepTimeMilliseconds: 1000
   
-  # The max value of the retry interval to connect to the registry.
+  # The max value of the retry interval to connect to the registry
   maxSleepTimeMilliseconds: 3000
   
-  # The max number of retry to connect to the registry.
+  # The max number of retry to connect to the registry
   maxRetries: 3
 
 # The job configuration
@@ -499,12 +280,20 @@ jobConfig:
   # The cron expression to trigger jobs
   cron: 0/5 * * * * ?
   
-  # The max number of transaction logs for each assignment.
+  # The max number of transaction logs for each assignment
   transactionLogFetchDataCount: 100
   
-  # The max number of retry to send the transactions.
+  # The max number of retry to send the transactions
   maxDeliveryTryTimes: 3
   
   # The number of delayed milliseconds to execute asynchronous transactions. The transactions whose creating time earlier than this value will be executed by asynchronous jobs.
   maxDeliveryTryDelayMillis: 60000
 ```
+
+## Yaml syntax
+
+`!!` means class instantiation
+
+`-` means one or multiple available
+
+`[]` means array, can replace `-` each other
