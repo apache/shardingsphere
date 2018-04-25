@@ -269,16 +269,16 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 读写分离规则配置对象。
 
-| *名称*                    | *数据类型*                       | *说明*         |
-| ------------------------ | ------------------------------- | -------------- |
-| name                     | String                          | 读写分离配置名称 |
-| masterDataSourceName     | String                          | 主库数据源      |
-| slaveDataSourceNames     | Collection\<String\>            | 从库数据源列表   |
-| loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | 主从库访问策略   |
+| *名称*                    | *数据类型*                       | *说明*           |
+| ------------------------ | ------------------------------- | ---------------- |
+| name                     | String                          | 读写分离数据源名称 |
+| masterDataSourceName     | String                          | 主库数据源名称    |
+| slaveDataSourceNames     | Collection\<String\>            | 从库数据源名称列表 |
+| loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | 从库负载均衡算法   |
 
 #### configMap
 
-为用户提供的自定义透传的配置项。
+用户自定义配置。
 
 ### 数据治理
 
@@ -312,33 +312,33 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | *名称*           | *数据类型*                   | *说明*                                                     |
 | --------------- | --------------------------- | ---------------------------------------------------------- |
 | name            | String                      | 数据治理实例名称                                             |
-| regCenterConfig | RegistryCenterConfiguration | 注册中心配置                                                |
 | overwrite       | boolean                     | 本地配置是否覆盖注册中心配置，如果可覆盖，每次启动都以本地配置为准 |
-| type            | String                      | 数据源类型，可选值：sharding，masterslave                     |
+| type            | String                      | 数据源类型，可选值：sharding，masterslave                    |
+| regCenterConfig | RegistryCenterConfiguration | 注册中心配置                                                |
 
 #### ZookeeperConfiguration
 
 RegistryCenterConfiguration的实现类，用于配置Zookeeper注册中心。
 
-| *名称*                         | *数据类型* | *说明*                                                             |
-| ----------------------------- | ---------- | ----------------------------------------------------------------- |
-| serverLists                   | String     | Zookeeper连接地址，多个Zookeeper用逗号分隔，如：host1:2181,host2:2181 |
-| namespace                     | String     | Zookeeper的命名空间                                                |
-| baseSleepTimeMilliseconds (?) | int        | 连接失败的初始等待毫秒数，默认1000毫秒                                |
-| maxSleepTimeMilliseconds (?)  | int        | 连接失败的最大等待毫秒数，默认3000毫秒                                |
-| maxRetries (?)                | int        | 连接失败后的最大重试次数，默认3次                                     |
-| sessionTimeoutMilliseconds    | int        | 会话超时毫秒数                                                      |
-| connectionTimeoutMilliseconds | int        | 连接超时毫秒数                                                      |
-| digest (?)                    | String     | 连接凭证                                                           |
+| *名称*                         | *数据类型* | *说明*                                                                                 |
+| ----------------------------- | ---------- | ------------------------------------------------------------------------------------- |
+| serverLists                   | String     | 连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
+| namespace                     | String     | Zookeeper的命名空间                                                                    |
+| baseSleepTimeMilliseconds (?) | int        | 等待重试的间隔时间的初始毫秒数，默认1000毫秒                                               |
+| maxSleepTimeMilliseconds (?)  | int        | 等待重试的间隔时间的最大毫秒数，默认3000毫秒                                               |
+| maxRetries (?)                | int        | 连接失败后的最大重试次数，默认3次                                                         |
+| sessionTimeoutMilliseconds    | int        | 会话超时毫秒数                                                                          |
+| connectionTimeoutMilliseconds | int        | 连接超时毫秒数                                                                          |
+| digest (?)                    | String     | 连接Zookeeper的权限令牌。缺省为不需要权限验证                                              |
 
 #### EtcdConfiguration
 
 RegistryCenterConfiguration的实现类，用于配置Etcd注册中心。
 
-| *名称*                         | *数据类型* | *说明*                                                                 |
-| ----------------------------- | ---------- | --------------------------------------------------------------------- |
-| serverLists                   | String     | Etcd连接地址，多个Etcd用逗号分隔，如：http://host1:2379,http://host2:2379 |
-| timeToLiveSeconds (?)         | int        | 数据存活秒数，默认60秒                                                   |
-| timeoutMilliseconds (?)       | int        | 请求超时毫秒数，默认500毫秒                                              |
-| retryIntervalMilliseconds (?) | int        | 重试间隔毫秒数，默认200毫秒                                              |
-| maxRetries (?)                | int        | 请求失败后的最大重试次数，默认3次                                         |
+| *名称*                         | *数据类型* | *说明*                                                                                          |
+| ----------------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
+| serverLists                   | String     | 连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379 |
+| timeToLiveSeconds (?)         | int        | 临时节点存活秒数，默认60秒                                                                        |
+| timeoutMilliseconds (?)       | int        | 请求超时毫秒数，默认500毫秒                                                                       |
+| retryIntervalMilliseconds (?) | int        | 重试间隔毫秒数，默认200毫秒                                                                       |
+| maxRetries (?)                | int        | 请求失败后的最大重试次数，默认3次                                                                  |
