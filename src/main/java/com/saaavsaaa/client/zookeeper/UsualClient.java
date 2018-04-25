@@ -80,11 +80,19 @@ public class UsualClient extends BaseClient {
         if (rootNode.equals(path)){
             return;
         }
-        zooKeeper.create(path, value.getBytes(Constants.UTF_8), authorities, createMode);
+        try {
+            zooKeeper.create(path, value.getBytes(Constants.UTF_8), authorities, createMode);
+        } catch (KeeperException.NoNodeException e) {
+            // I don't know whether it will happen or not, if root watcher don't update rootExist timely
+            if (e.getMessage().contains(path)) {
+                rootExist = false;
+                this.createCurrentOnly(key, value, createMode);
+            }
+        }
     }
     
     /*
-    * closed beta
+    * todo exception recursion
     */
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
@@ -95,16 +103,17 @@ public class UsualClient extends BaseClient {
         List<String> nodes = PathUtil.getPathOrderNodes(rootNode, key);
         nodes.remove(rootNode);
         for (int i = 0; i < nodes.size(); i++) {
-            // todo contrast cache
-            if (checkExists(nodes.get(i))){
+            try {
+                if (i == nodes.size() - 1){
+                    this.createCurrentOnly(nodes.get(i), value, createMode);
+                } else {
+//                    this.deleteAllChildren(nodes.get(i));
+                    this.createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, createMode);
+                }
+                System.out.println("not exist and create:" + nodes.get(i));
+            } catch (KeeperException.NodeExistsException ee){
                 System.out.println("exist:" + nodes.get(i));
                 continue;
-            }
-            System.out.println("not exist:" + nodes.get(i));
-            if (i == nodes.size() - 1){
-                createCurrentOnly(nodes.get(i), value, createMode);
-            } else {
-                createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, createMode);
             }
         }
     }

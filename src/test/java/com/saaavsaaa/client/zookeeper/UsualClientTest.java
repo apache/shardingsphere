@@ -29,13 +29,13 @@ public class UsualClientTest {
     
     private UsualClient client = null;
     
-//    @Before
+    @Before
     public void start() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         client = creator.setNamespace(ROOT).authorization(AUTH, AUTH.getBytes()).newClient(SERVERS, SESSION_TIMEOUT).start();
     }
     
-    @Before
+//    @Before
     public void startWithWatch() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         Listener listener = buildListener();
@@ -97,6 +97,10 @@ public class UsualClientTest {
         client.deleteCurrentBranch(keyC);
         assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, keyC), false) == null;
         assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, "a"), false) != null;
+        client.deleteCurrentBranch(keyB);
+        assert client.getZooKeeper().exists(PathUtil.checkPath(ROOT), false) == null;
+        client.createAllNeedPath(keyB, "bbb11", CreateMode.PERSISTENT);
+        assert client.getZooKeeper().exists(PathUtil.getRealPath(ROOT, keyB), false) != null;
         client.deleteCurrentBranch(keyB);
         assert client.getZooKeeper().exists(PathUtil.checkPath(ROOT), false) == null;
     }
