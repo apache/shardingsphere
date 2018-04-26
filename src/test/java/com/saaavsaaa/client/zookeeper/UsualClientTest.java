@@ -27,7 +27,7 @@ public class UsualClientTest {
     private static final String ROOT = "test";
     private static final String AUTH = "digest";
     
-    private BaseClient client = null;
+    private Client client = null;
     
 //    @Before
     public void start() throws IOException, InterruptedException {

@@ -17,7 +17,7 @@ import static org.apache.zookeeper.Watcher.Event.EventType.NodeDeleted;
 * todo Sequential
 * todo org.apache.zookeeper.KeeperException$NodeExistsException: KeeperErrorCode = NodeExists
 */
-public class UsualClient extends BaseClient {
+public class UsualClient extends Client {
     private final boolean watched = true; //false
     
     UsualClient(String servers, int sessionTimeoutMilliseconds) {

@@ -11,7 +11,7 @@ import java.io.IOException;
 public class ClientFactory {
 //    private static final String CLIENT_EXCLUSIVE_NODE = "ZKC";
     
-    private BaseClient client;
+    private Client client;
     private Listener globalListener;
     private String namespace;
     private String scheme;
@@ -34,7 +34,7 @@ public class ClientFactory {
         return this;
     }
     
-    public synchronized BaseClient start() throws IOException, InterruptedException {
+    public synchronized Client start() throws IOException, InterruptedException {
         client.setRootNode(namespace);
         client.start();
         client.setAuthorities(scheme , auth);
