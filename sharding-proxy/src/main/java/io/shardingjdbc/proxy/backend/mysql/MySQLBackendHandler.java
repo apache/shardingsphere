@@ -19,12 +19,8 @@ package io.shardingjdbc.proxy.backend.mysql;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.shardingjdbc.proxy.backend.common.BackendHandler;
 import io.shardingjdbc.proxy.backend.common.CommandResponsePacketsHandler;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketFactory;
-import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingjdbc.proxy.util.MySQLResultCache;
 
 /**
@@ -38,16 +34,18 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     public void channelRead(final ChannelHandlerContext context, final Object message) {
         //TODO 判断报文是握手还是OKPacket还是结果集
         if (true) {
-            auth(context,(ByteBuf) message);
+            auth(context, (ByteBuf) message);
         } else {
         
         }
     }
+    
     //TODO
     @Override
     protected void auth(ChannelHandlerContext context, ByteBuf message) {
     
     }
+    
     //TODO
     @Override
     protected void executeCommandResponsePackets(ChannelHandlerContext context, ByteBuf message) {
@@ -55,5 +53,5 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         int sequenceId = mysqlPacketPayload.readInt1();
         MySQLResultCache.getInstance().get(sequenceId).setResponse(null);
     }
-
+    
 }

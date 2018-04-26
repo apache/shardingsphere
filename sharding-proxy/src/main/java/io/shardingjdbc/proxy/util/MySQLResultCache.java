@@ -19,7 +19,6 @@ package io.shardingjdbc.proxy.util;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import io.netty.channel.Channel;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
 import java.util.concurrent.TimeUnit;

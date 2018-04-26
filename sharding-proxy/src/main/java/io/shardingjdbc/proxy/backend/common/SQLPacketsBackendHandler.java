@@ -53,7 +53,7 @@ public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
         synchronizedFuture = new SynchronizedFuture<>(routeResult.getExecutionUnits().size());
-        MySQLResultCache.getInstance().put(sequenceId,synchronizedFuture);
+        MySQLResultCache.getInstance().put(sequenceId, synchronizedFuture);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             execute(routeResult.getSqlStatement(), each);
         }
@@ -76,15 +76,18 @@ public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
         }
         return null;
     }
+    
     //TODO
-    private void executeQuery(final Channel channel, final String sql){
+    private void executeQuery(final Channel channel, final String sql) {
         channel.writeAndFlush("");
         
     }
+    
     //TODO
-    private void executeUpdate(final Channel channel, final String sql, final SQLStatement sqlStatement){
+    private void executeUpdate(final Channel channel, final String sql, final SQLStatement sqlStatement) {
     }
+    
     //TODO
-    private void executeCommon(final Channel channel, final String sql){
+    private void executeCommon(final Channel channel, final String sql) {
     }
 }
