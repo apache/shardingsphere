@@ -49,3 +49,4 @@ public final class DatabaseBroadcastRoutingEngineTest {
         assertThat(databaseBroadcastRoutingEngine.route(), instanceOf(RoutingResult.class));
     }
 }
+

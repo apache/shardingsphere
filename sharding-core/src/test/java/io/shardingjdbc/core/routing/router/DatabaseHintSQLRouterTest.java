@@ -71,3 +71,4 @@ public final class DatabaseHintSQLRouterTest {
         assertNotNull(databaseHintSQLRouter.route("select t from table t", Collections.emptyList(), new DQLStatement()));
     }
 }
+
