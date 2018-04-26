@@ -44,11 +44,11 @@ APM系统的使用。
 
 从跟踪图中能够看到这四次访问。
 
-`/SJDBC/TRUNK/*` : 表示本次SQL的总体执行性能。
+`/SJDBC/TRUNK/*`: 表示本次SQL的总体执行性能。
 
 
 ![逻辑执行节点](http://ovfotjrsi.bkt.clouddn.com/apm-trunk-span.png)
 
-`/SJSBC/BRANCH/*` : 表示具体执行的实际SQL的性能。
+`/SJSBC/BRANCH/*`: 表示具体执行的实际SQL的性能。
 
 ![实际访问节点](http://ovfotjrsi.bkt.clouddn.com/apm-branch-span.png)

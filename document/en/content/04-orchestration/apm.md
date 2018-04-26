@@ -40,11 +40,11 @@ Although the user accesses the application once, each database is accessed twice
 
 Four visits in total in this figure.
 
-`/SJDBC/TRUNK/*` : Represents the overall execution performance of this SQL.
+`/SJDBC/TRUNK/*`: Represents the overall execution performance of this SQL.
 
 
 ![The logical execution node](http://ovfotjrsi.bkt.clouddn.com/apm-trunk-span.png)
 
-`/SJDBC/BRANCH/*` : Represents the performance of the actual SQL.
+`/SJDBC/BRANCH/*`: Represents the performance of the actual SQL.
 
 ![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm-branch-span.png)

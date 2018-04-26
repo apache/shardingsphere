@@ -209,8 +209,119 @@ sharding.jdbc.config.orchestration.etcd.server-lists=localhost:2379
 
 ### 数据分片
 
+```properties
+sharding.jdbc.datasource.names= #数据源名称，多数据源以逗号分隔
+
+sharding.jdbc.datasource.<data_source_name>.type= #数据库连接池类名称
+sharding.jdbc.datasource.<data_source_name>.driver-class-name= #数据库驱动类名
+sharding.jdbc.datasource.<data_source_name>.url= #数据库url连接
+sharding.jdbc.datasource.<data_source_name>.username= #数据库用户名
+sharding.jdbc.datasource.<data_source_name>.password= #数据库密码
+sharding.jdbc.datasource.<data_source_name>.xxx= #数据库密码
+
+sharding.jdbc.config.sharding.tables.<logic_table_name>.actual-data-nodes= #由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况
+
+#database-strategy可以包含standard，complex，inline，hint和none5种类型，每个database-strategy只能配置其中的一种分片算法
+
+#用于单分片键的标准分片场景
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.sharding-column= #分片列名称
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.preciseAlgorithmClassName= #精确分片算法类名称，用于=和IN。该类需提供无参数构造器
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.rangeAlgorithmClassName= #范围分片算法类名称，用于BETWEEN，可选。该类提供无参数构造器
+
+#用于多分片键的复合分片场景
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.shardingColumns= #分片列名称，多个列以逗号分隔
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.algorithmClassName= #复合分片算法类名称。该类需提供无参数构造器
+
+#行表达式分片策略
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline.shardingColumn= #分片列名称
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline.algorithmInlineExpression= #分片算法行表达式，需符合groovy语法
+
+#Hint分片策略
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.hint.algorithmClassName= #Hint分片算法类名称。该类需提供无参数的构造器
+
+#table-strategy同database-strategy
+
+#用于单分片键的标准分片场景
+sharding.jdbc.config.sharding.tables.<logic_table_name>.table-strategy.xxx= #省略
+
+sharding.jdbc.config.sharding.tables.<logic_table_name>.key-generator-column-name= #自增列名称，不填写表示不使用自增主键生成器
+sharding.jdbc.config.sharding.tables.<logic_table_name>.key-generator-class= #自增列值生成器类名称。该类需提供无参数的构造器
+
+sharding.jdbc.config.sharding.tables.<logic_table_name>.logic-index= #逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表
+
+sharding.jdbc.config.sharding.binding-tables[0]= #绑定表规则列表
+sharding.jdbc.config.sharding.binding-tables[1]= #绑定表规则列表
+sharding.jdbc.config.sharding.binding-tables[x]= #绑定表规则列表
+
+sharding.jdbc.config.sharding.default-data-source-name= #未配置分片规则的表将通过默认数据源定位
+sharding.jdbc.config.sharding.default-database-strategy.xxx= #默认数据库分片策略，同分库策略
+sharding.jdbc.config.sharding.default-table-strategy.xxx= #默认表分片策略，同分表策略
+sharding.jdbc.config.sharding.default-key-generator-class.xxx= #默认自增列值生成器类名称，缺省使用io.shardingjdbc.core.keygen.DefaultKeyGenerator。该类需提供无参数的构造器
+
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.master-data-source-name= #详见读写分离部分
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[0]= #详见读写分离部分
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[1]= #详见读写分离部分
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[x]= #详见读写分离部分
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #详见读写分离部分
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-class-name= #详见读写分离部分
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key1= #详见读写分离部分
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key2= #详见读写分离部分
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.keyx= #详见读写分离部分
+
+sharding.jdbc.config.sharding.props.sql.show= #是否开启SQL显示，默认值: false
+sharding.jdbc.config.sharding.props.executor.size= #工作线程数量，默认值: CPU核数
+
+sharding.jdbc.config.sharding.config.map.key1= #用户自定义配置
+sharding.jdbc.config.sharding.config.map.key2= #用户自定义配置
+sharding.jdbc.config.sharding.config.map.keyx= #用户自定义配置
+```
+
 ### 读写分离
+
+```properties
+#省略数据源配置，与数据分片一致
+
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.master-data-source-name= #主库数据源名称
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[0]= #从库数据源名称列表
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[1]= #从库数据源名称列表
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[x]= #从库数据源名称列表
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-class-name= #从库负载均衡算法类名称。该类提供无参数构造器
+
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key1= #用户自定义配置
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key2= #用户自定义配置
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.keyx= #用户自定义配置
+```
 
 ### 使用Zookeeper的数据治理
 
+```properties
+#省略数据源、数据分片和读写分离配置
+
+sharding.jdbc.config.sharding.orchestration.name= #数据治理实例名称
+sharding.jdbc.config.sharding.orchestration.overwrite= #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
+sharding.jdbc.config.sharding.orchestration.type= #数据源类型，可选值：sharding，masterslave
+sharding.jdbc.config.sharding.orchestration.zookeeper.server-lists= #连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
+sharding.jdbc.config.sharding.orchestration.zookeeper.namespace= #Zookeeper的命名空间
+sharding.jdbc.config.sharding.orchestration.zookeeper.base-sleep-time-milliseconds= #等待重试的间隔时间的初始毫秒数，默认1000毫秒
+sharding.jdbc.config.sharding.orchestration.zookeeper.max-sleep-time-milliseconds= #等待重试的间隔时间的最大毫秒数，默认3000毫秒
+sharding.jdbc.config.sharding.orchestration.zookeeper.max-retries= #连接失败后的最大重试次数，默认3次
+sharding.jdbc.config.sharding.orchestration.zookeeper.session-timeout-milliseconds= #会话超时毫秒数
+sharding.jdbc.config.sharding.orchestration.zookeeper.connection-timeout-milliseconds= #连接超时毫秒数
+sharding.jdbc.config.sharding.orchestration.zookeeper.digest= #连接Zookeeper的权限令牌。缺省为不需要权限验证
+```
+
 ### 使用Etcd的数据治理
+
+```properties
+#省略数据源、数据分片和读写分离配置
+
+sharding.jdbc.config.sharding.orchestration.name= #同Zookeeper
+sharding.jdbc.config.sharding.orchestration.overwrite= #同Zookeeper
+sharding.jdbc.config.sharding.orchestration.type= #同Zookeeper
+sharding.jdbc.config.sharding.orchestration.etcd.server-lists= #连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379
+sharding.jdbc.config.sharding.orchestration.etcd.time-to-live-seconds= #临时节点存活秒数，默认60秒
+sharding.jdbc.config.sharding.orchestration.etcd.timeout-milliseconds= #请求超时毫秒数，默认500毫秒
+sharding.jdbc.config.sharding.orchestration.etcd.retry-interval-milliseconds= #重试间隔毫秒数，默认200毫秒
+sharding.jdbc.config.sharding.orchestration.etcd.max-retries= #请求失败后的最大重试次数，默认3次
+```
