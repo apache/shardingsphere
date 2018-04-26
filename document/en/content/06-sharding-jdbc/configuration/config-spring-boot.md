@@ -209,8 +209,117 @@ sharding.jdbc.config.orchestration.etcd.server-lists=localhost:2379
 
 ### Sharding
 
+```properties
+sharding.jdbc.datasource.names= #Names of data sources, split by comma
+
+sharding.jdbc.datasource.<data_source_name>.type= #Class name of data source pool
+sharding.jdbc.datasource.<data_source_name>.driver-class-name= #Class name of database driver
+sharding.jdbc.datasource.<data_source_name>.url= #Database URL
+sharding.jdbc.datasource.<data_source_name>.username= #Database username
+sharding.jdbc.datasource.<data_source_name>.password= #Database password
+sharding.jdbc.datasource.<data_source_name>.xxx= #Other properties for data source pool
+
+sharding.jdbc.config.sharding.tables.<logic_table_name>.actual-data-nodes= #Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl_${0..7}
+
+#Databases sharding strategy, use default databases sharding strategy if absent. sharding strategy below can choose only one.
+
+#Standard sharding scenario for single sharding column
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.sharding-column= #Name of sharding column
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.preciseAlgorithmClassName= #Precise algorithm class name used for `=` and `IN`. No argument constructor required
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.rangeAlgorithmClassName= #Range algorithm class name used for `BETWEEN`. No argument constructor required
+
+#Complex sharding scenario for multiple sharding columns
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.shardingColumns= #Names of sharding columns. Multiple names separated with comma
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.algorithmClassName= #Complex sharding algorithm class name. No argument constructor required
+
+#Inline expression sharding scenario for single sharding column
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline.shardingColumn= #Name of sharding column
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline.algorithmInlineExpression= #Inline expression for sharding algorithm
+
+#Hint sharding strategy
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.hint.algorithmClassName= #Hint sharding algorithm class name. No argument constructor required
+
+#Tables sharding strategy, Same as databases sharding strategy
+sharding.jdbc.config.sharding.tables.<logic_table_name>.table-strategy.xxx= #Ignore
+
+sharding.jdbc.config.sharding.tables.<logic_table_name>.key-generator-column-name= #Column name of key generator, do not use Key generator if absent
+sharding.jdbc.config.sharding.tables.<logic_table_name>.key-generator-class= #Key generator, use default key generator if absent. No argument constructor required
+
+sharding.jdbc.config.sharding.tables.<logic_table_name>.logic-index= #Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables
+
+sharding.jdbc.config.sharding.binding-tables[0]= #Binding table rule configurations
+sharding.jdbc.config.sharding.binding-tables[1]= #Binding table rule configurations
+sharding.jdbc.config.sharding.binding-tables[x]= #Binding table rule configurations
+
+sharding.jdbc.config.sharding.default-data-source-name= #If table not configure at table rule, will route to defaultDataSourceName
+sharding.jdbc.config.sharding.default-database-strategy.xxx= #Default strategy for sharding databases, same as databases sharding strategy
+sharding.jdbc.config.sharding.default-table-strategy.xxx= #Default strategy for sharding tables, same as tables sharding strategy
+sharding.jdbc.config.sharding.default-key-generator-class.xxx= #Default key generator class name, default value is `io.shardingjdbc.core.keygen.DefaultKeyGenerator`. No argument constructor required
+
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.master-data-source-name= #more details can reference Read-write splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[0]= #more details can reference Read-write splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[1]= #more details can reference Read-write splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[x]= #more details can reference Read-write splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #more details can reference Read-write splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-class-name= #more details can reference Read-write splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key1= #more details can reference Read-write splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key2= #more details can reference Read-write splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.keyx= #more details can reference Read-write splitting part
+
+sharding.jdbc.config.sharding.props.sql.show= #To show SQLS or not, default value: false
+sharding.jdbc.config.sharding.props.executor.size= #The number of working threads, default value: CPU count
+
+sharding.jdbc.config.sharding.config.map.key1= #User-defined arguments
+sharding.jdbc.config.sharding.config.map.key2= #User-defined arguments
+sharding.jdbc.config.sharding.config.map.keyx= #User-defined arguments
+```
+
 ### Read-write splitting
+
+```properties
+#Ignore data sources configuration, same as sharding
+
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.master-data-source-name= #Name of master data source
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[0]= #Names of Slave data sources
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[1]= #Names of Slave data sources
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[x]= #Names of Slave data sources
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-class-name= #Load balance algorithm class name. No argument constructor required
+
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key1= #User-defined arguments
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key2= #User-defined arguments
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.keyx= #User-defined arguments
+```
 
 ### Orchestration by Zookeeper
 
+```properties
+#Ignore data sources, sharding and read-write splitting configuration
+
+sharding.jdbc.config.sharding.orchestration.name= #Name of orchestration instance
+sharding.jdbc.config.sharding.orchestration.overwrite= #Use local configuration to overwrite registry center or not
+sharding.jdbc.config.sharding.orchestration.type= #Data source type, values should be: `sharding` or `masterslave`
+sharding.jdbc.config.sharding.orchestration.zookeeper.server-lists= #Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181
+sharding.jdbc.config.sharding.orchestration.zookeeper.namespace= #Namespace of zookeeper
+sharding.jdbc.config.sharding.orchestration.zookeeper.base-sleep-time-milliseconds= #Initial milliseconds of waiting for retry, default value is 1000 milliseconds
+sharding.jdbc.config.sharding.orchestration.zookeeper.max-sleep-time-milliseconds= #Maximum milliseconds of waiting for retry, default value is 3000 milliseconds
+sharding.jdbc.config.sharding.orchestration.zookeeper.max-retries= #Max retries times if connect failure, default value is 3
+sharding.jdbc.config.sharding.orchestration.zookeeper.session-timeout-milliseconds= #Session timeout milliseconds
+sharding.jdbc.config.sharding.orchestration.zookeeper.connection-timeout-milliseconds= #Connection timeout milliseconds
+sharding.jdbc.config.sharding.orchestration.zookeeper.digest= #Connection digest
+```
+
 ### Orchestration by Etcd
+
+```properties
+#Ignore data sources, sharding and read-write splitting configuration
+
+sharding.jdbc.config.sharding.orchestration.name= #Same as Zookeeper
+sharding.jdbc.config.sharding.orchestration.overwrite= #Same as Zookeeper
+sharding.jdbc.config.sharding.orchestration.type= #Same as Zookeeper
+sharding.jdbc.config.sharding.orchestration.etcd.server-lists= #Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379
+sharding.jdbc.config.sharding.orchestration.etcd.time-to-live-seconds= #Time to live of data, default is 60 seconds
+sharding.jdbc.config.sharding.orchestration.etcd.timeout-milliseconds= #Timeout milliseconds, default is 500 milliseconds
+sharding.jdbc.config.sharding.orchestration.etcd.retry-interval-milliseconds= #Milliseconds of retry interval, default is w00 milliseconds
+sharding.jdbc.config.sharding.orchestration.etcd.max-retries= #Max retries times if request failure, default value is 3
+```

@@ -113,7 +113,7 @@ orchestration:
 ```yaml
 dataSources: #Data sources configuration, multiple `data_source_name` available
   <data_source_name>: #<!!Data source pool implementation class> `!!` means class instantiation
-    driverClassName: #Database driver class name
+    driverClassName: #Class name of database driver
     url: #Database URL
     username: #Database username
     password: #Database password
@@ -128,7 +128,7 @@ shardingRule:
         standard: #Standard sharding scenario for single sharding column
           shardingColumn: #Name of sharding column
             preciseAlgorithmClassName: #Precise algorithm class name used for `=` and `IN`. No argument constructor required
-            rangeAlgorithmClassName: #Precise algorithm class name used for `BETWEEN`. No argument constructor required
+            rangeAlgorithmClassName: #Range algorithm class name used for `BETWEEN`. No argument constructor required
           complex: #Complex sharding scenario for multiple sharding columns
             shardingColumns: #Names of sharding columns. Multiple names separated with comma
             algorithmClassName: #Complex sharding algorithm class name. No argument constructor required
@@ -140,13 +140,14 @@ shardingRule:
            none: #Do not sharding
       tableStrategy: #Tables sharding strategy, Same as databases sharding strategy
         
-      keyGeneratorColumnName: #Key generator column name, do not use Key generator if absent
+      keyGeneratorColumnName: #Column name of key generator, do not use Key generator if absent
       keyGeneratorClass: #Key generator, use default key generator if absent. No argument constructor required
         
       logicIndex: #Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables
   bindingTables: #Binding table rule configurations
   - <logic_table_name_1, logic_table_name_2, ...> 
-  - <logic_table_name_3, logic_table_name_4, ...> 
+  - <logic_table_name_3, logic_table_name_4, ...>
+  - <logic_table_name_x, logic_table_name_y, ...>
   
   defaultDataSourceName: #If table not configure at table rule, will route to defaultDataSourceName  
   defaultDatabaseStrategy: #Default strategy for sharding databases, same as databases sharding strategy
@@ -162,6 +163,7 @@ shardingRule:
       configMap: #User-defined arguments
           key1: value1
           key2: value2
+          keyx: valuex
   
   props: #Properties
     sql.show: #To show SQLS or not, default value: false
@@ -170,6 +172,7 @@ shardingRule:
   configMap: #User-defined arguments
     key1: value1
     key2: value2
+    keyx: valuex
 ```
 
 ### Read-write splitting
@@ -183,12 +186,14 @@ masterSlaveRule:
   slaveDataSourceNames: #Names of Slave data sources
     - <data_source_name_1>
     - <data_source_name_2>
+    - <data_source_name_x>
   loadBalanceAlgorithmType: #Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`
   loadBalanceAlgorithmClassName: #Load balance algorithm class name. No argument constructor required
   
   configMap: #User-defined arguments
     key1: value1
     key2: value2
+    keyx: valuex
 ```
 
 ### Orchestration by Zookeeper

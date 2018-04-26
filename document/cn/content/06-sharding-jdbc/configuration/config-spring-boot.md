@@ -217,11 +217,11 @@ sharding.jdbc.datasource.<data_source_name>.driver-class-name= #数据库驱动�
 sharding.jdbc.datasource.<data_source_name>.url= #数据库url连接
 sharding.jdbc.datasource.<data_source_name>.username= #数据库用户名
 sharding.jdbc.datasource.<data_source_name>.password= #数据库密码
-sharding.jdbc.datasource.<data_source_name>.xxx= #数据库密码
+sharding.jdbc.datasource.<data_source_name>.xxx= #数据库连接池的其它属性
 
 sharding.jdbc.config.sharding.tables.<logic_table_name>.actual-data-nodes= #由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况
 
-#database-strategy可以包含standard，complex，inline，hint和none5种类型，每个database-strategy只能配置其中的一种分片算法
+#分库策略，不填写表示使用默认分库策略，以下的分片策略只能选其一
 
 #用于单分片键的标准分片场景
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.sharding-column= #分片列名称
@@ -239,9 +239,7 @@ sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline
 #Hint分片策略
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.hint.algorithmClassName= #Hint分片算法类名称。该类需提供无参数的构造器
 
-#table-strategy同database-strategy
-
-#用于单分片键的标准分片场景
+#分表策略，同分库策略
 sharding.jdbc.config.sharding.tables.<logic_table_name>.table-strategy.xxx= #省略
 
 sharding.jdbc.config.sharding.tables.<logic_table_name>.key-generator-column-name= #自增列名称，不填写表示不使用自增主键生成器

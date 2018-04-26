@@ -146,7 +146,8 @@ shardingRule:
       logicIndex: #逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表
   bindingTables: #绑定表规则列表
   - <logic_table_name_1, logic_table_name_2, ...> 
-  - <logic_table_name_3, logic_table_name_4, ...> 
+  - <logic_table_name_3, logic_table_name_4, ...>
+  - <logic_table_name_x, logic_table_name_y, ...>
   
   defaultDataSourceName: #未配置分片规则的表将通过默认数据源定位  
   defaultDatabaseStrategy: #默认数据库分片策略，同分库策略
@@ -162,6 +163,7 @@ shardingRule:
       configMap: #用户自定义配置
           key1: value1
           key2: value2
+          keyx: valuex
   
   props: #属性配置
     sql.show: #是否开启SQL显示，默认值: false
@@ -170,6 +172,7 @@ shardingRule:
   configMap: #用户自定义配置
     key1: value1
     key2: value2
+    keyx: valuex
 ```
 
 ### 读写分离
@@ -183,12 +186,14 @@ masterSlaveRule:
   slaveDataSourceNames: #从库数据源名称列表
     - <data_source_name_1>
     - <data_source_name_2>
+    - <data_source_name_x>
   loadBalanceAlgorithmType: #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM
   loadBalanceAlgorithmClassName: #从库负载均衡算法类名称。该类提供无参数构造器
   
   configMap: #用户自定义配置
     key1: value1
     key2: value2
+    keyx: valuex
 ```
 
 ### 使用Zookeeper的数据治理
