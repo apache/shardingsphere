@@ -5,6 +5,25 @@ weight = 7
 chapter = true
 +++
 
-## Navigation
+## Introduction
 
-This section introduce the configuration and usage of Sharding-Proxy.
+Sharding-Proxy is second project of Sharding-Sphere.
+It is a database proxy, Deploy as a stateless server, support MySQL protocol for now.
+
+* Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
+* Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.
+
+![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/proxy_brief_v2_en.png)
+
+## Comparison
+
+|                        | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
+| ---------------------- | --------------- | ---------------- | ------------------ |
+| Database               | Any             | `MySQL`          | MySQL              |
+| Connections            | More            | `Less`           | More               |
+| Heterogeneous Language | Java Only       | `Any`            | Nay                |
+| Performance            | Low loss        | `High loss`      | Low loss           |
+| Centre-less            | Yes             | `No`             | No                 |
+| Static Entry           | No              | `Yes`            | No                 |
+
+Sharding-Proxy can support heterogeneous languages and provide an operation entry for DBA.
