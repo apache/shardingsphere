@@ -169,8 +169,8 @@ weight = 1
 | ------------------ |  ------------------------ | -------------- |
 | dataSourceMap      | Map\<String, DataSource\> | 数据源配置      |
 | shardingRuleConfig | ShardingRuleConfiguration | 数据分片配置规则 |
-| configMap (?)      | Map\<String, Object\>     | 配置映射关系     |
-| props (?)          | Properties                | 相关属性配置     |
+| props (?)          | Properties                | 属性配置        |
+| configMap (?)      | Map\<String, Object\>     | 用户自定义配置   |
 
 #### ShardingRuleConfiguration
 
@@ -184,21 +184,21 @@ weight = 1
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | 默认分库策略                                                              |
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | 默认分表策略                                                              |
 | defaultKeyGenerator (?)                   | KeyGenerator                               | 默认自增列值生成器，缺省使用io.shardingjdbc.core.keygen.DefaultKeyGenerator |
-| masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | 读写分离规则，不填写表示不使用读写分离                                       |
+| masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | 读写分离规则，缺省表示不使用读写分离                                         |
 
 #### TableRuleConfiguration
 
 表分片规则配置对象。
 
-| *名称*                              | *数据类型*                     | *说明*                                                                                                     |
-| ---------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| logicTable                         | String                        | 逻辑表名称                                                                                                  |
+| *名称*                              | *数据类型*                     | *说明*                                                                                                                                                                                                      |
+| ---------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| logicTable                         | String                        | 逻辑表名称                                                                                                                                                                                                   |
 | actualDataNodes (?)                | String                        | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况 |
-| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | 分库策略，不填写表示使用默认分库策略                                                                           |
-| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略，不填写表示使用默认分表策略                                                                           |
-| logicIndex (?)                     | String                        | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表 |
-| keyGeneratorColumnName (?)         | String                        | 自增列名称，不填写表示不使用自增主键生成器                                                                      |
-| keyGenerator (?)                   | KeyGenerator                  | 自增列值生成器，如果填写了keyGeneratorColumnName，不填写keyGenerator，表示使用默认自增主键生成器                   |
+| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | 分库策略，缺省表示使用默认分库策略                                                                                                                                                                              |
+| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略，缺省表示使用默认分表策略                                                                                                                                                                              |
+| logicIndex (?)                     | String                        | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表                                                                                                  |
+| keyGeneratorColumnName (?)         | String                        | 自增列名称，缺省表示不使用自增主键生成器                                                                                                                                                                         |
+| keyGenerator (?)                   | KeyGenerator                  | 自增列值生成器，缺省表示使用默认自增主键生成器                                                                                                                                                                    |
 
 #### StandardShardingStrategyConfiguration
 
@@ -263,7 +263,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | --------------------- | ---------------------------- | ------------------ |
 | dataSourceMap         | Map\<String, DataSource\>    | 数据源与其名称的映射 |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 读写分离规则        |
-| configMap (?)         | Map\<String, Object\>        | 配置映射关系        |
+| configMap (?)         | Map\<String, Object\>        | 用户自定义配置      |
 
 #### MasterSlaveRuleConfiguration
 

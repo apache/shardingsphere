@@ -124,7 +124,7 @@ shardingRule:
     <logic_table_name>: #逻辑表名称
       actualDataNodes: #由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况
         
-      databaseStrategy: #分库策略，不填写表示使用默认分库策略，以下的分片策略只能选其一
+      databaseStrategy: #分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一
         standard: #用于单分片键的标准分片场景
           shardingColumn: #分片列名称
           preciseAlgorithmClassName: #精确分片算法类名称，用于=和IN。该类需提供无参数构造器
@@ -140,7 +140,7 @@ shardingRule:
         none: #不分片
       tableStrategy: #分表策略，同分库策略
         
-      keyGeneratorColumnName: #自增列名称，不填写表示不使用自增主键生成器
+      keyGeneratorColumnName: #自增列名称，缺省表示不使用自增主键生成器
       keyGeneratorClass: #自增列值生成器类名称。该类需提供无参数的构造器
         
       logicIndex: #逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表
