@@ -1,44 +1,36 @@
 +++
 toc = true
-title = "JDBC Standard"
+title = "Unsupported JDBC Items"
 weight = 3
 +++
-## The list of supported items in JDBC
 
-We support all the items except the items in the below list.
+## The DataSource interface
 
-## The list of unsupported items in JDBC
+- Do not support methods related to timeout
 
-Sharding-JDBC currently supports common JDBC methods.
+## The Connection interface
 
-### The DataSource interface
+- Do not support stored procedures, functions, cursor operation
+- Do not Native SQL
+- Do not support savepoint related operations
+- Do not support Schema / Catalog operation
+- Do not support Custom type mapping
 
-- Do not support methods related to timeout.
+## The interface of Statement and PreparedStatement
 
-### The Connection interface
+- Do not support statements that return multiple result sets (That is, stored procedures)
+- Do not support using international characters
 
-- Does not support stored procedures, functions, cursor operation
-- Does not Native SQL
-- Does not support savepoint related operations
-- Does not support Schema / Catalog operation
-- Does not support Custom type mapping
+## The ResultSet interface
 
-### The interface of Statement and PreparedStatement
+- Do not support getting result set pointer position
+- Do not support changing the position of the result pointer by none-next methods
+- Do not support modifying the content of result set 
+- Do not support using international characters
+- Do not support getting Array
 
-- Does not support statements that return multiple result sets (That is, stored procedures)
-- Does not support using international characters
+## The interface of JDBC 4.1
 
-### The ResultSet interface
+- Do not support new interface for JDBC 4.1
 
-- Does not support getting result set pointer position
-- Does not support changing the position of the result pointer by none-next methods
-- Does not support modifying the content of result set 
-- Does not support using international characters
-- Does not support getting Array
-
-
-### The interface of JDBC 4.1
-
-- Does not support new interface features in JDBC 4.1.
-
-Learn more about the unsupported items, please refer to io.shardingjdbc.core.jdbc.unsupported.
+More details about unsupported items, please refer package `io.shardingjdbc.core.jdbc.unsupported`.
