@@ -213,8 +213,8 @@ orchestration:
     baseSleepTimeMilliseconds: #Initial milliseconds of waiting for retry, default value is 1000 milliseconds
     maxSleepTimeMilliseconds: #Maximum milliseconds of waiting for retry, default value is 3000 milliseconds
     maxRetries: #Max retries times if connect failure, default value is 3
-    sessionTimeoutMilliseconds: #Session timeout milliseconds
-    connectionTimeoutMilliseconds: #Connection timeout milliseconds
+    sessionTimeoutMilliseconds: #Session timeout milliseconds, default is 60000 milliseconds
+    connectionTimeoutMilliseconds: #Connection timeout milliseconds, default is 15000 milliseconds
     digest: #Connection digest
 ```
 

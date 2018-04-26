@@ -304,8 +304,8 @@ sharding.jdbc.config.sharding.orchestration.zookeeper.namespace= #Zookeeper的�
 sharding.jdbc.config.sharding.orchestration.zookeeper.base-sleep-time-milliseconds= #等待重试的间隔时间的初始毫秒数，默认1000毫秒
 sharding.jdbc.config.sharding.orchestration.zookeeper.max-sleep-time-milliseconds= #等待重试的间隔时间的最大毫秒数，默认3000毫秒
 sharding.jdbc.config.sharding.orchestration.zookeeper.max-retries= #连接失败后的最大重试次数，默认3次
-sharding.jdbc.config.sharding.orchestration.zookeeper.session-timeout-milliseconds= #会话超时毫秒数
-sharding.jdbc.config.sharding.orchestration.zookeeper.connection-timeout-milliseconds= #连接超时毫秒数
+sharding.jdbc.config.sharding.orchestration.zookeeper.session-timeout-milliseconds= #会话超时毫秒数，默认60000毫秒
+sharding.jdbc.config.sharding.orchestration.zookeeper.connection-timeout-milliseconds= #连接超时毫秒数，默认15000毫秒
 sharding.jdbc.config.sharding.orchestration.zookeeper.digest= #连接Zookeeper的权限令牌。缺省为不需要权限验证
 ```
 

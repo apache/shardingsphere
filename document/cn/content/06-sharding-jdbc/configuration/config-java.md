@@ -320,16 +320,16 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 RegistryCenterConfiguration的实现类，用于配置Zookeeper注册中心。
 
-| *名称*                         | *数据类型* | *说明*                                                                                 |
-| ----------------------------- | ---------- | ------------------------------------------------------------------------------------- |
-| serverLists                   | String     | 连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
-| namespace                     | String     | Zookeeper的命名空间                                                                    |
-| baseSleepTimeMilliseconds (?) | int        | 等待重试的间隔时间的初始毫秒数，默认1000毫秒                                               |
-| maxSleepTimeMilliseconds (?)  | int        | 等待重试的间隔时间的最大毫秒数，默认3000毫秒                                               |
-| maxRetries (?)                | int        | 连接失败后的最大重试次数，默认3次                                                         |
-| sessionTimeoutMilliseconds    | int        | 会话超时毫秒数                                                                          |
-| connectionTimeoutMilliseconds | int        | 连接超时毫秒数                                                                          |
-| digest (?)                    | String     | 连接Zookeeper的权限令牌。缺省为不需要权限验证                                              |
+| *名称*                             | *数据类型* | *说明*                                                                                 |
+| --------------------------------- | ---------- | ------------------------------------------------------------------------------------- |
+| serverLists                       | String     | 连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
+| namespace                         | String     | Zookeeper的命名空间                                                                    |
+| baseSleepTimeMilliseconds (?)     | int        | 等待重试的间隔时间的初始毫秒数，默认1000毫秒                                               |
+| maxSleepTimeMilliseconds (?)      | int        | 等待重试的间隔时间的最大毫秒数，默认3000毫秒                                               |
+| maxRetries (?)                    | int        | 连接失败后的最大重试次数，默认3次                                                         |
+| sessionTimeoutMilliseconds (?)    | int        | 会话超时毫秒数，默认60000毫秒                                                            |
+| connectionTimeoutMilliseconds (?) | int        | 连接超时毫秒数，默认15000毫秒                                                            |
+| digest (?)                        | String     | 连接Zookeeper的权限令牌。缺省为不需要权限验证                                              |
 
 #### EtcdConfiguration
 

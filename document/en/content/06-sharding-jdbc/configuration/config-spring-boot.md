@@ -304,8 +304,8 @@ sharding.jdbc.config.sharding.orchestration.zookeeper.namespace= #Namespace of z
 sharding.jdbc.config.sharding.orchestration.zookeeper.base-sleep-time-milliseconds= #Initial milliseconds of waiting for retry, default value is 1000 milliseconds
 sharding.jdbc.config.sharding.orchestration.zookeeper.max-sleep-time-milliseconds= #Maximum milliseconds of waiting for retry, default value is 3000 milliseconds
 sharding.jdbc.config.sharding.orchestration.zookeeper.max-retries= #Max retries times if connect failure, default value is 3
-sharding.jdbc.config.sharding.orchestration.zookeeper.session-timeout-milliseconds= #Session timeout milliseconds
-sharding.jdbc.config.sharding.orchestration.zookeeper.connection-timeout-milliseconds= #Connection timeout milliseconds
+sharding.jdbc.config.sharding.orchestration.zookeeper.session-timeout-milliseconds= #Session timeout milliseconds, default value is 60000 milliseconds
+sharding.jdbc.config.sharding.orchestration.zookeeper.connection-timeout-milliseconds= #Connection timeout milliseconds, default value is 15000 milliseconds
 sharding.jdbc.config.sharding.orchestration.zookeeper.digest= #Connection digest
 ```
 

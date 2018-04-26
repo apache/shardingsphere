@@ -304,16 +304,16 @@ User-defined arguments.
 
 Subclass of RegistryCenterConfiguration.
 
-| *Name*                        | *DataType* | *Description*                                                                   |
-| ----------------------------- | ---------- | ------------------------------------------------------------------------------- |
-| serverLists                   | String     | Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181 |
-| namespace                     | String     | Namespace of zookeeper                                                          |
-| baseSleepTimeMilliseconds (?) | int        | Initial milliseconds of waiting for retry, default value is 1000 milliseconds   |
-| maxSleepTimeMilliseconds (?)  | int        | Maximum milliseconds of waiting for retry, default value is 3000 milliseconds   |
-| maxRetries (?)                | int        | Max retries times if connect failure, default value is 3                        |
-| sessionTimeoutMilliseconds    | int        | Session timeout milliseconds                                                    |
-| connectionTimeoutMilliseconds | int        | Connection timeout milliseconds                                                 |
-| digest (?)                    | String     | Connection digest                                                               |
+| *Name*                            | *DataType* | *Description*                                                                   |
+| --------------------------------- | ---------- | ------------------------------------------------------------------------------- |
+| serverLists                       | String     | Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181 |
+| namespace                         | String     | Namespace of zookeeper                                                          |
+| baseSleepTimeMilliseconds (?)     | int        | Initial milliseconds of waiting for retry, default value is 1000 milliseconds   |
+| maxSleepTimeMilliseconds (?)      | int        | Maximum milliseconds of waiting for retry, default value is 3000 milliseconds   |
+| maxRetries (?)                    | int        | Max retries times if connect failure, default value is 3                        |
+| sessionTimeoutMilliseconds (?)    | int        | Session timeout milliseconds, default value is 60000 milliseconds               |
+| connectionTimeoutMilliseconds (?) | int        | Connection timeout milliseconds, default value is 15000 milliseconds            |
+| digest (?)                        | String     | Connection digest                                                               |
 
 #### EtcdConfiguration
 

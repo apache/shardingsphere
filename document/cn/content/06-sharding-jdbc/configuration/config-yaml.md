@@ -213,8 +213,8 @@ orchestration:
     baseSleepTimeMilliseconds: #等待重试的间隔时间的初始毫秒数，默认1000毫秒
     maxSleepTimeMilliseconds: #等待重试的间隔时间的最大毫秒数，默认3000毫秒
     maxRetries: #连接失败后的最大重试次数，默认3次
-    sessionTimeoutMilliseconds: #会话超时毫秒数
-    connectionTimeoutMilliseconds: #连接超时毫秒数
+    sessionTimeoutMilliseconds: #会话超时毫秒数，默认60000毫秒
+    connectionTimeoutMilliseconds: #连接超时毫秒数，默认15000毫秒
     digest: #连接Zookeeper的权限令牌。缺省为不需要权限验证
 ```
 
