@@ -1,21 +1,7 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.untils.Constants;
-import com.saaavsaaa.client.untils.Listener;
-import com.saaavsaaa.client.untils.PathUtil;
-import org.apache.zookeeper.*;
-import org.apache.zookeeper.data.Stat;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.apache.zookeeper.KeeperException;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by aaa
