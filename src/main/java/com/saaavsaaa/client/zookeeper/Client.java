@@ -1,10 +1,7 @@
 package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.untils.*;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
 
 import java.io.IOException;
@@ -18,7 +15,7 @@ import static org.apache.zookeeper.Watcher.Event.EventType.NodeDeleted;
 /**
  * Created by aaa on 18-4-19.
  */
-public abstract class BaseClient {
+public abstract class Client implements IClient{
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
     protected static final Map<String, Watcher> watchers = new ConcurrentHashMap<>();
     private boolean globalListenerRegistered = false;
@@ -31,7 +28,7 @@ public abstract class BaseClient {
     protected boolean rootExist = false;
     protected List<ACL> authorities;
     
-    protected BaseClient(String servers, int sessionTimeoutMilliseconds) {
+    protected Client(String servers, int sessionTimeoutMilliseconds) {
         this.servers = servers;
         this.sessionTimeOut = sessionTimeoutMilliseconds;
     }
@@ -101,6 +98,32 @@ public abstract class BaseClient {
     
     public void close() throws InterruptedException {
         zooKeeper.close();
+    }
+    
+    void createNamespace() throws KeeperException, InterruptedException {
+        if (rootExist){
+            return;
+        }
+        zooKeeper.create(rootNode, Constants.NOTHING_DATA, authorities, CreateMode.PERSISTENT);
+        rootExist = true;
+        zooKeeper.exists(rootNode, new Watcher() {
+            @Override
+            public void process(WatchedEvent event) {
+                if (rootNode.equals(event.getPath()) && NodeDeleted.equals(event.getType())){
+                    rootExist = false;
+                    System.out.println("----------------------------------------------delete root");
+                    System.out.println(event.getPath());
+                    System.out.println(event.getState());
+                    System.out.println(event.getType());
+                    System.out.println("----------------------------------------------delete root");
+                }
+            }
+        });
+        System.out.println("----------------------------------------------create root");
+    }
+    
+    void deleteNamespace() throws KeeperException, InterruptedException {
+        zooKeeper.delete(rootNode, Constants.VERSION);
     }
     
     void setRootNode(String rootNode) {

@@ -23,32 +23,6 @@ public class UsualClient extends BaseClient {
     UsualClient(String servers, int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);
     }
-
-    public void createNamespace() throws KeeperException, InterruptedException {
-        if (rootExist){
-            return;
-        }
-        zooKeeper.create(rootNode, new byte[0], authorities, CreateMode.PERSISTENT);
-        rootExist = true;
-        zooKeeper.exists(rootNode, new Watcher() {
-            @Override
-            public void process(WatchedEvent event) {
-                if (rootNode.equals(event.getPath()) && NodeDeleted.equals(event.getType())){
-                    rootExist = false;
-                    System.out.println("----------------------------------------------delete root");
-                    System.out.println(event.getPath());
-                    System.out.println(event.getState());
-                    System.out.println(event.getType());
-                    System.out.println("----------------------------------------------delete root");
-                }
-            }
-        });
-        System.out.println("----------------------------------------------create root");
-    }
-    
-    public void deleteNamespace() throws KeeperException, InterruptedException {
-        zooKeeper.delete(rootNode, Constants.VERSION);
-    }
     
     public String getDataString(final String key) throws KeeperException, InterruptedException {
         return new String(getData(key));
@@ -131,10 +105,6 @@ public class UsualClient extends BaseClient {
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
         zooKeeper.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION);
         System.out.println("delete : " + PathUtil.getRealPath(rootNode, key));
-    }
-    
-    private void deleteOnlyCurrent(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
-        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION);
     }
     
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {

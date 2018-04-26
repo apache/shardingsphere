@@ -27,19 +27,19 @@ public class UsualClientTest {
     private static final String ROOT = "test";
     private static final String AUTH = "digest";
     
-    private UsualClient client = null;
+    private BaseClient client = null;
     
 //    @Before
     public void start() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
-        client = creator.setNamespace(ROOT).authorization(AUTH, AUTH.getBytes()).newClient(SERVERS, SESSION_TIMEOUT).start();
+        client = creator.setNamespace(ROOT).authorization(AUTH, AUTH.getBytes()).newUsualClient(SERVERS, SESSION_TIMEOUT).start();
     }
     
     @Before
     public void startWithWatch() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         Listener listener = buildListener();
-        client = creator.setNamespace(ROOT).authorization(AUTH, AUTH.getBytes()).newClient(SERVERS, SESSION_TIMEOUT).watch(listener).start();
+        client = creator.setNamespace(ROOT).authorization(AUTH, AUTH.getBytes()).newUsualClient(SERVERS, SESSION_TIMEOUT).watch(listener).start();
     }
     
     private Listener buildListener(){
@@ -235,7 +235,6 @@ public class UsualClientTest {
         
         String key = "a";
         Watcher watcher = client.registerWatch(key, listener);
-        client.createNamespace();
         client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
         client.checkExists(key, watcher);
         client.updateWithCheck(key, "value");

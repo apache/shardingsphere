@@ -68,6 +68,10 @@ public final class CacheClient extends UsualClient {
     private void deleteAllChild(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
     }
     
+    private void deleteOnlyCurrent(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
+        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION);
+    }
+    
     
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
