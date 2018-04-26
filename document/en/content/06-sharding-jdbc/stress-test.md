@@ -1,10 +1,10 @@
 +++
 toc = true
 title = "Performance test"
-weight = 2
+weight = 4
 +++
 
-## The summary of test result
+## Summary of test result
 
 1、The test of performance lose: When the server resources are sufficient and the number of concurrency is the same, we compare the performance loss of JDBC and Sharding-JDBC, the result is that the performance loss of Sharding-JDBC is less than 7%, compared with JDBC.<br>
 2、The test of performance: The server resources are used to the limit, the throughput of Sharding-JDBC and JDBC are on a fairly level.<br>
@@ -12,7 +12,7 @@ weight = 2
 4、The test of performance: The server resources are used to the limit, The performance of Sharding-JDBC V1.5.2 is more stable V1.4.2.<br>
 
 
-### The baseline performance test
+### Baseline performance test
 
 | Operation   | JDBC   | Sharding-JDBC1.5.2 |The loss ratio of Sharding-JDBC1.5.2/JDBC |
 |:----------|:-------|:-------------------|:---------------------------|
@@ -20,7 +20,7 @@ weight = 2
 |The UPDATE for single table in single DB| 6682    | 6303               | 5.7%                       |
 |The INSERT for single table in single DB| 6855    | 6375               | 7%                         |
 
-### The performance test for different DBs and Tables in JDBC and Sharding-JDBC
+### Performance test for different DBs and Tables in JDBC and Sharding-JDBC
 
 | Operation | Two tables in single DB for JDBC | Two tables in each of two DBs for Sharding-JDBC | The improved performance percentage  |
 |:--------|:------------|:----------------------|:----------|
@@ -35,7 +35,7 @@ weight = 2
 | UPDATE   | 9548        | 18561                 | 194%       |
 | INSERT   | 11182       | 21414                 | 192%       |
 
-### Sharding-JDBC v1.4.2与v1.5.2版本对
+### Sharding-JDBC v1.4.2 vs Sharding-JDBC v1.5.2
 
 | Operation | Sharding-JDBC 1.4.2&emsp; | Sharding-JDBC 1.5.2&emsp;&emsp;&emsp; | The improved ratio of 1.5.2/1.4.2 |
 |:--------|:--------------------------|:--------------------------------------|:------------|
