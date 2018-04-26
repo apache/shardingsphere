@@ -1,14 +1,14 @@
 dataSources:
   demo_ds_0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_jdbc_0
+    url: jdbc:mysql://localhost:3306/demo_ds_0
     username: root
-    password: 123456
+    password:
   demo_ds_1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_jdbc_1
+    url: jdbc:mysql://localhost:3306/demo_ds_1
     username: root
-    password: 123456
+    password:
 
 shardingRule:
   tables:
