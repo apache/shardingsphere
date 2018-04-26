@@ -22,5 +22,5 @@ Sharding-Proxy is suitable for uses to manage and debug, and can be connected ea
 ## Notices
 
 1. The default port of Sharding-Proxy is 3307, and can be changed by passing the port parameter to the startup script, e.g. bin/start.sh 3308.
-2. There is only one logical data source in Sharding-Proxy, named `sharding-db`.
+2. There is only one logical data source in Sharding-Proxy, named `sharding_db`.
 3. Currently, Sharding-Proxy does not support authorization, therefore you can login with any username and password at startup.

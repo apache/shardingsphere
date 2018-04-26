@@ -22,5 +22,5 @@ Sharding-Proxy是基于Sharding-JDBC基础上增加了针对MySQL协议的代理
 ## 注意事项
 
 1. Sharding-Proxy默认使用3307端口，可以通过启动脚本追加一个参数作为启动端口号。如: bin/start.sh 3308
-2. Sharding-Proxy目前只有一个逻辑数据源，名称为`sharding-db`。
+2. Sharding-Proxy目前只有一个逻辑数据源，名称为`sharding_db`。
 3. Sharding-Proxy目前并无授权功能，启动时可用任何用户名和密码登录。
