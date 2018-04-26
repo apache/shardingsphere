@@ -37,6 +37,7 @@ import java.util.Collections;
  * 
  * @author gaohongtao
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -57,7 +58,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
         log.debug("After database sharding only result: {}", routingDataSources);
         RoutingResult result = new RoutingResult();
         for (String each : routingDataSources) {
-            result.getTableUnits().getTableUnits().add(new TableUnit(each, "", ""));
+            result.getTableUnits().getTableUnits().add(new TableUnit(each));
         }
         return result;
     }

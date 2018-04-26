@@ -43,14 +43,10 @@ import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.routing.type.broadcast.DatabaseBroadcastRoutingEngine;
 import io.shardingjdbc.core.routing.type.broadcast.TableBroadcastRoutingEngine;
-import io.shardingjdbc.core.routing.type.complex.CartesianDataSource;
-import io.shardingjdbc.core.routing.type.complex.CartesianRoutingResult;
-import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
 import io.shardingjdbc.core.routing.type.complex.ComplexRoutingEngine;
 import io.shardingjdbc.core.routing.type.ignore.IgnoreRoutingEngine;
 import io.shardingjdbc.core.routing.type.standard.StandardRoutingEngine;
 import io.shardingjdbc.core.routing.type.unicast.UnicastRoutingEngine;
-import io.shardingjdbc.core.routing.type.unicast.UnicastRoutingResult;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 import io.shardingjdbc.core.util.SQLLogger;
@@ -102,18 +98,8 @@ public final class ParsingSQLRouter implements SQLRouter {
             processLimit(parameters, (SelectStatement) sqlStatement, isSingleRouting);
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
-        if (routingResult instanceof UnicastRoutingResult) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(((UnicastRoutingResult) routingResult).getDataSource(), rewriteEngine.generateSQL(routingResult.getTableUnits(), sqlBuilder)));
-        } else if (routingResult instanceof CartesianRoutingResult) {
-            for (CartesianDataSource cartesianDataSource : ((CartesianRoutingResult) routingResult).getRoutingDataSources()) {
-                for (CartesianTableReference cartesianTableReference : cartesianDataSource.getRoutingTableReferences()) {
-                    result.getExecutionUnits().add(new SQLExecutionUnit(cartesianDataSource.getDataSource(), rewriteEngine.generateSQL(cartesianTableReference, sqlBuilder)));
-                }
-            }
-        } else {
-            for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-                result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder)));
-            }
+        for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
+            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder)));
         }
         if (showSQL) {
             SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits());

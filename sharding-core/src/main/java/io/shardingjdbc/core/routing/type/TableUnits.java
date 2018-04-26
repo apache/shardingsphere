@@ -17,9 +17,7 @@
 
 package io.shardingjdbc.core.routing.type;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -36,6 +34,7 @@ import java.util.Set;
  * Route table unit collection.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @Getter
 @ToString
@@ -57,16 +56,17 @@ public final class TableUnits {
     }
     
     /**
-     * Find table unit via data source name and actual table name.
+     * Find routing table via data source name and actual table name.
      *
      * @param dataSourceName data source name
      * @param actualTableName actual table name
-     * @return table unit
+     * @return routing table
      */
-    public Optional<TableUnit> findTableUnit(final String dataSourceName, final String actualTableName) {
+    public Optional<RoutingTable> findRoutingTable(final String dataSourceName, final String actualTableName) {
         for (TableUnit each : tableUnits) {
-            if (each.getDataSourceName().equalsIgnoreCase(dataSourceName) && each.getActualTableName().equalsIgnoreCase(actualTableName)) {
-                return Optional.of(each);
+            Optional<RoutingTable> result = each.findRoutingTable(dataSourceName, actualTableName);
+            if (result.isPresent()) {
+                return result;
             }
         }
         return Optional.absent();
@@ -96,9 +96,7 @@ public final class TableUnits {
     private Set<String> getActualTableNames(final String dataSourceName, final String logicTableName) {
         Set<String> result = new HashSet<>(tableUnits.size(), 1);
         for (TableUnit each : tableUnits) {
-            if (each.getDataSourceName().equalsIgnoreCase(dataSourceName) && each.getLogicTableName().equalsIgnoreCase(logicTableName)) {
-                result.add(each.getActualTableName());
-            }
+            result.addAll(each.getActualTableNames(dataSourceName, logicTableName));
         }
         return result;
     }
@@ -124,13 +122,7 @@ public final class TableUnits {
         Set<String> result = new HashSet<>(tableUnits.size(), 1);
         for (TableUnit each : tableUnits) {
             if (each.getDataSourceName().equalsIgnoreCase(dataSourceName)) {
-                result.addAll(Lists.transform(tableUnits, new Function<TableUnit, String>() {
-                    
-                    @Override
-                    public String apply(final TableUnit input) {
-                        return input.getLogicTableName();
-                    }
-                }));
+                result.addAll(each.getLogicTableNames(dataSourceName));
             }
         }
         return result;

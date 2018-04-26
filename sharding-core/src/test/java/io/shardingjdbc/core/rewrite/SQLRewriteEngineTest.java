@@ -36,10 +36,9 @@ import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
 import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
 import io.shardingjdbc.core.parsing.parser.token.SchemaToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
-import io.shardingjdbc.core.routing.SQLUnit;
 import io.shardingjdbc.core.routing.router.GeneratedKey;
+import io.shardingjdbc.core.routing.type.RoutingTable;
 import io.shardingjdbc.core.routing.type.TableUnit;
-import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import org.junit.Before;
@@ -284,21 +283,9 @@ public final class SQLRewriteEngineTest {
         SQLRewriteEngine sqlRewriteEngine = 
                 new SQLRewriteEngine(shardingRule, "SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?", DatabaseType.MySQL, selectStatement, parameters, null);
         SQLBuilder sqlBuilder = sqlRewriteEngine.rewrite(true);
-        assertThat(sqlRewriteEngine.generateSQL(new TableUnit("db0", "table_x", "table_x"), sqlBuilder).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
-    }
-    
-    @Test
-    public void assertGenerateSQLForCartesian() {
-        List<Object> parameters = new ArrayList<>(2);
-        parameters.add(1);
-        parameters.add("x");
-        selectStatement.getSqlTokens().add(new TableToken(7, "table_x"));
-        selectStatement.getSqlTokens().add(new TableToken(31, "table_x"));
-        selectStatement.getSqlTokens().add(new TableToken(47, "table_x"));
-        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?", DatabaseType.MySQL, selectStatement, parameters, null);
-        SQLBuilder sqlBuilder = sqlRewriteEngine.rewrite(true);
-        CartesianTableReference cartesianTableReference = new CartesianTableReference(Collections.singletonList(new TableUnit("db0", "table_x", "table_x")));
-        assertThat(sqlRewriteEngine.generateSQL(cartesianTableReference, sqlBuilder).getSql(), is("SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?"));
+        TableUnit tableUnit = new TableUnit("db0");
+        tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
+        assertThat(sqlRewriteEngine.generateSQL(tableUnit, sqlBuilder).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
     }
     
     @Test

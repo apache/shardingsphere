@@ -26,6 +26,7 @@ import io.shardingjdbc.core.optimizer.condition.ShardingCondition;
 import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
+import io.shardingjdbc.core.routing.type.RoutingTable;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
@@ -42,6 +43,7 @@ import java.util.List;
  * Standard routing engine.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class StandardRoutingEngine implements RoutingEngine {
@@ -142,7 +144,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private RoutingResult generateRoutingResult(final Collection<DataNode> routedDataNodes) {
         RoutingResult result = new RoutingResult();
         for (DataNode each : routedDataNodes) {
-            result.getTableUnits().getTableUnits().add(new TableUnit(each.getDataSourceName(), logicTableName, each.getTableName()));
+            TableUnit tableUnit = new TableUnit(each.getDataSourceName());
+            tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, each.getTableName()));
+            result.getTableUnits().getTableUnits().add(tableUnit);
         }
         return result;
     }
