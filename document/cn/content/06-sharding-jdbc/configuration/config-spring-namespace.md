@@ -405,14 +405,14 @@ weight = 4
 
 #### \<master-slave:data-source />
 
-| *名称*                  | *类型* | *说明*                                        |
-| ----------------------- | ----- | -------------------------------------------- |
-| id                      | 属性  | Spring Bean Id                                |
-| master-data-source-name | 属性  | 主库数据源Bean Id                              |
-| slave-data-source-names | 属性  | 从库数据源Bean Id列表，多个Bean以逗号分隔        |
-| strategy-ref (?)        | 属性  | 从库负载均衡算法引用                            |
-| strategy-type (?)       | 属性  | 从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM |
-| config-map (?)          | 标签  | 用户自定义配置                                  |
+| *名称*                  | *类型* | *说明*                                                                       |
+| ----------------------- | ----- | ---------------------------------------------------------------------------- |
+| id                      | 属性  | Spring Bean Id                                                                |
+| master-data-source-name | 属性  | 主库数据源Bean Id                                                              |
+| slave-data-source-names | 属性  | 从库数据源Bean Id列表，多个Bean以逗号分隔                                        |
+| strategy-ref (?)        | 属性  | 从库负载均衡算法引用                                                            |
+| strategy-type (?)       | 属性  | 从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`strategy-ref`存在则忽略该配置 |
+| config-map (?)          | 标签  | 用户自定义配置                                                                 |
 
 #### \<sharding:config-map />
 
@@ -440,11 +440,11 @@ weight = 4
 | *名称*                  | *类型* | *说明*                 |
 | ----------------------- | ----- | ---------------------- |
 | id                      | 属性  | 配置同读写分离           |
-| master-data-source-name | 属性  | 配置同数据分片           |
-| slave-data-source-names | 属性  | 配置同数据分片           |
-| strategy-ref (?)        | 属性  | 配置同数据分片           |
-| strategy-type (?)       | 属性  | 配置同数据分片           |
-| config-map (?)          | 标签  | 配置同数据分片           |
+| master-data-source-name | 属性  | 配置同读写分离           |
+| slave-data-source-names | 属性  | 配置同读写分离           |
+| strategy-ref (?)        | 属性  | 配置同读写分离           |
+| strategy-type (?)       | 属性  | 配置同读写分离           |
+| config-map (?)          | 标签  | 配置同读写分离           |
 | registry-center-ref     | 属性  | 配置同数据分片 + 数据治理 |
 | overwrite               | 属性  | 配置同数据分片 + 数据治理 |
 

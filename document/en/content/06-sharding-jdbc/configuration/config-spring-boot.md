@@ -210,7 +210,7 @@ sharding.jdbc.config.orchestration.etcd.server-lists=localhost:2379
 ### Sharding
 
 ```properties
-sharding.jdbc.datasource.names= #Names of data sources, split by comma
+sharding.jdbc.datasource.names= #Names of data sources. Multiple data sources separated with comma
 
 sharding.jdbc.datasource.<data_source_name>.type= #Class name of data source pool
 sharding.jdbc.datasource.<data_source_name>.driver-class-name= #Class name of database driver
@@ -219,7 +219,7 @@ sharding.jdbc.datasource.<data_source_name>.username= #Database username
 sharding.jdbc.datasource.<data_source_name>.password= #Database password
 sharding.jdbc.datasource.<data_source_name>.xxx= #Other properties for data source pool
 
-sharding.jdbc.config.sharding.tables.<logic_table_name>.actual-data-nodes= #Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl_${0..7}
+sharding.jdbc.config.sharding.tables.<logic_table_name>.actual-data-nodes= #Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl_${0..7}
 
 #Databases sharding strategy, use default databases sharding strategy if absent. sharding strategy below can choose only one.
 
@@ -229,7 +229,7 @@ sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standa
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.rangeAlgorithmClassName= #Range algorithm class name used for `BETWEEN`. No argument constructor required
 
 #Complex sharding scenario for multiple sharding columns
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.shardingColumns= #Names of sharding columns. Multiple names separated with comma
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.shardingColumns= #Names of sharding columns. Multiple columns separated with comma
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.algorithmClassName= #Complex sharding algorithm class name. No argument constructor required
 
 #Inline expression sharding scenario for single sharding column
@@ -260,8 +260,8 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[0]= #more details can reference Read-write splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[1]= #more details can reference Read-write splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[x]= #more details can reference Read-write splitting part
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #more details can reference Read-write splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-class-name= #more details can reference Read-write splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #more details can reference Read-write splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key1= #more details can reference Read-write splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key2= #more details can reference Read-write splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.keyx= #more details can reference Read-write splitting part
@@ -283,8 +283,8 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[0]= #Names of Slave data sources
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[1]= #Names of Slave data sources
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[x]= #Names of Slave data sources
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-class-name= #Load balance algorithm class name. No argument constructor required
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`. Ignore if `load-balance-algorithm-class-name` is present 
 
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key1= #User-defined arguments
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key2= #User-defined arguments

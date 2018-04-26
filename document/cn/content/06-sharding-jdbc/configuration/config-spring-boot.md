@@ -260,8 +260,8 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[0]= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[1]= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[x]= #详见读写分离部分
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-class-name= #详见读写分离部分
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key1= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key2= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.keyx= #详见读写分离部分
@@ -283,8 +283,8 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[0]= #从库数据源名称列表
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[1]= #从库数据源名称列表
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[x]= #从库数据源名称列表
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-class-name= #从库负载均衡算法类名称。该类提供无参数构造器
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`load-balance-algorithm-class-name`存在则忽略该配置
 
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key1= #用户自定义配置
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key2= #用户自定义配置

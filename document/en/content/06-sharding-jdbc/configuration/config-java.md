@@ -208,10 +208,10 @@ Subclass of ShardingStrategyConfiguration.
 
 Subclass of ShardingStrategyConfiguration.
 
-| *Name*            | *DataType*                   | *Description*                                                  |
-| ----------------- | ---------------------------- | -------------------------------------------------------------- |
-| shardingColumns   | String                       | Names of sharding columns. Multiple names separated with comma |
-| shardingAlgorithm | ComplexKeysShardingAlgorithm | Complex sharding algorithm                                     |
+| *Name*            | *DataType*                   | *Description*                                                    |
+| ----------------- | ---------------------------- | ---------------------------------------------------------------- |
+| shardingColumns   | String                       | Names of sharding columns. Multiple columns separated with comma |
+| shardingAlgorithm | ComplexKeysShardingAlgorithm | Complex sharding algorithm                                       |
 
 #### InlineShardingStrategyConfiguration
 

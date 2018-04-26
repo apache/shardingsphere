@@ -122,7 +122,7 @@ dataSources: #Data sources configuration, multiple `data_source_name` available
 shardingRule:
   tables: #Sharding rule configuration, multiple `logic_table_name` available
     <logic_table_name>: #Name of logic table
-      actualDataNodes: #Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl_${0..7}
+      actualDataNodes: #Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl_${0..7}
         
       databaseStrategy: #Databases sharding strategy, use default databases sharding strategy if absent. sharding strategy below can choose only one.
         standard: #Standard sharding scenario for single sharding column
@@ -130,7 +130,7 @@ shardingRule:
             preciseAlgorithmClassName: #Precise algorithm class name used for `=` and `IN`. No argument constructor required
             rangeAlgorithmClassName: #Range algorithm class name used for `BETWEEN`. No argument constructor required
           complex: #Complex sharding scenario for multiple sharding columns
-            shardingColumns: #Names of sharding columns. Multiple names separated with comma
+            shardingColumns: #Names of sharding columns. Multiple columns separated with comma
             algorithmClassName: #Complex sharding algorithm class name. No argument constructor required
           inline: #Inline expression sharding scenario for single sharding column
             shardingColumn: #Name of sharding column
@@ -187,8 +187,8 @@ masterSlaveRule:
     - <data_source_name_1>
     - <data_source_name_2>
     - <data_source_name_x>
-  loadBalanceAlgorithmType: #Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`
   loadBalanceAlgorithmClassName: #Load balance algorithm class name. No argument constructor required
+  loadBalanceAlgorithmType: #Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`. Ignore if `loadBalanceAlgorithmClassName` is present
   
   configMap: #User-defined arguments
     key1: value1
@@ -233,7 +233,7 @@ orchestration:
     serverLists: #Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379
     timeToLiveSeconds: #Time to live of data, default is 60 seconds
     timeoutMilliseconds: #Timeout milliseconds, default is 500 milliseconds
-    retryIntervalMilliseconds: #Milliseconds of retry interval, default is w00 milliseconds
+    retryIntervalMilliseconds: #Milliseconds of retry interval, default is 200 milliseconds
     maxRetries: #Max retries times if request failure, default value is 3
 ```
 

@@ -158,8 +158,8 @@ shardingRule:
     <data_source_name>: #数据源名称，需要与真实数据源匹配，可配置多个data_source_name
       masterDataSourceName: #详见读写分离部分
       slaveDataSourceNames: #详见读写分离部分
-      loadBalanceAlgorithmType: #详见读写分离部分
       loadBalanceAlgorithmClassName: #详见读写分离部分
+      loadBalanceAlgorithmType: #详见读写分离部分
       configMap: #用户自定义配置
           key1: value1
           key2: value2
@@ -187,8 +187,8 @@ masterSlaveRule:
     - <data_source_name_1>
     - <data_source_name_2>
     - <data_source_name_x>
-  loadBalanceAlgorithmType: #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM
   loadBalanceAlgorithmClassName: #从库负载均衡算法类名称。该类提供无参数构造器
+  loadBalanceAlgorithmType: #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`loadBalanceAlgorithmClassName`存在则忽略该配置
   
   configMap: #用户自定义配置
     key1: value1
