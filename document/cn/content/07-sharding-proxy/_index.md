@@ -5,6 +5,26 @@ weight = 7
 chapter = true
 +++
 
-## 导览
+## 简介
 
-本章节将介绍Sharding-Proxy相关配置和使用。
+Sharding-Proxy是Sharding-Sphere的第二个产品。
+它定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
+目前先提供MySQL版本，它可以使用任何兼容MySQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench等)操作数据，对DBA更加友好。
+
+* 向应用程序完全透明，可直接当做MySQL使用。
+* 可适用于任何兼容MySQL协议的的客户端。
+
+![Sharding-JDBC Architecture](http://ovfotjrsi.bkt.clouddn.com/proxy_brief_v2_cn.png)
+
+## 对比
+
+|         | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
+| ------- | --------------- | ---------------- | ------------------ |
+| 数据库   | 任意            | `MySQL`          | MySQL               |
+| 连接数   | 高              | `低`             | 高                  |
+| 异构语言 | 仅Java          | `任意`            | 任意                |
+| 性能     | 损耗低          | `损耗略高`         | 损耗低              |
+| 无中心化 | 是              | `否`              | 是                  |
+| 静态入口 | 无              | `有`              | 无                  |
+
+Sharding-Proxy的优势在于对异构语言的支持，以及为DBA提供可操作入口。
