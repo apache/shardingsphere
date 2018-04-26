@@ -229,7 +229,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
             return mergeDML(headPackets);
         }
         if (SQLType.DQL == sqlStatement.getType() || SQLType.DAL == sqlStatement.getType()) {
-            return mergeDQL(sqlStatement, packets);
+            return mergeDQLorDAL(sqlStatement, packets);
         }
         return packets.get(0);
     }
@@ -245,7 +245,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         return new CommandResponsePackets(new OKPacket(1, affectedRows, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
     }
     
-    private CommandResponsePackets mergeDQL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
+    private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
         List<QueryResult> queryResults = new ArrayList<>(packets.size());
         for (int i = 0; i < packets.size(); i++) {
             // TODO replace to a common PacketQueryResult
