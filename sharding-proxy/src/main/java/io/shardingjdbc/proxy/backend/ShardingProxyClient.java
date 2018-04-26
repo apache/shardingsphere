@@ -19,6 +19,7 @@ package io.shardingjdbc.proxy.backend;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -31,9 +32,13 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.shardingjdbc.proxy.backend.netty.ClientHandlerInitializer;
 import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
+import lombok.Getter;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -42,31 +47,37 @@ import java.util.Map;
  * @author wangkai
  */
 public final class ShardingProxyClient {
+    private static final ShardingProxyClient INSTANCE = new ShardingProxyClient();
     
     private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors();
     
     private EventLoopGroup workerGroup;
+    
+    @Getter
+    private Map<String,Channel> channelMap = new HashMap<>();
     
     /**
      * Start Sharding-Proxy.
      *
      * @throws InterruptedException interrupted exception
      */
-    public void start() throws InterruptedException {
-        try {
-            Bootstrap bootstrap = new Bootstrap();
-            if (workerGroup instanceof EpollEventLoopGroup) {
-                groupsEpoll(bootstrap);
-            } else {
-                groupsNio(bootstrap);
-            }
-            Map<String, DataSource> dataSourceMap = ShardingRuleRegistry.getInstance().getDataSourceMap();
-            for (DataSource each : dataSourceMap.values()) {
-                ((BasicDataSource)each).getUrl().
-                ChannelFuture future = bootstrap.connect("localhost",3306).sync();
-                future.channel().closeFuture().sync();
-            }
-        } finally {
+    public void start() throws InterruptedException, MalformedURLException {
+        Bootstrap bootstrap = new Bootstrap();
+        if (workerGroup instanceof EpollEventLoopGroup) {
+            groupsEpoll(bootstrap);
+        } else {
+            groupsNio(bootstrap);
+        }
+        Map<String, DataSource> dataSourceMap = ShardingRuleRegistry.getInstance().getDataSourceMap();
+        for (Map.Entry<String,DataSource> each : dataSourceMap.entrySet()) {
+            URL url = new URL(((BasicDataSource)each.getValue()).getUrl().replaceAll("jdbc:mysql://","http://"));
+            ChannelFuture future = bootstrap.connect(url.getHost(),url.getPort()).sync();
+            channelMap.put(each.getKey(),future.channel());
+        }
+    }
+    
+    public void stop(){
+        if(workerGroup != null){
             workerGroup.shutdownGracefully();
         }
     }
@@ -94,5 +105,14 @@ public final class ShardingProxyClient {
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .handler(new ClientHandlerInitializer());
+    }
+    
+    /**
+     * Get instance of sharding-proxy client.
+     *
+     * @return instance of sharding-proxy client
+     */
+    public static ShardingProxyClient getInstance() {
+        return INSTANCE;
     }
 }

@@ -19,6 +19,7 @@ package io.shardingjdbc.proxy.backend.common;
 
 import io.netty.channel.EventLoopGroup;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.proxy.backend.mysql.MySQLBackendHandler;
 import io.shardingjdbc.proxy.frontend.common.FrontendHandler;
 import io.shardingjdbc.proxy.frontend.mysql.MySQLFrontendHandler;
 import lombok.AccessLevel;
@@ -32,15 +33,15 @@ import lombok.NoArgsConstructor;
 public final class BackendHandlerFactory {
     
     /**
-     * Create frontend handler instance.
+     * Create bakcend handler instance.
      *
      * @param databaseType database type
      * @return backend handler instance
      */
-    public static BackendHandler createFrontendHandlerInstance(final DatabaseType databaseType) {
+    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType) {
         switch (databaseType) {
             case MySQL:
-                return new MySQLFrontendHandler();
+                return new MySQLBackendHandler();
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
         }

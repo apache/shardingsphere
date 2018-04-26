@@ -22,6 +22,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.proxy.backend.common.BackendHandlerFactory;
 import io.shardingjdbc.proxy.frontend.common.FrontendHandlerFactory;
 import io.shardingjdbc.proxy.transport.common.codec.PacketCodecFactory;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,6 @@ public final class ClientHandlerInitializer extends ChannelInitializer<SocketCha
         ChannelPipeline pipeline = socketChannel.pipeline();
         // TODO load database type from yaml or startup arguments
         pipeline.addLast(PacketCodecFactory.createPacketCodecInstance(DatabaseType.MySQL));
-        pipeline.addLast(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL, userGroup));
+        pipeline.addLast(BackendHandlerFactory.createBackendHandlerInstance(DatabaseType.MySQL));
     }
 }

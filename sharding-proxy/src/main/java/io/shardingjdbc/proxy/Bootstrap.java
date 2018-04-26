@@ -19,10 +19,13 @@ package io.shardingjdbc.proxy;
 
 import io.shardingjdbc.proxy.frontend.ShardingProxy;
 
+import java.net.MalformedURLException;
+
 /**
  * Sharding-Proxy Bootstrap.
  *
  * @author zhangliang
+ * @author wangkai
  */
 public final class Bootstrap {
     
@@ -34,7 +37,7 @@ public final class Bootstrap {
      * @param args startup arguments
      * @throws InterruptedException interrupted exception
      */
-    public static void main(final String[] args) throws InterruptedException {
+    public static void main(final String[] args) throws InterruptedException, MalformedURLException {
         new ShardingProxy().start(getPort(args));
     }
     

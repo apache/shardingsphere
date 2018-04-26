@@ -15,24 +15,40 @@
  * </p>
  */
 
-package io.shardingjdbc.proxy.backend.common;
+package io.shardingjdbc.proxy.backend.mysql;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.shardingjdbc.proxy.backend.common.BackendHandler;
+import io.shardingjdbc.proxy.backend.common.CommandResponsePacketsHandler;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
 /**
  * Backend handler.
  *
- * @author zhangliang
+ * @author wangkai
  */
-public interface BackendHandler {
+public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
-    /**
-     * Execute command.
-     *
-     * @return result packets to be sent
-     */
-    CommandResponsePackets execute();
+    @Override
+    public void channelRead(final ChannelHandlerContext context, final Object message) {
+        //TODO 判断报文是握手还是
+        if (true) {
+            auth(context,(ByteBuf) message);
+        } else {
+        
+        }
+    }
+    
+    @Override
+    protected void auth(ChannelHandlerContext context, ByteBuf message) {
+    
+    }
+    
+    @Override
+    protected void executeCommandResponsePackets(ChannelHandlerContext context, ByteBuf message) {
+    
+    }
+
 }

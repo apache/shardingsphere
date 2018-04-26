@@ -32,9 +32,11 @@ import java.util.Map;
  * Sharding rule registry.
  *
  * @author zhangliang
+ * @author wangkai
  */
 @Getter
 public final class ShardingRuleRegistry {
+    public static final boolean WITHOUT_JDBC = true;
     
     private static final ShardingRuleRegistry INSTANCE = new ShardingRuleRegistry();
     
