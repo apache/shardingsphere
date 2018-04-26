@@ -111,6 +111,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     private CommandResponsePackets execute(final SQLStatement sqlStatement, final SQLExecutionUnit sqlExecutionUnit) {
         switch (sqlStatement.getType()) {
             case DQL:
+            case DAL:
                 return executeQuery(ShardingRuleRegistry.getInstance().getDataSourceMap().get(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql());
             case DML:
             case DDL:
@@ -265,7 +266,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         if (SQLType.DML == sqlStatement.getType()) {
             return mergeDML(headPackets);
         }
-        if (SQLType.DQL == sqlStatement.getType()) {
+        if (SQLType.DQL == sqlStatement.getType() || SQLType.DAL == sqlStatement.getType()) {
             return mergeDQL(sqlStatement, packets);
         }
         return packets.get(0);
