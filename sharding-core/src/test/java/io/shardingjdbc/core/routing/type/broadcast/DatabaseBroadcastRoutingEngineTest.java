@@ -27,6 +27,7 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class DatabaseBroadcastRoutingEngineTest {
@@ -46,7 +47,11 @@ public final class DatabaseBroadcastRoutingEngineTest {
     
     @Test
     public void assertRoute() {
-        assertThat(databaseBroadcastRoutingEngine.route(), instanceOf(RoutingResult.class));
+        RoutingResult routingResult = databaseBroadcastRoutingEngine.route();
+        assertThat(routingResult, instanceOf(RoutingResult.class));
+        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(2));
+        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getDataSourceName(), is("ds0"));
+        assertThat(routingResult.getTableUnits().getTableUnits().get(1).getDataSourceName(), is("ds1"));
     }
 }
 

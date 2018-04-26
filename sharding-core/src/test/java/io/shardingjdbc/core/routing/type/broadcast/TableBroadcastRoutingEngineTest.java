@@ -22,17 +22,21 @@ import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingjdbc.core.parsing.parser.token.IndexToken;
+import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+
 public final class TableBroadcastRoutingEngineTest {
     
     private ShardingRule shardingRule;
-    
-    private DDLStatement ddlStatement;
     
     @Before
     public void setEngineContext() {
@@ -43,20 +47,51 @@ public final class TableBroadcastRoutingEngineTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
-        ddlStatement = new DDLStatement();
     }
     
     @Test
-    public void assertRouteWithoutLogicTableNames() {
+    public void assertRoutingResultForDQLStatement() {
+        assertThat(createDQLStatementRoutingResult(), instanceOf(RoutingResult.class));
+    }
+    
+    @Test
+    public void assertIsSingleRoutingForDQLStatement() {
+        assertFalse(createDQLStatementRoutingResult().isSingleRouting());
+    }
+    
+    @Test
+    public void assertTableUnitsForDQLStatement() {
+        RoutingResult routingResult = createDQLStatementRoutingResult();
+        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(0));
+    }
+    
+    @Test
+    public void assertRoutingResultForDDLStatement() {
+        assertThat(createDDLStatementRoutingResult(), instanceOf(RoutingResult.class));
+    }
+    
+    @Test
+    public void assertIsSingleRoutingForDDLStatement() {
+        assertFalse(createDDLStatementRoutingResult().isSingleRouting());
+    }
+    
+    @Test
+    public void assertTableUnitsForDDLStatement() {
+        RoutingResult routingResult = createDDLStatementRoutingResult();
+        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(6));
+    }
+    
+    private RoutingResult createDQLStatementRoutingResult() {
         TableBroadcastRoutingEngine tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(shardingRule, new DQLStatement());
-        tableBroadcastRoutingEngine.route();
+        return tableBroadcastRoutingEngine.route();
     }
     
-    @Test
-    public void assertRouteWithLogicTableNames() {
+    private RoutingResult createDDLStatementRoutingResult() {
+        DDLStatement ddlStatement = new DDLStatement();
         ddlStatement.getSqlTokens().add(new IndexToken(13, "t_order_index", "t_order"));
         TableBroadcastRoutingEngine tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(shardingRule, ddlStatement);
-        tableBroadcastRoutingEngine.route();
+        return tableBroadcastRoutingEngine.route();
     }
 }
+
 
