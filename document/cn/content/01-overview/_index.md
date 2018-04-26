@@ -29,7 +29,7 @@ Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成�
 
 ### Sharding-JDBC
 
-Sharding-JDBC定位为轻量级Java框架，于Java的JDBC层提供的额外服务。
+定位为轻量级Java框架，于Java的JDBC层提供的额外服务。
 它使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为增强版的JDBC驱动，完全兼容JDBC和各种ORM框架。
 
 * 可适用于任何基于Java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC。
@@ -42,7 +42,7 @@ Sharding-JDBC定位为轻量级Java框架，于Java的JDBC层提供的额外服�
 
 [![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-proxy-2.1.0-SNAPSHOT-assembly-v1.tar.gz)
 
-Sharding-Proxy定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
+定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
 目前先提供MySQL版本，它可以使用任何兼容MySQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench等)操作数据，对DBA更加友好。
 
 * 向应用程序完全透明，可直接当做MySQL使用。
@@ -51,13 +51,17 @@ Sharding-Proxy定位为透明化的数据库代理端，提供封装了数据库
 ![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/proxy_brief_v2_cn.png)
 
 ### Sharding-Sidecar（TBD）
-Sharding-Sidecar定位为Kubernetes或Mesos的云原生数据库代理，以DaemonSet的形式代理所有对数据库的访问。
+
+定位为Kubernetes或Mesos的云原生数据库代理，以DaemonSet的形式代理所有对数据库的访问。
+通过无中心、零侵入的方案提供与数据库交互的的啮合层，即Database Mesh，又可称数据网格。
+Database Mesh的关注重点在于如何将分布式的数据访问应用与数据库有机串联起来，它更加关注的是交互，是将杂乱无章的应用与数据库之间的交互有效的梳理。使用Database Mesh，访问数据库的应用和数据库终将形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
 
 ![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_v2_cn.png)
 
 ## 功能列表
 
 ### 数据分片
+
 * 分库 + 分表
 * 支持聚合，分组，排序，分页，关联查询等复杂查询语句
 * 支持常见的DML，DDL，TCL以及数据库管理语句
@@ -67,16 +71,19 @@ Sharding-Sidecar定位为Kubernetes或Mesos的云原生数据库代理，以Daem
 * 分布式主键
 
 ### 读写分离
+
 * 一主多从的读写分离
 * 同一线程内的数据一致性
 * 支持分库分表与读写分离共同使用
 * 基于Hint的强制主库路由
 
 ### 柔性事务
+
 * 最大努力送达型事务
 * TCC型事务(TBD)
 
 ### 分布式治理
+
 * 配置中心，配置动态化
 * 客户端熔断
 * 客户端失效转移
