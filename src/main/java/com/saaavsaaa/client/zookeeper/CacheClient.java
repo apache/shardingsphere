@@ -1,12 +1,13 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.cache.PathTree;
 import com.saaavsaaa.client.untils.Constants;
 import com.saaavsaaa.client.untils.PathUtil;
-import com.saaavsaaa.client.untils.StringUtil;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Transaction;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Stack;
 
@@ -14,10 +15,17 @@ import java.util.Stack;
  * Created by aaa on 18-4-19.
  */
 public final class CacheClient extends UsualClient {
+    PathTree pathTree = null;
+    
     CacheClient(String servers, int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);
     }
     
+    @Override
+    public void start() throws IOException, InterruptedException {
+        super.start();
+        pathTree = new PathTree(rootNode);
+    }
     
     /*
     * closed beta

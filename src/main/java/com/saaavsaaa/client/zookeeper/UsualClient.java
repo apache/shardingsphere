@@ -5,12 +5,12 @@ package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.untils.Constants;
 import com.saaavsaaa.client.untils.PathUtil;
-import com.saaavsaaa.client.untils.StringUtil;
-import org.apache.zookeeper.*;
+import org.apache.zookeeper.AsyncCallback;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.Watcher;
 
 import java.util.List;
-
-import static org.apache.zookeeper.Watcher.Event.EventType.NodeDeleted;
 
 /*
 * cache

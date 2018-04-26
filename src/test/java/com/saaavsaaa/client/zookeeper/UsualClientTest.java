@@ -3,7 +3,6 @@ package com.saaavsaaa.client.zookeeper;
 import com.saaavsaaa.client.untils.Constants;
 import com.saaavsaaa.client.untils.Listener;
 import com.saaavsaaa.client.untils.PathUtil;
-import com.saaavsaaa.client.untils.StringUtil;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
@@ -19,30 +18,9 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * Created by aaa on 18-4-18.
+ * Created by aaa
  */
-public class UsualClientTest {
-    
-    private Client client = null;
-    
-//    @Before
-    public void start() throws IOException, InterruptedException {
-        ClientFactory creator = new ClientFactory();
-        client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newUsualClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
-    }
-    
-    @Before
-    public void startWithWatch() throws IOException, InterruptedException {
-        ClientFactory creator = new ClientFactory();
-        Listener listener = TestSupport.buildListener();
-        client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newUsualClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
-    }
-    
-    @After
-    public void stop() throws InterruptedException {
-        client.close();
-        client = null;
-    }
+public class UsualClientTest extends BaseClientTest {
     
     @Test
     public void createRoot() throws KeeperException, InterruptedException {
@@ -272,98 +250,9 @@ public class UsualClientTest {
         return listener;
     }
     
-    private Listener buildEventListener(List<String> actual){
-        EventListener eventListener = new EventListener() {
-            @Override
-            public void onChange(DataChangedEvent event) {
-                System.out.println("==========================================================");
-                System.out.println(event.getKey());
-                System.out.println(event.getValue());
-                System.out.println(event.getEventType());
-                System.out.println("==========================================================");
-            }
-        };
-        Listener listener = new Listener() {
-            @Override
-            public void process(WatchedEvent event) {
-                byte[] data = new byte[0];
-                try {
-                    data = client.getZooKeeper().getData(event.getPath(),false, null);
-                } catch (KeeperException e) {
-                    if (e instanceof KeeperException.NoNodeException){
-                        System.out.println(event.getType() +" : "+ e.getMessage());
-                    } else {
-                        e.printStackTrace();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                String result = null == data ? null : new String(data, Constants.UTF_8);
-                eventListener.onChange(new DataChangedEvent(getEventType(event, result), event.getPath(), result));
-            }
-        
-            private DataChangedEvent.Type getEventType(final WatchedEvent event, final String result) {
-                switch (event.getType()) {
-                    case NodeDataChanged:
-                    case NodeChildrenChanged: {
-                        actual.add(new StringBuilder().append("update_").append(event.getPath()).append("_").append(result).toString());
-                        return DataChangedEvent.Type.UPDATED;
-                    }
-                    case NodeDeleted: {
-                        actual.add(new StringBuilder().append("delete_").append(event.getPath()).append("_").append(result).toString());
-                        return DataChangedEvent.Type.DELETED;
-                    }
-                    default:
-                        actual.add(new StringBuilder().append("ignore_").append(event.getPath()).append("_").append(result).toString());
-                        return DataChangedEvent.Type.IGNORED;
-                }
-            }
-        };
-        return listener;
-    }
-    
     @Test
     public void close() throws Exception {
         client.close();
         assert client.getZooKeeper().getState() == ZooKeeper.States.CLOSED;
-    }
-}
-
-interface EventListener {
-    void onChange(DataChangedEvent event);
-}
-
-class DataChangedEvent {
-    
-    public Type getEventType() {
-        return eventType;
-    }
-    
-    public String getKey() {
-        return key;
-    }
-    
-    public String getValue() {
-        return value;
-    }
-    
-    public DataChangedEvent(Type eventType, String key, String value) {
-        this.eventType = eventType;
-        this.key = key;
-        this.value = value;
-    }
-    
-    private final Type eventType;
-    
-    private final String key;
-    
-    private final String value;
-    
-    /**
-     * Data changed event type.
-     */
-    public enum Type {
-        
-        UPDATED, DELETED, IGNORED
     }
 }
