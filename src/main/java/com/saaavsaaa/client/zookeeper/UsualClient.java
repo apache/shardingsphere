@@ -85,7 +85,8 @@ public class UsualClient extends BaseClient {
         } catch (KeeperException.NoNodeException e) {
             // I don't know whether it will happen or not, if root watcher don't update rootExist timely
             if (e.getMessage().contains(path)) {
-                rootExist = false;
+                System.out.println("rootExist : " + e.getMessage());
+                Thread.sleep(50);
                 this.createCurrentOnly(key, value, createMode);
             }
         }

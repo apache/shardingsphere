@@ -29,13 +29,13 @@ public class UsualClientTest {
     
     private UsualClient client = null;
     
-    @Before
+//    @Before
     public void start() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         client = creator.setNamespace(ROOT).authorization(AUTH, AUTH.getBytes()).newClient(SERVERS, SESSION_TIMEOUT).start();
     }
     
-//    @Before
+    @Before
     public void startWithWatch() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         Listener listener = buildListener();
