@@ -54,4 +54,3 @@ public final class DatabaseBroadcastRoutingEngineTest {
         assertThat(routingResult.getTableUnits().getTableUnits().get(1).getDataSourceName(), is("ds1"));
     }
 }
-

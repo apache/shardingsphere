@@ -32,4 +32,3 @@ public final class IgnoreRoutingEngineTest {
         assertThat(ignoreRoutingEngine.route(), instanceOf(RoutingResult.class));
     }
 }
-
