@@ -28,17 +28,18 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * COM_QUERY command packet.
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  *
  * @author zhangliang
+ * @author wangkai
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  */
 @Slf4j
 public final class ComQueryPacket extends CommandPacket {
     
     private final String sql;
     
-    public ComQueryPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
+    public ComQueryPacket(final int sequenceId, final int connectionId, MySQLPacketPayload mysqlPacketPayload) {
+        super(sequenceId, connectionId);
         sql = mysqlPacketPayload.readStringEOF();
     }
     
@@ -51,8 +52,8 @@ public final class ComQueryPacket extends CommandPacket {
     public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         if (ShardingRuleRegistry.WITHOUT_JDBC) {
-            return new SQLPacketsBackendHandler(sql, DatabaseType.MySQL, true).execute();
-        }else {
+            return new SQLPacketsBackendHandler(sql, connectionId, DatabaseType.MySQL, true).execute();
+        } else {
             return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
         }
     }

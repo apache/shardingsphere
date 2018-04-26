@@ -31,6 +31,7 @@ import io.shardingjdbc.proxy.transport.mysql.packet.handshake.AuthPluginData;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
+import io.shardingjdbc.proxy.util.MySQLResultCache;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -48,6 +49,8 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     @Override
     protected void handshake(final ChannelHandlerContext context) {
         authPluginData = new AuthPluginData();
+        int connectionId = ConnectionIdGenerator.getInstance().nextId();
+        MySQLResultCache.getInstance().putConnectionMap(context.channel().id().asShortText(),connectionId);
         context.writeAndFlush(new HandshakePacket(ConnectionIdGenerator.getInstance().nextId(), authPluginData));
     }
     
@@ -67,7 +70,8 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             public void run() {
                 MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
                 int sequenceId = mysqlPacketPayload.readInt1();
-                CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, mysqlPacketPayload);
+                int connectionId = MySQLResultCache.getInstance().getonnectionMap(context.channel().id().asShortText());
+                CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, mysqlPacketPayload);
                 for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
                     context.write(each);
                 }

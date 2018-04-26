@@ -23,16 +23,24 @@ import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
  * Command packet.
  *
  * @author zhangliang
+ * @author wangkai
  */
 public abstract class CommandPacket extends MySQLPacket {
+    protected final int connectionId;
+    
+    public CommandPacket(final int sequenceId, final int connectionId) {
+        super(sequenceId);
+        this.connectionId = connectionId;
+    }
     
     public CommandPacket(final int sequenceId) {
         super(sequenceId);
+        this.connectionId = 0;
     }
     
     /**
      * Execute command.
-     * 
+     *
      * @return result packets to be sent
      */
     public abstract CommandResponsePackets execute();

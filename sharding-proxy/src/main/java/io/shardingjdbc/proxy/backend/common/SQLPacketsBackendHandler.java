@@ -40,39 +40,41 @@ import java.util.concurrent.TimeUnit;
 public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
     private SynchronizedFuture<CommandResponsePackets> synchronizedFuture;
     
-    public SQLPacketsBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
+    private int connectionId;
+    
+    public SQLPacketsBackendHandler(final String sql, final int connectionId, final DatabaseType databaseType, final boolean showSQL) {
         super(sql, databaseType, showSQL);
+        this.connectionId = connectionId;
     }
     
     @Override
     public CommandResponsePackets execute() {
         SQLRouteResult routeResult = routingEngine.route(sql);
-        //TODO sequenceId should be set.
-        int sequenceId = 0;
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
         synchronizedFuture = new SynchronizedFuture<>(routeResult.getExecutionUnits().size());
-        MySQLResultCache.getInstance().put(sequenceId, synchronizedFuture);
+        MySQLResultCache.getInstance().put(connectionId, synchronizedFuture);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             execute(routeResult.getSqlStatement(), each);
         }
-        //TODO timeout will be set.
+        //TODO timeout should be set.
         List<CommandResponsePackets> result = synchronizedFuture.get(30, TimeUnit.SECONDS);
-        MySQLResultCache.getInstance().delete(sequenceId);
+        MySQLResultCache.getInstance().delete(connectionId);
         return merge(routeResult.getSqlStatement(), result);
     }
     
     @Override
     protected CommandResponsePackets execute(final SQLStatement sqlStatement, final SQLExecutionUnit sqlExecutionUnit) {
+        Channel channel = ShardingProxyClient.getInstance().getChannelMap().get(sqlExecutionUnit.getDataSource());
         switch (sqlStatement.getType()) {
             case DQL:
-                executeQuery(ShardingProxyClient.getInstance().getChannelMap().get(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSql());
+                executeQuery(channel, sqlExecutionUnit.getSql());
             case DML:
             case DDL:
-                executeUpdate(ShardingProxyClient.getInstance().getChannelMap().get(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSql(), sqlStatement);
+                executeUpdate(channel, sqlExecutionUnit.getSql(), sqlStatement);
             default:
-                executeCommon(ShardingProxyClient.getInstance().getChannelMap().get(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSql());
+                executeCommon(channel, sqlExecutionUnit.getSql());
         }
         return null;
     }

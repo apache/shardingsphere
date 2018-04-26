@@ -21,6 +21,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingjdbc.proxy.backend.common.CommandResponsePacketsHandler;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
+import io.shardingjdbc.proxy.transport.mysql.packet.handshake.AuthPluginData;
+import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingjdbc.proxy.util.MySQLResultCache;
 
 /**
@@ -32,26 +34,29 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
-        //TODO 判断报文是握手还是OKPacket还是结果集
+        //TODO if handshake, then invoke auth.
+        //TODO if execute command, then invoke executeCommandResponsePackets.
+        //TODO if OKPacket or ERRPacket, then log.
         if (true) {
             auth(context, (ByteBuf) message);
-        } else {
+        } else if(true){
+        
+        } else{
         
         }
     }
     
-    //TODO
+    //TODO message to handshakePacket; send handshakeResponse back.
     @Override
     protected void auth(ChannelHandlerContext context, ByteBuf message) {
-    
+        HandshakePacket handshakePacket = new HandshakePacket(1,new AuthPluginData());
     }
     
     //TODO
     @Override
     protected void executeCommandResponsePackets(ChannelHandlerContext context, ByteBuf message) {
-        MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
-        int sequenceId = mysqlPacketPayload.readInt1();
-        MySQLResultCache.getInstance().get(sequenceId).setResponse(null);
+        int connectionId = 0;
+        MySQLResultCache.getInstance().get(connectionId).setResponse(null);
     }
     
 }

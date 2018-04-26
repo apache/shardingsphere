@@ -31,26 +31,49 @@ import java.util.concurrent.TimeUnit;
 public class MySQLResultCache {
     private static final MySQLResultCache INSTANCE = new MySQLResultCache();
     //TODO expire time will be set.
-    private Cache<String, SynchronizedFuture> cache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
+    private Cache<Integer, SynchronizedFuture> resultCache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
+    
+    private Cache<String, Integer> connectionCache = CacheBuilder.newBuilder().build();
+    
+    private Cache<String, Integer> channelCache = CacheBuilder.newBuilder().build();
     
     /**
-     * @param sequenceId send mysql server transaction id.
+     * @param connectionId       mysql connection id.
      * @param synchronizedFuture multiple result set.
      */
-    public void put(int sequenceId, SynchronizedFuture<CommandResponsePackets> synchronizedFuture){
-        cache.put(sequenceId + "", synchronizedFuture);
+    public void put(int connectionId, SynchronizedFuture<CommandResponsePackets> synchronizedFuture) {
+        resultCache.put(connectionId, synchronizedFuture);
     }
     
     /**
-     * @param sequenceId send mysql server transaction id.
+     * @param connectionId mysql connection id.
      * @return multiple result set.
      */
-    public SynchronizedFuture<CommandResponsePackets> get(int sequenceId){
-        return cache.getIfPresent(sequenceId + "");
+    public SynchronizedFuture<CommandResponsePackets> get(int connectionId) {
+        return resultCache.getIfPresent(connectionId);
     }
     
-    public void delete(int sequenceId){
-        cache.invalidate(sequenceId + "");
+    /**
+     * @param connectionId mysql connection id.
+     */
+    public void delete(int connectionId) {
+        resultCache.invalidate(connectionId);
+    }
+    
+    /**
+     * @param serverChannelId netty server channel id.
+     * @param connectionId    mysql connection id.
+     */
+    public void putConnectionMap(String serverChannelId, int connectionId) {
+        connectionCache.put(serverChannelId, connectionId);
+    }
+    
+    /**
+     * @param serverChannelId netty server channel id.
+     * @return connectionId   mysql connection id.
+     */
+    public int getonnectionMap(String serverChannelId) {
+        return connectionCache.getIfPresent(serverChannelId);
     }
     
     /**

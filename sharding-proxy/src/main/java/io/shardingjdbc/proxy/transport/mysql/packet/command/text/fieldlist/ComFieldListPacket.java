@@ -42,8 +42,8 @@ public final class ComFieldListPacket extends CommandPacket {
     
     private final String fieldWildcard;
     
-    public ComFieldListPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
+    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
+        super(sequenceId, connectionId);
         table = mysqlPacketPayload.readStringNul();
         fieldWildcard = mysqlPacketPayload.readStringEOF();
     }
@@ -62,7 +62,7 @@ public final class ComFieldListPacket extends CommandPacket {
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
         if (ShardingRuleRegistry.WITHOUT_JDBC) {
-            return new SQLPacketsBackendHandler(sql, DatabaseType.MySQL, true).execute();
+            return new SQLPacketsBackendHandler(sql, connectionId, DatabaseType.MySQL, true).execute();
         }else {
             return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
         }
