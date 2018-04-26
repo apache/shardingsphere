@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.core.routing.router;
 
-
 import io.shardingjdbc.core.api.HintManager;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;

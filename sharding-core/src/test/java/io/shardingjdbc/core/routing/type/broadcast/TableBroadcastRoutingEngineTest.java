@@ -36,11 +36,11 @@ public final class TableBroadcastRoutingEngineTest {
     
     @Before
     public void setEngineContext() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("t_order");
         tableRuleConfig.setActualDataNodes("ds${0..1}.t_order_${0..2}");
         tableRuleConfig.setLogicIndex("t_order_index");
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
         ddlStatement = new DDLStatement();
@@ -59,3 +59,5 @@ public final class TableBroadcastRoutingEngineTest {
         tableBroadcastRoutingEngine.route();
     }
 }
+
+
