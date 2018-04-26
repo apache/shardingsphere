@@ -20,7 +20,7 @@ package io.shardingjdbc.core.routing.type.ignore;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import org.junit.Test;
 
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public final class IgnoreRoutingEngineTest {

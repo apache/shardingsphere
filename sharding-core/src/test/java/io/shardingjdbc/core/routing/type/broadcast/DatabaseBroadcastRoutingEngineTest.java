@@ -29,7 +29,6 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-
 public final class DatabaseBroadcastRoutingEngineTest {
     
     private DatabaseBroadcastRoutingEngine databaseBroadcastRoutingEngine;
