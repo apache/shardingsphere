@@ -22,7 +22,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.shardingjdbc.proxy.backend.common.BackendHandler;
 import io.shardingjdbc.proxy.backend.common.CommandResponsePacketsHandler;
+import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
+import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketFactory;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingjdbc.proxy.util.MySQLResultCache;
 
 /**
  * Backend handler.
@@ -33,22 +36,24 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
-        //TODO 判断报文是握手还是
+        //TODO 判断报文是握手还是OKPacket还是结果集
         if (true) {
             auth(context,(ByteBuf) message);
         } else {
         
         }
     }
-    
+    //TODO
     @Override
     protected void auth(ChannelHandlerContext context, ByteBuf message) {
     
     }
-    
+    //TODO
     @Override
     protected void executeCommandResponsePackets(ChannelHandlerContext context, ByteBuf message) {
-    
+        MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
+        int sequenceId = mysqlPacketPayload.readInt1();
+        MySQLResultCache.getInstance().get(sequenceId).setResponse(null);
     }
 
 }

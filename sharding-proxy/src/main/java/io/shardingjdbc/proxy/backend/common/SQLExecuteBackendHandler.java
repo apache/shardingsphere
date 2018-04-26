@@ -55,12 +55,13 @@ import java.util.List;
  * SQL execute backend handler.
  *
  * @author zhangliang
+ * @author wangkai
  */
-public final class SQLExecuteBackendHandler implements BackendHandler {
+public class SQLExecuteBackendHandler implements BackendHandler {
     
-    private final String sql;
+    protected final String sql;
     
-    private final StatementRoutingEngine routingEngine;
+    protected final StatementRoutingEngine routingEngine;
     
     public SQLExecuteBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
         this.sql = sql;
@@ -81,7 +82,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         return merge(routeResult.getSqlStatement(), result);
     }
     
-    private CommandResponsePackets execute(final SQLStatement sqlStatement, final SQLExecutionUnit sqlExecutionUnit) {
+    protected CommandResponsePackets execute(final SQLStatement sqlStatement, final SQLExecutionUnit sqlExecutionUnit) {
         switch (sqlStatement.getType()) {
             case DQL:
                 return executeQuery(ShardingRuleRegistry.getInstance().getDataSourceMap().get(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSql());
@@ -173,7 +174,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         return result;
     }
     
-    private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
+    protected CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
         if (1 == packets.size()) {
             return packets.iterator().next();
         }

@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.proxy.util;
 
+import com.google.common.collect.Lists;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -38,7 +40,7 @@ public class SynchronizedFuture<T> implements Future<List<T>> {
     
     public SynchronizedFuture(int resultSize){
         latch = new CountDownLatch(resultSize);
-        responses = new ArrayList<>(resultSize);
+        responses = Lists.newArrayListWithCapacity(resultSize);
     }
     
     @Override
@@ -64,11 +66,15 @@ public class SynchronizedFuture<T> implements Future<List<T>> {
     }
     
     @Override
-    public List<T> get(long timeout, TimeUnit unit) throws InterruptedException {
-        if (latch.await(timeout, unit)) {
-            return this.responses;
+    public List<T> get(long timeout, TimeUnit unit) {
+        try {
+            if (latch.await(timeout, unit)) {
+                return this.responses;
+            }
+        } catch (InterruptedException e) {
+            //TODO
         }
-        return null;
+        return this.responses;
     }
     
     public void setResponse(T response) {

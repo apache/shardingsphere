@@ -20,6 +20,8 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.text.fieldlist;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.proxy.backend.common.SQLExecuteBackendHandler;
+import io.shardingjdbc.proxy.backend.common.SQLPacketsBackendHandler;
+import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketType;
@@ -28,9 +30,10 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * COM_FIELD_LIST command packet.
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
  *
  * @author zhangliang
+ * @author wangkai
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
  */
 @Slf4j
 public final class ComFieldListPacket extends CommandPacket {
@@ -58,6 +61,10 @@ public final class ComFieldListPacket extends CommandPacket {
         log.debug("field wildcard received for Sharding-Proxy: {}", fieldWildcard);
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
-        return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
+        if (ShardingRuleRegistry.WITHOUT_JDBC) {
+            return new SQLPacketsBackendHandler(sql, DatabaseType.MySQL, true).execute();
+        }else {
+            return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
+        }
     }
 }

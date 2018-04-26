@@ -19,6 +19,8 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.text.query;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.proxy.backend.common.SQLExecuteBackendHandler;
+import io.shardingjdbc.proxy.backend.common.SQLPacketsBackendHandler;
+import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -48,6 +50,10 @@ public final class ComQueryPacket extends CommandPacket {
     @Override
     public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
-        return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
+        if (ShardingRuleRegistry.WITHOUT_JDBC) {
+            return new SQLPacketsBackendHandler(sql, DatabaseType.MySQL, true).execute();
+        }else {
+            return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
+        }
     }
 }

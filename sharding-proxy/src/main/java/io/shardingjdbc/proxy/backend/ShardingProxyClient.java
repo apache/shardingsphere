@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.proxy.backend;
 
+import com.google.common.collect.Maps;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -54,12 +55,13 @@ public final class ShardingProxyClient {
     private EventLoopGroup workerGroup;
     
     @Getter
-    private Map<String,Channel> channelMap = new HashMap<>();
+    private Map<String,Channel> channelMap = Maps.newHashMap();
     
     /**
      * Start Sharding-Proxy.
      *
      * @throws InterruptedException interrupted exception
+     * @throws MalformedURLException url is illegal.
      */
     public void start() throws InterruptedException, MalformedURLException {
         Bootstrap bootstrap = new Bootstrap();
