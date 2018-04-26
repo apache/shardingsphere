@@ -1,0 +1,16 @@
++++
+toc = true
+title = "User Manual"
+weight = 1
++++
+
+1. Download the latest version of Sharding-Proxy from https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-proxy-2.1.0-SNAPSHOT-assembly-v1.tar.gz
+1. Modify the conf/sharding-config.yaml file after decompression, and configure the sharding rule. Please reference [Configuration Manual](/07-sharding-proxy/configuration/).
+1. Run `bin/start.sh` on Linux, or `bin/start.bat` on Windows to start Sharding-Proxy.
+1. Connect to it by means of any client tools, e.g. `mysql -u root -h 127.0.0.1 -P3307`
+
+## Notices
+
+1. The default port of Sharding-Proxy is 3307, user can change it by passing the port number on startup script, e.g. `bin/start.sh 3308`.
+1. There is only one logical data source in Sharding-Proxy, named `sharding_db`.
+1. Currently, Sharding-Proxy does not support authorization, therefore you can login with any username and password to connected.
