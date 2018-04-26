@@ -15,12 +15,20 @@
  * </p>
  */
 
-package io.shardingjdbc.orchestration.reg.api;
+package io.shardingjdbc.core.routing.type.ignore;
 
-/**
- * Registry center configuration.
- *
- * @author zhangliang
- */
-public interface RegistryCenterConfiguration {
+import io.shardingjdbc.core.routing.type.RoutingResult;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class IgnoreRoutingEngineTest {
+
+    @Test
+    public void route() {
+        IgnoreRoutingEngine ignoreRoutingEngine = new IgnoreRoutingEngine();
+        ignoreRoutingEngine.route();
+        assertThat(ignoreRoutingEngine.route(), instanceOf(RoutingResult.class));
+    }
 }

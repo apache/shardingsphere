@@ -178,14 +178,9 @@
         <tokens>
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="31" original-literals="t_order_item" />
-            <items-token begin-position="11">
-                <items>
-                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
         </tokens>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
+            <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     
@@ -221,11 +216,6 @@
         <tokens>
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="31" original-literals="t_order_item" />
-            <items-token begin-position="11">
-                <items>
-                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -240,7 +230,7 @@
             </and-condition>
         </or-condition>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
+            <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     
@@ -252,11 +242,6 @@
         <tokens>
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="31" original-literals="t_order_item" />
-            <items-token begin-position="11">
-                <items>
-                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -271,7 +256,7 @@
             </and-condition>
         </or-condition>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
+            <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     
@@ -283,11 +268,6 @@
         <tokens>
             <table-token begin-position="16" original-literals="T_ORDER" />
             <table-token begin-position="31" original-literals="T_order_item" />
-            <items-token begin-position="11">
-                <items>
-                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -302,7 +282,7 @@
             </and-condition>
         </or-condition>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
+            <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     
@@ -314,11 +294,6 @@
         <tokens>
             <table-token begin-position="34" original-literals="T_ORDER" />
             <table-token begin-position="49" original-literals="T_order_item" />
-            <items-token begin-position="29">
-                <items>
-                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -333,7 +308,7 @@
             </and-condition>
         </or-condition>
         <order-by-columns>
-            <order-by-column owner="i" name="item_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
+            <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     

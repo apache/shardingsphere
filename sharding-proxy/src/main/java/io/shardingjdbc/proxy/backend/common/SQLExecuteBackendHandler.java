@@ -55,6 +55,7 @@ import java.util.List;
  * SQL execute backend handler.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class SQLExecuteBackendHandler implements BackendHandler {
     
@@ -80,7 +81,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     public SQLExecuteBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
         this.sql = sql;
-        routingEngine = new StatementRoutingEngine(ShardingRuleRegistry.getInstance().getShardingRule(), databaseType, showSQL);
+        routingEngine = new StatementRoutingEngine(ShardingRuleRegistry.getInstance().getShardingRule(), ShardingRuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
         connections = new ArrayList<>(1024);
         resultSets = new ArrayList<>(1024);
         isDQL = false;

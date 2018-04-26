@@ -20,7 +20,10 @@ package io.shardingjdbc.core.metadata;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Table metadata.
@@ -33,4 +36,17 @@ import java.util.Collection;
 public final class TableMetaData {
     
     private final Collection<ColumnMetaData> columnMetaData;
+    
+    /**
+     * Get all column names.
+     *
+     * @return column name list.
+     */
+    public List<String> getAllColumnNames() {
+        List<String> columnNames = new ArrayList<>();
+        for (ColumnMetaData each : columnMetaData) {
+            columnNames.add(each.getColumnName());
+        }
+        return columnNames;
+    }
 }

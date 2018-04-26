@@ -28,6 +28,9 @@ import io.shardingjdbc.core.parsing.parser.clause.facade.AbstractSelectClausePar
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.SelectItem;
+import io.shardingjdbc.core.parsing.parser.context.selectitem.StarSelectItem;
+import io.shardingjdbc.core.parsing.parser.context.table.Table;
+import io.shardingjdbc.core.parsing.parser.context.table.Tables;
 import io.shardingjdbc.core.parsing.parser.sql.SQLParser;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
 import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
@@ -36,6 +39,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -174,17 +178,35 @@ public abstract class AbstractSelectParser implements SQLParser {
     }
     
     private boolean isContainsItem(final OrderItem orderItem, final SelectStatement selectStatement) {
-        if (selectStatement.isContainStar()) {
+        if (-1 != orderItem.getIndex()) {
             return true;
         }
+        if (!selectStatement.getStarSelectItems().isEmpty()) {
+            return isContainsItemInStarSelectItem(selectStatement.getStarSelectItems(), orderItem, selectStatement.getTables());
+        }
         for (SelectItem each : selectStatement.getItems()) {
-            if (-1 != orderItem.getIndex()) {
-                return true;
-            }
             if (each.getAlias().isPresent() && orderItem.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(orderItem.getAlias().get())) {
                 return true;
             }
             if (!each.getAlias().isPresent() && orderItem.getQualifiedName().isPresent() && each.getExpression().equalsIgnoreCase(orderItem.getQualifiedName().get())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isContainsItemInStarSelectItem(final List<StarSelectItem> starSelectItems, final OrderItem orderItem, final Tables tables) {
+        for (StarSelectItem each : starSelectItems) {
+            if (!each.getOwner().isPresent()) {
+                return true;
+            }
+            Optional<Table> tableOptionalOfStarSelectItem = tables.find(each.getOwner().get());
+            if (orderItem.getOwner().isPresent() && tables.find(orderItem.getOwner().get()).equals(tableOptionalOfStarSelectItem)) {
+                return true;
+            }
+            List<String> columnNames = tableOptionalOfStarSelectItem.isPresent()
+                    ? shardingMetaData.getTableMetaDataMap().get(tableOptionalOfStarSelectItem.get().getName()).getAllColumnNames() : new ArrayList<String>();
+            if (columnNames.contains(orderItem.getName().get().toUpperCase()) || columnNames.contains(orderItem.getName().get().toLowerCase())) {
                 return true;
             }
         }
