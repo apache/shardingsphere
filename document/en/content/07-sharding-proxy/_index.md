@@ -21,7 +21,7 @@ It is a database proxy, Deploy as a stateless server, support MySQL protocol for
 | ---------------------- | --------------- | ---------------- | ------------------ |
 | Database               | Any             | `MySQL`          | MySQL              |
 | Connections            | More            | `Less`           | More               |
-| Heterogeneous Language | Java Only       | `Any`            | Nay                |
+| Heterogeneous Language | Java Only       | `Any`            | Any                |
 | Performance            | Low loss        | `High loss`      | Low loss           |
 | Centre-less            | Yes             | `No`             | No                 |
 | Static Entry           | No              | `Yes`            | No                 |

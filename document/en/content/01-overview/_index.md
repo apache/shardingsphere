@@ -41,7 +41,7 @@ Use JDBC connect databases without redirect cost for java application, best perf
 
 [![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-proxy-2.1.0-SNAPSHOT-assembly-v1.tar.gz)
 
-Database proxy. Deploy as a stateless server, support MySQL protocol for now.
+It is a database proxy. Deploy as a stateless server, support MySQL protocol for now.
 
 * Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
 * Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.
@@ -50,9 +50,21 @@ Database proxy. Deploy as a stateless server, support MySQL protocol for now.
 
 ### Sharding-Sidecar(TBD)
 
-Use sidecar to connect databases, best for Kubernetes or Mesos together.
+It can mesh interactions between applications and databases, must run in Kubernetes or Mesos environment.
+It is a centre-less solution, can support any languages, we call it as `Database Mesh`.
+
+Database Mesh is focused on how to connect the distributed data-access-layer and databases together. It pays more attention on interaction, which means the messy interaction among the applications and databases will be effectively orchestrate. By using Database Mesh, applications and databases will form a large grid system, and they just need to be put into the right position on grid system accordingly.
 
 ![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sidecar_brief_v2_en.png)
+
+|                        | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
+| ---------------------- | --------------- | ---------------- | ------------------ |
+| Database               | Any             | MySQL            | MySQL              |
+| Connections            | More            | Less             | More               |
+| Heterogeneous Language | Java Only       | Any              | Any                |
+| Performance            | Low loss        | High loss        | Low loss           |
+| Centre-less            | Yes             | No               | No                 |
+| Static Entry           | No              | Yes              | No                 |
 
 ## Features
 
