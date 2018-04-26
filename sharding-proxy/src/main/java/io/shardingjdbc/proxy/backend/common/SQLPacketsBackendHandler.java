@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.proxy.backend.common;
 
-import com.sun.xml.internal.bind.v2.TODO;
 import io.netty.channel.Channel;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
@@ -30,7 +29,6 @@ import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingjdbc.proxy.util.MySQLResultCache;
 import io.shardingjdbc.proxy.util.SynchronizedFuture;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
