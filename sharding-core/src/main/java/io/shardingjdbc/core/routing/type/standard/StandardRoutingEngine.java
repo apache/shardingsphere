@@ -36,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -59,7 +60,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         Collection<String> databaseShardingColumns = shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns();
         Collection<String> tableShardingColumns = shardingRule.getTableShardingStrategy(tableRule).getShardingColumns();
-        Collection<DataNode> routedDataNodes = new LinkedList<>();
+        Collection<DataNode> routedDataNodes = new LinkedHashSet<>();
         if (HintManagerHolder.isUseShardingHint()) {
             List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint(databaseShardingColumns);
             List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint(tableShardingColumns);
