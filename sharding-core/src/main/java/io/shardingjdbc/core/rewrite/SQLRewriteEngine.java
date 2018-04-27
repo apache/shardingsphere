@@ -86,7 +86,8 @@ public final class SQLRewriteEngine {
      * @param sqlStatement SQL statement
      * @param generatedKey generated key
      */
-    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, 
+                            final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;

@@ -109,7 +109,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     @Test
     public void parseWithOr() {
         ShardingRule shardingRule = createShardingRule();
-        DMLStatement updateStatement = (DMLStatement) new SQLParsingEngine(DatabaseType.Oracle, "UPDATE TABLE_XXX AS xxx SET field1=1 WHERE field1<1 AND (field1 >2 OR xxx.field2 =1)", shardingRule, null).parse(false);
+        DMLStatement updateStatement = (DMLStatement) new SQLParsingEngine(
+                DatabaseType.Oracle, "UPDATE TABLE_XXX AS xxx SET field1=1 WHERE field1<1 AND (field1 >2 OR xxx.field2 =1)", shardingRule, null).parse(false);
         assertUpdateStatementWitOr(updateStatement);
     }
     

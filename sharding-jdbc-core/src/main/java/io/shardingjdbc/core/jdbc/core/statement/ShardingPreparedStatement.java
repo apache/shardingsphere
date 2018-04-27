@@ -82,7 +82,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private final Collection<PreparedStatement> routedStatements = new LinkedList<>();
     
-    private int batchCount = 0;
+    private int batchCount;
     
     @Getter(AccessLevel.NONE)
     private boolean returnGeneratedKeys;
@@ -114,7 +114,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         ShardingContext shardingContext = connection.getShardingContext();
-        routingEngine = new PreparedStatementRoutingEngine(sql, shardingContext.getShardingRule(), shardingContext.getShardingMetaData(), shardingContext.getDatabaseType(), shardingContext.isShowSQL());
+        routingEngine = new PreparedStatementRoutingEngine(
+                sql, shardingContext.getShardingRule(), shardingContext.getShardingMetaData(), shardingContext.getDatabaseType(), shardingContext.isShowSQL());
     }
     
     @Override

@@ -63,9 +63,11 @@ public final class ExecuteEventListenerTest {
     public void assertSingleStatement() throws Exception {
         Statement statement = mock(Statement.class);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        executorEngine.execute(SQLType.DML, Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
+        executorEngine.execute(SQLType.DML, Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0", 
+                new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
+            
             @Override
-            public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+            public Integer execute(final BaseStatementUnit baseStatementUnit) {
                 return 0;
             }
         });
@@ -94,7 +96,9 @@ public final class ExecuteEventListenerTest {
     public void assertSQLException() throws Exception {
         Statement statement = mock(Statement.class);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        executorEngine.execute(SQLType.DQL, Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
+        executorEngine.execute(SQLType.DQL, Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0", 
+                new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
+            
             @Override
             public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
                 throw new SQLException();

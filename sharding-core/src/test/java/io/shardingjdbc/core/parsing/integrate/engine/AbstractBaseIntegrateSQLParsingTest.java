@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,9 +65,9 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
     
     private static ShardingMetaData buildShardingMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
-        tableMetaDataMap.put("t_order", getTableMetaData(new ArrayList<String>(){{add("user_id");add("order_id");}}));
-        tableMetaDataMap.put("t_order_item", getTableMetaData(new ArrayList<String>(){{add("user_id");add("order_id");add("item_id");add("c_date");}}));
-        tableMetaDataMap.put("t_place", getTableMetaData(new ArrayList<String>(){{add("user_new_id");add("guid");}}));
+        tableMetaDataMap.put("t_order", getTableMetaData(Arrays.asList("user_id", "order_id")));
+        tableMetaDataMap.put("t_order_item", getTableMetaData(Arrays.asList("user_id", "order_id", "item_id", "c_date")));
+        tableMetaDataMap.put("t_place", getTableMetaData(Arrays.asList("user_new_id", "guid")));
         ShardingMetaData shardingMetaData = Mockito.mock(ShardingMetaData.class);
         when(shardingMetaData.getTableMetaDataMap()).thenReturn(tableMetaDataMap);
         return shardingMetaData;
