@@ -48,7 +48,7 @@ Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成�
 * 向应用程序完全透明，可直接当做MySQL使用。
 * 可适用于任何兼容MySQL协议的的客户端。
 
-![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/proxy_brief_v2_cn.png)
+![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-proxy-brief.png)
 
 ### Sharding-Sidecar（TBD）
 
