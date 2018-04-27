@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.utility.*;
+import com.saaavsaaa.client.utility.PathUtil;
+import com.saaavsaaa.client.utility.StringUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.constant.Properties;
 import com.saaavsaaa.client.utility.section.Listener;
@@ -13,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-
-import static org.apache.zookeeper.Watcher.Event.EventType.NodeDeleted;
 
 /**
  * Created by aaa on 18-4-19.
@@ -68,13 +67,13 @@ public abstract class Client implements IClient{
         if (globalListenerRegistered){
             return;
         }
-        globalListenerRegistered = true;
         watchers.put(Constants.GLOBAL_LISTENER_KEY, new Watcher() {
             @Override
             public void process(WatchedEvent event) {
                 globalListener.process(event);
             }
         });
+        globalListenerRegistered = true;
     }
     
     public Watcher registerWatch(final String key, final Listener listener){

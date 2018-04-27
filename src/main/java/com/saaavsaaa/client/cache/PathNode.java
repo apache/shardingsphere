@@ -18,7 +18,11 @@ public class PathNode {
         return children;
     }
     
-    public void setChildren(Map<String, PathNode> children) {
-        this.children = children;
+    public String getKey(){
+        return this.nodeKey;
+    }
+    
+    public void attechChild(PathNode node) {
+        this.children.put(node.nodeKey, node);
     }
 }

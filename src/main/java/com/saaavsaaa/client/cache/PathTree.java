@@ -18,4 +18,8 @@ public class PathTree {
     public void setStatus(PathStatus status) {
         Status = status;
     }
+    
+    public PathNode getRootNode() {
+        return rootNode;
+    }
 }

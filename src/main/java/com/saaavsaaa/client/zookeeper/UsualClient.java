@@ -24,30 +24,37 @@ public class UsualClient extends Client {
         super(servers, sessionTimeoutMilliseconds);
     }
     
+    @Override
     public String getDataString(final String key) throws KeeperException, InterruptedException {
         return new String(getData(key));
     }
-
+    
+    @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
         return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), watched, null);
     }
     
+    @Override
     public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         zooKeeper.getData(PathUtil.getRealPath(rootNode, key), watched, callback, ctx);
     }
     
+    @Override
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
         return null != zooKeeper.exists(PathUtil.getRealPath(rootNode, key), watched);
     }
     
+    @Override
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
         return null != zooKeeper.exists(PathUtil.getRealPath(rootNode, key), watcher);
     }
     
+    @Override
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
         return zooKeeper.getChildren(PathUtil.getRealPath(rootNode, key), watched);
     }
     
+    @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         createNamespace();
         String path = PathUtil.getRealPath(rootNode, key);
@@ -66,9 +73,7 @@ public class UsualClient extends Client {
         }
     }
     
-    /*
-    * todo exception recursion
-    */
+    @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
             this.createCurrentOnly(key, value, createMode);
@@ -93,24 +98,29 @@ public class UsualClient extends Client {
         }
     }
     
+    @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
         zooKeeper.setData(PathUtil.getRealPath(rootNode, key), value.getBytes(Constants.UTF_8), Constants.VERSION);
     }
     
+    @Override
     public void updateWithCheck(final String key, final String value) throws KeeperException, InterruptedException {
         String realPath = PathUtil.getRealPath(rootNode, key);
         zooKeeper.transaction().check(realPath, Constants.VERSION).setData(realPath, value.getBytes(Constants.UTF_8), Constants.VERSION).commit();
     }
     
+    @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
         zooKeeper.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION);
         System.out.println("delete : " + PathUtil.getRealPath(rootNode, key));
     }
     
+    @Override
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         zooKeeper.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION, callback, ctx);
     }
     
+    @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
         String realPath = PathUtil.getRealPath(rootNode, key);
         try {
@@ -131,6 +141,7 @@ public class UsualClient extends Client {
     /*
     * delete the current node with force and delete the super node whose only child node is current node recursively
     */
+    @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         String path = PathUtil.getRealPath(rootNode, key);
         this.deleteAllChildren(path);
