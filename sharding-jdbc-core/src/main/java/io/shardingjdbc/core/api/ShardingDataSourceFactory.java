@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.core.api;
 
-import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.ShardingRule;
@@ -29,8 +28,6 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -54,7 +51,6 @@ public final class ShardingDataSourceFactory {
      */
     public static DataSource createDataSource(
             final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) throws SQLException {
-        processDataSourceMapWithMasterSlave(dataSourceMap, shardingRuleConfig);
         return new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
     }
     
@@ -114,20 +110,5 @@ public final class ShardingDataSourceFactory {
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlShardingConfiguration config) throws SQLException {
         return createDataSource(dataSourceMap, config.getShardingRule().getShardingRuleConfiguration(), config.getShardingRule().getConfigMap(), config.getShardingRule().getProps());
-    }
-    
-    private static void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfiguration) throws SQLException {
-//        for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
-//            processDataSourceMapWithMasterSlave(dataSourceMap, each);
-//        }
-    }
-    
-    private static void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
-        Map<String, DataSource> masterSlaveDataSourceMap = new LinkedHashMap<>(masterSlaveRuleConfig.getSlaveDataSourceNames().size() + 1, 1);
-        for (String each : masterSlaveRuleConfig.getSlaveDataSourceNames()) {
-            masterSlaveDataSourceMap.put(each, dataSourceMap.remove(each));
-        }
-        masterSlaveDataSourceMap.put(masterSlaveRuleConfig.getMasterDataSourceName(), dataSourceMap.remove(masterSlaveRuleConfig.getMasterDataSourceName()));
-        dataSourceMap.put(masterSlaveRuleConfig.getName(), MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap()));
     }
 }
