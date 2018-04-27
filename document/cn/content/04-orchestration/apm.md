@@ -30,21 +30,21 @@ weight = 4
 
 ### 拓扑图展示
 
-![拓扑图](http://ovfotjrsi.bkt.clouddn.com/apm-topology.png)
+![拓扑图](http://ovfotjrsi.bkt.clouddn.com/apm/apm-topology.png)
 
 从图中看，虽然用户访问一次应用，但是每个数据库访问了两次。这是由于本次访问涉及到每个库中的两个分表，所以一共访问了四张表。
 
 ### 跟踪数据展示
 
-![拓扑图](http://ovfotjrsi.bkt.clouddn.com/apm-trace.png)
+![拓扑图](http://ovfotjrsi.bkt.clouddn.com/apm/apm-trace.png)
 
 从跟踪图中能够看到这四次访问。
 
 `/SJDBC/TRUNK/*` : 表示本次SQL的总体执行性能。
 
 
-![逻辑执行节点](http://ovfotjrsi.bkt.clouddn.com/apm-trunk-span.png)
+![逻辑执行节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-trunk-span.png)
 
 `/SJDBC/BRANCH/*` : 表示具体执行的实际SQL的性能。
 
-![实际访问节点](http://ovfotjrsi.bkt.clouddn.com/apm-branch-span.png)
+![实际访问节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-branch-span.png)
