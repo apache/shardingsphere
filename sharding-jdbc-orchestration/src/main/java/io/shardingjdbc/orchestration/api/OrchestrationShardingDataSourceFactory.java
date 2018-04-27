@@ -191,9 +191,9 @@ public final class OrchestrationShardingDataSourceFactory {
     }
     
     private static void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfiguration) throws SQLException {
-        for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
-            processDataSourceMapWithMasterSlave(dataSourceMap, each);
-        }
+//        for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
+//            processDataSourceMapWithMasterSlave(dataSourceMap, each);
+//        }
     }
     
     private static void processDataSourceMapWithMasterSlave(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {

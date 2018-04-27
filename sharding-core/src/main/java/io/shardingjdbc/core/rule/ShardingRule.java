@@ -20,6 +20,7 @@ package io.shardingjdbc.core.rule;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.exception.ShardingConfigurationException;
@@ -62,6 +63,8 @@ public final class ShardingRule {
     
     private final KeyGenerator defaultKeyGenerator;
     
+    private final Collection<MasterSlaveRule> masterSlaveRules = new LinkedList<>();
+    
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkNotNull(dataSourceNames, "Data sources cannot be null.");
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
@@ -83,6 +86,9 @@ public final class ShardingRule {
         defaultTableShardingStrategy = null == shardingRuleConfig.getDefaultTableShardingStrategyConfig()
                 ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
         defaultKeyGenerator = null == shardingRuleConfig.getDefaultKeyGenerator() ? new DefaultKeyGenerator() : shardingRuleConfig.getDefaultKeyGenerator();
+        for (MasterSlaveRuleConfiguration each : shardingRuleConfig.getMasterSlaveRuleConfigs()) {
+            masterSlaveRules.add(new MasterSlaveRule(each));
+        }
     }
     
     private String getDefaultDataSourceName(final Collection<String> dataSourceNames, final String defaultDataSourceName) {

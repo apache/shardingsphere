@@ -21,8 +21,11 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.DataNode;
+import io.shardingjdbc.core.rule.MasterSlaveRule;
+import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -39,11 +42,21 @@ public final class JDBCShardingMetaData extends ShardingMetaData {
     
     private final Map<String, DataSource> dataSourceMap;
     
+    private final ShardingRule shardingRule;
+    
     private final DatabaseType databaseType;
     
     @Override
     protected Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode) throws SQLException {
-        return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType).getColumnMetaDataList();
+        DataSource dataSource = dataSourceMap.get(dataNode.getDataSourceName());
+        if (null == dataSource) {
+            for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
+                if (each.getName().equalsIgnoreCase(dataNode.getDataSourceName())) {
+                    dataSource = dataSourceMap.get(each.getMasterDataSourceName());
+                }
+            }
+        }
+        return ShardingMetaDataHandlerFactory.newInstance(dataSource, dataNode.getTableName(), databaseType).getColumnMetaDataList();
     }
 }
 

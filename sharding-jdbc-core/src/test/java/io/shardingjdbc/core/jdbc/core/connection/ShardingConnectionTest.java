@@ -63,15 +63,16 @@ public final class ShardingConnectionTest {
     }
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("test");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
-        ShardingMetaData shardingMetaData = new JDBCShardingMetaData(dataSourceMap, null);
-        ShardingContext shardingContext = new ShardingContext(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), null, null, shardingMetaData, false);
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
+        ShardingMetaData shardingMetaData = new JDBCShardingMetaData(dataSourceMap, shardingRule, null);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, null, null, shardingMetaData, false);
         connection = new ShardingConnection(shardingContext);
     }
     
