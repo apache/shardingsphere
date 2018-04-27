@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "Sharding-Proxy"
+title = "Sharding-Proxy快速入门"
 weight = 2
 +++
 

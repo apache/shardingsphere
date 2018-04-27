@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "Sharding-JDBC"
+title = "Sharding-JDBC快速入门"
 weight = 1
 +++
 
