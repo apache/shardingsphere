@@ -35,7 +35,7 @@ Use JDBC connect databases without redirect cost for java application, best perf
 * Connection-pool compatible. DBCP, C3P0, BoneCP, Druid supported.
 * Multi SQL-based databases compatible. Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
 
-![Sharding-JDBC Architecture](http://ovfotjrsi.bkt.clouddn.com/jdbc_brief_en.png)
+![Sharding-JDBC Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-jdbc-brief.png)
 
 ### Sharding-Proxy
 
