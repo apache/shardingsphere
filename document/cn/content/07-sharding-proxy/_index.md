@@ -12,7 +12,7 @@ Sharding-Proxy是Sharding-Sphere的第二个产品。
 目前先提供MySQL版本，它可以使用任何兼容MySQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench等)操作数据，对DBA更加友好。
 
 * 向应用程序完全透明，可直接当做MySQL使用。
-* 可适用于任何兼容MySQL协议的的客户端。
+* 适用于任何兼容MySQL协议的的客户端。
 
 ![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-proxy-brief.png)
 
