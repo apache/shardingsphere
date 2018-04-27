@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
  * Broadcast routing engine for databases.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class DatabaseBroadcastRoutingEngine implements RoutingEngine {
@@ -37,7 +38,7 @@ public final class DatabaseBroadcastRoutingEngine implements RoutingEngine {
     public RoutingResult route() {
         RoutingResult result = new RoutingResult();
         for (String each : shardingRule.getDataSourceNames()) {
-            result.getTableUnits().getTableUnits().add(new TableUnit(each, "", ""));
+            result.getTableUnits().getTableUnits().add(new TableUnit(each));
         }
         return result;
     }

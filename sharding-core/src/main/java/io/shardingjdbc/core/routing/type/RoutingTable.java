@@ -15,24 +15,25 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.type.complex;
+package io.shardingjdbc.core.routing.type;
 
-import io.shardingjdbc.core.routing.type.TableUnit;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.List;
-
 /**
- * Cartesian table reference.
+ * Routing table.
  * 
- * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 @ToString
-public final class CartesianTableReference {
+public final class RoutingTable {
     
-    private final List<TableUnit> tableUnits;
+    private final String logicTableName;
+    
+    private final String actualTableName;
 }
