@@ -6,10 +6,10 @@ weight = 4
 
 ## 测试结果概述
 
-1、性能损耗测试：服务器资源充足、并发数相同，比较JDBC和Sharding-JDBC性能损耗，Sharding-JDBC相对JDBC损耗不超过7%<br>
-2、性能对比测试：服务器资源使用到极限，相同的场景JDBC与Sharding-JDBC的吞吐量相当<br>
-3、性能对比测试：服务器资源使用到极限，Sharding-JDBC采用分库分表后，Sharding-JDBC吞吐量较JDBC不分表有接近2倍的提升<br>
-4、性能对比测试：服务器资源使用到极限，Sharding-JDBC V1.5.2与V1.4.2对比，性能比较稳定<br>
+1. 性能损耗测试：服务器资源充足、并发数相同，比较JDBC和Sharding-JDBC性能损耗，Sharding-JDBC相对JDBC损耗不超过7%。
+1. 性能对比测试：服务器资源使用到极限，相同的场景JDBC与Sharding-JDBC的吞吐量相当。
+1. 性能对比测试：服务器资源使用到极限，Sharding-JDBC采用分库分表后，Sharding-JDBC吞吐量较JDBC不分表有接近2倍的提升。
+1. 性能对比测试：服务器资源使用到极限，Sharding-JDBC V1.5.2与V1.4.2对比，性能比较稳定。
 
 
 ### 基准测试性能对比
@@ -36,13 +36,13 @@ weight = 4
 | 更新    | 9548        | 18561                 | 194%       |
 | 插入    | 11182       | 21414                 | 192%       |
 
-### Sharding-JDBC v1.4.2与v1.5.2版本对
+### Sharding-JDBC v1.4.2与v1.5.2版本对比
 
-| 业务场景 | Sharding-JDBC 1.4.2&emsp; | Sharding-JDBC 1.5.2&emsp;&emsp;&emsp; | 1.5.2/1.4.2 |
-|:--------|:--------------------------|:--------------------------------------|:------------|
-| 查询    | 2934                       | 2944                                  | 100.34%     |
-| 更新    | 18454                      | 18561                                 | 100.58%     |
-| 插入    | 21045                      | 21414                                 | 101.75%     |
+| 业务场景 | Sharding-JDBC 1.4.2 | Sharding-JDBC 1.5.2 | 1.5.2 / 1.4.2 |
+|:--------|:--------------------|:--------------------|:--------------|
+| 查询    | 2934                | 2944                 | 100.34%       |
+| 更新    | 18454               | 18561                | 100.58%       |
+| 插入    | 21045               | 21414                | 101.75%       |
 
 ## 测试目的
 
@@ -54,56 +54,57 @@ weight = 4
 
 ### JDBC业务场景
 
-| 业务场景&emsp;&emsp;&emsp; | 场景缩写&emsp;&emsp;&emsp;&emsp; |
-|:--------------------------|:--------------------------------|
-| 单库单表查询               | JSdbStSelect                     |
-| 单库单表插入               | JSdbStInsert                      |
-| 单库单表更新               | JSdbStUpdate                     |
-| 单库两表查询               | JSdbMtSelect                     |
-| 单库两表插入               | JSdbMtInsert                      |
-| 单库两表更新               | JSdbMtUpdate                     |
+| 业务场景     | 场景缩写     |
+|:------------|:-------------|
+| 单库单表查询 | JSdbStSelect |
+| 单库单表插入 | JSdbStInsert |
+| 单库单表更新 | JSdbStUpdate |
+| 单库两表查询 | JSdbMtSelect |
+| 单库两表插入 | JSdbMtInsert |
+| 单库两表更新 | JSdbMtUpdate |
 
 ### Sharding-JDBC业务场景
 
-| 业务场景&emsp;&emsp;&emsp; | 场景缩写&emsp;&emsp;&emsp;&emsp; |
-|:--------------------------|:--------------------------------|
-| 单库单表查询                | SJSdbStSelect                   |
-| 单库单表插入                | SJSdbStInsert                    |
-| 单库单表更新                | SJSdbStUpdate                   |
-| 单库两表查询                | SJSdbMtSelect                   |
-| 单库两表插入                | SJSdbMtInsert                    |
-| 单库两表更新                | SJSdbMtUpdate                   |
-| 两库各一表查询              | SJMdbStSelect                   |
-| 两库各一表插入              | SJMdbStInsert                    |
-| 两库各一表更新              | SJMdbStUpdate                   |
-| 两库各两表查询              | SJMdbMtSelect                   |
-| 两库各两表插入              | SJMdbMtInsert                    |
-| 两库各两表更新              | SJMdbMtUpdate                   |
+| 业务场景       | 场景缩写      |
+|:--------------|:--------------|
+| 单库单表查询   | SJSdbStSelect |
+| 单库单表插入   | SJSdbStInsert |
+| 单库单表更新   | SJSdbStUpdate |
+| 单库两表查询   | SJSdbMtSelect |
+| 单库两表插入   | SJSdbMtInsert |
+| 单库两表更新   | SJSdbMtUpdate |
+| 两库各一表查询 | SJMdbStSelect |
+| 两库各一表插入 | SJMdbStInsert |
+| 两库各一表更新 | SJMdbStUpdate |
+| 两库各两表查询 | SJMdbMtSelect |
+| 两库各两表插入 | SJMdbMtInsert |
+| 两库各两表更新 | SJMdbMtUpdate |
 
 所有测试场景共分为以下两大类，其中极限测试测试范围是全部场景，基准测试范围是以下场景：
 
-| 业务场景&emsp;&emsp;&emsp; | 场景缩写&emsp;&emsp;&emsp;&emsp; |
-|:--------------------------|:--------------------------------|
-| 单库单表查询                | JSdbStSelect                    |
-| 单库单表插入                | JSdbStInsert                     |
-| 单库单表更新                | JSdbStUpdate                    |
-| 单库单表查询                | SJSdbStSelect                   |
-| 单库单表插入                | SJSdbStInsert                    |
-| 单库单表更新                | SJSdbStUpdate                   |
+| 业务场景     | 场景缩写       |
+|:------------|:--------------|
+| 单库单表查询 | JSdbStSelect  |
+| 单库单表插入 | JSdbStInsert  |
+| 单库单表更新 | JSdbStUpdate  |
+| 单库单表查询 | SJSdbStSelect |
+| 单库单表插入 | SJSdbStInsert |
+| 单库单表更新 | SJSdbStUpdate |
 
 ## 测试方法
 
-基准测试：服务器资源充足，使用同样的并发线程数量，对比同样的业务场景<br>
-极限测试：服务器资源使用达到极限、TPS不再上升，对比JDBC和Sharding-JDBC分库分表
+基准测试：服务器资源充足，使用同样的并发线程数量，对比同样的业务场景。
+
+极限测试：服务器资源使用达到极限、TPS不再上升，对比JDBC和Sharding-JDBC分库分表。
 
 ## 测试环境配置
 
 服务器配置
 
 | 名称 | 硬件配置                                                                                                      | 软件配置      | 混合应用 |
-|:----|:-------------------------------------------------------------------------------------------------------------|:-------------|:--------|
-| DB0 | OS：CentOS 6.6 64bit<br/>处理器：2C四核<br/>内存：32G<br/>存储：250G\*2\_RAID1+600G\*4\_RAID10<br/>网卡：1000mbps | Mysql 5.7.13 | 否      |
-| DB1 | OS：CentOS 6.6 64bit<br/>处理器：2C四核<br/>内存：32G<br/>存储：250G\*2\_RAID1+600G\*4\_RAID10<br/>网卡：1000mbps | Mysql 5.7.13 | 否      |
+|:----|:--------------------------------------------------------------------------------------------------------------|:-------------|:--------|
+| DB0 | OS：CentOS 6.6 64bit<br/>处理器：2C四核<br/>内存：32G<br/>存储：250G\*2\_RAID1+600G\*4\_RAID10<br/>网卡：1000mbps | MySQL 5.7.13 | 否      |
+| DB1 | OS：CentOS 6.6 64bit<br/>处理器：2C四核<br/>内存：32G<br/>存储：250G\*2\_RAID1+600G\*4\_RAID10<br/>网卡：1000mbps | MySQL 5.7.13 | 否      |
 
 ## 测试过程数据
 
@@ -254,11 +255,11 @@ RT展示
 
 ### Sharding-JDBC 1.4.2与1.5.2两库各一表对比
 
-| 业务场景 | Sharding-JDBC 1.4.2&emsp; | Sharding-JDBC 1.5.2&emsp;&emsp;&emsp; | 1.5.2/1.4.2&emsp; |
-|:--------|:--------------------------|:--------------------------------------|:------------------|
-| 查询    | 2934                       | 2944                                  | 100.34%           |
-| 更新    | 18454                      | 18561                                 | 100.58%           |
-| 插入    | 21045                      | 21414                                 | 101.75%           |
+| 业务场景 | Sharding-JDBC 1.4.2 | Sharding-JDBC 1.5.2 | 1.5.2 / 1.4.2 |
+|:--------|:--------------------|:--------------------|:--------------|
+| 查询    | 2934                | 2944                | 100.34%       |
+| 更新    | 18454               | 18561               | 100.58%       |
+| 插入    | 21045               | 21414               | 101.75%       |
 
 TPS展示
 
@@ -270,7 +271,7 @@ RT展示
 
 ## 附录
 
-本次测试，共使用两台数据库服务器，每台服务器上分别有1库，每个库中分别有2个主表，2个子表
+本次测试，共使用两台数据库服务器，每台服务器上分别有1库，每个库中分别有2个主表，2个子表。
 
 ### 建表语句说明
 
@@ -302,7 +303,7 @@ order_0 | CREATE TABLE `order_0` (
   KEY `index_id` (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=5189307 DEFAULT CHARSET=gbk 
 ```
-子表结构如下
+子表结构如下：
 
 ```sql
 ordert_0 | CREATE TABLE `ordert_0` (
