@@ -497,20 +497,6 @@ public class AssertEngine {
     }
     
     
-    public static void main(String[] args) throws IOException, SQLException {
-    
-        BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName(com.mysql.jdbc.Driver.class.getName());
-    
-        result.setUrl("jdbc:mysql://db.mysql:3306/mysql");
-        result.setUsername("test");
-        result.setPassword("test");
-        
-        Map dataSourceHashMap = new HashMap<String, DataSource>();
-        dataSourceHashMap.put("db_0",result);
-        System.out.println(getDataSource(dataSourceHashMap,"E:\\repository\\GitHubMe\\sharding-jdbc2\\sharding-jdbc-core\\src\\test\\resources\\asserts\\assert-sharding-database-only-with-hint-for-dml-test\\config\\test-dbtbl.yaml"));
-    }
-    
     public static DataSource getDataSource(final Map<String, DataSource> dataSourceMap, final String path) throws IOException, SQLException {
         return ShardingDataSourceFactory.createDataSource(dataSourceMap, new File(path));
     }

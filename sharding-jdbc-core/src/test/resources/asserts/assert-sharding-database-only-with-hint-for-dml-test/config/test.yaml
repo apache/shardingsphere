@@ -61,7 +61,7 @@ shardingRule:
       actualDataNodes: db_${0..9}.t_order
       databaseStrategy:
         standard:
-          shardingColumn: order_id
+          shardingColumn: user_id
           preciseAlgorithmClassName: io.shardingjdbc.dbtest.core.yaml.fixture.SingleAlgorithm
       tableStrategy:
         inline:
@@ -74,7 +74,7 @@ shardingRule:
       #绑定表中其余的表的策略与第一张表的策略相同
       databaseStrategy:
         standard:
-          shardingColumn: order_id
+          shardingColumn: user_id
           preciseAlgorithmClassName: io.shardingjdbc.dbtest.core.yaml.fixture.SingleAlgorithm
       tableStrategy:
         inline:
