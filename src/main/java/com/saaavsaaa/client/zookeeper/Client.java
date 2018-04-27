@@ -1,6 +1,10 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.untils.*;
+import com.saaavsaaa.client.utility.*;
+import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.constant.Properties;
+import com.saaavsaaa.client.utility.section.Listener;
+import com.saaavsaaa.client.utility.section.WatcherCreator;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
 
@@ -101,24 +105,21 @@ public abstract class Client implements IClient{
     }
     
     void createNamespace() throws KeeperException, InterruptedException {
+        createNamespace(Constants.NOTHING_DATA);
+    }
+    
+   private void createNamespace(final byte[] date) throws KeeperException, InterruptedException {
         if (rootExist){
             return;
         }
-        zooKeeper.create(rootNode, Constants.NOTHING_DATA, authorities, CreateMode.PERSISTENT);
+        zooKeeper.create(rootNode, date, authorities, CreateMode.PERSISTENT);
         rootExist = true;
-        zooKeeper.exists(rootNode, new Watcher() {
+        zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(rootNode, new Listener() {
             @Override
             public void process(WatchedEvent event) {
-                if (rootNode.equals(event.getPath()) && NodeDeleted.equals(event.getType())){
-                    rootExist = false;
-                    System.out.println("----------------------------------------------delete root");
-                    System.out.println(event.getPath());
-                    System.out.println(event.getState());
-                    System.out.println(event.getType());
-                    System.out.println("----------------------------------------------delete root");
-                }
+                rootExist = false;
             }
-        });
+        }));
         System.out.println("----------------------------------------------create root");
     }
     

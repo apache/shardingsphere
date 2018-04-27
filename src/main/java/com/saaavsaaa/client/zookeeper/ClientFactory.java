@@ -1,7 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.untils.Listener;
-import org.apache.zookeeper.Watcher;
+import com.saaavsaaa.client.utility.section.Listener;
 
 import java.io.IOException;
 

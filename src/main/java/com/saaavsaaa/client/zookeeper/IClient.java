@@ -1,6 +1,5 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.untils.Listener;
 import org.apache.zookeeper.*;
 
 import java.util.List;

@@ -1,11 +1,8 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.untils.Constants;
-import com.saaavsaaa.client.untils.Listener;
-import org.apache.zookeeper.KeeperException;
+import com.saaavsaaa.client.utility.section.Listener;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.io.IOException;
 

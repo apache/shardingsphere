@@ -1,8 +1,8 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.untils.Constants;
-import com.saaavsaaa.client.untils.Listener;
-import com.saaavsaaa.client.untils.PathUtil;
+import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.section.Listener;
+import com.saaavsaaa.client.utility.PathUtil;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
@@ -26,8 +26,8 @@ public class BaseClientTest {
     @Before
     public void start() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
-        testClient = createClient(creator);
-//        testClient = createWatchClient(creator);
+//        testClient = createClient(creator);
+        testClient = createWatchClient(creator);
     }
     
     protected Client createClient(ClientFactory creator) throws IOException, InterruptedException {

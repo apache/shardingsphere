@@ -1,6 +1,4 @@
-package com.saaavsaaa.client.untils;
-
-import java.nio.charset.Charset;
+package com.saaavsaaa.client.utility;
 
 /**
  * Created by aaa on 18-4-18.

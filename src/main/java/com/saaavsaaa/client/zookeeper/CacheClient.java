@@ -1,21 +1,25 @@
 package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.cache.PathTree;
-import com.saaavsaaa.client.untils.Constants;
-import com.saaavsaaa.client.untils.PathUtil;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.Transaction;
+import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.PathUtil;
+import com.saaavsaaa.client.utility.section.Listener;
+import com.saaavsaaa.client.utility.section.WatcherCreator;
+import org.apache.zookeeper.*;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Stack;
 
 /**
- * Created by aaa on 18-4-19.
+ * Created by aaa
+ * todo restructure the three clients to strategies
+ *  延迟缓存 定时刷新，刷新时先判断更新根节点数据，写成功开始更新，更新后改回根数据
  */
 public final class CacheClient extends UsualClient {
     PathTree pathTree = null;
+    
+    ZooKeeper reader;
     
     CacheClient(String servers, int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);
@@ -25,6 +29,27 @@ public final class CacheClient extends UsualClient {
     public void start() throws IOException, InterruptedException {
         super.start();
         pathTree = new PathTree(rootNode);
+    }
+    
+    //用替换整树的方式更新
+    private synchronized void loadCache(Client client) throws KeeperException, InterruptedException {
+        try {
+            this.createCurrentOnly(Constants.CHANGING_KEY, Constants.NOTHING_VALUE, CreateMode.EPHEMERAL);
+        } catch (KeeperException.NodeExistsException e) {
+            this.checkExists(Constants.CHANGING_KEY, WatcherCreator.deleteWatcher(PathUtil.getRealPath(rootNode, Constants.CHANGING_KEY), new Listener() {
+                @Override
+                public void process(WatchedEvent event) {
+                    try {
+                        loadCache(client);
+                    } catch (Exception ee){
+                        System.out.println(ee.getMessage());
+                        ee.printStackTrace();
+                    }
+                }
+            }));
+        }
+        
+        this.deleteOnlyCurrent(Constants.CHANGING_KEY);
     }
     
     /*

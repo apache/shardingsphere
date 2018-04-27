@@ -3,8 +3,8 @@ package com.saaavsaaa.client.zookeeper;
  * Created by aaa on 18-4-18.
  */
 
-import com.saaavsaaa.client.untils.Constants;
-import com.saaavsaaa.client.untils.PathUtil;
+import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.PathUtil;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;

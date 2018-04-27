@@ -1,4 +1,4 @@
-package com.saaavsaaa.client.untils;
+package com.saaavsaaa.client.utility.constant;
 
 /**
  * Created by aaa on 18-4-25.

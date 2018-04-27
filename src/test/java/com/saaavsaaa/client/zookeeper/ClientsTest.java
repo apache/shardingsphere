@@ -15,8 +15,11 @@ public class ClientsTest extends BaseClientTest {
     
     @Override
     public void start() throws IOException, InterruptedException {
-        clients = new ArrayList<>(2);
+        clients = new ArrayList<>(5);
         ClientFactory creator = new ClientFactory();
+        clients.add(createClient(creator));
+        clients.add(createClient(creator));
+        clients.add(createClient(creator));
         clients.add(createClient(creator));
         clients.add(createWatchClient(creator));
     }
