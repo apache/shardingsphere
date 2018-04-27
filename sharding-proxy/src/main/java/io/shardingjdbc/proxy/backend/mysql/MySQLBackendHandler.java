@@ -55,7 +55,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     //TODO
     @Override
     protected void executeCommandResponsePackets(ChannelHandlerContext context, ByteBuf message) {
-        int connectionId = 0;
+        int connectionId = MySQLResultCache.getInstance().getonnectionMap(context.channel().id().asShortText());
         MySQLResultCache.getInstance().get(connectionId).setResponse(null);
     }
     

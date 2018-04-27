@@ -67,6 +67,7 @@ public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
     @Override
     protected CommandResponsePackets execute(final SQLStatement sqlStatement, final SQLExecutionUnit sqlExecutionUnit) {
         Channel channel = ShardingProxyClient.getInstance().getChannelMap().get(sqlExecutionUnit.getDataSource());
+        MySQLResultCache.getInstance().putConnectionMap(channel.id().asShortText(),connectionId);
         switch (sqlStatement.getType()) {
             case DQL:
                 executeQuery(channel, sqlExecutionUnit.getSql());

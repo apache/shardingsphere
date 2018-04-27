@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MySQLResultCache {
     private static final MySQLResultCache INSTANCE = new MySQLResultCache();
-    //TODO expire time will be set.
+    //TODO expire time should be set.
     private Cache<Integer, SynchronizedFuture> resultCache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
     
     private Cache<String, Integer> connectionCache = CacheBuilder.newBuilder().build();
@@ -61,19 +61,19 @@ public class MySQLResultCache {
     }
     
     /**
-     * @param serverChannelId netty server channel id.
+     * @param channelId netty channel id.
      * @param connectionId    mysql connection id.
      */
-    public void putConnectionMap(String serverChannelId, int connectionId) {
-        connectionCache.put(serverChannelId, connectionId);
+    public void putConnectionMap(String channelId, int connectionId) {
+        connectionCache.put(channelId, connectionId);
     }
     
     /**
-     * @param serverChannelId netty server channel id.
+     * @param channelId netty channel id.
      * @return connectionId   mysql connection id.
      */
-    public int getonnectionMap(String serverChannelId) {
-        return connectionCache.getIfPresent(serverChannelId);
+    public int getonnectionMap(String channelId) {
+        return connectionCache.getIfPresent(channelId);
     }
     
     /**
