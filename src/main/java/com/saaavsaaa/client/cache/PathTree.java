@@ -5,8 +5,17 @@ package com.saaavsaaa.client.cache;
  */
 public class PathTree {
     private final PathNode rootNode;
+    private PathStatus Status;
     
     public PathTree(String root) {
         this.rootNode = new PathNode(root);
+    }
+    
+    public PathStatus getStatus() {
+        return Status;
+    }
+    
+    public void setStatus(PathStatus status) {
+        Status = status;
     }
 }

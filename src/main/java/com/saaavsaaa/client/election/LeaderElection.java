@@ -14,6 +14,9 @@ import org.apache.zookeeper.WatchedEvent;
  * Created by aaa on 18-4-27.
  */
 public class LeaderElection {
+    /*
+    * listener will be register when the contention of the path is unsuccessful
+    */
     public static boolean Contend(final String path, final Client client, final Listener listener) throws KeeperException, InterruptedException {
         boolean success = false;
         try {
