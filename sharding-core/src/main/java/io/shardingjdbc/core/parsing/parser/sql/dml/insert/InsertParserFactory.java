@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.parsing.parser.sql.dml.insert;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.sql.MySQLInsertParser;
 import io.shardingjdbc.core.parsing.parser.dialect.oracle.sql.OracleInsertParser;
@@ -31,6 +32,7 @@ import lombok.NoArgsConstructor;
  * Insert parser factory.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InsertParserFactory {
@@ -43,17 +45,17 @@ public final class InsertParserFactory {
      * @param lexerEngine lexical analysis engine.
      * @return insert parser instance
      */
-    public static AbstractInsertParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public static AbstractInsertParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLInsertParser(shardingRule, lexerEngine);
+                return new MySQLInsertParser(shardingRule, lexerEngine, shardingMetaData);
             case Oracle:
-                return new OracleInsertParser(shardingRule, lexerEngine);
+                return new OracleInsertParser(shardingRule, lexerEngine, shardingMetaData);
             case SQLServer:
-                return new SQLServerInsertParser(shardingRule, lexerEngine);
+                return new SQLServerInsertParser(shardingRule, lexerEngine, shardingMetaData);
             case PostgreSQL:
-                return new PostgreSQLInsertParser(shardingRule, lexerEngine);
+                return new PostgreSQLInsertParser(shardingRule, lexerEngine, shardingMetaData);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }

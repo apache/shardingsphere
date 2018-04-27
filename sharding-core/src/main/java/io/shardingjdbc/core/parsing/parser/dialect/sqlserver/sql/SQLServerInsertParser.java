@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.dialect.sqlserver.sql;
 
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.dialect.sqlserver.clause.facade.SQLServerInsertClauseParserFacade;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.AbstractInsertParser;
@@ -26,10 +27,11 @@ import io.shardingjdbc.core.rule.ShardingRule;
  * Insert parser for SQLServer.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class SQLServerInsertParser extends AbstractInsertParser {
     
-    public SQLServerInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new SQLServerInsertClauseParserFacade(shardingRule, lexerEngine));
+    public SQLServerInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
+        super(shardingRule, shardingMetaData, lexerEngine, new SQLServerInsertClauseParserFacade(shardingRule, lexerEngine));
     }
 }

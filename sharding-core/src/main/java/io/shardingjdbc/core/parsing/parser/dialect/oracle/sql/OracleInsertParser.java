@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.dialect.oracle.sql;
 
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.dialect.oracle.clause.facade.OracleInsertClauseParserFacade;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.AbstractInsertParser;
@@ -26,10 +27,11 @@ import io.shardingjdbc.core.rule.ShardingRule;
  * Insert parser for Oracle.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class OracleInsertParser extends AbstractInsertParser {
     
-    public OracleInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new OracleInsertClauseParserFacade(shardingRule, lexerEngine));
+    public OracleInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
+        super(shardingRule, shardingMetaData, lexerEngine, new OracleInsertClauseParserFacade(shardingRule, lexerEngine));
     }
 }

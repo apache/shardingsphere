@@ -23,11 +23,13 @@ import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
+import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
 import io.shardingjdbc.core.parsing.parser.token.SQLToken;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,5 +70,20 @@ public final class InsertStatement extends DMLStatement {
             }
         }
         return Optional.absent();
+    }
+    
+    /**
+     * Get items tokens.
+     *
+     * @return items token list.
+     */
+    public List<ItemsToken> getItemsTokens() {
+        List<ItemsToken> itemsTokens = new ArrayList<>();
+        for (SQLToken each : getSqlTokens()) {
+            if (each instanceof ItemsToken) {
+                itemsTokens.add((ItemsToken) each);
+            }
+        }
+        return itemsTokens;
     }
 }
