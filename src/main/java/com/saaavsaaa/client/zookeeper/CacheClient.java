@@ -48,13 +48,13 @@ public final class CacheClient extends UsualClient {
     //用替换整树的方式更新
     private synchronized void loadCache(final Client client) throws KeeperException, InterruptedException {
         boolean canBegin;
-        canBegin = LeaderElection.Contend(rootNode, client, new Listener() {
+        canBegin = LeaderElection.contend(rootNode, client, new Listener() {
             @Override
             public void process(WatchedEvent event) {
                 try {
                     loadCache(client);
                 } catch (Exception ee){
-                    System.out.println(ee.getMessage());
+                    System.out.println("loadCache Exception");
                     ee.printStackTrace();
                 }
             }
@@ -72,7 +72,7 @@ public final class CacheClient extends UsualClient {
         List<String> children = client.getChildren(rootNode);
         children.remove(PathUtil.getRealPath(rootNode, Constants.CHANGING_KEY));
         this.attechIntoNode(children, newTree.getRootNode(), client);
-        pathTree.setStatus(PathStatus.CHANGING);
+        pathTree.setStatus(PathStatus.RELEASE);
     }
     
     private void attechIntoNode(final List<String> children, final PathNode pathNode, final Client client) throws KeeperException, InterruptedException {
@@ -80,9 +80,9 @@ public final class CacheClient extends UsualClient {
             return;
         }
         for (String child : children) {
-            List<String> subs = client.getChildren(child);
-            PathNode current = new PathNode(child);
+            PathNode current = new PathNode(PathUtil.getRealPath(pathNode.getKey(), child));
             pathNode.attechChild(current);
+            List<String> subs = client.getChildren(child);
             this.attechIntoNode(subs, current, client);
         }
     }
@@ -90,6 +90,7 @@ public final class CacheClient extends UsualClient {
     /*
     * closed beta
     */
+    @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
             this.createCurrentOnly(key, value, createMode);
@@ -159,5 +160,19 @@ public final class CacheClient extends UsualClient {
             }
         }
         transaction.commit();
+    }
+    
+    //===========================================================================================================
+    
+    private boolean cacheReady(){
+        return PathStatus.RELEASE == pathTree.getStatus();
+    }
+    
+    @Override
+    public byte[] getData(final String key) throws KeeperException, InterruptedException {
+        if (cacheReady()){
+//            return
+        }
+        return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), watched, null);
     }
 }

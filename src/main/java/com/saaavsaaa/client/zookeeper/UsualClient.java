@@ -18,8 +18,6 @@ import java.util.List;
 * todo org.apache.zookeeper.KeeperException$NodeExistsException: KeeperErrorCode = NodeExists
 */
 public class UsualClient extends Client {
-    private final boolean watched = true; //false
-    
     UsualClient(String servers, int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);
     }

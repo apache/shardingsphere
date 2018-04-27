@@ -17,7 +17,7 @@ public class LeaderElection {
     /*
     * listener will be register when the contention of the path is unsuccessful
     */
-    public static boolean Contend(final String path, final Client client, final Listener listener) throws KeeperException, InterruptedException {
+    public static boolean contend(final String path, final Client client, final Listener listener) throws KeeperException, InterruptedException {
         boolean success = false;
         try {
             client.createCurrentOnly(Constants.CHANGING_KEY, Property.INSTANCE.getClientId(), CreateMode.EPHEMERAL);

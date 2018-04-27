@@ -21,15 +21,17 @@ import java.util.concurrent.CountDownLatch;
 public abstract class Client implements IClient{
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
     protected static final Map<String, Watcher> watchers = new ConcurrentHashMap<>();
-    private boolean globalListenerRegistered = false;
     
+    protected final boolean watched = true; //false
     private final String servers;
     private final int sessionTimeOut;
-    protected ZooKeeper zooKeeper;
     
+    protected ZooKeeper zooKeeper;
+    protected List<ACL> authorities;
+    private boolean globalListenerRegistered = false;
     protected String rootNode = "/InitValue";
     protected boolean rootExist = false;
-    protected List<ACL> authorities;
+    private ClientFactory clientFactory;
     
     protected Client(String servers, int sessionTimeoutMilliseconds) {
         this.servers = servers;
@@ -133,5 +135,13 @@ public abstract class Client implements IClient{
     void setAuthorities(String scheme, byte[] auth) {
         zooKeeper.addAuthInfo(scheme , auth);
         this.authorities = ZooDefs.Ids.CREATOR_ALL_ACL;
+    }
+    
+    public ClientFactory getClientFactory() {
+        return clientFactory;
+    }
+    
+    void setClientFactory(ClientFactory clientFactory) {
+        this.clientFactory = clientFactory;
     }
 }

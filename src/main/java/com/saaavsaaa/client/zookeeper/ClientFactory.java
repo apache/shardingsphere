@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Listener;
 
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class ClientFactory {
     }
     
     public synchronized Client start() throws IOException, InterruptedException {
+        client.setClientFactory(this);
         client.setRootNode(namespace);
         client.start();
         client.setAuthorities(scheme , auth);
@@ -44,8 +46,8 @@ public class ClientFactory {
     }
     
     public ClientFactory setNamespace(String namespace) {
-        if (!namespace.startsWith("/")){
-            namespace = "/" + namespace;
+        if (!namespace.startsWith(Constants.PATH_SEPARATOR)){
+            namespace = Constants.PATH_SEPARATOR + namespace;
         }
         this.namespace = namespace;
         return this;
