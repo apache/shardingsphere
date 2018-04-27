@@ -75,7 +75,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     private int columnCount;
     
-    private boolean isDQL;
+    private boolean isMerged;
     
     private boolean hasMoreResultValueFlag;
     
@@ -84,7 +84,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         routingEngine = new StatementRoutingEngine(ShardingRuleRegistry.getInstance().getShardingRule(), ShardingRuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
         connections = new ArrayList<>(1024);
         resultSets = new ArrayList<>(1024);
-        isDQL = false;
+        isMerged = false;
         hasMoreResultValueFlag = true;
     }
     
@@ -254,7 +254,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         }
         try {
             mergedResult = MergeEngineFactory.newInstance(ShardingRuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
-            isDQL = true;
+            isMerged = true;
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
         }
@@ -283,7 +283,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
      * @throws SQLException sql exception
      */
     public boolean hasMoreResultValue() throws SQLException {
-        if (!isDQL || !hasMoreResultValueFlag) {
+        if (!isMerged || !hasMoreResultValueFlag) {
             return false;
         }
         if (!mergedResult.next()) {
