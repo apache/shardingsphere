@@ -36,6 +36,7 @@ import io.shardingjdbc.dbtest.init.InItCreateSchema;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Assert;
 import org.xml.sax.SAXException;
 
@@ -57,7 +58,7 @@ public class AssertEngine {
     
     @Getter
     @Setter
-    private static volatile boolean clean ;
+    private static volatile boolean clean;
     
     static {
         initialized = Boolean.valueOf(StartTest.getString("initialized", "false"));
@@ -87,18 +88,16 @@ public class AssertEngine {
         
         String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
         assertsDefinition.setPath(rootPath);
-        
+        DataSource dataSource = null;
         try {
             String msg = "The file path " + path + ", under which id is " + id;
-            DataSource dataSource = getDataSource(PathUtil.getPath(assertsDefinition.getShardingRuleConfig(), rootPath));
+            
+            dataSource = getDataSource(PathUtil.getPath(assertsDefinition.getShardingRuleConfig(), rootPath));
             
             ShardingContext shardingContext = getShardingContext((ShardingDataSource) dataSource);
             Map<String, DataSource> dataSourceMaps = shardingContext.getDataSourceMap();
             
-            List<String> dbs = new ArrayList<>();
-            for (String s : dataSourceMaps.keySet()) {
-                dbs.add(s);
-            }
+            List<String> dbs = new ArrayList<>(dataSourceMaps.keySet());
             
             // dql run
             dqlRun(path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
@@ -111,6 +110,10 @@ public class AssertEngine {
             
         } catch (NoSuchFieldException | IllegalAccessException | ParseException | XPathExpressionException | SQLException | ParserConfigurationException | SAXException | IOException e) {
             throw new DbTestException(e);
+        } finally {
+            if (dataSource != null) {
+                ((ShardingDataSource) dataSource).close();
+            }
         }
         return true;
     }
@@ -205,12 +208,12 @@ public class AssertEngine {
         try {
             initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
             try (Connection con = dataSource.getConnection();) {
-                boolean actual = DatabaseUtil.updateUsePreparedStatementToExecute(con, rootsql,
+                int actual = DatabaseUtil.updateUsePreparedStatementToExecute(con, rootsql,
                         anAssert.getParameters());
                 String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
                 
-                Assert.assertEquals(msg + " Update error", false, actual);
+                Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), actual);
                 
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getInstance().getSQL(checksql);
@@ -296,12 +299,12 @@ public class AssertEngine {
         try {
             initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
             try (Connection con = dataSource.getConnection();) {
-                boolean actual = DatabaseUtil.updateUseStatementToExecute(con, rootsql, anAssert.getParameters());
+                int actual = DatabaseUtil.updateUseStatementToExecute(con, rootsql, anAssert.getParameters());
                 
                 String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
                 
-                Assert.assertEquals("Update error", false, actual);
+                Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), actual);
                 
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getInstance().getSQL(checksql);
@@ -362,7 +365,7 @@ public class AssertEngine {
     private static void doUpdateUseStatementToExecuteUpdateDDL(final String rootPath, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
-    
+                
                 ParametersDefinition parametersDefinition = new ParametersDefinition();
                 parametersDefinition.setNewParameter(Arrays.asList(anAssert.getParameter()));
                 
@@ -491,6 +494,21 @@ public class AssertEngine {
      */
     public static DataSource getDataSource(final String path) throws IOException, SQLException {
         return ShardingDataSourceFactory.createDataSource(new File(path));
+    }
+    
+    
+    public static void main(String[] args) throws IOException, SQLException {
+    
+        BasicDataSource result = new BasicDataSource();
+        result.setDriverClassName(com.mysql.jdbc.Driver.class.getName());
+    
+        result.setUrl("jdbc:mysql://db.mysql:3306/mysql");
+        result.setUsername("test");
+        result.setPassword("test");
+        
+        Map dataSourceHashMap = new HashMap<String, DataSource>();
+        dataSourceHashMap.put("db_0",result);
+        System.out.println(getDataSource(dataSourceHashMap,"E:\\repository\\GitHubMe\\sharding-jdbc2\\sharding-jdbc-core\\src\\test\\resources\\asserts\\assert-sharding-database-only-with-hint-for-dml-test\\config\\test-dbtbl.yaml"));
     }
     
     public static DataSource getDataSource(final Map<String, DataSource> dataSourceMap, final String path) throws IOException, SQLException {

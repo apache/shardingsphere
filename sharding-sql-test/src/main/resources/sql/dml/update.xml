@@ -2,4 +2,6 @@
 <sql-cases>
     <sql-case id="assertUpdateWithAlias" value="UPDATE t_order AS o SET o.status = %s WHERE o.order_id = %s AND o.user_id = %s" db-types="MySQL,H2"/>
     <sql-case id="assertUpdateWithoutAlias" value="UPDATE t_order SET status = %s WHERE order_id = %s AND user_id = %s" />
+
+
 </sql-cases>

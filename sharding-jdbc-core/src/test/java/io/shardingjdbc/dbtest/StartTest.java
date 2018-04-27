@@ -26,6 +26,7 @@ import javax.xml.bind.JAXBException;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.dbtest.config.bean.*;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -90,18 +91,28 @@ public class StartTest {
         try {
             for (String each : paths) {
                 AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
-            
-                InItCreateSchema.addDatabase(assertsDefinition.getBaseConfig());
-            
+                
+                if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
+                    String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig());
+                    for (String db : dbs) {
+                        InItCreateSchema.addDatabase(db);
+                    }
+                } else {
+                    String[] dbs = new String[]{"db", "dbtbl", "jdbc", "master", "master_only", "nullable", "slave", "slave_only", "tbl"};
+                    for (String db : dbs) {
+                        InItCreateSchema.addDatabase(db);
+                    }
+                }
+                
                 List<AssertDQLDefinition> assertDQLs = assertsDefinition.getAssertDQL();
                 collateData(RESULT_ASSERT, each, assertDQLs);
-            
+                
                 List<AssertDMLDefinition> assertDMLs = assertsDefinition.getAssertDML();
                 collateData(RESULT_ASSERT, each, assertDMLs);
-            
+                
                 List<AssertDDLDefinition> assertDDLs = assertsDefinition.getAssertDDL();
                 collateData(RESULT_ASSERT, each, assertDDLs);
-            
+                
                 AssertEngine.addAssertDefinition(each, assertsDefinition);
             }
         } catch (JAXBException | IOException e) {

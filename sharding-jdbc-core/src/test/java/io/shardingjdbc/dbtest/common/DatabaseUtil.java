@@ -189,7 +189,8 @@ public class DatabaseUtil {
         int result = 0;
         try (Statement pstmt = conn.createStatement()) {
             for (ParameterDefinition parameterDefinition : parameter) {
-                String newSql = sqlStatement(sql, parameterDefinition.getValues());
+                String newSql = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
+                newSql = sqlStatement(newSql, parameterDefinition.getValues());
                 result = result + pstmt.executeUpdate(newSql);
             }
         }
@@ -242,6 +243,51 @@ public class DatabaseUtil {
     }
     
     /**
+     * Processing statement sql.
+     *
+     * @param sql       sql
+     * @param parameter parameter
+     * @return sql
+     */
+    private static String sqlReplaceStatement(final String sql, final List<ParameterValueDefinition> parameter) {
+        if (parameter == null) {
+            return sql;
+        }
+        String result = sql;
+        for (ParameterValueDefinition parameterDefinition : parameter) {
+            
+            String type = parameterDefinition.getType();
+            String datacol = parameterDefinition.getValue();
+            switch (type) {
+                case "byte":
+                case "short":
+                case "int":
+                case "long":
+                case "float":
+                case "double":
+                    result = Pattern.compile("#s", Pattern.LITERAL).matcher(result)
+                            .replaceFirst(Matcher.quoteReplacement(datacol.toString()));
+                    break;
+                case "boolean":
+                    result = Pattern.compile("#s", Pattern.LITERAL).matcher(result)
+                            .replaceFirst(Matcher.quoteReplacement(Boolean.valueOf(datacol).toString()));
+                    break;
+                case "Date":
+                    throw new DbTestException("Date type not supported for the time being");
+                case "String":
+                    result = Pattern.compile("#s", Pattern.LITERAL).matcher(result)
+                            .replaceFirst(Matcher.quoteReplacement("'" + datacol + "'"));
+                    break;
+                default:
+                    result = Pattern.compile("#s", Pattern.LITERAL).matcher(result)
+                            .replaceFirst(Matcher.quoteReplacement("'" + datacol + "'"));
+                    break;
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Use Statement Test data update.
      *
      * @param conn       Jdbc connection
@@ -250,18 +296,20 @@ public class DatabaseUtil {
      * @return Implementation results
      * @throws SQLException SQL executes exceptions
      */
-    public static boolean updateUseStatementToExecute(final Connection conn, final String sql,
-                                                      final ParametersDefinition parameters) throws SQLException {
+    public static int updateUseStatementToExecute(final Connection conn, final String sql,
+                                                  final ParametersDefinition parameters) throws SQLException {
         List<ParameterDefinition> parameter = parameters.getParameter();
+        int result = 0;
         try (Statement pstmt = conn.createStatement()) {
             for (ParameterDefinition parameterDefinition : parameter) {
-                String newSql = sqlStatement(sql, parameterDefinition.getValues());
+                String newSql = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
+                newSql = sqlStatement(newSql, parameterDefinition.getValues());
                 if (!pstmt.execute(newSql)) {
-                    return false;
+                    result = result + pstmt.getUpdateCount();
                 }
             }
         }
-        return true;
+        return result;
     }
     
     /**
@@ -278,9 +326,10 @@ public class DatabaseUtil {
                                                                 final ParametersDefinition parameters) throws SQLException, ParseException {
         List<ParameterDefinition> parameter = parameters.getParameter();
         int result = 0;
-        String newSql = sql.replaceAll("\\%s", "?");
-        try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
-            for (ParameterDefinition parameterDefinition : parameter) {
+        for (ParameterDefinition parameterDefinition : parameter) {
+            String newSql = sql.replaceAll("\\%s", "?");
+            newSql = sqlReplaceStatement(newSql, parameterDefinition.getValueReplaces());
+            try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
                 sqlPreparedStatement(parameterDefinition.getValues(), pstmt);
                 result = result + pstmt.executeUpdate();
             }
@@ -298,19 +347,23 @@ public class DatabaseUtil {
      * @throws SQLException   SQL executes exceptions
      * @throws ParseException ParseException
      */
-    public static boolean updateUsePreparedStatementToExecute(final Connection conn, final String sql,
-                                                              final ParametersDefinition parameters) throws SQLException, ParseException {
+    public static int updateUsePreparedStatementToExecute(final Connection conn, final String sql,
+                                                          final ParametersDefinition parameters) throws SQLException, ParseException {
         List<ParameterDefinition> parameter = parameters.getParameter();
-        String newSql = sql.replaceAll("\\%s", "?");
-        try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
-            for (ParameterDefinition parameterDefinition : parameter) {
+       
+        int result = 0;
+        for (ParameterDefinition parameterDefinition : parameter) {
+            String newSql = sql.replaceAll("\\%s", "?");
+            newSql = sqlReplaceStatement(newSql, parameterDefinition.getValueReplaces());
+            try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
                 sqlPreparedStatement(parameterDefinition.getValues(), pstmt);
                 if (!pstmt.execute()) {
-                    return false;
+                    result = result + pstmt.getUpdateCount();
                 }
             }
         }
-        return true;
+       
+        return result;
     }
     
     /**
@@ -326,7 +379,8 @@ public class DatabaseUtil {
     public static DatasetDatabase selectUsePreparedStatement(final Connection conn, final String sql,
                                                              final ParameterDefinition parameters) throws SQLException, ParseException {
         List<ParameterValueDefinition> parameter = parameters.getValues();
-        String newSql = sql.replaceAll("\\%s", "?");
+        String newSql = sqlReplaceStatement(sql, parameters.getValueReplaces());
+        newSql = newSql.replaceAll("\\%s", "?");
         try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
             sqlPreparedStatement(parameter, pstmt);
             try (ResultSet resultSet = pstmt.executeQuery()) {
@@ -348,7 +402,8 @@ public class DatabaseUtil {
     public static DatasetDatabase selectUsePreparedStatementToExecuteSelect(final Connection conn, final String sql,
                                                                             final ParameterDefinition parameters) throws SQLException, ParseException {
         List<ParameterValueDefinition> parameter = parameters.getValues();
-        String newSql = sql.replaceAll("\\%s", "?");
+        String newSql = sqlReplaceStatement(sql, parameters.getValueReplaces());
+        newSql = newSql.replaceAll("\\%s", "?");
         try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
             sqlPreparedStatement(parameter, pstmt);
             boolean flag = pstmt.execute();
@@ -442,8 +497,9 @@ public class DatabaseUtil {
     public static DatasetDatabase selectUseStatement(final Connection conn, final String sql,
                                                      final ParameterDefinition parameters) throws SQLException {
         List<ParameterValueDefinition> parameter = parameters.getValues();
+        String newSql = sqlReplaceStatement(sql, parameters.getValueReplaces());
         try (Statement pstmt = conn.createStatement()) {
-            String newSql = sqlStatement(sql, parameter);
+            newSql = sqlStatement(newSql, parameter);
             try (ResultSet resultSet = pstmt.executeQuery(newSql)) {
                 return useStatementBackResultSet(resultSet);
             }
@@ -462,8 +518,9 @@ public class DatabaseUtil {
     public static DatasetDatabase selectUseStatementToExecuteSelect(final Connection conn, final String sql,
                                                                     final ParameterDefinition parameters) throws SQLException {
         List<ParameterValueDefinition> parameter = parameters.getValues();
+        String newSql = sqlReplaceStatement(sql, parameters.getValueReplaces());
         try (Statement pstmt = conn.createStatement()) {
-            String newSql = sqlStatement(sql, parameter);
+            newSql = sqlStatement(newSql, parameter);
             try (ResultSet resultSet = pstmt.executeQuery(newSql)) {
                 return useStatementBackResultSet(resultSet);
             }

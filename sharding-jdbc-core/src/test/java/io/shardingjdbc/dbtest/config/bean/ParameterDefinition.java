@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -31,9 +32,9 @@ import java.util.List;
 public class ParameterDefinition {
 
     @XmlElement(name = "value")
-    private List<ParameterValueDefinition> values;
-
-
-
-
+    private List<ParameterValueDefinition> values = new ArrayList<>();
+    
+    @XmlElement(name = "valueReplace")
+    private List<ParameterValueDefinition> valueReplaces = new ArrayList<>();
+    
 }
