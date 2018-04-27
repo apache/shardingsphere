@@ -117,11 +117,11 @@ Server environment:
 
 TPS:
 
-![TPS](/img/b-SdbSt-query-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/b-SdbSt-query-tps.png)
 
 Response Time:
 
-![RT](/img/b-SdbSt-query-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/b-SdbSt-query-rt.png)
 
 ### UPDATE in one table in one DB
 
@@ -132,11 +132,11 @@ Response Time:
 
 TPS:
 
-![TPS](/img/b-SdbSt-update-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/b-SdbSt-update-tps.png)
 
 Response Time:
 
-![RT](/img/b-SdbSt-update-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/b-SdbSt-update-rt.png)
 
 ### INSERT in one table in one DB
 
@@ -147,11 +147,11 @@ Response Time:
 
 TPS:
 
-![TPS](/img/b-SdbSt-insert-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/b-SdbSt-insert-tps.png)
 
 Response Time:
 
-![RT](/img/b-SdbSt-insert-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/b-SdbSt-insert-rt.png)
 
 ## Limit test
 
@@ -165,11 +165,11 @@ Response Time:
 
 TPS:
 
-![TPS](/img/l-SdbSt-MdbSt-query-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbSt-MdbSt-query-tps.png)
 
 Response Time:
 
-![RT](/img/l-SdbSt-MdbSt-query-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbSt-MdbSt-query-rt.png)
 
 ### SELECT in two tables in one DB and The SELECT in two tables in each of two DBs 
 
@@ -181,11 +181,11 @@ Response Time:
 
 TPS:
 
-![TPS](/img/l-SdbMt-MdbMt-query-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbMt-MdbMt-query-tps.png)
 
 Response Time:
 
-![RT](/img/l-SdbMt-MdbMt-query-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbMt-MdbMt-query-rt.png)
 
 ### UPDATE in one table in one DB and The UPDATE in one table in each of two DBs
 
@@ -197,11 +197,11 @@ Response Time:
 
 TPS:
 
-![TPS](/img/l-SdbSt-MdbSt-update-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbSt-MdbSt-update-tps.png)
 
 Response Time:
 
-![RT](/img/l-SdbSt-MdbSt-update-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbSt-MdbSt-update-rt.png)
 
 ### UPDATE in two tables in one DB and The UPDATE in two tables in each of two DBs
 
@@ -213,11 +213,11 @@ Response Time:
 
 TPS:
 
-![TPS](/img/l-SdbMt-MdbMt-update-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbMt-MdbMt-update-tps.png)
 
 Response Time:
 
-![RT](/img/l-SdbMt-MdbMt-update-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbMt-MdbMt-update-rt.png)
 
 ### INSERT in one table in one DB and The INSERT in one table in each of two DBs
 
@@ -229,11 +229,11 @@ Response Time:
 
 TPS:
 
-![TPS](/img/l-SdbSt-MdbSt-insert-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbSt-MdbSt-insert-tps.png)
 
 Response Time:
 
-![RT](/img/l-SdbSt-MdbSt-insert-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbSt-MdbSt-insert-rt.png)
 
 ### INSERT in two tables in one DB and The INSERT in two tables in each of two DBs
 
@@ -245,11 +245,11 @@ Response Time:
 
 TPS:
 
-![TPS](/img/l-SdbMt-MdbMt-insert-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbMt-MdbMt-insert-tps.png)
 
 Response Time:
 
-![RT](/img/l-SdbMt-MdbMt-insert-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbMt-MdbMt-insert-rt.png)
 
 ### Operations in one table in each of two DBs for Sharding-JDBC 1.4.2 and 1.5.2
 
@@ -261,11 +261,11 @@ Response Time:
 
 TPS:
 
-![TPS](/img/152vs142tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/152vs142tps.png)
 
 Response Time:
 
-![RT](/img/152vs142rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/152vs142rt.png)
 
 ## Appendix
 
@@ -276,7 +276,7 @@ There are two test servers, and two parent tables and two child tables in single
 Structure of table `order`:
 
 ```sql
-order_0 | CREATE TABLE `order_0` (
+CREATE TABLE `order_0` (
   `id` bigint(50) NOT NULL AUTO_INCREMENT,
   `order_id` varchar(50) NOT NULL,
   `order_type` int(11) DEFAULT NULL,
@@ -305,7 +305,7 @@ order_0 | CREATE TABLE `order_0` (
 Structure of table `ordert`:
 
 ```sql
-ordert_0 | CREATE TABLE `ordert_0` (
+CREATE TABLE `ordert_0` (
   `idm` bigint(50) NOT NULL,
   `id` int(10) DEFAULT NULL,
   `order_idm` varchar(50) DEFAULT NULL,

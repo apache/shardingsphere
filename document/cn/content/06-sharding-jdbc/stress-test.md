@@ -11,7 +11,6 @@ weight = 4
 1. 性能对比测试：服务器资源使用到极限，Sharding-JDBC采用分库分表后，Sharding-JDBC吞吐量较JDBC不分表有接近2倍的提升。
 1. 性能对比测试：服务器资源使用到极限，Sharding-JDBC V1.5.2与V1.4.2对比，性能比较稳定。
 
-
 ### 基准测试性能对比
 
 | 业务场景   | JDBC   | Sharding-JDBC1.5.2 | Sharding-JDBC1.5.2/JDBC损耗 |
@@ -119,11 +118,11 @@ weight = 4
 
 TPS展示
 
-![TPS](/img/b-SdbSt-query-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/b-SdbSt-query-tps.png)
 
 RT展示
 
-![RT](/img/b-SdbSt-query-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/b-SdbSt-query-rt.png)
 
 ### 单库单表更新
 
@@ -134,11 +133,11 @@ RT展示
 
 TPS展示
 
-![TPS](/img/b-SdbSt-update-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/b-SdbSt-update-tps.png)
 
 RT展示
 
-![RT](/img/b-SdbSt-update-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/b-SdbSt-update-rt.png)
 
 ### 单库单表插入
 
@@ -149,11 +148,11 @@ RT展示
 
 TPS展示
 
-![TPS](/img/b-SdbSt-insert-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/b-SdbSt-insert-tps.png)
 
 RT展示
 
-![RT](/img/b-SdbSt-insert-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/b-SdbSt-insert-rt.png)
 
 ## 极限测试
 
@@ -167,11 +166,11 @@ RT展示
 
 TPS展示
 
-![TPS](/img/l-SdbSt-MdbSt-query-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbSt-MdbSt-query-tps.png)
 
 RT展示
 
-![RT](/img/l-SdbSt-MdbSt-query-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbSt-MdbSt-query-rt.png)
 
 ### 单库两表与两库各两表查询
 
@@ -183,11 +182,11 @@ RT展示
 
 TPS展示
 
-![TPS](/img/l-SdbMt-MdbMt-query-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbMt-MdbMt-query-tps.png)
 
 RT展示
 
-![RT](/img/l-SdbMt-MdbMt-query-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbMt-MdbMt-query-rt.png)
 
 ### 单库单表更新与两库各一表更新
 
@@ -199,11 +198,11 @@ RT展示
 
 TPS展示
 
-![TPS](/img/l-SdbSt-MdbSt-update-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbSt-MdbSt-update-tps.png)
 
 RT展示
 
-![RT](/img/l-SdbSt-MdbSt-update-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbSt-MdbSt-update-rt.png)
 
 ### 单库两表与两库各2表更新
 
@@ -215,11 +214,11 @@ RT展示
 
 TPS展示
 
-![TPS](/img/l-SdbMt-MdbMt-update-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbMt-MdbMt-update-tps.png)
 
 RT展示
 
-![RT](/img/l-SdbMt-MdbMt-update-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbMt-MdbMt-update-rt.png)
 
 ### 单库单表插入与两库各一表插入
 
@@ -231,11 +230,11 @@ RT展示
 
 TPS展示
 
-![TPS](/img/l-SdbSt-MdbSt-insert-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbSt-MdbSt-insert-tps.png)
 
 RT展示
 
-![RT](/img/l-SdbSt-MdbSt-insert-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbSt-MdbSt-insert-rt.png)
 
 ### 单库两表与两库各2表插入
 
@@ -247,11 +246,11 @@ RT展示
 
 TPS展示
 
-![TPS](/img/l-SdbMt-MdbMt-insert-tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbMt-MdbMt-insert-tps.png)
 
 RT展示
 
-![RT](/img/l-SdbMt-MdbMt-insert-rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/l-SdbMt-MdbMt-insert-rt.png)
 
 ### Sharding-JDBC 1.4.2与1.5.2两库各一表对比
 
@@ -263,11 +262,11 @@ RT展示
 
 TPS展示
 
-![TPS](/img/152vs142tps.png)
+![TPS](http://ovfotjrsi.bkt.clouddn.com/stress-test/152vs142tps.png)
 
 RT展示
 
-![RT](/img/152vs142rt.png)
+![RT](http://ovfotjrsi.bkt.clouddn.com/stress-test/152vs142rt.png)
 
 ## 附录
 
@@ -278,7 +277,7 @@ RT展示
 主表结构如下：
 
 ```sql
-order_0 | CREATE TABLE `order_0` (
+CREATE TABLE `order_0` (
   `id` bigint(50) NOT NULL AUTO_INCREMENT,
   `order_id` varchar(50) NOT NULL,
   `order_type` int(11) DEFAULT NULL,
@@ -306,7 +305,7 @@ order_0 | CREATE TABLE `order_0` (
 子表结构如下：
 
 ```sql
-ordert_0 | CREATE TABLE `ordert_0` (
+CREATE TABLE `ordert_0` (
   `idm` bigint(50) NOT NULL,
   `id` int(10) DEFAULT NULL,
   `order_idm` varchar(50) DEFAULT NULL,
