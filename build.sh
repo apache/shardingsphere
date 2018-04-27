@@ -40,8 +40,3 @@ cd ..
 cd ..
 mv community/en/public target/community/en
 
-# to add <hr />
-cd target/document/
-find . -name "index.html" |xargs sed -i '/<li data-nav-id="\/02-sharding\/"/i <hr \/>'
-find . -name "index.html" |xargs sed -i '/<li data-nav-id="\/06-sharding-jdbc\/"/i <hr \/>'
-find . -name "index.html" |xargs sed -i '/<li data-nav-id="\/09-other\/"/i <hr \/>'
