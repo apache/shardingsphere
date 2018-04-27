@@ -42,7 +42,8 @@ public final class InsertParserFactory {
      *
      * @param dbType database type
      * @param shardingRule databases and tables sharding rule
-     * @param lexerEngine lexical analysis engine.
+     * @param lexerEngine lexical analysis engine
+     * @param shardingMetaData sharding meta data
      * @return insert parser instance
      */
     public static AbstractInsertParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {

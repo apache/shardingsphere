@@ -39,7 +39,7 @@ public final class ItemsToken implements SQLToken {
     private final int beginPosition;
     
     @Setter
-    private boolean isFirstOfItemsSpecial = false;
+    private boolean isFirstOfItemsSpecial;
     
     private final List<String> items = new LinkedList<>();
 }
