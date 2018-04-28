@@ -4,7 +4,7 @@ import com.saaavsaaa.client.utility.section.Listener;
 import org.apache.zookeeper.WatchedEvent;
 
 /**
- * Created by aaa on 18-4-26.
+ * Created by aaa
  */
 public class TestSupport {
     static final String AUTH = "digest";

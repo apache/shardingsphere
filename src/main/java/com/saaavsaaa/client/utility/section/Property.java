@@ -5,7 +5,7 @@ import com.saaavsaaa.client.utility.StringUtil;
 import java.util.ResourceBundle;
 
 /**
- * Created by aaa on 18-4-27.
+ * Created by aaa
  */
 public enum Property {
     INSTANCE;

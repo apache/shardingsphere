@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * Created by aaa on 18-4-26.
+ * Created by aaa
  */
 public final class PathTree {
     private final Map<String, String> currentNodes = new ConcurrentHashMap<>();

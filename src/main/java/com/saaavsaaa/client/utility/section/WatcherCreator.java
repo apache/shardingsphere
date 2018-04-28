@@ -6,7 +6,7 @@ import org.apache.zookeeper.Watcher;
 import static org.apache.zookeeper.Watcher.Event.EventType.NodeDeleted;
 
 /**
- * Created by aaa on 18-4-27.
+ * Created by aaa
  */
 public class WatcherCreator {
     public static Watcher deleteWatcher(final String path, Listener listener){

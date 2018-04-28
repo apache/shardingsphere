@@ -97,7 +97,7 @@ public final class CacheClient extends UsualClient {
 
         List<String> nodes = PathUtil.getPathOrderNodes(rootNode, key);
         for (int i = 0; i < nodes.size(); i++) {
-            // todo not goog
+            // todo not good
             if (super.checkExists(nodes.get(i))){
                 System.out.println("exist:" + nodes.get(i));
                 continue;
@@ -117,12 +117,6 @@ public final class CacheClient extends UsualClient {
         return transaction.create(PathUtil.getRealPath(rootNode, key), data, authorities, createMode);
     }
     
-    /*
-    * closed beta
-    * 当前实现方法用于缓存方式
-    * 缓存实现后此类判断换为异常方式（包括创建）
-    * 用事务不能用异常
-    */
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
         Transaction transaction = zooKeeper.transaction();
@@ -131,10 +125,11 @@ public final class CacheClient extends UsualClient {
     }
     
     private void deleteAllChildren(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
+        
     }
     
     private void deleteOnlyCurrent(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
-        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION);
+        transaction.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION);
     }
     
     

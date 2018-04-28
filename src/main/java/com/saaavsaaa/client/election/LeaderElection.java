@@ -11,7 +11,7 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 
 /**
- * Created by aaa on 18-4-27.
+ * Created by aaa
  */
 public abstract class LeaderElection {
 

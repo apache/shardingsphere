@@ -7,7 +7,7 @@ import org.junit.Before;
 import java.io.IOException;
 
 /**
- * Created by aaa on 18-4-20.
+ * Created by aaa
  */
 public class CacheClientTest {
     private Client client = null;

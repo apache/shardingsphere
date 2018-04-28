@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * Created by aaa on 18-4-26.
+ * Created by aaa
  */
 public class BaseClientTest {
     protected Client testClient = null;

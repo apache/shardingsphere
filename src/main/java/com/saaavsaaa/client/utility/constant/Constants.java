@@ -3,7 +3,7 @@ package com.saaavsaaa.client.utility.constant;
 import java.nio.charset.Charset;
 
 /**
- * Created by aaa on 18-4-25.
+ * Created by aaa
  */
 public final class Constants {
     public static final int VERSION = -1;

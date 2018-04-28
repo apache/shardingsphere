@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * Created by aaa on 18-4-19.
+ * Created by aaa
  */
 public abstract class Client implements IClient{
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);

@@ -4,7 +4,7 @@ import com.saaavsaaa.client.zookeeper.Client;
 import org.apache.zookeeper.KeeperException;
 
 /**
- * Created by aaa on 18-4-27.
+ * Created by aaa
  */
 public abstract class ClientTask implements Runnable {
     private final Client client;

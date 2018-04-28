@@ -1,7 +1,7 @@
 package com.saaavsaaa.client.utility;
 
 /**
- * Created by aaa on 18-4-18.
+ * Created by aaa
  */
 public class StringUtil {
     public static boolean isNullOrBlank(String string) {

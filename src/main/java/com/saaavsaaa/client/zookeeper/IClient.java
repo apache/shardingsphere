@@ -5,7 +5,7 @@ import org.apache.zookeeper.*;
 import java.util.List;
 
 /**
- * Created by aaa on 18-4-26.
+ * Created by aaa
  */
 public interface IClient {
     String getDataString(final String key) throws KeeperException, InterruptedException ;
