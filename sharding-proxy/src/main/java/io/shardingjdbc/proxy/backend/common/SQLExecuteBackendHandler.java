@@ -75,7 +75,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     private int columnCount;
     
-    private boolean isDQL;
+    private boolean isMerged;
     
     private boolean hasMoreResultValueFlag;
     
@@ -84,7 +84,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         routingEngine = new StatementRoutingEngine(ShardingRuleRegistry.getInstance().getShardingRule(), ShardingRuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
         connections = new ArrayList<>(1024);
         resultSets = new ArrayList<>(1024);
-        isDQL = false;
+        isMerged = false;
         hasMoreResultValueFlag = true;
     }
     
@@ -105,6 +105,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     private CommandResponsePackets execute(final SQLStatement sqlStatement, final SQLExecutionUnit sqlExecutionUnit) {
         switch (sqlStatement.getType()) {
             case DQL:
+            case DAL:
                 return executeQuery(ShardingRuleRegistry.getInstance().getDataSourceMap().get(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql());
             case DML:
             case DDL:
@@ -228,8 +229,8 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         if (SQLType.DML == sqlStatement.getType()) {
             return mergeDML(headPackets);
         }
-        if (SQLType.DQL == sqlStatement.getType()) {
-            return mergeDQL(sqlStatement, packets);
+        if (SQLType.DQL == sqlStatement.getType() || SQLType.DAL == sqlStatement.getType()) {
+            return mergeDQLorDAL(sqlStatement, packets);
         }
         return packets.get(0);
     }
@@ -245,7 +246,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         return new CommandResponsePackets(new OKPacket(1, affectedRows, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
     }
     
-    private CommandResponsePackets mergeDQL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
+    private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
         List<QueryResult> queryResults = new ArrayList<>(packets.size());
         for (int i = 0; i < packets.size(); i++) {
             // TODO replace to a common PacketQueryResult
@@ -253,7 +254,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         }
         try {
             mergedResult = MergeEngineFactory.newInstance(ShardingRuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
-            isDQL = true;
+            isMerged = true;
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
         }
@@ -282,7 +283,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
      * @throws SQLException sql exception
      */
     public boolean hasMoreResultValue() throws SQLException {
-        if (!isDQL || !hasMoreResultValueFlag) {
+        if (!isMerged || !hasMoreResultValueFlag) {
             return false;
         }
         if (!mergedResult.next()) {

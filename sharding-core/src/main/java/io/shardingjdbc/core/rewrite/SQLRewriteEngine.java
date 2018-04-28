@@ -41,9 +41,8 @@ import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
 import io.shardingjdbc.core.routing.SQLUnit;
 import io.shardingjdbc.core.routing.router.GeneratedKey;
+import io.shardingjdbc.core.routing.type.RoutingTable;
 import io.shardingjdbc.core.routing.type.TableUnit;
-import io.shardingjdbc.core.routing.type.TableUnits;
-import io.shardingjdbc.core.routing.type.complex.CartesianTableReference;
 import io.shardingjdbc.core.rule.BindingTableRule;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLUtil;
@@ -88,7 +87,8 @@ public final class SQLRewriteEngine {
      * @param sqlStatement SQL statement
      * @param generatedKey generated key
      */
-    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, 
+                            final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
@@ -247,17 +247,6 @@ public final class SQLRewriteEngine {
     
     /**
      * Generate SQL string.
-     *
-     * @param tableUnits route table units
-     * @param sqlBuilder SQL builder
-     * @return SQL unit
-     */
-    public SQLUnit generateSQL(final TableUnits tableUnits, final SQLBuilder sqlBuilder) {
-        return sqlBuilder.toSQL(getTableTokens(tableUnits), shardingRule);
-    }
-    
-    /**
-     * Generate SQL string.
      * 
      * @param tableUnit route table unit
      * @param sqlBuilder SQL builder
@@ -266,57 +255,26 @@ public final class SQLRewriteEngine {
     public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder) {
         return sqlBuilder.toSQL(getTableTokens(tableUnit), shardingRule);
     }
-    
-    /**
-     * Generate SQL string.
-     *
-     * @param cartesianTableReference cartesian table reference
-     * @param sqlBuilder SQL builder
-     * @return SQL unit
-     */
-    public SQLUnit generateSQL(final CartesianTableReference cartesianTableReference, final SQLBuilder sqlBuilder) {
-        return sqlBuilder.toSQL(getTableTokens(cartesianTableReference), shardingRule);
-    }
-    
-    private Map<String, String> getTableTokens(final TableUnits tableUnits) {
-        Map<String, String> result = new HashMap<>();
-        for (TableUnit each : tableUnits.getTableUnits()) {
-            String logicTableName = each.getLogicTableName().toLowerCase();
-            result.put(logicTableName, each.getActualTableName());
-        }
-        return result;
-    }
-    
+   
     private Map<String, String> getTableTokens(final TableUnit tableUnit) {
-        String logicTableName = tableUnit.getLogicTableName().toLowerCase();
         Map<String, String> result = new HashMap<>();
-        result.put(logicTableName, tableUnit.getActualTableName());
-        Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
-        if (bindingTableRule.isPresent()) {
-            result.putAll(getBindingTableTokens(tableUnit, bindingTableRule.get()));
-        }
-        return result;
-    }
-    
-    private Map<String, String> getTableTokens(final CartesianTableReference cartesianTableReference) {
-        Map<String, String> result = new HashMap<>();
-        for (TableUnit each : cartesianTableReference.getTableUnits()) {
-            String logicTableName = each.getLogicTableName().toLowerCase();
-            result.put(logicTableName, each.getActualTableName());
+        for (RoutingTable routingTable : tableUnit.getRoutingTables()) {
+            String logicTableName = routingTable.getLogicTableName().toLowerCase();
+            result.put(logicTableName, routingTable.getActualTableName());
             Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
             if (bindingTableRule.isPresent()) {
-                result.putAll(getBindingTableTokens(each, bindingTableRule.get()));
+                result.putAll(getBindingTableTokens(tableUnit.getDataSourceName(), routingTable, bindingTableRule.get()));
             }
         }
         return result;
     }
     
-    private Map<String, String> getBindingTableTokens(final TableUnit tableUnit, final BindingTableRule bindingTableRule) {
+    private Map<String, String> getBindingTableTokens(final String dataSourceName, final RoutingTable routingTable, final BindingTableRule bindingTableRule) {
         Map<String, String> result = new HashMap<>();
         for (String eachTable : sqlStatement.getTables().getTableNames()) {
             String tableName = eachTable.toLowerCase();
-            if (!tableName.equals(tableUnit.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
-                result.put(tableName, bindingTableRule.getBindingActualTable(tableUnit.getDataSourceName(), tableName, tableUnit.getActualTableName()));
+            if (!tableName.equals(routingTable.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
+                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, routingTable.getActualTableName()));
             }
         }
         return result;

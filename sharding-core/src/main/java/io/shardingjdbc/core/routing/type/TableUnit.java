@@ -17,15 +17,22 @@
 
 package io.shardingjdbc.core.routing.type;
 
+import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Route table unit.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
@@ -35,7 +42,54 @@ public final class TableUnit {
     
     private final String dataSourceName;
     
-    private final String logicTableName;
+    private final List<RoutingTable> routingTables = new LinkedList<>();
     
-    private final String actualTableName;
+    /**
+     * Find routing table via data source name and actual table name.
+     *
+     * @param dataSourceName data source name
+     * @param actualTableName actual table name
+     * @return routing table
+     */
+    public Optional<RoutingTable> findRoutingTable(final String dataSourceName, final String actualTableName) {
+        for (RoutingTable each : routingTables) {
+            if (dataSourceName.equalsIgnoreCase(this.dataSourceName) && each.getActualTableName().equalsIgnoreCase(actualTableName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    /**
+     * Get actual tables' names via data source name.
+     *
+     * @param dataSourceName data source name
+     * @param logicTableName logic table name
+     * @return  actual tables' names
+     */
+    public Set<String> getActualTableNames(final String dataSourceName, final String logicTableName) {
+        Set<String> result = new HashSet<>(routingTables.size(), 1);
+        for (RoutingTable each : routingTables) {
+            if (dataSourceName.equalsIgnoreCase(this.dataSourceName) && each.getLogicTableName().equalsIgnoreCase(logicTableName)) {
+                result.add(each.getActualTableName());
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get logic tables' names via data source name.
+     *
+     * @param dataSourceName data source name
+     * @return  logic tables' names
+     */
+    public Set<String> getLogicTableNames(final String dataSourceName) {
+        Set<String> result = new HashSet<>(routingTables.size(), 1);
+        for (RoutingTable each : routingTables) {
+            if (dataSourceName.equalsIgnoreCase(this.dataSourceName)) {
+                result.add(each.getLogicTableName());
+            }
+        }
+        return result;
+    }
 }
