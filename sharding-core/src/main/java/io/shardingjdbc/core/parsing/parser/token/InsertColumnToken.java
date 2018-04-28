@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.core.parsing.parser.token;
 
-import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -30,9 +29,9 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class SymbolToken implements SQLToken {
+public final class InsertColumnToken implements SQLToken {
     
     private final int beginPosition;
     
-    private final Symbol symbol;
+    private final String columnName;
 }

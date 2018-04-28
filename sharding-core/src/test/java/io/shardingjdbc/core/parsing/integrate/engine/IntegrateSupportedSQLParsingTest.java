@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -46,17 +45,8 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        Collection<Object[]> result = sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
-        Collection<Object[]> toRemovedItems = new ArrayList<>();
-        for (Object[] each : result) {
-            if (each[0].equals("assertInsertWithoutColumnsWithAllPlaceholders") || each[0].equals("assertInsertWithoutColumnsWithPartialPlaceholder") || each[0].equals("assertInsertWithoutColumnsWithGenerateKeyColumn") || each[0].equals("assertInsertWithoutColumnsWithoutGenerateKeyColumn")) {
-                toRemovedItems.add(each);
-            }
-        }
-        result.removeAll(toRemovedItems);
-        return result;
+        return sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
     }
-    
     
     @Test
     public void assertSupportedSQL() {
