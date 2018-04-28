@@ -23,7 +23,6 @@ import io.shardingjdbc.core.common.env.DatabaseEnvironment;
 import io.shardingjdbc.core.common.env.ShardingJdbcDatabaseTester;
 import io.shardingjdbc.core.common.env.ShardingTestStrategy;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.jaxb.SQLAssertData;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
@@ -240,18 +239,21 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         } else {
             sqlAssertHelper.executeWithStatement(isExecute, abstractDataSourceAdapter, getParameters(data));
         }
-        try (Connection conn = abstractDataSourceAdapter instanceof MasterSlaveDataSource ? abstractDataSourceAdapter.getConnection() 
-                : ((ShardingDataSource) abstractDataSourceAdapter).getConnection().getConnection(getDataSourceName(data.getExpected()), getSqlType())) {
+        String dataSourceName = getDataSourceName(data.getExpected());
+        if (dataSourceName.contains("ms")) {
+            dataSourceName = dataSourceName.replace("ms", "dataSource_master");
+        }
+        try (Connection conn = abstractDataSourceAdapter instanceof MasterSlaveDataSource ? ((MasterSlaveDataSource) abstractDataSourceAdapter).getConnection().getConnection(dataSourceName) 
+                : ((ShardingDataSource) abstractDataSourceAdapter).getConnection().getConnection(dataSourceName)) {
             sqlAssertHelper.assertResult(conn, expectedDataSetFile);
         }
     }
     
-    private SQLType getSqlType() {
-        return ShardingTestStrategy.masterslave == getShardingStrategy() ? SQLType.DML : SQLType.DQL;
-    }
-    
     // TODO 标准化文件名
     private String getDataSourceName(final String expected) {
+        if (ShardingTestStrategy.masterslaveonly == getShardingStrategy()) {
+            return "dataSource_master_only";
+        }
         String result = String.format(expected.split("/")[1].split(".xml")[0], getShardingStrategy().name());
         if (!result.contains("_")) {
             result = result + "_0";

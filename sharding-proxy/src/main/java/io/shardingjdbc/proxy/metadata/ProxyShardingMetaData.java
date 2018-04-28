@@ -20,6 +20,7 @@ package io.shardingjdbc.proxy.metadata;
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.DataNode;
+import io.shardingjdbc.core.rule.ShardingDataSourceNames;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -40,8 +41,8 @@ public final class ProxyShardingMetaData extends ShardingMetaData {
     private final Map<String, DataSource> dataSourceMap;
     
     @Override
-    protected Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode) throws SQLException {
-        return new ShardingMetaDataHandler(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName()).getColumnMetaDataList();
+    protected Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+        return new ShardingMetaDataHandler(dataSourceMap.get(shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName()).getColumnMetaDataList();
     }
 }
 

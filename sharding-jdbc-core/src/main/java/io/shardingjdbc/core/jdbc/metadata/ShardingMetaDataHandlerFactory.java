@@ -24,8 +24,8 @@ import io.shardingjdbc.core.jdbc.metadata.dialect.MySQLShardingMetaDataHandler;
 import io.shardingjdbc.core.jdbc.metadata.dialect.ShardingMetaDataHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 /**
  * Table metadata handler factory.
@@ -38,13 +38,12 @@ public final class ShardingMetaDataHandlerFactory {
     /**
      * To generate table metadata handler by data type.
      *
-     * @param dataSource data source.
-     * @param actualTableName actual table name.
-     * @param databaseType database type.
-     * @return abstract table metadata handler.
-     * @throws SQLException SQL exception.
+     * @param dataSource data source
+     * @param actualTableName actual table name
+     * @param databaseType database type
+     * @return sharding meta data handler
      */
-    public static ShardingMetaDataHandler newInstance(final DataSource dataSource, final String actualTableName, final DatabaseType databaseType) throws SQLException {
+    public static ShardingMetaDataHandler newInstance(final DataSource dataSource, final String actualTableName, final DatabaseType databaseType) {
         switch (databaseType) {
             case MySQL:
                 return new MySQLShardingMetaDataHandler(dataSource, actualTableName);

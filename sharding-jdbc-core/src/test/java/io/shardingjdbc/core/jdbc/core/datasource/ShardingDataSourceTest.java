@@ -22,7 +22,6 @@ import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
 import io.shardingjdbc.core.executor.ExecutorEngine;
 import io.shardingjdbc.core.rule.ShardingRule;
@@ -65,7 +64,7 @@ public final class ShardingDataSourceTest {
     
     @Test(expected = IllegalStateException.class)
     public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferentForMasterSlave() throws SQLException {
-        final DataSource dataSource1 = mockDataSource("MySQL");
+        DataSource dataSource1 = mockDataSource("MySQL");
         DataSource masterDataSource = mockDataSource("H2");
         DataSource slaveDataSource = mockDataSource("H2");
         Map<String, DataSource> masterSlaveDataSourceMap = new HashMap<>(2, 1);
@@ -94,21 +93,16 @@ public final class ShardingDataSourceTest {
     
     @Test
     public void assertGetDatabaseProductNameForMasterSlave() throws SQLException {
-        final DataSource dataSource1 = mockDataSource("H2");
+        DataSource dataSource1 = mockDataSource("H2");
         DataSource masterDataSource = mockDataSource("H2");
         DataSource slaveDataSource = mockDataSource("H2");
-        Map<String, DataSource> slaveDataSourceMap = new HashMap<>(2, 1);
-        slaveDataSourceMap.put("masterDataSource", masterDataSource);
-        slaveDataSourceMap.put("slaveDataSource", slaveDataSource);
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(
-                slaveDataSourceMap, new MasterSlaveRuleConfiguration("ds", "masterDataSource", Collections.singletonList("slaveDataSource")), Collections.<String, Object>emptyMap());
         DataSource dataSource3 = mockDataSource("H2");
-        Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(4, 1);
         dataSourceMap.put("ds1", dataSource1);
-        dataSourceMap.put("ds2", dataSource2);
+        dataSourceMap.put("masterDataSource", masterDataSource);
+        dataSourceMap.put("slaveDataSource", slaveDataSource);
         dataSourceMap.put("ds3", dataSource3);
-        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(),
-                dataSource2.getDataSourceMap().get("masterDataSource").getConnection(), dataSource2.getDataSourceMap().get("slaveDataSource").getConnection());
+        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), masterDataSource.getConnection(), slaveDataSource.getConnection());
     }
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
@@ -116,7 +110,6 @@ public final class ShardingDataSourceTest {
             createShardingDataSource(dataSourceMap).getDatabaseType();
         } finally {
             for (Connection each : connections) {
-                System.out.println(each.getMetaData());
                 verify(each, atLeast(1)).close();
             }
         }
@@ -141,7 +134,7 @@ public final class ShardingDataSourceTest {
         DataSource dataSource = mockDataSource("H2");
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
-        assertThat(createShardingDataSource(dataSourceMap).getConnection().getConnection("ds", SQLType.DQL), is(dataSource.getConnection()));
+        assertThat(createShardingDataSource(dataSourceMap).getConnection().getConnection("ds"), is(dataSource.getConnection()));
     }
     
     @Test

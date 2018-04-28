@@ -19,6 +19,7 @@ package io.shardingjdbc.core.metadata;
 
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.rule.DataNode;
+import io.shardingjdbc.core.rule.ShardingDataSourceNames;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 import lombok.Getter;
@@ -47,14 +48,14 @@ public abstract class ShardingMetaData {
     public void init(final ShardingRule shardingRule) throws SQLException {
         tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
-            tableMetaDataMap.put(each.getLogicTable(), getTableMetaData(each.getLogicTable(), each.getActualDataNodes()));
+            tableMetaDataMap.put(each.getLogicTable(), getTableMetaData(each.getLogicTable(), each.getActualDataNodes(), shardingRule.getShardingDataSourceNames()));
         }
     }
     
-    private TableMetaData getTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes) throws SQLException {
+    private TableMetaData getTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
         Collection<ColumnMetaData> result = null;
         for (DataNode each : actualDataNodes) {
-            Collection<ColumnMetaData> columnMetaDataList = getColumnMetaDataList(each);
+            Collection<ColumnMetaData> columnMetaDataList = getColumnMetaDataList(each, shardingDataSourceNames);
             if (null == result) {
                 result = columnMetaDataList;
             }
@@ -65,7 +66,7 @@ public abstract class ShardingMetaData {
         return new TableMetaData(result);
     }
     
-    protected abstract Collection<ColumnMetaData> getColumnMetaDataList(DataNode dataNode) throws SQLException;
+    protected abstract Collection<ColumnMetaData> getColumnMetaDataList(DataNode dataNode, ShardingDataSourceNames shardingDataSourceNames) throws SQLException;
 }
 
 

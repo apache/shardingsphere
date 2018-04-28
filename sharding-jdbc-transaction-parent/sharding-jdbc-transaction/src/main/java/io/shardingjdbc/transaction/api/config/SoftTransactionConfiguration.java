@@ -17,13 +17,12 @@
 
 package io.shardingjdbc.transaction.api.config;
 
+import com.google.common.base.Optional;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.transaction.constants.TransactionLogDataSourceType;
 import io.shardingjdbc.transaction.datasource.TransactionLogDataSource;
 import io.shardingjdbc.transaction.datasource.impl.MemoryTransactionLogDataSource;
 import io.shardingjdbc.transaction.datasource.impl.RdbTransactionLogDataSource;
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +79,7 @@ public class SoftTransactionConfiguration {
         if (!(targetDataSource instanceof ShardingDataSource)) {
             return targetDataSource.getConnection();
         }
-        return ((ShardingDataSource) targetDataSource).getConnection().getConnection(dataSourceName, SQLType.DQL);
+        return ((ShardingDataSource) targetDataSource).getConnection().getConnection(dataSourceName);
     }
 
     /**

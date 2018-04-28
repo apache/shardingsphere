@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.router;
+package io.shardingjdbc.core.routing.router.sharding;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -57,14 +57,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQL router with parse.
+ * Sharding router with parse.
  * 
  * @author zhangiang
  * @author maxiaoguang
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class ParsingSQLRouter implements SQLRouter {
+public final class ParsingSQLRouter implements ShardingRouter {
     
     private final ShardingRule shardingRule;
     

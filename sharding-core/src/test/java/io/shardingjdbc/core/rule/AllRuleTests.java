@@ -22,6 +22,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        ShardingDataSourceNamesTest.class, 
         ShardingRuleTest.class, 
         TableRuleTest.class, 
         DataNodeTest.class, 

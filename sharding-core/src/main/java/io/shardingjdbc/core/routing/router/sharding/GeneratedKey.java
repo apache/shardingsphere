@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.router;
+package io.shardingjdbc.core.routing.router.sharding;
 
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;

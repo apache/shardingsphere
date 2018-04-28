@@ -20,8 +20,9 @@ package io.shardingjdbc.core.routing;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
-import io.shardingjdbc.core.routing.router.SQLRouter;
-import io.shardingjdbc.core.routing.router.SQLRouterFactory;
+import io.shardingjdbc.core.routing.router.masterslave.ShardingMasterSlaveRouter;
+import io.shardingjdbc.core.routing.router.sharding.ShardingRouter;
+import io.shardingjdbc.core.routing.router.sharding.ShardingRouterFactory;
 import io.shardingjdbc.core.rule.ShardingRule;
 
 import java.util.List;
@@ -36,13 +37,16 @@ public final class PreparedStatementRoutingEngine {
     
     private final String logicSQL;
     
-    private final SQLRouter sqlRouter;
+    private final ShardingRouter shardingRouter;
+    
+    private final ShardingMasterSlaveRouter masterSlaveRouter;
     
     private SQLStatement sqlStatement;
     
     public PreparedStatementRoutingEngine(final String logicSQL, final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final boolean showSQL) {
         this.logicSQL = logicSQL;
-        sqlRouter = SQLRouterFactory.createSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL);
+        shardingRouter = ShardingRouterFactory.createSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL);
+        masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
     }
     
     /**
@@ -55,8 +59,8 @@ public final class PreparedStatementRoutingEngine {
      */
     public SQLRouteResult route(final List<Object> parameters) {
         if (null == sqlStatement) {
-            sqlStatement = sqlRouter.parse(logicSQL, true);
+            sqlStatement = shardingRouter.parse(logicSQL, true);
         }
-        return sqlRouter.route(logicSQL, parameters, sqlStatement);
+        return masterSlaveRouter.route(shardingRouter.route(logicSQL, parameters, sqlStatement));
     }
 }

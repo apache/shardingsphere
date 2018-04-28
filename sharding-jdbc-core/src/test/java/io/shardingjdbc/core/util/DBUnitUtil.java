@@ -36,6 +36,7 @@ public final class DBUnitUtil {
     
     /**
      * Get connection.
+     * 
      * @param dbEnv Database environment
      * @param connection connection
      * @return database connection

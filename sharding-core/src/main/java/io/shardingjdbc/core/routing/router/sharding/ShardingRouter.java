@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.router;
+package io.shardingjdbc.core.routing.router.sharding;
 
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.SQLRouteResult;
@@ -23,11 +23,11 @@ import io.shardingjdbc.core.routing.SQLRouteResult;
 import java.util.List;
 
 /**
- * SQL router interface.
+ * Sharding router.
  * 
  * @author zhangiang
  */
-public interface SQLRouter {
+public interface ShardingRouter {
     
     /**
      * Parse SQL.

@@ -17,9 +17,12 @@
 
 package io.shardingjdbc.core.jdbc.adapter;
 
+import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import lombok.Getter;
+import io.shardingjdbc.core.routing.router.masterslave.MasterVisitedManager;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,7 +39,6 @@ import java.util.Map;
  */
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
-    @Getter
     private final Map<String, Connection> cachedConnections = new HashMap<>();
     
     private boolean autoCommit = true;
@@ -46,6 +48,31 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private boolean closed;
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
+    
+    /**
+     * Get database connection.
+     *
+     * @param dataSourceName data source name
+     * @return database connection
+     * @throws SQLException SQL exception
+     */
+    public final Connection getConnection(final String dataSourceName) throws SQLException {
+        if (cachedConnections.containsKey(dataSourceName)) {
+            return cachedConnections.get(dataSourceName);
+        }
+        DataSource dataSource = getDataSourceMap().get(dataSourceName);
+        Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
+        Connection result = dataSource.getConnection();
+        cachedConnections.put(dataSourceName, result);
+        replayMethodsInvocation(result);
+        return result;
+    }
+    
+    protected abstract Map<String, DataSource> getDataSourceMap();
+    
+    protected void removeCache(final Connection connection) {
+        cachedConnections.values().remove(connection);
+    }
     
     @Override
     public final boolean getAutoCommit() {
@@ -90,6 +117,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public void close() throws SQLException {
         closed = true;
+        HintManagerHolder.clear();
+        MasterVisitedManager.clear();
         Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {

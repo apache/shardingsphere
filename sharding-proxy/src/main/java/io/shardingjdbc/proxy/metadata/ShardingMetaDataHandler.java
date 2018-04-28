@@ -17,9 +17,9 @@
 
 package io.shardingjdbc.proxy.metadata;
 
-import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,18 +35,13 @@ import java.util.List;
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
 public final class ShardingMetaDataHandler {
     
     private final DataSource dataSource;
     
     private final String actualTableName;
-    
-    public ShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
-        this.dataSource = dataSource instanceof MasterSlaveDataSource
-            ? ((MasterSlaveDataSource) dataSource).getMasterDataSource().values().iterator().next() : dataSource;
-        this.actualTableName = actualTableName;
-    }
     
     /**
      * Get column meta data list.

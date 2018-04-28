@@ -26,7 +26,7 @@ import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.OrCondition;
 import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLPlaceholderExpression;
-import io.shardingjdbc.core.routing.router.GeneratedKey;
+import io.shardingjdbc.core.routing.router.sharding.GeneratedKey;
 import org.junit.Test;
 
 import java.util.Collections;

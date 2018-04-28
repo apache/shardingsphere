@@ -40,7 +40,7 @@ import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
 import io.shardingjdbc.core.routing.SQLUnit;
-import io.shardingjdbc.core.routing.router.GeneratedKey;
+import io.shardingjdbc.core.routing.router.sharding.GeneratedKey;
 import io.shardingjdbc.core.routing.type.RoutingTable;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.rule.BindingTableRule;
