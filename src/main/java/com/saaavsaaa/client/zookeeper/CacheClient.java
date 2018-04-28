@@ -13,7 +13,9 @@ import org.apache.zookeeper.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -21,10 +23,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by aaa
  * todo restructure the three clients to strategies
- *  延迟缓存 定时刷新，刷新时先判断更新根节点数据，写成功开始更新，更新后改回根数据
+ *  todo log
+ *  todo currentNodes
  */
 public final class CacheClient extends UsualClient {
     private final ScheduledExecutorService cacheService = Executors.newSingleThreadScheduledExecutor();
+    private final Map<String, String> currentNodes = new ConcurrentHashMap<>();
     PathTree pathTree = null;
     
     ZooKeeper reader;
@@ -40,7 +44,9 @@ public final class CacheClient extends UsualClient {
         cacheService.scheduleAtFixedRate(new ClientTask(this) {
             @Override
             public void run(Client client) throws KeeperException, InterruptedException {
-                loadCache(client);
+                if (PathStatus.RELEASE == pathTree.getStatus()) {
+                    loadCache(client);
+                }
             }
         }, Properties.THREAD_INITIAL_DELAY, Properties.THREAD_PERIOD, TimeUnit.MILLISECONDS);
     }
@@ -62,6 +68,7 @@ public final class CacheClient extends UsualClient {
         
         if (canBegin){
             this.loadingCache(client);
+            currentNodes.clear();
             this.deleteOnlyCurrent(Constants.CHANGING_KEY);
         }
     }
@@ -72,7 +79,8 @@ public final class CacheClient extends UsualClient {
         List<String> children = client.getChildren(rootNode);
         children.remove(PathUtil.getRealPath(rootNode, Constants.CHANGING_KEY));
         this.attechIntoNode(children, newTree.getRootNode(), client);
-        pathTree.setStatus(PathStatus.RELEASE);
+        newTree.setStatus(PathStatus.RELEASE);
+        pathTree = newTree;
     }
     
     private void attechIntoNode(final List<String> children, final PathNode pathNode, final Client client) throws KeeperException, InterruptedException {
@@ -80,7 +88,7 @@ public final class CacheClient extends UsualClient {
             return;
         }
         for (String child : children) {
-            PathNode current = new PathNode(PathUtil.getRealPath(pathNode.getKey(), child));
+            PathNode current = new PathNode(PathUtil.getRealPath(pathNode.getKey(), child), super.getData(child));
             pathNode.attechChild(current);
             List<String> subs = client.getChildren(child);
             this.attechIntoNode(subs, current, client);
@@ -170,9 +178,10 @@ public final class CacheClient extends UsualClient {
     
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
+        String path = PathUtil.getRealPath(rootNode, key);
         if (cacheReady()){
-//            return
+            return pathTree.getValue(path);
         }
-        return zooKeeper.getData(PathUtil.getRealPath(rootNode, key), watched, null);
+        return zooKeeper.getData(path, watched, null);
     }
 }

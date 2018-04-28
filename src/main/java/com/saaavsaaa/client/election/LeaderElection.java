@@ -23,6 +23,7 @@ public class LeaderElection {
             client.createCurrentOnly(Constants.CHANGING_KEY, Property.INSTANCE.getClientId(), CreateMode.EPHEMERAL);
             success = true;
         } catch (KeeperException.NodeExistsException e) {
+            // TODO: or changing_key node value == current client id
             client.checkExists(Constants.CHANGING_KEY, WatcherCreator.deleteWatcher(PathUtil.getRealPath(path, Constants.CHANGING_KEY), listener));
         }
         return success;
