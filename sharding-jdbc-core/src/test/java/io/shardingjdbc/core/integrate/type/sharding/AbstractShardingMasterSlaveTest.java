@@ -31,6 +31,7 @@ import io.shardingjdbc.core.integrate.fixture.RangeModuloDatabaseShardingAlgorit
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.After;
 
@@ -165,6 +166,6 @@ public abstract class AbstractShardingMasterSlaveTest extends AbstractSQLAssertT
     @After
     public final void clearFlag() {
         HintManagerHolder.clear();
-        MasterSlaveDataSource.resetDMLFlag();
+        MasterVisitedManager.clear();
     }
 }

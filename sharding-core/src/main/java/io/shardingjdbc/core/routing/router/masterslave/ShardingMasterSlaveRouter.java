@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.router;
+package io.shardingjdbc.core.routing.router.masterslave;
 
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
@@ -29,20 +29,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Master slave router interface.
+ * Sharding with master-slave router interface.
  * 
  * @author zhangiang
  */
 @RequiredArgsConstructor
 public final class ShardingMasterSlaveRouter {
-    
-    private static final ThreadLocal<Boolean> DML_FLAG = new ThreadLocal<Boolean>() {
-        
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
     
     private final Collection<MasterSlaveRule> masterSlaveRules;
     
@@ -68,7 +60,7 @@ public final class ShardingMasterSlaveRouter {
             }
             toBeRemoved.add(each);
             if (isMasterRoute(sqlRouteResult.getSqlStatement().getType())) {
-                DML_FLAG.set(true);
+                MasterVisitedManager.setMasterVisited();
                 toBeAdded.add(new SQLExecutionUnit(masterSlaveRule.getMasterDataSourceName(), each.getSqlUnit()));
             } else {
                 toBeAdded.add(new SQLExecutionUnit(masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
@@ -80,13 +72,6 @@ public final class ShardingMasterSlaveRouter {
     }
     
     private boolean isMasterRoute(final SQLType sqlType) {
-        return SQLType.DQL != sqlType || DML_FLAG.get() || HintManagerHolder.isMasterRouteOnly();
-    }
-    
-    /**
-     * reset DML flag.
-     */
-    public static void resetDMLFlag() {
-        DML_FLAG.remove();
+        return SQLType.DQL != sqlType || MasterVisitedManager.isMasterVisited() || HintManagerHolder.isMasterRouteOnly();
     }
 }

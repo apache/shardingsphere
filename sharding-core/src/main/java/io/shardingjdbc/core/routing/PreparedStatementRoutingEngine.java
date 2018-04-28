@@ -20,7 +20,7 @@ package io.shardingjdbc.core.routing;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
-import io.shardingjdbc.core.routing.router.ShardingMasterSlaveRouter;
+import io.shardingjdbc.core.routing.router.masterslave.ShardingMasterSlaveRouter;
 import io.shardingjdbc.core.routing.router.SQLRouter;
 import io.shardingjdbc.core.routing.router.SQLRouterFactory;
 import io.shardingjdbc.core.rule.ShardingRule;

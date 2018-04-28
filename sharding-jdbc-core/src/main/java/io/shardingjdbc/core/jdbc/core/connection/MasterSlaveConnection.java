@@ -23,7 +23,7 @@ import io.shardingjdbc.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.statement.MasterSlavePreparedStatement;
 import io.shardingjdbc.core.jdbc.core.statement.MasterSlaveStatement;
-import io.shardingjdbc.core.routing.router.MasterSlaveRouter;
+import io.shardingjdbc.core.routing.router.masterslave.MasterSlaveRouter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;

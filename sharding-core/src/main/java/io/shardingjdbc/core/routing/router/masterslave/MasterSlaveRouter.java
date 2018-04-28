@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.router;
+package io.shardingjdbc.core.routing.router.masterslave;
 
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
@@ -34,14 +34,6 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class MasterSlaveRouter {
     
-    private static final ThreadLocal<Boolean> DML_FLAG = new ThreadLocal<Boolean>() {
-        
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
-    
     private final MasterSlaveRule masterSlaveRule;
     
     /**
@@ -53,7 +45,7 @@ public final class MasterSlaveRouter {
     // TODO for multiple masters may return more than one data source
     public Collection<String> route(final SQLType sqlType) {
         if (isMasterRoute(sqlType)) {
-            DML_FLAG.set(true);
+            MasterVisitedManager.setMasterVisited();
             return Collections.singletonList(masterSlaveRule.getMasterDataSourceName());
         } else {
             return Collections.singletonList(masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
@@ -62,13 +54,6 @@ public final class MasterSlaveRouter {
     }
     
     private boolean isMasterRoute(final SQLType sqlType) {
-        return SQLType.DQL != sqlType || DML_FLAG.get() || HintManagerHolder.isMasterRouteOnly();
-    }
-    
-    /**
-     * reset DML flag.
-     */
-    public static void resetDMLFlag() {
-        DML_FLAG.remove();
+        return SQLType.DQL != sqlType || MasterVisitedManager.isMasterVisited() || HintManagerHolder.isMasterRouteOnly();
     }
 }
