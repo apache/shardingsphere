@@ -18,14 +18,13 @@
 package io.shardingjdbc.core.jdbc.core.connection;
 
 import com.google.common.base.Preconditions;
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.jdbc.core.datasource.NamedDataSource;
 import io.shardingjdbc.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingjdbc.core.jdbc.core.statement.ShardingStatement;
+import io.shardingjdbc.core.routing.router.masterslave.MasterVisitedManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -88,29 +87,17 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * Get database connection via data source name.
      * 
      * @param dataSourceName data source name
-     * @param sqlType SQL type
      * @return all database connections via data source name
      * @throws SQLException SQL exception
      */
-    public Connection getConnection(final String dataSourceName, final SQLType sqlType) throws SQLException {
+    public Connection getConnection(final String dataSourceName) throws SQLException {
         if (getCachedConnections().containsKey(dataSourceName)) {
             return getCachedConnections().get(dataSourceName);
         }
         DataSource dataSource = shardingContext.getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
-        String realDataSourceName;
-        if (dataSource instanceof MasterSlaveDataSource) {
-            NamedDataSource namedDataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlType);
-            realDataSourceName = namedDataSource.getName();
-            if (getCachedConnections().containsKey(realDataSourceName)) {
-                return getCachedConnections().get(realDataSourceName);
-            }
-            dataSource = namedDataSource.getDataSource();
-        } else {
-            realDataSourceName = dataSourceName;
-        }
         Connection result = dataSource.getConnection();
-        getCachedConnections().put(realDataSourceName, result);
+        getCachedConnections().put(dataSourceName, result);
         replayMethodsInvocation(result);
         return result;
     }
@@ -130,7 +117,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return getConnection(shardingContext.getDataSourceMap().keySet().iterator().next(), SQLType.DQL).getMetaData();
+        return getConnection(shardingContext.getDataSourceMap().keySet().iterator().next()).getMetaData();
     }
     
     @Override
@@ -181,7 +168,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Override
     public void close() throws SQLException {
         HintManagerHolder.clear();
-        MasterSlaveDataSource.resetDMLFlag();
+        MasterVisitedManager.clear();
         super.close();
     }
 }

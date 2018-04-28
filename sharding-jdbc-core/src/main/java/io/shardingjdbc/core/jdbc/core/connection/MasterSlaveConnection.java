@@ -24,6 +24,7 @@ import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.statement.MasterSlavePreparedStatement;
 import io.shardingjdbc.core.jdbc.core.statement.MasterSlaveStatement;
 import io.shardingjdbc.core.routing.router.masterslave.MasterSlaveRouter;
+import io.shardingjdbc.core.routing.router.masterslave.MasterVisitedManager;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
@@ -137,7 +138,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     @Override
     public void close() throws SQLException {
         HintManagerHolder.clear();
-        MasterSlaveDataSource.resetDMLFlag();
+        MasterVisitedManager.clear();
         super.close();
     }
 }

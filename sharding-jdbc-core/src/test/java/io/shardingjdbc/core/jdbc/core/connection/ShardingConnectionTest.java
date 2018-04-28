@@ -20,7 +20,6 @@ package io.shardingjdbc.core.jdbc.core.connection;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.fixture.TestDataSource;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
@@ -85,40 +84,19 @@ public final class ShardingConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionSelectThenUpdate() throws Exception {
-        assertNotSame(connection.getConnection(DS_NAME, SQLType.DQL), connection.getConnection(DS_NAME, SQLType.DML));
+    public void assertGetConnectionFromCache() throws Exception {
+        assertSame(connection.getConnection(DS_NAME), connection.getConnection(DS_NAME));
     }
     
-    @Test
-    public void assertGetConnectionUpdateThenSelect() throws Exception {
-        assertSame(connection.getConnection(DS_NAME, SQLType.DML), connection.getConnection(DS_NAME, SQLType.DQL));
-    }
-    
-    @Test
-    public void assertGetConnectionBothSelect() throws Exception {
-        assertSame(connection.getConnection(DS_NAME, SQLType.DQL), connection.getConnection(DS_NAME, SQLType.DQL));
-    }
-    
-    @Test
-    public void assertGetConnectionBothUpdate() throws Exception {
-        assertSame(connection.getConnection(DS_NAME, SQLType.DML), connection.getConnection(DS_NAME, SQLType.DML));
-    }
-    
-    @Test
-    public void assertGetConnectionMixed() throws Exception {
-        Connection slaveConnection = connection.getConnection(DS_NAME, SQLType.DQL);
-        Connection masterConnection = connection.getConnection(DS_NAME, SQLType.DML);
-        assertNotSame(slaveConnection, masterConnection);
-        assertNotSame(slaveConnection, connection.getConnection(DS_NAME, SQLType.DQL));
-        assertNotSame(slaveConnection, connection.getConnection(DS_NAME, SQLType.DML));
-        assertSame(masterConnection, connection.getConnection(DS_NAME, SQLType.DQL));
-        assertSame(masterConnection, connection.getConnection(DS_NAME, SQLType.DML));
+    @Test(expected = IllegalStateException.class)
+    public void assertGetConnectionFailure() throws Exception {
+        connection.getConnection("not_exist");
     }
     
     @Test
     public void assertRelease() throws Exception {
-        Connection conn = connection.getConnection(DS_NAME, SQLType.DML);
+        Connection conn = connection.getConnection(DS_NAME);
         connection.release(conn);
-        assertNotSame(conn, connection.getConnection(DS_NAME, SQLType.DML));
+        assertNotSame(conn, connection.getConnection(DS_NAME));
     }
 }

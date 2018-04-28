@@ -68,6 +68,7 @@ public final class ShardingRule {
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkNotNull(dataSourceNames, "Data sources cannot be null.");
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
+        processDataSourceNamesWithMasterSlave(shardingRuleConfig.getMasterSlaveRuleConfigs(), dataSourceNames);
         this.dataSourceNames = new LinkedHashSet<>(dataSourceNames);
         defaultDataSourceName = getDefaultDataSourceName(dataSourceNames, shardingRuleConfig.getDefaultDataSourceName());
         tableRules = new LinkedList<>();
@@ -88,6 +89,27 @@ public final class ShardingRule {
         defaultKeyGenerator = null == shardingRuleConfig.getDefaultKeyGenerator() ? new DefaultKeyGenerator() : shardingRuleConfig.getDefaultKeyGenerator();
         for (MasterSlaveRuleConfiguration each : shardingRuleConfig.getMasterSlaveRuleConfigs()) {
             masterSlaveRules.add(new MasterSlaveRule(each));
+        }
+    }
+    
+    private Collection<String> processDataSourceNamesWithMasterSlave(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs, final Collection<String> dataSourceNames) {
+        Collection<String> result = new LinkedHashSet<>(dataSourceNames);
+        for (MasterSlaveRuleConfiguration each : masterSlaveRuleConfigs) {
+            processDataSourceNamesWithMasterSlave(each, result);
+        }
+        return result;
+    }
+    
+    private void processDataSourceNamesWithMasterSlave(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Collection<String> dataSourceNames) {
+        Collection<String> toBeRemoved = new LinkedHashSet<>(masterSlaveRuleConfig.getSlaveDataSourceNames().size(), 1);
+        for (String each : dataSourceNames) {
+            if (masterSlaveRuleConfig.getMasterDataSourceName().equals(each) || masterSlaveRuleConfig.getSlaveDataSourceNames().contains(each)) {
+                toBeRemoved.add(each);
+            }
+        }
+        if (!toBeRemoved.isEmpty()) {
+            dataSourceNames.removeAll(toBeRemoved);
+            dataSourceNames.add(masterSlaveRuleConfig.getName());
         }
     }
     

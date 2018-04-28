@@ -99,13 +99,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     /**
-     * reset DML flag.
-     */
-    public static void resetDMLFlag() {
-        DML_FLAG.remove();
-    }
-    
-    /**
      * Get data source from master-slave data source.
      *
      * @param sqlType SQL type

@@ -19,7 +19,6 @@ package io.shardingjdbc.transaction.base;
 
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
@@ -86,7 +85,7 @@ public abstract class AbstractSoftTransactionIntegrationTest {
             + "`id` int NOT NULL, "
             + "PRIMARY KEY (`id`));";
         try (
-                Connection conn = shardingDataSource.getConnection().getConnection("db_trans", SQLType.DQL);
+                Connection conn = shardingDataSource.getConnection().getConnection("db_trans");
                 PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {
