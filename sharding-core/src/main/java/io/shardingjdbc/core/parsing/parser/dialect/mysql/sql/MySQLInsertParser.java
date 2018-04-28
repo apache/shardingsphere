@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.dialect.mysql.sql;
 
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.dialect.mysql.clause.facade.MySQLInsertClauseParserFacade;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.AbstractInsertParser;
@@ -26,10 +27,11 @@ import io.shardingjdbc.core.rule.ShardingRule;
  * Insert parser for MySQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class MySQLInsertParser extends AbstractInsertParser {
     
-    public MySQLInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new MySQLInsertClauseParserFacade(shardingRule, lexerEngine));
+    public MySQLInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
+        super(shardingRule, shardingMetaData, lexerEngine, new MySQLInsertClauseParserFacade(shardingRule, lexerEngine));
     }
 }

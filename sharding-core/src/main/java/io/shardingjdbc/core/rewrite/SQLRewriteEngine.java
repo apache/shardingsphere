@@ -34,6 +34,7 @@ import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
 import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
 import io.shardingjdbc.core.parsing.parser.token.SQLToken;
 import io.shardingjdbc.core.parsing.parser.token.SchemaToken;
+import io.shardingjdbc.core.parsing.parser.token.SymbolToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
@@ -131,6 +132,8 @@ public final class SQLRewriteEngine {
                 appendLimitOffsetToken(result, (OffsetToken) each, count, sqlTokens, isRewriteLimit);
             } else if (each instanceof OrderByToken) {
                 appendOrderByToken(result, count, sqlTokens);
+            } else if (each instanceof SymbolToken) {
+                appendSymbolToken(result, (SymbolToken) each, count, sqlTokens);
             }
             count++;
         }
@@ -171,12 +174,15 @@ public final class SQLRewriteEngine {
     }
     
     private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count, final List<SQLToken> sqlTokens) {
-        for (String item : itemsToken.getItems()) {
-            sqlBuilder.appendLiterals(", ");
-            sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(item, databaseType));
+        for (int i = 0; i < itemsToken.getItems().size(); i++) {
+            if (itemsToken.isFirstOfItemsSpecial() && 0 == i) {
+                sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(itemsToken.getItems().get(i), databaseType));
+            } else {
+                sqlBuilder.appendLiterals(", ");
+                sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(itemsToken.getItems().get(i), databaseType));
+            }
         }
-        int beginPosition = itemsToken.getBeginPosition();
-        appendRest(sqlBuilder, count, sqlTokens, beginPosition);
+        appendRest(sqlBuilder, count, sqlTokens, itemsToken.getBeginPosition());
     }
     
     private void appendGenerateKeyToken(final SQLBuilder sqlBuilder, final GeneratedKeyToken generatedKeyToken, final int count, final List<SQLToken> sqlTokens) {
@@ -227,6 +233,11 @@ public final class SQLRewriteEngine {
         sqlBuilder.appendLiterals(orderByLiterals.toString());
         int beginPosition = ((SelectStatement) sqlStatement).getGroupByLastPosition();
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
+    }
+    
+    private void appendSymbolToken(final SQLBuilder sqlBuilder, final SymbolToken symbolToken, final int count, final List<SQLToken> sqlTokens) {
+        sqlBuilder.appendLiterals(symbolToken.getSymbol().getLiterals());
+        appendRest(sqlBuilder, count, sqlTokens, symbolToken.getBeginPosition());
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final List<SQLToken> sqlTokens, final int beginPosition) {

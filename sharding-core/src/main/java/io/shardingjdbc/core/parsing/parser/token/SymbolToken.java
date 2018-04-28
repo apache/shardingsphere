@@ -17,29 +17,22 @@
 
 package io.shardingjdbc.core.parsing.parser.token;
 
+import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Select items token.
+ * Symbol token.
  *
- * @author zhangliang
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class ItemsToken implements SQLToken {
+public final class SymbolToken implements SQLToken {
     
     private final int beginPosition;
     
-    @Setter
-    private boolean isFirstOfItemsSpecial;
-    
-    private final List<String> items = new LinkedList<>();
+    private final Symbol symbol;
 }

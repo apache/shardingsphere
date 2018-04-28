@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.dialect.postgresql.sql;
 
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.dialect.postgresql.clause.facade.PostgreSQLInsertClauseParserFacade;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.AbstractInsertParser;
@@ -26,10 +27,11 @@ import io.shardingjdbc.core.rule.ShardingRule;
  * Insert parser for PostgreSQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class PostgreSQLInsertParser extends AbstractInsertParser {
     
-    public PostgreSQLInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new PostgreSQLInsertClauseParserFacade(shardingRule, lexerEngine));
+    public PostgreSQLInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
+        super(shardingRule, shardingMetaData, lexerEngine, new PostgreSQLInsertClauseParserFacade(shardingRule, lexerEngine));
     }
 }

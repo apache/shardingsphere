@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.parsing.parser.sql.dml.insert;
 
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
@@ -35,6 +36,7 @@ import lombok.Getter;
  * Insert parser.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public abstract class AbstractInsertParser implements SQLParser {
     
@@ -42,12 +44,16 @@ public abstract class AbstractInsertParser implements SQLParser {
     private final ShardingRule shardingRule;
     
     @Getter(AccessLevel.PROTECTED)
+    private final ShardingMetaData shardingMetaData;
+    
+    @Getter(AccessLevel.PROTECTED)
     private final LexerEngine lexerEngine;
     
     private final AbstractInsertClauseParserFacade insertClauseParserFacade;
     
-    public AbstractInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final AbstractInsertClauseParserFacade insertClauseParserFacade) {
+    public AbstractInsertParser(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final LexerEngine lexerEngine, final AbstractInsertClauseParserFacade insertClauseParserFacade) {
         this.shardingRule = shardingRule;
+        this.shardingMetaData = shardingMetaData;
         this.lexerEngine = lexerEngine;
         this.insertClauseParserFacade = insertClauseParserFacade;
     }
@@ -57,11 +63,11 @@ public abstract class AbstractInsertParser implements SQLParser {
         lexerEngine.nextToken();
         InsertStatement result = new InsertStatement();
         insertClauseParserFacade.getInsertIntoClauseParser().parse(result);
-        insertClauseParserFacade.getInsertColumnsClauseParser().parse(result);
+        insertClauseParserFacade.getInsertColumnsClauseParser().parse(result, shardingMetaData);
         if (lexerEngine.equalAny(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot INSERT SELECT");
         }
-        insertClauseParserFacade.getInsertValuesClauseParser().parse(result);
+        insertClauseParserFacade.getInsertValuesClauseParser().parse(result, shardingMetaData);
         insertClauseParserFacade.getInsertSetClauseParser().parse(result);
         appendGenerateKeyToken(result);
         return result;
@@ -72,10 +78,14 @@ public abstract class AbstractInsertParser implements SQLParser {
         Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
         if (!generateKeyColumn.isPresent() || null != insertStatement.getGeneratedKeyCondition()) {
             return;
-        } 
-        ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
-        columnsToken.getItems().add(generateKeyColumn.get().getName());
-        insertStatement.getSqlTokens().add(columnsToken);
+        }
+        if (!insertStatement.getItemsTokens().isEmpty()) {
+            insertStatement.getItemsTokens().get(0).getItems().add(generateKeyColumn.get().getName());
+        } else {
+            ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
+            columnsToken.getItems().add(generateKeyColumn.get().getName());
+            insertStatement.getSqlTokens().add(columnsToken);
+        }
         insertStatement.getSqlTokens().add(new GeneratedKeyToken(insertStatement.getValuesListLastPosition()));
     }
 }

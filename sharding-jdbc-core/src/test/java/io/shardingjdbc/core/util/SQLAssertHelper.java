@@ -180,7 +180,7 @@ public final class SQLAssertHelper {
                 String verifySql = "SELECT * FROM " + actualTableName + " WHERE status = '" + getStatus(file) + "'" + getOrderByCondition(actualTableName);
                 ITable actualTable = DBUnitUtil.getConnection(new DatabaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
                         .createQueryTable(actualTableName, verifySql);
-                Assertion.assertEquals(expectedTable, actualTable);
+                Assertion.assertEqualsIgnoreCols(expectedTable, actualTable, new String[]{"item_id"});
             }
         }
     }

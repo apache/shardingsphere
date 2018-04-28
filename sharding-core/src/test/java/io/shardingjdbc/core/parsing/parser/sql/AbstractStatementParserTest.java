@@ -22,12 +22,19 @@ import io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorit
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfiguration;
+import io.shardingjdbc.core.metadata.ColumnMetaData;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
+import io.shardingjdbc.core.metadata.TableMetaData;
 import io.shardingjdbc.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -52,5 +59,21 @@ public abstract class AbstractStatementParserTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         return new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
+    }
+    
+    protected final ShardingMetaData createShardingMetaData() {
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
+        tableMetaDataMap.put("TABLE_XXX", getTableMetaData(new ArrayList<String>(){{add("field1");add("field2");}}));
+        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
+        when(shardingMetaData.getTableMetaDataMap()).thenReturn(tableMetaDataMap);
+        return shardingMetaData;
+    }
+    
+    private static TableMetaData getTableMetaData(final List<String> columnNames) {
+        List<ColumnMetaData> columnMetaDataList = new ArrayList<>();
+        for (String columnName : columnNames) {
+            columnMetaDataList.add(new ColumnMetaData(columnName, "int(11)", ""));
+        }
+        return new TableMetaData(columnMetaDataList);
     }
 }
