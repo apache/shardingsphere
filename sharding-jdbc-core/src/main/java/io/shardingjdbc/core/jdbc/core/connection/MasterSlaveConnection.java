@@ -17,12 +17,10 @@
 
 package io.shardingjdbc.core.jdbc.core.connection;
 
-import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.statement.MasterSlavePreparedStatement;
 import io.shardingjdbc.core.jdbc.core.statement.MasterSlaveStatement;
-import io.shardingjdbc.core.routing.router.masterslave.MasterVisitedManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -97,12 +95,5 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     @Override
     public PreparedStatement prepareStatement(final String sql, final String[] columnNames) throws SQLException {
         return new MasterSlavePreparedStatement(this, sql, columnNames);
-    }
-    
-    @Override
-    public void close() throws SQLException {
-        HintManagerHolder.clear();
-        MasterVisitedManager.clear();
-        super.close();
     }
 }

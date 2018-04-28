@@ -18,7 +18,9 @@
 package io.shardingjdbc.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
+import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
+import io.shardingjdbc.core.routing.router.masterslave.MasterVisitedManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -115,6 +117,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public void close() throws SQLException {
         closed = true;
+        HintManagerHolder.clear();
+        MasterVisitedManager.clear();
         Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {

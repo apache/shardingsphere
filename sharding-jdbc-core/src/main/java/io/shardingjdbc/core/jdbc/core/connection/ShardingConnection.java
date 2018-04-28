@@ -17,12 +17,10 @@
 
 package io.shardingjdbc.core.jdbc.core.connection;
 
-import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingjdbc.core.jdbc.core.statement.ShardingStatement;
-import io.shardingjdbc.core.routing.router.masterslave.MasterVisitedManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -112,12 +110,5 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Override
     public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         return new ShardingStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
-    }
-    
-    @Override
-    public void close() throws SQLException {
-        HintManagerHolder.clear();
-        MasterVisitedManager.clear();
-        super.close();
     }
 }
