@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.core.jdbc.core.connection;
 
-import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
@@ -33,6 +32,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 
 /**
  * Connection that support sharding.
@@ -47,16 +47,8 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     private final ShardingContext shardingContext;
     
     @Override
-    public Connection getConnection(final String dataSourceName) throws SQLException {
-        if (getCachedConnections().containsKey(dataSourceName)) {
-            return getCachedConnections().get(dataSourceName);
-        }
-        DataSource dataSource = shardingContext.getDataSourceMap().get(dataSourceName);
-        Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
-        Connection result = dataSource.getConnection();
-        getCachedConnections().put(dataSourceName, result);
-        replayMethodsInvocation(result);
-        return result;
+    protected Map<String, DataSource> getDataSourceMap() {
+        return shardingContext.getDataSourceMap();
     }
     
     /**

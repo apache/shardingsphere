@@ -26,11 +26,12 @@ import io.shardingjdbc.core.routing.router.masterslave.MasterVisitedManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.sql.Connection;
+import javax.sql.DataSource;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 
 /**
  * Connection that support master-slave.
@@ -44,14 +45,8 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     private final MasterSlaveDataSource masterSlaveDataSource;
     
     @Override
-    public Connection getConnection(final String dataSourceName) throws SQLException {
-        if (getCachedConnections().containsKey(dataSourceName)) {
-            return getCachedConnections().get(dataSourceName);
-        }
-        Connection result = masterSlaveDataSource.getDataSourceMap().get(dataSourceName).getConnection();
-        getCachedConnections().put(dataSourceName, result);
-        replayMethodsInvocation(result);
-        return result;
+    protected Map<String, DataSource> getDataSourceMap() {
+        return masterSlaveDataSource.getDataSourceMap();
     }
     
     @Override

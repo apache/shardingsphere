@@ -17,9 +17,11 @@
 
 package io.shardingjdbc.core.jdbc.adapter;
 
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import lombok.Getter;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -54,7 +56,19 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @return database connection
      * @throws SQLException SQL exception
      */
-    public abstract Connection getConnection(String dataSourceName) throws SQLException;
+    public final Connection getConnection(final String dataSourceName) throws SQLException {
+        if (cachedConnections.containsKey(dataSourceName)) {
+            return cachedConnections.get(dataSourceName);
+        }
+        DataSource dataSource = getDataSourceMap().get(dataSourceName);
+        Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
+        Connection result = dataSource.getConnection();
+        cachedConnections.put(dataSourceName, result);
+        replayMethodsInvocation(result);
+        return result;
+    }
+    
+    protected abstract Map<String, DataSource> getDataSourceMap();
     
     @Override
     public final boolean getAutoCommit() {
