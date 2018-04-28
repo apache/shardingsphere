@@ -19,7 +19,6 @@ package io.shardingjdbc.core.rule;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
@@ -35,7 +34,6 @@ import lombok.Getter;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
@@ -68,9 +66,9 @@ public final class ShardingRule {
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkNotNull(dataSourceNames, "Data sources cannot be null.");
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
-        processDataSourceNamesWithMasterSlave(shardingRuleConfig.getMasterSlaveRuleConfigs(), dataSourceNames);
-        this.dataSourceNames = new LinkedHashSet<>(dataSourceNames);
-        defaultDataSourceName = getDefaultDataSourceName(dataSourceNames, shardingRuleConfig.getDefaultDataSourceName());
+        ShardingDataSourceNames shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, dataSourceNames);
+        this.dataSourceNames = shardingDataSourceNames.getDataSourceNames();
+        defaultDataSourceName = shardingDataSourceNames.getDefaultDataSourceName();
         tableRules = new LinkedList<>();
         for (TableRuleConfiguration each : shardingRuleConfig.getTableRuleConfigs()) {
             tableRules.add(new TableRule(each, dataSourceNames));
@@ -90,37 +88,6 @@ public final class ShardingRule {
         for (MasterSlaveRuleConfiguration each : shardingRuleConfig.getMasterSlaveRuleConfigs()) {
             masterSlaveRules.add(new MasterSlaveRule(each));
         }
-    }
-    
-    private Collection<String> processDataSourceNamesWithMasterSlave(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs, final Collection<String> dataSourceNames) {
-        Collection<String> result = new LinkedHashSet<>(dataSourceNames);
-        for (MasterSlaveRuleConfiguration each : masterSlaveRuleConfigs) {
-            processDataSourceNamesWithMasterSlave(each, result);
-        }
-        return result;
-    }
-    
-    private void processDataSourceNamesWithMasterSlave(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Collection<String> dataSourceNames) {
-        Collection<String> toBeRemoved = new LinkedHashSet<>(masterSlaveRuleConfig.getSlaveDataSourceNames().size(), 1);
-        for (String each : dataSourceNames) {
-            if (masterSlaveRuleConfig.getMasterDataSourceName().equals(each) || masterSlaveRuleConfig.getSlaveDataSourceNames().contains(each)) {
-                toBeRemoved.add(each);
-            }
-        }
-        if (!toBeRemoved.isEmpty()) {
-            dataSourceNames.removeAll(toBeRemoved);
-            dataSourceNames.add(masterSlaveRuleConfig.getName());
-        }
-    }
-    
-    private String getDefaultDataSourceName(final Collection<String> dataSourceNames, final String defaultDataSourceName) {
-        if (1 == dataSourceNames.size()) {
-            return dataSourceNames.iterator().next();
-        }
-        if (Strings.isNullOrEmpty(defaultDataSourceName)) {
-            return null;
-        }
-        return defaultDataSourceName;
     }
     
     /**
