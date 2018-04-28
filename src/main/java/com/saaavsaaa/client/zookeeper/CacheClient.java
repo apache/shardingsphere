@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
  */
 public final class CacheClient extends UsualClient {
     private final ScheduledExecutorService cacheService = Executors.newSingleThreadScheduledExecutor();
-    private final Map<String, String> currentNodes = new ConcurrentHashMap<>();
     PathTree pathTree = null;
     
     ZooKeeper reader;
@@ -41,7 +40,8 @@ public final class CacheClient extends UsualClient {
     public void start() throws IOException, InterruptedException {
         super.start();
         pathTree = new PathTree(rootNode);
-        cacheService.scheduleAtFixedRate(new ClientTask(this) {
+        Client usualClient = this.getClientFactory().newUsualClient().start();
+        cacheService.scheduleAtFixedRate(new ClientTask(usualClient) {
             @Override
             public void run(Client client) throws KeeperException, InterruptedException {
                 if (PathStatus.RELEASE == pathTree.getStatus()) {
@@ -67,31 +67,8 @@ public final class CacheClient extends UsualClient {
         });
         
         if (canBegin){
-            this.loadingCache(client);
-            currentNodes.clear();
+            pathTree.loading(client);
             this.deleteOnlyCurrent(Constants.CHANGING_KEY);
-        }
-    }
-    
-    private void loadingCache(final Client client) throws KeeperException, InterruptedException {
-        pathTree.setStatus(PathStatus.CHANGING);
-        PathTree newTree = new PathTree(rootNode);
-        List<String> children = client.getChildren(rootNode);
-        children.remove(PathUtil.getRealPath(rootNode, Constants.CHANGING_KEY));
-        this.attechIntoNode(children, newTree.getRootNode(), client);
-        newTree.setStatus(PathStatus.RELEASE);
-        pathTree = newTree;
-    }
-    
-    private void attechIntoNode(final List<String> children, final PathNode pathNode, final Client client) throws KeeperException, InterruptedException {
-        if (children.isEmpty()){
-            return;
-        }
-        for (String child : children) {
-            PathNode current = new PathNode(PathUtil.getRealPath(pathNode.getKey(), child), super.getData(child));
-            pathNode.attechChild(current);
-            List<String> subs = client.getChildren(child);
-            this.attechIntoNode(subs, current, client);
         }
     }
     
@@ -138,11 +115,11 @@ public final class CacheClient extends UsualClient {
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
         Transaction transaction = zooKeeper.transaction();
-        this.deleteAllChild(key, transaction);
+        this.deleteAllChildren(key, transaction);
         transaction.commit();
     }
     
-    private void deleteAllChild(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
+    private void deleteAllChildren(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
     }
     
     private void deleteOnlyCurrent(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
@@ -182,6 +159,45 @@ public final class CacheClient extends UsualClient {
         if (cacheReady()){
             return pathTree.getValue(path);
         }
-        return zooKeeper.getData(path, watched, null);
+        // without watcher ensure cache execute result consistency
+        byte[] data = zooKeeper.getData(path, false, null);
+        pathTree.put(path, new String(data));
+        return data;
+    }
+    
+    @Override
+    public boolean checkExists(final String key) throws KeeperException, InterruptedException {
+        String path = PathUtil.getRealPath(rootNode, key);
+        if (cacheReady()){
+            return null != pathTree.getValue(path);
+        }
+        return null != zooKeeper.exists(PathUtil.getRealPath(rootNode, key), false);
+    }
+    
+    @Override
+    public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
+        String path = PathUtil.getRealPath(rootNode, key);
+        if (cacheReady()){
+            return pathTree.getChildren(path);
+        }
+        return zooKeeper.getChildren(PathUtil.getRealPath(rootNode, key), false);
+    }
+    
+    @Override
+    public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+        super.createCurrentOnly(key, value, createMode);
+        pathTree.put(PathUtil.getRealPath(rootNode, key), value);
+    }
+    
+    @Override
+    public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
+        super.deleteOnlyCurrent(key);
+        pathTree.delete(PathUtil.getRealPath(rootNode, key));
+    }
+    
+    @Override
+    public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
+        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION, callback, ctx);
+        pathTree.delete(PathUtil.getRealPath(rootNode, key));
     }
 }
