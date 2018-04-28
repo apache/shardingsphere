@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.utility.StringUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Listener;
 
@@ -16,15 +17,31 @@ public class ClientFactory {
     private String namespace;
     private String scheme;
     private byte[] auth;
+    private String servers;
+    private int sessionTimeoutMilliseconds;
     
     public ClientFactory(){}
     
     public ClientFactory newCacheClient(final String servers, final int sessionTimeoutMilliseconds) {
+        this.servers = servers;
+        this.sessionTimeoutMilliseconds = sessionTimeoutMilliseconds;
+        client = new CacheClient(servers, sessionTimeoutMilliseconds);
+        return this;
+    }
+    
+    ClientFactory newCacheClient() {
         client = new CacheClient(servers, sessionTimeoutMilliseconds);
         return this;
     }
 
     public ClientFactory newUsualClient(final String servers, final int sessionTimeoutMilliseconds) {
+        this.servers = servers;
+        this.sessionTimeoutMilliseconds = sessionTimeoutMilliseconds;
+        client = new UsualClient(servers, sessionTimeoutMilliseconds);
+        return this;
+    }
+    
+    ClientFactory newUsualClient() {
         client = new UsualClient(servers, sessionTimeoutMilliseconds);
         return this;
     }

@@ -15,6 +15,10 @@ public class PathNode {
     private byte[] value;
     private Map<String, PathNode> children = new ConcurrentHashMap<>();
     
+    public PathNode(final String key) {
+        this(key, Constants.RELEASE_VALUE);
+    }
+    
     public PathNode(final String key, final byte[] value) {
         this.nodeKey = key;
         this.value = value;
