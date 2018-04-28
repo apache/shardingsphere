@@ -66,24 +66,24 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 
 ### 支持的SQL
 
-| SQL                                                                                         | 无条件支持 | 必要条件                   |
-| ------------------------------------------------------------------------------------------- | --------- | ------------------------- |
-| SELECT * FROM tbl_name                                                                      | 是        |                           |
-| SELECT * FROM tbl_name WHERE (col1 = ? or col2 = ?) and col3 = ?                            | 是        |                           |
-| SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            | 是        |                           |
-| SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = ?    | 是        |                           |
-| SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? | 是        |                           |
-| INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   | 是        |                           |
-| INSERT INTO tbl_name VALUES (?, ?,....)                                                     | `否`      | 通过Hint注入分片键          |
-| UPDATE tbl_name SET col1 = ? WHERE col2 = ?                                                 | 是        |                           |
-| DELETE FROM tbl_name WHERE col1 = ?                                                         | 是        |                           |
-| CREATE TABLE tbl_name (col1 int, ...)                                                       | 是        |                           |
-| ALTER TABLE tbl_name ADD col1 varchar(10)                                                   | 是        |                           |
-| DROP TABLE tbl_name                                                                         | 是        |                           |
-| TRUNCATE TABLE tbl_name                                                                     | 是        |                           |
-| CREATE INDEX idx_name ON tbl_name                                                           | 是        |                           |
-| DROP INDEX idx_name ON tbl_name                                                             | 是        |                           |
-| DROP INDEX idx_name                                                                         | 是        | TableRule中配置logic-index |
+| SQL                                                                                         | 必要条件                    |
+| ------------------------------------------------------------------------------------------- | -------------------------- |
+| SELECT * FROM tbl_name                                                                      |                            |
+| SELECT * FROM tbl_name WHERE (col1 = ? or col2 = ?) and col3 = ?                            |                            |
+| SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            |                            |
+| SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = ?    |                            |
+| SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                            |
+| INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                            |
+| INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                            |
+| UPDATE tbl_name SET col1 = ? WHERE col2 = ?                                                 |                            |
+| DELETE FROM tbl_name WHERE col1 = ?                                                         |                            |
+| CREATE TABLE tbl_name (col1 int, ...)                                                       |                            |
+| ALTER TABLE tbl_name ADD col1 varchar(10)                                                   |                            |
+| DROP TABLE tbl_name                                                                         |                            |
+| TRUNCATE TABLE tbl_name                                                                     |                            |
+| CREATE INDEX idx_name ON tbl_name                                                           |                            |
+| DROP INDEX idx_name ON tbl_name                                                             |                            |
+| DROP INDEX idx_name                                                                         |  TableRule中配置logic-index |
 
 ### 不支持的SQL
 

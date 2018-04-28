@@ -64,24 +64,24 @@ In addition, subquery containing aggregate functions are not supported currently
 
 ### Supported SQL
 
-| SQL                                                                                         | Unconditional | Required condition                 |
-| ------------------------------------------------------------------------------------------- | ------------- | ---------------------------------- |
-| SELECT * FROM tbl_name                                                                      | Y             |                                    |
-| SELECT * FROM tbl_name WHERE (col1 = ? or col2 = ?) and col3 = ?                            | Y             |                                    |
-| SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            | Y             |                                    |
-| SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = ?    | Y             |                                    |
-| SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? | Y             |                                    |
-| INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   | Y             |                                    |
-| INSERT INTO tbl_name VALUES (?, ?,....)                                                     | `N`           | Inject sharding columns by Hint    |
-| UPDATE tbl_name SET col1 = ? WHERE col2 = ?                                                 | Y             |                                    |
-| DELETE FROM tbl_name WHERE col1 = ?                                                         | Y             |                                    |
-| CREATE TABLE tbl_name (col1 int, ...)                                                       | Y             |                                    |
-| ALTER TABLE tbl_name ADD col1 varchar(10)                                                   | Y             |                                    |
-| DROP TABLE tbl_name                                                                         | Y             |                                    |
-| TRUNCATE TABLE tbl_name                                                                     | Y             |                                    |
-| CREATE INDEX idx_name ON tbl_name                                                           | Y             |                                    |
-| DROP INDEX idx_name ON tbl_name                                                             | Y             |                                    |
-| DROP INDEX idx_name                                                                         | Y             | Configure logic-index in TableRule |
+| SQL                                                                                         | Required condition                  |
+| ------------------------------------------------------------------------------------------- | ----------------------------------- |
+| SELECT * FROM tbl_name                                                                      |                                     |
+| SELECT * FROM tbl_name WHERE (col1 = ? or col2 = ?) and col3 = ?                            |                                     |
+| SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            |                                     |
+| SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = ?    |                                     |
+| SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                                     |
+| INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                                     |
+| INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                                     |
+| UPDATE tbl_name SET col1 = ? WHERE col2 = ?                                                 |                                     |
+| DELETE FROM tbl_name WHERE col1 = ?                                                         |                                     |
+| CREATE TABLE tbl_name (col1 int, ...)                                                       |                                     |
+| ALTER TABLE tbl_name ADD col1 varchar(10)                                                   |                                     |
+| DROP TABLE tbl_name                                                                         |                                     |
+| TRUNCATE TABLE tbl_name                                                                     |                                     |
+| CREATE INDEX idx_name ON tbl_name                                                           |                                     |
+| DROP INDEX idx_name ON tbl_name                                                             |                                     |
+| DROP INDEX idx_name                                                                         |  Configure logic-index in TableRule |
 
 ### Unsupported SQL
 
