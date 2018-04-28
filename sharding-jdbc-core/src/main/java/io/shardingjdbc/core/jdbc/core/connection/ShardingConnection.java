@@ -57,7 +57,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @param connection to be released connection
      */
     public void release(final Connection connection) {
-        getCachedConnections().values().remove(connection);
+        removeCache(connection);
         try {
             connection.close();
         } catch (final SQLException ignore) {

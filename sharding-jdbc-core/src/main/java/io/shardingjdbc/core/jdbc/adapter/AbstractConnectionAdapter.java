@@ -19,7 +19,6 @@ package io.shardingjdbc.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -38,7 +37,6 @@ import java.util.Map;
  */
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
-    @Getter
     private final Map<String, Connection> cachedConnections = new HashMap<>();
     
     private boolean autoCommit = true;
@@ -69,6 +67,10 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     protected abstract Map<String, DataSource> getDataSourceMap();
+    
+    protected void removeCache(final Connection connection) {
+        cachedConnections.values().remove(connection);
+    }
     
     @Override
     public final boolean getAutoCommit() {
