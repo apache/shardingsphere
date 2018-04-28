@@ -26,6 +26,7 @@ import io.shardingjdbc.core.api.config.strategy.ComplexShardingStrategyConfigura
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingOperator;
 import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
@@ -88,6 +89,42 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertInsertStatementWithParameter(insertStatement);
     }
     
+    @Test
+    public void assertParseWithoutColumnsWithGenerateKeyColumnsWithoutParameter() {
+        ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
+        ShardingMetaData shardingMetaData = createShardingMetaData();
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (10)", shardingRule, shardingMetaData);
+        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
+        assertInsertStatementWithoutParameter(insertStatement);
+    }
+    
+    @Test
+    public void assertParseWithoutColumnsWithGenerateKeyColumnsWithParameter() {
+        ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
+        ShardingMetaData shardingMetaData = createShardingMetaData();
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (?)", shardingRule, shardingMetaData);
+        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
+        assertInsertStatementWithParameter(insertStatement);
+    }
+    
+    @Test
+    public void assertParseWithoutColumnsWithoutParameter() {
+        ShardingRule shardingRule = createShardingRule();
+        ShardingMetaData shardingMetaData = createShardingMetaData();
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (10,20)", shardingRule, shardingMetaData);
+        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
+        assertInsertStatementWithoutParameter(insertStatement);
+    }
+    
+    @Test
+    public void assertParseWithoutColumnsWithParameter() {
+        ShardingRule shardingRule = createShardingRule();
+        ShardingMetaData shardingMetaData = createShardingMetaData();
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (?, ?)", shardingRule, shardingMetaData);
+        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
+        assertInsertStatementWithParameter(insertStatement);
+    }
+    
     private void assertInsertStatementWithParameter(final InsertStatement insertStatement) {
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
@@ -129,7 +166,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     @SuppressWarnings("unchecked")
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
         ShardingRule shardingRule = createShardingRule();
-        InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule, null).parse(false);
+        ShardingMetaData shardingMetaData = createShardingMetaData();
+        InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule, shardingMetaData).parse(false);
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         assertFalse(insertStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();

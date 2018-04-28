@@ -18,17 +18,21 @@
 package io.shardingjdbc.core.parsing.parser.clause;
 
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.Assist;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
+import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
+import io.shardingjdbc.core.parsing.parser.token.SymbolToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Insert columns clause parser.
@@ -46,13 +50,14 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
      * Parse insert columns.
      *
      * @param insertStatement insert statement
+     * @param shardingMetaData sharding meta data
      */
-    public void parse(final InsertStatement insertStatement) {
+    public void parse(final InsertStatement insertStatement, final ShardingMetaData shardingMetaData) {
         Collection<Column> result = new LinkedList<>();
+        String tableName = insertStatement.getTables().getSingleTableName();
+        Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
+        int count = 0;
         if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
-            String tableName = insertStatement.getTables().getSingleTableName();
-            Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
-            int count = 0;
             do {
                 lexerEngine.nextToken();
                 String columnName = SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals());
@@ -65,6 +70,23 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
             } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN) && !lexerEngine.equalAny(Assist.END));
             insertStatement.setColumnsListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
             lexerEngine.nextToken();
+        } else {
+            List<String> columnNames = shardingMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames();
+            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
+            insertStatement.getSqlTokens().add(new SymbolToken(beginPosition, Symbol.LEFT_PAREN));
+            ItemsToken columnsToken = new ItemsToken(beginPosition);
+            columnsToken.setFirstOfItemsSpecial(true);
+            for (String columnName : columnNames) {
+                result.add(new Column(columnName, tableName));
+                if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(columnName)) {
+                    insertStatement.setGenerateKeyColumnIndex(count);
+                }
+                columnsToken.getItems().add(columnName);
+                count++;
+            }
+            insertStatement.getSqlTokens().add(columnsToken);
+            insertStatement.getSqlTokens().add(new SymbolToken(beginPosition, Symbol.RIGHT_PAREN));
+            insertStatement.setColumnsListLastPosition(beginPosition);
         }
         insertStatement.getColumns().addAll(result);
     }

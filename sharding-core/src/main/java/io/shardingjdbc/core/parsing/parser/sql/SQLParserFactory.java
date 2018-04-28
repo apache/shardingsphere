@@ -45,6 +45,7 @@ import lombok.NoArgsConstructor;
  * SQL parser factory.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
@@ -64,7 +65,7 @@ public final class SQLParserFactory {
             return getDQLParser(dbType, shardingRule, lexerEngine, shardingMetaData);
         }
         if (isDML(tokenType)) {
-            return getDMLParser(dbType, tokenType, shardingRule, lexerEngine);
+            return getDMLParser(dbType, tokenType, shardingRule, lexerEngine, shardingMetaData);
         }
         if (isDDL(tokenType)) {
             return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
@@ -103,10 +104,10 @@ public final class SQLParserFactory {
         return SelectParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingMetaData);
     }
     
-    private static SQLParser getDMLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    private static SQLParser getDMLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
         switch ((DefaultKeyword) tokenType) {
             case INSERT:
-                return InsertParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return InsertParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingMetaData);
             case UPDATE:
                 return UpdateParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             case DELETE:
