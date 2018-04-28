@@ -243,7 +243,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         if (dataSourceName.contains("ms")) {
             dataSourceName = dataSourceName.replace("ms", "dataSource_master");
         }
-        try (Connection conn = abstractDataSourceAdapter instanceof MasterSlaveDataSource ? abstractDataSourceAdapter.getConnection() 
+        try (Connection conn = abstractDataSourceAdapter instanceof MasterSlaveDataSource ? ((MasterSlaveDataSource) abstractDataSourceAdapter).getConnection().getConnection(dataSourceName) 
                 : ((ShardingDataSource) abstractDataSourceAdapter).getConnection().getConnection(dataSourceName)) {
             sqlAssertHelper.assertResult(conn, expectedDataSetFile);
         }
@@ -251,6 +251,9 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     // TODO 标准化文件名
     private String getDataSourceName(final String expected) {
+        if (ShardingTestStrategy.masterslaveonly == getShardingStrategy()) {
+            return "dataSource_master_only";
+        }
         String result = String.format(expected.split("/")[1].split(".xml")[0], getShardingStrategy().name());
         if (!result.contains("_")) {
             result = result + "_0";

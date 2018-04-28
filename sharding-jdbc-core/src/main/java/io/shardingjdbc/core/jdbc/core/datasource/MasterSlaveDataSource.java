@@ -25,7 +25,6 @@ import io.shardingjdbc.core.rule.MasterSlaveRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -88,7 +87,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     @Override
-    public Connection getConnection() {
+    public MasterSlaveConnection getConnection() {
         return new MasterSlaveConnection(this);
     }
 }

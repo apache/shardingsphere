@@ -17,25 +17,20 @@
 
 package io.shardingjdbc.core.jdbc.core.connection;
 
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.statement.MasterSlavePreparedStatement;
 import io.shardingjdbc.core.jdbc.core.statement.MasterSlaveStatement;
-import io.shardingjdbc.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingjdbc.core.routing.router.masterslave.MasterVisitedManager;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Connection that support master-slave.
@@ -43,39 +38,25 @@ import java.util.Map;
  * @author zhangliang
  */
 @RequiredArgsConstructor
+@Getter
 public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
-    private final Map<String, DataSource> dataSourceMap;
-    
-    private final MasterSlaveRouter masterSlaveRouter;
-    
-    public MasterSlaveConnection(final MasterSlaveDataSource masterSlaveDataSource) {
-        dataSourceMap = masterSlaveDataSource.getDataSourceMap();
-        masterSlaveRouter = new MasterSlaveRouter(masterSlaveDataSource.getMasterSlaveRule());
-    }
+    private final MasterSlaveDataSource masterSlaveDataSource;
     
     /**
-     * Get database connections via SQL type.
+     * Get database connection.
      *
-     * <p>DDL will return master connection; DQL will return slave connection; DML or updated before in same thread will return master connection.</p>
-     * 
-     * @param sqlType SQL type
-     * @return database connections via SQL type
+     * @param dataSourceName data source name
+     * @return database connection
      * @throws SQLException SQL exception
      */
-    public Collection<Connection> getConnections(final SQLType sqlType) throws SQLException {
-        Collection<String> dataSourceNames = masterSlaveRouter.route(sqlType);
-        Collection<Connection> result = new LinkedList<>();
-        for (String each : dataSourceNames) {
-            if (getCachedConnections().containsKey(each)) {
-                result.add(getCachedConnections().get(each));
-                continue;
-            }
-            Connection connection = dataSourceMap.get(each).getConnection();
-            getCachedConnections().put(each, connection);
-            result.add(connection);
-            replayMethodsInvocation(connection);
+    public Connection getConnection(final String dataSourceName) throws SQLException {
+        if (getCachedConnections().containsKey(dataSourceName)) {
+            return getCachedConnections().get(dataSourceName);
         }
+        Connection result = masterSlaveDataSource.getDataSourceMap().get(dataSourceName).getConnection();
+        getCachedConnections().put(dataSourceName, result);
+        replayMethodsInvocation(result);
         return result;
     }
     
@@ -84,7 +65,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
         if (!getCachedConnections().isEmpty()) {
             return getCachedConnections().values().iterator().next().getMetaData();
         }
-        return getConnections(SQLType.DML).iterator().next().getMetaData();
+        return getConnection(masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName()).getMetaData();
     }
     
     @Override
