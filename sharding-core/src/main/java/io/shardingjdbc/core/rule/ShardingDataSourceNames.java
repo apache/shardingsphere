@@ -38,9 +38,9 @@ public final class ShardingDataSourceNames {
     @Getter
     private final Collection<String> dataSourceNames;
     
-    public ShardingDataSourceNames(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
+    public ShardingDataSourceNames(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> rawDataSourceNames) {
         this.shardingRuleConfig = shardingRuleConfig;
-        this.dataSourceNames = getAllDataSourceNames(dataSourceNames);
+        dataSourceNames = getAllDataSourceNames(rawDataSourceNames);
     }
     
     private Collection<String> getAllDataSourceNames(final Collection<String> dataSourceNames) {
@@ -60,5 +60,20 @@ public final class ShardingDataSourceNames {
      */
     public String getDefaultDataSourceName() {
         return 1 == dataSourceNames.size() ? dataSourceNames.iterator().next() : shardingRuleConfig.getDefaultDataSourceName();
+    }
+    
+    /**
+     * Get raw master data source name.
+     *
+     * @param dataSourceName data source name
+     * @return raw master data source name
+     */
+    public String getRawMasterDataSourceName(final String dataSourceName) {
+        for (MasterSlaveRuleConfiguration each : shardingRuleConfig.getMasterSlaveRuleConfigs()) {
+            if (each.getName().equals(dataSourceName)) {
+                return each.getMasterDataSourceName();
+            }
+        }
+        return dataSourceName;
     }
 }
