@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * Created by aaa
@@ -28,9 +29,9 @@ import java.util.concurrent.TimeUnit;
  */
 public final class CacheClient extends UsualClient {
     private final ScheduledExecutorService cacheService = Executors.newSingleThreadScheduledExecutor();
-    PathTree pathTree = null;
+    private Client usualClient;
     
-    ZooKeeper reader;
+    protected PathTree pathTree = null;
     
     CacheClient(String servers, int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);
@@ -40,7 +41,7 @@ public final class CacheClient extends UsualClient {
     public void start() throws IOException, InterruptedException {
         super.start();
         pathTree = new PathTree(rootNode);
-        Client usualClient = this.getClientFactory().newUsualClient().start();
+        usualClient = this.getClientFactory().newUsualClient().start();
         cacheService.scheduleAtFixedRate(new ClientTask(usualClient) {
             @Override
             public void run(Client client) throws KeeperException, InterruptedException {
@@ -53,23 +54,18 @@ public final class CacheClient extends UsualClient {
     
     //用替换整树的方式更新
     private synchronized void loadCache(final Client client) throws KeeperException, InterruptedException {
-        boolean canBegin;
-        canBegin = LeaderElection.contend(rootNode, client, new Listener() {
+        LeaderElection election = new LeaderElection() {
             @Override
-            public void process(WatchedEvent event) {
-                try {
-                    loadCache(client);
-                } catch (Exception ee){
-                    System.out.println("loadCache Exception");
-                    ee.printStackTrace();
-                }
+            public void actionWhenUnreached() throws KeeperException, InterruptedException {
+                loadCache(client);
             }
-        });
-        
-        if (canBegin){
-            pathTree.loading(client);
-            this.deleteOnlyCurrent(Constants.CHANGING_KEY);
-        }
+    
+            @Override
+            public void action() throws KeeperException, InterruptedException {
+                pathTree.loading(client);
+            }
+        };
+        election.executeContention(rootNode, client);
     }
     
     /*
@@ -77,16 +73,32 @@ public final class CacheClient extends UsualClient {
     */
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+        LeaderElection election = new LeaderElection() {
+            @Override
+            public void actionWhenUnreached() throws KeeperException, InterruptedException {
+                createAllNeedPath(key, value, createMode);
+            }
+        
+            @Override
+            public void action() throws KeeperException, InterruptedException {
+                createBegin(key, value, createMode);
+            }
+        };
+        election.executeContention(rootNode, this);
+    }
+    
+    
+    private void createBegin(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
-            this.createCurrentOnly(key, value, createMode);
+            super.createCurrentOnly(key, value, createMode);
             return;
         }
         Transaction transaction = zooKeeper.transaction();
-        //todo sync cache
+
         List<String> nodes = PathUtil.getPathOrderNodes(rootNode, key);
         for (int i = 0; i < nodes.size(); i++) {
-            // todo contrast cache
-            if (checkExists(nodes.get(i))){
+            // todo not goog
+            if (super.checkExists(nodes.get(i))){
                 System.out.println("exist:" + nodes.get(i));
                 continue;
             }
@@ -98,7 +110,6 @@ public final class CacheClient extends UsualClient {
             }
         }
         
-        // todo org.apache.zookeeper.KeeperException$NodeExistsException: KeeperErrorCode = NodeExists
         transaction.commit();
     }
     
@@ -185,19 +196,55 @@ public final class CacheClient extends UsualClient {
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        super.createCurrentOnly(key, value, createMode);
+//        super.createCurrentOnly(key, value, createMode);
+        LeaderElection election = new LeaderElection() {
+            @Override
+            public void actionWhenUnreached() throws KeeperException, InterruptedException {
+                createCurrentOnly(key, value, createMode);
+            }
+        
+            @Override
+            public void action() throws KeeperException, InterruptedException {
+                usualClient.createCurrentOnly(key, value, createMode);
+            }
+        };
+        election.executeContention(rootNode, this);
         pathTree.put(PathUtil.getRealPath(rootNode, key), value);
     }
     
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
-        super.deleteOnlyCurrent(key);
+//        super.deleteOnlyCurrent(key);
+        LeaderElection election = new LeaderElection() {
+            @Override
+            public void actionWhenUnreached() throws KeeperException, InterruptedException {
+                deleteOnlyCurrent(key);
+            }
+        
+            @Override
+            public void action() throws KeeperException, InterruptedException {
+                usualClient.deleteOnlyCurrent(key);
+            }
+        };
+        election.executeContention(rootNode, this);
         pathTree.delete(PathUtil.getRealPath(rootNode, key));
     }
     
     @Override
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        zooKeeper.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION, callback, ctx);
+//        super.deleteOnlyCurrent(key, callback, ctx);
+        LeaderElection election = new LeaderElection() {
+            @Override
+            public void actionWhenUnreached() throws KeeperException, InterruptedException {
+                deleteOnlyCurrent(key, callback, ctx);
+            }
+        
+            @Override
+            public void action() throws KeeperException, InterruptedException {
+                usualClient.deleteOnlyCurrent(key, callback, ctx);
+            }
+        };
+        election.executeContention(rootNode, this);
         pathTree.delete(PathUtil.getRealPath(rootNode, key));
     }
 }

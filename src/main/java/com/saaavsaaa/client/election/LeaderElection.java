@@ -13,11 +13,9 @@ import org.apache.zookeeper.WatchedEvent;
 /**
  * Created by aaa on 18-4-27.
  */
-public class LeaderElection {
-    /*
-    * listener will be register when the contention of the path is unsuccessful
-    */
-    public static boolean contend(final String path, final Client client, final Listener listener) throws KeeperException, InterruptedException {
+public abstract class LeaderElection {
+
+    private boolean contend(final String path, final Client client, final Listener listener) throws KeeperException, InterruptedException {
         boolean success = false;
         try {
             client.createCurrentOnly(Constants.CHANGING_KEY, Property.INSTANCE.getClientId(), CreateMode.EPHEMERAL);
@@ -28,4 +26,35 @@ public class LeaderElection {
         }
         return success;
     }
+    
+    /*
+    * listener will be register when the contention of the path is unsuccessful
+    */
+    public void executeContention(final String path, final Client client) throws KeeperException, InterruptedException {
+        boolean canBegin;
+        canBegin = this.contend(path, client, new Listener() {
+            @Override
+            public void process(WatchedEvent event) {
+                try {
+                    actionWhenUnreached();
+                } catch (Exception ee){
+                    System.out.println("Listener Exception " + path);
+                    ee.printStackTrace();
+                }
+            }
+        });
+    
+        if (canBegin){
+            try {
+                action();
+            } catch (Exception ee){
+                System.out.println("action Exception " + path);
+                ee.printStackTrace();
+            }
+            client.deleteOnlyCurrent(Constants.CHANGING_KEY);
+        }
+    }
+    
+    public abstract void actionWhenUnreached() throws KeeperException, InterruptedException;
+    public abstract void action() throws KeeperException, InterruptedException;
 }
