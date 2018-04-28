@@ -25,7 +25,7 @@ import io.shardingjdbc.core.parsing.parser.context.condition.AndCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.OrCondition;
-import io.shardingjdbc.core.routing.router.GeneratedKey;
+import io.shardingjdbc.core.routing.router.sharding.GeneratedKey;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;

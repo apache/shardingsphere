@@ -21,8 +21,8 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.router.masterslave.ShardingMasterSlaveRouter;
-import io.shardingjdbc.core.routing.router.SQLRouter;
-import io.shardingjdbc.core.routing.router.SQLRouterFactory;
+import io.shardingjdbc.core.routing.router.sharding.ShardingRouter;
+import io.shardingjdbc.core.routing.router.sharding.ShardingRouterFactory;
 import io.shardingjdbc.core.rule.ShardingRule;
 
 import java.util.Collections;
@@ -35,12 +35,12 @@ import java.util.Collections;
  */
 public final class StatementRoutingEngine {
     
-    private final SQLRouter sqlRouter;
+    private final ShardingRouter shardingRouter;
     
     private final ShardingMasterSlaveRouter masterSlaveRouter;
     
     public StatementRoutingEngine(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final boolean showSQL) {
-        sqlRouter = SQLRouterFactory.createSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL);
+        shardingRouter = ShardingRouterFactory.createSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL);
         masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
     }
     
@@ -51,7 +51,7 @@ public final class StatementRoutingEngine {
      * @return route result
      */
     public SQLRouteResult route(final String logicSQL) {
-        SQLStatement sqlStatement = sqlRouter.parse(logicSQL, false);
-        return masterSlaveRouter.route(sqlRouter.route(logicSQL, Collections.emptyList(), sqlStatement));
+        SQLStatement sqlStatement = shardingRouter.parse(logicSQL, false);
+        return masterSlaveRouter.route(shardingRouter.route(logicSQL, Collections.emptyList(), sqlStatement));
     }
 }

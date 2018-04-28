@@ -25,6 +25,7 @@ import io.shardingjdbc.core.fixture.OrderDatabaseHintShardingAlgorithm;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingjdbc.core.routing.router.sharding.DatabaseHintSQLRouter;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.After;
 import org.junit.Before;

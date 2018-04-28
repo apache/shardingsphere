@@ -52,7 +52,7 @@ public final class ShardingRule {
     
     private final ShardingDataSourceNames shardingDataSourceNames;
     
-    private final Collection<TableRule> tableRules;
+    private final Collection<TableRule> tableRules = new LinkedList<>();
     
     private final Collection<BindingTableRule> bindingTableRules = new LinkedList<>();
     
@@ -69,7 +69,6 @@ public final class ShardingRule {
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
         this.shardingRuleConfig = shardingRuleConfig;
         shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, dataSourceNames);
-        tableRules = new LinkedList<>();
         for (TableRuleConfiguration each : shardingRuleConfig.getTableRuleConfigs()) {
             tableRules.add(new TableRule(each, shardingDataSourceNames));
         }

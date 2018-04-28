@@ -36,7 +36,7 @@ import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
 import io.shardingjdbc.core.routing.SQLRouteResult;
 import io.shardingjdbc.core.routing.StatementRoutingEngine;
-import io.shardingjdbc.core.routing.router.GeneratedKey;
+import io.shardingjdbc.core.routing.router.sharding.GeneratedKey;
 import lombok.AccessLevel;
 import lombok.Getter;
 
