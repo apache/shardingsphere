@@ -23,6 +23,7 @@ import io.shardingjdbc.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.statement.MasterSlavePreparedStatement;
 import io.shardingjdbc.core.jdbc.core.statement.MasterSlaveStatement;
+import io.shardingjdbc.core.routing.router.MasterSlaveRouter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
@@ -34,7 +35,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Connection that support master-slave.
@@ -44,9 +44,16 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
-    private final MasterSlaveDataSource masterSlaveDataSource;
+    private final Map<String, DataSource> dataSourceMap;
+    
+    private final MasterSlaveRouter masterSlaveRouter;
     
     private SQLType cachedSQLType;
+    
+    public MasterSlaveConnection(final MasterSlaveDataSource masterSlaveDataSource) {
+        dataSourceMap = masterSlaveDataSource.getDataSourceMap();
+        masterSlaveRouter = new MasterSlaveRouter(masterSlaveDataSource.getMasterSlaveRule());
+    }
     
     /**
      * Get database connections via SQL type.
@@ -59,16 +66,15 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
      */
     public Collection<Connection> getConnections(final SQLType sqlType) throws SQLException {
         cachedSQLType = sqlType;
-        Map<String, DataSource> dataSources = SQLType.DDL == sqlType ? masterSlaveDataSource.getMasterDataSource() : masterSlaveDataSource.getDataSource(sqlType).toMap();
+        Collection<String> dataSourceNames = masterSlaveRouter.route(sqlType);
         Collection<Connection> result = new LinkedList<>();
-        for (Entry<String, DataSource> each : dataSources.entrySet()) {
-            String dataSourceName = each.getKey();
-            if (getCachedConnections().containsKey(dataSourceName)) {
-                result.add(getCachedConnections().get(dataSourceName));
+        for (String each : dataSourceNames) {
+            if (getCachedConnections().containsKey(each)) {
+                result.add(getCachedConnections().get(each));
                 continue;
             }
-            Connection connection = each.getValue().getConnection();
-            getCachedConnections().put(dataSourceName, connection);
+            Connection connection = dataSourceMap.get(each).getConnection();
+            getCachedConnections().put(each, connection);
             result.add(connection);
             replayMethodsInvocation(connection);
         }

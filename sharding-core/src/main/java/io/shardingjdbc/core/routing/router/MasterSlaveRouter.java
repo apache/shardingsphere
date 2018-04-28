@@ -19,14 +19,12 @@ package io.shardingjdbc.core.routing.router;
 
 import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
-import io.shardingjdbc.core.routing.SQLExecutionUnit;
-import io.shardingjdbc.core.routing.SQLRouteResult;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 
 /**
  * Master slave router interface.
@@ -44,39 +42,23 @@ public final class MasterSlaveRouter {
         }
     };
     
-    private final Collection<MasterSlaveRule> masterSlaveRules;
+    private final MasterSlaveRule masterSlaveRule;
     
     /**
-     * Route Master slave after sharding.
+     * Route Master slave.
      * 
-     * @param sqlRouteResult SQL route result
-     * @return parse result
+     * @param sqlType SQL type
+     * @return data source name
      */
-    public SQLRouteResult route(final SQLRouteResult sqlRouteResult) {
-        for (MasterSlaveRule each : masterSlaveRules) {
-            route(each, sqlRouteResult);
+    // TODO for multiple masters may return more than one data source
+    public Collection<String> route(final SQLType sqlType) {
+        if (isMasterRoute(sqlType)) {
+            DML_FLAG.set(true);
+            return Collections.singletonList(masterSlaveRule.getMasterDataSourceName());
+        } else {
+            return Collections.singletonList(masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
+                    masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames())));
         }
-        return sqlRouteResult;
-    }
-    
-    private void route(final MasterSlaveRule masterSlaveRule, final SQLRouteResult sqlRouteResult) {
-        Collection<SQLExecutionUnit> toBeRemoved = new LinkedList<>();
-        Collection<SQLExecutionUnit> toBeAdded = new LinkedList<>();
-        for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            if (!masterSlaveRule.getName().equalsIgnoreCase(each.getDataSource())) {
-                continue;
-            }
-            toBeRemoved.add(each);
-            if (isMasterRoute(sqlRouteResult.getSqlStatement().getType())) {
-                DML_FLAG.set(true);
-                toBeAdded.add(new SQLExecutionUnit(masterSlaveRule.getMasterDataSourceName(), each.getSqlUnit()));
-            } else {
-                toBeAdded.add(new SQLExecutionUnit(masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
-                        masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames())), each.getSqlUnit()));
-            }
-        }
-        sqlRouteResult.getExecutionUnits().removeAll(toBeRemoved);
-        sqlRouteResult.getExecutionUnits().addAll(toBeAdded);
     }
     
     private boolean isMasterRoute(final SQLType sqlType) {

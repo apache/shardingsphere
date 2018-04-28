@@ -20,7 +20,7 @@ package io.shardingjdbc.core.routing;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
-import io.shardingjdbc.core.routing.router.MasterSlaveRouter;
+import io.shardingjdbc.core.routing.router.ShardingMasterSlaveRouter;
 import io.shardingjdbc.core.routing.router.SQLRouter;
 import io.shardingjdbc.core.routing.router.SQLRouterFactory;
 import io.shardingjdbc.core.rule.ShardingRule;
@@ -37,11 +37,11 @@ public final class StatementRoutingEngine {
     
     private final SQLRouter sqlRouter;
     
-    private final MasterSlaveRouter masterSlaveRouter;
+    private final ShardingMasterSlaveRouter masterSlaveRouter;
     
     public StatementRoutingEngine(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final boolean showSQL) {
         sqlRouter = SQLRouterFactory.createSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL);
-        masterSlaveRouter = new MasterSlaveRouter(shardingRule.getMasterSlaveRules());
+        masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
     }
     
     /**
