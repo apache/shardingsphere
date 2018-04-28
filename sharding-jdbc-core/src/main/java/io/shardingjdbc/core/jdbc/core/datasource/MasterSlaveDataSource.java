@@ -77,17 +77,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     /**
-     * Get all master data sources.
-     *
-     * @return map of actual master data source name and actual master data sources
-     */
-    public Map<String, DataSource> getMasterDataSource() {
-        Map<String, DataSource> result = new HashMap<>(1, 1);
-        result.put(masterSlaveRule.getMasterDataSourceName(), dataSourceMap.get(masterSlaveRule.getMasterDataSourceName()));
-        return result;
-    }
-    
-    /**
      * Renew master-slave data source.
      *
      * @param dataSourceMap data source map
