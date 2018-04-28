@@ -59,5 +59,3 @@ public final class JDBCShardingMetaData extends ShardingMetaData {
         return ShardingMetaDataHandlerFactory.newInstance(dataSource, dataNode.getTableName(), databaseType).getColumnMetaDataList();
     }
 }
-
-

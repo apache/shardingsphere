@@ -20,7 +20,6 @@ package io.shardingjdbc.core.jdbc.metadata.dialect;
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -36,7 +35,7 @@ public final class DefaultShardingMetaDataHandler extends ShardingMetaDataHandle
     }
     
     @Override
-    public Collection<ColumnMetaData> getColumnMetaDataList() throws SQLException {
+    public Collection<ColumnMetaData> getColumnMetaDataList() {
         return new LinkedList<>();
     }
 }
