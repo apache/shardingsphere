@@ -19,8 +19,6 @@ package io.shardingjdbc.core.jdbc.core.datasource;
 
 import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingjdbc.core.constant.SQLType;
-import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingjdbc.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingjdbc.core.rule.MasterSlaveRule;
@@ -29,7 +27,6 @@ import lombok.Getter;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -42,14 +39,6 @@ import java.util.Map;
  */
 @Getter
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
-    
-    private static final ThreadLocal<Boolean> DML_FLAG = new ThreadLocal<Boolean>() {
-        
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
     
     private Map<String, DataSource> dataSourceMap;
     
@@ -96,27 +85,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         Map<String, DataSource> result = new HashMap<>(1, 1);
         result.put(masterSlaveRule.getMasterDataSourceName(), dataSourceMap.get(masterSlaveRule.getMasterDataSourceName()));
         return result;
-    }
-    
-    /**
-     * Get data source from master-slave data source.
-     *
-     * @param sqlType SQL type
-     * @return data source from master-slave data source
-     */
-    public NamedDataSource getDataSource(final SQLType sqlType) {
-        if (isMasterRoute(sqlType)) {
-            DML_FLAG.set(true);
-            return new NamedDataSource(masterSlaveRule.getMasterDataSourceName(), dataSourceMap.get(masterSlaveRule.getMasterDataSourceName()));
-        }
-        String selectedSourceName = masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
-                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames()));
-        DataSource selectedSource = dataSourceMap.get(selectedSourceName);
-        return new NamedDataSource(selectedSourceName, selectedSource);
-    }
-    
-    private boolean isMasterRoute(final SQLType sqlType) {
-        return SQLType.DQL != sqlType || DML_FLAG.get() || HintManagerHolder.isMasterRouteOnly();
     }
     
     /**
