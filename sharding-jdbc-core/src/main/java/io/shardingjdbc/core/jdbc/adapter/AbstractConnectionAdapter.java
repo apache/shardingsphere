@@ -47,6 +47,15 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
+    /**
+     * Get database connection.
+     *
+     * @param dataSourceName data source name
+     * @return database connection
+     * @throws SQLException SQL exception
+     */
+    public abstract Connection getConnection(String dataSourceName) throws SQLException;
+    
     @Override
     public final boolean getAutoCommit() {
         return autoCommit;

@@ -43,13 +43,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     private final MasterSlaveDataSource masterSlaveDataSource;
     
-    /**
-     * Get database connection.
-     *
-     * @param dataSourceName data source name
-     * @return database connection
-     * @throws SQLException SQL exception
-     */
+    @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
         if (getCachedConnections().containsKey(dataSourceName)) {
             return getCachedConnections().get(dataSourceName);

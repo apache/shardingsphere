@@ -46,13 +46,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Getter
     private final ShardingContext shardingContext;
     
-    /**
-     * Get database connection via data source name.
-     * 
-     * @param dataSourceName data source name
-     * @return all database connections via data source name
-     * @throws SQLException SQL exception
-     */
+    @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
         if (getCachedConnections().containsKey(dataSourceName)) {
             return getCachedConnections().get(dataSourceName);
