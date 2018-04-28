@@ -49,8 +49,6 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     private final MasterSlaveRouter masterSlaveRouter;
     
-    private SQLType cachedSQLType;
-    
     public MasterSlaveConnection(final MasterSlaveDataSource masterSlaveDataSource) {
         dataSourceMap = masterSlaveDataSource.getDataSourceMap();
         masterSlaveRouter = new MasterSlaveRouter(masterSlaveDataSource.getMasterSlaveRule());
@@ -66,7 +64,6 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
      * @throws SQLException SQL exception
      */
     public Collection<Connection> getConnections(final SQLType sqlType) throws SQLException {
-        cachedSQLType = sqlType;
         Collection<String> dataSourceNames = masterSlaveRouter.route(sqlType);
         Collection<Connection> result = new LinkedList<>();
         for (String each : dataSourceNames) {
@@ -87,7 +84,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
         if (!getCachedConnections().isEmpty()) {
             return getCachedConnections().values().iterator().next().getMetaData();
         }
-        return getConnections(null == cachedSQLType ? SQLType.DML : cachedSQLType).iterator().next().getMetaData();
+        return getConnections(SQLType.DML).iterator().next().getMetaData();
     }
     
     @Override
