@@ -20,7 +20,6 @@ package io.shardingjdbc.core.jdbc.core.statement;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.executor.type.batch.BatchPreparedStatementExecutor;
 import io.shardingjdbc.core.executor.type.batch.BatchPreparedStatementUnit;
 import io.shardingjdbc.core.executor.type.prepared.PreparedStatementExecutor;
@@ -52,7 +51,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -164,27 +162,10 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         Collection<PreparedStatementUnit> result = new LinkedList<>();
         routeResult = routingEngine.route(getParameters());
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            SQLType sqlType = routeResult.getSqlStatement().getType();
-            Collection<PreparedStatement> preparedStatements;
-            if (SQLType.DDL == sqlType) {
-                preparedStatements = generatePreparedStatementForDDL(each);
-            } else {
-                preparedStatements = Collections.singletonList(generatePreparedStatement(each));
-            }
-            routedStatements.addAll(preparedStatements);
-            for (PreparedStatement preparedStatement : preparedStatements) {
-                replaySetParameter(preparedStatement, each.getSqlUnit().getParameterSets().get(0));
-                result.add(new PreparedStatementUnit(each, preparedStatement));
-            }
-        }
-        return result;
-    }
-    
-    private Collection<PreparedStatement> generatePreparedStatementForDDL(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-        Collection<PreparedStatement> result = new LinkedList<>();
-        Collection<Connection> connections = getConnection().getConnectionsForDDL(sqlExecutionUnit.getDataSource());
-        for (Connection each : connections) {
-            result.add(each.prepareStatement(sqlExecutionUnit.getSqlUnit().getSql(), resultSetType, resultSetConcurrency, resultSetHoldability));
+            PreparedStatement preparedStatement = generatePreparedStatement(each);
+            routedStatements.add(preparedStatement);
+            replaySetParameter(preparedStatement, each.getSqlUnit().getParameterSets().get(0));
+            result.add(new PreparedStatementUnit(each, preparedStatement));
         }
         return result;
     }
