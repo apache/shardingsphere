@@ -34,7 +34,7 @@ import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
 import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
 import io.shardingjdbc.core.parsing.parser.token.SQLToken;
 import io.shardingjdbc.core.parsing.parser.token.SchemaToken;
-import io.shardingjdbc.core.parsing.parser.token.SymbolToken;
+import io.shardingjdbc.core.parsing.parser.token.InsertColumnToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
@@ -132,8 +132,8 @@ public final class SQLRewriteEngine {
                 appendLimitOffsetToken(result, (OffsetToken) each, count, sqlTokens, isRewriteLimit);
             } else if (each instanceof OrderByToken) {
                 appendOrderByToken(result, count, sqlTokens);
-            } else if (each instanceof SymbolToken) {
-                appendSymbolToken(result, (SymbolToken) each, count, sqlTokens);
+            } else if (each instanceof InsertColumnToken) {
+                appendSymbolToken(result, (InsertColumnToken) each, count, sqlTokens);
             }
             count++;
         }
@@ -235,9 +235,9 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
     }
     
-    private void appendSymbolToken(final SQLBuilder sqlBuilder, final SymbolToken symbolToken, final int count, final List<SQLToken> sqlTokens) {
-        sqlBuilder.appendLiterals(symbolToken.getSymbol().getLiterals());
-        appendRest(sqlBuilder, count, sqlTokens, symbolToken.getBeginPosition());
+    private void appendSymbolToken(final SQLBuilder sqlBuilder, final InsertColumnToken insertColumnToken, final int count, final List<SQLToken> sqlTokens) {
+        sqlBuilder.appendLiterals(insertColumnToken.getColumnName());
+        appendRest(sqlBuilder, count, sqlTokens, insertColumnToken.getBeginPosition());
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final List<SQLToken> sqlTokens, final int beginPosition) {

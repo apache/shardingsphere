@@ -65,8 +65,8 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
     
     private static ShardingMetaData buildShardingMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
-        tableMetaDataMap.put("t_order", getTableMetaData(Arrays.asList("user_id", "order_id")));
-        tableMetaDataMap.put("t_order_item", getTableMetaData(Arrays.asList("user_id", "order_id", "item_id", "c_date")));
+        tableMetaDataMap.put("t_order", getTableMetaData(Arrays.asList("order_id", "user_id")));
+        tableMetaDataMap.put("t_order_item", getTableMetaData(Arrays.asList("item_id", "order_id", "user_id", "status", "c_date")));
         tableMetaDataMap.put("t_place", getTableMetaData(Arrays.asList("user_new_id", "guid")));
         ShardingMetaData shardingMetaData = Mockito.mock(ShardingMetaData.class);
         when(shardingMetaData.getTableMetaDataMap()).thenReturn(tableMetaDataMap);

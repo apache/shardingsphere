@@ -25,7 +25,7 @@ import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
-import io.shardingjdbc.core.parsing.parser.token.SymbolToken;
+import io.shardingjdbc.core.parsing.parser.token.InsertColumnToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +73,7 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
         } else {
             List<String> columnNames = shardingMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames();
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
-            insertStatement.getSqlTokens().add(new SymbolToken(beginPosition, Symbol.LEFT_PAREN));
+            insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, "("));
             ItemsToken columnsToken = new ItemsToken(beginPosition);
             columnsToken.setFirstOfItemsSpecial(true);
             for (String columnName : columnNames) {
@@ -85,7 +85,7 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
                 count++;
             }
             insertStatement.getSqlTokens().add(columnsToken);
-            insertStatement.getSqlTokens().add(new SymbolToken(beginPosition, Symbol.RIGHT_PAREN));
+            insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, ")"));
             insertStatement.setColumnsListLastPosition(beginPosition);
         }
         insertStatement.getColumns().addAll(result);

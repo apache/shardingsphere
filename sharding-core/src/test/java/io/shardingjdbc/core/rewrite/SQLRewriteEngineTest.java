@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.OrderDirection;
-import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
@@ -31,12 +30,12 @@ import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingjdbc.core.parsing.parser.token.IndexToken;
+import io.shardingjdbc.core.parsing.parser.token.InsertColumnToken;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
 import io.shardingjdbc.core.parsing.parser.token.OffsetToken;
 import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
 import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
 import io.shardingjdbc.core.parsing.parser.token.SchemaToken;
-import io.shardingjdbc.core.parsing.parser.token.SymbolToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.routing.router.GeneratedKey;
 import io.shardingjdbc.core.routing.type.RoutingTable;
@@ -146,13 +145,13 @@ public final class SQLRewriteEngineTest {
         insertStatement.setParametersIndex(1);
         insertStatement.getSqlTokens().add(new TableToken(12, "`table_x`"));
         insertStatement.setGenerateKeyColumnIndex(0);
-        insertStatement.getSqlTokens().add(new SymbolToken(21, Symbol.LEFT_PAREN));
+        insertStatement.getSqlTokens().add(new InsertColumnToken(21, "("));
         ItemsToken itemsToken = new ItemsToken(21);
         itemsToken.setFirstOfItemsSpecial(true);
         itemsToken.getItems().add("name");
         itemsToken.getItems().add("id");
         insertStatement.getSqlTokens().add(itemsToken);
-        insertStatement.getSqlTokens().add(new SymbolToken(21, Symbol.RIGHT_PAREN));
+        insertStatement.getSqlTokens().add(new InsertColumnToken(21, ")"));
         insertStatement.getSqlTokens().add(new GeneratedKeyToken(31));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
                 shardingRule, "INSERT INTO `table_x` VALUES (?)", DatabaseType.MySQL, insertStatement, parameters, new GeneratedKey(new Column("id", "table_x"), 2, 1));
@@ -164,13 +163,13 @@ public final class SQLRewriteEngineTest {
         List<Object> parameters = new ArrayList<>();
         insertStatement.getSqlTokens().add(new TableToken(12, "`table_x`"));
         insertStatement.setGenerateKeyColumnIndex(0);
-        insertStatement.getSqlTokens().add(new SymbolToken(21, Symbol.LEFT_PAREN));
+        insertStatement.getSqlTokens().add(new InsertColumnToken(21, "("));
         ItemsToken itemsToken = new ItemsToken(21);
         itemsToken.setFirstOfItemsSpecial(true);
         itemsToken.getItems().add("name");
         itemsToken.getItems().add("id");
         insertStatement.getSqlTokens().add(itemsToken);
-        insertStatement.getSqlTokens().add(new SymbolToken(21, Symbol.RIGHT_PAREN));
+        insertStatement.getSqlTokens().add(new InsertColumnToken(21, ")"));
         insertStatement.getSqlTokens().add(new GeneratedKeyToken(32));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
                 shardingRule, "INSERT INTO `table_x` VALUES (10)", DatabaseType.MySQL, insertStatement, parameters, new GeneratedKey(new Column("id", "table_x"), 2, 1));
@@ -182,13 +181,13 @@ public final class SQLRewriteEngineTest {
         List<Object> parameters = new ArrayList<>();
         insertStatement.getSqlTokens().add(new TableToken(12, "`table_x`"));
         insertStatement.setGenerateKeyColumnIndex(0);
-        insertStatement.getSqlTokens().add(new SymbolToken(21, Symbol.LEFT_PAREN));
+        insertStatement.getSqlTokens().add(new InsertColumnToken(21, "("));
         ItemsToken itemsToken = new ItemsToken(21);
         itemsToken.setFirstOfItemsSpecial(true);
         itemsToken.getItems().add("name");
         itemsToken.getItems().add("id");
         insertStatement.getSqlTokens().add(itemsToken);
-        insertStatement.getSqlTokens().add(new SymbolToken(21, Symbol.RIGHT_PAREN));
+        insertStatement.getSqlTokens().add(new InsertColumnToken(21, ")"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
                 shardingRule, "INSERT INTO `table_x` VALUES (10, 1)", DatabaseType.MySQL, insertStatement, parameters, null);
         assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null).getSql(), is("INSERT INTO table_1(name, id) VALUES (10, 1)"));
@@ -199,13 +198,13 @@ public final class SQLRewriteEngineTest {
         List<Object> parameters = new ArrayList<>();
         insertStatement.getSqlTokens().add(new TableToken(12, "`table_x`"));
         insertStatement.setGenerateKeyColumnIndex(0);
-        insertStatement.getSqlTokens().add(new SymbolToken(21, Symbol.LEFT_PAREN));
+        insertStatement.getSqlTokens().add(new InsertColumnToken(21, "("));
         ItemsToken itemsToken = new ItemsToken(21);
         itemsToken.setFirstOfItemsSpecial(true);
         itemsToken.getItems().add("name");
         itemsToken.getItems().add("id");
         insertStatement.getSqlTokens().add(itemsToken);
-        insertStatement.getSqlTokens().add(new SymbolToken(21, Symbol.RIGHT_PAREN));
+        insertStatement.getSqlTokens().add(new InsertColumnToken(21, ")"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
                 shardingRule, "INSERT INTO `table_x` VALUES (?, ?)", DatabaseType.MySQL, insertStatement, parameters, null);
         assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens, null).getSql(), is("INSERT INTO table_1(name, id) VALUES (?, ?)"));
