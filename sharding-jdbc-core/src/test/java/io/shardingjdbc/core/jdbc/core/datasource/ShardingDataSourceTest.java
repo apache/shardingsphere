@@ -64,7 +64,7 @@ public final class ShardingDataSourceTest {
     
     @Test(expected = IllegalStateException.class)
     public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferentForMasterSlave() throws SQLException {
-        final DataSource dataSource1 = mockDataSource("MySQL");
+        DataSource dataSource1 = mockDataSource("MySQL");
         DataSource masterDataSource = mockDataSource("H2");
         DataSource slaveDataSource = mockDataSource("H2");
         Map<String, DataSource> masterSlaveDataSourceMap = new HashMap<>(2, 1);
@@ -115,7 +115,6 @@ public final class ShardingDataSourceTest {
             createShardingDataSource(dataSourceMap).getDatabaseType();
         } finally {
             for (Connection each : connections) {
-                System.out.println(each.getMetaData());
                 verify(each, atLeast(1)).close();
             }
         }

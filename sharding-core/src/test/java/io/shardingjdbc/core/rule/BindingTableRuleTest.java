@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.rule;
 
+import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.exception.ShardingConfigurationException;
 import org.junit.Test;
@@ -78,17 +79,17 @@ public final class BindingTableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..1}");
-        return new TableRule(tableRuleConfig, createDataSourceNames());
+        return new TableRule(tableRuleConfig, createShardingDataSourceNames());
     }
     
     private TableRule createSubTableRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("SUB_LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.sub_table_${0..1}");
-        return new TableRule(tableRuleConfig, createDataSourceNames());
+        return new TableRule(tableRuleConfig, createShardingDataSourceNames());
     }
     
-    private Collection<String> createDataSourceNames() {
-        return Arrays.asList("ds0", "ds1");
+    private ShardingDataSourceNames createShardingDataSourceNames() {
+        return new ShardingDataSourceNames(new ShardingRuleConfiguration(), Arrays.asList("ds0", "ds1"));
     }
 }

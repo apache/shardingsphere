@@ -101,7 +101,7 @@ public final class SQLBuilder {
             } else if (each instanceof SchemaPlaceholder) {
                 SchemaPlaceholder schemaPlaceholder = (SchemaPlaceholder) each;
                 Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(actualTableName);
-                if (!tableRule.isPresent() && Strings.isNullOrEmpty(shardingRule.getDefaultDataSourceName())) {
+                if (!tableRule.isPresent() && Strings.isNullOrEmpty(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
                     throw new ShardingJdbcException("Cannot found schema name '%s' in sharding rule.", schemaPlaceholder.getLogicSchemaName());
                 }
                 // TODO 目前只能找到真实数据源名称. 未来需要在初始化sharding rule时创建connection,并验证连接是否正确,并获取出真实的schema的名字, 然后在这里替换actualDataSourceName为actualSchemaName

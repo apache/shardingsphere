@@ -19,6 +19,7 @@ package io.shardingjdbc.core.rule;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
@@ -47,9 +48,9 @@ import java.util.TreeSet;
 @Getter
 public final class ShardingRule {
     
-    private final Collection<String> dataSourceNames;
+    private final ShardingRuleConfiguration shardingRuleConfig;
     
-    private final String defaultDataSourceName;
+    private final ShardingDataSourceNames shardingDataSourceNames;
     
     private final Collection<TableRule> tableRules;
     
@@ -66,12 +67,11 @@ public final class ShardingRule {
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkNotNull(dataSourceNames, "Data sources cannot be null.");
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
-        ShardingDataSourceNames shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, dataSourceNames);
-        this.dataSourceNames = shardingDataSourceNames.getDataSourceNames();
-        defaultDataSourceName = shardingDataSourceNames.getDefaultDataSourceName();
+        this.shardingRuleConfig = shardingRuleConfig;
+        shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, dataSourceNames);
         tableRules = new LinkedList<>();
         for (TableRuleConfiguration each : shardingRuleConfig.getTableRuleConfigs()) {
-            tableRules.add(new TableRule(each, dataSourceNames));
+            tableRules.add(new TableRule(each, shardingDataSourceNames));
         }
         for (String group : shardingRuleConfig.getBindingTableGroups()) {
             List<TableRule> tableRulesForBinding = new LinkedList<>();
@@ -131,7 +131,7 @@ public final class ShardingRule {
         if (tableRule.isPresent()) {
             return tableRule.get();
         }
-        if (null != defaultDataSourceName) {
+        if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
             return createTableRuleWithDefaultDataSource(logicTableName.toLowerCase());
         }
         throw new ShardingConfigurationException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
@@ -140,7 +140,7 @@ public final class ShardingRule {
     private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable(logicTableName);
-        return new TableRule(tableRuleConfig, Collections.singletonList(defaultDataSourceName));
+        return new TableRule(tableRuleConfig, new ShardingDataSourceNames(shardingRuleConfig, Collections.singletonList(shardingDataSourceNames.getDefaultDataSourceName())));
     }
     
     /**
@@ -321,7 +321,7 @@ public final class ShardingRule {
     public DataNode findDataNode(final String dataSourceName, final String logicTableName) {
         TableRule tableRule = getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
-            if (dataSourceNames.contains(each.getDataSourceName()) && (null == dataSourceName || each.getDataSourceName().equals(dataSourceName))) {
+            if (shardingDataSourceNames.getDataSourceNames().contains(each.getDataSourceName()) && (null == dataSourceName || each.getDataSourceName().equals(dataSourceName))) {
                 return each;
             }
         }
