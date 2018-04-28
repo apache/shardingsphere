@@ -60,7 +60,6 @@ public abstract class AbstractInsertParser implements SQLParser {
     
     @Override
     public final DMLStatement parse() {
-        // ======
         lexerEngine.nextToken();
         InsertStatement result = new InsertStatement();
         insertClauseParserFacade.getInsertIntoClauseParser().parse(result);
