@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.dialect.postgresql.clause;
 
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.clause.OrderByClauseParser;
 
@@ -33,7 +33,7 @@ public final class PostgreSQLOrderByClauseParser extends OrderByClauseParser {
     }
     
     @Override
-    protected OrderType getNullOrderType() {
-        return OrderType.DESC;
+    protected OrderDirection getNullOrderDirection() {
+        return OrderDirection.DESC;
     }
 }

@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.dialect.oracle.clause;
 
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.dialect.oracle.OracleKeyword;
 import io.shardingjdbc.core.parsing.parser.clause.OrderByClauseParser;
@@ -35,15 +35,15 @@ public final class OracleOrderByClauseParser extends OrderByClauseParser {
     }
     
     @Override
-    protected OrderType getNullOrderType() {
+    protected OrderDirection getNullOrderDirection() {
         if (!getLexerEngine().skipIfEqual(OracleKeyword.NULLS)) {
-            return OrderType.ASC;
+            return OrderDirection.ASC;
         }
         if (getLexerEngine().skipIfEqual(OracleKeyword.FIRST)) {
-            return OrderType.ASC;
+            return OrderDirection.ASC;
         }
         if (getLexerEngine().skipIfEqual(OracleKeyword.LAST)) {
-            return OrderType.DESC;
+            return OrderDirection.DESC;
         }
         throw new SQLParsingException(getLexerEngine());
     }

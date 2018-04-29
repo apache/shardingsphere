@@ -22,12 +22,11 @@ import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.algorithm.sharding.ShardingValue;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
-import io.shardingjdbc.core.parsing.parser.context.condition.Column;
-import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
-import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
-import io.shardingjdbc.core.routing.strategy.ShardingStrategy;
+import io.shardingjdbc.core.optimizer.condition.ShardingCondition;
+import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
+import io.shardingjdbc.core.routing.type.RoutingTable;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
@@ -36,6 +35,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,39 +44,48 @@ import java.util.List;
  * Standard routing engine.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class StandardRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
-    private final List<Object> parameters;
-    
     private final String logicTableName;
     
-    private final SQLStatement sqlStatement;
+    private final ShardingConditions shardingConditions;
     
     @Override
     public RoutingResult route() {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
-        List<ShardingValue> databaseShardingValues = getDatabaseShardingValues(tableRule);
-        List<ShardingValue> tableShardingValues = getTableShardingValues(tableRule);
-        Collection<String> routedDataSources = routeDataSources(tableRule, databaseShardingValues);
-        Collection<DataNode> routedDataNodes = new LinkedList<>();
-        for (String each : routedDataSources) {
-            routedDataNodes.addAll(routeTables(tableRule, each, tableShardingValues));
+        Collection<String> databaseShardingColumns = shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns();
+        Collection<String> tableShardingColumns = shardingRule.getTableShardingStrategy(tableRule).getShardingColumns();
+        Collection<DataNode> routedDataNodes = new LinkedHashSet<>();
+        if (HintManagerHolder.isUseShardingHint()) {
+            List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint(databaseShardingColumns);
+            List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint(tableShardingColumns);
+            routedDataNodes.addAll(route(tableRule, databaseShardingValues, tableShardingValues));
+        } else {
+            if (shardingConditions.getShardingConditions().isEmpty()) {
+                routedDataNodes.addAll(route(tableRule, Collections.<ShardingValue>emptyList(), Collections.<ShardingValue>emptyList()));
+            } else {
+                for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+                    List<ShardingValue> databaseShardingValues = getShardingValues(databaseShardingColumns, each);
+                    List<ShardingValue> tableShardingValues = getShardingValues(tableShardingColumns, each);
+                    routedDataNodes.addAll(route(tableRule, databaseShardingValues, tableShardingValues));
+                }
+            }
         }
         return generateRoutingResult(routedDataNodes);
     }
     
-    private List<ShardingValue> getDatabaseShardingValues(final TableRule tableRule) {
-        ShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
-        return HintManagerHolder.isUseShardingHint() ? getDatabaseShardingValuesFromHint(strategy.getShardingColumns()) : getShardingValues(strategy.getShardingColumns());
-    }
-    
-    private List<ShardingValue> getTableShardingValues(final TableRule tableRule) {
-        ShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
-        return HintManagerHolder.isUseShardingHint() ? getTableShardingValuesFromHint(strategy.getShardingColumns()) : getShardingValues(strategy.getShardingColumns());
+    private Collection<DataNode> route(final TableRule tableRule, final List<ShardingValue> databaseShardingValues, final List<ShardingValue> tableShardingValues) {
+        Collection<String> routedDataSources = routeDataSources(tableRule, databaseShardingValues);
+        Collection<DataNode> result = new LinkedList<>();
+        for (String each : routedDataSources) {
+            result.addAll(routeTables(tableRule, each, tableShardingValues));
+        }
+        return result;
     }
     
     private List<ShardingValue> getDatabaseShardingValuesFromHint(final Collection<String> shardingColumns) {
@@ -100,12 +110,11 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private List<ShardingValue> getShardingValues(final Collection<String> shardingColumns) {
+    private List<ShardingValue> getShardingValues(final Collection<String> shardingColumns, final ShardingCondition shardingCondition) {
         List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
-        for (String each : shardingColumns) {
-            Optional<Condition> condition = sqlStatement.getConditions().find(new Column(each, logicTableName));
-            if (condition.isPresent()) {
-                result.add(condition.get().getShardingValue(parameters));
+        for (ShardingValue each : shardingCondition.getShardingValues()) {
+            if (logicTableName.equals(each.getLogicTableName()) && shardingColumns.contains(each.getColumnName())) {
+                result.add(each);
             }
         }
         return result;
@@ -136,7 +145,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private RoutingResult generateRoutingResult(final Collection<DataNode> routedDataNodes) {
         RoutingResult result = new RoutingResult();
         for (DataNode each : routedDataNodes) {
-            result.getTableUnits().getTableUnits().add(new TableUnit(each.getDataSourceName(), logicTableName, each.getTableName()));
+            TableUnit tableUnit = new TableUnit(each.getDataSourceName());
+            tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, each.getTableName()));
+            result.getTableUnits().getTableUnits().add(tableUnit);
         }
         return result;
     }

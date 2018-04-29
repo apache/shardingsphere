@@ -19,6 +19,7 @@ package io.shardingjdbc.core.parsing.parser.token;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.LinkedList;
@@ -28,6 +29,7 @@ import java.util.List;
  * Select items token.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -35,6 +37,9 @@ import java.util.List;
 public final class ItemsToken implements SQLToken {
     
     private final int beginPosition;
+    
+    @Setter
+    private boolean isFirstOfItemsSpecial;
     
     private final List<String> items = new LinkedList<>();
 }

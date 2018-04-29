@@ -20,7 +20,7 @@ package io.shardingjdbc.core.routing.type;
 import lombok.Getter;
 
 /**
- *  Routing result.
+ * Routing result.
  * 
  * @author zhangliang
  */

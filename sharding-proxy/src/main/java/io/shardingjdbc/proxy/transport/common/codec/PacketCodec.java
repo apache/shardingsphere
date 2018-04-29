@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
-import io.shardingjdbc.proxy.transport.common.packet.SentPacket;
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.List;
  * @author zhangliang 
  */
 @Slf4j
-public abstract class PacketCodec<T extends SentPacket> extends ByteToMessageCodec<T> {
+public abstract class PacketCodec<T extends DatabaseProtocolPacket> extends ByteToMessageCodec<T> {
     
     @Override
     protected void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {

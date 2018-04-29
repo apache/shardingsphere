@@ -23,6 +23,7 @@ import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingjdbc.core.parsing.parser.context.selectitem.SelectItem;
+import io.shardingjdbc.core.parsing.parser.context.selectitem.StarSelectItem;
 import io.shardingjdbc.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingjdbc.core.parsing.parser.token.OffsetToken;
 import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
@@ -107,6 +108,22 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
+     * Get start select items.
+     *
+     * @return start select items.
+     */
+    public List<StarSelectItem> getStarSelectItems() {
+        List<StarSelectItem> result = new LinkedList<>();
+        for (SelectItem each : items) {
+            if (each instanceof StarSelectItem) {
+                StarSelectItem starSelectItem = (StarSelectItem) each;
+                result.add(starSelectItem);
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Adjust group by and order by sequence is same or not.
      *
      * @return group by and order by sequence is same or not
@@ -177,6 +194,7 @@ public final class SelectStatement extends DQLStatement {
         SelectStatement result = processLimitForSubQuery();
         processItems(result);
         processOrderByItems(result);
+        result.setParametersIndex(getParametersIndex());
         return result;
     }
     

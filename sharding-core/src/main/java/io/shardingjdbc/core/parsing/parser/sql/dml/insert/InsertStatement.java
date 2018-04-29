@@ -18,23 +18,18 @@
 package io.shardingjdbc.core.parsing.parser.sql.dml.insert;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.core.parsing.lexer.token.Symbol;
-import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
+import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
-import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
-import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
-import io.shardingjdbc.core.parsing.parser.expression.SQLPlaceholderExpression;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
 import io.shardingjdbc.core.parsing.parser.token.SQLToken;
-import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.core.rule.TableRule;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,7 +41,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class InsertStatement extends DMLStatement {
     
     private final Collection<Column> columns = new LinkedList<>();
@@ -61,55 +56,34 @@ public final class InsertStatement extends DMLStatement {
     
     private int valuesListLastPosition;
     
-    private GeneratedKey generatedKey;
+    private GeneratedKeyCondition generatedKeyCondition;
     
     /**
-     * Append generate key token.
-     *
-     * @param shardingRule databases and tables sharding rule
-     * @param parametersSize parameters size
+     * Find generated key token.
+     * 
+     * @return generated key token
      */
-    public void appendGenerateKeyToken(final ShardingRule shardingRule, final int parametersSize) {
-        if (null != generatedKey) {
-            return;
-        }
-        Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByLogicTable(getTables().getSingleTableName());
-        if (!tableRule.isPresent()) {
-            return;
-        }
-        Optional<GeneratedKeyToken> generatedKeysToken = findGeneratedKeyToken();
-        if (!generatedKeysToken.isPresent()) {
-            return;
-        }
-        ItemsToken valuesToken = new ItemsToken(generatedKeysToken.get().getBeginPosition());
-        if (0 == parametersSize) {
-            appendGenerateKeyToken(shardingRule, tableRule.get(), valuesToken);
-        } else {
-            appendGenerateKeyToken(shardingRule, tableRule.get(), valuesToken, parametersSize);
-        }
-        getSqlTokens().remove(generatedKeysToken.get());
-        getSqlTokens().add(valuesToken);
-    }
-    
-    private void appendGenerateKeyToken(final ShardingRule shardingRule, final TableRule tableRule, final ItemsToken valuesToken) {
-        Number generatedKey = shardingRule.generateKey(tableRule.getLogicTable());
-        valuesToken.getItems().add(generatedKey.toString());
-        getConditions().add(new Condition(new Column(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLNumberExpression(generatedKey)), shardingRule);
-        this.generatedKey = new GeneratedKey(tableRule.getLogicTable(), -1, generatedKey);
-    }
-    
-    private void appendGenerateKeyToken(final ShardingRule shardingRule, final TableRule tableRule, final ItemsToken valuesToken, final int parametersSize) {
-        valuesToken.getItems().add(Symbol.QUESTION.getLiterals());
-        getConditions().add(new Condition(new Column(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLPlaceholderExpression(parametersSize)), shardingRule);
-        generatedKey = new GeneratedKey(tableRule.getGenerateKeyColumn(), parametersSize, null);
-    }
-    
-    private Optional<GeneratedKeyToken> findGeneratedKeyToken() {
+    public Optional<GeneratedKeyToken> findGeneratedKeyToken() {
         for (SQLToken each : getSqlTokens()) {
             if (each instanceof GeneratedKeyToken) {
                 return Optional.of((GeneratedKeyToken) each);
             }
         }
         return Optional.absent();
+    }
+    
+    /**
+     * Get items tokens.
+     *
+     * @return items token list.
+     */
+    public List<ItemsToken> getItemsTokens() {
+        List<ItemsToken> itemsTokens = new ArrayList<>();
+        for (SQLToken each : getSqlTokens()) {
+            if (each instanceof ItemsToken) {
+                itemsTokens.add((ItemsToken) each);
+            }
+        }
+        return itemsTokens;
     }
 }

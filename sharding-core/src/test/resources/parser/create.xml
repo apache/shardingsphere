@@ -1,69 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser-asserts>
-    <parser-assert sql-case-id="assertCreateTable">
+<parser-result-sets>
+    <parser-result sql-case-id="assertCreateTable">
         <tables>
             <table name="t_log" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="13" original-literals="t_log" />
-        </table-tokens>
-    </parser-assert>
-    <parser-assert sql-case-id="assertCreateTableIfNotExist">
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertCreateTableIfNotExist">
         <tables>
             <table name="t_log" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="27" original-literals="t_log" />
-        </table-tokens>
-    </parser-assert>
-    <parser-assert sql-case-id="assertCreateTemporaryTable">
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertCreateTemporaryTable">
         <tables>
             <table name="t_temp_log" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="37" original-literals="t_temp_log" />
-        </table-tokens>
-    </parser-assert>
-    <parser-assert sql-case-id="assertCreateGlobalTemporaryTable">
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertCreateGlobalTemporaryTable">
         <tables>
             <table name="t_temp_log" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="30" original-literals="t_temp_log" />
-        </table-tokens>
-    </parser-assert>
-    <parser-assert sql-case-id="assertCreateLocalTempTable">
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertCreateLocalTempTable">
         <tables>
             <table name="t_temp_log" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="24" original-literals="t_temp_log" />
-        </table-tokens>
-    </parser-assert>
-    <parser-assert sql-case-id="assertCreateUnloggedTable">
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertCreateUnloggedTable">
         <tables>
             <table name="t_log" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="22" original-literals="t_log" />
-        </table-tokens>
-    </parser-assert>
-`    <parser-assert sql-case-id="assertCreateIndex">
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertCreateIndex">
         <tables>
             <table name="t_log" />
         </tables>
-        <index-token begin-position="13" original-literals="t_log_index" table-name="t_log" />
-        <table-tokens>
+        <tokens>
+            <index-token begin-position="13" original-literals="t_log_index" table-name="t_log" />
             <table-token begin-position="28" original-literals="t_log" />
-        </table-tokens>
-    </parser-assert>
-    <parser-assert sql-case-id="assertCreateUniqueIndex">
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertCreateUniqueIndex">
         <tables>
             <table name="t_log" />
         </tables>
-        <index-token begin-position="20" original-literals="t_log_index" table-name="t_log" />
-        <table-tokens>
+        <tokens>
+            <index-token begin-position="20" original-literals="t_log_index" table-name="t_log" />
             <table-token begin-position="35" original-literals="t_log" />
-        </table-tokens>
-    </parser-assert>
-</parser-asserts>
+        </tokens>
+    </parser-result>
+</parser-result-sets>

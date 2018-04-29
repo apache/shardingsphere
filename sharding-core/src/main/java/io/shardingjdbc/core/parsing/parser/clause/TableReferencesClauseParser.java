@@ -20,6 +20,7 @@ package io.shardingjdbc.core.parsing.parser.clause;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
+import io.shardingjdbc.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
@@ -28,6 +29,7 @@ import io.shardingjdbc.core.parsing.parser.clause.expression.BasicExpressionPars
 import io.shardingjdbc.core.parsing.parser.context.table.Table;
 import io.shardingjdbc.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLUtil;
@@ -80,8 +82,8 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         final int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         String literals = lexerEngine.getCurrentToken().getLiterals();
         lexerEngine.nextToken();
-        if (lexerEngine.equalAny(Symbol.DOT)) {
-            throw new UnsupportedOperationException("Cannot support SQL for `schema.table`");
+        if (lexerEngine.skipIfEqual(Symbol.DOT)) {
+            literals = lexerEngine.getCurrentToken().getLiterals();
         }
         String tableName = SQLUtil.getExactlyValue(literals);
         if (Strings.isNullOrEmpty(tableName)) {
@@ -89,13 +91,30 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         }
         Optional<String> alias = aliasExpressionParser.parseTableAlias();
         if (isSingleTableOnly || shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()
-                || shardingRule.getDataSourceNames().contains(shardingRule.getDefaultDataSourceName())) {
+                || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
             sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
             sqlStatement.getTables().add(new Table(tableName, alias));
         }
+        parseForceIndex(tableName, sqlStatement);
         parseJoinTable(sqlStatement);
         if (isSingleTableOnly && !sqlStatement.getTables().isSingleTable()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
+        }
+    }
+    
+    private void parseForceIndex(final String tableName, final SQLStatement sqlStatement) {
+        boolean skipIfForce = lexerEngine.skipIfEqual(MySQLKeyword.FORCE) && this.lexerEngine.skipIfEqual(DefaultKeyword.INDEX);
+        if (skipIfForce) {
+            lexerEngine.accept(Symbol.LEFT_PAREN);
+            do {
+                String literals = lexerEngine.getCurrentToken().getLiterals();
+                if (shardingRule.isLogicIndex(literals, tableName)) {
+                    int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - literals.length();
+                    sqlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
+                }
+                lexerEngine.nextToken();
+            } while (lexerEngine.skipIfEqual(Symbol.COMMA));
+            lexerEngine.accept(Symbol.RIGHT_PAREN);
         }
     }
     

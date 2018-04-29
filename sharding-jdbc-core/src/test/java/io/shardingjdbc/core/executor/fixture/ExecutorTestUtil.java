@@ -41,7 +41,7 @@ public final class ExecutorTestUtil {
         if (event instanceof AbstractSQLExecutionEvent) {
             AbstractSQLExecutionEvent sqlExecutionEvent = (AbstractSQLExecutionEvent) event;
             eventCaller.verifyDataSource(sqlExecutionEvent.getDataSource());
-            eventCaller.verifySQL(sqlExecutionEvent.getSql());
+            eventCaller.verifySQL(sqlExecutionEvent.getSqlUnit().getSql());
             eventCaller.verifyParameters(sqlExecutionEvent.getParameters());
             eventCaller.verifyEventExecutionType(sqlExecutionEvent.getEventExecutionType());
             

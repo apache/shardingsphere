@@ -34,6 +34,7 @@ import java.util.List;
  * 
  * @author zhangliang
  * @author caohao
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class PreparedStatementExecutor {
@@ -44,8 +45,6 @@ public final class PreparedStatementExecutor {
     
     private final Collection<PreparedStatementUnit> preparedStatementUnits;
     
-    private final List<Object> parameters;
-    
     /**
      * Execute query.
      * 
@@ -53,7 +52,7 @@ public final class PreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public List<ResultSet> executeQuery() throws SQLException {
-        return executorEngine.executePreparedStatement(sqlType, preparedStatementUnits, parameters, new ExecuteCallback<ResultSet>() {
+        return executorEngine.execute(sqlType, preparedStatementUnits, new ExecuteCallback<ResultSet>() {
             
             @Override
             public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
@@ -69,7 +68,7 @@ public final class PreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public int executeUpdate() throws SQLException {
-        List<Integer> results = executorEngine.executePreparedStatement(sqlType, preparedStatementUnits, parameters, new ExecuteCallback<Integer>() {
+        List<Integer> results = executorEngine.execute(sqlType, preparedStatementUnits, new ExecuteCallback<Integer>() {
             
             @Override
             public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
@@ -94,7 +93,7 @@ public final class PreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public boolean execute() throws SQLException {
-        List<Boolean> result = executorEngine.executePreparedStatement(sqlType, preparedStatementUnits, parameters, new ExecuteCallback<Boolean>() {
+        List<Boolean> result = executorEngine.execute(sqlType, preparedStatementUnits, new ExecuteCallback<Boolean>() {
             
             @Override
             public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {

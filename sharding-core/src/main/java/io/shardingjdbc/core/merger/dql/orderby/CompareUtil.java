@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.core.merger.dql.orderby;
 
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -34,21 +34,21 @@ public final class CompareUtil {
      *
      * @param thisValue this value
      * @param otherValue other value
-     * @param orderType order type
-     * @param nullOrderType null value order type
+     * @param orderDirection order direction 
+     * @param nullOrderDirection order direction for null value
      * @return compare result
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType orderType, final OrderType nullOrderType) {
+    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         if (null == thisValue && null == otherValue) {
             return 0;
         }
         if (null == thisValue) {
-            return orderType == nullOrderType ? -1 : 1;
+            return orderDirection == nullOrderDirection ? -1 : 1;
         }
         if (null == otherValue) {
-            return orderType == nullOrderType ? 1 : -1;
+            return orderDirection == nullOrderDirection ? 1 : -1;
         }
-        return OrderType.ASC == orderType ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
+        return OrderDirection.ASC == orderDirection ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
 }

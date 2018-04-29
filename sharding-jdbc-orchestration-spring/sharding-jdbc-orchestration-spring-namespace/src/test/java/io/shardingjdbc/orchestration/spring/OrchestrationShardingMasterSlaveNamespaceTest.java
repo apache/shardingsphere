@@ -48,7 +48,7 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
         assertNotNull(dataSourceMap.get("refMasterSlaveDataSource"));
         assertNotNull(dataSourceMap.get("defaultMasterSlaveDataSource"));
         ShardingRule shardingRule = getShardingRule();
-        assertThat(shardingRule.getDefaultDataSourceName(), is("defaultMasterSlaveDataSource"));
+        assertThat(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName(), is("defaultMasterSlaveDataSource"));
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
     }

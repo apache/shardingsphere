@@ -20,29 +20,24 @@ package io.shardingjdbc.core.parsing.parser.context.condition;
 import com.google.common.base.Optional;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Conditions collection.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @ToString
 public final class Conditions {
     
-    private final Map<Column, Condition> conditions = new LinkedHashMap<>();
+    private final OrCondition orCondition = new OrCondition();
     
     public Conditions(final Conditions conditions) {
-        for (Entry<Column, Condition> entry : conditions.conditions.entrySet()) {
-            this.conditions.put(entry.getKey(), entry.getValue());
-        }
+        orCondition.getAndConditions().addAll(conditions.orCondition.getAndConditions());
     }
     
     /**
@@ -51,36 +46,35 @@ public final class Conditions {
      * @param condition condition
      * @param shardingRule databases and tables sharding rule
      */
-    // TODO adjust before add condition, eg: if condition exist = operator and include same column, should remove condition (tow equal condition should found nothing)
     public void add(final Condition condition, final ShardingRule shardingRule) {
         // TODO self-join has problem, table name maybe use alias
         if (shardingRule.isShardingColumn(condition.getColumn())) {
-            conditions.put(condition.getColumn(), condition);
+            orCondition.add(condition);
         }
     }
     
-    // TODO should remove, use mockito to replace this method
-    @Deprecated
-    public void add(final Condition condition) {
-        conditions.put(condition.getColumn(), condition);
-    }
-    
     /**
-     * Adjust condition is empty or not.
-     * 
-     * @return condition is empty or not
+     * Find condition via column in first and condition.
+     *
+     * @param column column
+     * @return found condition
+     * @deprecated only test call
      */
-    public boolean isEmpty() {
-        return conditions.isEmpty();
+    @Deprecated
+    public Optional<Condition> find(final Column column) {
+        return find(column, 0);
     }
     
     /**
      * Find condition via column.
      *
      * @param column column
+     * @param index index of and conditions
      * @return found condition
+     * @deprecated only test call
      */
-    public Optional<Condition> find(final Column column) {
-        return Optional.fromNullable(conditions.get(column));
+    @Deprecated
+    public Optional<Condition> find(final Column column, final int index) {
+        return orCondition.find(column, index);
     }
 }

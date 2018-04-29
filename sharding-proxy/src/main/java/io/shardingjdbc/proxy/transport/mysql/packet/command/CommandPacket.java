@@ -17,22 +17,38 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLReceivedPacket;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
-
-import java.util.List;
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 
 /**
  * Command packet.
  *
  * @author zhangliang
  */
-public abstract class CommandPacket extends MySQLReceivedPacket {
+public abstract class CommandPacket extends MySQLPacket {
+    
+    public CommandPacket(final int sequenceId) {
+        super(sequenceId);
+    }
     
     /**
      * Execute command.
      * 
      * @return result packets to be sent
      */
-    public abstract List<MySQLSentPacket> execute();
+    public abstract CommandResponsePackets execute();
+    
+    /**
+     * Has more result value.
+     *
+     * @return has more result value
+     */
+    public abstract boolean hasMoreResultValue();
+    
+    /**
+     * Get result value.
+     *
+     * @return result to be sent
+     */
+    public abstract DatabaseProtocolPacket getResultValue();
 }

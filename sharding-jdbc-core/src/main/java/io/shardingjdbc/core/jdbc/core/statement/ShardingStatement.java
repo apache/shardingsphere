@@ -18,7 +18,6 @@
 package io.shardingjdbc.core.jdbc.core.statement;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.executor.type.statement.StatementExecutor;
 import io.shardingjdbc.core.executor.type.statement.StatementUnit;
 import io.shardingjdbc.core.jdbc.adapter.AbstractStatementAdapter;
@@ -30,7 +29,6 @@ import io.shardingjdbc.core.merger.JDBCQueryResult;
 import io.shardingjdbc.core.merger.MergeEngine;
 import io.shardingjdbc.core.merger.MergeEngineFactory;
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.parsing.parser.context.GeneratedKey;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.DQLStatement;
@@ -38,16 +36,15 @@ import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
 import io.shardingjdbc.core.routing.SQLRouteResult;
 import io.shardingjdbc.core.routing.StatementRoutingEngine;
+import io.shardingjdbc.core.routing.router.sharding.GeneratedKey;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -199,22 +196,13 @@ public class ShardingStatement extends AbstractStatementAdapter {
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         clearPrevious();
         ShardingContext shardingContext = connection.getShardingContext();
-        routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), shardingContext.getDatabaseType(), shardingContext.isShowSQL()).route(sql);
+        routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), shardingContext.getShardingMetaData(), shardingContext.getDatabaseType(), shardingContext.isShowSQL()).route(sql);
         Collection<StatementUnit> statementUnits = new LinkedList<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            Collection<Connection> connections;
-            SQLType sqlType = routeResult.getSqlStatement().getType();
-            if (SQLType.DDL == sqlType) {
-                connections = connection.getConnectionsForDDL(each.getDataSource());
-            } else {
-                connections = Collections.singletonList(connection.getConnection(each.getDataSource(), routeResult.getSqlStatement().getType()));
-            }
-            for (Connection connection : connections) {
-                Statement statement = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
-                replayMethodsInvocation(statement);
-                statementUnits.add(new StatementUnit(each, statement));
-                routedStatements.add(statement);
-            }
+            Statement statement = connection.getConnection(each.getDataSource()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+            replayMethodsInvocation(statement);
+            statementUnits.add(new StatementUnit(each, statement));
+            routedStatements.add(statement);
         }
         return new StatementExecutor(connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), statementUnits);
     }
@@ -230,7 +218,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
         if (returnGeneratedKeys && generatedKey.isPresent()) {
-            return new GeneratedKeysResultSet(routeResult.getGeneratedKeys().iterator(), generatedKey.get().getColumn(), this);
+            return new GeneratedKeysResultSet(routeResult.getGeneratedKey().getGeneratedKeys().iterator(), generatedKey.get().getColumn().getName(), this);
         }
         if (1 == getRoutedStatements().size()) {
             return getRoutedStatements().iterator().next().getGeneratedKeys();
@@ -240,7 +228,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     private Optional<GeneratedKey> getGeneratedKey() {
         if (null != routeResult && routeResult.getSqlStatement() instanceof InsertStatement) {
-            return Optional.fromNullable(((InsertStatement) routeResult.getSqlStatement()).getGeneratedKey());
+            return Optional.fromNullable(routeResult.getGeneratedKey());
         }
         return Optional.absent();
     }

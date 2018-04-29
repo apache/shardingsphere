@@ -17,8 +17,9 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.generic;
 
+import com.google.common.base.Preconditions;
+import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 import lombok.Getter;
 
 /**
@@ -28,7 +29,7 @@ import lombok.Getter;
  * @author zhangliang 
  */
 @Getter
-public class ErrPacket extends MySQLSentPacket {
+public class ErrPacket extends MySQLPacket {
     
     private static final int HEADER = 0xff;
     
@@ -41,11 +42,20 @@ public class ErrPacket extends MySQLSentPacket {
     private final String errorMessage;
     
     public ErrPacket(final int sequenceId, final int errorCode, final String sqlStateMarker, final String sqlState, final String errorMessage) {
-        setSequenceId(sequenceId);
+        super(sequenceId);
         this.errorCode = errorCode;
         this.sqlStateMarker = sqlStateMarker;
         this.sqlState = sqlState;
         this.errorMessage = errorMessage;
+    }
+    
+    public ErrPacket(final MySQLPacketPayload mysqlPacketPayload) {
+        super(mysqlPacketPayload.readInt1());
+        Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
+        errorCode = mysqlPacketPayload.readInt2();
+        sqlStateMarker = mysqlPacketPayload.readStringFix(1);
+        sqlState = mysqlPacketPayload.readStringFix(5);
+        errorMessage = mysqlPacketPayload.readStringEOF();
     }
     
     @Override

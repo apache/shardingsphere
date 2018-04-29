@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.parsing.parser.dialect.sqlserver.sql;
 
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.parser.dialect.sqlserver.clause.SQLServerOffsetClauseParser;
 import io.shardingjdbc.core.parsing.parser.dialect.sqlserver.clause.SQLServerTopClauseParser;
@@ -36,8 +37,8 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     private final SQLServerOffsetClauseParser offsetClauseParser;
     
-    public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(shardingRule, lexerEngine, new SQLServerSelectClauseParserFacade(shardingRule, lexerEngine));
+    public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
+        super(shardingRule, lexerEngine, new SQLServerSelectClauseParserFacade(shardingRule, lexerEngine), shardingMetaData);
         topClauseParser = new SQLServerTopClauseParser(lexerEngine);
         offsetClauseParser = new SQLServerOffsetClauseParser(lexerEngine);
     }

@@ -18,6 +18,7 @@ shardingRule:
         complex:
           shardingColumns: user_id, order_id
           algorithmClassName: io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm
+      logicIndex: order_index
     t_order_item:
       actualDataNodes: db${0..1}.t_order_item
       tableStrategy: 
@@ -25,6 +26,12 @@ shardingRule:
           shardingColumns: user_id, order_id, item_id
           algorithmClassName: io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm 
       keyGeneratorColumnName: item_id
+    t_place:
+      actualDataNodes: db${0..1}.t_place
+      tableStrategy: 
+        complex:
+          shardingColumns: user_new_id, guid
+          algorithmClassName: io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm
   bindingTables:
     - t_order, t_order_item
   defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator

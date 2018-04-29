@@ -17,14 +17,13 @@
 
 package io.shardingjdbc.core.integrate.type.sharding.hint.type;
 
-import io.shardingjdbc.core.util.SQLPlaceholderUtil;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.sql.DatabaseTestSQL;
 import io.shardingjdbc.core.integrate.type.sharding.hint.base.AbstractShardingDatabaseOnlyWithHintTest;
 import io.shardingjdbc.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
 import io.shardingjdbc.core.jdbc.core.connection.ShardingConnection;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.util.SQLPlaceholderUtil;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
@@ -165,9 +164,8 @@ public final class ShardingDatabaseOnlyWithHintForDMLTest extends AbstractShardi
     
     private void assertDataSet(final ShardingConnection connection, final DatabaseType type, final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
-            assertDataSet(String.format("integrate/dataset/sharding/hint/expect/%s/db_%s.xml", expectedDataSetPattern, i),
-                    connection.getConnection(String.format("dataSource_db_%s", i), SQLType.DQL),
-                    SQLPlaceholderUtil.replacePreparedStatement(DatabaseTestSQL.ASSERT_SELECT_WITH_STATUS_SQL), type, status);
+            assertDataSet(String.format("integrate/dataset/sharding/hint/expect/%s/db_%s.xml", expectedDataSetPattern, i), 
+                    connection.getConnection(String.format("dataSource_db_%s", i)), SQLPlaceholderUtil.replacePreparedStatement(DatabaseTestSQL.ASSERT_SELECT_WITH_STATUS_SQL), type, status);
         }
     }
 }

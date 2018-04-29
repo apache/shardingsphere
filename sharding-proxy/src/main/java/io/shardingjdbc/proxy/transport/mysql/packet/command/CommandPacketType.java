@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
+@Getter
 public enum CommandPacketType {
     
     /**

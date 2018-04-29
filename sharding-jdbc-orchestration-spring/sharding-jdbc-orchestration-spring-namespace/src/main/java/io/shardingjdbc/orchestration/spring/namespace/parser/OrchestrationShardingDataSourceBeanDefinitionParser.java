@@ -21,8 +21,9 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.keygen.KeyGeneratorFactory;
-import io.shardingjdbc.orchestration.internal.OrchestrationShardingDataSource;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingjdbc.orchestration.spring.datasource.OrchestrationShardingDataSourceFactoryBean;
+import io.shardingjdbc.orchestration.spring.datasource.SpringShardingDataSource;
 import io.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -50,14 +51,33 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationShardingDataSource.class);
+        String regCenter = parseRegistryCenterRef(element);
+        if (Strings.isNullOrEmpty(regCenter)) {
+            return getSpringShardingDataSourceBean(element, parserContext);
+        }
+        return getOrchestrationSpringShardingDataSourceBean(element, parserContext);
+    }
+    
+    private AbstractBeanDefinition getSpringShardingDataSourceBean(final Element element, final ParserContext parserContext) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseShardingRuleConfig(element));
         factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
-        factory.addConstructorArgValue(parseOrchestrationConfiguration(element));
-        factory.setInitMethodName("init");
         factory.setDestroyMethodName("close");
+        return factory.getBeanDefinition();
+    }
+    
+    private AbstractBeanDefinition getOrchestrationSpringShardingDataSourceBean(final Element element, final ParserContext parserContext) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationShardingDataSourceFactoryBean.class);
+        Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
+        if (null != shardingRuleElement) {
+            factory.addConstructorArgValue(parseDataSources(element));
+            factory.addConstructorArgValue(parseShardingRuleConfig(shardingRuleElement));
+            factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
+            factory.addConstructorArgValue(parseProperties(element, parserContext));
+        }
+        factory.addConstructorArgValue(parseOrchestrationConfiguration(element, OrchestrationConfiguration.SHARDING));
         return factory.getBeanDefinition();
     }
     
@@ -72,21 +92,20 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
     }
     
     private BeanDefinition parseShardingRuleConfig(final Element element) {
-        Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfiguration.class);
-        parseDefaultDataSource(factory, shardingRuleElement);
-        parseDefaultDatabaseShardingStrategy(factory, shardingRuleElement);
-        parseDefaultTableShardingStrategy(factory, shardingRuleElement);
-        factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfig(shardingRuleElement));
-        factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfig(shardingRuleElement));
-        parseKeyGenerator(factory, shardingRuleElement);
+        parseDefaultDataSource(factory, element);
+        parseDefaultDatabaseShardingStrategy(factory, element);
+        parseDefaultTableShardingStrategy(factory, element);
+        factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfig(element));
+        factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfig(element));
+        parseKeyGenerator(factory, element);
         return factory.getBeanDefinition();
     }
     
     private void parseKeyGenerator(final BeanDefinitionBuilder factory, final Element element) {
-        String keyGeneratorClass = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.KEY_GENERATOR_CLASS);
-        if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
-            factory.addPropertyValue("defaultKeyGenerator", KeyGeneratorFactory.newInstance(keyGeneratorClass));
+        String keyGenerator = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DEFAULT_KEY_GENERATOR_REF_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(keyGenerator)) {
+            factory.addPropertyReference("defaultKeyGenerator", keyGenerator);
         }
     }
     
@@ -136,13 +155,13 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
         if (!Strings.isNullOrEmpty(tableStrategy)) {
             factory.addPropertyReference("tableShardingStrategyConfig", tableStrategy);
         }
-        String keyGeneratorColumnName = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.GENERATE_KEY_COLUMN);
+        String keyGeneratorColumnName = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.GENERATE_KEY_COLUMN_NAME_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(keyGeneratorColumnName)) {
             factory.addPropertyValue("keyGeneratorColumnName", keyGeneratorColumnName);
         }
-        String keyGeneratorClass = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.COLUMN_KEY_GENERATOR_CLASS);
-        if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
-            factory.addPropertyValue("keyGenerator", KeyGeneratorFactory.newInstance(keyGeneratorClass));
+        String keyGenerator = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.KEY_GENERATOR_REF_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(keyGenerator)) {
+            factory.addPropertyReference("keyGenerator", keyGenerator);
         }
         String logicIndex = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.LOGIC_INDEX_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(logicIndex)) {

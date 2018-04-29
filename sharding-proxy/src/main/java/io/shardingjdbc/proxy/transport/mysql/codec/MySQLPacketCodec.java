@@ -22,7 +22,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.shardingjdbc.proxy.transport.common.codec.PacketCodec;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLSentPacket;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ import java.util.List;
  * 
  * @author zhangliang 
  */
-public final class MySQLPacketCodec extends PacketCodec<MySQLSentPacket> {
+public final class MySQLPacketCodec extends PacketCodec<MySQLPacket> {
     
     @Override
     protected boolean isValidHeader(final int readableBytes) {
@@ -46,15 +45,11 @@ public final class MySQLPacketCodec extends PacketCodec<MySQLSentPacket> {
             in.resetReaderIndex();
             return;
         }
-        if (readableBytes > realPacketLength) {
-            out.add(in.readRetainedSlice(payloadLength + MySQLPacket.SEQUENCE_LENGTH));
-            return;
-        }
-        out.add(in);
+        out.add(in.readRetainedSlice(payloadLength + MySQLPacket.SEQUENCE_LENGTH));
     }
     
     @Override
-    protected void doEncode(final ChannelHandlerContext context, final MySQLSentPacket message, final ByteBuf out) {
+    protected void doEncode(final ChannelHandlerContext context, final MySQLPacket message, final ByteBuf out) {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(context.alloc().buffer());
         message.write(mysqlPacketPayload);
         out.writeMediumLE(mysqlPacketPayload.getByteBuf().readableBytes());

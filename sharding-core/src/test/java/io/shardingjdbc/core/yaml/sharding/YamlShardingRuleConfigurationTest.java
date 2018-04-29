@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.yaml.sharding;
 
 import io.shardingjdbc.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingjdbc.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
@@ -78,8 +79,8 @@ public final class YamlShardingRuleConfigurationTest {
         result.setName("master_slave_ds");
         result.setMasterDataSourceName("master_ds");
         result.setSlaveDataSourceNames(Arrays.asList("slave_ds_0", "slave_ds_1"));
-        result.setLoadBalanceAlgorithmType(MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN);
-        result.setLoadBalanceAlgorithmClassName("TestLoadBalanceAlgorithmClassName");
+        result.setLoadBalanceAlgorithmClassName(RoundRobinMasterSlaveLoadBalanceAlgorithm.class.getName());
+        result.setLoadBalanceAlgorithmType(MasterSlaveLoadBalanceAlgorithmType.RANDOM);
         return result;
     }
     
@@ -99,7 +100,7 @@ public final class YamlShardingRuleConfigurationTest {
         assertThat(actual.getName(), is("master_slave_ds"));
         assertThat(actual.getMasterDataSourceName(), is("master_ds"));
         assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Arrays.asList("slave_ds_0", "slave_ds_1")));
-        assertThat(actual.getLoadBalanceAlgorithm(), is(MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()));
+        assertThat(actual.getLoadBalanceAlgorithm(), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
     }
     
     private void assertWithoutDefaultStrategy(final ShardingRuleConfiguration actual) {

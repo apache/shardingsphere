@@ -18,7 +18,7 @@
 package io.shardingjdbc.core.parsing.parser.sql;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.core.constant.OrderType;
+import io.shardingjdbc.core.constant.OrderDirection;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.junit.Test;
@@ -36,16 +36,16 @@ public final class SelectStatementTest {
     @Test
     public void assertIsSameGroupByAndOrderByItemsWhenSame() {
         SelectStatement actual = new SelectStatement();
-        actual.getOrderByItems().add(new OrderItem("col", OrderType.ASC, OrderType.ASC, Optional.<String>absent()));
-        actual.getGroupByItems().add(new OrderItem("col", OrderType.ASC, OrderType.ASC, Optional.<String>absent()));
+        actual.getOrderByItems().add(new OrderItem("col", OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent()));
+        actual.getGroupByItems().add(new OrderItem("col", OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent()));
         assertTrue(actual.isSameGroupByAndOrderByItems());
     }
     
     @Test
     public void assertIsSameGroupByAndOrderByItemsWhenDifferent() {
         SelectStatement actual = new SelectStatement();
-        actual.getOrderByItems().add(new OrderItem("order_col", OrderType.ASC, OrderType.ASC, Optional.<String>absent()));
-        actual.getGroupByItems().add(new OrderItem("group_col", OrderType.ASC, OrderType.ASC, Optional.<String>absent()));
+        actual.getOrderByItems().add(new OrderItem("order_col", OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent()));
+        actual.getGroupByItems().add(new OrderItem("group_col", OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent()));
         assertFalse(actual.isSameGroupByAndOrderByItems());
     }
 }

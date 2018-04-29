@@ -1,255 +1,287 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser-asserts>
-    <parser-assert sql-case-id="assertSelectDateFuncWithGroupBy" parameters="1000,1100">
+<parser-result-sets>
+    <parser-result sql-case-id="assertSelectDateFuncWithGroupBy" parameters="1000 1100">
         <tables>
             <table name="t_order_item" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="76" original-literals="`t_order_item`" />
-        </table-tokens>
-        <order-by-token begin-position-of-statement="162" begin-position-of-prepared-statement="156"/>
-        <conditions>
-            <condition column-name="order_id" table-name="t_order_item" operator="IN">
-                <value index="0" literal="1000" type="int" />
-                <value index="1" literal="1100" type="int" />
-            </condition>
-        </conditions>
+            <order-by-token placeholder-begin-position="156" literal-begin-position="162" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="IN">
+                    <value index="0" literal="1000" type="int" />
+                    <value index="1" literal="1100" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="c_number" />
+            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="c_number" />
         </aggregation-select-items>
         <group-by-columns>
-            <group-by-column name="date_format(c_date, '%y-%m-%d')" order-by-type="ASC" alias="c_date" />
+            <group-by-column name="date_format(c_date, '%y-%m-%d')" order-direction="ASC" alias="c_date" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="date_format(c_date, '%y-%m-%d')" order-by-type="ASC" alias="c_date" />
+            <order-by-column name="date_format(c_date, '%y-%m-%d')" order-direction="ASC" alias="c_date" />
         </order-by-columns>
-    </parser-assert>
-    <parser-assert sql-case-id="assertSelectSumWithGroupBy">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectSumWithGroupBy">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="49" original-literals="t_order" />
-        </table-tokens>
+        </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM" alias="orders_sum" />
+            <aggregation-select-item type="SUM" inner-expression="(order_id)" alias="orders_sum" />
         </aggregation-select-items>
         <group-by-columns>
-            <group-by-column name="user_id" order-by-type="ASC" />
+            <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="user_id" order-by-type="ASC" />
+            <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
-    <parser-assert sql-case-id="assertSelectCountWithGroupBy">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectCountWithGroupBy">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="53" original-literals="t_order" />
-        </table-tokens>
+        </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(order_id)" aggregation-type="COUNT" alias="orders_count" />
+            <aggregation-select-item type="COUNT" inner-expression="(order_id)" alias="orders_count" />
         </aggregation-select-items>
         <group-by-columns>
-            <group-by-column name="user_id" order-by-type="ASC" />
+            <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="user_id" order-by-type="ASC" />
+            <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
-    <parser-assert sql-case-id="assertSelectMaxWithGroupBy">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectMaxWithGroupBy">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="51" original-literals="t_order" />
-        </table-tokens>
+        </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(order_id)" aggregation-type="MAX" alias="max_order_id" />
+            <aggregation-select-item type="MAX" inner-expression="(order_id)" alias="max_order_id" />
         </aggregation-select-items>
         <group-by-columns>
-            <group-by-column name="user_id" order-by-type="ASC" />
+            <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="user_id" order-by-type="ASC" />
+            <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
-    <parser-assert sql-case-id="assertSelectMinWithGroupBy">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectMinWithGroupBy">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="51" original-literals="t_order" />
-        </table-tokens>
+        </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(order_id)" aggregation-type="MIN" alias="min_order_id"/>
+            <aggregation-select-item type="MIN" inner-expression="(order_id)" alias="min_order_id"/>
         </aggregation-select-items>
         <group-by-columns>
-            <group-by-column name="user_id" order-by-type="ASC" />
+            <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="user_id" order-by-type="ASC" />
+            <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
-    <parser-assert sql-case-id="assertSelectAvgWithGroupBy">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectAvgWithGroupBy">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="49" original-literals="t_order" />
-        </table-tokens>
-        <items-token begin-position="44">
-            <items>
-                <item>COUNT(order_id) AS AVG_DERIVED_COUNT_0 </item>
-                <item>SUM(order_id) AS AVG_DERIVED_SUM_0 </item>
-            </items>
-        </items-token>
+            <items-token begin-position="44">
+                <items>
+                    <item>COUNT(order_id) AS AVG_DERIVED_COUNT_0 </item>
+                    <item>SUM(order_id) AS AVG_DERIVED_SUM_0 </item>
+                </items>
+            </items-token>
+        </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(order_id)" aggregation-type="AVG" alias="orders_avg">
-                <derived-column inner-expression="(order_id)" aggregation-type="COUNT" alias="AVG_DERIVED_COUNT_0" />
-                <derived-column inner-expression="(order_id)" aggregation-type="SUM" alias="AVG_DERIVED_SUM_0" />
+            <aggregation-select-item type="AVG" inner-expression="(order_id)" alias="orders_avg">
+                <derived-column type="COUNT" inner-expression="(order_id)" alias="AVG_DERIVED_COUNT_0" />
+                <derived-column type="SUM" inner-expression="(order_id)" alias="AVG_DERIVED_SUM_0" />
             </aggregation-select-item>
         </aggregation-select-items>
         <group-by-columns>
-            <group-by-column name="user_id" order-by-type="ASC" />
+            <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="user_id" order-by-type="ASC" />
+            <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
-    <parser-assert sql-case-id="assertSelectOrderByDescWithGroupBy">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectOrderByDescWithGroupBy">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="49" original-literals="t_order" />
-        </table-tokens>
+        </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM" alias="orders_sum" />
+            <aggregation-select-item type="SUM" inner-expression="(order_id)" alias="orders_sum" />
         </aggregation-select-items>
         <group-by-columns>
-            <group-by-column name="user_id" order-by-type="ASC" />
+            <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="orders_sum" alias="orders_sum" order-by-type="DESC" />
+            <order-by-column name="orders_sum" alias="orders_sum" order-direction="DESC" />
         </order-by-columns>
-    </parser-assert>
-    <parser-assert sql-case-id="assertSelectCountWithoutGroupedColumn" parameters="1,2,9,10">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectCountWithoutGroupedColumn" parameters="1 2 9 10">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="36" original-literals="t_order" />
             <table-token begin-position="51" original-literals="t_order_item" />
-        </table-tokens>
-        <items-token begin-position="31">
-            <items>
-                <item>o.user_id AS GROUP_BY_DERIVED_0 </item>
-            </items>
-        </items-token>
-        <order-by-token begin-position-of-statement="195" begin-position-of-prepared-statement="194" />
-        <conditions>
-            <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
-            </condition>
-            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="2" literal="9" type="int" />
-                <value index="3" literal="10" type="int" />
-            </condition>
-        </conditions>
+            <items-token begin-position="31">
+                <items>
+                    <item>o.user_id AS GROUP_BY_DERIVED_0 </item>
+                </items>
+            </items-token>
+            <order-by-token placeholder-begin-position="194" literal-begin-position="195" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="items_count" />
+            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count" />
         </aggregation-select-items>
         <group-by-columns>
-            <group-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="o" order-by-type="ASC" />
+            <group-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="o" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="o" order-by-type="ASC" />
+            <order-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="o" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
-    <parser-assert sql-case-id="assertSelectCountWithGroupByBindingTable" parameters="1,2,9,10">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectCountWithGroupByBindingTable" parameters="1 2 9 10">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="47" original-literals="t_order" />
             <table-token begin-position="62" original-literals="t_order_item" />
-        </table-tokens>
-        <conditions>
-            <condition column-name="user_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
-            </condition>
-            <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                <value index="2" literal="9" type="int" />
-                <value index="3" literal="10" type="int" />
-            </condition>
-        </conditions>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(*)" aggregation-type="COUNT" alias="items_count" />
+            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count" />
         </aggregation-select-items>
         <group-by-columns>
-            <group-by-column name="user_id" owner="o" order-by-type="ASC" />
+            <group-by-column name="user_id" owner="o" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="user_id" owner="o" order-by-type="ASC" />
+            <order-by-column name="user_id" owner="o" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
-    <parser-assert sql-case-id="assertSelectWithGroupByAndLimit" parameters="5">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectWithGroupByAndLimit" parameters="5">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="20" original-literals="t_order" />
-        </table-tokens>
-        <row-count-token row-count="5" begin-position="68" />
+            <row-count-token row-count="5" begin-position="68" />
+        </tokens>
         <group-by-columns>
-            <group-by-column name="user_id" order-by-type="ASC" />
+            <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="user_id" order-by-type="ASC" />
+            <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
         <limit row-count-index="0" row-count="5" />
-    </parser-assert>
-    <parser-assert sql-case-id="assertSelectWithGroupByAndOrderByAndLimit" parameters="5">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectWithGroupByAndOrderByAndLimit" parameters="5">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="35" original-literals="t_order" />
-        </table-tokens>
-        <row-count-token row-count="5" begin-position="89" />
+            <row-count-token row-count="5" begin-position="89" />
+        </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM"/>
+            <aggregation-select-item type="SUM" inner-expression="(order_id)" />
         </aggregation-select-items>
         <group-by-columns>
-            <group-by-column name="user_id" order-by-type="ASC" />
+            <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="SUM(order_id)" order-by-type="ASC" />
+            <order-by-column name="SUM(order_id)" order-direction="ASC" />
         </order-by-columns>
         <limit row-count-index="0" row-count="5" />
-    </parser-assert>
-    <parser-assert sql-case-id="assertSelectGroupByWithAliasIsKeyword">
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectItemWithAliasAndMatchOrderByAndGroupByItems">
+        <tables>
+            <table name="t_order" alias="o" />
+        </tables>
+        <tokens>
+            <table-token begin-position="26" original-literals="t_order" />
+        </tokens>
+        <group-by-columns>
+            <group-by-column name="user_id" owner="o" alias="uid" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="user_id" owner="o" alias="uid" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertSelectGroupByWithAliasIsKeyword">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="58" original-literals="t_order" />
-        </table-tokens>
-        <order-by-token begin-position-of-statement="80" begin-position-of-prepared-statement="80"/>
+            <order-by-token placeholder-begin-position="80" literal-begin-position="80" />
+        </tokens>
         <aggregation-select-items>
-            <aggregation-select-item inner-expression="(order_id)" aggregation-type="SUM" alias="orders_sum" />
+            <aggregation-select-item type="SUM" inner-expression="(order_id)" alias="orders_sum" />
         </aggregation-select-items>
         <group-by-columns>
-            <group-by-column name="key" alias="key" order-by-type="ASC" />
+            <group-by-column name="key" alias="key" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="key" alias="key" order-by-type="ASC" />
+            <order-by-column name="key" alias="key" order-direction="ASC" />
         </order-by-columns>
-    </parser-assert>
-</parser-asserts>
+    </parser-result>
+</parser-result-sets>

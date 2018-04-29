@@ -22,6 +22,7 @@ import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.orchestration.internal.json.DataSourceJsonConverter;
 import io.shardingjdbc.orchestration.internal.json.GsonFactory;
+import io.shardingjdbc.orchestration.internal.json.MasterSlaveRuleConfigurationConverter;
 import io.shardingjdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
 import io.shardingjdbc.orchestration.reg.api.RegistryCenter;
 
@@ -158,7 +159,7 @@ public final class ConfigurationService {
     
     private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasMasterSlaveRuleConfiguration()) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH), GsonFactory.getGson().toJson(masterSlaveRuleConfig));
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH), MasterSlaveRuleConfigurationConverter.toJson(masterSlaveRuleConfig));
         }
     }
     
@@ -212,7 +213,7 @@ public final class ConfigurationService {
      * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
-        return GsonFactory.getGson().fromJson(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)), MasterSlaveRuleConfiguration.class);
+        return MasterSlaveRuleConfigurationConverter.fromJson(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
     }
     
     /**

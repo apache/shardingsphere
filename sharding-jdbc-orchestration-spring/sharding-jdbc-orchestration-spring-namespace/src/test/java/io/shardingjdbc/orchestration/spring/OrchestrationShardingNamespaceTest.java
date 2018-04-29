@@ -119,7 +119,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         ShardingRule shardingRule = getShardingRule("shardingRuleWithAttributesDataSource");
         assertNotNull(dataSourceMap.get("dbtbl_0"));
         assertNotNull(dataSourceMap.get("dbtbl_1"));
-        assertThat(shardingRule.getDefaultDataSourceName(), is("dbtbl_0"));
+        assertThat(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName(), is("dbtbl_0"));
         assertTrue(Arrays.equals(shardingRule.getDefaultDatabaseShardingStrategy().getShardingColumns().toArray(new String[]{}), 
                 new String[]{this.applicationContext.getBean("standardStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertTrue(Arrays.equals(shardingRule.getDefaultTableShardingStrategy().getShardingColumns().toArray(new String[]{}), 

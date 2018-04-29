@@ -20,7 +20,6 @@ package io.shardingjdbc.orchestration.internal;
 import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.ShardingRule;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -47,9 +46,9 @@ public class OrchestrationShardingDataSource extends ShardingDataSource {
     private final Properties props;
     
     public OrchestrationShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
-                                           final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration config) throws SQLException {
+                                           final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
         super(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
-        orchestrationFacade = new OrchestrationFacade(config);
+        this.orchestrationFacade = orchestrationFacade;
         this.dataSourceMap = dataSourceMap;
         this.shardingRuleConfig = shardingRuleConfig;
         this.configMap = configMap;

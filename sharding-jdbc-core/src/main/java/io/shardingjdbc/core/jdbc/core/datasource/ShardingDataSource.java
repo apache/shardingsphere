@@ -20,10 +20,13 @@ package io.shardingjdbc.core.jdbc.core.datasource;
 import io.shardingjdbc.core.api.ConfigMapContext;
 import io.shardingjdbc.core.constant.ShardingProperties;
 import io.shardingjdbc.core.constant.ShardingPropertiesConstant;
+import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.executor.ExecutorEngine;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.connection.ShardingConnection;
+import io.shardingjdbc.core.jdbc.metadata.JDBCShardingMetaData;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.Getter;
 
@@ -59,8 +62,10 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executorEngine = new ExecutorEngine(executorSize);
+        ShardingMetaData shardingMetaData = new JDBCShardingMetaData(dataSourceMap, shardingRule, getDatabaseType());
+        shardingMetaData.init(shardingRule);
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, showSQL);
+        shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingMetaData, showSQL);
     }
     
     /**
@@ -80,8 +85,15 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
             originalExecutorEngine.close();
         }
         boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        ShardingMetaData shardingMetaData = new JDBCShardingMetaData(newDataSourceMap, newShardingRule, getDatabaseType());
+        try {
+            shardingMetaData.init(newShardingRule);
+        } catch (SQLException ex) {
+            throw new ShardingJdbcException(ex);
+        }
+        
         shardingProperties = newShardingProperties;
-        shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, newShowSQL);
+        shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, shardingMetaData, newShowSQL);
     }
     
     @Override

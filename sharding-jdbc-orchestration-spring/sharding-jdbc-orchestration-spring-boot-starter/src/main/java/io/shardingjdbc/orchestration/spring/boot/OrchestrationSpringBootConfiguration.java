@@ -17,16 +17,13 @@
 
 package io.shardingjdbc.orchestration.spring.boot;
 
-import com.google.common.base.Preconditions;
-import io.shardingjdbc.core.exception.ShardingJdbcException;
-import io.shardingjdbc.core.util.DataSourceUtil;
-import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingjdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
-import io.shardingjdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
-import io.shardingjdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -34,10 +31,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.google.common.base.Preconditions;
+
+import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.util.DataSourceUtil;
+import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingjdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
+import io.shardingjdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
+import io.shardingjdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
+import io.shardingjdbc.orchestration.spring.boot.util.PropertyUtil;
 
 /**
  * Orchestration spring boot sharding and master-slave configuration.
@@ -67,11 +71,13 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
      */
     @Bean
     public DataSource dataSource() throws SQLException {
-        return null == masterSlaveProperties.getMasterDataSourceName() 
-                ? OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, 
-                        shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(), shardingProperties.getProps(), orchestrationProperties.getOrchestrationConfiguration())
-                : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
-                        masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), orchestrationProperties.getOrchestrationConfiguration());
+        String type = orchestrationProperties.getType();
+        Preconditions.checkState(null != type, "Missing the type of datasource configuration in orchestration configuration");
+        return OrchestrationConfiguration.SHARDING.equals(type)
+                ? OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap,
+                shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(), shardingProperties.getProps(), orchestrationProperties.getOrchestrationConfiguration())
+                : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap,
+                masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), orchestrationProperties.getOrchestrationConfiguration());
     }
     
     @Override
@@ -79,14 +85,17 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         setDataSourceMap(environment);
     }
     
+    @SuppressWarnings("unchecked")
     private void setDataSourceMap(final Environment environment) {
-        RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "sharding.jdbc.datasource.");
-        String dataSources = propertyResolver.getProperty("names");
-        Preconditions.checkState(!StringUtils.isEmpty(dataSources), "Wrong datasource properties, empty datasource !");
+        String prefix = "sharding.jdbc.datasource.";
+        String dataSources = environment.getProperty(prefix + "names");
+        if (StringUtils.isEmpty(dataSources)) {
+            return;
+        }
         dataSources = dataSources.trim();
         for (String each : dataSources.split(",")) {
             try {
-                Map<String, Object> dataSourceProps = propertyResolver.getSubProperties(each + ".");
+                Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, prefix + each, Map.class);
                 Preconditions.checkState(!dataSourceProps.isEmpty(), String.format("Wrong datasource [%s] properties!", each));
                 DataSource dataSource = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
                 dataSourceMap.put(each, dataSource);

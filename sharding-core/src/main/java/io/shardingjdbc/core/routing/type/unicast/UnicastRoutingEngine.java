@@ -17,37 +17,55 @@
 
 package io.shardingjdbc.core.routing.type.unicast;
 
-import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
+import io.shardingjdbc.core.routing.type.RoutingTable;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Unicast routing engine.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class UnicastRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
-    private final SQLStatement sqlStatement;
+    private final Collection<String> logicTables;
     
     @Override
     public RoutingResult route() {
         RoutingResult result = new RoutingResult();
-        if (sqlStatement.getTables().isEmpty()) {
-            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getDataSourceNames().iterator().next(), "", ""));
-        } else if (sqlStatement.getTables().isSingleTable()) {
-            String logicTableName = sqlStatement.getTables().getSingleTableName();
-            DataNode dataNode = shardingRule.findDataNodeByLogicTable(logicTableName);
-            result.getTableUnits().getTableUnits().add(new TableUnit(dataNode.getDataSourceName(), logicTableName, dataNode.getTableName()));
+        if (logicTables.isEmpty()) {
+            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getShardingDataSourceNames().getDataSourceNames().iterator().next()));
+        } else if (1 == logicTables.size()) {
+            String logicTableName = logicTables.iterator().next();
+            DataNode dataNode = shardingRule.findDataNode(logicTableName);
+            TableUnit tableUnit = new TableUnit(dataNode.getDataSourceName());
+            tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, dataNode.getTableName()));
+            result.getTableUnits().getTableUnits().add(tableUnit);
         } else {
-            throw new UnsupportedOperationException("Cannot support unicast routing for multiple tables.");
+            String dataSourceName = null;
+            List<RoutingTable> routingTables = new ArrayList<>(logicTables.size());
+            for (String each : logicTables) {
+                DataNode dataNode = shardingRule.findDataNode(dataSourceName, each);
+                routingTables.add(new RoutingTable(each, dataNode.getTableName()));
+                if (null == dataSourceName) {
+                    dataSourceName = dataNode.getDataSourceName();
+                }
+            }
+            TableUnit tableUnit = new TableUnit(dataSourceName);
+            tableUnit.getRoutingTables().addAll(routingTables);
+            result.getTableUnits().getTableUnits().add(tableUnit);
         }
         return result;
     }

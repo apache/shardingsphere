@@ -44,21 +44,26 @@ import java.util.Map.Entry;
  * Condition.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 @EqualsAndHashCode
 @ToString
-public final class Condition {
+public class Condition {
     
-    @Getter
     private final Column column;
     
-    @Getter
     private final ShardingOperator operator;
     
     private final Map<Integer, Comparable<?>> positionValueMap = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
+    
+    protected Condition() {
+        column = null;
+        operator = null;
+    }
     
     public Condition(final Column column, final SQLExpression sqlExpression) {
         this(column, ShardingOperator.EQUAL);
@@ -79,7 +84,7 @@ public final class Condition {
             count++;
         }
     }
-    
+ 
     private void init(final SQLExpression sqlExpression, final int position) {
         if (sqlExpression instanceof SQLPlaceholderExpression) {
             positionIndexMap.put(position, ((SQLPlaceholderExpression) sqlExpression).getIndex());
@@ -95,9 +100,11 @@ public final class Condition {
      *
      * @param parameters parameters
      * @return sharding value
+     * @deprecated only test call
      */
-    public ShardingValue getShardingValue(final List<Object> parameters) {
-        List<Comparable<?>> conditionValues = getValues(parameters);
+    @Deprecated
+    public ShardingValue getShardingValue(final List<?> parameters) {
+        List<Comparable<?>> conditionValues = getConditionValues(parameters);
         switch (operator) {
             case EQUAL:
             case IN:
@@ -109,7 +116,13 @@ public final class Condition {
         }
     }
     
-    private List<Comparable<?>> getValues(final List<Object> parameters) {
+    /**
+     * Get condition values.
+     * 
+     * @param parameters parameters
+     * @return condition values
+     */
+    public List<Comparable<?>> getConditionValues(final List<?> parameters) {
         List<Comparable<?>> result = new LinkedList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
             Object parameter = parameters.get(entry.getValue());

@@ -18,12 +18,11 @@
 package io.shardingjdbc.core.routing;
 
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.routing.router.sharding.GeneratedKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -38,7 +37,7 @@ public final class SQLRouteResult {
     
     private final SQLStatement sqlStatement;
     
-    private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
+    private final GeneratedKey generatedKey;
     
-    private final List<Number> generatedKeys = new LinkedList<>();
+    private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
 }

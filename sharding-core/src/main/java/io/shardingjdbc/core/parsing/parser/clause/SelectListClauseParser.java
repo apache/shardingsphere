@@ -34,7 +34,6 @@ import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLUtil;
 import lombok.Getter;
-
 import java.util.List;
 
 /**
@@ -83,7 +82,7 @@ public class SelectListClauseParser implements SQLClauseParser {
             result = parseAggregationSelectItem(selectStatement);
             parseRestSelectItem(selectStatement);
         } else {
-            result = new CommonSelectItem(SQLUtil.getExactlyValue(parseCommonSelectItem(selectStatement) + parseRestSelectItem(selectStatement)), aliasExpressionParser.parseSelectItemAlias());
+            result = parseCommonOrStarSelectItem(selectStatement);
         }
         return result;
     }
@@ -110,17 +109,13 @@ public class SelectListClauseParser implements SQLClauseParser {
         return new StarSelectItem(Optional.<String>absent());
     }
     
-    private boolean isAggregationSelectItem() {
-        return lexerEngine.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
-    }
-    
-    private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
-        AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
+    private SelectItem parseStarSelectItem(final String owner) {
         lexerEngine.nextToken();
-        return new AggregationSelectItem(aggregationType, lexerEngine.skipParentheses(selectStatement), aliasExpressionParser.parseSelectItemAlias());
+        aliasExpressionParser.parseSelectItemAlias();
+        return new StarSelectItem(Optional.fromNullable(owner));
     }
     
-    private String parseCommonSelectItem(final SelectStatement selectStatement) {
+    private SelectItem parseCommonOrStarSelectItem(final SelectStatement selectStatement) {
         String literals = lexerEngine.getCurrentToken().getLiterals();
         int position = lexerEngine.getCurrentToken().getEndPosition() - literals.length();
         StringBuilder result = new StringBuilder();
@@ -135,10 +130,25 @@ public class SelectListClauseParser implements SQLClauseParser {
             }
             result.append(lexerEngine.getCurrentToken().getLiterals());
             lexerEngine.nextToken();
+            if (lexerEngine.equalAny(Symbol.STAR)) {
+                return parseStarSelectItem(literals);
+            }
             result.append(lexerEngine.getCurrentToken().getLiterals());
             lexerEngine.nextToken();
         }
-        return result.toString();
+        return new CommonSelectItem(SQLUtil.getExactlyValue(result
+                + parseRestSelectItem(selectStatement)), aliasExpressionParser.parseSelectItemAlias());
+        
+    }
+    
+    private boolean isAggregationSelectItem() {
+        return lexerEngine.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
+    }
+    
+    private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
+        AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
+        lexerEngine.nextToken();
+        return new AggregationSelectItem(aggregationType, lexerEngine.skipParentheses(selectStatement), aliasExpressionParser.parseSelectItemAlias());
     }
     
     private String parseRestSelectItem(final SelectStatement selectStatement) {
@@ -146,7 +156,8 @@ public class SelectListClauseParser implements SQLClauseParser {
         while (lexerEngine.equalAny(Symbol.getOperators())) {
             result.append(lexerEngine.getCurrentToken().getLiterals());
             lexerEngine.nextToken();
-            result.append(parseCommonSelectItem(selectStatement));
+            SelectItem selectItem = parseCommonOrStarSelectItem(selectStatement);
+            result.append(selectItem.getExpression());
         }
         return result.toString();
     }

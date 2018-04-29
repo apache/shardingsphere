@@ -22,14 +22,14 @@ import com.google.common.collect.Lists;
 import io.shardingjdbc.core.common.env.DatabaseEnvironment;
 import io.shardingjdbc.core.common.env.ShardingJdbcDatabaseTester;
 import io.shardingjdbc.core.common.env.ShardingTestStrategy;
-import io.shardingjdbc.core.util.SQLAssertHelper;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.integrate.jaxb.SQLAssertData;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.core.parsing.cache.ParsingResultCache;
+import io.shardingjdbc.core.util.SQLAssertHelper;
 import lombok.Getter;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.IDatabaseTester;
@@ -135,6 +135,11 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
     }
     
+    @After
+    public void cleanupParsingResultCache() {
+        ParsingResultCache.getInstance().clear();
+    }
+    
     private void executeSQL(final String sql) throws SQLException {
         for (Map.Entry<DatabaseType, ? extends AbstractDataSourceAdapter> each : getDataSources().entrySet()) {
             if (getCurrentDatabaseType() == each.getKey()) {
@@ -234,18 +239,21 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         } else {
             sqlAssertHelper.executeWithStatement(isExecute, abstractDataSourceAdapter, getParameters(data));
         }
-        try (Connection conn = abstractDataSourceAdapter instanceof MasterSlaveDataSource ? abstractDataSourceAdapter.getConnection() 
-                : ((ShardingDataSource) abstractDataSourceAdapter).getConnection().getConnection(getDataSourceName(data.getExpected()), getSqlType())) {
+        String dataSourceName = getDataSourceName(data.getExpected());
+        if (dataSourceName.contains("ms")) {
+            dataSourceName = dataSourceName.replace("ms", "dataSource_master");
+        }
+        try (Connection conn = abstractDataSourceAdapter instanceof MasterSlaveDataSource ? ((MasterSlaveDataSource) abstractDataSourceAdapter).getConnection().getConnection(dataSourceName) 
+                : ((ShardingDataSource) abstractDataSourceAdapter).getConnection().getConnection(dataSourceName)) {
             sqlAssertHelper.assertResult(conn, expectedDataSetFile);
         }
     }
     
-    private SQLType getSqlType() {
-        return ShardingTestStrategy.masterslave == getShardingStrategy() ? SQLType.DML : SQLType.DQL;
-    }
-    
     // TODO 标准化文件名
     private String getDataSourceName(final String expected) {
+        if (ShardingTestStrategy.masterslaveonly == getShardingStrategy()) {
+            return "dataSource_master_only";
+        }
         String result = String.format(expected.split("/")[1].split(".xml")[0], getShardingStrategy().name());
         if (!result.contains("_")) {
             result = result + "_0";

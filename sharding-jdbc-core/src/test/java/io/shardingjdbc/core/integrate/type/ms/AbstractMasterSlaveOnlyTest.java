@@ -25,6 +25,7 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.integrate.jaxb.SQLShardingRule;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingjdbc.core.routing.router.masterslave.MasterVisitedManager;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -93,7 +94,7 @@ public abstract class AbstractMasterSlaveOnlyTest extends AbstractSQLAssertTest 
     @After
     public final void clearFlag() {
         HintManagerHolder.clear();
-        MasterSlaveDataSource.resetDMLFlag();
+        MasterVisitedManager.clear();
     }
     
     @AfterClass

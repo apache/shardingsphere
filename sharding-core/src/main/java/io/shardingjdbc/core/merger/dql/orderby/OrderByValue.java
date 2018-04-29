@@ -69,7 +69,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     public int compareTo(final OrderByValue o) {
         for (int i = 0; i < orderByItems.size(); i++) {
             OrderItem thisOrderBy = orderByItems.get(i);
-            int result = CompareUtil.compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderBy.getType(), thisOrderBy.getNullOrderType());
+            int result = CompareUtil.compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderBy.getOrderDirection(), thisOrderBy.getNullOrderDirection());
             if (0 != result) {
                 return result;
             }

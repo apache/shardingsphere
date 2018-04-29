@@ -1,35 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser-asserts>
-    <parser-assert sql-case-id="assertUpdateWithAlias" parameters="'update',1,1">
+<parser-result-sets>
+    <parser-result sql-case-id="assertUpdateWithAlias" parameters="'update' 1 1">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="7" original-literals="t_order" />
-        </table-tokens>
-        <conditions>
-            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                <value index="1" literal="1" type="int" />
-            </condition>
-            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                <value index="2" literal="1" type="int" />
-            </condition>
-        </conditions>
-    </parser-assert>
-    <parser-assert sql-case-id="assertUpdateWithoutAlias" parameters="'update',1,1">
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="2" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertUpdateWithoutAlias" parameters="'update' 1 1">
         <tables>
             <table name="t_order" />
         </tables>
-        <table-tokens>
+        <tokens>
             <table-token begin-position="7" original-literals="t_order" />
-        </table-tokens>
-        <conditions>
-            <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                <value index="1" literal="1" type="int" />
-            </condition>
-            <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                <value index="2" literal="1" type="int" />
-            </condition>
-        </conditions>
-    </parser-assert>
-</parser-asserts>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="2" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="assertUpdateWithJsonAndGeo" parameters="'2017-06-07' 100 200 '{&quot;rule2&quot;:&quot;null2&quot;}' 3 5 7 200">
+        <tables>
+            <table name="t_place" />
+        </tables>
+        <tokens>
+            <table-token begin-position="7" original-literals="t_place" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
+                    <value index="6" literal="7" type="int" />
+                </condition>
+                <condition column-name="guid" table-name="t_place" operator="EQUAL">
+                    <value index="7" literal="200" type="int"/>
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+</parser-result-sets>
